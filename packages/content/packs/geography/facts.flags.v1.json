@@ -1,0 +1,143 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "$comment": "Flag facts. Each value is a DESCRIPTION, not just a name, so tpl.flag-describe.mc4 can test the same fact without sight — a screen-reader user ends up with an identical user_facts row.",
+  "packId": "geography.facts.flags",
+  "version": "1.0.0",
+  "subject": "geography",
+  "kind": "facts",
+  "locales": [
+    "en",
+    "sv"
+  ],
+  "license": "CC-BY-4.0",
+  "generatedAt": "2026-07-31",
+  "items": [
+    {
+      "id": "geo.SE.flag",
+      "entity": "SE",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-SE",
+        "names": {
+          "en": "a yellow Nordic cross on a blue field",
+          "sv": "ett gult nordiskt kors på blå botten"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "europe",
+        "nordic-cross",
+        "core"
+      ],
+      "source": {
+        "name": "Swedish Act on the National Flag (SFS 1982:269)",
+        "url": "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/lag-1982269-om-sveriges-flagga_sfs-1982-269/",
+        "verifiedAt": "2026-07-31"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NO.flag",
+      "entity": "NO",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-NO",
+        "names": {
+          "en": "a blue Nordic cross outlined in white on a red field",
+          "sv": "ett blått nordiskt kors med vit kant på röd botten"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "europe",
+        "nordic-cross",
+        "core",
+        "commonly-confused"
+      ],
+      "source": {
+        "name": "Norwegian Flag Act (LOV-1898-12-10-1)",
+        "url": "https://lovdata.no/dokument/NL/lov/1898-12-10-1",
+        "verifiedAt": "2026-07-31"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DK.flag",
+      "entity": "DK",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-DK",
+        "names": {
+          "en": "a white Nordic cross on a red field",
+          "sv": "ett vitt nordiskt kors på röd botten"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "europe",
+        "nordic-cross",
+        "core",
+        "commonly-confused"
+      ],
+      "source": {
+        "name": "Danish Ministry of Justice, Order on the Danish flag",
+        "url": "https://www.retsinformation.dk/eli/lta/1915/72",
+        "verifiedAt": "2026-07-31"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FI.flag",
+      "entity": "FI",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-FI",
+        "names": {
+          "en": "a blue Nordic cross on a white field",
+          "sv": "ett blått nordiskt kors på vit botten"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "europe",
+        "nordic-cross",
+        "core",
+        "commonly-confused"
+      ],
+      "source": {
+        "name": "Finnish Flag Act (380/1978)",
+        "url": "https://www.finlex.fi/fi/laki/ajantasa/1978/19780380",
+        "verifiedAt": "2026-07-31"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JP.flag",
+      "entity": "JP",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-JP",
+        "names": {
+          "en": "a red circle centred on a white field",
+          "sv": "en röd cirkel i mitten på vit botten"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "flag",
+        "asia",
+        "core"
+      ],
+      "source": {
+        "name": "Act on National Flag and Anthem of Japan (Act No. 127 of 1999)",
+        "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/174",
+        "verifiedAt": "2026-07-31"
+      },
+      "volatility": "stable"
+    }
+  ]
+}

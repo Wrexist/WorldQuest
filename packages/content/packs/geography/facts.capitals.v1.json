@@ -1,0 +1,141 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "$comment": "Capital facts. One pack per attribute keeps IDs unique and lets a locale or a correction ship without touching unrelated content.",
+  "packId": "geography.facts.capitals",
+  "version": "1.0.0",
+  "subject": "geography",
+  "kind": "facts",
+  "locales": [
+    "en",
+    "sv"
+  ],
+  "license": "CC-BY-4.0",
+  "generatedAt": "2026-07-31",
+  "items": [
+    {
+      "id": "geo.SE.capital",
+      "entity": "SE",
+      "attribute": "capital",
+      "value": {
+        "id": "SE-AB",
+        "names": {
+          "en": "Stockholm",
+          "sv": "Stockholm"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "capital",
+        "europe",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "UN Statistics Division, M49 standard",
+        "url": "https://unstats.un.org/unsd/methodology/m49/",
+        "verifiedAt": "2026-07-31"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NO.capital",
+      "entity": "NO",
+      "attribute": "capital",
+      "value": {
+        "id": "NO-03",
+        "names": {
+          "en": "Oslo",
+          "sv": "Oslo"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "capital",
+        "europe",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "UN Statistics Division, M49 standard",
+        "url": "https://unstats.un.org/unsd/methodology/m49/",
+        "verifiedAt": "2026-07-31"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DK.capital",
+      "entity": "DK",
+      "attribute": "capital",
+      "value": {
+        "id": "DK-84",
+        "names": {
+          "en": "Copenhagen",
+          "sv": "Köpenhamn"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "europe",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "UN Statistics Division, M49 standard",
+        "url": "https://unstats.un.org/unsd/methodology/m49/",
+        "verifiedAt": "2026-07-31"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FI.capital",
+      "entity": "FI",
+      "attribute": "capital",
+      "value": {
+        "id": "FI-18",
+        "names": {
+          "en": "Helsinki",
+          "sv": "Helsingfors"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "europe",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "UN Statistics Division, M49 standard",
+        "url": "https://unstats.un.org/unsd/methodology/m49/",
+        "verifiedAt": "2026-07-31"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JP.capital",
+      "entity": "JP",
+      "attribute": "capital",
+      "value": {
+        "id": "JP-13",
+        "names": {
+          "en": "Tokyo",
+          "sv": "Tokyo"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "capital",
+        "asia",
+        "east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "UN Statistics Division, M49 standard",
+        "url": "https://unstats.un.org/unsd/methodology/m49/",
+        "verifiedAt": "2026-07-31"
+      },
+      "volatility": "stable"
+    }
+  ]
+}

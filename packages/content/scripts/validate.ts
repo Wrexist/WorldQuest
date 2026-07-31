@@ -102,7 +102,9 @@ for (const file of packFiles) {
       seenIds.set(item.id, rel)
     }
 
-    if (item.attribute === undefined) continue // entity or template
+    // A fact belongs to an entity. Templates have an `attribute` too, so
+    // testing that alone would treat every template as an unsourced fact.
+    if (item.attribute === undefined || item.entity === undefined) continue
     factCount++
 
     // 3. Sourcing and freshness.

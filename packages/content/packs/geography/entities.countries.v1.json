@@ -1,0 +1,69 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "$comment": "Phase 1 walking-skeleton entity set. The exit criterion for Phase 1 is that adding a sixth country means editing THIS FILE (plus its facts) and nothing else — no engine change, no screen change. packages/engines/src/content/thesis.test.ts asserts exactly that.",
+  "packId": "geography.entities",
+  "version": "1.0.0",
+  "subject": "geography",
+  "kind": "entities",
+  "locales": ["en", "sv"],
+  "license": "CC-BY-4.0",
+  "attribution": "Country names and codes from the UN Statistics Division M49 standard. Flag artwork is public domain.",
+  "generatedAt": "2026-07-31",
+  "items": [
+    {
+      "id": "JP",
+      "type": "country",
+      "names": { "en": "Japan", "sv": "Japan" },
+      "region": "AS",
+      "subregion": "east-asia",
+      "geometry": "geo/countries/JP.svg",
+      "assets": {
+        "flag": { "path": "flags/JP.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "SE",
+      "type": "country",
+      "names": { "en": "Sweden", "sv": "Sverige" },
+      "region": "EU",
+      "subregion": "northern-europe",
+      "geometry": "geo/countries/SE.svg",
+      "assets": {
+        "flag": { "path": "flags/SE.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "NO",
+      "type": "country",
+      "names": { "en": "Norway", "sv": "Norge" },
+      "region": "EU",
+      "subregion": "northern-europe",
+      "geometry": "geo/countries/NO.svg",
+      "assets": {
+        "flag": { "path": "flags/NO.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "DK",
+      "type": "country",
+      "names": { "en": "Denmark", "sv": "Danmark" },
+      "region": "EU",
+      "subregion": "northern-europe",
+      "geometry": "geo/countries/DK.svg",
+      "assets": {
+        "flag": { "path": "flags/DK.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "FI",
+      "type": "country",
+      "names": { "en": "Finland", "sv": "Finland" },
+      "region": "EU",
+      "subregion": "northern-europe",
+      "geometry": "geo/countries/FI.svg",
+      "assets": {
+        "flag": { "path": "flags/FI.svg", "license": "public-domain" }
+      }
+    }
+  ]
+}

@@ -12,6 +12,7 @@ const walk = (dir: string): string[] =>
 
 type Fact = {
   id?: string
+  entity?: string
   attribute?: string
   value?: { names?: Record<string, string> }
   source?: { name?: string; url?: string; verifiedAt?: string }
@@ -19,6 +20,12 @@ type Fact = {
   quizzable?: boolean
   sensitivity?: string
 }
+
+/**
+ * Templates carry an `attribute` too, so filtering on that alone counts them as
+ * unsourced facts. A fact is the thing that belongs to an entity.
+ */
+const isFact = (item: Fact): boolean => item.entity !== undefined
 
 const packs = walk(packsDir).map((file) => ({
   file,
@@ -44,7 +51,7 @@ describe('content packs', () => {
     // A wrong fact is the worst defect this product can ship. Sourcing is the
     // only thing standing between us and a plausible guess.
     for (const { file, pack } of packs) {
-      for (const item of pack.items.filter((i) => i.attribute)) {
+      for (const item of pack.items.filter(isFact)) {
         expect(item.source?.name, `${file} ${item.id} has no source`).toBeTruthy()
         expect(item.source?.verifiedAt, `${file} ${item.id} has no verifiedAt`).toBeTruthy()
       }
@@ -80,7 +87,7 @@ describe('content packs', () => {
   it('keeps fact ids unique and in the documented format', () => {
     const seen = new Set<string>()
     for (const { file, pack } of packs) {
-      for (const item of pack.items.filter((i) => i.attribute)) {
+      for (const item of pack.items.filter(isFact)) {
         expect(item.id, `${file} has a fact with no id`).toBeTruthy()
         expect(item.id!, `${item.id} is malformed`).toMatch(/^[a-z0-9]+\.[A-Z0-9-]+\.[a-z0-9-]+$/)
         expect(seen.has(item.id!), `${item.id} is duplicated`).toBe(false)
