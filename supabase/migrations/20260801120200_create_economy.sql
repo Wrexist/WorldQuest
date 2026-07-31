@@ -64,10 +64,10 @@ alter table wallets     enable row level security;
 alter table inventory   enable row level security;
 alter table streaks     enable row level security;
 
-create policy own_xp_select        on xp_ledger   for select using (auth.uid() = user_id);
-create policy own_coins_select     on coin_ledger for select using (auth.uid() = user_id);
-create policy own_wallet_select    on wallets     for select using (auth.uid() = user_id);
-create policy own_inventory_select on inventory   for select using (auth.uid() = user_id);
-create policy own_streak_select    on streaks     for select using (auth.uid() = user_id);
+create policy own_xp_select        on xp_ledger   for select using ((select auth.uid()) = user_id);
+create policy own_coins_select     on coin_ledger for select using ((select auth.uid()) = user_id);
+create policy own_wallet_select    on wallets     for select using ((select auth.uid()) = user_id);
+create policy own_inventory_select on inventory   for select using ((select auth.uid()) = user_id);
+create policy own_streak_select    on streaks     for select using ((select auth.uid()) = user_id);
 -- Deliberately no client write policy on any of the above. There is no endpoint
 -- that accepts "give me 500 XP".

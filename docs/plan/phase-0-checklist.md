@@ -57,8 +57,10 @@ two weeks that saves six months.
 | ✅ | Design system preview (`pnpm design:preview`) |
 | ✅ | Economy simulation with health gates (`pnpm engines:simulate`) |
 | ✅ | First three migrations + RLS tests |
-| ⬜ | Supabase project created (dev + prod) |
-| ⬜ | Sentry, PostHog, RevenueCat accounts |
+| ✅ | Supabase project created (`worldquest-dev`, eu-north-1) — [connected-services.md](../engineering/connected-services.md) |
+| ⬜ | Supabase **prod** project |
+| ⛔ | Sentry — MCP connector needs OAuth, cannot be done headlessly |
+| ⬜ | PostHog (EU region), RevenueCat accounts |
 | ⬜ | EAS project + build profiles |
 
 ## Decisions needing a human
@@ -98,14 +100,14 @@ These are **not** things an agent should decide. Each changes the product.
 | ✅ | 6 · Lesson screen | All five states, tokens only, every string a key |
 | ✅ | 7 · Offline queue + reconcile | 27 tests incl. duplicate flush and parking |
 | ✅ | 8 · Home screen showing real progress | Loop closes: Home → lesson → progress → Home |
-| ⬜ | Run it against a live Supabase project | Needs the project created (above) |
+| ✅ | Run it against a live Supabase project | 5 migrations applied, 0 security advisors, invariants verified on the real DB |
 
 ### Exit criteria
 
 | | Criterion | Status |
 |---|---|---|
-| ⚠️ | A real answer changes a real `due_at` **on a real server** | Proven in-process (`lesson.test.ts`); needs a live project to be literally true |
-| ⚠️ | The slice runs offline and reconciles on reconnect | Queue logic fully tested; the network adapter lands with the Supabase project |
+| ⚠️ | A real answer changes a real `due_at` **on a real server** | Persistence proven on the live DB (`due_at` = 3.17 days, matching FSRS); the HTTP round trip is untested because the build sandbox's proxy denies CONNECT to the project host |
+| ⚠️ | The slice runs offline and reconciles on reconnect | Queue logic fully tested (27 cases); `submitLesson` is wired but has never made a real request |
 | ✅ | `packages/engines` is React- and network-free, ≥ 90 % covered | 97 % |
 | ✅ | **Adding a sixth country is one JSON file and nothing else** | Asserted by `content/thesis.test.ts` |
 

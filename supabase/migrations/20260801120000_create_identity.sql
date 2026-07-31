@@ -41,7 +41,11 @@ create table entitlements (
 -- is_child and role are server-owned. Enforced in a trigger because RLS cannot
 -- restrict individual columns.
 create or replace function guard_protected_profile_columns()
-returns trigger language plpgsql security definer as $$
+returns trigger language plpgsql security definer
+-- An empty search_path is required on SECURITY DEFINER: without it a caller can
+-- shadow a referenced object and run code as the function owner.
+set search_path = ''
+as $$
 begin
   if auth.role() = 'service_role' then return new; end if;
   if new.is_child is distinct from old.is_child then
@@ -61,10 +65,10 @@ alter table profiles enable row level security;
 alter table entitlements enable row level security;
 
 create policy own_profile_select on profiles
-  for select using (auth.uid() = id and deleted_at is null);
+  for select using ((select auth.uid()) = id and deleted_at is null);
 create policy own_profile_update on profiles
-  for update using (auth.uid() = id) with check (auth.uid() = id);
+  for update using ((select auth.uid()) = id) with check ((select auth.uid()) = id);
 create policy own_entitlements_select on entitlements
-  for select using (auth.uid() = user_id);
+  for select using ((select auth.uid()) = user_id);
 -- No insert/update/delete policy on entitlements: purchases are granted by the
 -- RevenueCat webhook running as service_role. The absence IS the control.

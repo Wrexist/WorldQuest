@@ -67,6 +67,6 @@ alter table review_log enable row level security;
 alter table lessons    enable row level security;
 
 -- Read-only for the owner. All writes happen in edge functions as service_role.
-create policy own_facts_select   on user_facts for select using (auth.uid() = user_id);
-create policy own_reviews_select on review_log for select using (auth.uid() = user_id);
-create policy own_lessons_select on lessons    for select using (auth.uid() = user_id);
+create policy own_facts_select   on user_facts for select using ((select auth.uid()) = user_id);
+create policy own_reviews_select on review_log for select using ((select auth.uid()) = user_id);
+create policy own_lessons_select on lessons    for select using ((select auth.uid()) = user_id);

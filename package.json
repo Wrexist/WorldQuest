@@ -10,7 +10,7 @@
     "dev": "pnpm --filter @worldquest/mobile start",
     "verify": "pnpm typecheck && pnpm test && pnpm content:validate && pnpm i18n:check && pnpm design:contrast",
     "typecheck": "pnpm -r --filter './packages/*' --filter './apps/*' typecheck",
-    "test": "pnpm -r --filter './packages/*' test",
+    "test": "pnpm -r --filter './packages/*' test && vitest run --config vitest.edge.config.ts",
     "content:validate": "pnpm --filter @worldquest/content validate",
     "content:preview": "pnpm --filter @worldquest/content preview",
     "content:stats": "pnpm --filter @worldquest/content stats",
@@ -22,8 +22,10 @@
     "engines:simulate": "pnpm --filter @worldquest/engines simulate",
     "db:start": "supabase start",
     "db:reset": "supabase db reset",
-    "db:types": "supabase gen types typescript --local > packages/api/src/database.types.ts",
-    "db:test": "supabase test db"
+    "db:types": "supabase gen types typescript --project-id tjdjogidudjobxipibqb > packages/api/src/database.types.ts",
+    "db:test": "supabase test db",
+    "edge:build": "tsx supabase/functions/build.ts submit-lesson",
+    "edge:deploy": "supabase functions deploy submit-lesson --project-ref tjdjogidudjobxipibqb"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
