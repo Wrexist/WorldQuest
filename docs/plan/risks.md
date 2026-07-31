@@ -74,7 +74,7 @@ most trust-destroying bug a learning app can have.
 - Idempotency keys on every mutation; the server may safely replay anything.
 - `review_log` is append-only and authoritative — state is always rebuildable.
 - E2E flow 7 (airplane mode → lesson → reconnect) runs every release on real devices.
-- Alert on any spike in `xp_reconciliation_mismatch`.
+- Alert on any spike in `xp_reconciliation_failed`.
 
 **Early warning:** any support ticket about lost progress. **Owner:** Engineering.
 

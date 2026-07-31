@@ -40,8 +40,14 @@ export const BALANCE = {
     streakMilestones: { 7: 50, 30: 200, 100: 500, 365: 1000 },
     achievementByTier: { bronze: 25, silver: 50, gold: 100, platinum: 250, legendary: 500 },
 
-    /** Past this, XP earns at 25 % and we say so plainly. Anti-grind, on-brand. */
-    dailySoftCap: 1500,
+    /**
+     * Past this, XP earns at 25 % and we say so plainly. Anti-grind, on-brand.
+     *
+     * 3000 ≈ 60 minutes of play. Simulation showed 1500 throttling a 30-minute
+     * user on 84 of 90 days — that is not a grinder, that is a committed learner,
+     * and taxing them daily punishes exactly the behaviour we want.
+     */
+    dailySoftCap: 3000,
     softCapMultiplier: 0.25,
     /** Re-answering an already-mastered fact the same day. */
     repeatMasteredSameDay: 2,
@@ -91,6 +97,41 @@ export const BALANCE = {
     childRegenMinutes: 22,
     /** A correct answer on a previously-failed review gives one back. */
     restoreOnRedemption: 1,
+    /**
+     * A run of correct answers inside a lesson restores a heart (capped at max).
+     *
+     * Without this, 5 hearts against a 15-item lesson at realistic accuracy ends
+     * ~60 % of lessons early — the simulation measured it. That is the death
+     * spiral that makes hearts the most-hated mechanic in this category. Earning
+     * a heart back rewards recovery and keeps the stakes without the punishment.
+     */
+    restoreEveryCorrectStreak: 5,
+    /**
+     * New items never cost a heart. Only review items — things the user has seen
+     * before — can.
+     *
+     * You cannot lose a life for not knowing something you have never been taught.
+     * Beyond being unfair, the simulation showed the alternative punishes exactly
+     * the wrong people: heart loss scales with error rate, so a struggling
+     * ten-year-old at 75 % accuracy was blocked on 59 % of lessons while a
+     * completionist at 92 % was blocked on 9 %. A mechanic that penalises the
+     * users who most need to keep going is a mechanic aimed backwards.
+     */
+    newItemsCostHearts: false,
+    /**
+     * Hearts reset at the start of every lesson, not once a day.
+     *
+     * Carried across a session they compound: a casual learner doing three short
+     * lessons back to back was blocked on 42 % of them, because five hearts cannot
+     * survive three lessons at beginner accuracy. That is a day-long lockout in
+     * everything but name, which is the mechanic our own principles forbid.
+     *
+     * Per-lesson keeps the stakes exactly where they belong — be careful *in this
+     * lesson* — and guarantees the next lesson always starts fresh. The coin sink
+     * moves from "refill hearts" to "continue this lesson now"; Premium still buys
+     * never being interrupted.
+     */
+    resetPerLesson: true,
     premiumUnlimited: true,
     /** Off entirely in Relaxed Mode and Classroom Mode. */
     disabledInRelaxedMode: true,

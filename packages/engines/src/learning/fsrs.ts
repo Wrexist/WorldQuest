@@ -221,9 +221,19 @@ export function deriveRating(
   medianMs: number,
 ): Rating {
   if (!correct) return 1
-  const capped = Math.min(elapsedMs, MAX_CREDITED_ANSWER_MS)
-  if (capped > medianMs * 2.5) return 2
-  if (capped < medianMs * 0.6) return 4
+
+  // Past the credible window the user put the phone down, so we have NO timing
+  // signal — fall back to Good rather than inferring from the elapsed value.
+  // Clamping instead would be worse than useless: for a slow template (say a
+  // 60 s median) a capped 30 s reads as *below* the fast threshold, and someone
+  // who wandered off for ten minutes gets scored as instant recall.
+  if (elapsedMs > MAX_CREDITED_ANSWER_MS) return 3
+
+  // Sub-400ms answers are not credible either, but they are excluded upstream —
+  // they earn no XP and never reach the scheduler. See the anti-cheat table in
+  // docs/engineering/security-privacy.md.
+  if (elapsedMs > medianMs * 2.5) return 2
+  if (elapsedMs < medianMs * 0.6) return 4
   return 3
 }
 

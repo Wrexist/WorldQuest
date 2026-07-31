@@ -30,9 +30,10 @@ function import the **same module**, so they cannot drift.
 
 ```ts
 export const BALANCE = {
-  xp: { correctAnswer: 10, dailyQuest: 50, factMastered: 20, dailySoftCap: 1500, … },
+  xp: { correctAnswer: 10, dailyQuest: 50, factMastered: 20, dailySoftCap: 3000, … },
   coins: { … },
-  hearts: { max: 5, regenMinutes: 45, childRegenMinutes: 22, refillCost: 250 },
+  hearts: { max: 5, resetPerLesson: true, newItemsCostHearts: false,
+            restoreEveryCorrectStreak: 5, regenMinutes: 45, childRegenMinutes: 22 },
   levels: { base: 50, exponent: 1.55 },
 } as const
 ```
@@ -56,7 +57,7 @@ heart-block rate. **Compare before and after, and put both in the PR.**
 | Coin earn ÷ spend, weekly | 0.9 – 1.2 | > 1.5 → not enough sinks; < 0.7 → too expensive |
 | Days to first meaningful cosmetic | 4 – 7 | Faster = weightless; slower = pointless shop |
 | Median coin balance | < 5 days of earnings | A hoard means nothing is worth buying |
-| Heart-block rate | < 15 % of lessons | Too punishing |
+| Heart-block rate | < 15 % of lessons | Too punishing. Check it **per accuracy band** — if it rises as accuracy falls, the mechanic is backwards. |
 | Coin refills after a block | < 20 % | People are paying to keep learning — wrong |
 | Daily XP soft-cap hits | < 5 % of DAU | We're encouraging grinding |
 
@@ -64,8 +65,10 @@ heart-block rate. **Compare before and after, and put both in the PR.**
 
 1. **Coins buy delight, never advantage.** No content, no lessons, no difficulty skips,
    no league position, no XP.
-2. **Hearts never block learning.** Practice and Review are always free, with zero
-   hearts, forever. Premium sells convenience, not access.
+2. **Hearts never block learning.** Practice and Review are always free at zero hearts,
+   forever. Premium sells convenience, not access. Hearts reset every lesson, and new
+   items never cost one — simulation showed the alternatives block struggling learners
+   far more than confident ones, which aims the mechanic backwards.
 3. **No randomised paid rewards.** No loot boxes, gacha, or mystery boxes. Permanent
    no-list — predatory, and illegal for minors in several of our markets.
 4. **All awards are computed server-side.** The client's number is a prediction.

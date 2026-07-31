@@ -119,7 +119,7 @@ selected) · `collection_viewed` · `content_pack_downloaded` (pack, ms, bytes)
 
 `error_occurred` (domain, code, is_fatal) · `sync_queued` / `_flushed` /
 `_conflict_resolved` · `offline_mode_entered` / `_exited` (duration) ·
-`xp_reconciliation_mismatch` (client_xp, server_xp) · `performance_measured`
+`xp_reconciliation_failed` (client_xp, server_xp) · `performance_measured`
 (metric, ms) · `notification_received` / `_opened` / `_permission_result` ·
 `setting_changed` (setting, value) · `a11y_feature_detected` (feature) —
 *aggregate only, never per-user; knowing 12 % of users run 200 % text is a design

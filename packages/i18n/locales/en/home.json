@@ -6,7 +6,10 @@
   "home:streak.days": "{count, plural, =0 {No streak yet} one {# day streak} other {# day streak}}",
   "home:streak.days__note": "ICU plural — Swedish and German need forms English does not have.",
   "home:quest.today": "Today's Quest",
+  "home:quest.today__note": "Card title on Home for the day's quest. Max 18 chars.",
   "home:quest.empty": "Start your first lesson",
   "home:challenge.next": "New challenge in {time}",
-  "home:friends.online": "{count} online"
+  "home:challenge.next__note": "Countdown to the next daily challenge. {time} is a formatted duration like \"14:22:16\".",
+  "home:friends.online": "{count, plural, =0 {No friends online} one {# friend online} other {# friends online}}",
+  "home:friends.online__note": "Count of friends currently online. ICU plural."
 }

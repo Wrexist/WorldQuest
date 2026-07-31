@@ -20,7 +20,7 @@ Split them.
 | Currency | Earned by | Spent on | Direction |
 |---|---|---|---|
 | **XP** | Learning | Nothing, ever | Monotonically up |
-| **Coins** | Learning, quests, achievements | Cosmetics, freezes, heart refills | Up and down |
+| **Coins** | Learning, quests, achievements | Cosmetics, freezes, lesson continues | Up and down |
 | **Gems** | Purchase only | Premium cosmetics, gifting | Paid |
 | **Hearts** | Regenerate over time | Wrong answers | Consumable |
 

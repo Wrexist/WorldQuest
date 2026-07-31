@@ -128,7 +128,7 @@ export const EVENTS = {
     description: 'Client and server state disagreed; server won',
     properties: { kind: 'string' },
   },
-  xp_reconciliation_mismatch: {
+  xp_reconciliation_failed: {
     description: 'Client-predicted XP differed from the server. A spike means a bug or a cheat.',
     properties: { client_xp: 'number', server_xp: 'number' },
   },

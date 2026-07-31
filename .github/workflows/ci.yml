@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+
+      - run: pnpm install --frozen-lockfile
+
+      # Generated artefacts must match their source. A stale tokens.ts means the
+      # app and the design system have silently diverged.
+      - name: Tokens are up to date
+        run: |
+          pnpm design:tokens
+          git diff --exit-code packages/design/src/tokens.ts packages/design/src/tokens.css \
+            || (echo "::error::tokens.ts is stale — run pnpm design:tokens and commit"; exit 1)
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Unit tests (engines gate at 90% coverage)
+        run: pnpm test
+
+      - name: Content validation
+        run: pnpm content:validate
+
+      - name: Localisation
+        run: pnpm i18n:check
+
+      - name: Contrast (WCAG 2.2 AA)
+        run: pnpm design:contrast

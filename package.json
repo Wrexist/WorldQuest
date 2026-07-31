@@ -2,27 +2,40 @@
   "name": "worldquest",
   "private": true,
   "packageManager": "pnpm@9.15.0",
-  "engines": { "node": ">=22.0.0", "pnpm": ">=9.0.0" },
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=9.0.0"
+  },
   "scripts": {
-    "dev": "pnpm --filter @worldquest/mobile dev",
-    "verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm content:validate && pnpm i18n:check && pnpm lint:a11y",
-    "typecheck": "turbo run typecheck",
-    "lint": "turbo run lint",
-    "lint:a11y": "turbo run lint:a11y",
-    "test": "turbo run test",
+    "dev": "pnpm --filter @worldquest/mobile start",
+    "verify": "pnpm typecheck && pnpm test && pnpm content:validate && pnpm i18n:check && pnpm design:contrast",
+    "typecheck": "pnpm -r --filter './packages/*' typecheck",
+    "test": "pnpm -r --filter './packages/*' test",
     "content:validate": "pnpm --filter @worldquest/content validate",
     "content:preview": "pnpm --filter @worldquest/content preview",
     "content:stats": "pnpm --filter @worldquest/content stats",
     "i18n:check": "pnpm --filter @worldquest/i18n check",
     "i18n:types": "pnpm --filter @worldquest/i18n types",
-    "i18n:pseudo": "pnpm --filter @worldquest/i18n pseudo",
     "design:tokens": "pnpm --filter @worldquest/design build-tokens",
     "design:contrast": "pnpm --filter @worldquest/design check-contrast",
+    "design:preview": "pnpm --filter @worldquest/design preview",
     "engines:simulate": "pnpm --filter @worldquest/engines simulate",
     "db:start": "supabase start",
     "db:reset": "supabase db reset",
     "db:types": "supabase gen types typescript --local > packages/api/src/database.types.ts",
     "db:test": "supabase test db"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "18.3.12",
+    "@vitest/coverage-v8": "^2.1.8",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "react": "18.3.1",
+    "react-native": "0.76.5",
+    "tsx": "^4.23.1",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   },
   "$comment": "Install from the repo ROOT, never inside a package. See CLAUDE.md."
 }

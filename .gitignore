@@ -31,3 +31,5 @@ packages/api/src/database.types.ts
 
 .DS_Store
 *.log
+packages/*/coverage/
+packages/design/preview/

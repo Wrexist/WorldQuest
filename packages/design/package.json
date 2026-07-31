@@ -1,0 +1,14 @@
+{
+  "name": "@worldquest/design",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build-tokens": "tsx scripts/build-tokens.ts",
+    "check-contrast": "tsx scripts/check-contrast.ts",
+    "preview": "tsx scripts/build-preview.ts"
+  }
+}

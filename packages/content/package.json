@@ -1,0 +1,17 @@
+{
+  "name": "@worldquest/content",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "validate": "tsx scripts/validate.ts",
+    "preview": "tsx scripts/preview.ts",
+    "stats": "tsx scripts/stats.ts"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  }
+}

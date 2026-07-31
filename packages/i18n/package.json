@@ -1,0 +1,11 @@
+{
+  "name": "@worldquest/i18n",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "check": "tsx scripts/check.ts",
+    "types": "tsx scripts/build-keys.ts"
+  }
+}

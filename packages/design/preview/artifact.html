@@ -1,0 +1,499 @@
+<title>WorldQuest — design system</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --canvas:#001227; --deep:#00050F; --top:#052342;
+  --surf:#0A1F3C; --surf2:#102A4D; --surf3:#16375C;
+  --line:#1B3A63;
+  --green:#22A73A; --green4:#4FCB5C; --blue:#1E86E8;
+  --gold:#F5A61E; --flame:#FF6A14; --red:#E5252A;
+  --t1:#FFFFFF; --t2:#9FB3D1; --t3:#6B82A6;
+  --wrongbg:#3A2130;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:20px;
+  --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px;
+  /* Stand-in stack. The app ships Baloo 2 + Inter — type is the one thing this
+     page cannot verify, because the CSP blocks font CDNs. */
+  --ui:ui-rounded,"SF Pro Rounded",-apple-system,"Segoe UI Variable","Segoe UI",Roboto,system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+body{margin:0;background:var(--deep);color:var(--t1);font-family:var(--ui);
+  -webkit-font-smoothing:antialiased;line-height:1.5}
+.page{max-width:1180px;margin:0 auto;padding:var(--s6) var(--s4) 96px}
+
+/* night sky, no external assets */
+.sky{position:fixed;inset:0;z-index:-1;background:
+  radial-gradient(1100px 700px at 15% -10%, #052342 0%, transparent 60%),
+  radial-gradient(900px 600px at 85% 5%, #06284a 0%, transparent 55%),
+  var(--deep);}
+.sky::after{content:"";position:absolute;inset:0;opacity:.5;background-image:
+  radial-gradient(1.4px 1.4px at 12% 22%, #fff, transparent),
+  radial-gradient(1.2px 1.2px at 38% 8%, #cfe6ff, transparent),
+  radial-gradient(1.6px 1.6px at 67% 31%, #fff, transparent),
+  radial-gradient(1.1px 1.1px at 84% 14%, #b9d8ff, transparent),
+  radial-gradient(1.3px 1.3px at 26% 61%, #fff, transparent),
+  radial-gradient(1.2px 1.2px at 91% 54%, #dbeaff, transparent),
+  radial-gradient(1.1px 1.1px at 54% 78%, #fff, transparent);}
+
+h1,h2,h3{text-wrap:balance;margin:0}
+.eyebrow{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.title{font-size:clamp(30px,5vw,46px);font-weight:800;letter-spacing:-.02em;margin:var(--s3) 0}
+.lede{color:var(--t2);max-width:62ch;font-size:17px}
+section{margin-top:var(--s6);padding-top:var(--s5);border-top:1px solid var(--line)}
+.sec-h{font-size:22px;font-weight:800;letter-spacing:-.01em}
+.sec-p{color:var(--t2);max-width:66ch;margin-top:var(--s2)}
+.note{margin-top:var(--s3);padding:var(--s3) var(--s4);border-left:3px solid var(--gold);
+  background:rgba(245,166,30,.07);border-radius:0 var(--r-sm) var(--r-sm) 0;color:var(--t2);font-size:14px;max-width:70ch}
+.note b{color:var(--t1)}
+code,.mono{font-family:var(--mono);font-size:12px}
+.dim{color:var(--t2)}
+
+/* tokens */
+.sw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:var(--s3);margin-top:var(--s4)}
+.sw{background:var(--surf);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden}
+.sw-chip{height:58px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px}
+.sw-meta{padding:var(--s2) var(--s3);display:flex;flex-direction:column;gap:2px}
+.sw-meta code{color:var(--t1)}
+.ratio{color:var(--green4);font-variant-numeric:tabular-nums}
+.scale-row{display:flex;align-items:flex-end;gap:var(--s3);flex-wrap:wrap;margin-top:var(--s4)}
+.scale-row .u{text-align:center}
+.scale-row .u i{display:block;background:linear-gradient(180deg,var(--blue),var(--green));border-radius:3px}
+.scale-row .u span{font-family:var(--mono);font-size:11px;color:var(--t2)}
+table{width:100%;border-collapse:collapse;margin-top:var(--s4);font-size:14px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{color:var(--t3);font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+td.n{font-family:var(--mono);color:var(--t2);font-variant-numeric:tabular-nums}
+.tbl-wrap{overflow-x:auto}
+
+/* component bench */
+.bench{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--s4);margin-top:var(--s4)}
+.bench .cell{background:var(--surf);border:1px solid var(--line);border-radius:var(--r-lg);padding:var(--s4);display:flex;flex-direction:column;gap:var(--s3)}
+.cell-lab{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);font-weight:700}
+
+/* shared app pieces */
+.btn{border:0;border-radius:var(--r-md);height:48px;padding:0 var(--s5);font-family:var(--ui);
+  font-size:16px;font-weight:600;color:#fff;cursor:pointer;width:100%}
+.btn.primary{background:var(--green);box-shadow:0 0 24px rgba(34,167,58,.35)}
+.btn.secondary{background:var(--blue)}
+.btn.tertiary{background:transparent;border:1px solid var(--line);color:var(--t1);box-shadow:none}
+.btn.destructive{background:#B01216}
+.btn.ghost{background:transparent;color:var(--t2);box-shadow:none}
+.btn.disabled{background:var(--surf3);color:var(--t3);box-shadow:none;cursor:not-allowed}
+.btn.sm{height:36px;font-size:13px}
+.btn.wide{margin-top:var(--s4)}
+.opt{min-height:56px;border-radius:var(--r-md);background:var(--surf2);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-weight:600;position:relative;padding:0 var(--s4)}
+.opt.correct{background:var(--green);border-color:var(--green)}
+.opt.wrong{background:var(--wrongbg);border-color:#5b3448}
+.opt.selected{background:var(--surf3)}
+.opt.disabled{background:var(--surf);color:var(--t3)}
+.tick{position:absolute;right:var(--s4);font-weight:800}
+.bar{height:8px;border-radius:999px;background:var(--deep);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green4);border-radius:999px}
+.bar-row{display:flex;align-items:center;gap:var(--s3)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13px;font-weight:700;color:var(--green4)}
+.num.gold{color:var(--gold)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;
+  background:var(--surf);font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.chip.xp{color:var(--gold)} .chip.coin{color:#FBC24A}
+.chip.streak{color:var(--flame)} .chip.hearts{color:var(--red)}
+.skel{background:var(--surf2);border-radius:var(--r-sm);height:14px;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:.8}}
+
+/* phone frames — echoing the mockup's own composition */
+.phones{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:var(--s5);margin-top:var(--s5)}
+.phone-wrap{display:flex;flex-direction:column;gap:var(--s2)}
+.phone-cap{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);font-weight:700}
+.scr{background:linear-gradient(170deg,var(--top),var(--canvas) 45%,var(--deep));
+  border:1px solid var(--line);border-radius:26px;padding:var(--s3);aspect-ratio:9/19.5;
+  display:flex;flex-direction:column;gap:var(--s3);overflow:hidden;position:relative;
+  box-shadow:0 18px 44px rgba(0,0,0,.55)}
+.scr.center{align-items:center;text-align:center}
+.statusbar{display:flex;justify-content:space-between;font-size:10px;color:var(--t2);
+  font-variant-numeric:tabular-nums;padding:0 2px}
+.hd{display:flex;align-items:center;gap:var(--s2)}
+.hd-txt{flex:1}
+.avatar{width:34px;height:34px;border-radius:999px;background:linear-gradient(140deg,var(--blue),#4C9BF0);
+  border:2px solid var(--gold)}
+.streak{display:flex;flex-direction:column;align-items:center;color:var(--flame);line-height:1.1}
+.streak b{font-size:17px;font-variant-numeric:tabular-nums}
+.fl{font-size:13px}
+.card{background:var(--surf);border-radius:var(--r-lg);padding:var(--s3);display:flex;
+  flex-direction:column;gap:var(--s2)}
+.card.lift{background:var(--surf2);box-shadow:0 6px 16px rgba(0,0,0,.45)}
+.row-card{flex-direction:row;align-items:center;justify-content:space-between}
+.trophy{font-size:26px}
+.two-up{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
+.mini{padding:var(--s3)}
+.tabs{margin-top:auto;display:flex;justify-content:space-between;padding-top:var(--s2);
+  border-top:1px solid var(--line)}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--t3);flex:1}
+.tab.on{color:var(--blue)}
+.tg{font-size:15px}
+.lesson-hd{display:flex;align-items:center;gap:var(--s2)}
+.flex1{flex:1}
+.x{color:var(--t2);font-size:15px}
+.hearts{color:var(--red);font-size:12px;font-weight:700}
+.q{text-align:center;margin:var(--s2) 0}
+.map{background:var(--deep);border-radius:var(--r-md);overflow:hidden;border:1px solid var(--line)}
+.map svg{display:block;width:100%}
+.opts{display:flex;flex-direction:column;gap:var(--s2);margin-top:auto}
+.opts.pad{margin-top:var(--s3)}
+.flag{width:96px;margin:var(--s3) auto 0;border-radius:6px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.5)}
+.flag svg{display:block;width:100%}
+.rewards{display:flex;gap:var(--s2);justify-content:center;margin-top:var(--s3)}
+.streaky{color:var(--flame);margin-top:var(--s2)}
+.ok{color:#4FCB5C}
+.explain{background:var(--surf);border-radius:var(--r-md);padding:var(--s3);margin-top:var(--s3)}
+.confetti{position:absolute;inset:0;pointer-events:none}
+.confetti i{position:absolute;width:6px;height:10px;border-radius:1px;opacity:.9}
+
+/* type helpers mirroring the token scale */
+.t-h1{font-size:28px;font-weight:800;letter-spacing:-.01em}
+.t-h2{font-size:22px;font-weight:800}
+.t-h3{font-size:18px;font-weight:600}
+.t-body{font-size:15px}
+.t-cap{font-size:12px;font-weight:500}
+.t-ov{font-size:9px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+.gold{color:var(--gold)}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="sky"></div>
+<div class="page">
+  <div class="eyebrow">WorldQuest · design system v1.0</div>
+  <h1 class="title">Every value on this page comes from <code>tokens.json</code></h1>
+  <p class="lede">Nothing here is hand-picked CSS. The palette was sampled from the v1
+  mockup, written to <code>packages/design/tokens.json</code>, and this page is generated
+  from that file — so if a token drifts from the design, this page drifts visibly with it.
+  Regenerate with <code>pnpm design:preview</code>.</p>
+
+  <div class="note"><b>What this page can and cannot verify.</b> It verifies colour,
+  spacing, radius, elevation, component states and screen composition. It cannot verify
+  <b>type</b> — the app ships Baloo&nbsp;2 and Inter, and this page falls back to a system
+  rounded stack because the sandbox blocks font CDNs. It also cannot verify motion, haptics
+  or the real mascot and map art. Those need the device.</div>
+
+  <section>
+    <h2 class="sec-h">Colour</h2>
+    <p class="sec-p">Ratios are computed live against the surface each colour sits on.
+    Components import the <em>semantic</em> name (<code>action.primary</code>), never the raw
+    palette — that indirection is what makes high-contrast and seasonal event themes possible
+    without touching a component.</p>
+    <div class="sw-grid">
+      
+  <div class="sw">
+    <div class="sw-chip" style="background:#00050F"></div>
+    <div class="sw-meta">
+      <code>space.900 · page base</code>
+      <span class="mono dim">#00050F</span>
+      
+    </div>
+  </div>
+      
+  <div class="sw">
+    <div class="sw-chip" style="background:#001227"><span style="color:#FFFFFF">Aa</span></div>
+    <div class="sw-meta">
+      <code>space.800 · canvas</code>
+      <span class="mono dim">#001227</span>
+      <span class="mono ratio">18.82:1</span>
+    </div>
+  </div>
+      
+  <div class="sw">
+    <div class="sw-chip" style="background:#0A1F3C"><span style="color:#FFFFFF">Aa</span></div>
+    <div class="sw-meta">
+      <code>surface.1 · card</code>
+      <span class="mono dim">#0A1F3C</span>
+      <span class="mono ratio">16.48:1</span>
+    </div>
+  </div>
+      
+  <div class="sw">
+    <div class="sw-chip" style="background:#102A4D"><span style="color:#FFFFFF">Aa</span></div>
+    <div class="sw-meta">
+      <code>surface.2 · raised</code>
+      <span class="mono dim">#102A4D</span>
+      <span class="mono ratio">14.38:1</span>
+    </div>
+  </div>
+      
+  <div class="sw">
+    <div class="sw-chip" style="background:#22A73A"><span style="color:#FFFFFF">Aa</span></div>
+    <div class="sw-meta">
+      <code>action.primary · continue</code>
+      <span class="mono dim">#22A73A</span>
+      <span class="mono ratio">3.15:1</span>
+    </div>
+  </div>
+      
+  <div class="sw">
+    <div class="sw-chip" style="background:#1E86E8"><span style="color:#FFFFFF">Aa</span></div>
+    <div class="sw-meta">
+      <code>action.secondary · navigate</code>
+      <span class="mono dim">#1E86E8</span>
+      <span class="mono ratio">3.73:1</span>
+    </div>
+  </div>
+      
+  <div class="sw">
+    <div class="sw-chip" style="background:#F5A61E"><span style="color:#00050F">Aa</span></div>
+    <div class="sw-meta">
+      <code>reward · xp, coins, premium</code>
+      <span class="mono dim">#F5A61E</span>
+      <span class="mono ratio">10.07:1</span>
+    </div>
+  </div>
+      
+  <div class="sw">
+    <div class="sw-chip" style="background:#FF6A14"><span style="color:#00050F">Aa</span></div>
+    <div class="sw-meta">
+      <code>status.streak</code>
+      <span class="mono dim">#FF6A14</span>
+      <span class="mono ratio">7.12:1</span>
+    </div>
+  </div>
+      
+  <div class="sw">
+    <div class="sw-chip" style="background:#E5252A"><span style="color:#FFFFFF">Aa</span></div>
+    <div class="sw-meta">
+      <code>status.hearts</code>
+      <span class="mono dim">#E5252A</span>
+      <span class="mono ratio">4.54:1</span>
+    </div>
+  </div>
+      
+  <div class="sw">
+    <div class="sw-chip" style="background:#3A2130"><span style="color:#FFFFFF">Aa</span></div>
+    <div class="sw-meta">
+      <code>feedback.wrong · muted, not red</code>
+      <span class="mono dim">#3A2130</span>
+      <span class="mono ratio">14.58:1</span>
+    </div>
+  </div>
+      
+  <div class="sw">
+    <div class="sw-chip" style="background:#9FB3D1"><span style="color:#0A1F3C">Aa</span></div>
+    <div class="sw-meta">
+      <code>text.secondary</code>
+      <span class="mono dim">#9FB3D1</span>
+      <span class="mono ratio">7.73:1</span>
+    </div>
+  </div>
+      
+  <div class="sw">
+    <div class="sw-chip" style="background:#6B82A6"><span style="color:#0A1F3C">Aa</span></div>
+    <div class="sw-meta">
+      <code>text.tertiary · ≥18px only</code>
+      <span class="mono dim">#6B82A6</span>
+      <span class="mono ratio">4.21:1</span>
+    </div>
+  </div>
+    </div>
+    <div class="note"><b>Why the wrong-answer surface isn't red.</b> A red flash reads as
+    punishment. We state the truth, show the right answer and move on — so the token is a
+    muted plum that carries no alarm.</div>
+  </section>
+
+  <section>
+    <h2 class="sec-h">Scale</h2>
+    <p class="sec-p">An 8-point grid. <code>padding: 15</code> is a bug, and CI treats it as one.</p>
+    <div class="scale-row">
+      <div class="u"><i style="width:4px;height:4px"></i><span>4</span></div><div class="u"><i style="width:8px;height:8px"></i><span>8</span></div><div class="u"><i style="width:12px;height:12px"></i><span>12</span></div><div class="u"><i style="width:16px;height:16px"></i><span>16</span></div><div class="u"><i style="width:24px;height:24px"></i><span>24</span></div><div class="u"><i style="width:32px;height:32px"></i><span>32</span></div><div class="u"><i style="width:40px;height:40px"></i><span>40</span></div><div class="u"><i style="width:48px;height:48px"></i><span>48</span></div><div class="u"><i style="width:64px;height:64px"></i><span>64</span></div>
+    </div>
+    <div class="scale-row">
+      <div class="u"><i style="width:56px;height:44px;border-radius:8px"></i><span>sm 8</span></div><div class="u"><i style="width:56px;height:44px;border-radius:12px"></i><span>md 12</span></div><div class="u"><i style="width:56px;height:44px;border-radius:16px"></i><span>lg 16</span></div><div class="u"><i style="width:56px;height:44px;border-radius:20px"></i><span>xl 20</span></div><div class="u"><i style="width:56px;height:44px;border-radius:28px"></i><span>2xl 28</span></div>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Type token</th><th>Size / line</th><th>Weight</th><th>Use</th></tr></thead>
+      <tbody><tr><td><code>display</code></td><td class="n">34 / 40</td><td class="n">700</td><td class="dim">Onboarding headline</td></tr><tr><td><code>h1</code></td><td class="n">28 / 34</td><td class="n">700</td><td class="dim">Screen title</td></tr><tr><td><code>h2</code></td><td class="n">22 / 28</td><td class="n">700</td><td class="dim">Section header, question</td></tr><tr><td><code>h3</code></td><td class="n">18 / 24</td><td class="n">600</td><td class="dim">Card title</td></tr><tr><td><code>body</code></td><td class="n">16 / 24</td><td class="n">400</td><td class="dim">Default</td></tr><tr><td><code>bodyStrong</code></td><td class="n">16 / 24</td><td class="n">600</td><td class="dim">Answers, list rows</td></tr><tr><td><code>caption</code></td><td class="n">13 / 18</td><td class="n">500</td><td class="dim">Metadata, progress counts</td></tr><tr><td><code>overline</code></td><td class="n">11 / 14</td><td class="n">700</td><td class="dim">Tab labels, badges</td></tr><tr><td><code>numeric</code></td><td class="n">20 / 24</td><td class="n">700</td><td class="dim">XP, timers, scores</td></tr></tbody>
+    </table></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Motion</th><th>Duration</th><th>Easing</th><th>Use</th></tr></thead>
+      <tbody><tr><td><code>instant</code></td><td class="n">100ms</td><td class="n">easeOut</td><td class="dim">Press feedback (scale .96)</td></tr><tr><td><code>quick</code></td><td class="n">180ms</td><td class="n">easeOut</td><td class="dim">Chips, toggles, tab switch</td></tr><tr><td><code>base</code></td><td class="n">260ms</td><td class="n">easeInOut</td><td class="dim">Screen transitions, sheets</td></tr><tr><td><code>expressive</code></td><td class="n">420ms</td><td class="n">spring</td><td class="dim">Card entrance, mascot</td></tr><tr><td><code>celebrate</code></td><td class="n">900ms</td><td class="n">lottie</td><td class="dim">Correct answer, level up</td></tr></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2 class="sec-h">Components</h2>
+    <p class="sec-p">Every state, because a component missing its disabled or loading state
+    is a component that will be improvised at 2am.</p>
+    <div class="bench">
+      <div class="cell"><div class="cell-lab">Button · variants</div>
+        <button class="btn primary">Continue</button>
+        <button class="btn secondary">Start Quest</button>
+        <button class="btn tertiary">Maybe later</button>
+        <button class="btn destructive">Log Out</button>
+      </div>
+      <div class="cell"><div class="cell-lab">Button · states</div>
+        <button class="btn primary">Default</button>
+        <button class="btn primary" style="transform:scale(.96);background:#1B8D1F;box-shadow:none">Pressed</button>
+        <button class="btn disabled" disabled>Disabled</button>
+        <button class="btn sm secondary">Small</button>
+      </div>
+      <div class="cell"><div class="cell-lab">Answer option · states</div>
+        <div class="opt">Idle</div>
+        <div class="opt selected">Selected</div>
+        <div class="opt correct">Correct<span class="tick">✓</span></div>
+        <div class="opt wrong">Wrong<span class="tick">→</span></div>
+      </div>
+      <div class="cell"><div class="cell-lab">Progress · always with a count</div>
+        <div class="bar-row"><div class="bar flex1"><i style="width:88%"></i></div><span class="num">172 / 195</span></div>
+        <div class="bar-row"><div class="bar flex1"><i style="width:44%"></i></div><span class="num">86 / 195</span></div>
+        <div class="bar-row"><div class="bar flex1"><i style="width:6%"></i></div><span class="num">12 / 195</span></div>
+      </div>
+      <div class="cell"><div class="cell-lab">Stat chips</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span class="chip xp">✦ 12,850</span><span class="chip coin">● 430</span>
+          <span class="chip streak">🔥 12</span><span class="chip hearts">♥ 5</span>
+        </div>
+      </div>
+      <div class="cell"><div class="cell-lab">Skeleton · never a spinner</div>
+        <div class="skel" style="width:60%"></div>
+        <div class="skel"></div>
+        <div class="skel" style="width:80%"></div>
+        <div class="skel" style="height:44px;margin-top:6px"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec-h">Screens</h2>
+    <p class="sec-p">Rebuilt from tokens only — no bitmaps, no hand-tuned hex values. Open
+    <code>docs/design/assets/mockup-v1.png</code> beside this and the differences are the work.</p>
+    <div class="phones">
+      <div class="phone-wrap"><div class="phone-cap">3 · Home</div>
+<div class="scr">
+  <div class="statusbar"><span>9:41</span><span class="sb-r">▮▮▮</span></div>
+  <div class="hd">
+    <div class="avatar"></div>
+    <div class="hd-txt">
+      <div class="t-cap dim">Good evening,</div>
+      <div class="t-h2">Explorer!</div>
+    </div>
+    <div class="streak"><span class="fl">🔥</span><b>12</b><span class="t-ov">DAY STREAK</span></div>
+  </div>
+
+  <div class="card lift">
+    <div class="t-cap dim">Today's Quest</div>
+    <div class="t-h3">Europe II</div>
+    <div class="bar-row"><div class="bar"><i style="width:70%"></i></div><span class="num">7 / 10</span></div>
+    <button class="btn primary">Continue</button>
+  </div>
+
+  <div class="card row-card">
+    <div>
+      <div class="t-cap dim">Daily Challenge</div>
+      <div class="t-h3">New challenge in <span class="num gold">14:22:16</span></div>
+    </div>
+    <div class="trophy">🏆</div>
+  </div>
+
+  <div class="two-up">
+    <div class="card mini">
+      <div class="t-cap dim">Friends</div>
+      <div class="t-h3">12 <span class="t-cap dim">online</span></div>
+    </div>
+    <div class="card mini">
+      <div class="t-cap dim">League</div>
+      <div class="t-h3 gold">Gold I</div>
+      <div class="t-cap dim">Top 15%</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab on"><span class="tg">⌂</span><span class="t-ov">Home</span></div><div class="tab"><span class="tg">◎</span><span class="t-ov">Explore</span></div><div class="tab"><span class="tg">☰</span><span class="t-ov">Quests</span></div><div class="tab"><span class="tg">☺</span><span class="t-ov">Profile</span></div><div class="tab"><span class="tg">⋯</span><span class="t-ov">More</span></div>
+  </div>
+</div></div>
+      <div class="phone-wrap"><div class="phone-cap">5 · Lesson runner</div>
+<div class="scr">
+  <div class="statusbar"><span>9:41</span><span class="sb-r">▮▮▮</span></div>
+  <div class="lesson-hd">
+    <span class="x">✕</span>
+    <div class="bar flex1"><i style="width:20%"></i></div>
+    <span class="num dim">2 / 10</span>
+    <span class="hearts">♥ <b>5</b></span>
+  </div>
+
+  <div class="t-h2 q">Where is Japan?</div>
+
+  <div class="map">
+    <svg viewBox="0 0 200 120" role="img" aria-label="Map of East Asia">
+      <rect width="200" height="120" fill="#00050F"/>
+      <path d="M20 40 L70 25 L110 35 L120 70 L80 95 L35 85 Z" fill="#F59E3C" opacity=".5"/>
+      <path d="M150 30 L162 42 L158 58 L168 66 L160 84 L148 74 L152 56 L143 44 Z"
+            fill="#F59E3C" stroke="#F5A61E" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+  <div class="opts">
+    <div class="opt">China</div>
+    <div class="opt correct">Japan<span class="tick">✓</span></div>
+    <div class="opt">Korea</div>
+    <div class="opt">Thailand</div>
+  </div>
+</div></div>
+      <div class="phone-wrap"><div class="phone-cap">6 · Correct answer</div>
+<div class="scr center">
+  <div class="statusbar"><span>9:41</span><span class="sb-r">▮▮▮</span></div>
+  <div class="confetti"><i style="left:4%;top:0%;background:#4FCB5C;transform:rotate(0deg)"></i><i style="left:11%;top:13%;background:#F5A61E;transform:rotate(37deg)"></i><i style="left:18%;top:26%;background:#4C9BF0;transform:rotate(74deg)"></i><i style="left:25%;top:9%;background:#FF6A14;transform:rotate(111deg)"></i><i style="left:32%;top:22%;background:#4FCB5C;transform:rotate(148deg)"></i><i style="left:39%;top:5%;background:#F5A61E;transform:rotate(185deg)"></i><i style="left:46%;top:18%;background:#4C9BF0;transform:rotate(222deg)"></i><i style="left:53%;top:1%;background:#FF6A14;transform:rotate(259deg)"></i><i style="left:60%;top:14%;background:#4FCB5C;transform:rotate(296deg)"></i><i style="left:67%;top:27%;background:#F5A61E;transform:rotate(333deg)"></i><i style="left:74%;top:10%;background:#4C9BF0;transform:rotate(370deg)"></i><i style="left:81%;top:23%;background:#FF6A14;transform:rotate(407deg)"></i><i style="left:88%;top:6%;background:#4FCB5C;transform:rotate(444deg)"></i><i style="left:95%;top:19%;background:#F5A61E;transform:rotate(481deg)"></i></div>
+
+  <div class="t-h1 ok">Perfect!</div>
+  <div class="t-body dim">You found Japan 🎉</div>
+
+  <div class="flag" role="img" aria-label="Flag of Japan">
+    <svg viewBox="0 0 90 60"><rect width="90" height="60" fill="#fff"/><circle cx="45" cy="30" r="18" fill="#BC002D"/></svg>
+  </div>
+  <div class="t-h2">Japan</div>
+
+  <div class="rewards">
+    <span class="chip xp">✦ +10 XP</span>
+    <span class="chip coin">● +5</span>
+  </div>
+
+  <button class="btn primary wide">Continue</button>
+  <div class="t-cap streaky">Streak Bonus! 🔥 +2 XP</div>
+</div></div>
+      <div class="phone-wrap"><div class="phone-cap">Wrong answer · not in the mockup</div>
+<div class="scr">
+  <div class="statusbar"><span>9:41</span><span class="sb-r">▮▮▮</span></div>
+  <div class="lesson-hd">
+    <span class="x">✕</span><div class="bar flex1"><i style="width:30%"></i></div>
+    <span class="num dim">3 / 10</span><span class="hearts">♥ <b>4</b></span>
+  </div>
+  <div class="t-h2 q">Where is Japan?</div>
+  <div class="opts pad">
+    <div class="opt wrong">Thailand<span class="tick">→</span></div>
+    <div class="opt correct">Japan<span class="tick">✓</span></div>
+  </div>
+  <div class="explain">
+    <div class="t-h3">That's Thailand.</div>
+    <div class="t-body dim">Japan is the island chain to the northeast — look for the
+    four big islands off the Asian coast.</div>
+  </div>
+  <button class="btn primary wide">Continue</button>
+</div></div>
+    </div>
+    <div class="note"><b>The fourth screen isn't in your mockup, and that's the point.</b>
+    The mockup designs the moment a user gets it right. Users see the other one just as often,
+    and it's where an app either feels encouraging or makes someone feel stupid. Muted surface,
+    the correct answer shown, one memorable hook, no buzzer — designed, not improvised.</div>
+  </section>
+
+  <section>
+    <h2 class="sec-h">What the mockup still owes us</h2>
+    <p class="sec-p">Honest gaps between the concept art and something buildable.</p>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Asset</th><th>Status</th><th>Needed by</th></tr></thead>
+      <tbody>
+        <tr><td>Baloo 2 + Inter font files</td><td class="dim">Both OFL — download and bundle</td><td class="n">Week 3</td></tr>
+        <tr><td>Atlas the mascot</td><td class="dim">Concept art only; needs commissioning as a real sprite set</td><td class="n">Week 6</td></tr>
+        <tr><td>Country vector geometry</td><td class="dim">Natural Earth, public domain — needs simplifying per zoom</td><td class="n">Week 3</td></tr>
+        <tr><td>Flag SVGs ×195</td><td class="dim">Mostly public domain; licence must be recorded per set</td><td class="n">Week 4</td></tr>
+        <tr><td>Landmark imagery ×300</td><td class="dim">The expensive one — photo licensing vs illustration is an open decision</td><td class="n">v1.5</td></tr>
+        <tr><td>3D globe</td><td class="dim">Mockup shows a render; the buildable version is vector, with the continent grid as fallback</td><td class="n">Week 9</td></tr>
+        <tr><td>Sound set</td><td class="dim">Six cues, one key, ≤600ms — commission or licence</td><td class="n">Week 10</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+</div>

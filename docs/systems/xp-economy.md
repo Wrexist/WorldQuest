@@ -12,9 +12,9 @@ So we split the currency, exactly as the mockup already implies with its `+10 XP
 | Currency | Earned by | Spent on | Direction |
 |---|---|---|---|
 | **XP** | Learning | **Nothing** | Only ever goes up |
-| **Coins** 🪙 | Learning, quests, achievements | Cosmetics, streak freezes, heart refills | Up and down |
+| **Coins** 🪙 | Learning, quests, achievements | Cosmetics, streak freezes, lesson continues | Up and down |
 | **Gems** 💎 | **Purchase only** | Premium cosmetics, gifting | Paid |
-| **Hearts** ❤️ | Regenerate | Wrong answers | Consumable |
+| **Hearts** ❤️ | Reset every lesson | Wrong answers on *review* items | Consumable |
 
 Recorded as a Product Bible amendment (2026-07-31).
 
@@ -45,7 +45,7 @@ farmed by volume. Getting the same fact right ten times in a day earns diminishi
 XP; getting it right across three weeks earns the mastery bonus.
 
 **Anti-farming**
-- Daily XP soft cap: **1,500**, after which XP earns at 25 %. Users are told plainly
+- Daily XP soft cap: **3,000** (≈ 60 min), after which XP earns at 25 %. Users are told plainly
   ("You've done plenty today — come back tomorrow for full XP"), which is on-brand.
 - Repeating an already-`mastered` fact in the same day earns 2 XP, not 10.
 - A lesson with < 5 items earns no completion bonus.
@@ -108,7 +108,7 @@ possible status reward, and Alex will chase them for months.
 
 | Item | Cost | Note |
 |---|---|---|
-| Heart refill (×5) | 250 | Also free after 4 h, and free in Relaxed Mode |
+| Continue a lesson after running out | 250 | The next lesson is always free and fresh |
 | Streak freeze | 400 | Max 2 held |
 | Streak repair (within 48 h) | 600 | Once per 30 days |
 | Avatar item | 300 – 2,000 | The main sink |
@@ -134,20 +134,37 @@ The mockup shows 5 hearts. Hearts create stakes. Duolingo's version is also the 
 most-hated mechanic in the category, because it **blocks learning behind a wait or a
 payment**. We keep the tension and remove the harm.
 
-**Rules**
-- Start with **5**. A wrong answer costs 1. A correct answer on a review you'd
-  previously failed restores 1 (max 5).
-- Out of hearts → the **lesson** ends. It does **not** lock the app.
-- **Practice Mode and Review are always free.** You can always keep learning, forever,
-  with zero hearts. This is the line we do not cross.
-- Regeneration: 1 heart per **45 min**, full in ~4 h.
-- Refill: 250 coins, or watch nothing (there are no ads), or just wait.
-- **Premium = unlimited hearts.** This is the correct paywall: it sells *convenience*,
-  never *access*.
-- **Relaxed Mode and Classroom Mode: hearts off entirely.**
-- Child accounts (< 13): hearts regenerate at **double** speed.
+**The rules, all four of them verified by simulation** (`pnpm engines:simulate`):
 
----
+1. **5 hearts, reset at the start of every lesson.** Not once a day. Carried across a
+   session they compound — a casual learner doing three short lessons back to back was
+   blocked on **42 %** of them, because five hearts cannot survive three lessons at
+   beginner accuracy. That is a day-long lockout in everything but name, which our own
+   principles forbid.
+2. **New items never cost a heart.** Only review items can. You cannot lose a life for
+   not knowing something you have never been taught — and the alternative aims the
+   mechanic backwards: heart loss scales with error rate, so simulation showed a
+   struggling 10-year-old at 75 % accuracy blocked on 59 % of lessons while a
+   completionist at 92 % was blocked on 9 %.
+3. **A run of 5 correct answers restores a heart** (capped at 5). Rewards recovery and
+   breaks the death spiral that makes hearts the most-hated mechanic in this category.
+4. **Out of hearts ends the lesson, never the app.** Practice and Review are always
+   free at zero hearts, forever. This is the line we do not cross.
+
+**Measured block rate after these changes:** casual 10.1 % · regular 1.6 % · heavy 0.1 %.
+Note the direction — the struggling learner is protected *most*. Before the fixes it was
+exactly inverted.
+
+**Other heart rules**
+- Regeneration between sessions: 1 per **45 min**, full in ~4 h (child accounts: 22 min).
+- A correct answer on a previously-failed review restores 1.
+- **Premium = never interrupted.** The correct paywall: it sells *convenience*, never
+  *access*.
+- **Relaxed Mode and Classroom Mode: hearts off entirely.**
+
+**The coin sink moved.** Because hearts reset per lesson, "refill hearts" is no longer a
+meaningful purchase. It is replaced by **Continue this lesson** (250 coins) — spent in
+the moment, when you have 2 items left and want to finish.
 
 ## 4. Gems 💎 — paid only
 
@@ -172,11 +189,14 @@ export const BALANCE = {
     speedBonus: 2, speedBonusMaxPerLesson: 5, firstLessonOfDay: 10,
     factMastered: 20, friendActivated: 100, collectionComplete: 100,
     streakMilestones: { 7: 50, 30: 200, 100: 500, 365: 1000 },
-    dailySoftCap: 1500, softCapMultiplier: 0.25,
+    dailySoftCap: 3000, softCapMultiplier: 0.25,
     repeatMasteredSameDay: 2,
   },
   coins: { /* … */ },
-  hearts: { max: 5, regenMinutes: 45, childRegenMinutes: 22, refillCost: 250 },
+  hearts: {
+    max: 5, resetPerLesson: true, newItemsCostHearts: false,
+    restoreEveryCorrectStreak: 5, regenMinutes: 45, childRegenMinutes: 22,
+  },
   levels: { base: 50, exponent: 1.55 },
 } as const
 ```
@@ -186,7 +206,7 @@ export const BALANCE = {
 2. Changing a value requires running `/wq-balance-check` (economy simulation) and
    updating this document in the same PR.
 3. The client's award is a **prediction**; the server recomputes and reconciles.
-   Mismatches are logged as `xp_reconciliation_mismatch` — a spike means a bug or a
+   Mismatches are logged as `xp_reconciliation_failed` — a spike means a bug or a
    cheat.
 4. XP and coins are **append-only ledgers** (`xp_ledger`, `coin_ledger`), never
    mutable balances. A balance you can only compute is a balance you can audit,
@@ -219,9 +239,9 @@ Detail: [`../engineering/security-privacy.md`](../engineering/security-privacy.m
 | Coins earned vs spent, weekly | 0.9 – 1.2 | > 1.5: not enough sinks; < 0.7: prices too high |
 | Median coin balance | < 5 days of earnings | A hoard means nothing is worth buying |
 | % of users owning ≥ 1 cosmetic by day 14 | > 40 % | The shop isn't landing |
-| Heart-block rate | < 15 % of lessons | Too punishing |
-| Coin heart-refill rate | < 20 % of blocks | People are paying to learn — wrong |
-| Daily XP soft-cap hits | < 5 % of DAU | We may be encouraging grinding |
+| Heart-block rate | < 15 % of lessons | Too punishing. Watch it **per accuracy band** — if it rises as accuracy falls, the mechanic is aimed backwards. |
+| Paid lesson continues | < 20 % of blocks | People are paying to keep learning — wrong |
+| Daily XP soft-cap hits | < 5 % of DAU | We may be encouraging grinding. Cap is 3000 ≈ 60 min; at 1500 it throttled a 30-minute learner on 84 of 90 days, which taxes exactly the behaviour we want. |
 
 Reviewed monthly. A change to any number in §5 requires a before/after simulation.
 

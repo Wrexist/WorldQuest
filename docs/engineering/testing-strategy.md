@@ -183,7 +183,7 @@ Sentry (crashes, ANRs, performance) · PostHog (funnels, guardrails) · Supabase
 (slow queries, errors) · uptime checks on edge functions.
 
 **Alerts that page:** crash-free < 99 % · error rate > 1 % · p95 submit > 2 s · sync
-failure rate > 5 % · any spike in `xp_reconciliation_mismatch` (a bug or a cheat) ·
+failure rate > 5 % · any spike in `xp_reconciliation_failed` (a bug or a cheat) ·
 any content fact dropping below 40 % accuracy.
 
 ## 10. What we deliberately don't test

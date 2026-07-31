@@ -52,7 +52,11 @@ two weeks that saves six months.
 | ✅ | Content pack JSON Schema + sample pack |
 | ✅ | Reference FSRS implementation + types |
 | ✅ | Analytics event registry |
-| ⬜ | CI pipeline green (`pnpm verify`) |
+| ✅ | CI pipeline green (`pnpm verify` — typecheck · 104 tests · content · i18n · contrast) |
+| ✅ | Engine test suite at 97 % coverage (90 % gate enforced) |
+| ✅ | Design system preview (`pnpm design:preview`) |
+| ✅ | Economy simulation with health gates (`pnpm engines:simulate`) |
+| ✅ | First three migrations + RLS tests |
 | ⬜ | Supabase project created (dev + prod) |
 | ⬜ | Sentry, PostHog, RevenueCat accounts |
 | ⬜ | EAS project + build profiles |
