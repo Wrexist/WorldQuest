@@ -60,6 +60,22 @@ const capitalQuestion =
 const flagQuestion =
   questions.find((q) => q.item.templateId === 'tpl.flag-describe.mc4') ?? questions[1]!
 
+/** Exactly the state the mockup depicts, so the two can be compared directly. */
+const MOCKUP_STATE = {
+  xpTotal: 4820,
+  coins: 430,
+  streak: 12,
+  factsMastered: 7,
+  factsTotal: 10,
+  questTitle: 'Europe II',
+  questDone: 7,
+  questTotal: 10,
+  challengeIn: '14:22:18',
+  friendsOnline: 12,
+  leagueTier: 'Gold I',
+  leaguePercentile: 'Top 15%',
+}
+
 /** A phone-sized frame, so screenshots are comparable to the mockup. */
 function Phone({
   label,
@@ -177,7 +193,7 @@ function Gallery() {
 
         <Phone label="Home · returning user" id="home-returning">
           <HomeScreen
-            progress={{ xpTotal: 4820, coins: 430, streak: 12, factsMastered: 7, factsTotal: 10 }}
+            progress={MOCKUP_STATE}
             loading={false}
             isOffline={false}
             onStartLesson={() => {}}
@@ -210,7 +226,7 @@ function Gallery() {
 
         <Phone label="Home · offline" id="home-offline">
           <HomeScreen
-            progress={{ xpTotal: 4820, coins: 430, streak: 12, factsMastered: 7, factsTotal: 10 }}
+            progress={MOCKUP_STATE}
             loading={false}
             isOffline
             onStartLesson={() => {}}
@@ -276,7 +292,7 @@ const s = StyleSheet.create({
     color: colors.text.tertiary, fontWeight: '700',
   },
   phone: {
-    width: 300, height: 640, borderRadius: 26, overflow: 'hidden',
+    width: 375, height: 812, borderRadius: 30, overflow: 'hidden',
     borderWidth: 1, borderColor: colors.border.subtle, backgroundColor: colors.bg.canvas,
   },
   screen: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[4] },

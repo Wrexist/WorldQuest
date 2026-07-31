@@ -8,9 +8,17 @@
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native'
 import { colors, radius, space, typography } from '../tokens.js'
 
+/**
+ * `progress` is the default green. `reward` is the amber the mockup uses on the
+ * quest card — a distinct meaning (this is a reward track, not raw completion),
+ * so it earns its own tone rather than a colour override at the call site.
+ */
+export type ProgressTone = 'progress' | 'reward'
+
 export type ProgressBarProps = {
   current: number
   total: number
+  tone?: ProgressTone
   /** Renders "172 / 195" beside the bar. Strongly preferred. */
   showCount?: boolean
   label?: string
@@ -20,8 +28,9 @@ export type ProgressBarProps = {
 }
 
 export function ProgressBar({
-  current, total, showCount = true, label, height = 8, style, testID,
+  current, total, tone = 'progress', showCount = true, label, height = 8, style, testID,
 }: ProgressBarProps) {
+  const fill = tone === 'reward' ? colors.reward.xp : colors.status.progress
   const safeTotal = Math.max(1, total)
   const pct = Math.min(100, Math.max(0, (current / safeTotal) * 100))
 
@@ -37,11 +46,11 @@ export function ProgressBar({
       {(label !== undefined || showCount) && (
         <View style={styles.header}>
           {label !== undefined && <Text style={styles.label}>{label}</Text>}
-          {showCount && <Text style={styles.count}>{current} / {total}</Text>}
+          {showCount && <Text style={[styles.count, { color: fill }]}>{current} / {total}</Text>}
         </View>
       )}
       <View style={[styles.track, { height, borderRadius: radius.full }]}>
-        <View style={[styles.fill, { width: `${pct}%`, borderRadius: radius.full }]} />
+        <View style={[styles.fill, { width: `${pct}%`, borderRadius: radius.full, backgroundColor: fill }]} />
       </View>
     </View>
   )
