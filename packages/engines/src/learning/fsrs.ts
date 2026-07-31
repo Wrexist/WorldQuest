@@ -1,0 +1,262 @@
+/**
+ * FSRS scheduler — the core of the WorldQuest learning engine.
+ *
+ * Pure. No clock, no randomness, no I/O. The same module runs in the app for
+ * optimistic feedback and in the `submit-lesson` edge function for authoritative
+ * grading, so the two cannot drift.
+ *
+ * Spec:     docs/systems/learning-engine.md
+ * Decision: docs/adr/0004-spaced-repetition.md
+ */
+
+import { clamp, MS_PER_DAY } from '../shared/index.js'
+import {
+  DEFAULT_TARGET_RETENTION,
+  LEECH_LAPSE_THRESHOLD,
+  MAX_CREDITED_ANSWER_MS,
+  type FactId,
+  type Mastery,
+  type MemoryState,
+  type Rating,
+  type ReviewEvent,
+  type ReviewInput,
+} from './types.js'
+
+/** Forgetting-curve constants. R(t,S) = (1 + FACTOR·t/S)^DECAY */
+const DECAY = -0.5
+const FACTOR = 19 / 81
+
+/**
+ * Default FSRS weights.
+ *
+ * Index map: w0–w3 initial stability per rating · w4–w5 initial difficulty ·
+ * w6 difficulty delta · w7 mean reversion · w8–w10 stability after recall ·
+ * w11–w14 stability after a lapse · w15 hard penalty · w16 easy bonus.
+ *
+ * TODO(verify): pin these against the reference implementation
+ * (open-spaced-repetition/fsrs4anki) and record the exact version before Phase 1
+ * ships. A sanity check that catches a bad vector immediately: initial difficulty
+ * for a "Good" first answer must land near the middle of the 1–10 range, not at a
+ * clamp boundary. `pnpm engines:simulate` asserts this.
+ *
+ * After ~50k reviews, re-fit on our own `review_log` per cohort. The exact numbers
+ * matter less than they look: `rebuild()` recomputes all state from the append-only
+ * log, so changing weights never costs a user their progress.
+ */
+export const DEFAULT_WEIGHTS = [
+  0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192,
+  1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898,
+] as const
+
+export type Weights = readonly number[]
+
+const MIN_STABILITY = 0.01
+const MAX_STABILITY = 36500
+const MIN_DIFFICULTY = 1
+const MAX_DIFFICULTY = 10
+
+/**
+ * A product cap, not a mathematical one. FSRS will happily schedule a well-known
+ * fact decades out; a geography app that never checks in on Japan again has
+ * quietly stopped being able to claim you know it. Burnished facts are reviewed
+ * about yearly — see the mastery table in docs/systems/learning-engine.md.
+ */
+const MAX_INTERVAL_DAYS = 365
+
+/** Never schedule inside an hour, even after a lapse — that's a drill, not a review. */
+const MIN_INTERVAL_DAYS = 1 / 24
+
+/** Probability of recalling a fact right now, given its stability. */
+export function retrievability(state: MemoryState, now: number): number {
+  if (state.lastReviewAt === null) return 0
+  const elapsedDays = Math.max(0, (now - state.lastReviewAt) / MS_PER_DAY)
+  return Math.pow(1 + (FACTOR * elapsedDays) / state.stability, DECAY)
+}
+
+/**
+ * Days until retrievability decays to `targetRetention`.
+ *
+ * targetRetention is a PRODUCT decision, not a technical one: a lower target means
+ * fewer reviews and more new content (better for Emma and Ingrid), a higher target
+ * means more reviews and higher accuracy (what Alex and Kenji want).
+ */
+export function intervalDays(stability: number, targetRetention: number): number {
+  const r = clamp(targetRetention, 0.7, 0.99)
+  return (stability / FACTOR) * (Math.pow(r, 1 / DECAY) - 1)
+}
+
+function initialStability(rating: Rating, w: Weights): number {
+  return clamp(w[rating - 1]!, MIN_STABILITY, MAX_STABILITY)
+}
+
+function initialDifficulty(rating: Rating, w: Weights): number {
+  return clamp(w[4]! - Math.exp(w[5]! * (rating - 1)) + 1, MIN_DIFFICULTY, MAX_DIFFICULTY)
+}
+
+function nextDifficulty(difficulty: number, rating: Rating, w: Weights): number {
+  // Linear damping: difficulty moves less the closer it already is to the extreme.
+  const delta = -w[6]! * (rating - 3)
+  const damped = difficulty + (delta * (10 - difficulty)) / 9
+  // Mean reversion towards the "easy" baseline, so a run of bad days doesn't
+  // permanently mark a fact as impossible.
+  const reverted = w[7]! * initialDifficulty(4, w) + (1 - w[7]!) * damped
+  return clamp(reverted, MIN_DIFFICULTY, MAX_DIFFICULTY)
+}
+
+function stabilityAfterRecall(
+  stability: number,
+  difficulty: number,
+  r: number,
+  rating: Rating,
+  w: Weights,
+): number {
+  const hardPenalty = rating === 2 ? w[15]! : 1
+  const easyBonus = rating === 4 ? w[16]! : 1
+  const growth =
+    1 +
+    Math.exp(w[8]!) *
+      (11 - difficulty) *
+      Math.pow(stability, -w[9]!) *
+      (Math.exp(w[10]! * (1 - r)) - 1) *
+      hardPenalty *
+      easyBonus
+  return clamp(stability * growth, MIN_STABILITY, MAX_STABILITY)
+}
+
+function stabilityAfterLapse(
+  stability: number,
+  difficulty: number,
+  r: number,
+  w: Weights,
+): number {
+  const next =
+    w[11]! *
+    Math.pow(difficulty, -w[12]!) *
+    (Math.pow(stability + 1, w[13]!) - 1) *
+    Math.exp(w[14]! * (1 - r))
+  // A lapse must never increase stability.
+  return clamp(Math.min(next, stability), MIN_STABILITY, MAX_STABILITY)
+}
+
+/**
+ * The single scheduling entry point. Pure: same inputs → same output.
+ */
+export function review(input: ReviewInput, weights: Weights = DEFAULT_WEIGHTS): MemoryState {
+  const { state, rating, now } = input
+  const targetRetention = input.targetRetention ?? DEFAULT_TARGET_RETENTION
+  const w = weights
+
+  let stability: number
+  let difficulty: number
+  let reps: number
+  let lapses: number
+  const factId: FactId = input.factId
+
+  if (state === null || state.lastReviewAt === null) {
+    stability = initialStability(rating, w)
+    difficulty = initialDifficulty(rating, w)
+    reps = 1
+    lapses = rating === 1 ? 1 : 0
+  } else {
+    const r = retrievability(state, now)
+    difficulty = nextDifficulty(state.difficulty, rating, w)
+    stability =
+      rating === 1
+        ? stabilityAfterLapse(state.stability, difficulty, r, w)
+        : stabilityAfterRecall(state.stability, difficulty, r, rating, w)
+    reps = state.reps + 1
+    lapses = state.lapses + (rating === 1 ? 1 : 0)
+  }
+
+  const days = clamp(
+    intervalDays(stability, targetRetention),
+    MIN_INTERVAL_DAYS,
+    MAX_INTERVAL_DAYS,
+  )
+  const dueAt = now + days * MS_PER_DAY
+
+  return {
+    factId,
+    stability,
+    difficulty,
+    reps,
+    lapses,
+    lastReviewAt: now,
+    dueAt,
+    // We stop drilling what someone keeps failing — it needs a different template
+    // or an explanation, not another repetition. See the leech policy in the spec.
+    suspended: lapses >= LEECH_LAPSE_THRESHOLD,
+  }
+}
+
+/**
+ * The UI label. Boundaries are exact and tested — `mastered` is the claim behind
+ * "183 / 195 countries", so it has to mean something specific.
+ */
+export function masteryOf(state: MemoryState | null, now: number): Mastery {
+  if (state === null || state.lastReviewAt === null) return 'unseen'
+
+  const stabilityDays = state.stability
+  const r = retrievability(state, now)
+
+  if (stabilityDays >= 180 && state.lapses === 0) return 'burnished'
+  if (stabilityDays >= 21 && state.reps >= 5) return 'mastered'
+  if (stabilityDays >= 7 && state.reps >= 3 && state.lapses <= 1) return 'proficient'
+  if (stabilityDays >= 1 && r >= 0.9) return 'familiar'
+  return 'learning'
+}
+
+/**
+ * Turn a binary answer plus timing into an FSRS grade.
+ *
+ * Hesitation is real signal about memory strength; treating every correct answer
+ * identically throws it away. This mapping is one of the highest-leverage tuning
+ * knobs in the product — change it with simulation, not intuition.
+ *
+ * `medianMs` is the user's own median for this template type, with a global prior.
+ */
+export function deriveRating(
+  correct: boolean,
+  elapsedMs: number,
+  medianMs: number,
+): Rating {
+  if (!correct) return 1
+  const capped = Math.min(elapsedMs, MAX_CREDITED_ANSWER_MS)
+  if (capped > medianMs * 2.5) return 2
+  if (capped < medianMs * 0.6) return 4
+  return 3
+}
+
+/**
+ * Replay an append-only review log to rebuild memory state.
+ *
+ * This is not a convenience — it is the recovery guarantee that makes every other
+ * decision here reversible. `review_log` is authoritative; `user_facts` is a cache.
+ * If weights change, a bug corrupts state, or we migrate algorithms, we recompute.
+ * Users never lose progress to an engine change.
+ */
+export function rebuild(
+  log: readonly ReviewEvent[],
+  targetRetention: number = DEFAULT_TARGET_RETENTION,
+  weights: Weights = DEFAULT_WEIGHTS,
+): Map<FactId, MemoryState> {
+  const byFact = new Map<FactId, MemoryState>()
+  const ordered = [...log].sort((a, b) => a.at - b.at)
+
+  for (const event of ordered) {
+    const previous = byFact.get(event.factId) ?? null
+    const next = review(
+      {
+        factId: event.factId,
+        state: previous,
+        rating: event.rating,
+        now: event.at,
+        targetRetention,
+      },
+      weights,
+    )
+    byFact.set(event.factId, next)
+  }
+
+  return byFact
+}

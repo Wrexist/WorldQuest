@@ -1,0 +1,16 @@
+{
+  "common:continue": "Continue",
+  "common:continue__note": "Button label. Verb, imperative — advances to the next item. Max 12 chars.",
+  "common:start": "Start",
+  "common:retry": "Try again",
+  "common:back": "Back",
+  "common:back__note": "Accessibility label for the back chevron. Describes the ACTION, not the icon.",
+  "common:close": "Close",
+  "common:cancel": "Cancel",
+  "common:offline.banner": "You're offline — lessons still work. We'll sync later.",
+  "common:offline.banner__note": "Reassuring, not alarming. States what still works.",
+  "common:error.generic.title": "That didn't load",
+  "common:error.generic.body": "Let's try again.",
+  "common:progress.count": "{current} / {total}",
+  "common:progress.count__note": "Progress like 172 / 195. Tabular numerals."
+}

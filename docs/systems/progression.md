@@ -31,9 +31,9 @@ same reward.
 
 ## 1. Explorer Level
 
-`xpForLevel(n) = round(50 · n^1.55)` — see
-[`xp-economy.md`](xp-economy.md#level-curve). Uncapped. Every 10 levels grants a
-**Title**:
+`xpForLevel(n) = round(50 · n^1.9)` — see
+[`xp-economy.md`](xp-economy.md#level-curve). Uncapped: L10 in ~2 weeks, L38 in
+~5 months, L100 in ~3 years for a regular user. Every 10 levels grants a **Title**:
 
 | Level | Title |
 |---|---|

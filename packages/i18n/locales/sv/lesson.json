@@ -1,0 +1,14 @@
+{
+  "lesson:prompt.capital_of": "Vad är huvudstaden i {country}?",
+  "lesson:prompt.which_flag": "Vilket lands flagga är detta?",
+  "lesson:prompt.locate": "Var ligger {country}?",
+  "lesson:feedback.correct.title": "Perfekt!",
+  "lesson:feedback.correct.body": "Du hittade {country} 🎉",
+  "lesson:feedback.wrong.title": "Det är {chosen}.",
+  "lesson:feedback.wrong.body": "{correct} är {hint}.",
+  "lesson:answer.label": "{country}",
+  "lesson:leave.confirm": "Lämna lektionen? Dina framsteg sparas.",
+  "lesson:summary.title": "Bra jobbat.",
+  "lesson:hearts.empty.title": "Slut på hjärtan",
+  "lesson:hearts.empty.body": "Hjärtan kommer tillbaka med tiden. Övningsläget är alltid gratis."
+}

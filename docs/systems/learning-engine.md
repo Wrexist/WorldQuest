@@ -78,6 +78,12 @@ R(t, S) = (1 + FACTOR · t / S) ^ DECAY        DECAY = −0.5, FACTOR = 19/81
 I(S) = (S / FACTOR) · (targetRetention ^ (1/DECAY) − 1)
 ```
 
+Capped at **365 days**. That cap is a product decision, not a mathematical one: FSRS
+will happily schedule a well-known fact decades out, but a geography app that never
+checks in on Japan again has quietly stopped being able to claim you know it. The
+consequence is that for a burnished fact, retrievability at `dueAt` is *above* the
+target rather than equal to it — expected, and asserted in the tests.
+
 **`targetRetention` is a product decision, not a technical one.**
 
 | Audience | Target R | Effect |
@@ -134,8 +140,14 @@ The 60/30/10 rule, per lesson:
 - **Interleaving** — never two consecutive items from the same fact, and never the
   same country twice in a row. Interleaving beats blocking for retention, and blocked
   repetition feels broken to users.
-- **Lesson length** = the user's daily goal (5/10/20 min) ÷ median item time, clamped
-  to **[5, 20] items**. A lesson always ends.
+- **Lesson length** is a fixed unit of **~2 minutes**, clamped to **[5, 20] items**.
+  The daily goal (5/10/20 min) controls **how many lessons a day**, not how long one
+  lesson is.
+
+  > Deriving length from the goal directly (goal ÷ item time) collapses: at realistic
+  > item times every goal from 5 to 20 minutes lands above the 20-item cap, so the
+  > setting does nothing. Sizing the lesson and counting lessons keeps "five minutes
+  > is a complete experience" true at every goal — and a lesson always ends.
 
 ### Leeches
 A fact with `lapses >= 8` is **suspended** from normal rotation and queued for a
@@ -189,6 +201,7 @@ export type MemoryState = {
 }
 
 export type ReviewInput = {
+  factId: FactId
   state: MemoryState | null     // null = first ever review
   rating: Rating
   now: number                   // injected clock — never Date.now()
@@ -284,10 +297,13 @@ it.
 
 `packages/engines/src/learning/*.test.ts`, ≥ 90 % coverage:
 
-- A first correct review yields `dueAt` ~1 day out
+- A first correct review yields `dueAt` a few days out (~3 d at the default weights)
 - A wrong answer reduces stability and shortens the interval
 - Intervals grow monotonically across consecutive correct reviews
-- `retrievability` decays with time and equals ~`targetRetention` at `dueAt`
+- `retrievability` decays with time and equals ~`targetRetention` at `dueAt`,
+  **except where the 365-day cap binds**, in which case it is higher
+- Initial difficulty for a first "Good" answer lands mid-range (~5), not on a clamp
+  boundary — this is the check that catches a bad weight vector immediately
 - `masteryOf` transitions at exactly the documented boundaries
 - `selectItems` respects 60/30/10 with a full queue, and degrades correctly when a
   bucket is empty

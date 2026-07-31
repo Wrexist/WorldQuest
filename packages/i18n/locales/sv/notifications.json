@@ -1,0 +1,6 @@
+{
+  "notifications:daily.reminder": "{region} väntar. 5 minuter?",
+  "notifications:streak.atRisk": "Din svit är på {count}. En lektion räcker.",
+  "notifications:mastery.almost": "{country} är nästan bemästrat – en lektion kvar.",
+  "notifications:comeback": "Världen har saknat dig."
+}

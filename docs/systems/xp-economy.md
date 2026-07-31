@@ -57,18 +57,30 @@ total on the profile. Nothing else. Ever.
 ### Level curve
 
 ```
-xpForLevel(n) = round(50 · n^1.55)
+xpForLevel(n) = round(50 · n^1.9)        // cumulative XP to reach level n
 ```
 
-| Level | Cumulative XP | Roughly |
+Computed values, and the pacing for a regular user earning ~300 XP/day:
+
+| Level | Cumulative XP | Days at 300 XP/day |
 |---|---|---|
-| 2 | 147 | Day 1 |
-| 5 | 1,240 | Day 3 |
-| 10 | 5,400 | Week 2 |
-| 20 | 24,000 | Month 2 |
-| 38 | 129,000 | *(the mockup's "Explorer Max, Level 38")* |
-| 50 | 258,000 | ~Year 1 for a daily user |
-| 100 | 1.4 M | The long tail |
+| 2 | 187 | 1 |
+| 5 | 1,064 | 4 |
+| 10 | 3,972 | 13 |
+| 20 | 14,823 | 49 |
+| 30 | 32,026 | 107 |
+| 38 | 50,183 | 167 *(the mockup's "Explorer Max, Level 38")* |
+| 50 | 84,530 | 282 |
+| 70 | 160,198 | 534 |
+| 100 | 315,479 | ~3 years |
+
+**Why 1.9.** A shallower curve (1.55) puts level 100 inside the first year and leaves
+Alex nothing to chase; a steeper one (2.2) makes the first ten levels feel like work
+and loses Emma. 1.9 gives L10 in two weeks, L38 in five months, L100 in three years.
+
+> The mockup's `12,850 / 15,000` is an illustrative label, not a target — the curve is
+> defined by the formula above. The bar shows progress *within* the current level:
+> `(total − xpForLevel(n)) / (xpForLevel(n+1) − xpForLevel(n))`.
 
 Levels are **uncapped**; every 10 levels grants a **Title** (Wanderer · Navigator ·
 Cartographer · Pathfinder · Voyager · Circumnavigator …). Titles are the cheapest

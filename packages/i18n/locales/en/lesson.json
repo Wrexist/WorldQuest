@@ -1,0 +1,20 @@
+{
+  "lesson:prompt.capital_of": "What is the capital of {country}?",
+  "lesson:prompt.capital_of__note": "Question prompt. {country} is a localised country name from the content pack.",
+  "lesson:prompt.which_flag": "Which country's flag is this?",
+  "lesson:prompt.locate": "Where is {country}?",
+  "lesson:feedback.correct.title": "Perfect!",
+  "lesson:feedback.correct.title__note": "Celebration headline after a correct answer. One word, one exclamation mark maximum.",
+  "lesson:feedback.correct.body": "You found {country} 🎉",
+  "lesson:feedback.wrong.title": "That's {chosen}.",
+  "lesson:feedback.wrong.title__note": "NEVER 'Wrong!' or 'Oops!'. State the truth plainly — no exclamation mark, no sad emoji. See docs/design/voice-and-tone.md.",
+  "lesson:feedback.wrong.body": "{correct} is {hint}.",
+  "lesson:feedback.wrong.body__note": "Names the right answer and gives one memorable hook. e.g. 'Japan is the island chain to the northeast.'",
+  "lesson:answer.label": "{country}",
+  "lesson:answer.label__note": "Accessibility label for an answer option button.",
+  "lesson:leave.confirm": "Leave lesson? Your progress is saved.",
+  "lesson:summary.title": "Nice work.",
+  "lesson:hearts.empty.title": "Out of hearts",
+  "lesson:hearts.empty.body": "Hearts come back over time. Practice mode is always free.",
+  "lesson:hearts.empty.body__note": "Critical: must make clear that learning is NEVER blocked."
+}

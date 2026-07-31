@@ -1,0 +1,28 @@
+{
+  "name": "worldquest",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "engines": { "node": ">=22.0.0", "pnpm": ">=9.0.0" },
+  "scripts": {
+    "dev": "pnpm --filter @worldquest/mobile dev",
+    "verify": "pnpm typecheck && pnpm lint && pnpm test && pnpm content:validate && pnpm i18n:check && pnpm lint:a11y",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "lint:a11y": "turbo run lint:a11y",
+    "test": "turbo run test",
+    "content:validate": "pnpm --filter @worldquest/content validate",
+    "content:preview": "pnpm --filter @worldquest/content preview",
+    "content:stats": "pnpm --filter @worldquest/content stats",
+    "i18n:check": "pnpm --filter @worldquest/i18n check",
+    "i18n:types": "pnpm --filter @worldquest/i18n types",
+    "i18n:pseudo": "pnpm --filter @worldquest/i18n pseudo",
+    "design:tokens": "pnpm --filter @worldquest/design build-tokens",
+    "design:contrast": "pnpm --filter @worldquest/design check-contrast",
+    "engines:simulate": "pnpm --filter @worldquest/engines simulate",
+    "db:start": "supabase start",
+    "db:reset": "supabase db reset",
+    "db:types": "supabase gen types typescript --local > packages/api/src/database.types.ts",
+    "db:test": "supabase test db"
+  },
+  "$comment": "Install from the repo ROOT, never inside a package. See CLAUDE.md."
+}

@@ -1,0 +1,9 @@
+{
+  "notifications:daily.reminder": "{region} is waiting. 5 minutes?",
+  "notifications:daily.reminder__note": "Daily nudge. An invitation, never pressure. Max 60 chars.",
+  "notifications:streak.atRisk": "Your streak is at {count}. One lesson keeps it.",
+  "notifications:streak.atRisk__note": "NEVER 'Don't lose your streak!'. State the fact, offer the action.",
+  "notifications:mastery.almost": "{country} is almost mastered — one lesson to go.",
+  "notifications:comeback": "The world missed you.",
+  "notifications:comeback__note": "Warm, never guilty. No 'we haven't seen you in 3 days'."
+}

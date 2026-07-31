@@ -1,0 +1,12 @@
+{
+  "home:greeting.morning": "Good morning, Explorer!",
+  "home:greeting.afternoon": "Good afternoon, Explorer!",
+  "home:greeting.evening": "Good evening, Explorer!",
+  "home:greeting.evening__note": "Time-of-day greeting on Home. 'Explorer' is the user's role, not their name.",
+  "home:streak.days": "{count, plural, =0 {No streak yet} one {# day streak} other {# day streak}}",
+  "home:streak.days__note": "ICU plural — Swedish and German need forms English does not have.",
+  "home:quest.today": "Today's Quest",
+  "home:quest.empty": "Start your first lesson",
+  "home:challenge.next": "New challenge in {time}",
+  "home:friends.online": "{count} online"
+}

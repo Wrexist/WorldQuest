@@ -1,0 +1,33 @@
+node_modules/
+.pnpm-store/
+dist/
+build/
+.turbo/
+coverage/
+
+# Expo
+.expo/
+.expo-shared/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.keystore
+
+# Supabase
+supabase/.branches/
+supabase/.temp/
+
+# Secrets — never commit
+.env
+.env.*
+!.env.example
+
+# Generated
+packages/design/src/tokens.ts
+packages/i18n/src/keys.ts
+packages/api/src/database.types.ts
+
+.DS_Store
+*.log
