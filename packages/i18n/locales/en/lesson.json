@@ -11,7 +11,7 @@
   "lesson:feedback.wrong.title": "That's {chosen}.",
   "lesson:feedback.wrong.title__note": "NEVER 'Wrong!' or 'Oops!'. State the truth plainly — no exclamation mark, no sad emoji. See docs/design/voice-and-tone.md.",
   "lesson:feedback.wrong.body": "{correct} is {hint}.",
-  "lesson:feedback.wrong.body__note": "Names the right answer and gives one memorable hook. e.g. 'Japan is the island chain to the northeast.'",
+  "lesson:feedback.wrong.body__note": "Used ONLY when a hint exists (flag descriptions). Names the right answer and gives one memorable hook.",
   "lesson:answer.label": "{country}",
   "lesson:answer.label__note": "Accessibility label for an answer option button.",
   "lesson:leave.confirm": "Leave lesson? Your progress is saved.",
@@ -36,5 +36,7 @@
   "lesson:prompt.capital_reverse": "{valueName} is the capital of which country?",
   "lesson:prompt.capital_reverse__note": "Reverse capital question. {valueName} is a city name.",
   "lesson:prompt.flag_described": "Which country's flag is {description}?",
-  "lesson:prompt.flag_described__note": "Screen-reader-safe flag question. {description} is a phrase like \"a red circle on a white field\"."
+  "lesson:prompt.flag_described__note": "Screen-reader-safe flag question. {description} is a phrase like \"a red circle on a white field\".",
+  "lesson:feedback.wrong.bodyPlain": "The answer is {correct}.",
+  "lesson:feedback.wrong.bodyPlain__note": "Used when the fact carries no descriptive hint, e.g. a capital. Still states the answer plainly — never just \"wrong\"."
 }

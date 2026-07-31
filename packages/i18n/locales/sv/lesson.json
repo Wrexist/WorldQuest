@@ -18,5 +18,6 @@
   "lesson:empty.title": "Du är ikapp",
   "lesson:empty.body": "Inget är på tur just nu. Utforska något nytt?",
   "lesson:prompt.capital_reverse": "{valueName} är huvudstad i vilket land?",
-  "lesson:prompt.flag_described": "Vilket lands flagga är {description}?"
+  "lesson:prompt.flag_described": "Vilket lands flagga är {description}?",
+  "lesson:feedback.wrong.bodyPlain": "Svaret är {correct}."
 }

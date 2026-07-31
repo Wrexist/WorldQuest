@@ -238,6 +238,19 @@ export function buildQuestion(
     modality: template.modality,
     timeLimitMs: template.timeLimitMs ?? null,
     isNew: opts.isNew ?? false,
-    ...(nameOf(fact.value.names) !== undefined ? { hint: nameOf(fact.value.names)! } : {}),
+    /**
+     * A hint only when it ADDS something.
+     *
+     * When the answer already comes from the fact value, the fact value is the
+     * answer — emitting it as a hint produced "Stockholm is Stockholm." on the
+     * wrong-answer screen. Caught by looking at a screenshot, not by a test.
+     *
+     * When the answer is the entity name, the fact value describes it ("a yellow
+     * Nordic cross on a blue field"), which is exactly the memorable hook the
+     * wrong-answer copy is designed around.
+     */
+    ...(template.answer.from === 'entity.names' && nameOf(fact.value.names) !== undefined
+      ? { hint: nameOf(fact.value.names)! }
+      : {}),
   }
 }

@@ -146,10 +146,14 @@ export function LessonScreen({ onExit }: { onExit: () => void }) {
                   {t('lesson:feedback.wrong.title', { chosen: chosenLabel(question, lastAnswer?.chosenOptionId) })}
                 </Text>
                 <Text style={styles.feedbackBody}>
-                  {t('lesson:feedback.wrong.body', {
-                    correct: question.options.find((o) => o.isCorrect)?.label ?? '',
-                    hint: question.hint ?? '',
-                  })}
+                  {question.hint
+                    ? t('lesson:feedback.wrong.body', {
+                        correct: question.options.find((o) => o.isCorrect)?.label ?? '',
+                        hint: question.hint,
+                      })
+                    : t('lesson:feedback.wrong.bodyPlain', {
+                        correct: question.options.find((o) => o.isCorrect)?.label ?? '',
+                      })}
                 </Text>
               </>
             )}

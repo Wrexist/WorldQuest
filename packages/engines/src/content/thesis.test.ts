@@ -209,6 +209,31 @@ describe('question construction', () => {
     }
   })
 
+  it('never emits a hint that just repeats the answer', () => {
+    // Produced "Stockholm is Stockholm." on the wrong-answer screen. A hint must
+    // add information or be absent.
+    for (const item of index.items) {
+      const q = buildQuestion(index, item, 'en', seededRng(13))
+      if (!q?.hint) continue
+      const correct = q.options.find((o) => o.isCorrect)!.label
+      expect(q.hint.toLowerCase(), `${item.id} hint repeats its answer`).not.toBe(
+        correct.toLowerCase(),
+      )
+    }
+  })
+
+  it('gives descriptive facts a hint, and self-answering ones none', () => {
+    const flag = index.itemsByFact
+      .get('geo.SE.flag')!
+      .find((i) => i.templateId === 'tpl.flag-describe.mc4')!
+    expect(buildQuestion(index, flag, 'en', seededRng(1))!.hint).toContain('Nordic cross')
+
+    const capital = index.itemsByFact
+      .get('geo.SE.capital')!
+      .find((i) => i.templateId === 'tpl.capital.mc4')!
+    expect(buildQuestion(index, capital, 'en', seededRng(1))!.hint).toBeUndefined()
+  })
+
   it('falls back to a wider pool when the close one is too small', () => {
     // Japan is the only East Asian entity here, so same-subregion yields nothing
     // and the same-region fallback must carry it.
