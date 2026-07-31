@@ -10,5 +10,13 @@
   "lesson:leave.confirm": "Lämna lektionen? Dina framsteg sparas.",
   "lesson:summary.title": "Bra jobbat.",
   "lesson:hearts.empty.title": "Slut på hjärtan",
-  "lesson:hearts.empty.body": "Hjärtan kommer tillbaka med tiden. Övningsläget är alltid gratis."
+  "lesson:hearts.empty.body": "Hjärtan kommer tillbaka med tiden. Övningsläget är alltid gratis.",
+  "lesson:progress.label": "Framsteg",
+  "lesson:hearts.remaining": "{count, plural, =0 {Inga hjärtan kvar} one {# hjärta kvar} other {# hjärtan kvar}}",
+  "lesson:reward.xp": "{amount} XP intjänat",
+  "lesson:reward.coins": "{amount} mynt intjänade",
+  "lesson:empty.title": "Du är ikapp",
+  "lesson:empty.body": "Inget är på tur just nu. Utforska något nytt?",
+  "lesson:prompt.capital_reverse": "{valueName} är huvudstad i vilket land?",
+  "lesson:prompt.flag_described": "Vilket lands flagga är {description}?"
 }

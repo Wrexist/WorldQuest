@@ -20,5 +20,21 @@
   "lesson:hearts.empty.title": "Out of hearts",
   "lesson:hearts.empty.title__note": "Headline when hearts run out. Neutral and factual, never a punishment.",
   "lesson:hearts.empty.body": "Hearts come back over time. Practice mode is always free.",
-  "lesson:hearts.empty.body__note": "Critical: must make clear that learning is NEVER blocked."
+  "lesson:hearts.empty.body__note": "Critical: must make clear that learning is NEVER blocked.",
+  "lesson:progress.label": "Progress",
+  "lesson:progress.label__note": "Label above the lesson progress bar. Max 10 chars.",
+  "lesson:hearts.remaining": "{count, plural, =0 {No hearts left} one {# heart left} other {# hearts left}}",
+  "lesson:hearts.remaining__note": "Accessibility label for the hearts indicator. ICU plural.",
+  "lesson:reward.xp": "{amount} XP earned",
+  "lesson:reward.xp__note": "Accessibility label for the XP chip. Spoken, so it is a full phrase.",
+  "lesson:reward.coins": "{amount} coins earned",
+  "lesson:reward.coins__note": "Accessibility label for the coin chip.",
+  "lesson:empty.title": "You're all caught up",
+  "lesson:empty.title__note": "Shown when nothing is due. Celebrate it — never a dead end.",
+  "lesson:empty.body": "Nothing is due right now. Explore somewhere new?",
+  "lesson:empty.body__note": "Empty state body. Always offers the next step.",
+  "lesson:prompt.capital_reverse": "{valueName} is the capital of which country?",
+  "lesson:prompt.capital_reverse__note": "Reverse capital question. {valueName} is a city name.",
+  "lesson:prompt.flag_described": "Which country's flag is {description}?",
+  "lesson:prompt.flag_described__note": "Screen-reader-safe flag question. {description} is a phrase like \"a red circle on a white field\"."
 }

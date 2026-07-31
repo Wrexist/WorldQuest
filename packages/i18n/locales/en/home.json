@@ -11,5 +11,15 @@
   "home:challenge.next": "New challenge in {time}",
   "home:challenge.next__note": "Countdown to the next daily challenge. {time} is a formatted duration like \"14:22:16\".",
   "home:friends.online": "{count, plural, =0 {No friends online} one {# friend online} other {# friends online}}",
-  "home:friends.online__note": "Count of friends currently online. ICU plural."
+  "home:friends.online__note": "Count of friends currently online. ICU plural.",
+  "home:progress.mastered": "Places mastered",
+  "home:progress.mastered__note": "Label on the mastery progress bar. Max 18 chars.",
+  "home:level": "Level {level}",
+  "home:level__note": "Label on the XP bar. {level} is a whole number.",
+  "home:stats.label": "Your progress",
+  "home:stats.label__note": "Accessibility label grouping the stats card into one element.",
+  "home:stats.xp": "{amount} XP total",
+  "home:stats.xp__note": "Accessibility label for the XP chip. Spoken, so a full phrase.",
+  "home:stats.coins": "{amount} coins",
+  "home:stats.coins__note": "Accessibility label for the coin chip."
 }

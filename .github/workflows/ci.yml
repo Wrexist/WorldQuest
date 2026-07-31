@@ -29,7 +29,7 @@ jobs:
           git diff --exit-code packages/design/src/tokens.ts packages/design/src/tokens.css \
             || (echo "::error::tokens.ts is stale — run pnpm design:tokens and commit"; exit 1)
 
-      - name: Typecheck
+      - name: Typecheck (packages + app)
         run: pnpm typecheck
 
       - name: Unit tests (engines gate at 90% coverage)

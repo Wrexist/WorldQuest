@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "pnpm --filter @worldquest/mobile start",
     "verify": "pnpm typecheck && pnpm test && pnpm content:validate && pnpm i18n:check && pnpm design:contrast",
-    "typecheck": "pnpm -r --filter './packages/*' typecheck",
+    "typecheck": "pnpm -r --filter './packages/*' --filter './apps/*' typecheck",
     "test": "pnpm -r --filter './packages/*' test",
     "content:validate": "pnpm --filter @worldquest/content validate",
     "content:preview": "pnpm --filter @worldquest/content preview",

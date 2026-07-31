@@ -86,6 +86,29 @@ These are **not** things an agent should decide. Each changes the product.
 | ⬜ | Beta cohort recruited by persona (incl. 5 children, 3 teachers, 5 over-60s, 3 assistive-tech users) |
 | ⬜ | Legal review of the privacy policy and the child-consent flow |
 
+## Phase 1 — walking skeleton
+
+| | Step | Evidence |
+|---|---|---|
+| ✅ | 1 · Monorepo, tooling, CI, `pnpm verify` | Exits 0: 200 tests, typecheck, content, i18n, contrast |
+| ✅ | 2 · FSRS engine + tests | 100 % coverage on `fsrs.ts`; 10k-case property tests |
+| ✅ | 3 · Content packs, schema, validator | 5 countries × 2 attributes × 4 templates |
+| ✅ | 4 · Supabase migrations + RLS | identity · learning · economy, with RLS tests |
+| ✅ | 5 · `submit-lesson` edge function | Imports the same `gradeLesson` the client runs |
+| ✅ | 6 · Lesson screen | All five states, tokens only, every string a key |
+| ✅ | 7 · Offline queue + reconcile | 27 tests incl. duplicate flush and parking |
+| ✅ | 8 · Home screen showing real progress | Loop closes: Home → lesson → progress → Home |
+| ⬜ | Run it against a live Supabase project | Needs the project created (above) |
+
+### Exit criteria
+
+| | Criterion | Status |
+|---|---|---|
+| ⚠️ | A real answer changes a real `due_at` **on a real server** | Proven in-process (`lesson.test.ts`); needs a live project to be literally true |
+| ⚠️ | The slice runs offline and reconciles on reconnect | Queue logic fully tested; the network adapter lands with the Supabase project |
+| ✅ | `packages/engines` is React- and network-free, ≥ 90 % covered | 97 % |
+| ✅ | **Adding a sixth country is one JSON file and nothing else** | Asserted by `content/thesis.test.ts` |
+
 ---
 
 ## Exit criteria

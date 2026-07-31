@@ -16,5 +16,7 @@
   "common:error.generic.title": "That didn't load",
   "common:error.generic.body": "Let's try again.",
   "common:progress.count": "{current} / {total}",
-  "common:progress.count__note": "Progress like 172 / 195. Tabular numerals."
+  "common:progress.count__note": "Progress like 172 / 195. Tabular numerals.",
+  "common:loading": "Loading",
+  "common:loading__note": "Accessibility label for a loading screen."
 }
