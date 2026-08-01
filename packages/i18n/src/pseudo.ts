@@ -1,9 +1,13 @@
 /**
- * The pseudo-localisation transform, as a pure function.
+ * The pseudo-localisation transform.
  *
- * Separated from the script that writes files so it can be tested. Its one hard
- * invariant — placeholders and ICU structure survive untouched — is exactly the kind
- * of thing that breaks silently and wastes a designer's afternoon.
+ * Lives in `src` rather than `scripts` because the app applies it AT RUNTIME in a dev
+ * build (`enablePseudoLocale`) rather than loading generated files. Generating in
+ * memory from the English bundle means the pseudo-locale can never be stale, and
+ * there is nothing to commit or gitignore.
+ *
+ * Its one hard invariant — placeholders and ICU structure survive untouched — is
+ * exactly the kind of thing that breaks silently and wastes a designer's afternoon.
  */
 
 /** Enough expansion to match the worst real language, no more. */

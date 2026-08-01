@@ -17,6 +17,7 @@
 
 import i18next, { type i18n as I18nInstance } from 'i18next'
 import { IcuFormat } from './icu.js'
+import { pseudo } from './pseudo.js'
 import { NAMESPACES, type Namespace, type TranslationKey, type TranslationParams } from './keys.js'
 
 import enAchievements from '../locales/en/achievements.json' with { type: 'json' }
@@ -67,6 +68,9 @@ const isDev = (): boolean => {
 export const SUPPORTED_LOCALES = ['en', 'sv'] as const
 export type Locale = (typeof SUPPORTED_LOCALES)[number]
 export const FALLBACK_LOCALE: Locale = 'en'
+
+/** Not in `SUPPORTED_LOCALES` — a development tool, never a shipped language. */
+export const PSEUDO_LOCALE = 'en-XA'
 
 // ── resources ───────────────────────────────────────────────────────────────
 
@@ -158,7 +162,10 @@ i18n
   .init({
     lng: FALLBACK_LOCALE,
     fallbackLng: FALLBACK_LOCALE,
-    supportedLngs: SUPPORTED_LOCALES,
+    // The pseudo-locale is listed so i18next does not reject it when a dev build
+    // switches to it. It has no bundle until `enablePseudoLocale` builds one, and
+    // `resolveLocale` never returns it, so no user can land here by accident.
+    supportedLngs: [...SUPPORTED_LOCALES, PSEUDO_LOCALE],
     ns: NAMESPACES,
     defaultNS: 'common',
     resources,
@@ -249,6 +256,39 @@ export function resolveLocale(candidates: readonly string[]): Locale {
 export async function setLocale(locale: Locale): Promise<void> {
   if (i18n.language === locale) return
   await i18n.changeLanguage(locale)
+}
+
+// ── pseudo-locale ───────────────────────────────────────────────────────────
+
+/**
+ * Adds `en-XA` and switches to it.
+ *
+ * German and Finnish run about 40% longer than English. Testing a layout only in
+ * English means finding that out in a screenshot from a translator, months later,
+ * after the layout has been copied into six other screens.
+ *
+ * The bundle is built in memory from the English one, so it can never be stale and
+ * there is nothing to generate or commit. The accents also make untranslated strings
+ * obvious: anything still rendering in plain ASCII never went through `t()`.
+ *
+ * A no-op in production. Not because shipping it would be catastrophic, but because
+ * a language nobody speaks appearing in a picker is a support ticket.
+ */
+export async function enablePseudoLocale(): Promise<boolean> {
+  if (!isDev()) return false
+
+  for (const [namespace, bundle] of Object.entries(RAW.en)) {
+    const stripped = toBundle(namespace, bundle)
+    const pseudoBundle = Object.fromEntries(
+      Object.entries(stripped).map(([key, value]) => [key, pseudo(value)]),
+    )
+    i18n.addResourceBundle(PSEUDO_LOCALE, namespace, pseudoBundle, true, true)
+  }
+
+  // Awaited: `changeLanguage` resolves the new language, and a caller that renders
+  // immediately after a fire-and-forget call sees the old one.
+  await i18n.changeLanguage(PSEUDO_LOCALE)
+  return true
 }
 
 export const currentLocale = (): Locale =>

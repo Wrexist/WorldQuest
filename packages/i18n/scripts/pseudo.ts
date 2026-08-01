@@ -21,7 +21,7 @@
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { EXPANSION, pseudo } from './pseudo-text.js'
+import { EXPANSION, pseudo } from '../src/pseudo.js'
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
 const englishDir = join(root, 'locales', 'en')

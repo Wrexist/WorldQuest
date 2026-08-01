@@ -129,6 +129,9 @@ shorter.
 - Buttons size to content with a minimum width; they never truncate a label.
 - Test every screen with a **pseudo-locale** (`en-XA`) that inflates strings by 40 %
   and adds accents. It catches truncation before a translator ever sees it.
+  `enablePseudoLocale()` builds it in memory from the English bundle at runtime —
+  no generated files to commit or keep in step. `pnpm i18n:pseudo` additionally
+  writes the bundle to disk and reports the longest strings.
 - Never fix a layout to an English string's width.
 
 ### 3.7 RTL

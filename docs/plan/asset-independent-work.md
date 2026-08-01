@@ -68,7 +68,7 @@ blocked by anything.
 | E1 | Component tests for every screen's five states | ✅ *(all seven screens — 65 tests)* |
 | E2 | Maestro E2E: first launch → taster lesson → progress persists | ⬜ |
 | E3 | CI: RLS tests on a local stack, migrations from empty, economy health, and every generated file checked against its source | ✅ |
-| E4 | Wire the `en-XA` pseudo-locale into a dev build — the generator exists (`pnpm i18n:pseudo`), loading it at runtime does not | ⬜ |
+| E4 | `en-XA` pseudo-locale — `enablePseudoLocale()` builds it in memory from the English bundle at runtime, so it can never be stale | ✅ |
 
 ## Track F — the visual gap that isn't art
 
@@ -84,9 +84,12 @@ blocked by anything.
 
 ~~A1 → A2 → A3 → F1 → B1 → B2 → C1 → B4 → C2 → C3 → C4~~ — done.
 
-**Remaining, in order:** A4 (TanStack Query) → B5 (Profile) → B3 (Country page) →
-B6 (hidden screens) → E1 (component tests) → E2 (Maestro) → F2 (gradients) →
-F3 (motion) → E3 (CI) → E4 (pseudo-locale in a dev build).
+**Remaining:** B6 (hidden screens) · E2 (Maestro) · F3 (motion) · D1–D3 (content).
+
+E2 is deliberately last and deliberately not started here: a Maestro flow written
+without ever running it against a device is a file full of guesses about selectors and
+timing. It needs one session on a machine with a simulator, and until then writing it
+would be the same false-green as a CI step that checks nothing.
 
 The starter catalogue is 12 definitions, deliberately. The ~300 in
 [`../systems/achievements.md`](../systems/achievements.md) arrive in batches once the

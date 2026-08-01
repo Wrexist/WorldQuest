@@ -9,6 +9,8 @@ import {
   formatList,
   formatNumber,
   formatPercent,
+  PSEUDO_LOCALE,
+  enablePseudoLocale,
   i18n,
   resolveLocale,
   setLocale,
@@ -16,7 +18,7 @@ import {
 } from './index.js'
 import { NAMESPACES } from './keys.js'
 import { generateKeys } from '../scripts/keys.js'
-import { pseudo } from '../scripts/pseudo-text.js'
+import { pseudo } from './pseudo.js'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
@@ -77,6 +79,26 @@ describe('pseudo-locale', () => {
 
   it('produces something a translator can tell apart from English', () => {
     expect(pseudo('Continue')).not.toBe('Continue')
+  })
+
+  it('can be switched on at runtime, built from the English bundle', async () => {
+    // Generated in memory rather than loaded from files, so it can never be stale
+    // and there is nothing to commit. This is the whole point of E4.
+    await expect(enablePseudoLocale()).resolves.toBe(true)
+    expect(i18n.language).toBe(PSEUDO_LOCALE)
+
+    const rendered = t('common:continue')
+    expect(rendered).not.toBe('Continue')
+    // Accented AND wider — the two things it exists to surface.
+    expect(rendered).toMatch(/[áéíóúñçšž]/i)
+    expect(rendered.length).toBeGreaterThan('Continue'.length)
+
+    // ICU still parses: the placeholders survived the transform.
+    const plural = t('home:streak.days', { count: 12 })
+    expect(plural).toContain('12')
+    expect(plural).not.toContain('{')
+
+    await setLocale(FALLBACK_LOCALE)
   })
 })
 
