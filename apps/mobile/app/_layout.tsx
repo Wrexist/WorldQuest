@@ -13,11 +13,18 @@
 import { Stack } from 'expo-router'
 import { SafeAreaView, StatusBar, StyleSheet } from 'react-native'
 import { colors, motion } from '@worldquest/design'
+import { useAppFonts } from '../src/lib/fonts.js'
 import { t } from '../src/lib/i18n.js'
 import { useDeviceLocale } from '../src/lib/locale.js'
 
 export default function RootLayout() {
+  const fontsReady = useAppFonts()
   useDeviceLocale()
+
+  // The native splash is still covering the screen here, so there is nothing to see.
+  // Rendering before the fonts land means laying out in the system font and jumping
+  // when Baloo 2 arrives — its metrics are nothing like the fallback's.
+  if (!fontsReady) return null
 
   return (
     <SafeAreaView style={styles.root}>

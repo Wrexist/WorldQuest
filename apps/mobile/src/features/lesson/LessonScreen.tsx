@@ -19,7 +19,7 @@ import {
   colors,
   radius,
   space,
-  typography,
+  text,
 } from '@worldquest/design'
 import type { GradeResult, LessonState, Question } from '@worldquest/engines'
 import { useLesson } from './hooks/useLesson.js'
@@ -293,35 +293,12 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   header: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   body: { gap: space[5], paddingBottom: space[6] },
-  prompt: {
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.scale.h2.size,
-    lineHeight: typography.scale.h2.lineHeight,
-    fontWeight: '700',
-    color: colors.text.primary,
-    textAlign: 'center',
-  },
+  prompt: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
   options: { gap: space[2] },
   feedback: { gap: space[2] },
-  feedbackTitle: {
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.scale.h3.size,
-    fontWeight: '600',
-    color: colors.text.primary,
-  },
-  feedbackTitleOk: {
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.scale.h2.size,
-    fontWeight: '700',
-    color: colors.feedback.correct,
-  },
-  feedbackBody: {
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.scale.body.size,
-    lineHeight: typography.scale.body.lineHeight,
-    color: colors.text.secondary,
-    textAlign: 'center',
-  },
+  feedbackTitle: { ...text('h3'), color: colors.text.primary },
+  feedbackTitleOk: { ...text('h2'), color: colors.feedback.correct },
+  feedbackBody: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
   rewards: { flexDirection: 'row', gap: space[2], justifyContent: 'center' },
   footer: { paddingBottom: space[4] },
   retry: { marginTop: space[4] },
@@ -330,10 +307,5 @@ const styles = StyleSheet.create({
     padding: space[3],
     borderRadius: radius.md,
   },
-  offlineText: {
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.scale.caption.size,
-    color: colors.text.secondary,
-    textAlign: 'center',
-  },
+  offlineText: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
 })

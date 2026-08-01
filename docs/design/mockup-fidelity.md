@@ -40,14 +40,14 @@ The mockup's imagery is generated art. Matching it needs real assets:
 | Avatar | Illustrated character | Initials in a ringed circle |
 | Atlas the mascot | Robot explorer | Not built |
 | Card gradients | Blue→dark, purple→dark | Flat surfaces; needs `expo-linear-gradient` |
-| Inter + Baloo 2 | The real faces | Both OFL — download and bundle |
+| ~~Inter + Baloo 2~~ | The real faces | ✅ **Bundled.** Loaded per weight from `@expo-google-fonts`, splash held until they land, and the screenshots now render in the real faces instead of a substitute sans. |
 
 Prompts for every one of these are in [`asset-prompts.md`](asset-prompts.md).
 
-`ArtSlot` exists so this is a one-line swap per slot rather than a redesign. The
-fonts and gradients are hours of work; the illustration set is the decision already
-flagged in the Phase 0 checklist (commission vs licence), and it is the single
-biggest remaining visual gap.
+`ArtSlot` exists so this is a one-line swap per slot rather than a redesign.
+Gradients are hours of work; the illustration set is the decision already flagged in
+the Phase 0 checklist (commission vs licence), and it is now the single biggest
+remaining visual gap.
 
 ### 3. Deliberate deviations — we are not copying these
 
@@ -62,6 +62,7 @@ things our own Definition of Done forbids.
 | Six blocks packed to the screen edge | Same six, scrolling, with breathing room | The mockup's density cannot survive 200 % text, which the DoD requires |
 | `12,850 / 15,000 XP` on Profile | The real curve (`50·n^1.9`) | The mockup's numbers do not correspond to any coherent progression; see xp-economy.md |
 | No wrong-answer screen | A designed one | Users see it as often as the celebration. Leaving it undesigned is how apps end up making people feel stupid. |
+| Tab labels in title case at ~10 px | Title case at 11 px (`overline`, casing suppressed) | The size is on the scale; the casing follows the mockup rather than the type token, because five uppercase labels at that size read as a fence |
 
 ---
 

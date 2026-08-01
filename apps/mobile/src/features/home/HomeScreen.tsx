@@ -26,7 +26,7 @@ import {
   palette,
   radius,
   space,
-  typography,
+  text,
 } from '@worldquest/design'
 import { levelForXp, xpForLevel } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
@@ -220,73 +220,33 @@ const styles = StyleSheet.create({
 
   greetingRow: { flexDirection: 'row', alignItems: 'flex-end', gap: space[3] },
   greetingText: { flex: 1 },
-  salutation: {
-    fontFamily: typography.fontFamily.body,
-    fontSize: 15,
-    color: colors.text.secondary,
-  },
-  explorer: {
-    fontFamily: typography.fontFamily.display,
-    fontSize: 24,
-    lineHeight: 30,
-    fontWeight: '700',
-    color: colors.text.primary,
-  },
+  salutation: { ...text('body'), color: colors.text.secondary },
+  explorer: { ...text('h1'), color: colors.text.primary },
 
   questCard: { gap: space[3] },
   questBody: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   questText: { flex: 1, gap: space[1] },
-  questTitle: {
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.scale.h2.size,
-    fontWeight: '700',
-    color: colors.text.primary,
-  },
+  questTitle: { ...text('h2'), color: colors.text.primary },
 
   challengeCard: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   challengeText: { flex: 1, gap: space[1] },
-  countdown: {
-    fontFamily: typography.fontFamily.numeric,
-    fontSize: 20,
-    fontWeight: '700',
-    color: colors.text.primary,
-    fontVariant: ['tabular-nums'],
-  },
+  // Tabular, because it ticks: proportional digits make the whole card twitch.
+  countdown: { ...text('numeric'), color: colors.text.primary },
 
   twoUp: { flexDirection: 'row', gap: space[3] },
   tile: { flex: 1, gap: space[1] },
-  leagueTier: {
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.scale.h3.size,
-    fontWeight: '700',
-    color: colors.reward.xp,
-  },
+  leagueTier: { ...text('h3', { weight: '700' }), color: colors.reward.xp },
 
   levelCard: { gap: space[3] },
   chips: { flexDirection: 'row', gap: space[2] },
 
-  cardLabel: {
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.scale.caption.size,
-    color: colors.text.secondary,
-    fontWeight: '500',
-  },
-  cardTitle: {
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.scale.h3.size,
-    fontWeight: '600',
-    color: colors.text.primary,
-  },
+  cardLabel: { ...text('caption'), color: colors.text.secondary },
+  cardTitle: { ...text('h3'), color: colors.text.primary },
 
   offline: {
     backgroundColor: colors.bg.surfaceRaised,
     padding: space[3],
     borderRadius: radius.md,
   },
-  offlineText: {
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.scale.caption.size,
-    color: colors.text.secondary,
-    textAlign: 'center',
-  },
+  offlineText: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
 })

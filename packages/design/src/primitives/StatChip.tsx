@@ -5,7 +5,8 @@
  * The icon is always present: colour alone must never carry the meaning.
  */
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native'
-import { colors, radius, space, typography } from '../tokens.js'
+import { colors, radius, space } from '../tokens.js'
+import { text } from '../typography.js'
 
 export type ChipKind = 'xp' | 'coin' | 'streak' | 'hearts' | 'gem'
 
@@ -51,8 +52,5 @@ const styles = StyleSheet.create({
     borderRadius: radius.full, backgroundColor: colors.bg.surface,
   },
   glyph: { fontSize: 14 },
-  value: {
-    fontFamily: typography.fontFamily.numeric, fontSize: typography.scale.caption.size,
-    fontWeight: '700', fontVariant: ['tabular-nums'],
-  },
+  value: text('caption', { weight: '700', numeric: true }),
 })

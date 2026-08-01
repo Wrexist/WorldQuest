@@ -10,14 +10,18 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@expo-google-fonts/baloo-2": "^0.2.3",
+    "@expo-google-fonts/inter": "^0.2.3",
     "@worldquest/analytics": "workspace:*",
     "@worldquest/api": "workspace:^",
     "@worldquest/design": "workspace:*",
     "@worldquest/engines": "workspace:*",
     "@worldquest/i18n": "workspace:*",
     "expo": "~52.0.0",
+    "expo-font": "~13.0.0",
     "expo-localization": "~16.0.0",
     "expo-router": "~4.0.0",
+    "expo-splash-screen": "~0.29.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-i18next": "^15.2.0",

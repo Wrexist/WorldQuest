@@ -20,6 +20,23 @@ motion   instant 100 · quick 180 · base 260 · expressive 420 · celebrate 900
 type     display 34 · h1 28 · h2 22 · h3 18 · body 16 · caption 13 · overline 11
 ```
 
+## Type: never set `fontWeight`
+
+`fontFamily` and `fontWeight` do **not** combine for a custom font on React Native.
+`{ fontFamily: 'Inter', fontWeight: '700' }` gives you regular Inter on iOS and a
+synthetic fake-bold on Android — each weight is a separate file and a separate family.
+
+So use `text()`, which resolves the whole style from one scale step:
+
+```ts
+title: { ...text('h2'), color: colors.text.primary },
+count: { ...text('caption', { weight: '700', numeric: true }), color: colors.status.progress },
+```
+
+`tokens.test.ts` fails any primitive containing `fontWeight:`. Adding a weight means
+adding it to `tokens.json` **and** to `apps/mobile/src/lib/fonts.ts` — both sides
+assert against the other.
+
 `padding: 15` is a bug. If a value you need doesn't exist, **add a token** — never a
 local literal.
 

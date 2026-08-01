@@ -20,7 +20,8 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native'
-import { colors, radius, space, typography } from '../tokens.js'
+import { colors, radius, space } from '../tokens.js'
+import { text } from '../typography.js'
 
 export type AnswerState = 'idle' | 'selected' | 'correct' | 'wrong' | 'disabled'
 
@@ -116,14 +117,13 @@ const styles = StyleSheet.create({
   idleBorder: { borderWidth: 1, borderColor: colors.border.subtle },
   correctBorder: { borderWidth: 1, borderColor: colors.feedback.correct },
   label: {
+    ...text('bodyStrong'),
     flexShrink: 1,
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.scale.bodyStrong.size,
-    lineHeight: typography.scale.bodyStrong.lineHeight,
-    fontWeight: '600',
     color: colors.text.primary,
     textAlign: 'center',
   },
   glyphWrap: { position: 'absolute', right: space[4] },
-  glyph: { fontSize: 18, color: colors.text.onAccent, fontWeight: '700' },
+  // A tick or a cross, not type — it comes from the system emoji/symbol font, so
+  // there is no custom family to pick a weight from.
+  glyph: { fontSize: 18, color: colors.text.onAccent },
 })

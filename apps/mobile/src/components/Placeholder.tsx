@@ -12,7 +12,7 @@
  */
 
 import { StyleSheet, Text, View } from 'react-native'
-import { colors, space, typography } from '@worldquest/design'
+import { colors, space, text } from '@worldquest/design'
 import { useT, type TranslationKey } from '../lib/i18n.js'
 
 export type PlaceholderProps = {
@@ -42,18 +42,9 @@ const styles = StyleSheet.create({
     padding: space[5],
     gap: space[3],
   },
-  title: {
-    fontFamily: typography.fontFamily.display,
-    fontSize: typography.scale.h2.size,
-    lineHeight: typography.scale.h2.lineHeight,
-    fontWeight: '700',
-    color: colors.text.primary,
-    textAlign: 'center',
-  },
+  title: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
   body: {
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.scale.body.size,
-    lineHeight: typography.scale.body.lineHeight,
+    ...text('body'),
     color: colors.text.secondary,
     textAlign: 'center',
     maxWidth: 320,

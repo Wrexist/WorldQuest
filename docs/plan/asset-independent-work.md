@@ -74,7 +74,7 @@ blocked by anything.
 
 | # | Work | Notes | State |
 |---|---|---|---|
-| F1 | **Bundle Inter + Baloo 2** | Both OFL, both free. The screenshots render in a substitute serif today, which is the single biggest reason the build doesn't read like the mockup. No commissioning required — just files. | ⬜ |
+| F1 | **Bundle Inter + Baloo 2** | Both OFL, both free. Loaded per weight — `fontFamily` + `fontWeight` does not combine for custom fonts on React Native, so this needed the `text()` helper and a guard, not just the files. | ✅ |
 | F2 | **Card gradients** (`expo-linear-gradient`) | The mockup's cards are gradients; ours are flat fills | ⬜ |
 | F3 | **Motion pass** | Springs, celebration, reduced-motion — all token-driven, no assets | ⬜ |
 

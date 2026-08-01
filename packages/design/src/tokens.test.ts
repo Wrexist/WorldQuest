@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { colors, contrastFloors, layout, motion, radius, space, typography } from './tokens.js'
+import { FONT_FAMILIES, fontFamily, text } from './typography.js'
 
 const primitivesDir = join(import.meta.dirname, 'primitives')
 /** Comments discuss the very things these tests grep for, so strip them first. */
@@ -122,6 +123,64 @@ describe('primitives obey the token discipline', () => {
       expect(elevations, `${file} has ${shadows} shadows but ${elevations} elevations`)
         .toBeGreaterThanOrEqual(shadows)
     }
+  })
+})
+
+describe('type is set in a font that exists', () => {
+  it('has a real font file for every weight the scale asks for', () => {
+    // `fontFamily: 'Inter', fontWeight: '700'` does NOT give you bold Inter on React
+    // Native — each weight is a separate file and therefore a separate family. If a
+    // scale step names a weight the token map has no file for, `text()` silently
+    // falls back to the nearest one and the design quietly drifts.
+    for (const [step, spec] of Object.entries(typography.scale)) {
+      const face = (typography.face as Record<string, string>)[step]!
+      const weights = Object.keys((typography.font as Record<string, object>)[face]!)
+      expect(weights, `${step} wants ${face} ${spec.weight}`).toContain(spec.weight)
+    }
+  })
+
+  it('names every family the app has to load', () => {
+    // A family in the tokens that nobody loads renders as the system font — a
+    // different face entirely on Android, and close enough to miss on iOS.
+    expect(FONT_FAMILIES.length).toBeGreaterThan(0)
+    for (const family of FONT_FAMILIES) {
+      // `@expo-google-fonts` names files `Inter_600SemiBold`. The loader keys off
+      // exactly this string, so a typo here is a silently missing font.
+      expect(family).toMatch(/^[A-Za-z0-9]+_\d{3}[A-Za-z]+$/)
+    }
+  })
+
+  it('never pairs fontWeight with a custom family in a primitive', () => {
+    // The whole point of `text()`. On iOS this renders regular weight; on Android it
+    // synthesises a smeared fake bold. It looks correct on whichever simulator the
+    // author happened to open, which is why review does not catch it.
+    for (const { file, code } of sources) {
+      expect(code, `${file} sets fontWeight — use text(step, { weight }) instead`).not.toMatch(
+        /fontWeight\s*:/,
+      )
+    }
+  })
+
+  it('resolves a missing weight to the nearest one rather than to undefined', () => {
+    // The fallback is a safety net, not a routine path — but a screen a user is
+    // looking at should degrade to slightly-wrong type, never to a crash.
+    expect(fontFamily('display', '100')).toBe(typography.font.display['600'])
+    expect(fontFamily('body', '900')).toBe(typography.font.body['700'])
+  })
+
+  it('builds a complete style from one call', () => {
+    const h2 = text('h2')
+    expect(h2.fontFamily).toBe('Baloo2_700Bold')
+    expect(h2.fontSize).toBe(typography.scale.h2.size)
+    expect(h2.lineHeight).toBe(typography.scale.h2.lineHeight)
+
+    // Tabular by default where digits change, so a counter does not jitter.
+    expect(text('numeric').fontVariant).toEqual(['tabular-nums'])
+    expect(text('body').fontVariant).toBeUndefined()
+
+    // Casing comes from the token, and the opt-out is explicit.
+    expect(text('overline').textTransform).toBe('uppercase')
+    expect(text('overline', { transform: 'none' }).textTransform).toBeUndefined()
   })
 })
 

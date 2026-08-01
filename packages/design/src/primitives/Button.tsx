@@ -20,7 +20,8 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native'
-import { colors, motion, radius, space, typography } from '../tokens.js'
+import { colors, motion, radius, space } from '../tokens.js'
+import { text } from '../typography.js'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'destructive' | 'ghost'
 export type ButtonSize = 'sm' | 'md' | 'lg'
@@ -131,7 +132,7 @@ export function Button({
               style={[
                 styles.label,
                 { color: disabled ? colors.text.tertiary : LABEL_COLORS[variant] },
-                size === 'sm' && { fontSize: typography.scale.caption.size },
+                size === 'sm' && styles.labelSm,
               ]}
             >
               {label}
@@ -153,12 +154,12 @@ const styles = StyleSheet.create({
   fullWidth: { alignSelf: 'stretch' },
   content: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
   label: {
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.scale.bodyStrong.size,
-    lineHeight: typography.scale.bodyStrong.lineHeight,
-    fontWeight: '600',
+    ...text('bodyStrong'),
     textAlign: 'center',
   },
+  // A whole step down, not just a smaller size — dropping fontSize alone leaves the
+  // line height and letter spacing of the larger step behind.
+  labelSm: text('caption', { weight: '600' }),
   tertiaryBorder: { borderWidth: 1, borderColor: colors.border.subtle },
   // elevation must be zeroed too — an iOS shadowOpacity of 0 does nothing on
   // Android, so a disabled button would keep floating there.

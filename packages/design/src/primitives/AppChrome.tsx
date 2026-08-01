@@ -10,7 +10,8 @@
  */
 
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native'
-import { colors, radius, space, typography } from '../tokens.js'
+import { colors, radius, space } from '../tokens.js'
+import { fontFamily, text } from '../typography.js'
 
 // ── avatar ──────────────────────────────────────────────────────────────────
 
@@ -154,27 +155,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   avatarText: {
+    // Size is computed from the avatar's diameter, so this cannot come from a scale
+    // step — but the family still must, or the initials render in the system font.
+    fontFamily: fontFamily('display', '700'),
     color: colors.text.primary,
-    fontWeight: '700',
-    fontFamily: typography.fontFamily.display,
   },
 
   streak: { alignItems: 'center' },
   streakRow: { flexDirection: 'row', alignItems: 'center', gap: space[1] },
   flame: { fontSize: 18 },
-  streakCount: {
-    fontFamily: typography.fontFamily.numeric,
-    fontSize: 22,
-    fontWeight: '700',
-    color: colors.text.primary,
-    fontVariant: ['tabular-nums'],
-  },
-  streakLabel: {
-    fontFamily: typography.fontFamily.body,
-    fontSize: typography.scale.caption.size,
-    color: colors.text.secondary,
-    fontWeight: '500',
-  },
+  streakCount: { ...text('numeric'), color: colors.text.primary },
+  streakLabel: { ...text('caption'), color: colors.text.secondary },
 
   art: {
     borderRadius: radius.md,
@@ -204,9 +195,9 @@ const styles = StyleSheet.create({
   tabGlyph: { fontSize: 17, color: colors.text.tertiary },
   tabGlyphActive: { color: colors.text.onAccent },
   tabLabel: {
-    fontFamily: typography.fontFamily.body,
-    fontSize: 10,
-    fontWeight: '600',
+    // Title case, not the overline's uppercase — the mockup's bar reads "Explore",
+    // not "EXPLORE", and five uppercase labels at this size become a fence.
+    ...text('overline', { weight: '600', transform: 'none' }),
     color: colors.text.tertiary,
   },
   tabLabelActive: { color: colors.action.secondary },

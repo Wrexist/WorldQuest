@@ -6,7 +6,8 @@
  * mockup shows `172 / 195` alongside the bar on nine of fifteen screens — match it.
  */
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native'
-import { colors, radius, space, typography } from '../tokens.js'
+import { colors, radius, space } from '../tokens.js'
+import { text } from '../typography.js'
 
 /**
  * `progress` is the default green. `reward` is the amber the mockup uses on the
@@ -59,13 +60,11 @@ export function ProgressBar({
 const styles = StyleSheet.create({
   wrap: { gap: space[2] },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  label: {
-    fontFamily: typography.fontFamily.body, fontSize: typography.scale.caption.size,
-    color: colors.text.secondary, fontWeight: '500',
-  },
+  label: { ...text('caption'), color: colors.text.secondary },
+  // Tabular: `9 / 10` must not shift width when it becomes `10 / 10`.
   count: {
-    fontFamily: typography.fontFamily.numeric, fontSize: typography.scale.caption.size,
-    color: colors.status.progress, fontWeight: '700', fontVariant: ['tabular-nums'],
+    ...text('caption', { weight: '700', numeric: true }),
+    color: colors.status.progress,
   },
   track: { backgroundColor: colors.bg.canvas, overflow: 'hidden' },
   fill: { height: '100%', backgroundColor: colors.status.progress },

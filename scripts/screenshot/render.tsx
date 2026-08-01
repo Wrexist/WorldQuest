@@ -12,7 +12,8 @@
 import { AppRegistry, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { createRequire } from 'node:module'
+import { dirname, join } from 'node:path'
 import {
   AnswerOption,
   Button,
@@ -21,10 +22,11 @@ import {
   Skeleton,
   StatChip,
   TabBar,
+  FONT_FAMILIES,
   colors,
   radius,
   space,
-  typography,
+  text,
 } from '@worldquest/design'
 import nav from '../../packages/i18n/locales/en/nav.json'
 import {
@@ -301,18 +303,12 @@ function Gallery() {
 const s = StyleSheet.create({
   page: { flex: 1, backgroundColor: '#00050F' },
   pageContent: { padding: space[6], gap: space[5] },
-  h1: {
-    fontSize: 30, fontWeight: '800', color: colors.text.primary,
-    fontFamily: typography.fontFamily.display,
-  },
-  h2: { fontSize: 20, fontWeight: '700', color: colors.text.primary, marginTop: space[5] },
-  lede: { fontSize: 15, color: colors.text.secondary, maxWidth: 720 },
+  h1: { ...text('h1'), color: colors.text.primary },
+  h2: { ...text('h3'), color: colors.text.primary, marginTop: space[5] },
+  lede: { ...text('body'), color: colors.text.secondary, maxWidth: 720 },
   phones: { flexDirection: 'row', flexWrap: 'wrap', gap: space[5] },
   phoneWrap: { gap: space[2] },
-  phoneLabel: {
-    fontSize: 11, letterSpacing: 1, textTransform: 'uppercase',
-    color: colors.text.tertiary, fontWeight: '700',
-  },
+  phoneLabel: { ...text('overline'), color: colors.text.tertiary },
   phone: {
     width: 375, height: 812, borderRadius: 30, overflow: 'hidden',
     borderWidth: 1, borderColor: colors.border.subtle, backgroundColor: colors.bg.canvas,
@@ -320,24 +316,13 @@ const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[4] },
   lessonHeader: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   flex: { flex: 1 },
-  counter: {
-    fontSize: 13, fontWeight: '700', color: colors.status.progress,
-    fontVariant: ['tabular-nums'],
-  },
-  prompt: {
-    fontSize: typography.scale.h2.size, lineHeight: typography.scale.h2.lineHeight,
-    fontWeight: '700', color: colors.text.primary, textAlign: 'center',
-    fontFamily: typography.fontFamily.display, marginTop: space[3],
-  },
+  counter: { ...text('caption', { weight: '700', numeric: true }), color: colors.status.progress },
+  prompt: { ...text('h2'), color: colors.text.primary, textAlign: 'center', marginTop: space[3] },
   options: { gap: space[2], marginTop: 'auto' },
   feedback: { gap: space[2] },
-  feedbackOk: {
-    fontSize: typography.scale.h2.size, fontWeight: '700', color: colors.feedback.correct,
-  },
-  feedbackTitle: { fontSize: 17, fontWeight: '600', color: colors.text.primary },
-  feedbackBody: {
-    fontSize: 15, lineHeight: 22, color: colors.text.secondary,
-  },
+  feedbackOk: { ...text('h2'), color: colors.feedback.correct },
+  feedbackTitle: { ...text('h3'), color: colors.text.primary },
+  feedbackBody: { ...text('body'), color: colors.text.secondary },
   row: { flexDirection: 'row', gap: space[2] },
   footer: { paddingBottom: space[2] },
   bench: { flexDirection: 'row', flexWrap: 'wrap', gap: space[4] },
@@ -346,10 +331,7 @@ const s = StyleSheet.create({
     backgroundColor: colors.bg.surface, borderRadius: radius.lg,
     borderWidth: 1, borderColor: colors.border.subtle,
   },
-  cellLabel: {
-    fontSize: 11, letterSpacing: 1, textTransform: 'uppercase',
-    color: colors.text.tertiary, fontWeight: '700',
-  },
+  cellLabel: { ...text('overline'), color: colors.text.tertiary },
 })
 
 AppRegistry.registerComponent('WorldQuest', () => Gallery)
@@ -359,6 +341,42 @@ const { element, getStyleElement } = (
     getApplication: (n: string) => { element: unknown; getStyleElement: () => unknown }
   }
 ).getApplication('WorldQuest')
+
+/**
+ * Embeds the REAL font files as data URIs.
+ *
+ * Until now these screenshots substituted DejaVu Sans, because Inter and Baloo 2 are
+ * not installed in a build container — so every screenshot misrepresented the single
+ * most visible part of the design. The fonts ship in node_modules via
+ * @expo-google-fonts, so there is no reason to guess: embed them and the page renders
+ * in the same faces the phone does.
+ *
+ * The family names are the token values, so a font the app loads and this does not
+ * (or vice versa) shows up as an obviously wrong screenshot rather than as nothing.
+ */
+function fontFaces(): string {
+  // Resolved from the app rather than from here: pnpm does not hoist, so the font
+  // packages live under apps/mobile even though this script runs at the repo root.
+  // `import.meta.url` is not usable — esbuild bundles this to CommonJS.
+  const from = [join(process.cwd(), 'apps', 'mobile')]
+  const require_ = createRequire(join(process.cwd(), 'index.js'))
+  const resolve = (pkg: string): string =>
+    dirname(require_.resolve(`${pkg}/package.json`, { paths: from }))
+
+  const dirs = {
+    Inter: resolve('@expo-google-fonts/inter'),
+    Baloo2: resolve('@expo-google-fonts/baloo-2'),
+  }
+
+  return FONT_FAMILIES.map((family) => {
+    const dir = dirs[family.split('_')[0] as keyof typeof dirs]
+    const ttf = readFileSync(join(dir, `${family}.ttf`)).toString('base64')
+    // No `font-weight` descriptor on purpose: each file IS its own family here,
+    // exactly as React Native treats it. Declaring a weight would let the browser
+    // synthesise the others and hide the very mistake this mirrors.
+    return `@font-face{font-family:"${family}";src:url(data:font/ttf;base64,${ttf}) format("truetype")}`
+  }).join('')
+}
 
 const body = renderToStaticMarkup(element as never)
 
@@ -384,13 +402,6 @@ process.stdout.write(
   `<!doctype html><html><head><meta charset="utf-8">` +
     `<title>WorldQuest</title>` +
     `${renderToStaticMarkup(getStyleElement() as never)}` +
-    // Inter and Baloo 2 are not installed in a build container, so the tokens'
-    // font families would silently fall back to a SERIF face and make these
-    // screenshots misrepresent the design. Substitute the nearest available sans
-    // and say so on the page — type is the one thing this cannot verify.
-    `<style>
-       html,body,#root{margin:0;background:#00050F}
-       *{font-family:"DejaVu Sans","Liberation Sans",FreeSans,Arial,sans-serif !important}
-     </style>` +
+    `<style>${fontFaces()}html,body,#root{margin:0;background:#00050F}</style>` +
     `</head><body><div id="root">${body}</div></body></html>`,
 )
