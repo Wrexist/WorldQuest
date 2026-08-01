@@ -1,0 +1,26 @@
+{
+  "profile:title": "Profil",
+  "profile:anonymous": "Utforskare",
+
+  "profile:level": "Nivå {level}",
+  "profile:level.next": "{remaining} XP till nivå {level}",
+  "profile:level.max": "Alla nivåer klara",
+
+  "profile:stats.title": "Dina siffror",
+  "profile:stats.xp": "Total XP",
+  "profile:stats.coins": "Mynt",
+  "profile:stats.streak": "Dagars svit",
+  "profile:stats.longest": "Bästa svit",
+  "profile:stats.mastered": "Bemästrade fakta",
+  "profile:stats.countries": "Länder",
+
+  "profile:world.title": "Din värld",
+  "profile:world.summary": "{learned} av {total} fakta inlärda",
+
+  "profile:account.title": "Spara dina framsteg",
+  "profile:account.body": "Du lär dig utan konto. Skapar du ett stannar din svit kvar även om du byter telefon.",
+  "profile:account.cta": "Skapa ett konto",
+
+  "profile:empty.title": "Inget att visa ännu",
+  "profile:empty.body": "Gör din första lektion så börjar dina siffror här."
+}

@@ -1,0 +1,238 @@
+/**
+ * Profile — mockup screen 13.
+ *
+ * The screen that answers "what have I actually done?". Every number on it is real:
+ * XP, coins and streaks come from the server (authoritative), and the per-continent
+ * bars come from the progression engine over the user's local memory.
+ *
+ * The mockup shows `12,850 / 15,000 XP` on this screen. Those numbers do not
+ * correspond to any coherent curve, so this uses the real one (`50·n^1.9`) and shows
+ * the actual distance to the next level — recorded in mockup-fidelity.md.
+ *
+ * Presentational: data comes in, actions go out. The illustrated avatar is not
+ * commissioned yet, so `Avatar` falls back to initials — which is not a placeholder,
+ * it is the accessible default the component was built around.
+ */
+
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import {
+  Avatar,
+  Button,
+  Card,
+  ProgressBar,
+  Skeleton,
+  colors,
+  palette,
+  radius,
+  space,
+  text,
+} from '@worldquest/design'
+import { levelForXp, xpForLevel, type WorldProgress } from '@worldquest/engines'
+import { formatCompact, useT, currentLocale, type TranslationKey } from '../../lib/i18n.js'
+import { REGIONS, type RegionCode } from '../explore/ExploreScreen.js'
+
+const REGION_NAME: Record<RegionCode, TranslationKey> = {
+  EU: 'explore:region.EU',
+  AS: 'explore:region.AS',
+  AF: 'explore:region.AF',
+  NA: 'explore:region.NA',
+  SA: 'explore:region.SA',
+  OC: 'explore:region.OC',
+  AN: 'explore:region.AN',
+}
+
+export type ProfileStats = {
+  readonly xpTotal: number
+  readonly coins: number
+  readonly streak: number
+  readonly longestStreak: number
+  readonly factsMastered: number
+}
+
+export type ProfileScreenProps = {
+  readonly stats: ProfileStats | null
+  readonly world: WorldProgress | null
+  readonly loading: boolean
+  /** Absent once the user has an account — the prompt disappears with the reason. */
+  readonly onCreateAccount?: (() => void) | undefined
+}
+
+export function ProfileScreen({ stats, world, loading, onCreateAccount }: ProfileScreenProps) {
+  const t = useT()
+  const locale = currentLocale()
+
+  if (loading) return <ProfileSkeleton />
+
+  if (stats === null || stats.xpTotal === 0) {
+    return (
+      <View style={[styles.screen, styles.centered]}>
+        <Avatar initials="EX" size={72} accessibilityLabel={t('profile:anonymous')} />
+        <Text style={styles.title} accessibilityRole="header">
+          {t('profile:empty.title')}
+        </Text>
+        <Text style={styles.subtitle}>{t('profile:empty.body')}</Text>
+      </View>
+    )
+  }
+
+  const level = levelForXp(stats.xpTotal)
+  const floor = xpForLevel(level)
+  const ceiling = xpForLevel(level + 1)
+  const remaining = Math.max(0, ceiling - stats.xpTotal)
+
+  return (
+    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      <View style={styles.identity}>
+        <Avatar initials="EX" size={72} accessibilityLabel={t('profile:anonymous')} />
+        <Text style={styles.name} accessibilityRole="header">
+          {t('profile:anonymous')}
+        </Text>
+      </View>
+
+      <Card style={styles.levelCard}>
+        <ProgressBar
+          current={stats.xpTotal - floor}
+          total={Math.max(1, ceiling - floor)}
+          showCount={false}
+          label={t('profile:level', { level })}
+        />
+        <Text style={styles.levelNext}>
+          {/* `xpForLevel` grows without bound, so there is always a next level — but
+              the copy exists for the day a cap is introduced rather than being added
+              in a hurry then. */}
+          {remaining > 0
+            ? t('profile:level.next', { remaining, level: level + 1 })
+            : t('profile:level.max')}
+        </Text>
+      </Card>
+
+      <Section title={t('profile:stats.title')}>
+        <View style={styles.statGrid}>
+          <Stat label={t('profile:stats.xp')} value={formatCompact(stats.xpTotal, locale)} />
+          <Stat label={t('profile:stats.coins')} value={formatCompact(stats.coins, locale)} />
+          <Stat label={t('profile:stats.streak')} value={String(stats.streak)} />
+          <Stat label={t('profile:stats.longest')} value={String(stats.longestStreak)} />
+          <Stat label={t('profile:stats.mastered')} value={String(stats.factsMastered)} />
+          <Stat
+            label={t('profile:stats.countries')}
+            value={String(world?.entitiesComplete ?? 0)}
+          />
+        </View>
+      </Section>
+
+      {world !== null && (
+        <Section title={t('profile:world.title')}>
+          <Card style={styles.worldCard}>
+            <Text style={styles.subtitle}>
+              {t('profile:world.summary', {
+                learned: world.factsLearned,
+                total: world.factsTotal,
+              })}
+            </Text>
+            {REGIONS.map((region) => {
+              const progress = world.regions.find((r) => r.region === region)
+              // Continents with no content yet are omitted here rather than dimmed:
+              // Explore is the map of what exists, Profile is the record of what the
+              // user has done, and an empty bar is not a record of anything.
+              if (progress === undefined || progress.factsTotal === 0) return null
+              return (
+                <View key={region} style={styles.regionRow}>
+                  <View style={[styles.swatch, { backgroundColor: palette.continent[region] }]} />
+                  <View style={styles.regionBar}>
+                    <ProgressBar
+                      current={progress.factsLearned}
+                      total={Math.max(1, progress.factsTotal)}
+                      label={t(REGION_NAME[region])}
+                    />
+                  </View>
+                </View>
+              )
+            })}
+          </Card>
+        </Section>
+      )}
+
+      {onCreateAccount !== undefined && (
+        <Card style={styles.accountCard}>
+          <Text style={styles.cardTitle}>{t('profile:account.title')}</Text>
+          {/* States what an account is FOR. "Sign up to continue" is the version that
+              treats the user's progress as leverage; this one treats it as theirs. */}
+          <Text style={styles.subtitle}>{t('profile:account.body')}</Text>
+          <Button label={t('profile:account.cta')} onPress={onCreateAccount} />
+        </Card>
+      )}
+    </ScrollView>
+  )
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle} accessibilityRole="header">
+        {title}
+      </Text>
+      {children}
+    </View>
+  )
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    // One element: a reader says "Total XP, 12.9K" rather than two disconnected nodes.
+    <View accessible accessibilityLabel={`${label}, ${value}`} style={styles.stat}>
+      <Text style={styles.statValue}>{value}</Text>
+      <Text style={styles.statLabel}>{label}</Text>
+    </View>
+  )
+}
+
+function ProfileSkeleton() {
+  const t = useT()
+  return (
+    <View style={styles.screen} accessibilityLabel={t('common:loading')}>
+      <View style={styles.content}>
+        <Skeleton width={72} height={72} borderRadius={36} />
+        <Skeleton width="40%" height={28} />
+        <Skeleton height={88} borderRadius={radius.lg} />
+        <Skeleton height={160} borderRadius={radius.lg} />
+      </View>
+    </View>
+  )
+}
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: colors.bg.canvas },
+  content: { padding: space[4], gap: space[4] },
+  centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },
+
+  identity: { alignItems: 'center', gap: space[2] },
+  name: { ...text('h1'), color: colors.text.primary },
+  title: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
+  subtitle: { ...text('caption'), color: colors.text.secondary },
+
+  levelCard: { gap: space[2] },
+  levelNext: { ...text('caption'), color: colors.text.secondary },
+
+  section: { gap: space[2] },
+  sectionTitle: { ...text('overline'), color: colors.text.tertiary },
+
+  statGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
+  stat: {
+    // Three per row at phone width, with the grid's gap between them.
+    width: '31%',
+    gap: space[1],
+    padding: space[3],
+    borderRadius: radius.lg,
+    backgroundColor: colors.bg.surface,
+  },
+  statValue: { ...text('numeric'), color: colors.text.primary },
+  statLabel: { ...text('caption'), color: colors.text.secondary },
+
+  worldCard: { gap: space[3] },
+  regionRow: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  swatch: { width: 6, height: 28, borderRadius: radius.full },
+  regionBar: { flex: 1 },
+
+  accountCard: { gap: space[3] },
+  cardTitle: { ...text('h3'), color: colors.text.primary },
+})

@@ -14,7 +14,7 @@ const path = require('path')
 const SHOTS = [
   'home-first', 'home-returning', 'home-loading', 'home-offline',
   'lesson-question', 'lesson-correct', 'lesson-wrong', 'lesson-flag',
-  'explore', 'quests', 'settings',
+  'explore', 'quests', 'profile', 'settings',
 ]
 
 ;(async () => {

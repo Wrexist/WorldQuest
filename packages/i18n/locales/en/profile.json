@@ -1,0 +1,41 @@
+{
+  "profile:title": "Profile",
+  "profile:title__note": "Screen title. Max 12 characters.",
+  "profile:anonymous": "Explorer",
+  "profile:anonymous__note": "Stands in for a display name before the user has an account. Max 14 characters.",
+
+  "profile:level": "Level {level}",
+  "profile:level__note": "Label on the XP bar. {level} is a whole number.",
+  "profile:level.next": "{remaining} XP to level {level}",
+  "profile:level.next__note": "How much XP remains. Both are whole numbers.",
+  "profile:level.max": "Every level earned",
+  "profile:level.max__note": "Shown instead of a countdown at the top level. Max 22 characters.",
+
+  "profile:stats.title": "Your numbers",
+  "profile:stats.title__note": "Section heading above the stat grid. Max 16 characters.",
+  "profile:stats.xp": "Total XP",
+  "profile:stats.xp__note": "Stat label. Max 12 characters.",
+  "profile:stats.coins": "Coins",
+  "profile:stats.coins__note": "Stat label. Max 12 characters.",
+  "profile:stats.streak": "Day streak",
+  "profile:stats.streak__note": "Stat label for the current streak. Max 12 characters.",
+  "profile:stats.longest": "Best streak",
+  "profile:stats.longest__note": "Stat label for the longest streak ever. Max 12 characters.",
+  "profile:stats.mastered": "Facts mastered",
+  "profile:stats.mastered__note": "Stat label. Max 16 characters.",
+  "profile:stats.countries": "Countries",
+  "profile:stats.countries__note": "Stat label for fully learned countries. Max 12 characters.",
+
+  "profile:world.title": "Your world",
+  "profile:world.title__note": "Section heading above the per-continent bars. Max 16 characters.",
+  "profile:world.summary": "{learned} of {total} facts learned",
+  "profile:world.summary__note": "Overall progress. Both are whole numbers.",
+
+  "profile:account.title": "Save your progress",
+  "profile:account.body": "You are learning without an account. Creating one keeps your streak safe if you change phone.",
+  "profile:account.cta": "Create an account",
+  "profile:account.cta__note": "Button label. Max 20 characters.",
+
+  "profile:empty.title": "Nothing to show yet",
+  "profile:empty.body": "Finish your first lesson and your numbers will start here."
+}

@@ -25,6 +25,7 @@ import enHome from '../locales/en/home.json' with { type: 'json' }
 import enLesson from '../locales/en/lesson.json' with { type: 'json' }
 import enNav from '../locales/en/nav.json' with { type: 'json' }
 import enNotifications from '../locales/en/notifications.json' with { type: 'json' }
+import enProfile from '../locales/en/profile.json' with { type: 'json' }
 import enQuests from '../locales/en/quests.json' with { type: 'json' }
 import enSettings from '../locales/en/settings.json' with { type: 'json' }
 import svCommon from '../locales/sv/common.json' with { type: 'json' }
@@ -33,6 +34,7 @@ import svHome from '../locales/sv/home.json' with { type: 'json' }
 import svLesson from '../locales/sv/lesson.json' with { type: 'json' }
 import svNav from '../locales/sv/nav.json' with { type: 'json' }
 import svNotifications from '../locales/sv/notifications.json' with { type: 'json' }
+import svProfile from '../locales/sv/profile.json' with { type: 'json' }
 import svQuests from '../locales/sv/quests.json' with { type: 'json' }
 import svSettings from '../locales/sv/settings.json' with { type: 'json' }
 
@@ -76,6 +78,7 @@ const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
     lesson: enLesson,
     nav: enNav,
     notifications: enNotifications,
+    profile: enProfile,
     quests: enQuests,
     settings: enSettings,
   },
@@ -86,6 +89,7 @@ const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
     lesson: svLesson,
     nav: svNav,
     notifications: svNotifications,
+    profile: svProfile,
     quests: svQuests,
     settings: svSettings,
   },

@@ -18,7 +18,7 @@ against the slot, and the art arrives into a finished app instead of a half-buil
 | A1 | **expo-router `app/` tree + five tabs** | `apps/mobile/package.json` already declared `main: expo-router/entry` with no `app/` directory — the app could not boot. Every screen in Track B needs somewhere to live. | ✅ |
 | A2 | **Real i18next, typed keys** | `src/lib/i18n.ts` was a hand-written shim, and `packages/i18n` declared a `types` script whose file did not exist. Every screen built before this is a screen to revisit. | ✅ |
 | A3 | **Wire `packages/api` into the app** | Anonymous session on launch, generated DB types, `submitLesson` on the real queue, progress read on Home. | ✅ *(code complete — the two ⚠️ Phase 1 exit criteria still need one run on a machine whose proxy allows the Supabase host)* |
-| A4 | **TanStack Query + MMKV persistence** | Server state has one owner (PROJECT.md §9). Retrofitting it after six screens read Supabase directly is the expensive version. | ⬜ |
+| A4 | **TanStack Query + MMKV persistence** | Server state has one owner (PROJECT.md §9). Cache persisted through MMKV, so a returning user sees real numbers in the first frame. | ✅ |
 
 ## Track B — screens that need no art
 
@@ -32,7 +32,7 @@ illustration. Each is a mockup screen or a hidden screen from
 | B2 | **Continents** (#9) | None — the continent grid is colour + type | ✅ *(plus `/region/[code]`, the country list inside one)* |
 | B3 | **Country page** (#7) | Flag only, and flags are *sourced, never generated* | ⬜ |
 | B4 | **Daily Quest** (#4) | None as built — the five tasks are type and progress | ✅ |
-| B5 | **Profile** (#13) | Avatar → initials fallback already exists | ⬜ |
+| B5 | **Profile** (#13) | Avatar → initials fallback already exists | ✅ |
 | B6 | **Hidden screens H1–H22** | None — these are states, not pictures | ⬜ |
 
 Deliberately **not** here: Onboarding (#1–2) and the Explore globe (#8). Onboarding is

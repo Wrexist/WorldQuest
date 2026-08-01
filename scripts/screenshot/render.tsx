@@ -41,6 +41,7 @@ import {
 } from '@worldquest/engines'
 import { HomeScreen } from '../../apps/mobile/src/features/home/HomeScreen.js'
 import { ExploreScreen } from '../../apps/mobile/src/features/explore/ExploreScreen.js'
+import { ProfileScreen } from '../../apps/mobile/src/features/profile/ProfileScreen.js'
 import { QuestScreen } from '../../apps/mobile/src/features/quests/QuestScreen.js'
 import { SettingsScreen } from '../../apps/mobile/src/features/settings/SettingsScreen.js'
 import { DEFAULTS as SETTINGS_DEFAULTS } from '../../apps/mobile/src/features/settings/usePreferences.js'
@@ -85,6 +86,34 @@ const MOCKUP_STATE = {
   leagueTier: 'Gold I',
   leaguePercentile: 'Top 15%',
 }
+
+/**
+ * A partly-learned world for the Profile frame.
+ *
+ * The stat card and the continent bars come from different sources in the real app
+ * (server vs local memory), so the harness must feed them CONSISTENT data — a
+ * screenshot showing "7 mastered" above "0 of 10 learned" would depict a bug and
+ * invite someone to build against it.
+ */
+const PROFILE_WORLD = worldProgress(
+  index,
+  new Map(
+    [...index.facts.keys()].slice(0, 6).map((factId) => [
+      factId,
+      {
+        factId,
+        stability: 400,
+        difficulty: 5,
+        reps: 8,
+        lapses: 0,
+        lastReviewAt: Date.parse('2026-07-30T19:00:00Z'),
+        dueAt: Date.parse('2026-10-01T19:00:00Z'),
+        suspended: false,
+      },
+    ]),
+  ),
+  Date.parse('2026-07-31T19:00:00Z'),
+)
 
 /**
  * The tab bar the navigator draws around every tabbed screen. Screens no longer own
@@ -275,6 +304,21 @@ function Gallery() {
             world={worldProgress(index, new Map(), Date.parse('2026-07-31T19:00:00Z'))}
             loading={false}
             onSelectRegion={() => {}}
+          />
+        </Phone>
+
+        <Phone label="Profile · returning user" id="profile" tab="profile">
+          <ProfileScreen
+            stats={{
+              xpTotal: 4820,
+              coins: 430,
+              streak: 12,
+              longestStreak: 31,
+              factsMastered: PROFILE_WORLD.factsLearned,
+            }}
+            world={PROFILE_WORLD}
+            loading={false}
+            onCreateAccount={() => {}}
           />
         </Phone>
 
