@@ -57,7 +57,7 @@ blocked by anything.
 
 | # | Work | Notes | State |
 |---|---|---|---|
-| D1 | **Beyond 5 countries** | The long pole. Every fact needs `source` + `verifiedAt`. Ship in continent-sized batches so progress is visible. | ⬜ |
+| D1 | **Beyond 5 countries** | The long pole. Every fact needs `source` + `verifiedAt`. Ship in continent-sized batches so progress is visible. | 🟡 *(east-asia complete — 9 countries, 19 facts, 45 items, all reachable)* |
 | D2 | **More question templates** | `tpl.flag-of-country.mc4` — country → flag description, the reverse of the existing pair. Five templates now; each multiplies across every fact already written. | ✅ |
 | D3 | **Authoring ergonomics** | `content:preview` (reads every generated question, gates CI) and `content:stats` (says which subregion to author next). Both were advertised in `package.json` and neither existed. | ✅ |
 
@@ -118,12 +118,27 @@ migrations now.
 
 **Remaining:** the rest of B6 (gated on accounts and social) · E2 (Maestro) · D1 (content volume).
 
-D1 is now the only one with no tooling excuse left. `pnpm content:stats` names the next
-batch directly: today it reports **23 of 25 authored questions reachable**, with the two
-gaps both in `east-asia`, which has a single member. A subregion below four entities
-cannot produce a four-option question at all, so countries authored into a lonely
-subregion teach nobody until their neighbours land. Author by subregion, not by
-interest.
+`pnpm content:stats` names each batch directly. It reported **23 of 25 questions
+reachable**, both gaps in `east-asia`, which had one member — so that subregion was
+authored first: China, South Korea, North Korea and Mongolia, each with a capital and
+a flag description, every fact carrying the source it was checked against. That is
+**45 of 45 reachable** now, and it is the rule for every batch after it: a subregion
+below four entities cannot fill a four-option question, so countries authored into a
+lonely subregion teach nobody until their neighbours land. Author by subregion, never
+by interest.
+
+Authoring east-asia also exposed a defect that five countries in one region had hidden
+completely — `visually-similar` matched any shared tag except `core`, which included
+`flag`, so it had always meant "any country at all". The first Swedish flag question
+offered against China and Mongolia made it obvious. Similarity is now declared in
+`like:` tags ([`../systems/content-pipeline.md`](../systems/content-pipeline.md#like-tags--how-similarity-is-authored)).
+Worth stating plainly: no test caught this, and no test could have — it needed content
+from a second region and someone reading the output.
+
+**Taiwan is deliberately absent** from this batch. It belongs to east-asia by
+geography and is a contested case under the sensitive-content policy, which says to
+flag it and get a second author's sign-off rather than resolve it unilaterally. It
+needs a human decision, not a default.
 
 E2 is deliberately last and deliberately not started here: a Maestro flow written
 without ever running it against a device is a file full of guesses about selectors and

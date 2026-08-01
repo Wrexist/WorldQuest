@@ -136,6 +136,106 @@
         "verifiedAt": "2026-07-31"
       },
       "volatility": "stable"
+    },
+    {
+      "id": "geo.CN.capital",
+      "entity": "CN",
+      "attribute": "capital",
+      "value": {
+        "id": "CN-BJ",
+        "names": {
+          "en": "Beijing",
+          "sv": "Peking"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "asia",
+        "east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Beijing”",
+        "url": "https://en.wikipedia.org/wiki/Beijing",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KR.capital",
+      "entity": "KR",
+      "attribute": "capital",
+      "value": {
+        "id": "KR-11",
+        "names": {
+          "en": "Seoul",
+          "sv": "Seoul"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "asia",
+        "east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Seoul”",
+        "url": "https://en.wikipedia.org/wiki/Seoul",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KP.capital",
+      "entity": "KP",
+      "attribute": "capital",
+      "value": {
+        "id": "KP-01",
+        "names": {
+          "en": "Pyongyang",
+          "sv": "Pyongyang"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "asia",
+        "east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Pyongyang”",
+        "url": "https://en.wikipedia.org/wiki/Pyongyang",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MN.capital",
+      "entity": "MN",
+      "attribute": "capital",
+      "value": {
+        "id": "MN-1",
+        "names": {
+          "en": "Ulaanbaatar",
+          "sv": "Ulan Bator"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "asia",
+        "east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Ulaanbaatar”",
+        "url": "https://en.wikipedia.org/wiki/Ulaanbaatar",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
     }
   ]
 }

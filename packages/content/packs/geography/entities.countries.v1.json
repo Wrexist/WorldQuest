@@ -22,6 +22,50 @@
       }
     },
     {
+      "id": "CN",
+      "type": "country",
+      "names": { "en": "China", "sv": "Kina" },
+      "region": "AS",
+      "subregion": "east-asia",
+      "geometry": "geo/countries/CN.svg",
+      "assets": {
+        "flag": { "path": "flags/CN.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "KR",
+      "type": "country",
+      "names": { "en": "South Korea", "sv": "Sydkorea" },
+      "region": "AS",
+      "subregion": "east-asia",
+      "geometry": "geo/countries/KR.svg",
+      "assets": {
+        "flag": { "path": "flags/KR.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "KP",
+      "type": "country",
+      "names": { "en": "North Korea", "sv": "Nordkorea" },
+      "region": "AS",
+      "subregion": "east-asia",
+      "geometry": "geo/countries/KP.svg",
+      "assets": {
+        "flag": { "path": "flags/KP.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "MN",
+      "type": "country",
+      "names": { "en": "Mongolia", "sv": "Mongoliet" },
+      "region": "AS",
+      "subregion": "east-asia",
+      "geometry": "geo/countries/MN.svg",
+      "assets": {
+        "flag": { "path": "flags/MN.svg", "license": "public-domain" }
+      }
+    },
+    {
       "id": "SE",
       "type": "country",
       "names": { "en": "Sweden", "sv": "Sverige" },

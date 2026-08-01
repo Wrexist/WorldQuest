@@ -27,7 +27,7 @@
       "tags": [
         "flag",
         "europe",
-        "nordic-cross",
+        "like:nordic-cross",
         "core"
       ],
       "source": {
@@ -52,9 +52,9 @@
       "tags": [
         "flag",
         "europe",
-        "nordic-cross",
         "core",
-        "commonly-confused"
+        "commonly-confused",
+        "like:nordic-cross"
       ],
       "source": {
         "name": "Norwegian Flag Act (LOV-1898-12-10-1)",
@@ -78,9 +78,9 @@
       "tags": [
         "flag",
         "europe",
-        "nordic-cross",
         "core",
-        "commonly-confused"
+        "commonly-confused",
+        "like:nordic-cross"
       ],
       "source": {
         "name": "Danish Ministry of Justice, Order on the Danish flag",
@@ -104,9 +104,9 @@
       "tags": [
         "flag",
         "europe",
-        "nordic-cross",
         "core",
-        "commonly-confused"
+        "commonly-confused",
+        "like:nordic-cross"
       ],
       "source": {
         "name": "Finnish Flag Act (380/1978)",
@@ -130,12 +130,113 @@
       "tags": [
         "flag",
         "asia",
+        "like:central-circle",
         "core"
       ],
       "source": {
         "name": "Act on National Flag and Anthem of Japan (Act No. 127 of 1999)",
         "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/174",
         "verifiedAt": "2026-07-31"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CN.flag",
+      "entity": "CN",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-CN",
+        "names": {
+          "en": "a large gold star with four smaller ones in the top corner of a red field",
+          "sv": "en stor guldstjärna med fyra mindre i övre hörnet på röd botten"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "asia",
+        "like:red-with-stars",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of China”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_China",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KR.flag",
+      "entity": "KR",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-KR",
+        "names": {
+          "en": "a red and blue circle on a white field, with a black trigram in each corner",
+          "sv": "en röd och blå cirkel på vit botten, med ett svart trigram i varje hörn"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "asia",
+        "like:central-circle",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of South Korea”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_South_Korea",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KP.flag",
+      "entity": "KP",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-KP",
+        "names": {
+          "en": "a red star on a white circle, on a wide red band between two blue ones",
+          "sv": "en röd stjärna på en vit cirkel, på ett brett rött band mellan två blå"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "asia",
+        "like:red-with-stars",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of North Korea”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_North_Korea",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MN.flag",
+      "entity": "MN",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-MN",
+        "names": {
+          "en": "a gold Soyombo emblem on the first of three bands — red, blue, red",
+          "sv": "ett gyllene soyombo-emblem på det första av tre band — rött, blått, rött"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "asia",
+        "like:vertical-bands",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Mongolia”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Mongolia",
+        "verifiedAt": "2026-08-01"
       },
       "volatility": "stable"
     }

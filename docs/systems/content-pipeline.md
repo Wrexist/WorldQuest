@@ -115,9 +115,33 @@ three options are absurd teaches nothing and feels cheap.
 |---|---|---|
 | `same-subregion` | Same subregion (East Asia) | Default — plausible and educational |
 | `same-region` | Same continent | Fallback when the subregion is too small |
-| `visually-similar` | Precomputed flag-similarity neighbours | Flag questions — Chad/Romania, Monaco/Indonesia |
-| `commonly-confused` | Hand-authored confusion pairs | Slovenia/Slovakia, Austria/Australia |
+| `visually-similar` | Facts sharing a `like:` tag | Flag questions — Chad/Romania, Monaco/Indonesia |
+| `commonly-confused` | Facts sharing a `like:` tag | Slovenia/Slovakia, Austria/Australia |
 | `random-global` | Anything | **Never in production.** Test fixtures only. |
+
+### `like:` tags — how similarity is authored
+
+Similarity is **declared by the author**, in tags namespaced `like:`:
+
+```jsonc
+"tags": ["flag", "europe", "like:nordic-cross", "core"]
+```
+
+Only `like:` tags are considered by the two similarity strategies. That prefix is
+load-bearing rather than decorative: the first implementation matched *any* shared tag
+except `core`, and since every flag fact carries `flag`, "visually similar" quietly
+meant "any country in the pack". Five countries in one subregion concealed it
+completely — the first question that exposed it was a Swedish flag offered against
+China and Mongolia, printed by `pnpm content:preview` the day a second region landed.
+
+A fact with **no** `like:` tag matches nothing and falls through to the strategy's
+`fallback`. That is the intended outcome: we have not been told what its flag
+resembles, and guessing is how the bug above happened.
+
+Groups in use today: `like:nordic-cross`, `like:central-circle`,
+`like:red-with-stars`, `like:vertical-bands`. A group needs **four members** before it
+can carry a four-option question on its own; below that the fallback does the work,
+which is correct but easier than intended. `pnpm content:stats` reports the gap.
 
 **Hard rules**
 - Never a distractor that is *also* a correct answer (a country with two capitals; a

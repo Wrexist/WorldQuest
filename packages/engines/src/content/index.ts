@@ -117,17 +117,31 @@ function candidatePool(
       return all.filter((e) => e.region !== undefined && e.region === correct.region)
     case 'visually-similar':
     case 'commonly-confused': {
-      // Entities that share a distinguishing tag with this fact — Nordic crosses
-      // with Nordic crosses, tricolours with tricolours. Precomputed similarity
-      // sets replace this in v1.0; the shape of the call does not change.
-      const tags = new Set(fact.tags ?? [])
-      const similar = all.filter((e) => {
+      /**
+       * Entities that share a `like:` tag with this fact — Nordic crosses with
+       * Nordic crosses, tricolours with tricolours, Chad with Romania.
+       *
+       * Only `like:` tags count, and that prefix is the whole point. This used to
+       * match any shared tag except `core`, which meant it matched `flag` — a tag
+       * every flag fact carries — so "visually similar" silently meant "any country
+       * at all". With five countries nobody could tell. The moment a second region
+       * was authored, `pnpm content:preview` printed a Swedish flag question whose
+       * distractors were China and Mongolia: a hard question turned into a free one.
+       *
+       * A fact with no `like:` tag matches nothing here and falls through to the
+       * strategy's `fallback`, which is the honest outcome — we do not know what its
+       * flag resembles, so we should not pretend to.
+       *
+       * Spec: docs/systems/content-pipeline.md §distractors
+       */
+      const tags = new Set((fact.tags ?? []).filter((t) => t.startsWith('like:')))
+      if (tags.size === 0) return []
+      return all.filter((e) => {
         const theirFact = [...index.facts.values()].find(
           (f) => f.entity === e.id && f.attribute === fact.attribute,
         )
-        return theirFact?.tags?.some((t) => tags.has(t) && t !== 'core') ?? false
+        return theirFact?.tags?.some((t) => tags.has(t)) ?? false
       })
-      return similar
     }
     case 'random-global':
       // Rejected by content validation for shipped packs; kept for test fixtures.

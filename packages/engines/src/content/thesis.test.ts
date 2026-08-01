@@ -250,6 +250,36 @@ describe('question construction', () => {
     expect(hintOf('geo.SE.capital', 'tpl.capital-reverse.mc4')).toBeUndefined()
   })
 
+  it('draws visually-similar distractors from the `like:` tag alone', () => {
+    // This matched any shared tag except `core`, which meant it matched `flag` —
+    // carried by every flag fact — so "visually similar" meant "any country". Five
+    // countries in one region hid it completely. The moment east-asia was authored,
+    // `pnpm content:preview` printed a Swedish flag question offering China and
+    // Mongolia, which is a free point rather than a question.
+    const item = index.itemsByFact
+      .get('geo.SE.flag')!
+      .find((i) => i.templateId === 'tpl.flag-to-country.mc4')!
+    const q = buildQuestion(index, item, 'en', seededRng(1))!
+    const nordic = new Set(['Sweden', 'Norway', 'Denmark', 'Finland'])
+    for (const option of q.options) {
+      expect(nordic.has(option.label), `${option.label} is not a Nordic cross`).toBe(true)
+    }
+  })
+
+  it('falls back rather than inventing similarity it was never told about', () => {
+    // Only Japan and South Korea share `like:central-circle`, which is one short of
+    // a four-option question. Falling back to the region is right; quietly widening
+    // to "any flag" and calling it visual similarity is not.
+    const item = index.itemsByFact
+      .get('geo.JP.flag')!
+      .find((i) => i.templateId === 'tpl.flag-to-country.mc4')!
+    const q = buildQuestion(index, item, 'en', seededRng(3))!
+    expect(q.options).toHaveLength(4)
+    for (const option of q.options) {
+      expect(index.entities.get(option.id)?.region).toBe('AS')
+    }
+  })
+
   it('falls back to a wider pool when the close one is too small', () => {
     // Japan is the only East Asian entity here, so same-subregion yields nothing
     // and the same-region fallback must carry it.
