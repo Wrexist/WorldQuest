@@ -40,6 +40,7 @@ import {
   type Template,
 } from '@worldquest/engines'
 import { HomeScreen } from '../../apps/mobile/src/features/home/HomeScreen.js'
+import { CountryScreen } from '../../apps/mobile/src/features/explore/CountryScreen.js'
 import { ExploreScreen } from '../../apps/mobile/src/features/explore/ExploreScreen.js'
 import { ProfileScreen } from '../../apps/mobile/src/features/profile/ProfileScreen.js'
 import { QuestScreen } from '../../apps/mobile/src/features/quests/QuestScreen.js'
@@ -281,6 +282,43 @@ function Gallery() {
 
         <Phone label="Lesson · screen-reader-safe flag question" id="lesson-flag">
           <LessonView question={flagQuestion} answered={false} />
+        </Phone>
+
+        <Phone label="Country · half learned" id="country">
+          <CountryScreen
+            name="Sweden"
+            region="EU"
+            facts={[
+              {
+                id: 'geo.SE.capital',
+                attribute: 'capital',
+                value: 'Stockholm',
+                mastery: 'unseen',
+                due: false,
+                source: {
+                  name: 'UN Statistics Division, M49 standard',
+                  verifiedAt: '2026-07-31',
+                },
+              },
+              {
+                id: 'geo.SE.flag',
+                attribute: 'flag',
+                value: 'a yellow Nordic cross on a blue field',
+                mastery: 'mastered',
+                due: true,
+              },
+            ]}
+            progress={{
+              entityId: 'SE',
+              mastery: 'unseen',
+              factsTotal: 2,
+              factsLearned: 1,
+              factsDue: 1,
+              factsSeen: 1,
+              complete: false,
+            }}
+            onPractise={() => {}}
+          />
         </Phone>
 
         <Phone label="Quests · today's five" id="quests" tab="quests">

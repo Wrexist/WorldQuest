@@ -10,7 +10,7 @@
  * everyone except the users it is wrong for.
  */
 
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Button, ProgressBar, colors, palette, radius, space, text } from '@worldquest/design'
 import type { EntityProgress, Mastery } from '@worldquest/engines'
 import { collator, currentLocale, useT, type TranslationKey } from '../../lib/i18n.js'
@@ -45,6 +45,7 @@ export type RegionScreenProps = {
   readonly region: RegionCode
   readonly regionNameKey: TranslationKey
   readonly countries: readonly CountryRow[]
+  readonly onSelectCountry: (id: string) => void
   readonly onStartLesson: () => void
 }
 
@@ -52,6 +53,7 @@ export function RegionScreen({
   region,
   regionNameKey,
   countries,
+  onSelectCountry,
   onStartLesson,
 }: RegionScreenProps) {
   const t = useT()
@@ -89,8 +91,11 @@ export function RegionScreen({
 
       <View style={styles.list}>
         {sorted.map(({ id, name, progress }) => (
-          <View
+          <Pressable
             key={id}
+            role="button"
+            aria-disabled={false}
+            onPress={() => onSelectCountry(id)}
             // One element per country: a reader announces "Sweden, Learning, 1 of 2
             // learned" rather than sweeping three separate text nodes.
             accessible
@@ -112,7 +117,7 @@ export function RegionScreen({
             <Text style={[styles.mastery, { color: MASTERY_COLOR[progress.mastery] }]}>
               {t(MASTERY_LABEL[progress.mastery])}
             </Text>
-          </View>
+          </Pressable>
         ))}
       </View>
 

@@ -57,6 +57,7 @@ export default function RegionRoute() {
       region={region}
       regionNameKey={REGION_NAME[region]}
       countries={countries}
+      onSelectCountry={(id) => router.push(`/country/${id}`)}
       onStartLesson={() => router.push('/lesson')}
     />
   )

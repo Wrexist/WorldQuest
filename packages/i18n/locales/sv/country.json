@@ -1,0 +1,22 @@
+{
+  "country:facts.title": "Att kunna",
+  "country:attribute.capital": "Huvudstad",
+  "country:attribute.flag": "Flagga",
+  "country:attribute.population": "Befolkning",
+  "country:attribute.currency": "Valuta",
+  "country:attribute.language": "Språk",
+
+  "country:fact.hidden": "Lär dig den först",
+  "country:fact.due": "Dags att repetera",
+  "country:fact.label": "{attribute}: {value}, {mastery}",
+
+  "country:progress": "{learned} av {total} inlärda",
+
+  "country:source.title": "Varifrån det kommer",
+  "country:source.verified": "Kontrollerad {date}",
+
+  "country:practice": "Öva på det här landet",
+
+  "country:missing.title": "Det här landet finns inte än",
+  "country:missing.body": "Mer av världen kommer med varje innehållsuppdatering."
+}

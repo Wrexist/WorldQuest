@@ -31,6 +31,20 @@ export type Fact = {
   /** Authored prior, 1–5. The engine learns the real per-user difficulty. */
   readonly difficulty: number
   readonly tags?: readonly string[]
+  /**
+   * Where this fact came from, and when it was last checked.
+   *
+   * Every pack already carries this and `pnpm content:validate` requires it — the
+   * type simply did not say so, which meant the one screen that shows provenance
+   * could not read it without a cast. A wrong fact in a learning app is the worst
+   * bug available, and "we cannot say where this came from" is how one survives.
+   */
+  readonly source?: {
+    readonly name: string
+    readonly url?: string
+    /** ISO date. Population and currency go stale; capitals occasionally move. */
+    readonly verifiedAt: string
+  }
   readonly volatility: 'stable' | 'slow' | 'fast'
   readonly sensitivity?: 'none' | 'review-required'
   /** Defaults to true. Sensitive and fast-volatility facts set it false. */

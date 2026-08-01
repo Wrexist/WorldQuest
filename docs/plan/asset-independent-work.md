@@ -30,7 +30,7 @@ illustration. Each is a mockup screen or a hidden screen from
 |---|---|---|---|
 | B1 | **Settings** (#15) | None — it's rows and switches | ✅ |
 | B2 | **Continents** (#9) | None — the continent grid is colour + type | ✅ *(plus `/region/[code]`, the country list inside one)* |
-| B3 | **Country page** (#7) | Flag only, and flags are *sourced, never generated* | ⬜ |
+| B3 | **Country page** (#7) | Flag image is an `ArtSlot` until the sourced files land; the flag *description* is real content | ✅ |
 | B4 | **Daily Quest** (#4) | None as built — the five tasks are type and progress | ✅ |
 | B5 | **Profile** (#13) | Avatar → initials fallback already exists | ✅ |
 | B6 | **Hidden screens H1–H22** | None — these are states, not pictures | ⬜ |
@@ -65,7 +65,7 @@ blocked by anything.
 
 | # | Work | State |
 |---|---|---|
-| E1 | Component tests for every screen's five states | ✅ *(Home, Explore, Quests, Settings — 38 tests. Lesson and Profile still to cover)* |
+| E1 | Component tests for every screen's five states | ✅ *(Home, Explore, Country, Quests, Settings — 48 tests. Lesson and Profile still to cover)* |
 | E2 | Maestro E2E: first launch → taster lesson → progress persists | ⬜ |
 | E3 | CI: run the Supabase RLS tests and the edge-function bundle guard on every PR | ⬜ |
 | E4 | Wire the `en-XA` pseudo-locale into a dev build — the generator exists (`pnpm i18n:pseudo`), loading it at runtime does not | ⬜ |
