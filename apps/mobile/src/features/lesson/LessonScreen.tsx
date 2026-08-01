@@ -24,13 +24,14 @@ import {
 import type { GradeResult, LessonState, Question } from '@worldquest/engines'
 import { useLesson } from './hooks/useLesson.js'
 import { useContent } from '../../lib/content.js'
-import { t } from '../../lib/i18n.js'
+import { tContent, useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
 import { enqueueLesson } from '../../lib/sync.js'
 
 type ScreenState = 'loading' | 'error' | 'empty' | 'ready'
 
 export function LessonScreen({ onExit }: { onExit: () => void }) {
+  const t = useT()
   const { index, memory, status, reload, isOffline } = useContent()
   const [screen, setScreen] = useState<ScreenState>('loading')
 
@@ -114,7 +115,10 @@ export function LessonScreen({ onExit }: { onExit: () => void }) {
 
       <ScrollView contentContainerStyle={styles.body}>
         <Text style={styles.prompt} accessibilityRole="header">
-          {t(question.promptKey, question.promptParams)}
+          {/* The prompt key and its params come from the question template in the
+              content pack, so they are validated by `pnpm content:validate` rather
+              than by the compiler. */}
+          {tContent(question.promptKey, question.promptParams)}
         </Text>
 
         <View style={styles.options}>
@@ -196,6 +200,8 @@ const makeLessonId = (): string =>
 
 /** Skeleton, never a spinner, on primary content — no layout shift on arrival. */
 function LoadingState() {
+  const t = useT()
+
   return (
     <View style={styles.screen} accessibilityLabel={t('common:loading')}>
       <View style={styles.header}>
@@ -214,6 +220,8 @@ function LoadingState() {
 }
 
 function ErrorState({ onRetry }: { onRetry: () => void }) {
+  const t = useT()
+
   return (
     <View style={[styles.screen, styles.centered]}>
       <Text style={styles.prompt}>{t('common:error.generic.title')}</Text>
@@ -225,6 +233,8 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
 
 /** Never a dead end — an empty queue is celebrated, then offers what is next. */
 function EmptyState() {
+  const t = useT()
+
   return (
     <View style={[styles.screen, styles.centered]}>
       <Text style={styles.prompt}>{t('lesson:empty.title')}</Text>
@@ -234,6 +244,8 @@ function EmptyState() {
 }
 
 function OfflineBanner() {
+  const t = useT()
+
   return (
     <View style={styles.offline} accessibilityRole="alert">
       <Text style={styles.offlineText}>{t('common:offline.banner')}</Text>
@@ -250,6 +262,8 @@ function SummaryState({
   isOffline: boolean
   onExit: () => void
 }) {
+  const t = useT()
+
   return (
     <View style={[styles.screen, styles.centered]}>
       {isOffline && <OfflineBanner />}

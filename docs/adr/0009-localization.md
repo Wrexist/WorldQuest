@@ -17,6 +17,26 @@ string or a missing key.
 Content strings (country and city names) are translated in the **content packs**, not
 the locale files — a country name is a fact, not copy.
 
+### Implementation note — the ICU adapter
+
+i18next does not speak ICU natively; it needs an `i18nFormat` plugin. The obvious
+choice, `i18next-icu`, is **not** what we use.
+
+Its ESM build does `import IntlMessageFormat from 'intl-messageformat'`, which resolves
+to the module namespace rather than the class under Node's ESM loader — every `new`
+threw. Its default error handler then swallowed the throw and returned the *raw
+pattern*, so the app rendered `{count, plural, one {# day streak} ...}` on screen with
+nothing logged anywhere. It worked under CommonJS and failed under ESM, meaning the
+behaviour depended on which bundler happened to be in front of it.
+
+`packages/i18n/src/icu.ts` implements the same plugin surface — `type`, `init`,
+`parse` — in about forty lines, over `intl-messageformat` directly (FormatJS's ICU
+engine, the same one underneath `i18next-icu`). It imports the **named** export, which
+survives every interop path, and its error handler is loud in development.
+
+This is still "i18next + ICU MessageFormat". Reconsider it if `i18next-icu` fixes the
+interop and grows a feature we want.
+
 ## Alternatives considered
 
 | Option | Why not |

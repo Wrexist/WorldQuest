@@ -15,8 +15,11 @@
     "@worldquest/engines": "workspace:*",
     "@worldquest/i18n": "workspace:*",
     "expo": "~52.0.0",
+    "expo-localization": "~16.0.0",
     "expo-router": "~4.0.0",
     "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-i18next": "^15.2.0",
     "react-native": "0.76.5"
   },
   "$comment": "Phase 1 is deliberately ugly. Design lands in weeks 3-6 — see docs/plan/build-order.md."

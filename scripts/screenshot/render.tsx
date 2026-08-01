@@ -360,6 +360,26 @@ const { element, getStyleElement } = (
   }
 ).getApplication('WorldQuest')
 
+const body = renderToStaticMarkup(element as never)
+
+/**
+ * Fail rather than screenshot a broken string.
+ *
+ * ICU formatting has now silently regressed twice through module-interop differences
+ * between Node, esbuild and Metro — each time rendering the raw pattern
+ * (`{count, plural, one {# day streak} ...}`) instead of words. The library's default
+ * behaviour is to swallow the error, so nothing failed; the only signal was a
+ * screenshot nobody had looked at yet. This turns that into an exit code.
+ */
+const leaked = body.match(/\{[a-zA-Z_]+(?:\s*,\s*(?:plural|select|selectordinal|number|date))?\s*[,}]/)
+if (leaked) {
+  process.stderr.write(
+    `\n✗ an unformatted i18n placeholder reached the markup: ${leaked[0]}\n` +
+      `  The ICU formatter is not running. See packages/i18n/src/icu.ts.\n\n`,
+  )
+  process.exit(1)
+}
+
 process.stdout.write(
   `<!doctype html><html><head><meta charset="utf-8">` +
     `<title>WorldQuest</title>` +
@@ -372,5 +392,5 @@ process.stdout.write(
        html,body,#root{margin:0;background:#00050F}
        *{font-family:"DejaVu Sans","Liberation Sans",FreeSans,Arial,sans-serif !important}
      </style>` +
-    `</head><body><div id="root">${renderToStaticMarkup(element as never)}</div></body></html>`,
+    `</head><body><div id="root">${body}</div></body></html>`,
 )

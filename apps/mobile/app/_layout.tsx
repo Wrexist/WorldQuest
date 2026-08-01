@@ -14,8 +14,11 @@ import { Stack } from 'expo-router'
 import { SafeAreaView, StatusBar, StyleSheet } from 'react-native'
 import { colors, motion } from '@worldquest/design'
 import { t } from '../src/lib/i18n.js'
+import { useDeviceLocale } from '../src/lib/locale.js'
 
 export default function RootLayout() {
+  useDeviceLocale()
+
   return (
     <SafeAreaView style={styles.root}>
       <StatusBar barStyle="light-content" backgroundColor={colors.bg.canvas} />

@@ -12,21 +12,23 @@
 
 import { Tabs } from 'expo-router'
 import { TabBar } from '@worldquest/design'
-import { t } from '../../src/lib/i18n.js'
+import { useT, type TranslationKey } from '../../src/lib/i18n.js'
 
 /**
  * Route name → tab identity. The glyphs are placeholders for the commissioned icon
  * set (docs/design/asset-prompts.md); everything else about the bar is final.
  */
-const TABS = [
+const TABS: readonly { name: string; glyph: string; labelKey: TranslationKey }[] = [
   { name: 'index', glyph: '⌂', labelKey: 'nav:home' },
   { name: 'explore', glyph: '◎', labelKey: 'nav:explore' },
   { name: 'quests', glyph: '◈', labelKey: 'nav:quests' },
   { name: 'profile', glyph: '☺', labelKey: 'nav:profile' },
   { name: 'more', glyph: '⋯', labelKey: 'nav:more' },
-] as const
+]
 
 export default function TabsLayout() {
+  const t = useT()
+
   return (
     <Tabs
       screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'transparent' } }}

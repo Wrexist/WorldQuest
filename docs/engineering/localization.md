@@ -21,14 +21,32 @@ and `if (n === 1)` is wrong in most of the world.
 ```
 packages/i18n/
   locales/
-    en/  common.json  home.json  lesson.json  explore.json  profile.json
-         settings.json  achievements.json  notifications.json  errors.json
-    sv/  (same files, same keys)
+    en/     common.json  home.json  lesson.json  nav.json  notifications.json
+            (explore · profile · settings · achievements · errors follow with their screens)
+    sv/     same files, same keys
+    en-XA/  GENERATED pseudo-locale, gitignored — pnpm i18n:pseudo
   src/
-    index.ts          # init, detection, fallback
-    keys.ts           # GENERATED — typed key union
-    format.ts         # number, date, list, relative-time formatters
+    index.ts          # init, detection, fallback, the typed `t`
+    keys.ts           # GENERATED — typed key union + per-key params
+    format.ts         # number, date, list, relative-time, collation
+    icu.ts            # the ICU MessageFormat adapter — see ADR 0009
+  scripts/
+    check.ts          # the CI gate
+    keys.ts           # the key generator, as a pure function
+    build-keys.ts     # writes src/keys.ts
+    pseudo-text.ts    # the pseudo-localisation transform
+    pseudo.ts         # writes locales/en-XA/
 ```
+
+`t` is typed against the generated union in both directions: an unknown key is a
+compile error, **and so is a missing placeholder**. `t('home:level')` does not compile
+without `{ level }`. That second half is the one that catches real bugs — a missing
+placeholder renders as the literal text `{level}`, which no test that merely asserts
+"the key resolved" will ever notice.
+
+Keys that come from a **content pack** — a question template names its own prompt —
+use `tContent`, which is unchecked by the compiler and validated by
+`pnpm content:validate` instead. Reaching for it anywhere else silently opts out.
 
 ## 2. Keys
 

@@ -33,3 +33,6 @@ packages/api/src/database.types.ts
 *.log
 packages/*/coverage/
 packages/design/preview/
+
+# Generated pseudo-locale — rebuild with `pnpm i18n:pseudo`
+packages/i18n/locales/en-XA/

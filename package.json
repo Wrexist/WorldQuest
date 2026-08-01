@@ -16,6 +16,7 @@
     "content:stats": "pnpm --filter @worldquest/content stats",
     "i18n:check": "pnpm --filter @worldquest/i18n check",
     "i18n:types": "pnpm --filter @worldquest/i18n types",
+    "i18n:pseudo": "pnpm --filter @worldquest/i18n pseudo",
     "design:tokens": "pnpm --filter @worldquest/design build-tokens",
     "design:contrast": "pnpm --filter @worldquest/design check-contrast",
     "design:preview": "pnpm --filter @worldquest/design preview",

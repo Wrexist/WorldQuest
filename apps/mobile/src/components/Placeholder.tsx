@@ -13,14 +13,16 @@
 
 import { StyleSheet, Text, View } from 'react-native'
 import { colors, space, typography } from '@worldquest/design'
-import { t } from '../lib/i18n.js'
+import { useT, type TranslationKey } from '../lib/i18n.js'
 
 export type PlaceholderProps = {
-  readonly titleKey: string
-  readonly bodyKey: string
+  readonly titleKey: TranslationKey
+  readonly bodyKey: TranslationKey
 }
 
 export function Placeholder({ titleKey, bodyKey }: PlaceholderProps) {
+  const t = useT()
+
   return (
     <View style={styles.screen}>
       <Text style={styles.title} accessibilityRole="header">

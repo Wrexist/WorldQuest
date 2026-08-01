@@ -16,7 +16,7 @@ against the slot, and the art arrives into a finished app instead of a half-buil
 | # | Work | Why it's first | State |
 |---|---|---|---|
 | A1 | **expo-router `app/` tree + five tabs** | `apps/mobile/package.json` already declared `main: expo-router/entry` with no `app/` directory — the app could not boot. Every screen in Track B needs somewhere to live. | ✅ |
-| A2 | **Real i18next, typed keys** | `src/lib/i18n.ts` is a hand-written shim. `packages/i18n` declares a `types` script whose file doesn't exist. Every screen built before this is a screen to revisit. | ⬜ |
+| A2 | **Real i18next, typed keys** | `src/lib/i18n.ts` was a hand-written shim, and `packages/i18n` declared a `types` script whose file did not exist. Every screen built before this is a screen to revisit. | ✅ |
 | A3 | **Wire `packages/api` into the app** | Anonymous session on launch, generated DB types, `submitLesson` on the real queue. Turns the two ⚠️ Phase 1 exit criteria into ✅. | ⬜ |
 | A4 | **TanStack Query + MMKV persistence** | Server state has one owner (PROJECT.md §9). Retrofitting it after six screens read Supabase directly is the expensive version. | ⬜ |
 
@@ -68,6 +68,7 @@ blocked by anything.
 | E1 | Component tests (React Native Testing Library) for every screen's five states | ⬜ |
 | E2 | Maestro E2E: first launch → taster lesson → progress persists | ⬜ |
 | E3 | CI: run the Supabase RLS tests and the edge-function bundle guard on every PR | ⬜ |
+| E4 | Wire the `en-XA` pseudo-locale into a dev build — the generator exists (`pnpm i18n:pseudo`), loading it at runtime does not | ⬜ |
 
 ## Track F — the visual gap that isn't art
 

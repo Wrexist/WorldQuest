@@ -29,7 +29,7 @@ import {
   typography,
 } from '@worldquest/design'
 import { levelForXp, xpForLevel } from '@worldquest/engines'
-import { t } from '../../lib/i18n.js'
+import { useT, type TranslationKey } from '../../lib/i18n.js'
 
 export type HomeProgress = {
   readonly xpTotal: number
@@ -53,13 +53,17 @@ export type HomeScreenProps = {
   readonly onStartLesson: () => void
 }
 
-function greetingKey(hour: number): string {
+function greetingKey(hour: number): TranslationKey {
   if (hour < 12) return 'home:greeting.morning'
   if (hour < 18) return 'home:greeting.afternoon'
   return 'home:greeting.evening'
 }
 
 export function HomeScreen({ progress, loading, isOffline, onStartLesson }: HomeScreenProps) {
+  // Before the early return: hooks cannot be conditional, and the skeleton needs
+  // translated copy too.
+  const t = useT()
+
   if (loading) return <HomeSkeleton />
 
   const level = progress ? levelForXp(progress.xpTotal) : 1
@@ -179,6 +183,8 @@ export function HomeScreen({ progress, loading, isOffline, onStartLesson }: Home
 }
 
 function HomeSkeleton() {
+  const t = useT()
+
   return (
     <View style={styles.screen} accessibilityLabel={t('common:loading')}>
       <View style={styles.content}>
