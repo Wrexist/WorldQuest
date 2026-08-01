@@ -28,6 +28,8 @@ which, and fix it the same day.
 | [`design/design-system.md`](design/design-system.md) | Colour, spacing, radius, elevation, type, motion, icons, components |
 | [`design/voice-and-tone.md`](design/voice-and-tone.md) | How WorldQuest talks, including when you fail |
 | [`design/accessibility.md`](design/accessibility.md) | The a11y contract — built in, not retrofitted |
+| [`design/asset-prompts.md`](design/asset-prompts.md) | Copy-paste generation prompts for every asset — and what must never be generated |
+| [`design/mockup-fidelity.md`](design/mockup-fidelity.md) | How close the build is to the mockup, and which differences are deliberate |
 | [`design/assets/mockup-v1.png`](design/assets/mockup-v1.png) | The v1.0 visual target |
 
 ## Systems — *the game and learning machinery*

@@ -42,6 +42,8 @@ The mockup's imagery is generated art. Matching it needs real assets:
 | Card gradients | Blue→dark, purple→dark | Flat surfaces; needs `expo-linear-gradient` |
 | Inter + Baloo 2 | The real faces | Both OFL — download and bundle |
 
+Prompts for every one of these are in [`asset-prompts.md`](asset-prompts.md).
+
 `ArtSlot` exists so this is a one-line swap per slot rather than a redesign. The
 fonts and gradients are hours of work; the illustration set is the decision already
 flagged in the Phase 0 checklist (commission vs licence), and it is the single
