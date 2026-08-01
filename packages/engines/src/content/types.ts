@@ -17,7 +17,22 @@ export type LocalizedText = Readonly<Record<string, string>>
 export type Entity = {
   readonly id: EntityId
   readonly type: string
+  /** The citation form — what goes in a list, on a card, or in an answer option. */
   readonly names: LocalizedText
+  /**
+   * The form used inside a sentence, when it differs from `names`.
+   *
+   * English needs this for the handful of countries that take a definite article:
+   * "What is the capital of Netherlands?" is wrong, and the fix cannot live in the
+   * translation catalogue because the template is one string shared by 200 countries.
+   * It cannot live in `names` either — a country list sorted alphabetically must file
+   * the Netherlands under N.
+   *
+   * It is localised rather than an `article` flag because the problem is not articles.
+   * Languages with grammatical case need the country in an oblique form here, and a
+   * boolean cannot express that.
+   */
+  readonly namesInSentence?: LocalizedText
   readonly region?: string
   readonly subregion?: string
   readonly assets?: Readonly<Record<string, { path: string; license: string }>>

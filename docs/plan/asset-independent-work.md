@@ -57,7 +57,7 @@ blocked by anything.
 
 | # | Work | Notes | State |
 |---|---|---|---|
-| D1 | **Beyond 5 countries** | The long pole. Every fact needs `source` + `verifiedAt`. Ship in continent-sized batches so progress is visible. | 🟡 *(east-asia complete — 9 countries, 19 facts, 45 items, all reachable)* |
+| D1 | **Beyond 5 countries** | The long pole. Every fact needs `source` + `verifiedAt`. Ship in subregion-sized batches so progress is visible. | 🟡 *(east-asia + western-europe — 15 countries, 31 facts, 73 items, all reachable)* |
 | D2 | **More question templates** | `tpl.flag-of-country.mc4` — country → flag description, the reverse of the existing pair. Five templates now; each multiplies across every fact already written. | ✅ |
 | D3 | **Authoring ergonomics** | `content:preview` (reads every generated question, gates CI) and `content:stats` (says which subregion to author next). Both were advertised in `package.json` and neither existed. | ✅ |
 
@@ -135,10 +135,25 @@ offered against China and Mongolia made it obvious. Similarity is now declared i
 Worth stating plainly: no test caught this, and no test could have — it needed content
 from a second region and someone reading the output.
 
-**Taiwan is deliberately absent** from this batch. It belongs to east-asia by
-geography and is a contested case under the sensitive-content policy, which says to
-flag it and get a second author's sign-off rather than resolve it unilaterally. It
-needs a human decision, not a default.
+Western Europe followed — France, Germany, Belgium, the Netherlands, Austria,
+Switzerland — and reading *its* output caught the next one: **"What is the capital of
+Netherlands?"** A country whose name takes an article cannot be fixed in the
+translation catalogue, because one template string serves every country, and it cannot
+be fixed in `names` either, because a country list has to file the Netherlands under N.
+Entities now carry an optional, localised `namesInSentence`, used for prompt params and
+never for answer options. Localised rather than an `article` boolean on purpose: the
+languages after Swedish need an oblique *case*, not a word in front.
+
+**Two things are deliberately withheld for a human decision**, per the
+sensitive-content policy — flag it, do not resolve it:
+
+- **Taiwan**, absent entirely. East-asia by geography, contested by status.
+- **Switzerland's capital**, authored but `review-required` and therefore not
+  quizzable. The Swiss constitution names no capital; Bern is the *Bundesstadt*.
+  Every atlas answers "Bern", which is exactly why it was worth stopping over —
+  the easy default is the one that ships a confident wrong answer.
+
+Two facts are now flagged for review and `pnpm content:validate` reports both.
 
 E2 is deliberately last and deliberately not started here: a Maestro flow written
 without ever running it against a device is a file full of guesses about selectors and

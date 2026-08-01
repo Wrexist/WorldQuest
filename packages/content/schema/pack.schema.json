@@ -132,6 +132,10 @@
         "names": {
           "$ref": "#/$defs/localizedText"
         },
+        "namesInSentence": {
+          "$ref": "#/$defs/localizedText",
+          "description": "The form used inside a sentence, when it differs from `names` \u2014 \"the Netherlands\" in a prompt, \"Netherlands\" in a list. Localised rather than a boolean article flag, because languages with grammatical case need an oblique form here."
+        },
         "region": {
           "type": "string"
         },

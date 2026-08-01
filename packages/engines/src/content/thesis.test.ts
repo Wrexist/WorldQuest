@@ -250,6 +250,35 @@ describe('question construction', () => {
     expect(hintOf('geo.SE.capital', 'tpl.capital-reverse.mc4')).toBeUndefined()
   })
 
+  it('uses the sentence form in a prompt and the citation form in an option', () => {
+    // "What is the capital of Netherlands?" — the fix cannot live in the catalogue,
+    // because one template string serves every country, and it cannot live in `names`
+    // either, because a country list has to file the Netherlands under N.
+    const capital = index.itemsByFact
+      .get('geo.NL.capital')!
+      .find((i) => i.templateId === 'tpl.capital.mc4')!
+    expect(buildQuestion(index, capital, 'en', seededRng(2))!.promptParams['entityName']).toBe(
+      'the Netherlands',
+    )
+
+    const reverse = index.itemsByFact
+      .get('geo.NL.capital')!
+      .find((i) => i.templateId === 'tpl.capital-reverse.mc4')!
+    const answer = buildQuestion(index, reverse, 'en', seededRng(2))!.options.find(
+      (o) => o.isCorrect,
+    )!
+    expect(answer.label).toBe('Netherlands')
+  })
+
+  it('falls back to the citation form for the countries that need no variant', () => {
+    const item = index.itemsByFact
+      .get('geo.SE.capital')!
+      .find((i) => i.templateId === 'tpl.capital.mc4')!
+    expect(buildQuestion(index, item, 'en', seededRng(2))!.promptParams['entityName']).toBe(
+      'Sweden',
+    )
+  })
+
   it('draws visually-similar distractors from the `like:` tag alone', () => {
     // This matched any shared tag except `core`, which meant it matched `flag` —
     // carried by every flag fact — so "visually similar" meant "any country". Five

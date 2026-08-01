@@ -239,6 +239,156 @@
         "verifiedAt": "2026-08-01"
       },
       "volatility": "stable"
+    },
+    {
+      "id": "geo.FR.flag",
+      "entity": "FR",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-FR",
+        "names": {
+          "en": "three vertical bands — blue, white, red",
+          "sv": "tre lodräta band — blått, vitt, rött"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "flag",
+        "europe",
+        "like:vertical-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of France”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_France",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BE.flag",
+      "entity": "BE",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-BE",
+        "names": {
+          "en": "three vertical bands — black, yellow, red",
+          "sv": "tre lodräta band — svart, gult, rött"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "europe",
+        "like:vertical-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Belgium”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Belgium",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DE.flag",
+      "entity": "DE",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-DE",
+        "names": {
+          "en": "three horizontal bands — black, red, gold",
+          "sv": "tre vågräta band — svart, rött, guld"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "europe",
+        "like:horizontal-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Germany”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Germany",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NL.flag",
+      "entity": "NL",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-NL",
+        "names": {
+          "en": "three horizontal bands — red, white, blue",
+          "sv": "tre vågräta band — rött, vitt, blått"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "europe",
+        "like:horizontal-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of the Netherlands”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_the_Netherlands",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AT.flag",
+      "entity": "AT",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-AT",
+        "names": {
+          "en": "three horizontal bands — red, white, red",
+          "sv": "tre vågräta band — rött, vitt, rött"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "europe",
+        "like:horizontal-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Austria”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Austria",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CH.flag",
+      "entity": "CH",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-CH",
+        "names": {
+          "en": "a white cross centred on a square red field",
+          "sv": "ett vitt kors i mitten på en kvadratisk röd duk"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "europe",
+        "like:centred-cross",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Switzerland”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Switzerland",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
     }
   ]
 }

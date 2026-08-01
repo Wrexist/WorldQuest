@@ -236,6 +236,160 @@
         "verifiedAt": "2026-08-01"
       },
       "volatility": "stable"
+    },
+    {
+      "id": "geo.FR.capital",
+      "entity": "FR",
+      "attribute": "capital",
+      "value": {
+        "id": "FR-75",
+        "names": {
+          "en": "Paris",
+          "sv": "Paris"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "capital",
+        "europe",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Paris”",
+        "url": "https://en.wikipedia.org/wiki/Paris",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DE.capital",
+      "entity": "DE",
+      "attribute": "capital",
+      "value": {
+        "id": "DE-BE",
+        "names": {
+          "en": "Berlin",
+          "sv": "Berlin"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "capital",
+        "europe",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Berlin”",
+        "url": "https://en.wikipedia.org/wiki/Berlin",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BE.capital",
+      "entity": "BE",
+      "attribute": "capital",
+      "value": {
+        "id": "BE-BRU",
+        "names": {
+          "en": "Brussels",
+          "sv": "Bryssel"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "europe",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Brussels”",
+        "url": "https://en.wikipedia.org/wiki/Brussels",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AT.capital",
+      "entity": "AT",
+      "attribute": "capital",
+      "value": {
+        "id": "AT-9",
+        "names": {
+          "en": "Vienna",
+          "sv": "Wien"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "europe",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Vienna”",
+        "url": "https://en.wikipedia.org/wiki/Vienna",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "$comment": "Amsterdam is the capital by Article 32 of the Constitution; The Hague is the SEAT OF GOVERNMENT. Both are true and the pair is a good country-page fact — but the capital is not in dispute, so this stays quizzable. Do not 'correct' it to The Hague.",
+      "id": "geo.NL.capital",
+      "entity": "NL",
+      "attribute": "capital",
+      "value": {
+        "id": "NL-NH",
+        "names": {
+          "en": "Amsterdam",
+          "sv": "Amsterdam"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "europe",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "Constitution of the Netherlands, Article 32 (via English Wikipedia, “Capital of the Netherlands”)",
+        "url": "https://en.wikipedia.org/wiki/Capital_of_the_Netherlands",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "$comment": "CONTESTED — needs a second author's sign-off before it can be quizzed. The Swiss constitution names no capital; Bern is the Bundesstadt (federal city) and the de facto seat of government since 1848. Every atlas answers 'Bern', which is why this is tempting to just ship. Resolve it deliberately, per docs/systems/content-pipeline.md#sensitive-content.",
+      "id": "geo.CH.capital",
+      "entity": "CH",
+      "attribute": "capital",
+      "value": {
+        "id": "CH-BE",
+        "names": {
+          "en": "Bern",
+          "sv": "Bern"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "europe",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "SWI swissinfo.ch, “Why Switzerland hasn’t got a capital city”",
+        "url": "https://www.swissinfo.ch/eng/swiss-oddities/why-switzerland-hasnt-got-a-capital-city/89071876",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable",
+      "sensitivity": "review-required",
+      "quizzable": false
     }
   ]
 }

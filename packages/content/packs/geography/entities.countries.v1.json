@@ -66,6 +66,74 @@
       }
     },
     {
+      "id": "FR",
+      "type": "country",
+      "names": { "en": "France", "sv": "Frankrike" },
+      "region": "EU",
+      "subregion": "western-europe",
+      "geometry": "geo/countries/FR.svg",
+      "assets": {
+        "flag": { "path": "flags/FR.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "DE",
+      "type": "country",
+      "names": { "en": "Germany", "sv": "Tyskland" },
+      "region": "EU",
+      "subregion": "western-europe",
+      "geometry": "geo/countries/DE.svg",
+      "assets": {
+        "flag": { "path": "flags/DE.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "BE",
+      "type": "country",
+      "names": { "en": "Belgium", "sv": "Belgien" },
+      "region": "EU",
+      "subregion": "western-europe",
+      "geometry": "geo/countries/BE.svg",
+      "assets": {
+        "flag": { "path": "flags/BE.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "NL",
+      "type": "country",
+      "names": { "en": "Netherlands", "sv": "Nederländerna" },
+      "$comment": "English takes the article inside a sentence but not in a list — 'the capital of the Netherlands', filed under N. Swedish needs no variant.",
+      "namesInSentence": { "en": "the Netherlands" },
+      "region": "EU",
+      "subregion": "western-europe",
+      "geometry": "geo/countries/NL.svg",
+      "assets": {
+        "flag": { "path": "flags/NL.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "AT",
+      "type": "country",
+      "names": { "en": "Austria", "sv": "Österrike" },
+      "region": "EU",
+      "subregion": "western-europe",
+      "geometry": "geo/countries/AT.svg",
+      "assets": {
+        "flag": { "path": "flags/AT.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "CH",
+      "type": "country",
+      "names": { "en": "Switzerland", "sv": "Schweiz" },
+      "region": "EU",
+      "subregion": "western-europe",
+      "geometry": "geo/countries/CH.svg",
+      "assets": {
+        "flag": { "path": "flags/CH.svg", "license": "public-domain" }
+      }
+    },
+    {
       "id": "SE",
       "type": "country",
       "names": { "en": "Sweden", "sv": "Sverige" },

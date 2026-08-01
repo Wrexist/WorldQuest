@@ -270,7 +270,13 @@ export function buildQuestion(
 
   const promptParams: Record<string, string> = {}
   for (const param of template.prompt.params ?? []) {
-    if (param === 'entityName') promptParams[param] = nameOf(entity.names) ?? entity.id
+    // The sentence form when the content supplies one, the citation form otherwise.
+    // Answer OPTIONS deliberately keep the citation form: "the Netherlands" belongs in
+    // "the capital of the Netherlands", not in a list of four countries.
+    if (param === 'entityName') {
+      promptParams[param] =
+        nameOf(entity.namesInSentence) ?? nameOf(entity.names) ?? entity.id
+    }
     if (param === 'valueName') promptParams[param] = nameOf(fact.value.names) ?? ''
     if (param === 'description') promptParams[param] = nameOf(fact.value.names) ?? ''
   }
