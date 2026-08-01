@@ -57,7 +57,7 @@ blocked by anything.
 
 | # | Work | Notes | State |
 |---|---|---|---|
-| D1 | **Beyond 5 countries** | The long pole. Every fact needs `source` + `verifiedAt`. Ship in subregion-sized batches so progress is visible. | 🟡 *(east-asia + western-europe — 15 countries, 31 facts, 73 items, all reachable)* |
+| D1 | **Beyond 5 countries** | The long pole. Every fact needs `source` + `verifiedAt`. Ship in subregion-sized batches so progress is visible. | 🟡 *(3 subregions added — 19 countries, 39 facts, 93 items, all reachable)* |
 | D2 | **More question templates** | `tpl.flag-of-country.mc4` — country → flag description, the reverse of the existing pair. Five templates now; each multiplies across every fact already written. | ✅ |
 | D3 | **Authoring ergonomics** | `content:preview` (reads every generated question, gates CI) and `content:stats` (says which subregion to author next). Both were advertised in `package.json` and neither existed. | ✅ |
 
@@ -153,7 +153,18 @@ sensitive-content policy — flag it, do not resolve it:
   Every atlas answers "Bern", which is exactly why it was worth stopping over —
   the easy default is the one that ships a confident wrong answer.
 
-Two facts are now flagged for review and `pnpm content:validate` reports both.
+Southern Europe came third — Italy, Spain, Portugal, Greece — and was the first batch
+that produced no new bug, which is what the two tools existing is supposed to buy.
+It did produce the first genuinely hard flag question: Spain against three other
+horizontal tricolours, because `like:horizontal-tricolour` finally has four members.
+
+Two facts are now flagged for review and `pnpm content:validate` reports both. Three
+capitals carry no `value.id`: the ISO 3166-2 subdivision code was not confirmed while
+authoring, and nothing reads that field, so it is absent rather than guessed.
+
+**19 countries · 39 facts · 93 items · 93 of 93 reachable.** The next batch is
+whichever subregion `pnpm content:stats` says is thinnest — the tool picks, not
+taste.
 
 E2 is deliberately last and deliberately not started here: a Maestro flow written
 without ever running it against a device is a file full of guesses about selectors and

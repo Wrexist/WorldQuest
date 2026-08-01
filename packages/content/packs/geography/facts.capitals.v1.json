@@ -390,6 +390,106 @@
       "volatility": "stable",
       "sensitivity": "review-required",
       "quizzable": false
+    },
+    {
+      "$comment": "The ISO 3166-2 subdivision code for this city was not confirmed at authoring time, so it is omitted rather than guessed. `value.id` is documentation — nothing reads it — and a wrong code is worse than an absent one.",
+      "id": "geo.IT.capital",
+      "entity": "IT",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Rome",
+          "sv": "Rom"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "capital",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Rome”",
+        "url": "https://en.wikipedia.org/wiki/Rome",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "$comment": "The ISO 3166-2 subdivision code for this city was not confirmed at authoring time, so it is omitted rather than guessed. `value.id` is documentation — nothing reads it — and a wrong code is worse than an absent one.",
+      "id": "geo.ES.capital",
+      "entity": "ES",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Madrid",
+          "sv": "Madrid"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "capital",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Madrid”",
+        "url": "https://en.wikipedia.org/wiki/Madrid",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PT.capital",
+      "entity": "PT",
+      "attribute": "capital",
+      "value": {
+        "id": "PT-11",
+        "names": {
+          "en": "Lisbon",
+          "sv": "Lissabon"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Lisbon”",
+        "url": "https://en.wikipedia.org/wiki/Lisbon",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "$comment": "The ISO 3166-2 subdivision code for this city was not confirmed at authoring time, so it is omitted rather than guessed. `value.id` is documentation — nothing reads it — and a wrong code is worse than an absent one.",
+      "id": "geo.GR.capital",
+      "entity": "GR",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Athens",
+          "sv": "Aten"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Athens”",
+        "url": "https://en.wikipedia.org/wiki/Athens",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
     }
   ]
 }

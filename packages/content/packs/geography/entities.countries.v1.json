@@ -66,6 +66,50 @@
       }
     },
     {
+      "id": "IT",
+      "type": "country",
+      "names": { "en": "Italy", "sv": "Italien" },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "geometry": "geo/countries/IT.svg",
+      "assets": {
+        "flag": { "path": "flags/IT.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "ES",
+      "type": "country",
+      "names": { "en": "Spain", "sv": "Spanien" },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "geometry": "geo/countries/ES.svg",
+      "assets": {
+        "flag": { "path": "flags/ES.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "PT",
+      "type": "country",
+      "names": { "en": "Portugal", "sv": "Portugal" },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "geometry": "geo/countries/PT.svg",
+      "assets": {
+        "flag": { "path": "flags/PT.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "GR",
+      "type": "country",
+      "names": { "en": "Greece", "sv": "Grekland" },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "geometry": "geo/countries/GR.svg",
+      "assets": {
+        "flag": { "path": "flags/GR.svg", "license": "public-domain" }
+      }
+    },
+    {
       "id": "FR",
       "type": "country",
       "names": { "en": "France", "sv": "Frankrike" },

@@ -389,6 +389,106 @@
         "verifiedAt": "2026-08-01"
       },
       "volatility": "stable"
+    },
+    {
+      "id": "geo.IT.flag",
+      "entity": "IT",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-IT",
+        "names": {
+          "en": "three vertical bands — green, white, red",
+          "sv": "tre lodräta band — grönt, vitt, rött"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "europe",
+        "like:vertical-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Italy”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Italy",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ES.flag",
+      "entity": "ES",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-ES",
+        "names": {
+          "en": "three horizontal bands — red, yellow, red — with a coat of arms toward the left",
+          "sv": "tre vågräta band — rött, gult, rött — med ett riksvapen mot vänster"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "europe",
+        "like:horizontal-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Spain”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Spain",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PT.flag",
+      "entity": "PT",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-PT",
+        "names": {
+          "en": "a narrow green panel and a wider red one, with a coat of arms where they meet",
+          "sv": "ett smalt grönt fält och ett bredare rött, med ett riksvapen där de möts"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "europe",
+        "like:vertical-bicolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Portugal”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Portugal",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GR.flag",
+      "entity": "GR",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-GR",
+        "names": {
+          "en": "nine blue and white stripes, with a white cross in the top corner",
+          "sv": "nio blå och vita ränder, med ett vitt kors i övre hörnet"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "europe",
+        "like:stripes-and-canton",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Greece”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Greece",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
     }
   ]
 }
