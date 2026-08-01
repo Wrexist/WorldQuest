@@ -21,22 +21,18 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # ── generated artefacts must match their source ──────────────────────
+      # ── generated artefacts ──────────────────────────────────────────────
       #
-      # A stale generated file is worse than none: it compiles, so it looks
-      # correct, right up until it describes something that no longer exists.
-
-      - name: Tokens are up to date
-        run: |
-          pnpm design:tokens
-          git diff --exit-code packages/design/src/tokens.ts packages/design/src/tokens.css \
-            || (echo "::error::tokens.ts is stale — run pnpm design:tokens and commit"; exit 1)
-
-      - name: Translation keys are up to date
-        run: |
-          pnpm i18n:types
-          git diff --exit-code packages/i18n/src/keys.ts \
-            || (echo "::error::keys.ts is stale — run pnpm i18n:types and commit"; exit 1)
+      # `tokens.ts`, `tokens.css` and `keys.ts` are untracked and rebuilt here from
+      # `tokens.json` and `locales/`. They cannot be stale, so there is nothing to
+      # check — the earlier `git diff --exit-code` on them passed unconditionally,
+      # because git does not diff files it is not tracking.
+      #
+      # `database.types.ts` IS tracked, because generating it needs a running
+      # Postgres that this job does not have. Its freshness is checked in the
+      # `database` job below, where the diff has something to compare against.
+      - name: Generate tokens and translation keys
+        run: pnpm generate
 
       - name: Typecheck (packages + app)
         run: pnpm typecheck

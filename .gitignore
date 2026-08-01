@@ -24,10 +24,21 @@ supabase/.temp/
 .env.*
 !.env.example
 
-# Generated
+# Generated from source that IS in this repo, by `pnpm generate` — which runs on
+# install, so a fresh clone typechecks. Untracked deliberately: a checked-in artefact
+# derivable in one command is merge conflicts for no gain, and "is it stale?" is not a
+# question you can ask about a file that is rebuilt before every use.
+
+# from packages/design/tokens.json
 packages/design/src/tokens.ts
+packages/design/src/tokens.css
+# from packages/i18n/locales/
 packages/i18n/src/keys.ts
-packages/api/src/database.types.ts
+
+# NOT ignored: packages/api/src/database.types.ts. It is generated too, but only by a
+# running Postgres, which the `verify` CI job does not have — so it is committed, and
+# the `database` job regenerates it against a local stack and diffs. That check is
+# real only because the file is tracked.
 
 .DS_Store
 *.log
