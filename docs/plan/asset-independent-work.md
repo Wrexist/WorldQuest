@@ -28,7 +28,7 @@ illustration. Each is a mockup screen or a hidden screen from
 
 | # | Screen | Art needed? | State |
 |---|---|---|---|
-| B1 | **Settings** (#15) | None — it's rows and switches | ⬜ |
+| B1 | **Settings** (#15) | None — it's rows and switches | ✅ |
 | B2 | **Continents** (#9) | None — the continent grid is colour + type | ⬜ |
 | B3 | **Country page** (#7) | Flag only, and flags are *sourced, never generated* | ⬜ |
 | B4 | **Daily Quest** (#4) | `ArtSlot` covers it | ⬜ |

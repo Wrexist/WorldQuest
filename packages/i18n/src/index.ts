@@ -24,11 +24,13 @@ import enHome from '../locales/en/home.json' with { type: 'json' }
 import enLesson from '../locales/en/lesson.json' with { type: 'json' }
 import enNav from '../locales/en/nav.json' with { type: 'json' }
 import enNotifications from '../locales/en/notifications.json' with { type: 'json' }
+import enSettings from '../locales/en/settings.json' with { type: 'json' }
 import svCommon from '../locales/sv/common.json' with { type: 'json' }
 import svHome from '../locales/sv/home.json' with { type: 'json' }
 import svLesson from '../locales/sv/lesson.json' with { type: 'json' }
 import svNav from '../locales/sv/nav.json' with { type: 'json' }
 import svNotifications from '../locales/sv/notifications.json' with { type: 'json' }
+import svSettings from '../locales/sv/settings.json' with { type: 'json' }
 
 export * from './format.js'
 export { NAMESPACES, type Namespace, type TranslationKey, type TranslationParams }
@@ -69,6 +71,7 @@ const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
     lesson: enLesson,
     nav: enNav,
     notifications: enNotifications,
+    settings: enSettings,
   },
   sv: {
     common: svCommon,
@@ -76,6 +79,7 @@ const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
     lesson: svLesson,
     nav: svNav,
     notifications: svNotifications,
+    settings: svSettings,
   },
 }
 

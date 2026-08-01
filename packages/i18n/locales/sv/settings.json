@@ -1,0 +1,39 @@
+{
+  "settings:title": "Inställningar",
+
+  "settings:section.learning": "Lärande",
+  "settings:section.sound": "Ljud & känsla",
+  "settings:section.language": "Språk",
+  "settings:section.privacy": "Integritet & data",
+  "settings:section.about": "Om",
+
+  "settings:goal.label": "Dagligt mål",
+  "settings:goal.value": "{minutes, plural, one {# minut om dagen} other {# minuter om dagen}}",
+  "settings:goal.help": "Du kan ändra det när som helst. En missad dag är inget misslyckande.",
+
+  "settings:reminder.label": "Daglig påminnelse",
+  "settings:reminder.help": "En om dagen, vid en tid du väljer. Aldrig fler.",
+
+  "settings:sound.label": "Ljudeffekter",
+  "settings:haptics.label": "Vibration",
+  "settings:motion.label": "Minska rörelse",
+  "settings:motion.help": "Följer din enhets inställning om du inte ändrar den här.",
+
+  "settings:language.system": "Följ min enhet",
+  "settings:language.en": "English",
+  "settings:language.sv": "Svenska",
+
+  "settings:privacy.policy": "Integritetspolicy",
+  "settings:privacy.terms": "Användarvillkor",
+  "settings:privacy.analytics.label": "Hjälp oss förbättra WorldQuest",
+  "settings:privacy.analytics.help": "Anonym användningsdata. Aldrig på för ett barnkonto, aldrig såld, aldrig delad.",
+  "settings:privacy.account.title": "Dina uppgifter",
+  "settings:privacy.account.body": "Du lär dig utan konto, så inget här identifierar dig. När konton kommer hittar du export och radering av dina uppgifter här.",
+
+  "settings:about.version": "Version",
+  "settings:about.licences": "Öppen källkod-licenser",
+  "settings:about.credits": "Kart- och flaggdata kommer från öppna källor och anges vid varje fakta.",
+
+  "settings:on": "På",
+  "settings:off": "Av"
+}

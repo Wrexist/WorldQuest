@@ -1,0 +1,61 @@
+{
+  "settings:title": "Settings",
+  "settings:title__note": "Screen title. Max 12 characters.",
+
+  "settings:section.learning": "Learning",
+  "settings:section.learning__note": "Section heading. Max 14 characters.",
+  "settings:section.sound": "Sound & feel",
+  "settings:section.sound__note": "Section heading covering audio and haptics. Max 14 characters.",
+  "settings:section.language": "Language",
+  "settings:section.language__note": "Section heading. Max 14 characters.",
+  "settings:section.privacy": "Privacy & data",
+  "settings:section.privacy__note": "Section heading. Max 16 characters.",
+  "settings:section.about": "About",
+  "settings:section.about__note": "Section heading. Max 14 characters.",
+
+  "settings:goal.label": "Daily goal",
+  "settings:goal.label__note": "Row label — how many minutes a day the user aims for. Max 14 characters.",
+  "settings:goal.value": "{minutes, plural, one {# minute a day} other {# minutes a day}}",
+  "settings:goal.value__note": "The chosen daily goal. ICU plural.",
+  "settings:goal.help": "You can change this any time. A missed day is not a failure.",
+
+  "settings:reminder.label": "Daily reminder",
+  "settings:reminder.label__note": "Toggle label for the once-a-day notification. Max 16 characters.",
+  "settings:reminder.help": "One a day, at a time you choose. Never more.",
+
+  "settings:sound.label": "Sound effects",
+  "settings:sound.label__note": "Toggle label. Max 16 characters.",
+  "settings:haptics.label": "Vibration",
+  "settings:haptics.label__note": "Toggle label for haptic feedback. Max 14 characters.",
+  "settings:motion.label": "Reduce motion",
+  "settings:motion.label__note": "Toggle label. Max 16 characters.",
+  "settings:motion.help": "Follows your device setting unless you change it here.",
+
+  "settings:language.system": "Match my device",
+  "settings:language.system__note": "Language option that follows the OS setting rather than a fixed choice.",
+  "settings:language.en": "English",
+  "settings:language.en__note": "Always written in the language itself, never translated.",
+  "settings:language.sv": "Svenska",
+  "settings:language.sv__note": "Swedish, written in Swedish. Never translate a language name.",
+
+  "settings:privacy.policy": "Privacy policy",
+  "settings:privacy.policy__note": "Row that opens the privacy policy. Max 18 characters.",
+  "settings:privacy.terms": "Terms of use",
+  "settings:privacy.terms__note": "Row that opens the terms. Max 18 characters.",
+  "settings:privacy.analytics.label": "Help improve WorldQuest",
+  "settings:privacy.analytics.help": "Anonymous usage data. Never on for a child account, never sold, never shared.",
+  "settings:privacy.account.title": "Your data",
+  "settings:privacy.account.title__note": "Heading of a short explanation, not a link. Max 14 characters.",
+  "settings:privacy.account.body": "You are learning without an account, so nothing here identifies you. When accounts arrive, exporting and deleting your data will live here.",
+
+  "settings:about.version": "Version",
+  "settings:about.version__note": "Row label next to the app version number. Max 12 characters.",
+  "settings:about.licences": "Open source licences",
+  "settings:about.licences__note": "Row that lists the libraries and fonts we use. Max 24 characters.",
+  "settings:about.credits": "Map and flag data comes from open sources, listed with every fact.",
+
+  "settings:on": "On",
+  "settings:on__note": "Accessibility state for a switch that is enabled.",
+  "settings:off": "Off",
+  "settings:off__note": "Accessibility state for a switch that is disabled."
+}

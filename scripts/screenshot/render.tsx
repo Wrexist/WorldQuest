@@ -38,6 +38,8 @@ import {
   type Template,
 } from '@worldquest/engines'
 import { HomeScreen } from '../../apps/mobile/src/features/home/HomeScreen.js'
+import { SettingsScreen } from '../../apps/mobile/src/features/settings/SettingsScreen.js'
+import { DEFAULTS as SETTINGS_DEFAULTS } from '../../apps/mobile/src/features/settings/usePreferences.js'
 
 // ── real content, loaded from the real packs ────────────────────────────────
 const packs = join(process.cwd(), 'packages', 'content', 'packs', 'geography')
@@ -246,6 +248,16 @@ function Gallery() {
 
         <Phone label="Lesson · screen-reader-safe flag question" id="lesson-flag">
           <LessonView question={flagQuestion} answered={false} />
+        </Phone>
+
+        <Phone label="More · settings" id="settings" tab="more">
+          <SettingsScreen
+            version="0.1.0"
+            preferences={SETTINGS_DEFAULTS}
+            onChange={() => {}}
+            onOpenPrivacyPolicy={() => {}}
+            onOpenTerms={() => {}}
+          />
         </Phone>
 
         <Phone label="Home · offline" id="home-offline" tab="index">
