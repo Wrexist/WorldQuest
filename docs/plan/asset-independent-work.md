@@ -58,8 +58,14 @@ blocked by anything.
 | # | Work | Notes | State |
 |---|---|---|---|
 | D1 | **Beyond 5 countries** | The long pole. Every fact needs `source` + `verifiedAt`. Ship in continent-sized batches so progress is visible. | ⬜ |
-| D2 | **More question templates** | Each new template multiplies across every fact already written | ⬜ |
-| D3 | **Authoring ergonomics** | A generator + validator that makes a batch of 20 countries an afternoon, not a week | ⬜ |
+| D2 | **More question templates** | `tpl.flag-of-country.mc4` — country → flag description, the reverse of the existing pair. Five templates now; each multiplies across every fact already written. | ✅ |
+| D3 | **Authoring ergonomics** | `content:preview` (reads every generated question, gates CI) and `content:stats` (says which subregion to author next). Both were advertised in `package.json` and neither existed. | ✅ |
+
+`content:preview` found two shipped bugs the moment it first ran, which is the argument
+for it: the capital prompt rendered the literal text `{country}` because the engine
+emits `entityName`, and the reverse-capital hint read *"Sweden is Stockholm."* Neither
+was reachable by any test we had — the screenshot harness hand-writes its prompt, and
+the one lesson component test happened to draw a flag question.
 
 ## Track E — quality
 
@@ -67,8 +73,34 @@ blocked by anything.
 |---|---|---|
 | E1 | Component tests for every screen's five states | ✅ *(all seven screens — 65 tests)* |
 | E2 | Maestro E2E: first launch → taster lesson → progress persists | ⬜ |
-| E3 | CI: RLS tests on a local stack, migrations from empty, economy health, and every generated file checked against its source | ✅ |
+| E3 | CI: RLS tests on a local stack, migrations from empty, economy health, generated files, and content that reads correctly | ✅ *(re-done — see below)* |
 | E4 | `en-XA` pseudo-locale — `enablePseudoLocale()` builds it in memory from the English bundle at runtime, so it can never be stale | ✅ |
+
+### E3, corrected
+
+The first version of the CI workflow had three steps of the form *"regenerate the file,
+then `git diff --exit-code` it"* — for `tokens.ts`, `keys.ts` and `database.types.ts`.
+All three files are in `.gitignore`. **Git does not diff files it is not tracking, so
+all three passed unconditionally**, on any change, forever. The same false-green shape
+I'd already caught and removed for the edge-function bundle, two steps further up the
+same file.
+
+Worse, the `verify` job could not have survived a fresh checkout at all: `packages/api`
+imports `./database.types.js`, and nothing in that job creates it.
+
+The fix splits the two cases that were being treated as one:
+
+- **Derivable from this repo** (`tokens.ts`, `tokens.css`, `keys.ts`) — untracked, and
+  rebuilt by `pnpm generate`, which now runs on install and at the head of `pnpm verify`.
+  A file rebuilt before every use cannot be stale, so there is nothing to check and the
+  check is gone.
+- **Needs a running Postgres** (`database.types.ts`) — now **committed**, so a fresh
+  clone typechecks. Its freshness is checked by the `database` job, which has a local
+  stack, regenerates it and diffs. That check is real *only* because the file is tracked.
+
+`pnpm db:types` also pointed at the hosted project while CI generated from `--local`,
+so the two would have disagreed the moment the two schemas did. Both read from the
+migrations now.
 
 ## Track F — the visual gap that isn't art
 
@@ -84,7 +116,14 @@ blocked by anything.
 
 ~~A1 → A2 → A3 → F1 → B1 → B2 → C1 → B4 → C2 → C3 → C4~~ — done.
 
-**Remaining:** the rest of B6 (gated on accounts and social) · E2 (Maestro) · D1–D3 (content).
+**Remaining:** the rest of B6 (gated on accounts and social) · E2 (Maestro) · D1 (content volume).
+
+D1 is now the only one with no tooling excuse left. `pnpm content:stats` names the next
+batch directly: today it reports **23 of 25 authored questions reachable**, with the two
+gaps both in `east-asia`, which has a single member. A subregion below four entities
+cannot produce a four-option question at all, so countries authored into a lonely
+subregion teach nobody until their neighbours land. Author by subregion, not by
+interest.
 
 E2 is deliberately last and deliberately not started here: a Maestro flow written
 without ever running it against a device is a file full of guesses about selectors and

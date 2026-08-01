@@ -222,16 +222,32 @@ describe('question construction', () => {
     }
   })
 
-  it('gives descriptive facts a hint, and self-answering ones none', () => {
-    const flag = index.itemsByFact
-      .get('geo.SE.flag')!
-      .find((i) => i.templateId === 'tpl.flag-describe.mc4')!
-    expect(buildQuestion(index, flag, 'en', seededRng(1))!.hint).toContain('Nordic cross')
+  it('gives a hint only when it adds something the question did not', () => {
+    const hintOf = (factId: string, templateId: string): string | undefined =>
+      buildQuestion(
+        index,
+        index.itemsByFact.get(factId as never)!.find((i) => i.templateId === templateId)!,
+        'en',
+        seededRng(1),
+      )!.hint
 
-    const capital = index.itemsByFact
-      .get('geo.SE.capital')!
-      .find((i) => i.templateId === 'tpl.capital.mc4')!
-    expect(buildQuestion(index, capital, 'en', seededRng(1))!.hint).toBeUndefined()
+    // The case the wrong-answer copy was designed around: the user saw a flag, chose
+    // wrongly, and the hint puts words to the picture they were looking at.
+    expect(hintOf('geo.SE.flag', 'tpl.flag-to-country.mc4')).toContain('Nordic cross')
+
+    // Its screen-reader sibling asks the SAME fact by stating the description in the
+    // prompt — so the hint would be the question read back. No information is lost:
+    // the sighted user's hint is what the blind user was already given.
+    expect(hintOf('geo.SE.flag', 'tpl.flag-describe.mc4')).toBeUndefined()
+
+    // "What is the capital of Sweden?" — the answer IS the fact value, so a hint
+    // built from it says "Stockholm is Stockholm."
+    expect(hintOf('geo.SE.capital', 'tpl.capital.mc4')).toBeUndefined()
+
+    // "Stockholm is the capital of which country?" — the fact value is in the
+    // PROMPT this time, so the hint says "Sweden is Stockholm." Found by
+    // `pnpm content:preview`, which exists to be read.
+    expect(hintOf('geo.SE.capital', 'tpl.capital-reverse.mc4')).toBeUndefined()
   })
 
   it('falls back to a wider pool when the close one is too small', () => {

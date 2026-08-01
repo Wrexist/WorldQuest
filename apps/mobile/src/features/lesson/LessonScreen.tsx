@@ -128,7 +128,7 @@ export function LessonScreen({ onExit }: { onExit: () => void }) {
               label={option.label}
               state={optionState(option.isCorrect, option.id, answered, lastAnswer?.chosenOptionId)}
               onPress={() => lesson.answer(option.id)}
-              aria-label={t('lesson:answer.label', { country: option.label })}
+              aria-label={t('lesson:answer.label', { answer: option.label })}
             />
           ))}
         </View>

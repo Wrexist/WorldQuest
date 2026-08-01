@@ -146,6 +146,38 @@ const normalise = (s: string): string =>
  * better than a question with an absurd option, which teaches nothing and makes the
  * app feel cheap.
  */
+/**
+ * The wrong-answer hint, or nothing.
+ *
+ * Two ways a hint can be worthless, and both shipped before this function existed:
+ *
+ * 1. The answer IS the fact value, so the hint restates the answer — "Stockholm is
+ *    Stockholm." Caught by looking at a screenshot.
+ * 2. The fact value is already in the PROMPT, so the hint restates the question —
+ *    "Stockholm is the capital of which country?" → "Sweden is Stockholm." Caught by
+ *    `pnpm content:preview`, which exists for exactly this.
+ *
+ * What is left is the case the copy was designed around: the answer is a country and
+ * the fact value describes it. "Sweden is a yellow Nordic cross on a blue field."
+ */
+function hintFor(
+  template: Template,
+  fact: Fact,
+  nameOf: (names: Readonly<Record<string, string>> | undefined) => string | undefined,
+  promptParams: Readonly<Record<string, string>>,
+): string | undefined {
+  if (template.answer.from !== 'entity.names') return undefined
+
+  const value = nameOf(fact.value.names)
+  if (value === undefined) return undefined
+
+  // Already said in the question. Repeating it is noise at the moment the user is
+  // most in need of something new.
+  if (Object.values(promptParams).includes(value)) return undefined
+
+  return value
+}
+
 export function buildQuestion(
   index: ContentIndex,
   item: Item,
@@ -229,6 +261,8 @@ export function buildQuestion(
     if (param === 'description') promptParams[param] = nameOf(fact.value.names) ?? ''
   }
 
+  const hint = hintFor(template, fact, nameOf, promptParams)
+
   return {
     item,
     promptKey: template.prompt.key,
@@ -238,19 +272,8 @@ export function buildQuestion(
     modality: template.modality,
     timeLimitMs: template.timeLimitMs ?? null,
     isNew: opts.isNew ?? false,
-    /**
-     * A hint only when it ADDS something.
-     *
-     * When the answer already comes from the fact value, the fact value is the
-     * answer — emitting it as a hint produced "Stockholm is Stockholm." on the
-     * wrong-answer screen. Caught by looking at a screenshot, not by a test.
-     *
-     * When the answer is the entity name, the fact value describes it ("a yellow
-     * Nordic cross on a blue field"), which is exactly the memorable hook the
-     * wrong-answer copy is designed around.
-     */
-    ...(template.answer.from === 'entity.names' && nameOf(fact.value.names) !== undefined
-      ? { hint: nameOf(fact.value.names)! }
-      : {}),
+    // A hint only when it ADDS something — see `hintFor`. Omitted rather than set to
+    // undefined, because `exactOptionalPropertyTypes` distinguishes the two.
+    ...(hint !== undefined ? { hint } : {}),
   }
 }

@@ -43,6 +43,16 @@ jobs:
       - name: Content validation
         run: pnpm content:validate
 
+      # Schema-valid content can still read as nonsense: a hint that repeats its own
+      # answer, a prompt that gives the answer away, a template pointing at a
+      # translation key nobody wrote. All three shipped at least once. This renders
+      # every question through the real catalogue and fails on those.
+      #
+      # `--quiet` because the full listing is for a human deciding whether the
+      # questions are GOOD. CI can only decide whether they are broken.
+      - name: Content reads correctly
+        run: pnpm content:preview --quiet
+
       - name: Localisation
         run: pnpm i18n:check
 

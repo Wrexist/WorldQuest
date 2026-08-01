@@ -5,7 +5,10 @@
   "version": "1.0.0",
   "subject": "geography",
   "kind": "templates",
-  "locales": ["en", "sv"],
+  "locales": [
+    "en",
+    "sv"
+  ],
   "license": "CC-BY-4.0",
   "generatedAt": "2026-07-31",
   "items": [
@@ -13,15 +16,24 @@
       "id": "tpl.capital.mc4",
       "attribute": "capital",
       "modality": "text",
-      "prompt": { "key": "lesson:prompt.capital_of", "params": ["entityName"] },
-      "answer": { "from": "fact.value.names" },
+      "prompt": {
+        "key": "lesson:prompt.capital_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
         "fallback": "same-region",
         "excludeSimilarStrings": true
       },
-      "a11y": { "screenReaderSafe": true },
+      "a11y": {
+        "screenReaderSafe": true
+      },
       "timeLimitMs": null,
       "difficultyModifier": 0
     },
@@ -29,15 +41,24 @@
       "id": "tpl.capital-reverse.mc4",
       "attribute": "capital",
       "modality": "text",
-      "prompt": { "key": "lesson:prompt.capital_reverse", "params": ["valueName"] },
-      "answer": { "from": "entity.names" },
+      "prompt": {
+        "key": "lesson:prompt.capital_reverse",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
       "distractors": {
         "count": 3,
         "strategy": "same-subregion",
         "fallback": "same-region",
         "excludeSimilarStrings": true
       },
-      "a11y": { "screenReaderSafe": true },
+      "a11y": {
+        "screenReaderSafe": true
+      },
       "timeLimitMs": null,
       "difficultyModifier": 1
     },
@@ -45,8 +66,13 @@
       "id": "tpl.flag-to-country.mc4",
       "attribute": "flag",
       "modality": "image",
-      "prompt": { "key": "lesson:prompt.which_flag", "params": [] },
-      "answer": { "from": "entity.names" },
+      "prompt": {
+        "key": "lesson:prompt.which_flag",
+        "params": []
+      },
+      "answer": {
+        "from": "entity.names"
+      },
       "distractors": {
         "count": 3,
         "strategy": "visually-similar",
@@ -64,17 +90,51 @@
       "id": "tpl.flag-describe.mc4",
       "attribute": "flag",
       "modality": "text",
-      "prompt": { "key": "lesson:prompt.flag_described", "params": ["description"] },
-      "answer": { "from": "entity.names" },
+      "prompt": {
+        "key": "lesson:prompt.flag_described",
+        "params": [
+          "description"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
       "distractors": {
         "count": 3,
         "strategy": "visually-similar",
         "fallback": "same-region",
         "excludeSimilarStrings": true
       },
-      "a11y": { "screenReaderSafe": true },
+      "a11y": {
+        "screenReaderSafe": true
+      },
       "timeLimitMs": null,
       "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.flag-of-country.mc4",
+      "attribute": "flag",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.flag_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "visually-similar",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
     }
   ]
 }
