@@ -37,6 +37,7 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="region/[code]" />
         <Stack.Screen
           name="lesson"
           options={{

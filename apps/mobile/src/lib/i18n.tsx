@@ -18,6 +18,18 @@ import { i18n, t } from '@worldquest/i18n'
 // One typed `t` for the whole app. Re-exported rather than wrapped so that a call
 // site's key and params are checked against the generated key union.
 export { t, tContent, currentLocale, setLocale } from '@worldquest/i18n'
+// Locale-aware formatting and collation. Re-exported so a screen imports from one
+// place — and so `collator` is the obvious thing to reach for instead of `.sort()`.
+export {
+  collator,
+  formatCompact,
+  formatDate,
+  formatDuration,
+  formatList,
+  formatNumber,
+  formatPercent,
+  formatRelative,
+} from '@worldquest/i18n'
 export type { Locale, TranslationKey } from '@worldquest/i18n'
 
 /**

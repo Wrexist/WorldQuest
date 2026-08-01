@@ -1,6 +1,7 @@
 export * from './shared/index.js'
 export * from './learning/index.js'
 export * from './content/index.js'
+export * from './progression/index.js'
 export * from './lesson/index.js'
 export * from './grading/index.js'
 export * from './sync/index.js'

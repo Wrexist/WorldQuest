@@ -33,11 +33,13 @@ import {
   buildIndex,
   composeLesson,
   seededRng,
+  worldProgress,
   type Entity,
   type Fact,
   type Template,
 } from '@worldquest/engines'
 import { HomeScreen } from '../../apps/mobile/src/features/home/HomeScreen.js'
+import { ExploreScreen } from '../../apps/mobile/src/features/explore/ExploreScreen.js'
 import { SettingsScreen } from '../../apps/mobile/src/features/settings/SettingsScreen.js'
 import { DEFAULTS as SETTINGS_DEFAULTS } from '../../apps/mobile/src/features/settings/usePreferences.js'
 
@@ -248,6 +250,14 @@ function Gallery() {
 
         <Phone label="Lesson · screen-reader-safe flag question" id="lesson-flag">
           <LessonView question={flagQuestion} answered={false} />
+        </Phone>
+
+        <Phone label="Explore · continents" id="explore" tab="explore">
+          <ExploreScreen
+            world={worldProgress(index, new Map(), Date.parse('2026-07-31T19:00:00Z'))}
+            loading={false}
+            onSelectRegion={() => {}}
+          />
         </Phone>
 
         <Phone label="More · settings" id="settings" tab="more">

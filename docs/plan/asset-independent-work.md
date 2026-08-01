@@ -29,7 +29,7 @@ illustration. Each is a mockup screen or a hidden screen from
 | # | Screen | Art needed? | State |
 |---|---|---|---|
 | B1 | **Settings** (#15) | None — it's rows and switches | ✅ |
-| B2 | **Continents** (#9) | None — the continent grid is colour + type | ⬜ |
+| B2 | **Continents** (#9) | None — the continent grid is colour + type | ✅ *(plus `/region/[code]`, the country list inside one)* |
 | B3 | **Country page** (#7) | Flag only, and flags are *sourced, never generated* | ⬜ |
 | B4 | **Daily Quest** (#4) | `ArtSlot` covers it | ⬜ |
 | B5 | **Profile** (#13) | Avatar → initials fallback already exists | ⬜ |
@@ -46,7 +46,7 @@ the globe needs map geometry, which is an unresolved licensing decision
 |---|---|---|---|
 | C1 | **Achievements rule engine** | ~300 achievements evaluated from a ledger, not from booleans sprinkled through screens. Spec: [`../systems/achievements.md`](../systems/achievements.md) | ⬜ |
 | C2 | **Quest engine** | Daily/weekly generation, progress, expiry. Spec: [`../systems/quests-and-liveops.md`](../systems/quests-and-liveops.md) | ⬜ |
-| C3 | **Progression / region mastery** | Roll fact mastery up to country → region → continent → world | ⬜ |
+| C3 | **Progression / region mastery** | Roll fact mastery up to country → region → continent → world | ✅ |
 | C4 | **Streak freeze + repair** | The streak logic exists; freezes and repair don't | ⬜ |
 
 These are the highest-value items on the whole list per hour spent: they're pure

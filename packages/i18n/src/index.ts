@@ -20,12 +20,14 @@ import { IcuFormat } from './icu.js'
 import { NAMESPACES, type Namespace, type TranslationKey, type TranslationParams } from './keys.js'
 
 import enCommon from '../locales/en/common.json' with { type: 'json' }
+import enExplore from '../locales/en/explore.json' with { type: 'json' }
 import enHome from '../locales/en/home.json' with { type: 'json' }
 import enLesson from '../locales/en/lesson.json' with { type: 'json' }
 import enNav from '../locales/en/nav.json' with { type: 'json' }
 import enNotifications from '../locales/en/notifications.json' with { type: 'json' }
 import enSettings from '../locales/en/settings.json' with { type: 'json' }
 import svCommon from '../locales/sv/common.json' with { type: 'json' }
+import svExplore from '../locales/sv/explore.json' with { type: 'json' }
 import svHome from '../locales/sv/home.json' with { type: 'json' }
 import svLesson from '../locales/sv/lesson.json' with { type: 'json' }
 import svNav from '../locales/sv/nav.json' with { type: 'json' }
@@ -67,6 +69,7 @@ export const FALLBACK_LOCALE: Locale = 'en'
 const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
   en: {
     common: enCommon,
+    explore: enExplore,
     home: enHome,
     lesson: enLesson,
     nav: enNav,
@@ -75,6 +78,7 @@ const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
   },
   sv: {
     common: svCommon,
+    explore: svExplore,
     home: svHome,
     lesson: svLesson,
     nav: svNav,
