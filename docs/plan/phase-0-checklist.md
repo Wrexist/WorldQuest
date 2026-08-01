@@ -106,8 +106,8 @@ These are **not** things an agent should decide. Each changes the product.
 
 | | Criterion | Status |
 |---|---|---|
-| ⚠️ | A real answer changes a real `due_at` **on a real server** | Persistence proven on the live DB (`due_at` = 3.17 days, matching FSRS); the HTTP round trip is untested because the build sandbox's proxy denies CONNECT to the project host |
-| ⚠️ | The slice runs offline and reconciles on reconnect | Queue logic fully tested (27 cases); `submitLesson` is wired but has never made a real request |
+| ⚠️ | A real answer changes a real `due_at` **on a real server** | Persistence proven on the live DB (`due_at` = 3.17 days, matching FSRS). The client path is now complete — typed client, anonymous session, `submitLesson` on the queue — but the HTTP round trip is still unverified: the build sandbox's proxy denies CONNECT to the project host. **Needs one run on a machine with network access to close.** |
+| ⚠️ | The slice runs offline and reconciles on reconnect | Queue logic fully tested (27 cases) and now persisted to MMKV, so it survives the app being killed. Same blocker: no request has ever left this machine. |
 | ✅ | `packages/engines` is React- and network-free, ≥ 90 % covered | 97 % |
 | ✅ | **Adding a sixth country is one JSON file and nothing else** | Asserted by `content/thesis.test.ts` |
 

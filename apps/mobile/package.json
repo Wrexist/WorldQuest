@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@worldquest/analytics": "workspace:*",
+    "@worldquest/api": "workspace:^",
     "@worldquest/design": "workspace:*",
     "@worldquest/engines": "workspace:*",
     "@worldquest/i18n": "workspace:*",
@@ -20,7 +21,8 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-i18next": "^15.2.0",
-    "react-native": "0.76.5"
+    "react-native": "0.76.5",
+    "react-native-mmkv": "^3.1.0"
   },
   "$comment": "Phase 1 is deliberately ugly. Design lands in weeks 3-6 — see docs/plan/build-order.md."
 }

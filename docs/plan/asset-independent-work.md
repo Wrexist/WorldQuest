@@ -17,7 +17,7 @@ against the slot, and the art arrives into a finished app instead of a half-buil
 |---|---|---|---|
 | A1 | **expo-router `app/` tree + five tabs** | `apps/mobile/package.json` already declared `main: expo-router/entry` with no `app/` directory — the app could not boot. Every screen in Track B needs somewhere to live. | ✅ |
 | A2 | **Real i18next, typed keys** | `src/lib/i18n.ts` was a hand-written shim, and `packages/i18n` declared a `types` script whose file did not exist. Every screen built before this is a screen to revisit. | ✅ |
-| A3 | **Wire `packages/api` into the app** | Anonymous session on launch, generated DB types, `submitLesson` on the real queue. Turns the two ⚠️ Phase 1 exit criteria into ✅. | ⬜ |
+| A3 | **Wire `packages/api` into the app** | Anonymous session on launch, generated DB types, `submitLesson` on the real queue, progress read on Home. | ✅ *(code complete — the two ⚠️ Phase 1 exit criteria still need one run on a machine whose proxy allows the Supabase host)* |
 | A4 | **TanStack Query + MMKV persistence** | Server state has one owner (PROJECT.md §9). Retrofitting it after six screens read Supabase directly is the expensive version. | ⬜ |
 
 ## Track B — screens that need no art

@@ -25,6 +25,9 @@
       ],
       "@worldquest/i18n": [
         "../../packages/i18n/src/index.ts"
+      ],
+      "@worldquest/api": [
+        "../../packages/api/src/index.ts"
       ]
     },
     "baseUrl": ".",
@@ -32,6 +35,7 @@
   },
   "include": [
     "app/**/*",
-    "src/**/*"
+    "src/**/*",
+    "types/**/*"
   ]
 }
