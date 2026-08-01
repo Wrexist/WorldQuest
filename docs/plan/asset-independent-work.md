@@ -67,7 +67,7 @@ blocked by anything.
 |---|---|---|
 | E1 | Component tests for every screen's five states | ✅ *(Home, Explore, Country, Quests, Settings — 48 tests. Lesson and Profile still to cover)* |
 | E2 | Maestro E2E: first launch → taster lesson → progress persists | ⬜ |
-| E3 | CI: run the Supabase RLS tests and the edge-function bundle guard on every PR | ⬜ |
+| E3 | CI: RLS tests on a local stack, migrations from empty, economy health, and every generated file checked against its source | ✅ |
 | E4 | Wire the `en-XA` pseudo-locale into a dev build — the generator exists (`pnpm i18n:pseudo`), loading it at runtime does not | ⬜ |
 
 ## Track F — the visual gap that isn't art

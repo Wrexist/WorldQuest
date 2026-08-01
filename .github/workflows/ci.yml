@@ -21,18 +21,27 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # Generated artefacts must match their source. A stale tokens.ts means the
-      # app and the design system have silently diverged.
+      # ── generated artefacts must match their source ──────────────────────
+      #
+      # A stale generated file is worse than none: it compiles, so it looks
+      # correct, right up until it describes something that no longer exists.
+
       - name: Tokens are up to date
         run: |
           pnpm design:tokens
           git diff --exit-code packages/design/src/tokens.ts packages/design/src/tokens.css \
             || (echo "::error::tokens.ts is stale — run pnpm design:tokens and commit"; exit 1)
 
+      - name: Translation keys are up to date
+        run: |
+          pnpm i18n:types
+          git diff --exit-code packages/i18n/src/keys.ts \
+            || (echo "::error::keys.ts is stale — run pnpm i18n:types and commit"; exit 1)
+
       - name: Typecheck (packages + app)
         run: pnpm typecheck
 
-      - name: Unit tests (engines gate at 90% coverage)
+      - name: Unit and component tests
         run: pnpm test
 
       - name: Content validation
@@ -43,3 +52,59 @@ jobs:
 
       - name: Contrast (WCAG 2.2 AA)
         run: pnpm design:contrast
+
+      # The economy simulation exits non-zero on its own health gates — a heart
+      # block rate over 15%, a hoarding cohort, a curve that tops out early. A
+      # reward number can be changed without any test noticing; this notices.
+      - name: Economy health
+        run: pnpm engines:simulate
+
+  # ── the two checks that need more than Node ────────────────────────────────
+
+  database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - uses: supabase/setup-cli@v1
+        with: { version: latest }
+
+      - run: pnpm install --frozen-lockfile
+
+      # Against a LOCAL stack, never a hosted project. A migration that drops a
+      # column is a migration that drops a column, and CI must be free to find
+      # that out.
+      - name: Start Supabase
+        run: supabase start
+
+      # Every migration applied from scratch. Catches the class of bug where a
+      # migration only works against the schema that happens to be in staging.
+      - name: Migrations apply from empty
+        run: supabase db reset
+
+      # RLS is the entire authorisation model. A policy that is missing, or that
+      # is written to `USING (true)`, lets one user read another's progress — and
+      # nothing else in this pipeline would notice.
+      - name: RLS policy tests
+        run: supabase test db
+
+      - name: Generated database types are up to date
+        run: |
+          supabase gen types typescript --local > packages/api/src/database.types.ts
+          git diff --exit-code packages/api/src/database.types.ts \
+            || (echo "::error::database.types.ts is stale — run pnpm db:types and commit"; exit 1)
+
+# The edge function VENDORS the grading, FSRS and balance modules, because Deno
+# cannot import from a pnpm workspace. Vendored code drifts silently, and the
+# result is a client and a server that disagree about what a user knows — the
+# worst bug this product can have.
+#
+# There is deliberately NO job for it here. The bundle is assembled in memory at
+# deploy time and never written to the repo, so a `git diff` check would pass
+# unconditionally and prove nothing. The real guard is
+# `supabase/functions/build.test.ts`, which asserts the vendored grading, FSRS
+# and balance modules are byte-identical to their source — and that runs in
+# `pnpm test` above.
