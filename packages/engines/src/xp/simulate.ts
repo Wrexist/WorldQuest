@@ -27,6 +27,9 @@ const COHORTS: Cohort[] = [
 
 const DAYS = 90
 const ITEM_MS = 8_000
+/** Kept in step with the quest engine's five slots. */
+const SLOTS_PER_QUEST = 5
+
 const ITEMS_PER_LESSON = 15
 
 /**
@@ -122,8 +125,14 @@ function simulate(cohort: Cohort): Result {
       if (l === 0) xpToday += BALANCE.xp.firstLessonOfDay
     }
 
-    // Daily quest, completed on most active days.
-    if (rng.next() < 0.7) {
+    // Daily quest. Five slots pay per slot; the bonus pays once, on all five.
+    //
+    // Partial completion is modelled, not just the all-or-nothing case — most days a
+    // user finishes three or four slots, and pretending otherwise understates the
+    // quest's contribution by more than half.
+    const slotsDone = rng.next() < 0.7 ? SLOTS_PER_QUEST : Math.floor(rng.next() * SLOTS_PER_QUEST)
+    xpToday += slotsDone * BALANCE.xp.dailyQuestTask
+    if (slotsDone === SLOTS_PER_QUEST) {
       xpToday += BALANCE.xp.dailyQuest
       coinsEarned += BALANCE.coins.dailyQuest
     }

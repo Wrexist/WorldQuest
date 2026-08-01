@@ -24,6 +24,14 @@ export const BALANCE = {
     overdueReviewBonus: 2,
     perfectLesson: 15,
     lessonComplete: 5,
+    /**
+     * Per completed quest slot. Specified in quests-and-liveops.md §1 ("five
+     * challenges, 10 XP each") but previously absent from this table, so the quest
+     * engine had nothing to read. Five slots × 10 + the 50 bonus = 100 XP a day at
+     * full completion, which the simulation below is re-run against.
+     */
+    dailyQuestTask: 10,
+    /** The bonus for completing all five. */
     dailyQuest: 50,
     dailyChallenge: 30,
     speedBonus: 2,
