@@ -47,7 +47,7 @@ the globe needs map geometry, which is an unresolved licensing decision
 | C1 | **Achievements rule engine** | Six rule types, incremental, backfillable. Definitions are content; the catalogue and the screen are still to write. | ✅ *(engine)* |
 | C2 | **Quest engine** | Daily/weekly generation, progress, expiry. Spec: [`../systems/quests-and-liveops.md`](../systems/quests-and-liveops.md) | ⬜ |
 | C3 | **Progression / region mastery** | Roll fact mastery up to country → region → continent → world | ✅ |
-| C4 | **Streak freeze + repair** | The streak logic exists; freezes and repair don't | ⬜ |
+| C4 | **Streak freeze + repair** | Freeze cap, 48-hour repair window, 30-day cooldown — all against the balance table, none invented | ✅ |
 
 These are the highest-value items on the whole list per hour spent: they're pure
 functions, they're where the product's behaviour actually lives, and they can't be

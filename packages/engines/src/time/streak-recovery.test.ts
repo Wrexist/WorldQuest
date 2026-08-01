@@ -1,0 +1,177 @@
+import { describe, expect, it } from 'vitest'
+import { BALANCE } from '../xp/balance.js'
+import {
+  FREEZE_PRICE,
+  MAX_FREEZES,
+  REPAIR_COOLDOWN_DAYS,
+  REPAIR_PRICE,
+  REPAIR_WINDOW_HOURS,
+  grantFreeze,
+  markBroken,
+  repair,
+  repairAvailability,
+  type RecoveryState,
+} from './streak-recovery.js'
+
+const TZ = 'Europe/Stockholm'
+const HOUR = 3_600_000
+const DAY = 24 * HOUR
+
+/** The streak broke on the 1st; "now" is measured from midnight UTC that day. */
+const BROKE_AT = Date.parse('2026-08-01T00:00:00Z')
+
+const broken = (overrides: Partial<RecoveryState> = {}): RecoveryState => ({
+  current: 1,
+  longest: 214,
+  lastActiveDate: '2026-07-30',
+  freezesHeld: 0,
+  brokenOn: '2026-08-01',
+  lastRepairAt: null,
+  ...overrides,
+})
+
+describe('prices come from the balance table', () => {
+  it('does not keep a second copy of any number a user can feel', () => {
+    // A duplicated price is a second number to forget to change, and the one that
+    // gets forgotten is always the one the user sees.
+    expect(FREEZE_PRICE).toBe(BALANCE.prices.streakFreeze)
+    expect(REPAIR_PRICE).toBe(BALANCE.prices.streakRepair)
+  })
+})
+
+describe('freezes', () => {
+  it('grants up to the cap', () => {
+    expect(grantFreeze({ freezesHeld: 0 })).toEqual({ freezesHeld: 1, granted: true })
+    expect(grantFreeze({ freezesHeld: 1 })).toEqual({ freezesHeld: 2, granted: true })
+  })
+
+  it('refuses past the cap instead of silently swallowing a purchase', () => {
+    // The caller is a shop. Taking the coins and discarding the freeze is the worst
+    // outcome available, and throwing mid-transaction is the second worst.
+    const result = grantFreeze({ freezesHeld: MAX_FREEZES })
+    expect(result).toEqual({ freezesHeld: MAX_FREEZES, granted: false })
+  })
+})
+
+describe('repair availability', () => {
+  it('is unavailable when nothing is broken', () => {
+    const intact = broken({ brokenOn: null, current: 42 })
+    expect(repairAvailability(intact, BROKE_AT, TZ)).toEqual({
+      available: false,
+      reason: 'not-broken',
+    })
+  })
+
+  it('is available inside the window', () => {
+    const result = repairAvailability(broken(), BROKE_AT + 12 * HOUR, TZ)
+    expect(result).toEqual({
+      available: true,
+      price: REPAIR_PRICE,
+      expiresAt: BROKE_AT + REPAIR_WINDOW_HOURS * HOUR,
+    })
+  })
+
+  it('closes once the window passes', () => {
+    const justInside = repairAvailability(broken(), BROKE_AT + REPAIR_WINDOW_HOURS * HOUR, TZ)
+    expect(justInside.available).toBe(true)
+
+    const justOutside = repairAvailability(
+      broken(),
+      BROKE_AT + REPAIR_WINDOW_HOURS * HOUR + 1,
+      TZ,
+    )
+    expect(justOutside).toEqual({ available: false, reason: 'window-expired' })
+  })
+
+  it('enforces the cooldown', () => {
+    const recent = broken({ lastRepairAt: BROKE_AT - 10 * DAY })
+    expect(repairAvailability(recent, BROKE_AT + HOUR, TZ)).toEqual({
+      available: false,
+      reason: 'cooldown',
+    })
+
+    const longAgo = broken({ lastRepairAt: BROKE_AT - (REPAIR_COOLDOWN_DAYS + 1) * DAY })
+    expect(repairAvailability(longAgo, BROKE_AT + HOUR, TZ).available).toBe(true)
+  })
+
+  it('refuses to sell back a streak that was never worth anything', () => {
+    // Charging 600 coins to restore a one-day streak is taking money for a rounding
+    // error, and it is the kind of thing a ten-year-old's parent notices.
+    const trivial = broken({ current: 1, longest: 1 })
+    expect(repairAvailability(trivial, BROKE_AT + HOUR, TZ)).toEqual({
+      available: false,
+      reason: 'nothing-to-restore',
+    })
+  })
+
+  it('gives a specific reason for every refusal', () => {
+    // "You can repair again in 12 days" and "the window closed yesterday" are
+    // different messages. A generic "not available" invites the user to keep tapping.
+    const reasons = new Set(
+      [
+        repairAvailability(broken({ brokenOn: null }), BROKE_AT, TZ),
+        repairAvailability(broken(), BROKE_AT + 100 * HOUR, TZ),
+        repairAvailability(broken({ lastRepairAt: BROKE_AT - DAY }), BROKE_AT + HOUR, TZ),
+        repairAvailability(broken({ current: 1, longest: 1 }), BROKE_AT + HOUR, TZ),
+      ].map((r) => (r.available ? 'available' : r.reason)),
+    )
+    expect(reasons).toEqual(
+      new Set(['not-broken', 'window-expired', 'cooldown', 'nothing-to-restore']),
+    )
+  })
+})
+
+describe('repair', () => {
+  it('restores the pre-break length, not the reset value', () => {
+    // `applyActivity` has already set current to 1 by the time anyone can tap repair.
+    // Reading it back would restore a 214-day streak as a 1-day streak and charge
+    // 600 coins for the privilege.
+    const result = repair(broken(), 214, 1000, BROKE_AT + HOUR, TZ)
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.state.current).toBe(214)
+    expect(result.state.longest).toBe(214)
+    expect(result.coinsSpent).toBe(REPAIR_PRICE)
+  })
+
+  it('counts today as active', () => {
+    // The user has just paid to be considered present. Making them ALSO complete a
+    // lesson to keep the streak they just bought is a small betrayal that sticks.
+    const result = repair(broken(), 214, 1000, BROKE_AT + 10 * HOUR, TZ)
+    expect(result.ok && result.state.lastActiveDate).toBe('2026-08-01')
+    expect(result.ok && result.state.brokenOn).toBeNull()
+  })
+
+  it('starts the cooldown', () => {
+    const at = BROKE_AT + HOUR
+    const result = repair(broken(), 214, 1000, at, TZ)
+    expect(result.ok && result.state.lastRepairAt).toBe(at)
+  })
+
+  it('fails rather than throwing when the user cannot afford it', () => {
+    // The caller has to be able to refund, so this is a Result. An exception here is
+    // a crash in the middle of a transaction.
+    const result = repair(broken(), 214, REPAIR_PRICE - 1, BROKE_AT + HOUR, TZ)
+    expect(result).toEqual({ ok: false, reason: 'insufficient-coins' })
+  })
+
+  it('fails when the window closed while the user was deciding', () => {
+    const result = repair(broken(), 214, 10_000, BROKE_AT + 100 * HOUR, TZ)
+    expect(result).toEqual({ ok: false, reason: 'window-expired' })
+  })
+
+  it('does not mutate the state it is given', () => {
+    const before = Object.freeze(broken())
+    repair(before, 214, 1000, BROKE_AT + HOUR, TZ)
+    expect(before.brokenOn).toBe('2026-08-01')
+    expect(before.current).toBe(1)
+  })
+})
+
+describe('markBroken', () => {
+  it('carries the pre-break length out so it can be persisted', () => {
+    const result = markBroken(broken({ brokenOn: null }), '2026-08-01', 214)
+    expect(result.brokenOn).toBe('2026-08-01')
+    expect(result.restorableLength).toBe(214)
+  })
+})
