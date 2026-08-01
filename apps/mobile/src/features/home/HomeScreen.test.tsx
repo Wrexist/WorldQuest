@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { HomeScreen, type HomeProgress } from './HomeScreen.js'
 
 const RETURNING: HomeProgress = {
@@ -74,7 +74,7 @@ describe('Home — behaviour', () => {
     render(
       <HomeScreen progress={RETURNING} loading={false} isOffline={false} onStartLesson={onStartLesson} />,
     )
-    screen.getByRole('button', { name: 'Continue' }).click()
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
     expect(onStartLesson).toHaveBeenCalledOnce()
   })
 

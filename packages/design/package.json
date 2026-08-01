@@ -10,5 +10,8 @@
     "build-tokens": "tsx scripts/build-tokens.ts",
     "check-contrast": "tsx scripts/check-contrast.ts",
     "preview": "tsx scripts/build-preview.ts"
+  },
+  "dependencies": {
+    "expo-linear-gradient": "~14.0.0"
   }
 }

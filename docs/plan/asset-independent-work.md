@@ -65,7 +65,7 @@ blocked by anything.
 
 | # | Work | State |
 |---|---|---|
-| E1 | Component tests for every screen's five states | ✅ *(Home, Explore, Country, Quests, Settings — 48 tests. Lesson and Profile still to cover)* |
+| E1 | Component tests for every screen's five states | ✅ *(all seven screens — 65 tests)* |
 | E2 | Maestro E2E: first launch → taster lesson → progress persists | ⬜ |
 | E3 | CI: RLS tests on a local stack, migrations from empty, economy health, and every generated file checked against its source | ✅ |
 | E4 | Wire the `en-XA` pseudo-locale into a dev build — the generator exists (`pnpm i18n:pseudo`), loading it at runtime does not | ⬜ |
@@ -75,7 +75,7 @@ blocked by anything.
 | # | Work | Notes | State |
 |---|---|---|---|
 | F1 | **Bundle Inter + Baloo 2** | Both OFL, both free. Loaded per weight — `fontFamily` + `fontWeight` does not combine for custom fonts on React Native, so this needed the `text()` helper and a guard, not just the files. | ✅ |
-| F2 | **Card gradients** (`expo-linear-gradient`) | The mockup's cards are gradients; ours are flat fills | ⬜ |
+| F2 | **Card gradients** | Semantic `gradient.*` tokens, drawn by `Card`, with a flat fallback where there is no native module | ✅ |
 | F3 | **Motion pass** | Springs, celebration, reduced-motion — all token-driven, no assets | ⬜ |
 
 ---

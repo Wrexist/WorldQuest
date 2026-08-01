@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { CountryScreen, type CountryFact } from './CountryScreen.js'
 
 const capital: CountryFact = {
@@ -122,7 +122,7 @@ describe('Country — states', () => {
         onPractise={onPractise}
       />,
     )
-    screen.getByRole('button', { name: 'Practise this country' }).click()
+    fireEvent.click(screen.getByRole('button', { name: 'Practise this country' }))
     expect(onPractise).toHaveBeenCalledOnce()
   })
 

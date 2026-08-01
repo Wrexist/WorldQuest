@@ -81,6 +81,7 @@ const body = [
   `export const elevation = ${JSON.stringify(resolved.elevation, null, 2)} as const`,
   `export const typography = ${JSON.stringify(resolved.typography, null, 2)} as const`,
   `export const motion = ${JSON.stringify(resolved.motion, null, 2)} as const`,
+  `export const gradient = ${JSON.stringify(resolved.gradient, null, 2)} as const`,
   `export const layout = ${JSON.stringify(resolved.layout, null, 2)} as const`,
   `export const icon = ${JSON.stringify(resolved.icon, null, 2)} as const`,
   `export const contrastFloors = ${JSON.stringify(resolved.contrastFloors, null, 2)} as const`,

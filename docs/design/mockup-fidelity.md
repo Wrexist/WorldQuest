@@ -39,7 +39,7 @@ The mockup's imagery is generated art. Matching it needs real assets:
 | Trophy | 3D gold trophy | `ArtSlot` placeholder |
 | Avatar | Illustrated character | Initials in a ringed circle |
 | Atlas the mascot | Robot explorer | Not built |
-| Card gradients | Blue→dark, purple→dark | Flat surfaces; needs `expo-linear-gradient` |
+| ~~Card gradients~~ | Blue→dark, purple→dark | ✅ **Done.** Semantic `gradient.*` tokens drawn by `Card`, 135° top-left to bottom-right. |
 | ~~Inter + Baloo 2~~ | The real faces | ✅ **Bundled.** Loaded per weight from `@expo-google-fonts`, splash held until they land, and the screenshots now render in the real faces instead of a substitute sans. |
 
 Prompts for every one of these are in [`asset-prompts.md`](asset-prompts.md).

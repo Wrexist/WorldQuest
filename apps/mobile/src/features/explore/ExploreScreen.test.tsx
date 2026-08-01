@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import type { WorldProgress } from '@worldquest/engines'
 import { ExploreScreen } from './ExploreScreen.js'
 
@@ -62,7 +62,7 @@ describe('Explore', () => {
   it('opens a continent that has content', () => {
     const onSelectRegion = vi.fn()
     render(<ExploreScreen world={world()} loading={false} onSelectRegion={onSelectRegion} />)
-    screen.getByRole('button', { name: 'Europe, 38% complete' }).click()
+    fireEvent.click(screen.getByRole('button', { name: 'Europe, 38% complete' }))
     expect(onSelectRegion).toHaveBeenCalledWith('EU')
   })
 

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { SettingsScreen } from './SettingsScreen.js'
 import { DEFAULTS } from './usePreferences.js'
 
@@ -46,7 +46,7 @@ describe('Settings', () => {
 
   it('changes the language and reports the new value', () => {
     const { onChange } = renderSettings()
-    screen.getByRole('radio', { name: 'Svenska' }).click()
+    fireEvent.click(screen.getByRole('radio', { name: 'Svenska' }))
     expect(onChange).toHaveBeenCalledWith('language', 'sv')
   })
 
@@ -74,7 +74,7 @@ describe('Settings', () => {
   it('makes a row a button once it has somewhere to go', () => {
     const onOpenPrivacyPolicy = vi.fn()
     renderSettings({ onOpenPrivacyPolicy })
-    screen.getByRole('button', { name: 'Privacy policy' }).click()
+    fireEvent.click(screen.getByRole('button', { name: 'Privacy policy' }))
     expect(onOpenPrivacyPolicy).toHaveBeenCalledOnce()
   })
 

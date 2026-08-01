@@ -24,6 +24,7 @@
     "expo": "~52.0.0",
     "expo-constants": "~17.0.0",
     "expo-font": "~13.0.0",
+    "expo-linear-gradient": "~14.0.0",
     "expo-linking": "~7.0.0",
     "expo-localization": "~16.0.0",
     "expo-router": "~4.0.0",
@@ -34,7 +35,7 @@
     "react-native": "0.76.5",
     "react-native-mmkv": "^3.1.0"
   },
-  "$comment": "Phase 1 is deliberately ugly. Design lands in weeks 3-6 \u2014 see docs/plan/build-order.md.",
+  "$comment": "Phase 1 is deliberately ugly. Design lands in weeks 3-6 — see docs/plan/build-order.md.",
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.1.0",

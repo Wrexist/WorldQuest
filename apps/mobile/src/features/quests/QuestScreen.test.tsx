@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import type { DailyQuest } from '@worldquest/engines'
 import { QuestScreen } from './QuestScreen.js'
 
@@ -80,7 +80,7 @@ describe('Quests — behaviour', () => {
   it('starts a lesson from the primary action', () => {
     const onStart = vi.fn()
     render(<QuestScreen quest={quest()} loading={false} onStart={onStart} />)
-    screen.getByRole('button', { name: 'Continue' }).click()
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
     expect(onStart).toHaveBeenCalledOnce()
   })
 

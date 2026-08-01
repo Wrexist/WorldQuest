@@ -1,7 +1,16 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
-import { colors, contrastFloors, layout, motion, radius, space, typography } from './tokens.js'
+import {
+  colors,
+  contrastFloors,
+  gradient,
+  layout,
+  motion,
+  radius,
+  space,
+  typography,
+} from './tokens.js'
 import { FONT_FAMILIES, fontFamily, text } from './typography.js'
 
 const primitivesDir = join(import.meta.dirname, 'primitives')
@@ -27,6 +36,20 @@ describe('token integrity', () => {
       }
     }
     walk(colors, 'colors')
+    // Gradients are semantic too — a component asks for `gradient.card`, never for a
+    // pair of hexes, so an unresolved reference here is the same class of failure.
+    walk(gradient, 'gradient')
+  })
+
+  it('gives every gradient two concrete stops and an angle', () => {
+    for (const [name, spec] of Object.entries(gradient)) {
+      expect(spec.from, `gradient.${name}.from`).toMatch(/^#[0-9a-fA-F]{6}$/)
+      expect(spec.to, `gradient.${name}.to`).toMatch(/^#[0-9a-fA-F]{6}$/)
+      // A gradient whose stops are equal is a flat fill wearing a costume — it costs
+      // a native view and buys nothing.
+      expect(spec.from, `gradient.${name} has identical stops`).not.toBe(spec.to)
+      expect(spec.angle).toBeTypeOf('number')
+    }
   })
 
   it('matches the documented scale exactly', () => {
