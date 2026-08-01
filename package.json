@@ -10,7 +10,7 @@
     "dev": "pnpm --filter @worldquest/mobile start",
     "verify": "pnpm typecheck && pnpm test && pnpm content:validate && pnpm i18n:check && pnpm design:contrast",
     "typecheck": "pnpm -r --filter './packages/*' --filter './apps/*' typecheck",
-    "test": "pnpm -r --filter './packages/*' test && vitest run --config vitest.edge.config.ts",
+    "test": "pnpm -r --filter './packages/*' --filter './apps/*' test && vitest run --config vitest.edge.config.ts",
     "content:validate": "pnpm --filter @worldquest/content validate",
     "content:preview": "pnpm --filter @worldquest/content preview",
     "content:stats": "pnpm --filter @worldquest/content stats",

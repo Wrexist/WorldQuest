@@ -19,7 +19,7 @@ export function Card({ children, level = 1, accessibilityLabel, style, testID }:
   return (
     <View
       accessible={accessibilityLabel !== undefined}
-      accessibilityLabel={accessibilityLabel}
+      aria-label={accessibilityLabel}
       testID={testID}
       style={[styles.base, LEVELS[level], style]}
     >

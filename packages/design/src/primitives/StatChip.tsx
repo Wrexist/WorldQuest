@@ -35,7 +35,7 @@ export function StatChip({ kind, value, accessibilityLabel, style, testID }: Sta
   return (
     <View
       accessible
-      accessibilityLabel={accessibilityLabel}
+      aria-label={accessibilityLabel}
       style={[styles.base, style]}
       testID={testID}
     >

@@ -63,7 +63,7 @@ export function ExploreScreen({ world, loading, onSelectRegion }: ExploreScreenP
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.header}>
-        <Text style={styles.title} accessibilityRole="header">
+        <Text style={styles.title} role="heading">
           {t('explore:title')}
         </Text>
         <Text style={styles.subtitle}>{t('explore:subtitle')}</Text>
@@ -92,12 +92,12 @@ export function ExploreScreen({ world, loading, onSelectRegion }: ExploreScreenP
           return (
             <Pressable
               key={region}
-              accessibilityRole="button"
-              accessibilityLabel={t('explore:region.label', {
+              role="button"
+              aria-label={t('explore:region.label', {
                 region: t(REGION_NAME[region]),
                 percent: percent(progress?.fraction ?? 0),
               })}
-              accessibilityState={{ disabled: empty }}
+              aria-disabled={empty}
               disabled={empty}
               onPress={() => onSelectRegion(region)}
               // A continent with no content yet is dimmed rather than hidden. Hiding
@@ -141,7 +141,7 @@ export function ExploreScreen({ world, loading, onSelectRegion }: ExploreScreenP
 function ExploreSkeleton() {
   const t = useT()
   return (
-    <View style={styles.screen} accessibilityLabel={t('common:loading')}>
+    <View style={styles.screen} aria-label={t('common:loading')}>
       <View style={styles.content}>
         <Skeleton width="45%" height={30} />
         <Skeleton height={88} borderRadius={radius.lg} />

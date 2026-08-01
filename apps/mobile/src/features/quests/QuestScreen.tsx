@@ -63,7 +63,7 @@ export function QuestScreen({ quest, loading, onStart }: QuestScreenProps) {
   if (quest === null) {
     return (
       <View style={[styles.screen, styles.centered]}>
-        <Text style={styles.title} accessibilityRole="header">
+        <Text style={styles.title} role="heading">
           {t('quests:empty.title')}
         </Text>
         <Text style={styles.subtitle}>{t('quests:empty.body')}</Text>
@@ -77,7 +77,7 @@ export function QuestScreen({ quest, loading, onStart }: QuestScreenProps) {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.header}>
-        <Text style={styles.title} accessibilityRole="header">
+        <Text style={styles.title} role="heading">
           {t('quests:title')}
         </Text>
         <Text style={styles.subtitle}>{t('quests:subtitle')}</Text>
@@ -125,12 +125,12 @@ function TaskRow({ task }: { task: QuestTask }) {
       // One element per task: a reader announces "Know the flag, 2 of 4" rather than
       // sweeping a title, a body and a counter separately.
       accessible
-      accessibilityLabel={t('quests:task.label', {
+      aria-label={t('quests:task.label', {
         title,
         progress: task.progress,
         target: task.target,
       })}
-      accessibilityState={{ checked: task.complete }}
+      aria-checked={task.complete}
       style={[styles.task, task.complete && styles.taskDone]}
     >
       <View style={styles.taskText}>
@@ -156,7 +156,7 @@ function TaskRow({ task }: { task: QuestTask }) {
 function QuestSkeleton() {
   const t = useT()
   return (
-    <View style={styles.screen} accessibilityLabel={t('common:loading')}>
+    <View style={styles.screen} aria-label={t('common:loading')}>
       <View style={styles.content}>
         <Skeleton width="55%" height={30} />
         <Skeleton height={96} borderRadius={radius.lg} />

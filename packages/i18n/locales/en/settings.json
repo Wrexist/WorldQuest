@@ -31,6 +31,8 @@
   "settings:motion.label__note": "Toggle label. Max 16 characters.",
   "settings:motion.help": "Follows your device setting unless you change it here.",
 
+  "settings:language.label": "App language",
+  "settings:language.label__note": "Label of the picker inside the Language section. Max 16 characters.",
   "settings:language.system": "Match my device",
   "settings:language.system__note": "Language option that follows the OS setting rather than a fixed choice.",
   "settings:language.en": "English",

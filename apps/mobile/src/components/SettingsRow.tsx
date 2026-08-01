@@ -20,7 +20,7 @@ import { colors, layout, radius, space, text } from '@worldquest/design'
 export function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle} accessibilityRole="header">
+      <Text style={styles.sectionTitle} role="heading">
         {title}
       </Text>
       <View style={styles.card}>{children}</View>
@@ -48,14 +48,14 @@ export function SwitchRow({
 }: SwitchRowProps) {
   return (
     <View
-      // One element, not four. `accessibilityRole="switch"` plus the state is what
+      // One element, not four. `role="switch"` plus the state is what
       // makes a reader say "Sound effects, on, switch" rather than reading a label,
       // then a paragraph, then an unlabelled control.
       accessible
-      accessibilityRole="switch"
-      accessibilityLabel={accessibilityLabel ?? label}
+      role="switch"
+      aria-label={accessibilityLabel ?? label}
       accessibilityHint={help}
-      accessibilityState={{ checked: value }}
+      aria-checked={value}
       style={styles.row}
     >
       <View style={styles.rowText}>
@@ -107,19 +107,21 @@ export function ChoiceRow<T extends string>({
 }: ChoiceRowProps<T>) {
   return (
     <View style={styles.rowStacked}>
-      <Text style={styles.rowLabel} accessibilityRole="header">
+      <Text style={styles.rowLabel} role="heading">
         {label}
       </Text>
       {help !== undefined && <Text style={styles.rowHelp}>{help}</Text>}
-      <View style={styles.choices} accessibilityRole="radiogroup">
+      <View style={styles.choices} role="radiogroup">
         {choices.map((choice) => {
           const selected = choice.value === value
           return (
             <Pressable
               key={choice.value}
-              accessibilityRole="radio"
-              accessibilityLabel={choice.label}
-              accessibilityState={{ selected }}
+              role="radio"
+              aria-label={choice.label}
+              // `aria-checked`, not `aria-selected`: selected is for options and tabs,
+              // and a radio carrying it announces nothing useful.
+              aria-checked={selected}
               onPress={() => onChange(choice.value)}
               style={[styles.choice, selected && styles.choiceSelected]}
             >
@@ -164,9 +166,9 @@ export function LinkRow({
   return (
     <Pressable
       accessible
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      accessibilityState={{ disabled: false }}
+      role="button"
+      aria-label={label}
+      aria-disabled={false}
       onPress={onPress}
       style={styles.row}
     >

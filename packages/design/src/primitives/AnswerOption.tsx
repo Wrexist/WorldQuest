@@ -65,12 +65,10 @@ export function AnswerOption({
   return (
     <Pressable
       accessible
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel ?? label}
-      accessibilityState={{
-        selected: state === 'selected',
-        disabled: isInert,
-      }}
+      role="button"
+      aria-label={accessibilityLabel ?? label}
+      aria-selected={state === 'selected'}
+      aria-disabled={isInert}
       disabled={isInert}
       onPress={onPress}
       testID={testID}

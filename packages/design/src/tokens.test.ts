@@ -97,11 +97,18 @@ describe('primitives obey the token discipline', () => {
     }
   })
 
-  it('gives every interactive primitive an accessibility role', () => {
+  it('gives every interactive primitive a role and a state', () => {
+    // ARIA props, not `accessibilityRole`/`accessibilityState`.
+    //
+    // React Native 0.71+ accepts both and maps ARIA to the native accessibility API,
+    // but react-native-web SILENTLY DROPS `accessibilityState` — no aria-checked, no
+    // aria-disabled, nothing. So on the web build every switch and every disabled
+    // control was unlabelled, and no test could have caught it, because the attribute
+    // simply was not in the tree. ARIA props survive both targets and are assertable.
     for (const { file, code } of sources) {
       if (!code.includes('Pressable')) continue
-      expect(code, `${file} has a Pressable with no accessibilityRole`).toContain('accessibilityRole')
-      expect(code, `${file} has a Pressable with no accessibilityState`).toContain('accessibilityState')
+      expect(code, `${file} has a Pressable with no role`).toMatch(/\brole=/)
+      expect(code, `${file} has a Pressable with no aria state`).toMatch(/\baria-(disabled|checked|selected|busy)=/)
     }
   })
 

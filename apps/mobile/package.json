@@ -7,7 +7,8 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@expo-google-fonts/baloo-2": "^0.2.3",
@@ -33,5 +34,12 @@
     "react-native": "0.76.5",
     "react-native-mmkv": "^3.1.0"
   },
-  "$comment": "Phase 1 is deliberately ugly. Design lands in weeks 3-6 — see docs/plan/build-order.md."
+  "$comment": "Phase 1 is deliberately ugly. Design lands in weeks 3-6 \u2014 see docs/plan/build-order.md.",
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.1.0",
+    "jsdom": "^25.0.1",
+    "react-native-web": "^0.19.13",
+    "vitest": "^2.1.8"
+  }
 }

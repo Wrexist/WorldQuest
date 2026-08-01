@@ -67,7 +67,7 @@ export function ProfileScreen({ stats, world, loading, onCreateAccount }: Profil
     return (
       <View style={[styles.screen, styles.centered]}>
         <Avatar initials="EX" size={72} accessibilityLabel={t('profile:anonymous')} />
-        <Text style={styles.title} accessibilityRole="header">
+        <Text style={styles.title} role="heading">
           {t('profile:empty.title')}
         </Text>
         <Text style={styles.subtitle}>{t('profile:empty.body')}</Text>
@@ -84,7 +84,7 @@ export function ProfileScreen({ stats, world, loading, onCreateAccount }: Profil
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.identity}>
         <Avatar initials="EX" size={72} accessibilityLabel={t('profile:anonymous')} />
-        <Text style={styles.name} accessibilityRole="header">
+        <Text style={styles.name} role="heading">
           {t('profile:anonymous')}
         </Text>
       </View>
@@ -168,7 +168,7 @@ export function ProfileScreen({ stats, world, loading, onCreateAccount }: Profil
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle} accessibilityRole="header">
+      <Text style={styles.sectionTitle} role="heading">
         {title}
       </Text>
       {children}
@@ -179,7 +179,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     // One element: a reader says "Total XP, 12.9K" rather than two disconnected nodes.
-    <View accessible accessibilityLabel={`${label}, ${value}`} style={styles.stat}>
+    <View accessible aria-label={`${label}, ${value}`} style={styles.stat}>
       <Text style={styles.statValue}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
     </View>
@@ -189,7 +189,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 function ProfileSkeleton() {
   const t = useT()
   return (
-    <View style={styles.screen} accessibilityLabel={t('common:loading')}>
+    <View style={styles.screen} aria-label={t('common:loading')}>
       <View style={styles.content}>
         <Skeleton width={72} height={72} borderRadius={36} />
         <Skeleton width="40%" height={28} />

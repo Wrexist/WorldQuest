@@ -25,7 +25,7 @@ export function Placeholder({ titleKey, bodyKey }: PlaceholderProps) {
 
   return (
     <View style={styles.screen}>
-      <Text style={styles.title} accessibilityRole="header">
+      <Text style={styles.title} role="heading">
         {t(titleKey)}
       </Text>
       <Text style={styles.body}>{t(bodyKey)}</Text>

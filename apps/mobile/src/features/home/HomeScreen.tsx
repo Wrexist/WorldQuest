@@ -75,7 +75,7 @@ export function HomeScreen({ progress, loading, isOffline, onStartLesson }: Home
     <View style={styles.screen}>
       <ScrollView contentContainerStyle={styles.content}>
         {isOffline && (
-          <View style={styles.offline} accessibilityRole="alert">
+          <View style={styles.offline} role="alert">
             <Text style={styles.offlineText}>{t('common:offline.banner')}</Text>
           </View>
         )}
@@ -83,7 +83,7 @@ export function HomeScreen({ progress, loading, isOffline, onStartLesson }: Home
         <View style={styles.topRow}>
           <Avatar initials="EX" accessibilityLabel={t('home:avatar.label')} />
           <View style={styles.spacer} />
-          <View style={styles.bell} accessible accessibilityLabel={t('home:inbox.label')}>
+          <View style={styles.bell} accessible aria-label={t('home:inbox.label')}>
             <Text style={styles.bellGlyph}>◉</Text>
           </View>
         </View>
@@ -93,7 +93,7 @@ export function HomeScreen({ progress, loading, isOffline, onStartLesson }: Home
         <View style={styles.greetingRow}>
           <View style={styles.greetingText}>
             <Text style={styles.salutation}>{t(greetingKey(new Date().getHours()))}</Text>
-            <Text style={styles.explorer} accessibilityRole="header">
+            <Text style={styles.explorer} role="heading">
               {t('home:greeting.role')}
             </Text>
           </View>
@@ -186,7 +186,7 @@ function HomeSkeleton() {
   const t = useT()
 
   return (
-    <View style={styles.screen} accessibilityLabel={t('common:loading')}>
+    <View style={styles.screen} aria-label={t('common:loading')}>
       <View style={styles.content}>
         <Skeleton width={40} height={40} borderRadius={20} />
         <Skeleton width="55%" height={26} />

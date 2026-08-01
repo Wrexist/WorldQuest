@@ -114,7 +114,7 @@ export function LessonScreen({ onExit }: { onExit: () => void }) {
       </View>
 
       <ScrollView contentContainerStyle={styles.body}>
-        <Text style={styles.prompt} accessibilityRole="header">
+        <Text style={styles.prompt} role="heading">
           {/* The prompt key and its params come from the question template in the
               content pack, so they are validated by `pnpm content:validate` rather
               than by the compiler. */}
@@ -128,7 +128,7 @@ export function LessonScreen({ onExit }: { onExit: () => void }) {
               label={option.label}
               state={optionState(option.isCorrect, option.id, answered, lastAnswer?.chosenOptionId)}
               onPress={() => lesson.answer(option.id)}
-              accessibilityLabel={t('lesson:answer.label', { country: option.label })}
+              aria-label={t('lesson:answer.label', { country: option.label })}
             />
           ))}
         </View>
@@ -203,7 +203,7 @@ function LoadingState() {
   const t = useT()
 
   return (
-    <View style={styles.screen} accessibilityLabel={t('common:loading')}>
+    <View style={styles.screen} aria-label={t('common:loading')}>
       <View style={styles.header}>
         <Skeleton width="70%" height={8} />
       </View>
@@ -247,7 +247,7 @@ function OfflineBanner() {
   const t = useT()
 
   return (
-    <View style={styles.offline} accessibilityRole="alert">
+    <View style={styles.offline} role="alert">
       <Text style={styles.offlineText}>{t('common:offline.banner')}</Text>
     </View>
   )

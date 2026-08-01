@@ -28,7 +28,7 @@ export function Avatar({ initials = '', size = 40, ringed = true, accessibilityL
   return (
     <View
       accessible
-      accessibilityLabel={accessibilityLabel}
+      aria-label={accessibilityLabel}
       style={[
         styles.avatar,
         {
@@ -59,7 +59,7 @@ export type StreakBadgeProps = {
  */
 export function StreakBadge({ days, label, accessibilityLabel }: StreakBadgeProps) {
   return (
-    <View accessible accessibilityLabel={accessibilityLabel} style={styles.streak}>
+    <View accessible aria-label={accessibilityLabel} style={styles.streak}>
       <View style={styles.streakRow}>
         <Text style={styles.flame}>🔥</Text>
         <Text style={styles.streakCount}>{days}</Text>
@@ -123,16 +123,16 @@ export type TabBarProps = {
  */
 export function TabBar({ items, activeKey, onSelect }: TabBarProps) {
   return (
-    <View accessibilityRole="tablist" style={styles.tabBar}>
+    <View role="tablist" style={styles.tabBar}>
       {items.map((item) => {
         const active = item.key === activeKey
         return (
           <View
             key={item.key}
             accessible
-            accessibilityRole="tab"
-            accessibilityLabel={item.label}
-            accessibilityState={{ selected: active }}
+            role="tab"
+            aria-label={item.label}
+            aria-selected={active}
             style={styles.tab}
             onTouchEnd={() => onSelect(item.key)}
           >

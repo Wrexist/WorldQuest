@@ -19,6 +19,7 @@
   "settings:motion.label": "Minska rörelse",
   "settings:motion.help": "Följer din enhets inställning om du inte ändrar den här.",
 
+  "settings:language.label": "Appens språk",
   "settings:language.system": "Följ min enhet",
   "settings:language.en": "English",
   "settings:language.sv": "Svenska",

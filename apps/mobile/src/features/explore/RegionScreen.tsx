@@ -61,7 +61,7 @@ export function RegionScreen({
   if (sorted.length === 0) {
     return (
       <View style={[styles.screen, styles.centered]}>
-        <Text style={styles.title} accessibilityRole="header">
+        <Text style={styles.title} role="heading">
           {t('explore:countries.empty.title')}
         </Text>
         <Text style={styles.subtitle}>{t('explore:countries.empty.body')}</Text>
@@ -76,7 +76,7 @@ export function RegionScreen({
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.header}>
         <View style={[styles.swatch, { backgroundColor: palette.continent[region] }]} />
-        <Text style={styles.title} accessibilityRole="header">
+        <Text style={styles.title} role="heading">
           {t(regionNameKey)}
         </Text>
       </View>
@@ -94,7 +94,7 @@ export function RegionScreen({
             // One element per country: a reader announces "Sweden, Learning, 1 of 2
             // learned" rather than sweeping three separate text nodes.
             accessible
-            accessibilityLabel={`${name}, ${t(MASTERY_LABEL[progress.mastery])}, ${t(
+            aria-label={`${name}, ${t(MASTERY_LABEL[progress.mastery])}, ${t(
               'explore:region.progress',
               { learned: progress.factsLearned, total: progress.factsTotal },
             )}`}

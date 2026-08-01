@@ -102,10 +102,10 @@ export function Button({
     <Animated.View style={[{ transform: [{ scale }] }, fullWidth && styles.fullWidth, style]}>
       <Pressable
         accessible
-        accessibilityRole="button"
-        accessibilityLabel={accessibilityLabel ?? label}
+        role="button"
+        aria-label={accessibilityLabel ?? label}
         accessibilityHint={accessibilityHint}
-        accessibilityState={{ disabled: isInert, busy: loading }}
+        aria-disabled={isInert} aria-busy={loading}
         // Reach the 44pt minimum target without growing the visual.
         hitSlop={Math.max(0, (44 - HEIGHTS[size]) / 2)}
         disabled={isInert}

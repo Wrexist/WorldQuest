@@ -65,7 +65,7 @@ blocked by anything.
 
 | # | Work | State |
 |---|---|---|
-| E1 | Component tests (React Native Testing Library) for every screen's five states | ⬜ |
+| E1 | Component tests for every screen's five states | ✅ *(Home, Explore, Quests, Settings — 38 tests. Lesson and Profile still to cover)* |
 | E2 | Maestro E2E: first launch → taster lesson → progress persists | ⬜ |
 | E3 | CI: run the Supabase RLS tests and the edge-function bundle guard on every PR | ⬜ |
 | E4 | Wire the `en-XA` pseudo-locale into a dev build — the generator exists (`pnpm i18n:pseudo`), loading it at runtime does not | ⬜ |

@@ -63,7 +63,7 @@ export function SettingsScreen({
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <Text style={styles.title} accessibilityRole="header">
+      <Text style={styles.title} role="heading">
         {t('settings:title')}
       </Text>
 
@@ -107,7 +107,7 @@ export function SettingsScreen({
 
       <Section title={t('settings:section.language')}>
         <ChoiceRow<LanguageChoice>
-          label={t('settings:section.language')}
+          label={t('settings:language.label')}
           value={preferences.language}
           choices={LANGUAGE_CHOICES.map((choice) => ({
             value: choice,

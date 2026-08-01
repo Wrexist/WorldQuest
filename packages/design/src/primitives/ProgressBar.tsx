@@ -38,8 +38,8 @@ export function ProgressBar({
   return (
     <View
       accessible
-      accessibilityRole="progressbar"
-      accessibilityLabel={label}
+      role="progressbar"
+      aria-label={label}
       accessibilityValue={{ min: 0, max: safeTotal, now: current, text: `${current} of ${total}` }}
       style={[styles.wrap, style]}
       testID={testID}

@@ -14,6 +14,31 @@ of magnitude.
 
 ---
 
+
+## ARIA props, not `accessibility*`
+
+Use `role`, `aria-label`, `aria-checked`, `aria-disabled`, `aria-selected` on React
+Native elements — **not** `accessibilityRole` and `accessibilityState`.
+
+React Native 0.71+ accepts both and maps ARIA to the native accessibility API, so
+nothing is lost on a device. But `react-native-web` **silently drops
+`accessibilityState`**: no `aria-checked`, no `aria-disabled`, nothing in the tree. On
+the web build every switch, every disabled control and every selected option announced
+no state at all — and no test could have caught it, because the attribute was simply
+absent.
+
+ARIA props survive both targets and are assertable, which is what makes the component
+suite able to test accessibility rather than just layout.
+
+Two details worth knowing:
+- The role is `heading`, not `header`. `header` is React Native's spelling and is not
+  a valid ARIA role.
+- A radio takes `aria-checked`, not `aria-selected`. `aria-selected` is for options
+  and tabs; on a radio it announces nothing useful.
+
+Our own components keep `accessibilityLabel` as their prop name — that is our API, and
+it reads better than a hyphenated key. They map it to `aria-label` internally.
+
 ## 1. Vision
 
 ### Colour blindness (~8 % of men — a large slice of our core audience)
