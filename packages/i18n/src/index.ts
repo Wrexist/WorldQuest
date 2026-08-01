@@ -23,6 +23,7 @@ import { NAMESPACES, type Namespace, type TranslationKey, type TranslationParams
 import enAchievements from '../locales/en/achievements.json' with { type: 'json' }
 import enCommon from '../locales/en/common.json' with { type: 'json' }
 import enCountry from '../locales/en/country.json' with { type: 'json' }
+import enErrors from '../locales/en/errors.json' with { type: 'json' }
 import enExplore from '../locales/en/explore.json' with { type: 'json' }
 import enHome from '../locales/en/home.json' with { type: 'json' }
 import enLesson from '../locales/en/lesson.json' with { type: 'json' }
@@ -34,6 +35,7 @@ import enSettings from '../locales/en/settings.json' with { type: 'json' }
 import svAchievements from '../locales/sv/achievements.json' with { type: 'json' }
 import svCommon from '../locales/sv/common.json' with { type: 'json' }
 import svCountry from '../locales/sv/country.json' with { type: 'json' }
+import svErrors from '../locales/sv/errors.json' with { type: 'json' }
 import svExplore from '../locales/sv/explore.json' with { type: 'json' }
 import svHome from '../locales/sv/home.json' with { type: 'json' }
 import svLesson from '../locales/sv/lesson.json' with { type: 'json' }
@@ -83,6 +85,7 @@ const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
     achievements: enAchievements,
     common: enCommon,
     country: enCountry,
+    errors: enErrors,
     explore: enExplore,
     home: enHome,
     lesson: enLesson,
@@ -96,6 +99,7 @@ const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
     achievements: svAchievements,
     common: svCommon,
     country: svCountry,
+    errors: svErrors,
     explore: svExplore,
     home: svHome,
     lesson: svLesson,

@@ -7,7 +7,7 @@
  */
 import { useEffect, useRef } from 'react'
 import { AccessibilityInfo, Animated, StyleSheet, type StyleProp, type ViewStyle } from 'react-native'
-import { colors, radius } from '../tokens.js'
+import { colors, motion, radius } from '../tokens.js'
 
 export type SkeletonProps = {
   width?: number | `${number}%`
@@ -25,8 +25,8 @@ export function Skeleton({ width = '100%', height = 16, borderRadius = radius.sm
       if (reduced) return
       loop = Animated.loop(
         Animated.sequence([
-          Animated.timing(opacity, { toValue: 0.8, duration: 700, useNativeDriver: true }),
-          Animated.timing(opacity, { toValue: 0.4, duration: 700, useNativeDriver: true }),
+          Animated.timing(opacity, { toValue: 0.8, duration: motion.shimmer.duration, useNativeDriver: true }),
+          Animated.timing(opacity, { toValue: 0.4, duration: motion.shimmer.duration, useNativeDriver: true }),
         ]),
       )
       loop.start()

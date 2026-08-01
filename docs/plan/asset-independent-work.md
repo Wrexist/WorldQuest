@@ -33,7 +33,7 @@ illustration. Each is a mockup screen or a hidden screen from
 | B3 | **Country page** (#7) | Flag image is an `ArtSlot` until the sourced files land; the flag *description* is real content | ✅ |
 | B4 | **Daily Quest** (#4) | None as built — the five tasks are type and progress | ✅ |
 | B5 | **Profile** (#13) | Avatar → initials fallback already exists | ✅ |
-| B6 | **Hidden screens H1–H22** | None — these are states, not pictures | ⬜ |
+| B6 | **Hidden screens H1–H22** | H8 (crash) and H9 (404) done — the two whose absence is a white screen. H6/H11/H15 already inline. The rest wait on accounts and social. | 🟡 |
 
 Deliberately **not** here: Onboarding (#1–2) and the Explore globe (#8). Onboarding is
 the app's first impression and is the one place placeholder art actively misleads;
@@ -76,7 +76,7 @@ blocked by anything.
 |---|---|---|---|
 | F1 | **Bundle Inter + Baloo 2** | Both OFL, both free. Loaded per weight — `fontFamily` + `fontWeight` does not combine for custom fonts on React Native, so this needed the `text()` helper and a guard, not just the files. | ✅ |
 | F2 | **Card gradients** | Semantic `gradient.*` tokens, drawn by `Card`, with a flat fallback where there is no native module | ✅ |
-| F3 | **Motion pass** | Springs, celebration, reduced-motion — all token-driven, no assets | ⬜ |
+| F3 | **Motion pass** | `useReducedMotion` / `useTiming` / `useCelebration`, all token-driven, with a guard against raw durations | ✅ |
 
 ---
 
@@ -84,7 +84,7 @@ blocked by anything.
 
 ~~A1 → A2 → A3 → F1 → B1 → B2 → C1 → B4 → C2 → C3 → C4~~ — done.
 
-**Remaining:** B6 (hidden screens) · E2 (Maestro) · F3 (motion) · D1–D3 (content).
+**Remaining:** the rest of B6 (gated on accounts and social) · E2 (Maestro) · D1–D3 (content).
 
 E2 is deliberately last and deliberately not started here: a Maestro flow written
 without ever running it against a device is a file full of guesses about selectors and

@@ -13,6 +13,7 @@
 import { Stack } from 'expo-router'
 import { SafeAreaView, StatusBar, StyleSheet } from 'react-native'
 import { colors, motion } from '@worldquest/design'
+import { ErrorBoundary } from '../src/components/ErrorBoundary.js'
 import { useAppFonts } from '../src/lib/fonts.js'
 import { t } from '../src/lib/i18n.js'
 import { useDeviceLocale } from '../src/lib/locale.js'
@@ -30,32 +31,34 @@ export default function RootLayout() {
   return (
     <SafeAreaView style={styles.root}>
       <StatusBar barStyle="light-content" backgroundColor={colors.bg.canvas} />
-      <QueryProvider>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: colors.bg.canvas },
-            animationDuration: motion.quick.duration,
-          }}
-        >
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="region/[code]" />
-          <Stack.Screen name="country/[code]" />
-          <Stack.Screen name="achievements" />
-          <Stack.Screen
-            name="lesson"
-            options={{
-              // Full screen, not a card: the lesson is the whole experience while it
-              // runs, and a card presentation leaves a strip of Home visible behind it.
-              presentation: 'fullScreenModal',
-              title: t('nav:lesson.title'),
-              // Swiping down mid-question would discard answers the user has earned.
-              // Leaving is deliberate — the in-screen exit control, which confirms.
-              gestureEnabled: false,
+      <ErrorBoundary>
+        <QueryProvider>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.bg.canvas },
+              animationDuration: motion.quick.duration,
             }}
-          />
-        </Stack>
-      </QueryProvider>
+          >
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="region/[code]" />
+            <Stack.Screen name="country/[code]" />
+            <Stack.Screen name="achievements" />
+            <Stack.Screen
+              name="lesson"
+              options={{
+                // Full screen, not a card: the lesson is the whole experience while it
+                // runs, and a card presentation leaves a strip of Home visible behind it.
+                presentation: 'fullScreenModal',
+                title: t('nav:lesson.title'),
+                // Swiping down mid-question would discard answers the user has earned.
+                // Leaving is deliberate — the in-screen exit control, which confirms.
+                gestureEnabled: false,
+              }}
+            />
+          </Stack>
+        </QueryProvider>
+      </ErrorBoundary>
     </SafeAreaView>
   )
 }

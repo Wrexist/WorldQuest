@@ -1,0 +1,13 @@
+{
+  "errors:notFound.title": "That page has moved on",
+  "errors:notFound.body": "The link you followed does not lead anywhere in the app. It may have been part of a lesson that has since changed.",
+  "errors:notFound.cta": "Take me home",
+  "errors:notFound.cta__note": "Button on the 404 screen. Max 18 characters.",
+
+  "errors:crash.title": "Something broke on our side",
+  "errors:crash.body": "Not your fault, and nothing you have learned is lost — it is saved on your device.",
+  "errors:crash.cta": "Try again",
+  "errors:crash.cta__note": "Button that remounts the screen after a crash. Max 14 characters.",
+  "errors:crash.detail": "Technical detail",
+  "errors:crash.detail__note": "Label above the error message, shown only in development. Max 20 characters."
+}
