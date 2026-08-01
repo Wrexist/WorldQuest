@@ -19,6 +19,7 @@ import i18next, { type i18n as I18nInstance } from 'i18next'
 import { IcuFormat } from './icu.js'
 import { NAMESPACES, type Namespace, type TranslationKey, type TranslationParams } from './keys.js'
 
+import enAchievements from '../locales/en/achievements.json' with { type: 'json' }
 import enCommon from '../locales/en/common.json' with { type: 'json' }
 import enCountry from '../locales/en/country.json' with { type: 'json' }
 import enExplore from '../locales/en/explore.json' with { type: 'json' }
@@ -29,6 +30,7 @@ import enNotifications from '../locales/en/notifications.json' with { type: 'jso
 import enProfile from '../locales/en/profile.json' with { type: 'json' }
 import enQuests from '../locales/en/quests.json' with { type: 'json' }
 import enSettings from '../locales/en/settings.json' with { type: 'json' }
+import svAchievements from '../locales/sv/achievements.json' with { type: 'json' }
 import svCommon from '../locales/sv/common.json' with { type: 'json' }
 import svCountry from '../locales/sv/country.json' with { type: 'json' }
 import svExplore from '../locales/sv/explore.json' with { type: 'json' }
@@ -74,6 +76,7 @@ export const FALLBACK_LOCALE: Locale = 'en'
  */
 const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
   en: {
+    achievements: enAchievements,
     common: enCommon,
     country: enCountry,
     explore: enExplore,
@@ -86,6 +89,7 @@ const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
     settings: enSettings,
   },
   sv: {
+    achievements: svAchievements,
     common: svCommon,
     country: svCountry,
     explore: svExplore,

@@ -32,6 +32,7 @@ import nav from '../../packages/i18n/locales/en/nav.json'
 import {
   buildIndex,
   composeLesson,
+  emptyProgress,
   generateDailyQuest,
   seededRng,
   worldProgress,
@@ -40,6 +41,8 @@ import {
   type Template,
 } from '@worldquest/engines'
 import { HomeScreen } from '../../apps/mobile/src/features/home/HomeScreen.js'
+import { AchievementsScreen } from '../../apps/mobile/src/features/achievements/AchievementsScreen.js'
+import { CATALOGUE } from '../../apps/mobile/src/features/achievements/useAchievements.js'
 import { CountryScreen } from '../../apps/mobile/src/features/explore/CountryScreen.js'
 import { ExploreScreen } from '../../apps/mobile/src/features/explore/ExploreScreen.js'
 import { ProfileScreen } from '../../apps/mobile/src/features/profile/ProfileScreen.js'
@@ -282,6 +285,20 @@ function Gallery() {
 
         <Phone label="Lesson · screen-reader-safe flag question" id="lesson-flag">
           <LessonView question={flagQuestion} answered={false} />
+        </Phone>
+
+        <Phone label="Achievements" id="achievements">
+          <AchievementsScreen
+            rows={CATALOGUE.map((def) => ({
+              def,
+              progress:
+                def.id === 'ach.quest.regular'
+                  ? { achievementId: def.id, value: 7, tier: 'bronze' as const }
+                  : def.id === 'ach.flags.collector'
+                    ? { achievementId: def.id, value: 15, tier: 'bronze' as const }
+                    : emptyProgress(def.id),
+            }))}
+          />
         </Phone>
 
         <Phone label="Country · half learned" id="country">

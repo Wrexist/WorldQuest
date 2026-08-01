@@ -41,6 +41,7 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="region/[code]" />
           <Stack.Screen name="country/[code]" />
+          <Stack.Screen name="achievements" />
           <Stack.Screen
             name="lesson"
             options={{

@@ -44,7 +44,7 @@ the globe needs map geometry, which is an unresolved licensing decision
 
 | # | Work | Notes | State |
 |---|---|---|---|
-| C1 | **Achievements rule engine** | Six rule types, incremental, backfillable. Definitions are content; the catalogue and the screen are still to write. | ✅ *(engine)* |
+| C1 | **Achievements rule engine** | Six rule types, incremental, backfillable + a 12-definition starter catalogue (content) + the screen | ✅ |
 | C2 | **Quest engine** | Daily generation, progress, expiry. Weekly quests are v1.5 and deliberately not built. | ✅ *(daily)* |
 | C3 | **Progression / region mastery** | Roll fact mastery up to country → region → continent → world | ✅ |
 | C4 | **Streak freeze + repair** | Freeze cap, 48-hour repair window, 30-day cooldown — all against the balance table, none invented | ✅ |
@@ -88,9 +88,10 @@ blocked by anything.
 B6 (hidden screens) → E1 (component tests) → E2 (Maestro) → F2 (gradients) →
 F3 (motion) → E3 (CI) → E4 (pseudo-locale in a dev build).
 
-The achievement and quest engines exist but nothing surfaces them yet: an achievement
-catalogue (content, not code) and an Achievements screen are the natural follow-ups to
-C1, and neither needs artwork beyond the tier frames already specced.
+The starter catalogue is 12 definitions, deliberately. The ~300 in
+[`../systems/achievements.md`](../systems/achievements.md) arrive in batches once the
+content packs are deep enough for them to be reachable — an achievement for 100 flags
+is a locked row for everyone until there are 100 flags to master.
 
 Track D runs in parallel from day one by someone who isn't writing code — that's the
 rule from [`build-order.md`](build-order.md) and it hasn't changed.
