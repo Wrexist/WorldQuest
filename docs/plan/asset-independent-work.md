@@ -44,7 +44,7 @@ the globe needs map geometry, which is an unresolved licensing decision
 
 | # | Work | Notes | State |
 |---|---|---|---|
-| C1 | **Achievements rule engine** | ~300 achievements evaluated from a ledger, not from booleans sprinkled through screens. Spec: [`../systems/achievements.md`](../systems/achievements.md) | ⬜ |
+| C1 | **Achievements rule engine** | Six rule types, incremental, backfillable. Definitions are content; the catalogue and the screen are still to write. | ✅ *(engine)* |
 | C2 | **Quest engine** | Daily/weekly generation, progress, expiry. Spec: [`../systems/quests-and-liveops.md`](../systems/quests-and-liveops.md) | ⬜ |
 | C3 | **Progression / region mastery** | Roll fact mastery up to country → region → continent → world | ✅ |
 | C4 | **Streak freeze + repair** | The streak logic exists; freezes and repair don't | ⬜ |
