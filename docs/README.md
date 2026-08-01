@@ -69,6 +69,7 @@ with the alternatives we rejected and what would make us reconsider.
 |---|---|
 | [`plan/build-order.md`](plan/build-order.md) | The sequence, with reasoning. Start here on Monday. |
 | [`plan/phase-0-checklist.md`](plan/phase-0-checklist.md) | Live status of the foundations |
+| [`plan/asset-independent-work.md`](plan/asset-independent-work.md) | Everything buildable before a single illustration exists — live status |
 | [`plan/risks.md`](plan/risks.md) | What kills this project, and the mitigation for each |
 
 ---

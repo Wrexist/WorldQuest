@@ -46,6 +46,30 @@ describe('token integrity', () => {
   it('states a reduced-motion duration well under the expressive one', () => {
     expect(motion.reducedMotion.duration).toBeLessThan(motion.expressive.duration)
   })
+
+  it('keeps the native window background in step with the canvas token', () => {
+    // The splash screen and the window behind the JS bundle are painted by the OS
+    // before any JavaScript runs, so they cannot read a token — the value has to be
+    // duplicated into app.json. Duplication without a guard is drift, and the symptom
+    // is a coloured flash on every cold start that nobody can reproduce on a
+    // simulator with a fast disk.
+    //
+    // This lives here, rather than in the app, because it is an assertion ABOUT the
+    // tokens. It reads a file; it does not import one, so the dependency direction
+    // in the shipped bundle is unchanged.
+    const appJsonPath = join(import.meta.dirname, '..', '..', '..', 'apps', 'mobile', 'app.json')
+    const appJson = JSON.parse(readFileSync(appJsonPath, 'utf8')) as {
+      expo: {
+        backgroundColor: string
+        android: { adaptiveIcon: { backgroundColor: string } }
+      }
+    }
+
+    expect(appJson.expo.backgroundColor.toLowerCase()).toBe(colors.bg.canvas.toLowerCase())
+    expect(appJson.expo.android.adaptiveIcon.backgroundColor.toLowerCase()).toBe(
+      colors.bg.canvas.toLowerCase(),
+    )
+  })
 })
 
 describe('primitives obey the token discipline', () => {

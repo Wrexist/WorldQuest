@@ -20,11 +20,13 @@ import {
   ProgressBar,
   Skeleton,
   StatChip,
+  TabBar,
   colors,
   radius,
   space,
   typography,
 } from '@worldquest/design'
+import nav from '../../packages/i18n/locales/en/nav.json'
 import {
   buildIndex,
   composeLesson,
@@ -76,14 +78,31 @@ const MOCKUP_STATE = {
   leaguePercentile: 'Top 15%',
 }
 
+/**
+ * The tab bar the navigator draws around every tabbed screen. Screens no longer own
+ * their own chrome (app/(tabs)/_layout.tsx does), so the harness has to supply it —
+ * otherwise these screenshots would show a Home screen that ends 60px short of the
+ * one users see.
+ */
+const TABS = [
+  { key: 'index', glyph: '⌂', label: nav['nav:home'] },
+  { key: 'explore', glyph: '◎', label: nav['nav:explore'] },
+  { key: 'quests', glyph: '◈', label: nav['nav:quests'] },
+  { key: 'profile', glyph: '☺', label: nav['nav:profile'] },
+  { key: 'more', glyph: '⋯', label: nav['nav:more'] },
+]
+
 /** A phone-sized frame, so screenshots are comparable to the mockup. */
 function Phone({
   label,
   id,
+  tab,
   children,
 }: {
   label: string
   id: string
+  /** Active tab key, when this frame is a tabbed screen rather than a full-screen one. */
+  tab?: string
   children: React.ReactNode
 }) {
   return (
@@ -91,7 +110,10 @@ function Phone({
     // cropped individually rather than only as part of the overview.
     <View style={s.phoneWrap} testID={`phone-${id}`}>
       <Text style={s.phoneLabel}>{label}</Text>
-      <View style={s.phone}>{children}</View>
+      <View style={s.phone}>
+        <View style={s.flex}>{children}</View>
+        {tab !== undefined && <TabBar items={TABS} activeKey={tab} onSelect={() => {}} />}
+      </View>
     </View>
   )
 }
@@ -182,7 +204,7 @@ function Gallery() {
       </Text>
 
       <View style={s.phones}>
-        <Phone label="Home · first launch" id="home-first">
+        <Phone label="Home · first launch" id="home-first" tab="index">
           <HomeScreen
             progress={{ xpTotal: 0, coins: 0, streak: 0, factsMastered: 0, factsTotal: 10 }}
             loading={false}
@@ -191,7 +213,7 @@ function Gallery() {
           />
         </Phone>
 
-        <Phone label="Home · returning user" id="home-returning">
+        <Phone label="Home · returning user" id="home-returning" tab="index">
           <HomeScreen
             progress={MOCKUP_STATE}
             loading={false}
@@ -200,7 +222,7 @@ function Gallery() {
           />
         </Phone>
 
-        <Phone label="Home · loading (skeleton)" id="home-loading">
+        <Phone label="Home · loading (skeleton)" id="home-loading" tab="index">
           <HomeScreen progress={null} loading isOffline={false} onStartLesson={() => {}} />
         </Phone>
 
@@ -224,7 +246,7 @@ function Gallery() {
           <LessonView question={flagQuestion} answered={false} />
         </Phone>
 
-        <Phone label="Home · offline" id="home-offline">
+        <Phone label="Home · offline" id="home-offline" tab="index">
           <HomeScreen
             progress={MOCKUP_STATE}
             loading={false}

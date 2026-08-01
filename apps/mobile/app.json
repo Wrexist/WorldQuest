@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "WorldQuest",
+    "slug": "worldquest",
+    "scheme": "worldquest",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "backgroundColor": "#001227",
+    "ios": {
+      "bundleIdentifier": "com.worldquest.app",
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "com.worldquest.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#001227"
+      }
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": false
+    },
+    "$comment": [
+      "backgroundColor is colors.bg.canvas from packages/design/tokens.json. It is",
+      "duplicated here because the native splash and window background are set before",
+      "any JavaScript runs, so they cannot read a token. If the canvas colour changes,",
+      "change it here too — packages/design/src/tokens.test.ts asserts they match.",
+      "icon/splash are omitted deliberately: pointing at files that do not exist fails",
+      "the build. They land with the assets in docs/design/asset-prompts.md."
+    ]
+  }
+}

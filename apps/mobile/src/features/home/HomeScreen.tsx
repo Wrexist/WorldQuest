@@ -3,7 +3,10 @@
  *
  * Laid out to match the mockup: avatar and notification bell, a two-tier greeting
  * with the streak stacked to its right, the quest card with art bleeding to the
- * edge, the daily challenge, a Friends/League pair, and the five-tab bar.
+ * edge, the daily challenge, and a Friends/League pair.
+ *
+ * The tab bar is NOT here — `app/(tabs)/_layout.tsx` owns it. A screen that draws its
+ * own chrome cannot be reused inside a navigator without drawing it twice.
  *
  * Three deliberate deviations from the mockup, each recorded in
  * docs/design/mockup-fidelity.md — none of them is an oversight.
@@ -19,7 +22,6 @@ import {
   Skeleton,
   StatChip,
   StreakBadge,
-  TabBar,
   colors,
   palette,
   radius,
@@ -50,14 +52,6 @@ export type HomeScreenProps = {
   readonly isOffline: boolean
   readonly onStartLesson: () => void
 }
-
-const TABS = [
-  { key: 'home', glyph: '⌂', label: 'Home' },
-  { key: 'explore', glyph: '◎', label: 'Explore' },
-  { key: 'quests', glyph: '◈', label: 'Quests' },
-  { key: 'profile', glyph: '☺', label: 'Profile' },
-  { key: 'more', glyph: '⋯', label: 'More' },
-] as const
 
 function greetingKey(hour: number): string {
   if (hour < 12) return 'home:greeting.morning'
@@ -180,8 +174,6 @@ export function HomeScreen({ progress, loading, isOffline, onStartLesson }: Home
           </Card>
         )}
       </ScrollView>
-
-      <TabBar items={TABS} activeKey="home" onSelect={() => {}} />
     </View>
   )
 }
@@ -199,7 +191,6 @@ function HomeSkeleton() {
           <Skeleton height={80} borderRadius={radius.lg} style={styles.flex} />
         </View>
       </View>
-      <TabBar items={TABS} activeKey="home" onSelect={() => {}} />
     </View>
   )
 }

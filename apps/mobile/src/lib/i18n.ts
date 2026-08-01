@@ -10,8 +10,9 @@
 import en from '../../../../packages/i18n/locales/en/common.json'
 import enLesson from '../../../../packages/i18n/locales/en/lesson.json'
 import enHome from '../../../../packages/i18n/locales/en/home.json'
+import enNav from '../../../../packages/i18n/locales/en/nav.json'
 
-const CATALOG: Record<string, string> = { ...en, ...enLesson, ...enHome }
+const CATALOG: Record<string, string> = { ...en, ...enLesson, ...enHome, ...enNav }
 
 /**
  * Minimal ICU: named placeholders and plural branches. Deliberately not a parser —

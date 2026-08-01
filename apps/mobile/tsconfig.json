@@ -28,7 +28,7 @@
     "resolveJsonModule": true
   },
   "include": [
-    "App.tsx",
+    "app/**/*",
     "src/**/*"
   ]
 }

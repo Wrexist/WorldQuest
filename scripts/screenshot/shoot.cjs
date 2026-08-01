@@ -27,7 +27,9 @@ const SHOTS = [
     viewport: { width: 1400, height: 1000 },
     deviceScaleFactor: 2,
   })
-  await page.goto('file://' + htmlPath)
+  // Absolute, always. `file://` + a relative path is not a URL Chromium will accept,
+  // and the failure reads as ERR_INVALID_URL rather than "path was relative".
+  await page.goto(`file://${path.resolve(htmlPath)}`)
   await page.waitForTimeout(500)
 
   await page.screenshot({ path: path.join(outDir, 'app-overview.png'), fullPage: true })
