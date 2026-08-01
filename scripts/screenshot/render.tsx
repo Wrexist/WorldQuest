@@ -32,6 +32,7 @@ import nav from '../../packages/i18n/locales/en/nav.json'
 import {
   buildIndex,
   composeLesson,
+  generateDailyQuest,
   seededRng,
   worldProgress,
   type Entity,
@@ -40,6 +41,7 @@ import {
 } from '@worldquest/engines'
 import { HomeScreen } from '../../apps/mobile/src/features/home/HomeScreen.js'
 import { ExploreScreen } from '../../apps/mobile/src/features/explore/ExploreScreen.js'
+import { QuestScreen } from '../../apps/mobile/src/features/quests/QuestScreen.js'
 import { SettingsScreen } from '../../apps/mobile/src/features/settings/SettingsScreen.js'
 import { DEFAULTS as SETTINGS_DEFAULTS } from '../../apps/mobile/src/features/settings/usePreferences.js'
 
@@ -250,6 +252,22 @@ function Gallery() {
 
         <Phone label="Lesson · screen-reader-safe flag question" id="lesson-flag">
           <LessonView question={flagQuestion} answered={false} />
+        </Phone>
+
+        <Phone label="Quests · today's five" id="quests" tab="quests">
+          <QuestScreen
+            quest={generateDailyQuest({
+              userId: 'demo',
+              date: '2026-07-31',
+              index,
+              memory: new Map(),
+              now: Date.parse('2026-07-31T19:00:00Z'),
+              rng: seededRng(3),
+              recentAccuracy: 0.92,
+            })}
+            loading={false}
+            onStart={() => {}}
+          />
         </Phone>
 
         <Phone label="Explore · continents" id="explore" tab="explore">

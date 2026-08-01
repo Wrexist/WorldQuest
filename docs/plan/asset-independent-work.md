@@ -31,7 +31,7 @@ illustration. Each is a mockup screen or a hidden screen from
 | B1 | **Settings** (#15) | None — it's rows and switches | ✅ |
 | B2 | **Continents** (#9) | None — the continent grid is colour + type | ✅ *(plus `/region/[code]`, the country list inside one)* |
 | B3 | **Country page** (#7) | Flag only, and flags are *sourced, never generated* | ⬜ |
-| B4 | **Daily Quest** (#4) | `ArtSlot` covers it | ⬜ |
+| B4 | **Daily Quest** (#4) | None as built — the five tasks are type and progress | ✅ |
 | B5 | **Profile** (#13) | Avatar → initials fallback already exists | ⬜ |
 | B6 | **Hidden screens H1–H22** | None — these are states, not pictures | ⬜ |
 
@@ -82,7 +82,15 @@ blocked by anything.
 
 ## What I'd do in what order
 
-A1 → A2 → A3 → F1 → B1 → B2 → C1 → B4 → C2 → B5 → B3 → C3 → C4 → B6 → E1 → E2.
+~~A1 → A2 → A3 → F1 → B1 → B2 → C1 → B4 → C2 → C3 → C4~~ — done.
+
+**Remaining, in order:** A4 (TanStack Query) → B5 (Profile) → B3 (Country page) →
+B6 (hidden screens) → E1 (component tests) → E2 (Maestro) → F2 (gradients) →
+F3 (motion) → E3 (CI) → E4 (pseudo-locale in a dev build).
+
+The achievement and quest engines exist but nothing surfaces them yet: an achievement
+catalogue (content, not code) and an Achievements screen are the natural follow-ups to
+C1, and neither needs artwork beyond the tier frames already specced.
 
 Track D runs in parallel from day one by someone who isn't writing code — that's the
 rule from [`build-order.md`](build-order.md) and it hasn't changed.
