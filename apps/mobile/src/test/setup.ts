@@ -50,6 +50,20 @@ vi.mock('expo-localization', () => ({
 }))
 
 /**
+ * NetInfo reaches a native module and ships untranspiled source, so importing it in
+ * jsdom fails at parse. The listener is never invoked here — connectivity defaults to
+ * online, and any test that needs the other state drives it through
+ * `__setOnlineForTests` in `lib/connectivity.ts` rather than through a fake radio.
+ */
+vi.mock('@react-native-community/netinfo', () => ({
+  default: {
+    configure: () => {},
+    addEventListener: () => () => {},
+    fetch: async () => ({ isInternetReachable: true }),
+  },
+}))
+
+/**
  * react-native-web warns about `shadow*` and `props.pointerEvents` being deprecated.
  * They come from inside react-native-web's own components, not from our code, so the
  * warnings are noise that hides the ones worth reading.

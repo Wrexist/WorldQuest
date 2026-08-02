@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { emptyProgress, evaluate, type AchievementProgress } from '@worldquest/engines'
 import { i18n } from '@worldquest/i18n'
 import { AchievementsScreen, type AchievementRow } from './AchievementsScreen.js'
@@ -138,3 +138,32 @@ describe('Achievements screen', () => {
 const rowsRender = (progress: AchievementProgress) => (
   <AchievementsScreen rows={rowsFor({ [progress.achievementId]: progress })} />
 )
+
+describe('Achievements — the empty state (H13)', () => {
+  it('names the next step that actually fixes it', () => {
+    render(<AchievementsScreen rows={[]} onStartLesson={vi.fn()} />)
+    expect(screen.getByText(/Nothing unlocked yet/i)).toBeTruthy()
+    expect(screen.getByText(/within reach/i)).toBeTruthy()
+  })
+
+  it('offers a way to take that step', () => {
+    // Copy that says "one lesson away" with no way to start one is a signpost
+    // pointing at a wall.
+    const onStartLesson = vi.fn()
+    render(<AchievementsScreen rows={[]} onStartLesson={onStartLesson} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Start a lesson' }))
+    expect(onStartLesson).toHaveBeenCalledOnce()
+  })
+
+  it('draws no button when there is nothing behind it', () => {
+    render(<AchievementsScreen rows={[]} />)
+    expect(screen.queryByRole('button')).toBeNull()
+  })
+
+  it('does not frame an empty list as a failure', () => {
+    const { container } = render(<AchievementsScreen rows={[]} onStartLesson={vi.fn()} />)
+    // `\blocked\b` rather than `locked` — the first draft of this matched "unlocked"
+    // inside "Nothing unlocked yet" and failed perfectly good copy.
+    expect(container.textContent).not.toMatch(/you haven'?t|none earned|0 of|failed|\blocked\b/i)
+  })
+})

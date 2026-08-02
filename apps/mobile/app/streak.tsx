@@ -15,9 +15,11 @@ import { useMemo } from 'react'
 import { repairAvailability, type RecoveryState } from '@worldquest/engines'
 import { StreakScreen } from '../src/features/streak/StreakScreen.js'
 import { useProgress } from '../src/features/home/useProgress.js'
+import { useOnline } from '../src/lib/connectivity.js'
 
 export default function StreakRoute() {
   const { data } = useProgress()
+  const online = useOnline()
   const now = Date.now()
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
@@ -55,6 +57,9 @@ export default function StreakRoute() {
       now={now}
       onBuyFreeze={undefined}
       onRepair={undefined}
+      // H7, scoped. Only these two controls need a server; the rest of this screen —
+      // and the rest of the app — works exactly as well without one.
+      offline={!online}
     />
   )
 }

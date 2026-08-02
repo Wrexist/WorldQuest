@@ -122,3 +122,68 @@ describe('StreakScreen', () => {
     expect(container.textContent).not.toMatch(/\{[a-zA-Z_]+[,}]/)
   })
 })
+
+describe('StreakScreen — offline (H7, scoped)', () => {
+  const REPAIRABLE = { available: true, price: REPAIR_PRICE, expiresAt: NOW + 3_600_000 } as const
+
+  it('will not sell a freeze it cannot deliver', () => {
+    // Freezes are a spend against a server-authoritative balance (ADR 0006). Letting
+    // the button work offline either lies to the user or takes their coins twice when
+    // the queue replays.
+    render(<StreakScreen {...props({ offline: true })} />)
+    const buy = screen.getByRole('button', { name: new RegExp(`${FREEZE_PRICE}`) })
+    expect(buy.getAttribute('aria-disabled')).toBe('true')
+  })
+
+  it('will not sell a repair it cannot deliver', () => {
+    render(<StreakScreen {...props({ offline: true, repair: REPAIRABLE })} />)
+    const repair = screen.getByRole('button', { name: /Restore/i })
+    expect(repair.getAttribute('aria-disabled')).toBe('true')
+  })
+
+  it('says the connection is why, and that everything else still works', () => {
+    // A greyed-out button with no reason is a bug as far as the user is concerned.
+    render(<StreakScreen {...props({ offline: true })} />)
+    expect(screen.getAllByText(/needs a connection/i).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/Everything else still works/i).length).toBeGreaterThan(0)
+  })
+
+  it('blames the connection before the coins', () => {
+    // A user who is offline AND short would otherwise be told to go find coins that
+    // would not have helped.
+    const { container } = render(<StreakScreen {...props({ offline: true, coins: 0 })} />)
+    expect(container.textContent).toMatch(/needs a connection/i)
+    expect(container.textContent).not.toMatch(/short/i)
+  })
+
+  it('does not turn a lost connection into an alarm', () => {
+    // Offline is a "not yet", not a failure, and this app works in a tunnel.
+    const { container } = render(<StreakScreen {...props({ offline: true })} />)
+    expect(container.textContent).not.toMatch(
+      /error|failed|check your|no internet|cannot|unavailable|try again later/i,
+    )
+  })
+
+  it('leaves everything that does not need a server alone', () => {
+    render(<StreakScreen {...props({ offline: true })} />)
+    expect(screen.getByText(/12 days/)).toBeTruthy()
+    expect(screen.getByText(/Longest: 40 days/)).toBeTruthy()
+  })
+
+  it('says none of it when the connection is fine', () => {
+    const { container } = render(<StreakScreen {...props()} />)
+    expect(container.textContent).not.toMatch(/needs a connection/i)
+  })
+
+  it('and the same buttons are live when the connection is fine', () => {
+    // Without this the two disabled assertions above prove nothing: a button that is
+    // disabled for some other reason would satisfy them just as well.
+    render(<StreakScreen {...props({ repair: REPAIRABLE })} />)
+    expect(
+      screen.getByRole('button', { name: new RegExp(`${FREEZE_PRICE}`) }).getAttribute('aria-disabled'),
+    ).not.toBe('true')
+    expect(
+      screen.getByRole('button', { name: /Restore/i }).getAttribute('aria-disabled'),
+    ).not.toBe('true')
+  })
+})

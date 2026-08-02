@@ -153,8 +153,8 @@ multiplies across every fact. This is the cheapest content leverage available.
 | # | Work |
 |---|---|
 | 5.1 | ✅ **H2 Welcome back** (7+ days). Gated on the local activity log, shown once per return, and it says the one thing a returning user needs: *everything you learned is still here*, with the counts beside it as evidence. Due facts are "ready for review", never "overdue". There is a way out that is not a lesson. |
-| 5.2 | **H7 blocking no-internet**, **H10 sync conflict** |
-| 5.3 | **H12/H13/H14 empty states** — 🟡 search (H14) and the starred-collection empty state are done; friends (H12) and achievements (H13) remain. The rule they follow: an empty state names the *next step that fixes it*. Offering "Start a lesson" to a user who has starred nothing sends them to the one place that cannot help. |
+| 5.2 | 🟡 **H7 done, scoped.** Not a blocking screen — a full-screen "no internet" would be a lie about this app: content ships in the binary and the queue replays on reconnect, so a lesson works in a tunnel. It disables the two controls that genuinely need a server (freeze, repair — spends against a server-authoritative balance, ADR 0006) and names the connection as the reason, before the coin gap, so a user who is offline *and* short is not sent looking for coins that would not have helped. **H10 sync conflict remains** — `reconcile()` exists in the engine with a notify threshold, but nothing calls it, so the UI would be unreachable until there is a server to disagree with. |
+| 5.3 | 🟡 **H13, H14 and the starred-collection empty state are done.** The rule they follow: an empty state names the *next step that fixes it*, and offers a way to take it. Achievements said "one lesson away" and gave you no way to start one — a signpost pointing at a wall. **H12 (friends) is deliberately not built**: the catalogue asks for an invite CTA, and there is no invite mechanism, no accounts, and no friends feature — building a button that cannot invite anyone is worse than the honest empty tile already on Home. It lands with friends, in v1.5. |
 | 5.4 | **H3 update required**, **H4 maintenance** — server-flagged |
 
 ### Deliberately not built

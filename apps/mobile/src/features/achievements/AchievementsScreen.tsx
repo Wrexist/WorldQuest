@@ -16,7 +16,7 @@
  */
 
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import { Card, ProgressBar, colors, palette, radius, space, text } from '@worldquest/design'
+import { Button, Card, ProgressBar, colors, palette, radius, space, text } from '@worldquest/design'
 import {
   TIERS,
   tierProgress,
@@ -57,6 +57,8 @@ export type AchievementRow = {
 
 export type AchievementsScreenProps = {
   readonly rows: readonly AchievementRow[]
+  /** H13. Optional so the screenshot renderer can mount this without a router. */
+  readonly onStartLesson?: (() => void) | undefined
 }
 
 /**
@@ -68,7 +70,7 @@ export type AchievementsScreenProps = {
 const nameKey = (id: string): string => `achievements:${id.slice('ach.'.length)}.name`
 const descKey = (id: string): string => `achievements:${id.slice('ach.'.length)}.desc`
 
-export function AchievementsScreen({ rows }: AchievementsScreenProps) {
+export function AchievementsScreen({ rows, onStartLesson }: AchievementsScreenProps) {
   const t = useT()
 
   const unlocked = rows.filter((row) => row.progress.tier !== null).length
@@ -80,6 +82,12 @@ export function AchievementsScreen({ rows }: AchievementsScreenProps) {
           {t('achievements:empty.title')}
         </Text>
         <Text style={styles.body}>{t('achievements:empty.body')}</Text>
+        {/* An empty state names the next step that actually fixes it, and here that
+            step is a lesson. Copy that says "one lesson away" with no way to start
+            one is a signpost pointing at a wall. */}
+        {onStartLesson !== undefined && (
+          <Button label={t('achievements:empty.action')} onPress={onStartLesson} />
+        )}
       </View>
     )
   }

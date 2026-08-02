@@ -49,6 +49,19 @@ export type StreakScreenProps = {
   readonly now: number
   readonly onBuyFreeze?: (() => void) | undefined
   readonly onRepair?: (() => void) | undefined
+  /**
+   * H7, scoped to the two actions that genuinely need a server.
+   *
+   * Freezes and repairs are spends against a server-authoritative balance (ADR 0006).
+   * The client may not decide them, so offline they cannot be honoured — and letting
+   * the button appear to work would either lie to the user or take their coins twice
+   * when the queue replays.
+   *
+   * It disables these two controls and nothing else. A full-screen "no internet" would
+   * be a lie about this app: content ships in the binary, the queue replays on
+   * reconnect, and a lesson works exactly as well in a tunnel.
+   */
+  readonly offline?: boolean
 }
 
 export function StreakScreen({
@@ -61,6 +74,7 @@ export function StreakScreen({
   now,
   onBuyFreeze,
   onRepair,
+  offline = false,
 }: StreakScreenProps) {
   const t = useT()
 
@@ -104,6 +118,7 @@ export function StreakScreen({
             coins={coins}
             now={now}
             onRepair={onRepair}
+            offline={offline}
           />
         </Card>
       )}
@@ -122,14 +137,21 @@ export function StreakScreen({
             <Button
               label={t('streak:freeze.buy', { price: FREEZE_PRICE })}
               variant="secondary"
-              disabled={!canAffordFreeze || onBuyFreeze === undefined}
+              disabled={offline || !canAffordFreeze || onBuyFreeze === undefined}
               onPress={() => onBuyFreeze?.()}
             />
-            {!canAffordFreeze && (
-              // The gap, stated once. No store link, no offer, no second ask.
-              <Text style={styles.note}>
-                {t('streak:cantAfford', { short: FREEZE_PRICE - coins })}
-              </Text>
+            {offline ? (
+              // Named before the coin gap: a user who is offline AND short of coins
+              // needs to know the connection is why the button is grey, or they will
+              // go looking for coins that would not have helped.
+              <Text style={styles.note}>{t('common:offline.action')}</Text>
+            ) : (
+              !canAffordFreeze && (
+                // The gap, stated once. No store link, no offer, no second ask.
+                <Text style={styles.note}>
+                  {t('streak:cantAfford', { short: FREEZE_PRICE - coins })}
+                </Text>
+              )
             )}
           </>
         )}
@@ -144,12 +166,14 @@ function RepairAction({
   coins,
   now,
   onRepair,
+  offline,
 }: {
   readonly repair: RepairAvailability
   readonly restoreTo: number
   readonly coins: number
   readonly now: number
   readonly onRepair: (() => void) | undefined
+  readonly offline: boolean
 }) {
   const t = useT()
 
@@ -180,10 +204,11 @@ function RepairAction({
       <Button
         label={t('streak:repair.buy', { count: restoreTo, price: repair.price })}
         variant="secondary"
-        disabled={!canAfford || onRepair === undefined}
+        disabled={offline || !canAfford || onRepair === undefined}
         onPress={() => onRepair?.()}
       />
-      {!canAfford && (
+      {offline && <Text style={styles.note}>{t('common:offline.action')}</Text>}
+      {!offline && !canAfford && (
         <Text style={styles.note}>{t('streak:cantAfford', { short: repair.price - coins })}</Text>
       )}
     </>

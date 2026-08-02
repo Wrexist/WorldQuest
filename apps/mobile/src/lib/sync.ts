@@ -18,6 +18,7 @@ import {
 import type { AnsweredItem } from '@worldquest/engines'
 import { submitLesson } from '@worldquest/api'
 import { currentUser, isConfigured, supabase } from './supabase.js'
+import { isOnline, onConnectivityChange } from './connectivity.js'
 import { readJson, writeJson } from './storage.js'
 
 const QUEUE_KEY = 'sync.queue.v1'
@@ -64,6 +65,12 @@ export async function flush(): Promise<void> {
   // burning their retry budget against a backend that was never configured.
   if (!isConfigured()) return
 
+  // Offline is not a failure, it is a "not yet". Sending anyway would spend an attempt
+  // per queued lesson on a request that cannot succeed, and after enough tunnels the
+  // queue parks work the user actually did. `MAX_ATTEMPTS` is there to stop us
+  // hammering a broken server, not to punish a commute.
+  if (!isOnline()) return
+
   for (const mutation of nextBatch(queue)) {
     try {
       await send(mutation)
@@ -73,6 +80,18 @@ export async function flush(): Promise<void> {
     }
   }
 }
+
+/**
+ * Replay the moment the connection comes back.
+ *
+ * Without this, a lesson finished in a tunnel sat in the queue until the user happened
+ * to finish another one — `flush()` was only ever called from `enqueueLesson`. A user
+ * who studies on the metro and then puts their phone away would see the XP appear a
+ * day later, which reads as the app losing their work.
+ */
+onConnectivityChange(() => {
+  if (isOnline()) void flush()
+})
 
 /**
  * A 4xx will fail identically forever, so retrying it wastes battery and delays every

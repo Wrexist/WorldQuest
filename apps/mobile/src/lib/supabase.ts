@@ -39,6 +39,15 @@ export function isConfigured(): boolean {
   return url !== '' && publishableKey !== ''
 }
 
+/**
+ * The backend origin, or `''` when there is none.
+ *
+ * Exposed for the connectivity probe, which needs to reach OUR server rather than
+ * whichever third party a library picked as a default. Deliberately not the client:
+ * asking "is the server up" must not require a session, a key, or a table.
+ */
+export const backendUrl = (): string => config().url
+
 export function supabase(): WorldQuestClient {
   client ??= createWorldQuestClient({ ...config(), storage: sessionStorage })
   return client

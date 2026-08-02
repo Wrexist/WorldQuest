@@ -325,6 +325,41 @@ const step = (name, ok, detail = '') => {
        /Sweden/.test(starred) && !/Mongolia/.test(starred))
   await page.screenshot({ path: path.join(SHOTS, 'collection-starred.png') })
 
+  // ── offline, scoped to what genuinely needs a server (H7) ──────────────────
+  //
+  // Real connectivity, not a prop: `context.setOffline` drops the network under the
+  // page, NetInfo's web implementation reports it, and the app has to react. That is
+  // the whole chain — `isOffline` was a hardcoded `false` for months and every test
+  // that passed a prop would have kept passing.
+  await page.goto(`http://localhost:${PORT}/streak`, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(1000)
+  const onlineStreak = await body()
+  step('the streak screen says nothing about connections while online',
+       !/needs a connection/i.test(onlineStreak))
+
+  await page.context().setOffline(true)
+  await page.waitForTimeout(1500)
+  const offlineStreak = await body()
+  step('going offline names the reason the purchase is unavailable',
+       /needs a connection/i.test(offlineStreak))
+  // The rest of the screen is untouched, and nothing here reads as an alarm. This
+  // app works in a tunnel; offline is a "not yet", not a failure.
+  step('and does not turn a tunnel into an emergency',
+       /streak|freeze/i.test(offlineStreak) &&
+       !/error|failed|check your|no internet|try again later/i.test(offlineStreak))
+  await page.screenshot({ path: path.join(SHOTS, 'streak-offline.png') })
+
+  // Recovery matters as much as detection. The first version of this never came back:
+  // NetInfo's default reachability probe pointed at a Google endpoint, which is both a
+  // third-party request from a child's device and the wrong question — it was
+  // unreachable here, so the app decided it was permanently offline and the buttons
+  // stayed grey forever. The probe now points at our own backend and does not run at
+  // all when there is none. See lib/connectivity.ts.
+  await page.context().setOffline(false)
+  await page.waitForTimeout(2000)
+  step('and takes it back when the connection returns',
+       !/needs a connection/i.test(await body()))
+
   // ── cold boot ──────────────────────────────────────────────────────────────
   //
   // What this can and cannot say about the splash, precisely:

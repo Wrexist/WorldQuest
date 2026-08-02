@@ -7,6 +7,8 @@
   "achievements:locked__note": "Shown instead of a tier on an achievement with no tier earned. Max 12 characters.",
   "achievements:next": "{remaining} to go",
   "achievements:next__note": "How much is left before the next tier. {remaining} is a whole number.",
+  "achievements:empty.action": "Start a lesson",
+  "achievements:empty.action__note": "Button on the empty achievements state. The next step that actually fixes it.",
   "achievements:empty.title": "Nothing unlocked yet",
   "achievements:empty.body": "Finish a lesson and the first one is already within reach.",
   "achievements:tier.bronze": "Bronze",

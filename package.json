@@ -51,5 +51,8 @@
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
   },
-  "$comment": "Install from the repo ROOT, never inside a package. See CLAUDE.md."
+  "$comment": "Install from the repo ROOT, never inside a package. See CLAUDE.md.",
+  "dependencies": {
+    "@react-native-community/netinfo": "11.4.1"
+  }
 }

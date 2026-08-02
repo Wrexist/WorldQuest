@@ -7,6 +7,7 @@
  */
 
 import { useCallback, useMemo, useState } from 'react'
+import { useOnline } from './connectivity.js'
 import {
   buildIndex,
   composeLesson,
@@ -33,6 +34,10 @@ export type LoadedContent = {
 export function useContent() {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('ready')
   const [nonce, setNonce] = useState(0)
+  // Was a hardcoded `false`, which made Home's offline banner unreachable for its
+  // entire life. Content itself is never offline — the packs are in the binary — so
+  // this describes the connection, not the load.
+  const online = useOnline()
 
   // Real memory state arrives from Supabase in week 3. Empty here means every fact
   // reads as new, which is the correct cold-start behaviour anyway.
@@ -73,5 +78,5 @@ export function useContent() {
     setNonce((n) => n + 1)
   }, [])
 
-  return { index, memory, status, reload, isOffline: false }
+  return { index, memory, status, reload, isOffline: !online }
 }

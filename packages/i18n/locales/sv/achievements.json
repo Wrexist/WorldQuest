@@ -3,6 +3,7 @@
   "achievements:progress": "{unlocked} av {total} upplåsta",
   "achievements:locked": "Inte än",
   "achievements:next": "{remaining} kvar",
+  "achievements:empty.action": "Starta en lektion",
   "achievements:empty.title": "Inget upplåst ännu",
   "achievements:empty.body": "Gör en lektion så är den första redan inom räckhåll.",
   "achievements:tier.bronze": "Brons",
