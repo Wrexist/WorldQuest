@@ -88,3 +88,49 @@ describe('submit-lesson bundle', () => {
     }
   })
 })
+
+describe('the answer key the server grades with', () => {
+  const files = buildFunction('submit-lesson')
+  const answers = files.find((f) => f.name === '_content/answers.ts')
+
+  it('is vendored into the bundle', () => {
+    // Without it the function cannot decide correctness itself, and the only other
+    // option is trusting the client — which is the exploit this closed.
+    expect(answers).toBeDefined()
+  })
+
+  it('maps real fact ids to the entity that answers them', () => {
+    // `buildQuestion` always gives the correct option the id of the item's entity, so
+    // "is this chosen option id the entity this fact is about" IS the whole check.
+    expect(answers!.content).toMatch(/geo\.SE\.capital["']?\s*:\s*["']SE["']/)
+  })
+
+  it('covers every fact the shipped packs contain', () => {
+    // A fact missing here is dropped from grading rather than mis-graded, so a gap is
+    // silent — it costs a user their XP instead of throwing.
+    const packed = (answers!.content.match(/"geo\.[^"]+":/g) ?? []).length
+    expect(packed).toBeGreaterThan(150)
+  })
+})
+
+describe('the endpoint does not trust the client', () => {
+  const index = buildFunction('submit-lesson').find((f) => f.name === 'index.ts')!.content
+
+  it('never hands the client\'s answers straight to the grader', () => {
+    // The P1 from review: `parseBody` checked `wasCorrect` was a boolean and passed
+    // it straight into gradeLesson, so a modified client could post ten fabricated
+    // answers with `wasCorrect: true` and mint XP, coins and mastery.
+    expect(index).toMatch(/gradeLesson\(\{[\s\S]{0,200}answers,/)
+    expect(index).not.toMatch(/answers:\s*body\.answers/)
+  })
+
+  it('recomputes correctness from the vendored key', () => {
+    expect(index).toMatch(/wasCorrect:[\s\S]{0,120}ANSWER_BY_FACT\[/)
+  })
+
+  it('treats an unanswered question as not correct', () => {
+    // A timeout has no chosen option. Without the null check it would compare
+    // undefined to undefined for an unknown fact and read as correct.
+    expect(index).toMatch(/chosenOptionId !== null/)
+  })
+})

@@ -6,6 +6,11 @@
  * reward by calling the same `gradeLesson` module the client used for its optimistic
  * display, so the two cannot disagree about what a user knows or earned.
  *
+ * It also does not submit WHETHER IT WAS RIGHT. That field exists on the wire because
+ * the client needs it locally, and this function ignores it: correctness is decided
+ * here from the vendored answer key. Trusting it meant a modified client could post
+ * ten fabricated answers and mint XP, coins and mastery.
+ *
  * Idempotent: `lessonId` is a client-generated UUID and the primary key of `lessons`.
  * A replayed offline submit collides, returns the original result, and awards nothing
  * twice. That single property is what makes the offline queue safe.
@@ -19,6 +24,7 @@ import { BALANCE } from '../../../packages/engines/src/xp/balance.ts'
 import type { AnsweredItem } from '../../../packages/engines/src/lesson/machine.ts'
 import type { MemoryState } from '../../../packages/engines/src/learning/types.ts'
 import { startOfLocalDay } from '../../../packages/engines/src/time/index.ts'
+import { ANSWER_BY_FACT } from './_content/answers.ts'
 
 type SubmitBody = {
   lessonId: string
@@ -51,7 +57,8 @@ function parseBody(raw: unknown): SubmitBody | null {
     const item = a as Record<string, unknown>
     if (typeof item.factId !== 'string') return null
     if (typeof item.templateId !== 'string') return null
-    if (typeof item.wasCorrect !== 'boolean') return null
+    // `wasCorrect` is deliberately NOT validated, because it is deliberately not
+    // read. The server decides correctness itself further down.
     if (typeof item.elapsedMs !== 'number') return null
     if (typeof item.answeredAt !== 'number') return null
   }
@@ -171,10 +178,29 @@ Deno.serve(async (req: Request): Promise<Response> => {
     .eq('user_id', user.id)
     .gte('completed_at', localMidnight.toISOString())
 
-  // ── grade, using the exact module the client used ─────────────────────────
+  // ── decide correctness HERE, then grade ───────────────────────────────────
+  //
+  // The client's `wasCorrect` is ignored entirely. It used to be trusted, and a
+  // modified client could post ten fabricated answers with `wasCorrect: true` and
+  // mint XP, coins and mastery — the exact exploit ADR 0006 exists to prevent.
+  //
+  // An answer whose fact this server has never heard of is DROPPED rather than
+  // marked wrong. During a content rollout a client can legitimately be one pack
+  // ahead, and the two dishonest options are both worse: counting it correct pays
+  // for something unverifiable, and counting it wrong punishes a user for our
+  // release timing by damaging a real memory state.
+  const graded = body.answers.filter((a) => ANSWER_BY_FACT[a.factId] !== undefined)
+  const answers = graded.map((a) => ({
+    ...a,
+    // `chosenOptionId === null` is a timeout: unanswered, therefore not correct.
+    wasCorrect: a.chosenOptionId !== null && ANSWER_BY_FACT[a.factId] === a.chosenOptionId,
+  }))
+
+  if (answers.length === 0) return json({ error: 'no_gradable_answers' }, 422)
+
   const result = gradeLesson({
     lessonId: body.lessonId,
-    answers: body.answers,
+    answers,
     memory,
     // Server time is authoritative for the submission; per-answer timestamps
     // still drive scheduling so an offline lesson schedules from when it was
