@@ -194,10 +194,18 @@ not fail the build: they are a backlog, not a regression.
 | # | Gap | Why it matters |
 |---|---|---|
 | 7.1 | ~~Achievements never evaluate~~ | ✅ Evaluated on device from `lesson_completed`, which is the one event the client observes *completely* — the count, the accuracy and the duration are all measured here. Three achievements become genuinely reachable: lessons finished, perfect lessons, and perfect lessons under a minute. Optimistic like XP, since unlocks pay coins and the server is the authority. The rest stay locked **on purpose**: `fact_mastered` needs real memory state, `streak_extended` is server-owned, and `region_started`/`daily_quest_completed` have no producer. An achievement that unlocks on nothing is worse than one that stays locked. |
-| 7.2 | **Quests are not wired** | The screen renders its empty state and no quest is ever generated. `applyQuestEvent`, `SLOTS` and `hasExpired` have no caller. |
+| 7.2 | ~~Quests are not wired~~ | ✅ **and my first note on this row was wrong.** Quests *were* generated — `generateDailyQuest` is called from the route, and the screen renders five real tasks. What never happened was progress: `applyQuestEvent` had no caller, so those five sat at 0/5 for ever however many lessons a user finished. A daily quest that cannot be completed is worse than none: it is a promise on the home screen the app quietly breaks every day. Progress is stored (the tasks are regenerated from the seed, so only what the user *did* needs saving), keyed by date so a new day starts clean without anything having to remember to clear it. One day only — a history would make "you completed 3 of 7 this week" possible, and the moment that number exists someone renders it. |
 | 7.3 | **The sync queue never backs off** | `backoffMs` is unused — a failing server is retried at full speed. |
 | 7.4 | **Parked mutations are invisible** | The engine parks work that exhausted its retries specifically so it is never silently dropped, and nothing surfaces it. `retryParked` has no caller. |
 | 7.5 | **No streak milestone is celebrated** | `isMilestone` has no caller, so 7, 30 and 100 days pass unremarked. |
+
+**Two of the original twelve entries were wrong, and that is worth recording.** I wrote
+"no quest is ever generated" and "the speed round uses its own constant" without
+checking either. Quests generate fine, and `SPEED_ROUND_MS` (90 s, a whole lesson) and
+`SPEED_SECONDS` (10 s, one question) are different things that happen to share a word.
+A file whose entire purpose is to hold true reasons is the worst possible place to
+guess, and the fix was to read the code before writing the row — which is also how the
+real, narrower gap turned up.
 | 7.6 | `regionProgress` | The region screen computes its own totals, so two code paths can disagree about the same number. |
 
 Deliberately NOT in that list, because they are right: everything server-authoritative

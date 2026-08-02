@@ -351,6 +351,24 @@ const step = (name, ok, detail = '') => {
   }
   await page.waitForTimeout(800)
 
+  // The quest, checked in the same pass — the lesson above is what should have moved
+  // it. Until now `applyQuestEvent` had no caller, so five tasks read 0/5 forever no
+  // matter how many lessons were finished: a promise on the home screen that the app
+  // quietly broke every day.
+  // By route, not by tab: the lesson is a full-screen sibling of the tabs, so there
+  // is no tab bar on screen at this point in the flow.
+  await page.goto(`http://localhost:${PORT}/quests`, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(1400)
+  const questAfter = await body()
+  // Matched against the copy the screen actually renders ("1 of 5 done"), not a
+  // guessed "1 / 5". The first version passed on a different branch and printed an
+  // empty detail, which is the same tell that caught the answer-selector bug.
+  const questDone = (questAfter.match(/(\d) of 5 done/) ?? [])[1]
+  step('finishing a lesson ticks a quest task',
+       questDone !== undefined && Number(questDone) > 0,
+       questDone === undefined ? 'no "N of 5 done" on screen' : `${questDone} of 5`)
+  await page.screenshot({ path: path.join(SHOTS, 'quests.png') })
+
   await page.goto(`http://localhost:${PORT}/achievements`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(1200)
   const afterAch = await body()

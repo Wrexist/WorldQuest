@@ -86,6 +86,9 @@ const ALLOWED: Record<string, string> = {
   // ── consumed by another engine rather than by a screen
   evaluate: 'the single-definition form; the client calls evaluateAll',
   backfill: 'for a pack that adds an achievement to users who already earned it — needs server-side history',
+  SLOTS: 'the type is what callers use; the screen keys its titles by Slot',
+  SPEED_ROUND_MS: 'the whole-lesson goal for the speed_round quest slot, read inside advanceTask — NOT the same thing as SPEED_SECONDS, which is per question',
+  hasExpired: 'the quest is regenerated per (user, day) by seed, so a stale one cannot be shown',
   candidatePool: 'used inside composeLesson',
   pickItemForFact: 'used inside composeLesson — including the screen-reader-only sibling pick',
   applySoftCap: 'used inside gradeLesson, which the server runs',
@@ -118,10 +121,6 @@ const ALLOWED: Record<string, string> = {
 const KNOWN_GAPS: Record<string, string> = {
   isMilestone: 'no streak milestone is ever celebrated',
   regionProgress: 'the region screen computes its own totals instead',
-  SLOTS: 'QUESTS ARE NOT WIRED — the screen renders an empty state and no quest is ever generated',
-  SPEED_ROUND_MS: 'the speed round uses its own constant in features/lesson/modes.ts',
-  applyQuestEvent: 'quests are not wired',
-  hasExpired: 'quests are not wired',
   backoffMs: 'the sync adapter retries with no delay at all — it never backs off',
   retryParked: 'parked mutations are never surfaced, so nothing can retry them',
   hasUnsyncedProgress: 'meant to warn before sign-out; there is no sign-out yet',

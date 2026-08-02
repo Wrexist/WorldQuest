@@ -29,6 +29,8 @@ import { OutOfHearts } from './OutOfHearts.js'
 import { Paused } from './Paused.js'
 import { recordPace, useItemPace } from './usePace.js'
 import { recordLessonForAchievements } from '../achievements/progress.js'
+import { todaysQuest } from '../quests/useDailyQuest.js'
+import { recordQuestEvent } from '../quests/questProgress.js'
 import { useContent } from '../../lib/content.js'
 import { tContent, useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
@@ -90,6 +92,26 @@ export function LessonScreen({
     const durationMs = Date.now() - (state.startedAt ?? Date.now())
     recordLessonForAchievements({ accuracy: optimistic.accuracy, durationMs, at: Date.now() })
 
+    // Today's quest, advanced. Regenerated rather than held: it is deterministic per
+    // (user, day), and a second copy of the seed logic would mean the screen showed
+    // one quest while the lesson ticked another.
+    if (index !== null) {
+      const quest = todaysQuest(index.index, memory)
+      recordQuestEvent(quest, {
+        type: 'lesson_completed',
+        accuracy: optimistic.accuracy,
+        durationMs,
+      })
+      for (const answer of state.answers) {
+        if (answer.chosenOptionId === null) continue
+        recordQuestEvent(quest, {
+          type: 'fact_answered',
+          factId: answer.factId,
+          correct: answer.wasCorrect,
+        })
+      }
+    }
+
     track('lesson_completed', {
       lesson_id: state.lessonId,
       kind: 'lesson',
@@ -101,7 +123,7 @@ export function LessonScreen({
       xp_awarded: optimistic.xpAwarded,
       was_offline: isOffline,
     })
-  }, [isOffline])
+  }, [isOffline, index, memory])
 
   const timeLimitMs = mode === 'speed' ? SPEED_SECONDS * 1000 : null
   const lesson = useLesson({ questions, memory, timeLimitMs, onComplete: handleComplete })
