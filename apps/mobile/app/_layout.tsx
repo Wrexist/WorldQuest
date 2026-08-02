@@ -74,6 +74,7 @@ export default function RootLayout() {
             <Stack.Screen name="country/[code]" />
             <Stack.Screen name="collection/[kind]" />
             <Stack.Screen name="achievements" />
+            <Stack.Screen name="streak" />
             <Stack.Screen
               name="lesson"
               options={{

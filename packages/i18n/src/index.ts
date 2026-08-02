@@ -20,6 +20,8 @@ import { IcuFormat } from './icu.js'
 import { pseudo } from './pseudo.js'
 import { NAMESPACES, type Namespace, type TranslationKey, type TranslationParams } from './keys.js'
 
+import enStreak from '../locales/en/streak.json' with { type: 'json' }
+import svStreak from '../locales/sv/streak.json' with { type: 'json' }
 import enTitles from '../locales/en/titles.json' with { type: 'json' }
 import svTitles from '../locales/sv/titles.json' with { type: 'json' }
 import enCollection from '../locales/en/collection.json' with { type: 'json' }
@@ -92,6 +94,7 @@ const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
     onboarding: enOnboarding,
     collection: enCollection,
     titles: enTitles,
+    streak: enStreak,
     common: enCommon,
     country: enCountry,
     errors: enErrors,
@@ -109,6 +112,7 @@ const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
     onboarding: svOnboarding,
     collection: svCollection,
     titles: svTitles,
+    streak: svStreak,
     common: svCommon,
     country: svCountry,
     errors: svErrors,

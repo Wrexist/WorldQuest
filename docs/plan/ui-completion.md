@@ -98,9 +98,15 @@ Every number below already exists in an engine and is invisible in the UI.
 | # | Work | Why now |
 |---|---|---|
 | 3.1 | **Level + title + XP bar** on Profile | ✅ `Level 20 · Navigator`. The maths moved into `levelProgress` in the engine — the curve is exponential, so progress is the position *inside* the band, and computing that in a component is how a bar ends up disagreeing with the number beside it. Found on the way: `TITLES` pointed at a `titles:` namespace that did not exist, so every title would have rendered as a raw key. |
-| 3.2 | **Streak UI** — flame, freeze, repair | C4 shipped the whole engine. A streak the user cannot see is not a streak. |
+| 3.2 | **Streak UI** — flame, freeze, repair | ✅ `/streak`, reached from the Home badge. Every refusal names its reason, and the cooldown carries the number of days. |
 | 3.3 | **Weekly activity bars** on Profile | ✅ Seven fixed slots, scaled to the user's own best day rather than to a goal, recorded locally the instant a lesson ends so the chart is right offline. |
-| 3.4 | **Shop / coin sink** | Coins are earned and cannot be spent. An economy with no sink is a number, not an economy — and `xp-economy.md` prices hearts and freezes already. |
+| 3.4 | **Shop / coin sink** | ✅ *as the streak screen, deliberately not as a store.* Freezes and repairs are the only sinks that exist without artwork — the cosmetics that form the real sink all need assets. A two-row store would be a shop in name only, and "buy a freeze" is a decision made while looking at the streak it protects, not while browsing a catalogue. |
+
+The kid-safety rules are asserted, not trusted. The component tests and the E2E both
+check the shipped copy for: no way to buy coins, no "hurry"/"last chance"/"expires
+soon", no seconds ticking on the repair window, nothing sold that confers an advantage
+at learning, and the standing promise that coins come from lessons and never from
+money. A freeze is never offered at the cap — selling a third takes coins for nothing.
 
 ### Wave 4 — more game, from content rather than code
 Each new **attribute** multiplies across every country; each new **template**

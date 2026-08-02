@@ -231,6 +231,20 @@ const step = (name, ok, detail = '') => {
   await page.waitForTimeout(700)
   step('a search with no match offers a way onward', /browse by continent/i.test(await body()))
 
+  // ── the streak screen, and the promises its copy makes ─────────────────────
+  await page.goto(`http://localhost:${PORT}/streak`, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(1200)
+  const streak = await body()
+  step('streak screen renders', /streak|freeze/i.test(streak))
+  await page.screenshot({ path: path.join(SHOTS, 'streak.png') })
+
+  // The rules from docs/systems/xp-economy.md, asserted in the shipped bundle rather
+  // than trusted to review. Coins are earned; nothing here sells an advantage; and
+  // nothing pressures a child into a purchase.
+  step('streak copy sells no advantage and applies no pressure',
+       !/buy coins|get coins|top up|last chance|hurry|expires soon|double xp|skip/i.test(streak) &&
+       /never from money/i.test(streak))
+
   // ── a deep route, which is also a content check ────────────────────────────
   await page.goto(`http://localhost:${PORT}/region/EU`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(1200)

@@ -88,6 +88,10 @@ describe('repair availability', () => {
     expect(repairAvailability(recent, BROKE_AT + HOUR, TZ)).toEqual({
       available: false,
       reason: 'cooldown',
+      // The number, not just the refusal. "Not available" makes a user tap again
+      // tomorrow and the day after; "available again in 20 days" ends the question,
+      // and the UI must not have to redo this arithmetic to say it.
+      availableInDays: REPAIR_COOLDOWN_DAYS - 10,
     })
 
     const longAgo = broken({ lastRepairAt: BROKE_AT - (REPAIR_COOLDOWN_DAYS + 1) * DAY })

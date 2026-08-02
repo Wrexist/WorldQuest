@@ -46,6 +46,7 @@ export default function HomeRoute() {
       // Stale numbers are exactly what "offline" means to a user: what you see is
       // real, it is just from last time. The banner says so instead of hiding it.
       isOffline={isStale || status === 'error'}
+      onOpenStreak={() => router.push('/streak')}
       onStartLesson={() => router.push('/lesson')}
     />
   )

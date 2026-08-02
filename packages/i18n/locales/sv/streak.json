@@ -1,0 +1,22 @@
+{
+  "streak:title": "Din svit",
+  "streak:days": "{count, plural, =0 {Inga dagar än} one {# dag} other {# dagar}}",
+  "streak:longest": "Längst: {count, plural, one {# dag} other {# dagar}}",
+  "streak:intact": "Kom tillbaka i morgon för att hålla den vid liv",
+  "streak:none": "Gör en lektion i dag för att starta en",
+  "streak:broken.title": "Din svit tog slut",
+  "streak:broken.body": "Det händer. Du kan börja om i dag, eller ta tillbaka den gamla.",
+  "streak:freeze.title": "Sviftfrysningar",
+  "streak:freeze.held": "{held} av {max} sparade",
+  "streak:freeze.body": "En frysning täcker en missad dag automatiskt. Du behöver aldrig komma ihåg att använda den.",
+  "streak:freeze.buy": "Köp en frysning · {price}",
+  "streak:freeze.full": "Du har maxantalet",
+  "streak:repair.title": "Ta tillbaka den",
+  "streak:repair.buy": "Återställ {count, plural, one {# dag} other {# dagar}} · {price}",
+  "streak:repair.expires": "Tillgänglig i {hours, plural, one {# timme till} other {# timmar till}}",
+  "streak:repair.cooldown": "Reparation går att göra igen om {days, plural, one {# dag} other {# dagar}}",
+  "streak:repair.expired": "Fönstret för den här har stängts",
+  "streak:coins": "{count, plural, one {# mynt} other {# mynt}}",
+  "streak:cantAfford": "Du behöver {short} till",
+  "streak:earned": "Mynt kommer från lektioner, aldrig från pengar"
+}

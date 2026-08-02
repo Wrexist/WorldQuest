@@ -76,7 +76,21 @@ export type RepairAvailability =
   | { readonly available: true; readonly price: number; readonly expiresAt: number }
   | {
       readonly available: false
-      readonly reason: 'not-broken' | 'window-expired' | 'cooldown' | 'nothing-to-restore'
+      readonly reason: 'not-broken' | 'window-expired' | 'nothing-to-restore'
+    }
+  | {
+      readonly available: false
+      readonly reason: 'cooldown'
+      /**
+       * Whole days until repair is possible again.
+       *
+       * Carried here rather than recomputed by the caller. "Not available" makes a
+       * user tap again tomorrow and the day after; "available again in 12 days" ends
+       * the question. The reason alone was not enough to write that sentence, so the
+       * UI would have had to redo the cooldown arithmetic — and two copies of a rule
+       * is one copy and one bug.
+       */
+      readonly availableInDays: number
     }
 
 /**
@@ -105,7 +119,13 @@ export function repairAvailability(
 
   if (state.lastRepairAt !== null) {
     const since = daysBetween(localDate(state.lastRepairAt, timeZone), localDate(now, timeZone))
-    if (since < REPAIR_COOLDOWN_DAYS) return { available: false, reason: 'cooldown' }
+    if (since < REPAIR_COOLDOWN_DAYS) {
+      return {
+        available: false,
+        reason: 'cooldown',
+        availableInDays: REPAIR_COOLDOWN_DAYS - since,
+      }
+    }
   }
 
   return { available: true, price: REPAIR_PRICE, expiresAt }

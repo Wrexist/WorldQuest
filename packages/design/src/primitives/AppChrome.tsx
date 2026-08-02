@@ -51,21 +51,50 @@ export type StreakBadgeProps = {
   /** "Day streak" — passed in so the component stays i18n-agnostic. */
   label: string
   accessibilityLabel: string
+  /**
+   * Makes the badge the way in to streak freezes and repair.
+   *
+   * Handled here rather than by wrapping the badge in a Pressable at the call site:
+   * a wrapper needs its own label, which leaves two elements answering to the same
+   * name and a screen reader announcing the streak twice.
+   */
+  onPress?: () => void
 }
 
 /**
  * Flame, count, then a caption underneath — the mockup's vertical stack rather
  * than a pill. The count is the loudest thing in the header after the greeting.
  */
-export function StreakBadge({ days, label, accessibilityLabel }: StreakBadgeProps) {
-  return (
-    <View accessible aria-label={accessibilityLabel} style={styles.streak}>
+export function StreakBadge({ days, label, accessibilityLabel, onPress }: StreakBadgeProps) {
+  const inner = (
+    <>
       <View style={styles.streakRow}>
         <Text style={styles.flame}>🔥</Text>
         <Text style={styles.streakCount}>{days}</Text>
       </View>
       <Text style={styles.streakLabel}>{label}</Text>
-    </View>
+    </>
+  )
+
+  if (onPress === undefined) {
+    return (
+      <View accessible aria-label={accessibilityLabel} style={styles.streak}>
+        {inner}
+      </View>
+    )
+  }
+
+  return (
+    <Pressable
+      accessible
+      role="button"
+      aria-label={accessibilityLabel}
+      aria-disabled={false}
+      onPress={onPress}
+      style={styles.streak}
+    >
+      {inner}
+    </Pressable>
   )
 }
 

@@ -51,6 +51,8 @@ export type HomeScreenProps = {
   readonly loading: boolean
   readonly isOffline: boolean
   readonly onStartLesson: () => void
+  /** Optional so the screenshot renderer and component tests mount without a router. */
+  readonly onOpenStreak?: (() => void) | undefined
 }
 
 function greetingKey(hour: number): TranslationKey {
@@ -59,7 +61,7 @@ function greetingKey(hour: number): TranslationKey {
   return 'home:greeting.evening'
 }
 
-export function HomeScreen({ progress, loading, isOffline, onStartLesson }: HomeScreenProps) {
+export function HomeScreen({ progress, loading, isOffline, onStartLesson, onOpenStreak }: HomeScreenProps) {
   // Before the early return: hooks cannot be conditional, and the skeleton needs
   // translated copy too.
   const t = useT()
@@ -97,11 +99,17 @@ export function HomeScreen({ progress, loading, isOffline, onStartLesson }: Home
               {t('home:greeting.role')}
             </Text>
           </View>
+          {/* The badge is now the way in to freezes and repair. A streak the user can
+              see but cannot protect is a number; making it tappable is what turns it
+              into something they can act on. */}
           {progress && progress.streak > 0 && (
             <StreakBadge
               days={progress.streak}
               label={t('home:streak.label')}
               accessibilityLabel={t('home:streak.days', { count: progress.streak })}
+              // The badge is the way in to freezes and repair. A streak you can see
+              // but cannot protect is a number, not a feature.
+              {...(onOpenStreak !== undefined ? { onPress: onOpenStreak } : {})}
             />
           )}
         </View>
