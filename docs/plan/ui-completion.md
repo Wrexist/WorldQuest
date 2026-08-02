@@ -169,7 +169,8 @@ at zero hearts and the whole mechanic was decorative.
 | # | Work | Why |
 |---|---|---|
 | 6.1 | **Out of hearts** (lesson state, screen-catalog §5) | ✅ A fork, not a wall. The one sentence that matters is *the next lesson starts with a full set* — hearts reset per lesson, so this is never a lockout, but a ten-year-old who has just been stopped does not know that. It is said **before** any offer to spend coins. No countdown (the next lesson does not wait for a refill, so a clock would be both a lie and pressure); no way to buy coins; and `REVIVE` resumes at the *next* item, because paying to re-answer the one you just missed is paying for the answer. |
-| 6.2 | **Paused / network-lost mid-lesson** | ⬜ The machine has `PAUSE`/`RESUME`; nothing sends them. Same pattern again. |
+| 6.2 | **Paused** | ✅ And the serious half was not the state — **there was no close button.** The catalogue lists one first among the runner's controls and it had never been built; the route disables the back gesture on purpose, so a started lesson could only be left by answering every question or killing the app. For a ten-year-old called to dinner, killing the app *was* the exit. It pauses rather than quits, so a mis-tap is recoverable; leaving keeps and submits every answer, so the copy threatens nothing. It also fixes a real speed-round bug: the countdown is wall-clock, so backgrounding the app timed out the question while it was off screen — `RESUME` resets `shownAt`, which the machine had already decided was correct. |
+| 6.3 | **Network lost mid-lesson** | ✅ *already* — the banner shows and the queue replays; nothing to build once connectivity was real. |
 
 **The question types are 3 of 5, not 2.** Flag → country, country → capital and the
 speed round all ship; currency is a bonus fourth axis. The two missing —

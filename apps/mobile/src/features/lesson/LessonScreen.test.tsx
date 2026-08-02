@@ -20,8 +20,7 @@ vi.mock('../../lib/sync.js', () => ({ enqueueLesson: vi.fn(), flush: vi.fn() }))
 vi.mock('../../lib/analytics.js', () => ({ track: vi.fn() }))
 
 /** Every button except the footer's Continue. */
-const answerButtons = (): HTMLElement[] =>
-  screen.getAllByRole('button').filter((button) => button.textContent !== 'Continue')
+const answerButtons = (): HTMLElement[] => screen.getAllByTestId('answer-option')
 
 describe('Lesson', () => {
   it('asks a real question composed from the shipped packs', () => {
@@ -75,5 +74,36 @@ describe('Lesson', () => {
       expect(option.getAttribute('aria-label')).toBe(option.textContent)
       expect(option.getAttribute('aria-label')).toBeTruthy()
     }
+  })
+})
+
+describe('Lesson — pausing', () => {
+  it('offers a way out of the lesson at all', () => {
+    // The catalogue lists a close control first (§5) and it had never been built. The
+    // route disables the back gesture on purpose, so before this the only exits from
+    // a started lesson were answering ten questions or killing the app.
+    render(<LessonScreen onExit={() => {}} />)
+    expect(screen.getByRole('button', { name: 'Pause the lesson' })).toBeTruthy()
+  })
+
+  it('pauses rather than quitting, so a mis-tap is recoverable', () => {
+    render(<LessonScreen onExit={() => {}} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Pause the lesson' }))
+
+    expect(screen.getByText('Paused')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Keep going' }))
+    expect(screen.queryByText('Paused')).toBeNull()
+  })
+
+  it('covers the question while paused', () => {
+    // A pause that leaves the prompt readable is a free look at an item the
+    // scheduler is about to score.
+    render(<LessonScreen onExit={() => {}} />)
+    const prompt = screen.getByRole('heading').textContent
+    fireEvent.click(screen.getByRole('button', { name: 'Pause the lesson' }))
+
+    // The paused heading is now the only one on screen.
+    expect(screen.getByRole('heading').textContent).toBe('Paused')
+    expect(screen.getByRole('heading').textContent).not.toBe(prompt)
   })
 })

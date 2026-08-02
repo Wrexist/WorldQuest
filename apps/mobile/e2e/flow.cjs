@@ -155,21 +155,21 @@ const step = (name, ok, detail = '') => {
   if (prompt !== undefined) {
     await page.screenshot({ path: path.join(SHOTS, 'lesson.png') })
 
-    const before = text
-    let answered = false
-    for (const button of await page.getByRole('button').all()) {
-      const label = (await button.innerText().catch(() => '')).trim()
-      // The options are the short buttons; the prompt and the CTA are not.
-      if (label && label.length < 40 && !/capital of|which country|what does/i.test(label)) {
-        await button.click()
-        answered = true
-        break
-      }
-    }
+    // By testID, not by "the short buttons". That heuristic picked the first button
+    // in the DOM, and the moment a close button was added to the header it started
+    // clicking THAT — pausing the lesson, changing the screen, and satisfying a
+    // `text !== before` assertion without ever answering anything. The step went
+    // green with an empty feedback string, which is the only reason it was caught.
+    const options = await page.getByTestId('answer-option').all()
+    const answered = options.length > 0
+    if (answered) await options[0].click()
+
     await page.waitForTimeout(1200)
     text = await body()
     const feedback = (text.match(/Perfect!|That's [^\n]*|The answer is [^\n]*/) ?? [''])[0]
-    step('answering produces feedback', answered && text !== before, feedback)
+    // The feedback string itself, not just "something changed" — pausing also changes
+    // the screen, and that is precisely what went undetected before.
+    step('answering produces feedback', answered && feedback.length > 0, feedback)
 
     // The voice rule, asserted rather than trusted: never "Wrong!", never "Oops!".
     // See docs/design/voice-and-tone.md. This is the one place a copy regression
@@ -324,6 +324,33 @@ const step = (name, ok, detail = '') => {
   step('a star set on one screen filters the collection on another',
        /Sweden/.test(starred) && !/Mongolia/.test(starred))
   await page.screenshot({ path: path.join(SHOTS, 'collection-starred.png') })
+
+  // ── the way out of a lesson ────────────────────────────────────────────────
+  //
+  // The route disables the back gesture on purpose, so this control is the ONLY exit
+  // from a started lesson short of answering every question or killing the app. It did
+  // not exist until now, which makes it worth a step in the only thing that runs the
+  // real bundle.
+  await page.goto(`http://localhost:${PORT}/lesson`, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(1800)
+  await page.getByRole('button', { name: /Pause the lesson/i }).click()
+  await page.waitForTimeout(600)
+  const paused = await body()
+  step('a lesson can be paused', /Paused/.test(paused))
+  // Leaving keeps every answer already given, so nothing here may threaten the user
+  // with losing it. This is the screen most likely to acquire an "Are you sure?"
+  // in a later well-meaning edit.
+  // Matches the THREAT, not the word. The first version banned /lost/ and failed on
+  // "Nothing is lost." — the reassurance itself. A blunt keyword ban rejects good
+  // copy and teaches whoever hits it to weaken the test rather than the sentence.
+  step('and pausing threatens nothing',
+       !/you'?ll lose|will lose|will be lost|lose your|are you sure|discard|start over/i.test(paused))
+  await page.screenshot({ path: path.join(SHOTS, 'lesson-paused.png') })
+
+  await page.getByRole('button', { name: /Keep going/i }).click()
+  await page.waitForTimeout(600)
+  step('and resuming returns to the question',
+       /capital of|flag|money do people/i.test(await body()))
 
   // ── offline, scoped to what genuinely needs a server (H7) ──────────────────
   //

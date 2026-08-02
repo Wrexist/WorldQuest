@@ -10,6 +10,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
+import { AppState, type AppStateStatus } from 'react-native'
 import {
   accuracy,
   currentQuestion,
@@ -115,6 +116,35 @@ export function useLesson({
     dispatch({ type: 'REVIVE', now: now() })
   }, [])
 
+  const pause = useCallback(() => {
+    dispatch({ type: 'PAUSE', now: now() })
+  }, [])
+
+  const resume = useCallback(() => {
+    dispatch({ type: 'RESUME', now: now() })
+  }, [])
+
+  /**
+   * Leaving the app pauses the lesson.
+   *
+   * This is a correctness fix, not a nicety. The countdown above is anchored to
+   * `state.shownAt` in wall-clock time, so a user who takes a phone call during a
+   * speed round comes back to a question that timed out while the app was not even
+   * on screen. `RESUME` resets `shownAt` — the machine already decided that time
+   * spent paused is not thinking time — so pausing on background is exactly the fix.
+   *
+   * The subscription is optional-chained on removal for the same reason
+   * `useReducedMotion` is: react-native-web has returned `undefined` here before, and
+   * an unguarded `.remove()` throws on every unmount.
+   */
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (next: AppStateStatus) => {
+      if (next !== 'active') dispatch({ type: 'PAUSE', now: now() })
+    }) as { remove?: () => void } | undefined
+
+    return () => subscription?.remove?.()
+  }, [])
+
   // Optimistic grading: the SAME module the server will run. The number shown is a
   // prediction, and the server's answer replaces it on reconcile.
   const optimistic = useMemo<GradeResult | null>(() => {
@@ -146,6 +176,8 @@ export function useLesson({
     advance,
     abandon,
     revive,
+    pause,
+    resume,
     send,
   }
 }

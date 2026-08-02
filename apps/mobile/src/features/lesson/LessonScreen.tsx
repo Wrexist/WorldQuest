@@ -8,7 +8,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   AnswerOption,
   Button,
@@ -25,6 +25,7 @@ import type { GradeResult, LessonState, Question } from '@worldquest/engines'
 import { useLesson } from './hooks/useLesson.js'
 import { SPEED_SECONDS } from './modes.js'
 import { OutOfHearts } from './OutOfHearts.js'
+import { Paused } from './Paused.js'
 import { useContent } from '../../lib/content.js'
 import { tContent, useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
@@ -115,6 +116,18 @@ export function LessonScreen({
     return <SummaryState result={lesson.optimistic} isOffline={isOffline} onExit={onExit} />
   }
 
+  // Replaces the runner rather than covering it: an overlay leaves the question in
+  // the accessibility tree, which is a free look at an item about to be scored.
+  if (lesson.state.phase === 'paused') {
+    return (
+      <Paused
+        answered={lesson.state.answers.length}
+        onResume={lesson.resume}
+        onFinish={lesson.abandon}
+      />
+    )
+  }
+
   const question = lesson.question
   if (!question) return <LoadingState />
 
@@ -126,6 +139,20 @@ export function LessonScreen({
       {isOffline && <OfflineBanner />}
 
       <View style={styles.header}>
+        {/* The catalogue lists this control first (§5) and it had never been built,
+            so a user who started a lesson could not leave it except by answering ten
+            questions — the route disables the back gesture on purpose, so killing the
+            app was the only other way out. It pauses rather than quitting, which is
+            what makes a mis-tap recoverable. */}
+        <Pressable
+          role="button"
+          aria-label={t('lesson:close')}
+          onPress={lesson.pause}
+          hitSlop={space[2]}
+          style={styles.close}
+        >
+          <Text style={styles.closeGlyph}>✕</Text>
+        </Pressable>
         <ProgressBar
           current={lesson.progress.current}
           total={lesson.progress.total}
@@ -162,6 +189,11 @@ export function LessonScreen({
               state={optionState(option.isCorrect, option.id, answered, lastAnswer?.chosenOptionId)}
               onPress={() => lesson.answer(option.id)}
               aria-label={t('lesson:answer.label', { answer: option.label })}
+              // So tests can select answers POSITIVELY. The helper used to take every
+              // button that was not labelled "Continue", which silently swallowed the
+              // close button the moment one existed and made two tests click pause
+              // while believing they were answering.
+              testID="answer-option"
             />
           ))}
         </View>
@@ -217,6 +249,7 @@ export function LessonScreen({
           )}
         </View>
       )}
+
     </View>
   )
 }
@@ -386,6 +419,9 @@ const styles = StyleSheet.create({
   feedbackTitle: { ...text('h3'), color: colors.text.primary },
   feedbackTitleOk: { ...text('h2'), color: colors.feedback.correct },
   feedbackBody: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
+
+  close: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  closeGlyph: { ...text('h3'), color: colors.text.secondary },
   rewards: { flexDirection: 'row', gap: space[2], justifyContent: 'center' },
   footer: { paddingBottom: space[4] },
   retry: { marginTop: space[4] },
