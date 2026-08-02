@@ -88,24 +88,47 @@ export function Card({
   const wrapped = !flat && Gradient !== null
 
   /**
-   * `style` lands on the OUTERMOST element only, and never on both.
+   * A card is exactly ONE box, gradient or not.
    *
-   * When the gradient wraps, the caller's style used to be applied to the wrapper AND
-   * to the inner view. Margins doubled silently; percentage widths compounded, so a
-   * `width: '31%'` tile became 31% of 31% and rendered its label one character per
-   * line. It looked like a text-wrapping bug and was a layout one.
+   * This started as a wrapper around an inner view, and both versions of that were
+   * wrong. Applying the caller's `style` to both doubled every margin and compounded
+   * every percentage — a `width: '31%'` tile became 31 % of 31 %. Applying it only to
+   * the wrapper fixed that and left a subtler one: `padding`, `alignItems`,
+   * `justifyContent` and `gap` are instructions about the card's CHILDREN, and the
+   * children lived in the inner view. A tile asking for `padding: space[2]` got 8 px
+   * on the wrapper plus the inner view's default 16 — 24 px a side — and its
+   * `alignItems: 'center'` governed one full-width box instead of the two labels it
+   * was written for. On a 111 px tile that left 63 px for text, and "Stockholm" broke
+   * mid-word.
    *
-   * The inner view stretches to fill instead, and keeps only what it owns: padding,
-   * radius, and the transparent fill that lets the gradient through.
+   * The tell was that the two branches disagreed: without the gradient module —
+   * component tests, the screenshot renderer, the design preview — there was only ever
+   * one box and the caller's style behaved correctly. So every test passed and only
+   * the real bundle was wrong. `pnpm e2e` is what saw it.
+   *
+   * So the gradient is now an absolutely-positioned child rather than a parent. One
+   * box means the caller's style can only mean one thing, and it means the same thing
+   * on both paths.
    */
   const shared = {
     accessible: accessibilityLabel !== undefined || interactive,
     'aria-label': accessibilityLabel,
     testID,
-    style: wrapped
-      ? [styles.base, LEVELS[level], styles.transparent, styles.fill]
-      : [styles.base, LEVELS[level], style],
+    // `clip` only when there is a gradient to clip: `overflow: 'hidden'` on every card
+    // would silently crop anything a caller deliberately hangs over the edge.
+    style: [styles.base, LEVELS[level], wrapped ? styles.clip : null, style],
   }
+
+  const backdrop = wrapped ? (
+    <Gradient
+      colors={stops(level)}
+      start={START}
+      end={END}
+      style={StyleSheet.absoluteFill}
+      // Paints under the children by document order; must never eat their touches.
+      pointerEvents="none"
+    />
+  ) : null
 
   // A pressable card is a Pressable, not a View with a touch handler. That is what
   // gives it the focus ring, the keyboard activation and the pressed state for free —
@@ -114,7 +137,7 @@ export function Card({
   // The two branches are written out rather than spread from one object so that
   // `role=` and `aria-checked=` are real JSX attributes. `tokens.test.ts` greps for
   // exactly that, and a guard that an object literal can walk past is not a guard.
-  const content = interactive ? (
+  return interactive ? (
     <Pressable
       {...shared}
       onPress={onPress}
@@ -126,21 +149,13 @@ export function Card({
       // far bigger than that; this is for the compact ones — chips, year pickers.
       hitSlop={4}
     >
+      {backdrop}
       {children}
     </Pressable>
   ) : (
-    <View {...shared}>{children}</View>
-  )
-
-  if (!wrapped) return content
-
-  // The gradient sits BEHIND the card rather than wrapping it, so the card keeps
-  // owning its own padding, radius and accessibility grouping. Wrapping would put a
-  // second element between the screen reader and the label.
-  return (
-    <View style={[styles.wrap, LEVELS[level], style]} pointerEvents="box-none">
-      <Gradient colors={stops(level)} start={START} end={END} style={StyleSheet.absoluteFill} />
-      {content}
+    <View {...shared}>
+      {backdrop}
+      {children}
     </View>
   )
 }
@@ -150,6 +165,12 @@ type GradientComponent = React.ComponentType<{
   start?: { x: number; y: number }
   end?: { x: number; y: number }
   style?: StyleProp<ViewStyle>
+  /**
+   * Forwarded to the View underneath. Declared here because this structural type is
+   * what we type-check against — expo-linear-gradient's own props are never seen, by
+   * design, so that a missing native module is a `null` and not an import failure.
+   */
+  pointerEvents?: 'none' | 'auto' | 'box-none' | 'box-only'
 }>
 
 let cached: GradientComponent | null | undefined
@@ -194,9 +215,6 @@ const LEVELS = StyleSheet.create({
 
 const styles = StyleSheet.create({
   base: { borderRadius: radius.lg, padding: space[4] },
-  // The wrapper carries the fill, the clip and the caller's layout; the inner view
-  // must not paint over it, and must not receive the layout a second time.
-  wrap: { borderRadius: radius.lg, overflow: 'hidden' },
-  fill: { flex: 1, width: '100%' },
-  transparent: { backgroundColor: 'transparent', shadowOpacity: 0, elevation: 0 },
+  // Keeps the gradient inside the corner radius. Nothing else needs it.
+  clip: { overflow: 'hidden' },
 })

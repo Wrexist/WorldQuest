@@ -23,9 +23,14 @@
  * are not in the bundle yet. The flag's DESCRIPTION is real content and is treated as
  * a fact like any other, which is also what makes the flag question screen-reader
  * safe.
+ *
+ * ## The heart
+ *
+ * A favourite is a bookmark and nothing more — see `features/favourites`. It changes
+ * what the collection can show you; it never changes what the scheduler asks.
  */
 
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   ArtSlot,
   Button,
@@ -73,6 +78,12 @@ export type CountryScreenProps = {
   readonly facts: readonly CountryFact[]
   readonly progress: EntityProgress | null
   readonly onPractise: () => void
+  /**
+   * Both optional together: the screenshot renderer and the component tests mount this
+   * without a store, and a heart that cannot be toggled should not be drawn at all.
+   */
+  readonly favourite?: boolean | undefined
+  readonly onToggleFavourite?: (() => void) | undefined
 }
 
 export function CountryScreen({
@@ -81,6 +92,8 @@ export function CountryScreen({
   facts,
   progress,
   onPractise,
+  favourite = false,
+  onToggleFavourite,
 }: CountryScreenProps) {
   const t = useT()
   const locale = currentLocale()
@@ -114,6 +127,26 @@ export function CountryScreen({
         <Text style={styles.title} role="heading">
           {name}
         </Text>
+        {onToggleFavourite !== undefined && (
+          <Pressable
+            // `switch` rather than `button`: it is on or off, and a button role would
+            // announce "Saved, button" with no way to hear which. `aria-checked`
+            // rather than `accessibilityState` because react-native-web drops the
+            // latter (see Card).
+            role="switch"
+            aria-checked={favourite}
+            aria-label={t('country:favourite.label')}
+            onPress={onToggleFavourite}
+            // 44pt, even though the glyph is 24. A target the size of the glyph is one
+            // only an adult with a small thumb reliably hits.
+            hitSlop={space[2]}
+            style={styles.star}
+          >
+            <Text style={favourite ? styles.starOn : styles.starOff}>
+              {favourite ? '★' : '☆'}
+            </Text>
+          </Pressable>
+        )}
       </View>
 
       {progress !== null && progress.factsTotal > 0 && (
@@ -198,8 +231,17 @@ const styles = StyleSheet.create({
   centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },
 
   header: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
-  title: { ...text('h1'), color: colors.text.primary, flexShrink: 1 },
+  title: { ...text('h1'), color: colors.text.primary, flex: 1, flexShrink: 1 },
   body: { ...text('caption'), color: colors.text.secondary },
+
+  star: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  // Blue, not gold and not red. Gold is XP and coins; red is the hearts you lose in a
+  // lesson. A saved country is neither a reward nor a life, and a ten-year-old who
+  // sees the same colour for three different things learns none of them.
+  starOn: { ...text('h2'), color: colors.action.secondary },
+  // Not `tertiary` — an outline star is already quiet, and a quiet colour on top of a
+  // quiet shape is a control nobody notices is a control.
+  starOff: { ...text('h2'), color: colors.text.secondary },
 
   section: { gap: space[2] },
   sectionTitle: { ...text('overline'), color: colors.text.tertiary },

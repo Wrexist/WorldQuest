@@ -1,4 +1,7 @@
 {
+  "country:favourite.label": "Star this country",
+  "country:favourite.label__note": "Accessibility label on the star toggle in the country header. Announced with its on/off state, so it names the thing rather than the action. Max 24 characters.",
+
   "country:facts.title": "What to know",
   "country:facts.title__note": "Section heading above the list of facts. Max 18 characters.",
   "country:attribute.capital": "Capital",

@@ -132,3 +132,46 @@ describe('Country — states', () => {
     expect(container.textContent).not.toMatch(/\{[a-zA-Z_]+[,}]/)
   })
 })
+
+describe('Country — the star', () => {
+  const withStar = (favourite: boolean, onToggleFavourite = vi.fn()) => {
+    render(
+      <CountryScreen
+        name="Sweden"
+        region="EU"
+        facts={[capital]}
+        progress={null}
+        onPractise={() => {}}
+        favourite={favourite}
+        onToggleFavourite={onToggleFavourite}
+      />,
+    )
+    return onToggleFavourite
+  }
+
+  it('announces its state, not just its existence', () => {
+    // A toggle rendered as a button says "Star this country, button" whether it is on
+    // or off — which is a control a screen-reader user cannot read the state of.
+    withStar(true)
+    const star = screen.getByRole('switch', { name: 'Star this country' })
+    expect(star.getAttribute('aria-checked')).toBe('true')
+  })
+
+  it('reports off when it is off', () => {
+    withStar(false)
+    expect(screen.getByRole('switch').getAttribute('aria-checked')).toBe('false')
+  })
+
+  it('toggles on press', () => {
+    const onToggleFavourite = withStar(false)
+    fireEvent.click(screen.getByRole('switch'))
+    expect(onToggleFavourite).toHaveBeenCalledOnce()
+  })
+
+  it('is not drawn at all when there is nothing to toggle', () => {
+    // The screenshot renderer and the "we do not have this one yet" state both mount
+    // without a store. A star that does nothing when tapped is worse than no star.
+    renderCountry()
+    expect(screen.queryByRole('switch')).toBeNull()
+  })
+})

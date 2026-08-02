@@ -86,6 +86,18 @@ const PAIRS: Pair[] = [
   { name: 'status.streak on surface', fg: p.flame['500'], bg: p.surface['1'], min: 3.0 },
   { name: 'status.progress on surface', fg: p.green['400'], bg: p.surface['1'], min: 3.0 },
   { name: 'feedback.correct on surface', fg: p.green['500'], bg: p.surface['1'], min: 3.0 },
+
+  // The favourite star. It lands at 4.42:1 — under the 4.5 small-text floor and over
+  // the 3:1 large-text one, which is why both places that draw it use an ≥18px step.
+  // That is the constraint, recorded here so a later "make the badge smaller" tweak
+  // fails this check instead of shipping.
+  {
+    name: 'action.secondary on surface (≥18px)',
+    fg: p.blue['500'],
+    bg: p.surface['1'],
+    min: 3.0,
+    note: 'the favourite star — never below 18px',
+  },
 ]
 
 let failed = 0

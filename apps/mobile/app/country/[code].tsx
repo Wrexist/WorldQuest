@@ -16,6 +16,7 @@ import {
   type CountryFact,
 } from '../../src/features/explore/CountryScreen.js'
 import { useContent } from '../../src/lib/content.js'
+import { useFavourites } from '../../src/features/favourites/useFavourites.js'
 import { currentLocale } from '../../src/lib/i18n.js'
 
 const isRegion = (value: string | undefined): value is RegionCode =>
@@ -24,6 +25,7 @@ const isRegion = (value: string | undefined): value is RegionCode =>
 export default function CountryRoute() {
   const { code } = useLocalSearchParams<{ code: string }>()
   const { index, memory } = useContent()
+  const { isFavourite, toggle } = useFavourites()
 
   const view = useMemo(() => {
     const entity = index === null || code === undefined ? undefined : index.index.entities.get(code)
@@ -58,6 +60,10 @@ export default function CountryRoute() {
     }
   }, [index, memory, code])
 
+  // No star on the "we do not have this one yet" state — starring a country the packs
+  // do not carry stores an id nothing can ever render.
+  const starrable = view.name !== null && code !== undefined
+
   return (
     <CountryScreen
       name={view.name}
@@ -65,6 +71,9 @@ export default function CountryRoute() {
       facts={view.facts}
       progress={view.progress}
       onPractise={() => router.push('/lesson')}
+      {...(starrable
+        ? { favourite: isFavourite(code), onToggleFavourite: () => toggle(code) }
+        : {})}
     />
   )
 }

@@ -72,15 +72,25 @@ surface that shows a user what they have.
 |---|---|---|
 | 2.1 | **Flags collection** (#10) | ✅ Grid, `0 / 65`, uncollected tiles dimmed but **visible**. Each tile holds a 3:2 art slot, so the sourced SVGs drop in without a relayout. |
 | 2.2 | **Countries collection** | ✅ Same route, keyed on entity mastery from `packages/engines/progression`. `mastered` is the bar, not `burnished` — a collection you can only finish by overlearning every entry is one nobody finishes. |
-| 2.3 | **Favourites** | ⬜ The Country page already draws a heart that does nothing. |
+| 2.3 | **Favourites** | ✅ A star on the country page and a fourth collection filter, over one `useSyncExternalStore` so two screens can never disagree. It is a **star, not the mockup's heart** — red hearts are the lives you lose in a lesson, and one glyph meaning two things teaches a ten-year-old neither. It changes what you can *find*, never what you are *asked*: boosting starred countries in the scheduler would let a user starve their own review queue, and "study what you like" is the instinct spaced repetition exists to overrule. |
 | 2.4 | **Search** (+ H14 empty) | ✅ Diacritic-insensitive, with an empty state that offers a way onward. |
 
-Building the collection screen surfaced two bugs in `Card`, both invisible until a
+Building the collection screen surfaced three bugs in `Card`, all invisible until a
 percentage-width tile existed:
 
 - **The caller's `style` was applied twice** — once to the gradient wrapper and once to
   the inner view. Margins had been silently doubling on every card in the app; a
   `width: '31%'` tile became 31% of 31% and rendered its label one character per line.
+- **Then the fix for that had its own bug**, found by 2.3. Moving `style` to the wrapper
+  alone meant `padding`, `alignItems`, `justifyContent` and `gap` — instructions about
+  a card's *children* — landed on a box whose only child was the inner view, while the
+  inner view kept its default `padding: space[4]`. A tile asking for 8 px got 24, which
+  left 63 px of text on a 111 px tile and broke "Stockholm" mid-word. The tell was that
+  the two branches disagreed: with no gradient module — component tests, the screenshot
+  renderer, the design preview — there was only ever one box and everything was correct,
+  so every test passed and only the shipped bundle was wrong. A `Card` is now exactly
+  one box with the gradient as an absolutely-positioned child, which is the only shape
+  in which a caller's style can mean one thing.
 - And the one that mattered most: **the tab bar was a `View` with `onTouchEnd`**.
   That fires for a finger and nothing else — no mouse click, no keyboard, and no
   screen-reader activation, because VoiceOver dispatches an accessibility action rather
@@ -124,7 +134,7 @@ multiplies across every fact. This is the cheapest content leverage available.
 |---|---|
 | 5.1 | ✅ **H2 Welcome back** (7+ days). Gated on the local activity log, shown once per return, and it says the one thing a returning user needs: *everything you learned is still here*, with the counts beside it as evidence. Due facts are "ready for review", never "overdue". There is a way out that is not a lesson. |
 | 5.2 | **H7 blocking no-internet**, **H10 sync conflict** |
-| 5.3 | **H12/H13/H14 empty states** — friends, achievements, search |
+| 5.3 | **H12/H13/H14 empty states** — 🟡 search (H14) and the starred-collection empty state are done; friends (H12) and achievements (H13) remain. The rule they follow: an empty state names the *next step that fixes it*. Offering "Start a lesson" to a user who has starred nothing sends them to the one place that cannot help. |
 | 5.4 | **H3 update required**, **H4 maintenance** — server-flagged |
 
 ### Deliberately not built

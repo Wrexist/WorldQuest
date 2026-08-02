@@ -17,6 +17,7 @@ import {
   type CollectionTile,
 } from '../../src/features/collection/CollectionScreen.js'
 import { useContent } from '../../src/lib/content.js'
+import { useFavourites } from '../../src/features/favourites/useFavourites.js'
 import { currentLocale, useT } from '../../src/lib/i18n.js'
 
 const KINDS = ['flags', 'countries'] as const
@@ -27,6 +28,7 @@ const isKind = (value: string): value is Kind => (KINDS as readonly string[]).in
 export default function CollectionRoute() {
   const { kind } = useLocalSearchParams<{ kind: string }>()
   const { index, memory, status } = useContent()
+  const { favourites } = useFavourites()
   const t = useT()
 
   // A deep link can carry anything. Flags is the safer default — it is the screen the
@@ -57,12 +59,13 @@ export default function CollectionRoute() {
           // of the scale, and a collection you can only complete by overlearning
           // every entry is a collection nobody completes.
           collected: progress.mastery === 'mastered' || progress.mastery === 'burnished',
+          favourite: favourites.has(entity.id),
         }
       })
       // Alphabetical in the user's locale — `localeCompare` so Swedish files Å after Z
       // rather than next to A, which is where a byte sort puts it.
       .sort((a, b) => a.name.localeCompare(b.name, locale))
-  }, [index, memory, which])
+  }, [index, memory, which, favourites])
 
   return (
     <CollectionScreen

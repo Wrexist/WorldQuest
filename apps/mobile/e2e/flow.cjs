@@ -297,6 +297,28 @@ const step = (name, ok, detail = '') => {
        /currency/i.test(country), (country.match(/Currency[^\n]*/) ?? [''])[0])
   await page.screenshot({ path: path.join(SHOTS, 'country.png') })
 
+  // ── starring, and the fact that it crosses screens ─────────────────────────
+  //
+  // The star is a toggle, so the state has to be readable and not merely visible.
+  const star = page.getByRole('switch', { name: /Star this country/i })
+  step('the star reports its state, not just its presence',
+       (await star.getAttribute('aria-checked')) === 'false')
+  await star.click()
+  await page.waitForTimeout(400)
+  step('starring flips the state a screen reader hears',
+       (await star.getAttribute('aria-checked')) === 'true')
+
+  // The bug worth an E2E step: a per-screen useState would leave this grid unstarred
+  // after the tap above, and nothing short of crossing screens catches it.
+  await page.goto(`http://localhost:${PORT}/collection/countries`, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(1400)
+  await page.getByRole('radio', { name: 'Starred' }).click()
+  await page.waitForTimeout(700)
+  const starred = await body()
+  step('a star set on one screen filters the collection on another',
+       /Sweden/.test(starred) && !/Mongolia/.test(starred))
+  await page.screenshot({ path: path.join(SHOTS, 'collection-starred.png') })
+
   // ── the screen whose absence is a white screen ─────────────────────────────
   await page.goto(`http://localhost:${PORT}/no-such-route`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(900)

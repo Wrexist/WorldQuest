@@ -44,9 +44,11 @@ export type CollectionTile = {
   readonly subtitle?: string | undefined
   /** Mastered — the user has actually learned this, not merely seen it once. */
   readonly collected: boolean
+  /** Starred on the country page. A bookmark, orthogonal to `collected`. */
+  readonly favourite?: boolean | undefined
 }
 
-export type CollectionFilter = 'all' | 'collected' | 'missing'
+export type CollectionFilter = 'all' | 'collected' | 'missing' | 'favourites'
 
 export type CollectionScreenProps = {
   readonly title: string
@@ -66,11 +68,12 @@ export type CollectionScreenProps = {
   readonly onStartLesson?: (() => void) | undefined
 }
 
-const FILTERS: readonly CollectionFilter[] = ['all', 'collected', 'missing']
+const FILTERS: readonly CollectionFilter[] = ['all', 'collected', 'missing', 'favourites']
 const FILTER_LABEL = {
   all: 'collection:filter.all',
   collected: 'collection:filter.collected',
   missing: 'collection:filter.missing',
+  favourites: 'collection:filter.favourites',
 } as const
 
 /** Diacritic-insensitive: someone typing "Cote" should find "Côte d'Ivoire". */
@@ -96,6 +99,7 @@ export function CollectionScreen({
     return tiles.filter((tile) => {
       if (filter === 'collected' && !tile.collected) return false
       if (filter === 'missing' && tile.collected) return false
+      if (filter === 'favourites' && tile.favourite !== true) return false
       if (needle.length > 0 && !normalise(tile.name).includes(needle)) return false
       return true
     })
@@ -155,16 +159,27 @@ export function CollectionScreen({
           ))}
         </View>
       ) : shown.length === 0 ? (
+        // Three different nothings, and they need three different answers. A search
+        // that missed is a spelling problem; an empty favourites list is a "you have
+        // not used this yet" problem whose next step is a star, not a lesson; an empty
+        // collection is a lesson. Offering "Start a lesson" to someone who has starred
+        // nothing sends them to the one place that will not fix it.
         <View style={styles.empty}>
           <Text style={styles.emptyTitle}>
             {query.length > 0
               ? t('collection:search.none.title', { query })
-              : t('collection:empty.title')}
+              : filter === 'favourites'
+                ? t('collection:favourites.none.title')
+                : t('collection:empty.title')}
           </Text>
           <Text style={styles.emptyBody}>
-            {query.length > 0 ? t('collection:search.none.body') : t('collection:empty.body')}
+            {query.length > 0
+              ? t('collection:search.none.body')
+              : filter === 'favourites'
+                ? t('collection:favourites.none.body')
+                : t('collection:empty.body')}
           </Text>
-          {query.length === 0 && onStartLesson !== undefined && (
+          {query.length === 0 && filter !== 'favourites' && onStartLesson !== undefined && (
             <Button label={t('collection:empty.action')} onPress={onStartLesson} />
           )}
         </View>
@@ -191,12 +206,14 @@ function Tile({
   const t = useT()
 
   // Everything the tile says, said once, to a screen reader — the name, what it is,
-  // and whether it has been collected. Without the subtitle here, a blind user gets a
-  // grid of country names and no flag at all.
+  // whether it has been collected, and whether it is starred. Without the subtitle
+  // here, a blind user gets a grid of country names and no flag at all; without the
+  // star, the marker in the corner is information only sighted users get.
   const label = [
     tile.name,
     tile.subtitle,
     tile.collected ? t('collection:collected') : t('collection:locked'),
+    tile.favourite === true ? t('collection:favourite') : undefined,
   ]
     .filter((part) => part !== undefined && part.length > 0)
     .join(', ')
@@ -224,6 +241,13 @@ function Tile({
       <Text style={styles.tileName} numberOfLines={2}>
         {tile.name}
       </Text>
+      {tile.favourite === true && (
+        // Decoration only — the state is already in the label above, so this is
+        // hidden from the screen reader rather than read out a second time.
+        <Text style={styles.tileStar} aria-hidden>
+          ★
+        </Text>
+      )}
     </Card>
   )
 }
@@ -241,7 +265,9 @@ const styles = StyleSheet.create({
     // 44pt floor for a touch target, and a text field is a touch target.
     height: 48,
   },
-  filters: { flexDirection: 'row', gap: space[2] },
+  // Wraps: four chips do not fit on one line at 390pt, and they fit on none of them at
+  // 200 % text. Two rows of two is the honest layout rather than a hidden scroller.
+  filters: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
   filter: { paddingVertical: space[2], paddingHorizontal: space[3] },
   filterOn: { borderColor: colors.action.primary, borderWidth: 1 },
   filterText: { ...text('caption'), color: colors.text.secondary },
@@ -257,6 +283,19 @@ const styles = StyleSheet.create({
   // Dimmed, never hidden. See the header comment — this is the whole design.
   tileDim: { opacity: 0.45 },
   tileName: { ...text('caption', { weight: '700' }), color: colors.text.primary, textAlign: 'center' },
+  // Absolute so a starred tile is exactly the same height as an unstarred one —
+  // otherwise starring a country makes its row jump.
+  //
+  // `h3` (18px), not `caption`. This blue is 4.42:1 on surface, which clears the
+  // large-text floor and misses the small-text one — so the glyph that carries the
+  // meaning has to be large text. `design:contrast` holds the other end of that.
+  tileStar: {
+    ...text('h3'),
+    color: colors.action.secondary,
+    position: 'absolute',
+    top: space[1],
+    right: space[1],
+  },
   tileSub: { ...text('caption'), color: colors.text.tertiary, textAlign: 'center' },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[2] },
   emptyTitle: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
