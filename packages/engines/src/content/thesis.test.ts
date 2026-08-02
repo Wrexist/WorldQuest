@@ -476,6 +476,105 @@ describe('accessibility parity', () => {
   })
 })
 
+describe('presentation', () => {
+  const imageItem = index.itemsByFact
+    .get('geo.SE.flag')!
+    .find((i) => i.templateId === 'tpl.flag-to-country.mc4')!
+
+  it('puts the image on the prompt, never on the options', () => {
+    const q = buildQuestion(index, imageItem, 'en', seededRng(3))!
+    expect(q.modality).toBe('image')
+    expect(q.promptAsset).toBe('flags/SE.svg')
+
+    // The template is answered by country NAME. A flag beside each name would print
+    // the answer next to it — the reason this moved off the options.
+    for (const option of q.options) {
+      expect(option).not.toHaveProperty('asset')
+    }
+  })
+
+  it('takes the prompt asset from the template attribute, not a hardcoded key', () => {
+    // The engine must not know the word "flag". A subject whose image attribute is
+    // called something else has to work with no engine change — that is the claim
+    // the whole package makes, and the reason this file exists.
+    const zoo = buildIndex({
+      entities: [
+        {
+          id: 'PANTHERA-LEO',
+          type: 'animal',
+          names: { en: 'Lion' },
+          region: 'AF',
+          assets: { photo: { path: 'photos/lion.jpg', license: 'CC-BY-4.0' } },
+        },
+        {
+          id: 'PANTHERA-PARDUS',
+          type: 'animal',
+          names: { en: 'Leopard' },
+          region: 'AF',
+          assets: { photo: { path: 'photos/leopard.jpg', license: 'CC-BY-4.0' } },
+        },
+      ] as unknown as Entity[],
+      facts: [
+        {
+          id: 'wild.PANTHERA-LEO.photo',
+          entity: 'PANTHERA-LEO',
+          attribute: 'photo',
+          value: { names: { en: 'a tawny cat with a mane' } },
+          difficulty: 1,
+          volatility: 'stable',
+        },
+      ] as unknown as Fact[],
+      templates: [
+        {
+          id: 'tpl.photo-to-animal.mc2',
+          attribute: 'photo',
+          modality: 'image',
+          prompt: { key: 'lesson:prompt.which_animal', params: [] },
+          answer: { from: 'entity.names' },
+          distractors: { count: 1, strategy: 'same-region', excludeSimilarStrings: true },
+          a11y: { screenReaderSafe: false, equivalentTemplate: 'tpl.photo-describe.mc2' },
+          timeLimitMs: null,
+          difficultyModifier: 0,
+        },
+      ] as unknown as Template[],
+    })
+
+    const item = zoo.itemsByFact.get('wild.PANTHERA-LEO.photo')![0]!
+    const q = buildQuestion(zoo, item, 'en', seededRng(1))
+    expect(q?.promptAsset).toBe('photos/lion.jpg')
+  })
+
+  it('omits the prompt asset on a text template', () => {
+    const textItem = index.itemsByFact
+      .get('geo.SE.flag')!
+      .find((i) => i.templateId === 'tpl.flag-describe.mc4')!
+    const q = buildQuestion(index, textItem, 'en', seededRng(3))!
+    expect(q.promptAsset).toBeUndefined()
+  })
+
+  it('will not pick a template whose modality the host cannot present', () => {
+    // The bug this guards: a host with no flag images still served "Which country's
+    // flag is this?" above four country names, and a wrong answer on an unanswerable
+    // question costs a heart.
+    for (let seed = 1; seed <= 30; seed++) {
+      const item = pickItemForFact(index, 'geo.SE.flag', seededRng(seed), {
+        modalities: ['text'],
+      })
+      expect(item).not.toBeNull()
+      expect(index.templates.get(item!.templateId)!.modality).toBe('text')
+    }
+  })
+
+  it('still reaches every fact when the host is text-only', () => {
+    // Narrowing must not silently drop knowledge. Same facts, same progress — the
+    // argument the screen-reader siblings already rest on.
+    for (const factId of index.itemsByFact.keys()) {
+      const item = pickItemForFact(index, factId, seededRng(1), { modalities: ['text'] })
+      expect(item, `${factId} is unreachable without images`).not.toBeNull()
+    }
+  })
+})
+
 describe('content safety', () => {
   it('never generates an item from a sensitive or volatile fact', () => {
     const guarded = buildIndex({

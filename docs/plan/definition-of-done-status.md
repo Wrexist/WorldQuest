@@ -12,11 +12,14 @@ the single fact that most of the rest follows from.
 
 ## Automated: green
 
-`pnpm verify` runs typecheck, 358 tests across seven packages, content validation,
+`pnpm verify` runs typecheck, 611 tests across seven packages, content validation,
 i18n completeness, contrast, `lint:a11y` and `reachability`. `pnpm e2e` runs 41 steps
-against the real Metro bundle in Chromium.
+against the real Metro bundle in Chromium, and `pnpm edge:test` runs 14 against the
+vendored edge bundle.
 
-That is a real floor, and it is not the same as done.
+That is a real floor, and it is not the same as done. The section at the bottom on
+what the lesson actually asked is the argument for why: every one of those numbers was
+green while two thirds of the authored content was unreachable.
 
 ---
 
@@ -137,3 +140,54 @@ child. `useOnboarding` already states the principle for that window: the safe th
 do when we do not know who is holding the phone is nothing at all. Every claim in this repo should be read
    against it — including the haptics above, which is the one feature whose entire
    output is invisible to every test and screenshot we have.
+
+---
+
+## What the lesson was actually asking
+
+Three defects, found while checking a review comment about flag rendering. They
+compound, and only the first was reported.
+
+**1. A question nobody could answer.** `tpl.flag-to-country.mc4` is modality `image`:
+"Which country's flag is this?", above four country names. There is not one flag file
+in this repo, and no component ever tried to draw one. `pickItemForFact` chose
+uniformly among a fact's templates, so one flag question in three was a prompt about a
+picture that did not exist — and a wrong answer costs a heart.
+
+The engine now carries `promptAsset` on the *question*, and a host declares what it can
+present (`modalities`). `apps/mobile` declares text only, with the reason in the
+constant. Nothing is lost: `tpl.flag-describe.mc4` asks the same fact in words, which
+is the sibling `accessibility.md` §8 already relies on.
+
+The asset was previously attached to every *option*, including distractors. Nothing
+rendered it, so it was wrong quietly — but the template is answered by country name,
+so drawing it would have printed the answer beside each one.
+
+**2. Two thirds of the content was unreachable.** `selectItems` documents its input as
+"ordered easiest-first" and takes the head of the list. `composeLesson` handed it index
+insertion order — which is the order the pack files happen to be listed in the host's
+import statement. Capitals were listed first, so a user with an empty memory got
+capitals and only capitals; no flag or currency question could appear until all
+sixty-five capitals had been seen. Every user's memory is empty on day one.
+
+Flags and currencies were authored, sourced, translated, validated and tested. One
+import statement decided the curriculum.
+
+**3. The suite was asserting the bug.** Four E2E steps detected "are we in a lesson?"
+with `/capital of|flag|money do people/i` over the English prompt copy. That regex
+cannot match `lesson:prompt.currency_reverse` at all — and it never had to, because
+defect 2 meant every lesson was capitals. Fixing the selection turned four green steps
+red with nothing wrong in the app. They now detect a lesson structurally, by prompt
+heading and answer options, which is true of any template in any pack.
+
+The shape worth remembering: a component test renders whatever question it is handed,
+and an E2E written against one subject's copy passes for as long as only that subject
+appears. Neither could see that the other two thirds never arrived. `reachability.ts`
+exists for exported functions nothing calls; this was the same failure one level up, in
+data — **content that no code path can reach**.
+
+**Also fixed here:** `composeLesson` was called with a hardcoded `locale: 'en'`, so a
+Swedish user got Swedish chrome around English answer options, with the correct answer
+sitting there as a foreign word. And the root layout applied `deviceLocale()` on every
+mount, so an explicit language choice in Settings survived until the app closed and
+never once survived a cold start.

@@ -248,6 +248,50 @@ describe('composeLesson', () => {
     expect(questions.length).toBeGreaterThan(0)
     expect(questions.every((q) => q.item.factId.endsWith('.flag'))).toBe(true)
   })
+
+  it('teaches every attribute on day one, not one pack at a time', () => {
+    // `selectItems` takes the HEAD of the new-fact list — its input is documented as
+    // "ordered easiest-first". The composer passed it index insertion order, which is
+    // the order the host happened to list its pack imports. Capitals were listed
+    // first, so a brand-new user got capitals and nothing else, and no flag could
+    // appear until all sixty-five capitals had been seen. Both attributes were
+    // authored and sourced; one was reachable.
+    //
+    // Asserted across seeds because one lucky draw is not the property. The property
+    // is that the mix does not depend on which file an app imported first.
+    for (const seed of [1, 2, 3, 4, 5]) {
+      const questions = composeLesson({
+        index, memory: [], now: T0, rng: seededRng(seed), locale: 'en', count: 20,
+      })
+      const attributes = new Set(questions.map((q) => q.item.factId.split('.').pop()))
+      expect(attributes, `seed ${seed}`).toContain('capital')
+      expect(attributes, `seed ${seed}`).toContain('flag')
+    }
+  })
+
+  it('leads with the easiest facts a user has not seen', () => {
+    // The other half of the same contract. Shuffling alone would fix the starvation
+    // and quietly drop "easiest-first", handing a beginner a difficulty-5 fact in
+    // their first five questions.
+    const questions = composeLesson({
+      index, memory: [], now: T0, rng: seededRng(7), locale: 'en', count: 10,
+    })
+    const hardest = Math.max(
+      ...questions.map((q) => index.facts.get(q.item.factId)!.difficulty),
+    )
+    const authored = [...index.facts.values()].map((f) => f.difficulty)
+    expect(hardest).toBeLessThan(Math.max(...authored))
+  })
+
+  it('never asks a question the host cannot present', () => {
+    const questions = composeLesson({
+      index, memory: [], now: T0, rng: seededRng(8), locale: 'en',
+      count: 20, modalities: ['text'],
+    })
+    expect(questions.length).toBeGreaterThan(0)
+    expect(questions.every((q) => q.modality === 'text')).toBe(true)
+    expect(questions.every((q) => q.promptAsset === undefined)).toBe(true)
+  })
 })
 
 describe('gradeLesson', () => {

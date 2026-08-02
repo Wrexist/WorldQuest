@@ -91,12 +91,15 @@ export function pickItemForFact(
   index: ContentIndex,
   factId: FactId,
   rng: Rng,
-  options: { screenReaderOnly?: boolean } = {},
+  options: { screenReaderOnly?: boolean; modalities?: readonly Template['modality'][] } = {},
 ): Item | null {
   const candidates = index.itemsByFact.get(factId) ?? []
-  const usable = options.screenReaderOnly
-    ? candidates.filter((i) => i.screenReaderSafe)
-    : candidates
+  const usable = candidates.filter((i) => {
+    if (options.screenReaderOnly && !i.screenReaderSafe) return false
+    if (options.modalities === undefined) return true
+    const modality = index.templates.get(i.templateId)?.modality
+    return modality !== undefined && options.modalities.includes(modality)
+  })
   if (usable.length === 0) return null
   return usable[Math.floor(rng.next() * usable.length)] ?? null
 }
@@ -347,14 +350,7 @@ export function buildQuestion(
 
   const spec = template.distractors
   const options: AnswerOption[] = [
-    {
-      id: item.entityId,
-      label: correctLabel,
-      isCorrect: true,
-      ...(template.modality === 'image' && entity.assets?.['flag']
-        ? { asset: entity.assets['flag'].path }
-        : {}),
-    },
+    { id: item.entityId, label: correctLabel, isCorrect: true },
   ]
 
   if (spec) {
@@ -387,14 +383,7 @@ export function buildQuestion(
       if (spec.excludeSimilarStrings !== false && key === normalise(correctLabel)) continue
 
       taken.add(key)
-      chosen.push({
-        id: candidate.id,
-        label,
-        isCorrect: false,
-        ...(template.modality === 'image' && candidate.assets?.['flag']
-          ? { asset: candidate.assets['flag'].path }
-          : {}),
-      })
+      chosen.push({ id: candidate.id, label, isCorrect: false })
     }
 
     // A question with too few plausible options is worse than no question.
@@ -404,10 +393,20 @@ export function buildQuestion(
 
   const hint = hintFor(template, fact, nameOf, promptParams)
 
+  /**
+   * Indexed by the template's ATTRIBUTE, not by the literal `'flag'`. Templates are
+   * attribute-shaped by design — see the comment at the top of the templates pack —
+   * so a wildlife pack asking about `photo` gets `entity.assets.photo` with no engine
+   * change, which is the whole reason this package knows nothing about geography.
+   */
+  const promptAsset =
+    template.modality === 'image' ? entity.assets?.[template.attribute]?.path : undefined
+
   return {
     item,
     promptKey: template.prompt.key,
     promptParams,
+    ...(promptAsset !== undefined ? { promptAsset } : {}),
     // Shuffled with the injected rng — position must never become the answer.
     options: shuffle(options, rng),
     modality: template.modality,

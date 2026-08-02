@@ -96,6 +96,28 @@ const step = (name, ok, detail = '') => {
     await page.waitForTimeout(800)
   }
 
+  /**
+   * "Are we in a lesson, and what is it asking?" — structurally, never by subject.
+   *
+   * Every one of these checks used to be a regex over the English prompt copy:
+   * `/capital of|flag|money do people/i`. Three separate problems with that, and all
+   * three bit. It could not see `lesson:prompt.currency_reverse` ("Which country uses
+   * the krona?"), which matches none of those words. It hardcoded the subject into a
+   * harness for an app whose entire thesis is that the subject is data — an astronomy
+   * pack would have failed a green suite. And it passed for years only because a
+   * selection bug meant every lesson was capitals; the day lessons drew from all three
+   * attributes, four steps went red with nothing wrong in the app.
+   *
+   * A lesson is a prompt heading above answer options. That is true of every template
+   * in every pack, and it is what these steps were always trying to say.
+   */
+  const lessonPrompt = async () => {
+    const options = await page.getByTestId('answer-option').all()
+    if (options.length === 0) return undefined
+    const heading = await page.locator('[role="heading"]').first().textContent()
+    return heading?.trim() || undefined
+  }
+
   // ── first launch: a brand-new user meets onboarding, not Home ─────────────
   await home()
   await page.waitForTimeout(1500)
@@ -135,7 +157,7 @@ const step = (name, ok, detail = '') => {
   await page.waitForTimeout(1800)
   text = await body()
   step('onboarding ends INSIDE a lesson, before any sign-up ask',
-       /capital of|flag/i.test(text) && !/sign up|create account/i.test(text))
+       (await lessonPrompt()) !== undefined && !/sign up|create account/i.test(text))
   await page.screenshot({ path: path.join(SHOTS, 'onboarding-taster.png') })
 
   // ── onboarding is remembered ──────────────────────────────────────────────
@@ -149,7 +171,7 @@ const step = (name, ok, detail = '') => {
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(1500)
   text = await body()
-  const prompt = text.split('\n').find((line) => /capital of|flag/i.test(line))
+  const prompt = await lessonPrompt()
   step('Continue opens a lesson', prompt !== undefined, prompt)
 
   if (prompt !== undefined) {
@@ -262,8 +284,7 @@ const step = (name, ok, detail = '') => {
   // ── the speed round ────────────────────────────────────────────────────────
   await page.goto(`http://localhost:${PORT}/lesson?mode=speed`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(1800)
-  const speed = await body()
-  step('speed round starts a timed lesson', /capital of|flag|money do people/i.test(speed))
+  step('speed round starts a timed lesson', (await lessonPrompt()) !== undefined)
   await page.screenshot({ path: path.join(SHOTS, 'speed-round.png') })
 
   // The clock must run out on its own and the copy must stay neutral. Ten seconds
@@ -402,8 +423,7 @@ const step = (name, ok, detail = '') => {
 
   await page.getByRole('button', { name: /Keep going/i }).click()
   await page.waitForTimeout(600)
-  step('and resuming returns to the question',
-       /capital of|flag|money do people/i.test(await body()))
+  step('and resuming returns to the question', (await lessonPrompt()) !== undefined)
 
   // ── offline, scoped to what genuinely needs a server (H7) ──────────────────
   //

@@ -114,8 +114,6 @@ export type AnswerOption = {
   readonly id: string
   readonly label: string
   readonly isCorrect: boolean
-  /** Present when the option should be shown as an image (a flag, a photo). */
-  readonly asset?: string
 }
 
 /** A question, ready to render. Contains no logic and no React. */
@@ -126,6 +124,17 @@ export type Question = {
   readonly promptParams: Readonly<Record<string, string>>
   readonly options: readonly AnswerOption[]
   readonly modality: Template['modality']
+  /**
+   * The image the PROMPT is asking about — the flag in "Which country's flag is
+   * this?". Present only for image-modality templates whose entity carries the
+   * matching asset.
+   *
+   * On the question, never on the options. It used to be per-option: every option
+   * carried its own entity's flag, which for a template answered by country NAME
+   * would have printed the answer beside each name. Nothing rendered it, so it was
+   * wrong quietly rather than loudly.
+   */
+  readonly promptAsset?: string
   readonly timeLimitMs: number | null
   /** For the wrong-answer explanation: "Japan is a red circle on white." */
   readonly hint?: string

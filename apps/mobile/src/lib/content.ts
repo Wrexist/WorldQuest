@@ -8,6 +8,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import { useOnline } from './connectivity.js'
+import { currentLocale } from './i18n.js'
 import {
   buildIndex,
   composeLesson,
@@ -30,6 +31,24 @@ export type LoadedContent = {
   index: ContentIndex
   compose: (opts: { count?: number }) => readonly Question[]
 }
+
+/**
+ * What this app can put on screen today.
+ *
+ * Text only, and that is an asset problem rather than a code one. The geography pack
+ * ships `tpl.flag-to-country.mc4` — "Which country's flag is this?", modality `image`
+ * — and no flag file exists in this repo, so the question rendered as a prompt about
+ * a picture that was not there, above four country names. One in three flag questions
+ * in a real lesson was that question, and a wrong answer on it costs a heart.
+ *
+ * Nothing is lost by narrowing it. The same fact is still asked, through
+ * `tpl.flag-describe.mc4`, which describes the flag in words — the sibling template
+ * `docs/design/accessibility.md` §8 already relies on for exactly this reason.
+ *
+ * Add `'image'` here in the same change that lands the flag assets and the renderer,
+ * never before: this constant is the one place that claims we can show a picture.
+ */
+const PRESENTABLE = ['text'] as const
 
 export function useContent() {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('ready')
@@ -63,8 +82,13 @@ export function useContent() {
             now: Date.now(),
             // Seeded per session so a reload does not reshuffle mid-lesson.
             rng: seededRng(nonce + 1),
-            locale: 'en',
+            // Was hardcoded `'en'`. A Swedish user got Swedish chrome around English
+            // answer options — and the correct answer read as a foreign word in their
+            // own language. Fact values are translated in the pack; this is what asks
+            // for the translation.
+            locale: currentLocale(),
             count,
+            modalities: PRESENTABLE,
           }),
       }
     } catch {
