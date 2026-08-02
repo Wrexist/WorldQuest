@@ -43,14 +43,23 @@ export function useReducedMotion(): boolean {
       if (alive) setReduced(value)
     })
 
+    // react-native-web returns `undefined` here rather than a subscription — it does
+    // not implement this event. Calling `.remove()` on that threw on every unmount of
+    // every component that reads reduced motion, which is a crash in a design-system
+    // hook that only appears when a screen using it goes away. The first screen to use
+    // it was the splash, and it took the app down on the transition out of boot.
+    //
+    // Optional-chained rather than platform-branched: the contract we depend on is
+    // "there may or may not be something to unsubscribe", and that is true of any
+    // renderer we have not met yet.
     const subscription = AccessibilityInfo.addEventListener(
       'reduceMotionChanged',
       (value: boolean) => setReduced(value),
-    )
+    ) as { remove?: () => void } | undefined
 
     return () => {
       alive = false
-      subscription.remove()
+      subscription?.remove?.()
     }
   }, [])
 

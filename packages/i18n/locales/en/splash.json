@@ -1,0 +1,10 @@
+{
+  "splash:wordmark": "WorldQuest",
+  "splash:wordmark__note": "The product name. NOT translated — it is a brand name, and a translated one is a different product. Present so the splash has no hardcoded string, and so a locale that needs a transliteration can have one.",
+  "splash:slow": "Getting your world ready…",
+  "splash:slow__note": "Shown only after 1.2s of boot. Says the app is working; never apologises and never blames the connection, which may not be the problem. Max 32 characters.",
+  "splash:failed.title": "That took too long",
+  "splash:failed.title__note": "Shown after 10s of boot. States the fact without blaming the user or the device. Max 24 characters.",
+  "splash:failed.body": "Something got stuck on the way in. Let's try that again.",
+  "splash:failed.body__note": "Body of the failed-boot state. Warm, brief, and followed by a retry button — a splash with no way out looks identical to a crash."
+}

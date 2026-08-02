@@ -38,7 +38,20 @@ describe('the motion helper', () => {
     // Read once at module load and a user who turns the setting on mid-session — the
     // user who most needs it — keeps getting the animations.
     expect(source).toContain('reduceMotionChanged')
-    expect(source).toContain('subscription.remove()')
+    expect(source).toMatch(/subscription\??\.remove/)
+  })
+
+  it('survives a renderer that has nothing to unsubscribe', () => {
+    // react-native-web returns `undefined` from addEventListener for this event, so
+    // an unguarded `subscription.remove()` threw on EVERY unmount of any component
+    // that reads reduced motion. It sat here undetected until the first screen used
+    // it — the splash — and then crashed the app on the way out of boot.
+    //
+    // Asserted on the source rather than by mocking, because the thing that must stay
+    // true is the shape of the call, and a mock returning undefined would be a test
+    // that passes the moment someone re-adds a platform branch instead.
+    expect(source).toMatch(/subscription\?\.remove\?\.\(\)/)
+    expect(source).not.toMatch(/[^?]\bsubscription\.remove\(\)/)
   })
 
   it('collapses duration to zero rather than skipping the animation', () => {

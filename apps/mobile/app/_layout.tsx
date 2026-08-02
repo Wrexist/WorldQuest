@@ -16,6 +16,7 @@ import { SafeAreaView, StatusBar, StyleSheet } from 'react-native'
 import { colors, motion } from '@worldquest/design'
 import { ErrorBoundary } from '../src/components/ErrorBoundary.js'
 import { readOnboarding } from '../src/features/onboarding/useOnboarding.js'
+import { SplashScreen, useSplashPhase } from '../src/features/splash/SplashScreen.js'
 import { useReturnVisit } from '../src/features/welcome/useReturnVisit.js'
 import { useAppFonts } from '../src/lib/fonts.js'
 import { t } from '../src/lib/i18n.js'
@@ -66,14 +67,35 @@ function useReturnGate(ready: boolean, onboarded: boolean): void {
 
 export default function RootLayout() {
   const fontsReady = useAppFonts()
+  const phase = useSplashPhase(fontsReady)
   useDeviceLocale()
   useOnboardingGate(fontsReady)
   useReturnGate(fontsReady, readOnboarding().completed)
 
-  // The native splash is still covering the screen here, so there is nothing to see.
-  // Rendering before the fonts land means laying out in the system font and jumping
-  // when Baloo 2 arrives — its metrics are nothing like the fallback's.
-  if (!fontsReady) return null
+  // Rendering the app before the fonts land means laying out in the system font and
+  // jumping when Baloo 2 arrives — its metrics are nothing like the fallback's.
+  //
+  // This used to be `return null`. On device the native splash covers that, so it
+  // looked fine; on web and on a slow cold start it is a blank dark rectangle with no
+  // way to tell a slow boot from a dead one. Our own splash renders here instead, in
+  // the system font on purpose — the whole reason we are still waiting is that the
+  // real one has not arrived, and one screen in the fallback face is a far smaller
+  // problem than an unexplained void.
+  if (!fontsReady) {
+    return (
+      <SafeAreaView style={styles.root}>
+        <StatusBar barStyle="light-content" backgroundColor={colors.bg.canvas} />
+        <SplashScreen
+          phase={phase}
+          // Fonts are the only boot work today and `useFonts` has no retry, so the
+          // honest retry is a full reload. `onRetry` stays undefined until there is
+          // something a button could actually re-attempt; a button that does nothing
+          // is worse than no button.
+          onRetry={undefined}
+        />
+      </SafeAreaView>
+    )
+  }
 
   return (
     <SafeAreaView style={styles.root}>

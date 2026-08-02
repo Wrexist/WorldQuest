@@ -22,6 +22,8 @@ import { NAMESPACES, type Namespace, type TranslationKey, type TranslationParams
 
 import enWelcome from '../locales/en/welcome.json' with { type: 'json' }
 import svWelcome from '../locales/sv/welcome.json' with { type: 'json' }
+import enSplash from '../locales/en/splash.json' with { type: 'json' }
+import svSplash from '../locales/sv/splash.json' with { type: 'json' }
 import enStreak from '../locales/en/streak.json' with { type: 'json' }
 import svStreak from '../locales/sv/streak.json' with { type: 'json' }
 import enTitles from '../locales/en/titles.json' with { type: 'json' }
@@ -96,6 +98,7 @@ const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
     onboarding: enOnboarding,
     collection: enCollection,
     titles: enTitles,
+    splash: enSplash,
     streak: enStreak,
     welcome: enWelcome,
     common: enCommon,
@@ -115,6 +118,7 @@ const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
     onboarding: svOnboarding,
     collection: svCollection,
     titles: svTitles,
+    splash: svSplash,
     streak: svStreak,
     welcome: svWelcome,
     common: svCommon,

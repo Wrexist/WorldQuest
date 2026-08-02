@@ -11,9 +11,15 @@
  * exported through Metro and driven in Chromium via react-native-web.
  *
  * **What it does not cover:** anything native. MMKV, haptics, real gesture handling,
- * iOS/Android layout, splash and font loading on device, the actual store build. A
- * green run here does NOT mean the app works on a phone. It means the bundle builds,
- * the routes resolve, the screens render, and a lesson can be played start to finish.
+ * iOS/Android layout, the actual store build. A green run here does NOT mean the app
+ * works on a phone. It means the bundle builds, the routes resolve, the screens
+ * render, and a lesson can be played start to finish.
+ *
+ * Font loading specifically: on web, expo declares the faces as `@font-face` in the
+ * HTML head, so `useFonts` resolves immediately and there is no pending state to
+ * observe. The splash's slow and failed states are therefore covered by component
+ * tests only — see the cold-boot section near the bottom, which says what it can and
+ * cannot prove rather than pretending.
  *
  * That is worth having on its own terms: the first time this ran it found that the app
  * had never bundled on ANY platform — 71 imports used TypeScript's `.js` convention
@@ -318,6 +324,40 @@ const step = (name, ok, detail = '') => {
   step('a star set on one screen filters the collection on another',
        /Sweden/.test(starred) && !/Mongolia/.test(starred))
   await page.screenshot({ path: path.join(SHOTS, 'collection-starred.png') })
+
+  // ── cold boot ──────────────────────────────────────────────────────────────
+  //
+  // What this can and cannot say about the splash, precisely:
+  //
+  // It CANNOT exercise it. The splash renders while `useAppFonts()` is pending, and on
+  // the web build that is never — expo declares the faces as `@font-face` in the HTML
+  // head, so `useFonts` resolves immediately and the browser swaps the glyphs in
+  // later. Holding the .ttf responses back for six seconds was tried: the requests are
+  // genuinely delayed and the app boots straight past them into Home. There is no
+  // pending state to catch, so the splash's three states are covered by its component
+  // tests and by nothing here.
+  //
+  // It CAN assert the property the splash exists for, which is that a cold start never
+  // shows a blank rectangle. That is true on whichever path the platform takes, and it
+  // is the thing a user would actually report.
+  //
+  // A separate context because the main page has booted a dozen times by now and
+  // everything is in its cache. A cold boot needs a cold context.
+  const cold = await browser.newContext({ viewport: { width: 390, height: 844 } })
+  const boot = await cold.newPage()
+  boot.on('pageerror', (e) => errors.push('cold boot: ' + String(e)))
+
+  await boot.goto(`http://localhost:${PORT}/`, { waitUntil: 'commit' })
+  await boot.waitForTimeout(1500)
+  await boot.screenshot({ path: path.join(SHOTS, 'cold-boot.png') })
+  const booted = await boot.evaluate(() => document.body.innerText)
+
+  step('a cold start paints something within 1.5s', booted.trim().length > 0,
+       booted.split('\n')[0] ?? '')
+  // Whatever it painted, it is not the splash still sitting there. A splash that
+  // outlives its work looks identical to a hang.
+  step('and is not still on the splash', !/Getting your world ready/i.test(booted))
+  await cold.close()
 
   // ── the screen whose absence is a white screen ─────────────────────────────
   await page.goto(`http://localhost:${PORT}/no-such-route`, { waitUntil: 'networkidle' })

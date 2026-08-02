@@ -58,22 +58,40 @@ for (const family of FONT_FAMILIES) {
 void SplashScreen.preventAutoHideAsync()
 
 /**
- * Loads the fonts and hides the splash once they are in.
+ * Loads the fonts, and hands the wait over to our own splash as soon as React can paint.
  *
- * Returns whether the app may render. Callers render nothing until it is true — the
- * splash is still covering the screen at that point, so there is nothing to see
- * anyway, and rendering early is what causes the metric jump.
+ * Returns whether the app may render. Callers render the splash until it is true;
+ * rendering the app early is what causes the metric jump.
+ *
+ * ## Why the native splash hides here and not when the fonts land
+ *
+ * It used to hide on `ready`, which is the obvious place and is wrong. The native
+ * splash covered exactly the window the fonts take, and our splash rendered only after
+ * that window closed — so it was never on screen for a single frame, on any platform.
+ * A screen with a slow state, a failed state and a retry button, none of which could
+ * ever be reached.
+ *
+ * The native splash is a static image. It cannot say "this is taking a while", it
+ * cannot offer a retry, and it cannot tell a user whether the app is working or
+ * wedged. That is the entire reason to have a React one. So the native splash's job
+ * ends the moment React can draw, and everything after that belongs to a screen that
+ * can speak.
+ *
+ * The cost is real and accepted: our splash paints in the fallback face, because the
+ * fonts are precisely what it is waiting for. One screen in the wrong font for a few
+ * hundred milliseconds is a far smaller problem than a boot that cannot explain itself.
  */
 export function useAppFonts(): boolean {
   const [loaded, error] = useFonts(FONTS)
   const ready = loaded || error !== null
 
   useEffect(() => {
-    // Note `error` counts as ready. A font that fails to decode is a bad day, but a
-    // splash screen that never goes away is a broken app — the system font is an
-    // ugly fallback, not a reason to strand the user on a logo.
-    if (ready) void SplashScreen.hideAsync()
-  }, [ready])
+    // Once, on mount — not on `ready`. See above.
+    void SplashScreen.hideAsync()
+  }, [])
 
+  // `error` counts as ready. A font that fails to decode is a bad day, but a splash
+  // that never goes away is a broken app — the system font is an ugly fallback, not a
+  // reason to strand the user on a logo.
   return ready
 }

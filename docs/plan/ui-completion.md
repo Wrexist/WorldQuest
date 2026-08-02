@@ -20,7 +20,7 @@ counts below look small and the work does not.
 
 | Designed screen | State |
 |---|---|
-| 1. Splash | ⬜ — no splash at all; the app flashes straight to Home |
+| 1. Splash | ✅ — mark, wordmark, and a slow/failed escalation with a way out |
 | 2. Onboarding | ✅ — slides → age gate → goal → taster lesson, gated on first launch |
 | 3. Home | ✅ |
 | 4. Daily Quest | ✅ |
@@ -52,12 +52,32 @@ The part of the product every user sees and we have never built.
 
 | # | Work | Why now |
 |---|---|---|
-| 1.1 | **Splash** (#1) | Covers the auth check and content-index load. 1.2 s budget — past that it is a loading screen wearing branding. |
+| 1.1 | **Splash** (#1) | ✅ No minimum duration — a splash held open so a logo can be admired is an app made slower on purpose. Silence under 1.2 s, a status line past it, and past 10 s it stops claiming to be loading and offers a way out, because a splash that never resolves looks identical to a crash. Never blames the connection: we do not know that it was. |
 | 1.2 | **Onboarding** (#2) | ✅ 3 value slides → age gate → daily-goal picker → **taster lesson**. The rule that makes it work, now asserted in the E2E: the user is inside a real lesson before any sign-up ask exists. |
 | 1.3 | **Age gate → child branch** | ✅ Neutral birth-year entry; the E2E asserts the string "are you over 13" never appears. Under-13 sees the child note and is never offered sign-in. |
 | 1.4 | **Daily goal** | ✅ Written to preferences, so Settings and the reminder scheduler read one value. |
 
-Two things came out of building it. `Card` gained `onPress` + `role` + `aria-checked`,
+Building the splash turned up the thing that made it worth building: **it was
+unreachable, and so was any splash we could have written.** `expo-splash-screen` was
+held open until the fonts landed, and the fonts landing is exactly the moment the React
+splash stops rendering — so the native image covered precisely the window our screen
+was for, on every platform. A slow state, a failed state and a retry button, none of
+which could be reached on any device. The native splash is a static image: it cannot
+say "this is taking a while", cannot offer a retry, and cannot distinguish working from
+wedged. So its job now ends the moment React can paint, and everything after that
+belongs to a screen that can speak. The accepted cost is that the splash paints in the
+fallback face — the fonts are what it is waiting for.
+
+The E2E cannot cover it, and now says so instead of pretending: on web, expo declares
+the faces as `@font-face` in the HTML head, so `useFonts` resolves immediately and
+there is no pending state to catch. Holding the `.ttf` responses for six seconds was
+tried — the requests are genuinely delayed and the app boots straight past them. An
+earlier version of that step "passed" against a page that had already booted and a
+screenshot that showed Home. The steps that remain assert the property the splash
+exists for (a cold start never paints a blank rectangle) rather than one it cannot
+observe.
+
+Two other things came out of Wave 1. `Card` gained `onPress` + `role` + `aria-checked`,
 because a selectable card is the shape of the goal picker, the year chips, and every
 collection tile still to come. And a real bug: **TypeScript does not type-check
 hyphenated JSX attributes**, so `aria-label` on a `Card` compiled, did nothing, and
