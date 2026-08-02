@@ -23,6 +23,7 @@ import {
   buildIndex,
   buildQuestion,
   isQuizzable,
+  isAmbiguous,
   isSelfAnswering,
   seededRng,
   type Entity,
@@ -160,6 +161,7 @@ console.log()
 const rng = seededRng(1)
 const blocked = new Map<string, string[]>()
 const selfAnswering: string[] = []
+const ambiguous: string[] = []
 let askable = 0
 
 for (const item of index.items) {
@@ -173,6 +175,12 @@ for (const item of index.items) {
     selfAnswering.push(item.id)
     continue
   }
+  // Shared values — the euro, the CFA franc. Adding countries makes this WORSE, so
+  // reporting it as a coverage gap would be advice pointing the wrong way.
+  if (isAmbiguous(index, item, 'en')) {
+    ambiguous.push(item.id)
+    continue
+  }
   const entity = index.entities.get(item.entityId)
   const where = entity?.subregion ?? entity?.region ?? '(no subregion)'
   const bucket = blocked.get(where)
@@ -184,6 +192,9 @@ const unquizzable = facts.filter((f) => !isQuizzable(f))
 
 console.log('  askability')
 console.log(`    askable today     ${askable}/${index.items.length}`)
+if (ambiguous.length > 0) {
+  console.log(`    many answers      ${ambiguous.length} (skipped by design)`)
+}
 if (selfAnswering.length > 0) {
   console.log(`    self-answering    ${selfAnswering.length} (skipped by design)`)
   for (const id of selfAnswering) console.log(`         · ${id}`)
@@ -206,7 +217,7 @@ if (blocked.size > 0) {
   console.log()
 }
 
-const reachable = index.items.length - selfAnswering.length
+const reachable = index.items.length - selfAnswering.length - ambiguous.length
 console.log(
   `  ${askable} of ${reachable} askable questions are reachable by a user today` +
     (selfAnswering.length > 0 ? ` (${selfAnswering.length} more give the answer away).` : '.') +

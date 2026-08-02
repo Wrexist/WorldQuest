@@ -28,6 +28,7 @@ import { fileURLToPath } from 'node:url'
 import {
   buildIndex,
   buildQuestion,
+  isAmbiguous,
   isSelfAnswering,
   namesAnswer,
   seededRng,
@@ -112,6 +113,14 @@ const uncovered: string[] = []
  * authoring more countries — the other template for the same fact still works.
  */
 const selfAnswering: string[] = []
+/**
+ * A question the engine refuses because more than one answer is correct.
+ *
+ * "Which country uses the Euro?" has ten right answers here. Permanent for as long as
+ * the value is shared, and not a coverage gap — the forward direction of the same fact
+ * is asked normally.
+ */
+const ambiguous: string[] = []
 
 for (const item of index.items) {
   const question = buildQuestion(index, item, locale, rng)
@@ -119,6 +128,7 @@ for (const item of index.items) {
     // Two very different reasons, and telling an author to add countries when the
     // real cause is "Guatemala City is the capital of which country?" wastes a day.
     if (isSelfAnswering(index, item, locale)) selfAnswering.push(item.id)
+    else if (isAmbiguous(index, item, locale)) ambiguous.push(item.id)
     else uncovered.push(`${item.factId} × ${item.templateId}`)
     continue
   }
@@ -172,6 +182,13 @@ if (selfAnswering.length > 0) {
   // decision rather than an omission.
   console.log(`  ${selfAnswering.length} item(s) would give the answer away, and are skipped:`)
   for (const item of selfAnswering) show(`    · ${item}`)
+  console.log()
+}
+
+if (ambiguous.length > 0) {
+  // Not a gap: the value is shared, so no set of distractors makes the question fair.
+  console.log(`  ${ambiguous.length} item(s) have more than one correct answer, and are skipped:`)
+  for (const item of ambiguous) show(`    · ${item}`)
   console.log()
 }
 

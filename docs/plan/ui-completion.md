@@ -114,9 +114,9 @@ multiplies across every fact. This is the cheapest content leverage available.
 
 | # | Work | Why now |
 |---|---|---|
-| 4.1 | **Currency + language facts** | Completes the Country page About grid, and both are stable and sourceable. |
+| 4.1 | **Currency facts** | ✅ 64 countries, `slow` volatility, full names ("Swedish krona", not "krona") so the value identifies the country wherever it can. Zimbabwe is absent: its currency changed twice in five years and the USD circulates — a fact already drifting is worse than a gap. **Language is deliberately still open** — Belgium, Switzerland, Canada, India and South Africa have several official languages, and picking one is exactly the unilateral call the content policy forbids. |
 | 4.2 | **Population** (`slow` volatility) | Shown with `as of <year>`, and **never a quiz answer** — volatile facts may not be. |
-| 4.3 | **Templates for the new attributes** | Currency → country, language → country, and their reverses. |
+| 4.3 | **Templates for the new attributes** | ✅ `tpl.currency.mc4` and `tpl.currency-reverse.mc4`. 449 items now, 415 askable. |
 | 4.4 | **Speed round** | A lesson mode, not a screen. Same items, a clock, different scoring. |
 
 ### Wave 5 — the hidden screens that are not gated on auth

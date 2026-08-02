@@ -16,7 +16,13 @@ import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { seededRng } from '../shared/index.js'
-import { buildIndex, buildQuestion, isSelfAnswering, pickItemForFact } from './index.js'
+import {
+  buildIndex,
+  buildQuestion,
+  isAmbiguous,
+  isSelfAnswering,
+  pickItemForFact,
+} from './index.js'
 import type { Entity, Fact, Template } from './types.js'
 
 const packsDir = join(import.meta.dirname, '..', '..', '..', 'content', 'packs', 'geography')
@@ -249,6 +255,92 @@ describe('question construction', () => {
     // PROMPT this time, so the hint says "Sweden is Stockholm." Found by
     // `pnpm content:preview`, which exists to be read.
     expect(hintOf('geo.SE.capital', 'tpl.capital-reverse.mc4')).toBeUndefined()
+  })
+
+  it('refuses a reverse question whose answer is not unique', () => {
+    // "Which country uses the Euro?" has twenty correct answers, and no choice of
+    // distractors fixes it: even with every shown option wrong but one, the user knows
+    // Germany would also have been right. content-pipeline.md states it as a hard rule
+    // — "never a distractor that is also a correct answer" — and it had only ever been
+    // enforced for options rendering as the same STRING, which is far weaker.
+    const shared: Fact[] = ['SE', 'NO'].map((code) => ({
+      id: `geo.${code}.currency`,
+      entity: code,
+      attribute: 'currency',
+      value: { names: { en: 'Krona' } },
+      difficulty: 2,
+      tags: ['currency', 'core'],
+      volatility: 'stable',
+    }))
+    const reverse: Template = {
+      id: 'tpl.currency-reverse.mc4',
+      attribute: 'currency',
+      modality: 'text',
+      prompt: { key: 'lesson:prompt.currency_reverse', params: ['valueName'] },
+      answer: { from: 'entity.names' },
+      distractors: { count: 3, strategy: 'same-region' },
+      a11y: { screenReaderSafe: true },
+    }
+
+    const built = buildIndex({ entities, facts: [...facts, ...shared], templates: [reverse] })
+    const item = built.itemsByFact.get('geo.SE.currency')![0]!
+    expect(isAmbiguous(built, item, 'en')).toBe(true)
+    expect(buildQuestion(built, item, 'en', seededRng(1))).toBeNull()
+  })
+
+  it('still asks a reverse question when the value identifies one country', () => {
+    // The guard must not swallow the whole template — a currency only one country uses
+    // is exactly the question worth asking.
+    const unique: Fact[] = [
+      {
+        id: 'geo.SE.currency',
+        entity: 'SE',
+        attribute: 'currency',
+        value: { names: { en: 'Swedish krona' } },
+        difficulty: 2,
+        tags: ['currency', 'core'],
+        volatility: 'stable',
+      },
+    ]
+    const reverse: Template = {
+      id: 'tpl.currency-reverse.mc4',
+      attribute: 'currency',
+      modality: 'text',
+      prompt: { key: 'lesson:prompt.currency_reverse', params: ['valueName'] },
+      answer: { from: 'entity.names' },
+      distractors: { count: 3, strategy: 'same-region' },
+      a11y: { screenReaderSafe: true },
+    }
+    const built = buildIndex({ entities, facts: [...facts, ...unique], templates: [reverse] })
+    const item = built.itemsByFact.get('geo.SE.currency')![0]!
+    expect(isAmbiguous(built, item, 'en')).toBe(false)
+    expect(buildQuestion(built, item, 'en', seededRng(1))).not.toBeNull()
+  })
+
+  it('leaves the FORWARD direction askable even when the value is shared', () => {
+    // "What is the currency of Sweden?" has one answer however many countries share
+    // it. Refusing this direction too would delete real content to fix a different bug.
+    const shared: Fact[] = ['SE', 'NO'].map((code) => ({
+      id: `geo.${code}.currency`,
+      entity: code,
+      attribute: 'currency',
+      value: { names: { en: 'Krona' } },
+      difficulty: 2,
+      tags: ['currency', 'core'],
+      volatility: 'stable',
+    }))
+    const forward: Template = {
+      id: 'tpl.currency.mc4',
+      attribute: 'currency',
+      modality: 'text',
+      prompt: { key: 'lesson:prompt.currency_of', params: ['entityName'] },
+      answer: { from: 'fact.value.names' },
+      distractors: { count: 3, strategy: 'same-region' },
+      a11y: { screenReaderSafe: true },
+    }
+    const built = buildIndex({ entities, facts: [...facts, ...shared], templates: [forward] })
+    const item = built.itemsByFact.get('geo.SE.currency')![0]!
+    expect(isAmbiguous(built, item, 'en')).toBe(false)
   })
 
   it('refuses a question whose prompt contains its own answer', () => {

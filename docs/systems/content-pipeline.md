@@ -145,7 +145,14 @@ which is correct but easier than intended. `pnpm content:stats` reports the gap.
 
 **Hard rules**
 - Never a distractor that is *also* a correct answer (a country with two capitals; a
-  shared capital).
+  shared capital; a shared currency). Enforced by `isAmbiguous`, which refuses a
+  **reverse** question whose value does not identify one entity. "Which country uses
+  the Euro?" has ten right answers here, and no choice of distractors repairs that —
+  even with every shown option wrong but one, the user knows Germany would also have
+  been right. The forward direction of the same fact stays askable, because "what
+  money do people use in France?" has exactly one answer however many countries share
+  it. This had only ever been enforced for options that render as the same *string*,
+  which is a far weaker rule and would have shipped the euro question.
 - Never two options with the same displayed name.
 - Never options that differ only by a diacritic.
 - Shuffle position with a **seeded** RNG, and never place the correct answer in the

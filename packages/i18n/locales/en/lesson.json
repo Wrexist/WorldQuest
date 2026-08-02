@@ -40,5 +40,9 @@
   "lesson:prompt.flag_described": "Which country's flag is {description}?",
   "lesson:prompt.flag_described__note": "Screen-reader-safe flag question. {description} is a phrase like \"a red circle on a white field\".",
   "lesson:feedback.wrong.bodyPlain": "The answer is {correct}.",
-  "lesson:feedback.wrong.bodyPlain__note": "Used when the fact carries no descriptive hint, e.g. a capital. Still states the answer plainly — never just \"wrong\"."
+  "lesson:feedback.wrong.bodyPlain__note": "Used when the fact carries no descriptive hint, e.g. a capital. Still states the answer plainly — never just \"wrong\".",
+  "lesson:prompt.currency_of": "What money do people use in {entityName}?",
+  "lesson:prompt.currency_of__note": "Currency question. Deliberately plain — 'What is the currency of X?' is a phrase a ten-year-old reads past. {entityName} is a localised country name.",
+  "lesson:prompt.currency_reverse": "Which country uses the {valueName}?",
+  "lesson:prompt.currency_reverse__note": "Reverse currency question. Only generated when the currency belongs to exactly one country — the engine refuses it for the euro."
 }

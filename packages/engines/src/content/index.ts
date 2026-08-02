@@ -290,6 +290,47 @@ export function namesAnswer(text: string, answer: string): boolean {
  * 3. The item references content that is not in the index at all, which is a bug in
  *    the pack rather than in the question.
  */
+/**
+ * Whether this item's question has more than one correct answer.
+ *
+ * Only reverse templates can be ambiguous — the ones whose answer is the ENTITY, with
+ * the fact value in the prompt. "Which country uses the Euro?" has twenty correct
+ * answers, and no choice of distractors fixes that: even if every option shown is
+ * wrong except one, the user knows Germany would also have been right.
+ *
+ * Shared capitals and shared currencies are the obvious cases; the general rule is
+ * that a reverse question is only askable when the value identifies the entity
+ * uniquely. `docs/systems/content-pipeline.md` states it as a hard rule — "never a
+ * distractor that is also a correct answer" — and it had only ever been enforced for
+ * options that render as the same STRING, which is a different and much weaker thing.
+ *
+ * Exported so the authoring tools can say "this can never be asked" rather than
+ * "add more countries", which would be advice that cannot work.
+ */
+export function isAmbiguous(index: ContentIndex, item: Item, locale: string): boolean {
+  const resolved = resolveShallow(index, item, locale)
+  if (resolved === null) return false
+
+  const { fact, template } = resolved
+  if (template.answer.from !== 'entity.names') return false
+
+  const nameOf = (names: Readonly<Record<string, string>> | undefined): string | undefined =>
+    names?.[locale] ?? names?.['en']
+  const value = nameOf(fact.value.names)
+  if (value === undefined) return false
+
+  for (const other of index.facts.values()) {
+    if (other.id === fact.id) continue
+    if (other.attribute !== fact.attribute) continue
+    if (other.entity === fact.entity) continue
+    // Only entities that actually exist in this index can be offered as options, so
+    // a value shared with an orphaned fact is not ambiguity the user can observe.
+    if (!index.entities.has(other.entity)) continue
+    if (normalise(nameOf(other.value.names) ?? '') === normalise(value)) return true
+  }
+  return false
+}
+
 export function buildQuestion(
   index: ContentIndex,
   item: Item,
@@ -302,6 +343,7 @@ export function buildQuestion(
   const { fact, template, entity, nameOf, correctLabel, promptParams } = resolved
 
   if (isSelfAnswering(index, item, locale)) return null
+  if (isAmbiguous(index, item, locale)) return null
 
   const spec = template.distractors
   const options: AnswerOption[] = [

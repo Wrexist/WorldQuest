@@ -135,6 +135,56 @@
       },
       "timeLimitMs": null,
       "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.currency.mc4",
+      "attribute": "currency",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.currency_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.currency-reverse.mc4",
+      "attribute": "currency",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.currency_reverse",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
     }
   ]
 }

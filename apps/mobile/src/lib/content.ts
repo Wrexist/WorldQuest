@@ -21,6 +21,7 @@ import {
 
 import entitiesPack from '../../../../packages/content/packs/geography/entities.countries.v1.json'
 import capitalsPack from '../../../../packages/content/packs/geography/facts.capitals.v1.json'
+import currenciesPack from '../../../../packages/content/packs/geography/facts.currencies.v1.json'
 import flagsPack from '../../../../packages/content/packs/geography/facts.flags.v1.json'
 import templatesPack from '../../../../packages/content/packs/geography/templates.v1.json'
 
@@ -44,6 +45,7 @@ export function useContent() {
         facts: [
           ...(capitalsPack.items as unknown as Fact[]),
           ...(flagsPack.items as unknown as Fact[]),
+          ...(currenciesPack.items as unknown as Fact[]),
         ],
         templates: templatesPack.items as unknown as Template[],
       })

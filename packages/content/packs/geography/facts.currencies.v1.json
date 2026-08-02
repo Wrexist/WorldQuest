@@ -1,0 +1,1488 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "$comment": "Currency facts. Volatility is `slow`, not `stable`: currencies change — Zimbabwe has changed twice in five years, which is why it is absent here rather than present and wrong. Names are the FULL form ('Swedish krona', not 'krona') so that the value identifies the country wherever it can. Where it genuinely cannot — the euro's ten members, the West African CFA franc's two — the engine refuses the reverse question rather than asking one with ten right answers. See isAmbiguous in packages/engines/src/content.",
+  "packId": "geography.facts.currencies",
+  "version": "1.0.0",
+  "subject": "geography",
+  "kind": "facts",
+  "locales": [
+    "en",
+    "sv"
+  ],
+  "license": "CC-BY-4.0",
+  "generatedAt": "2026-08-01",
+  "items": [
+    {
+      "id": "geo.SE.currency",
+      "entity": "SE",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Swedish krona",
+          "sv": "svensk krona"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Swedish krona”",
+        "url": "https://en.wikipedia.org/wiki/Swedish_krona",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NO.currency",
+      "entity": "NO",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Norwegian krone",
+          "sv": "norsk krone"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Norwegian krone”",
+        "url": "https://en.wikipedia.org/wiki/Norwegian_krone",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DK.currency",
+      "entity": "DK",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Danish krone",
+          "sv": "dansk krone"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Danish krone”",
+        "url": "https://en.wikipedia.org/wiki/Danish_krone",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.FI.currency",
+      "entity": "FI",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Euro",
+          "sv": "euro"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Euro”",
+        "url": "https://en.wikipedia.org/wiki/Euro",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.FR.currency",
+      "entity": "FR",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Euro",
+          "sv": "euro"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "currency",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Euro”",
+        "url": "https://en.wikipedia.org/wiki/Euro",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DE.currency",
+      "entity": "DE",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Euro",
+          "sv": "euro"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "currency",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Euro”",
+        "url": "https://en.wikipedia.org/wiki/Euro",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BE.currency",
+      "entity": "BE",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Euro",
+          "sv": "euro"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Euro”",
+        "url": "https://en.wikipedia.org/wiki/Euro",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NL.currency",
+      "entity": "NL",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Euro",
+          "sv": "euro"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Euro”",
+        "url": "https://en.wikipedia.org/wiki/Euro",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AT.currency",
+      "entity": "AT",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Euro",
+          "sv": "euro"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Euro”",
+        "url": "https://en.wikipedia.org/wiki/Euro",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.IT.currency",
+      "entity": "IT",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Euro",
+          "sv": "euro"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "currency",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Euro”",
+        "url": "https://en.wikipedia.org/wiki/Euro",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ES.currency",
+      "entity": "ES",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Euro",
+          "sv": "euro"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "currency",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Euro”",
+        "url": "https://en.wikipedia.org/wiki/Euro",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PT.currency",
+      "entity": "PT",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Euro",
+          "sv": "euro"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Euro”",
+        "url": "https://en.wikipedia.org/wiki/Euro",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GR.currency",
+      "entity": "GR",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Euro",
+          "sv": "euro"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Euro”",
+        "url": "https://en.wikipedia.org/wiki/Euro",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CH.currency",
+      "entity": "CH",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Swiss franc",
+          "sv": "schweizisk franc"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Swiss franc”",
+        "url": "https://en.wikipedia.org/wiki/Swiss_franc",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PL.currency",
+      "entity": "PL",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Polish złoty",
+          "sv": "polsk zloty"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Polish złoty”",
+        "url": "https://en.wikipedia.org/wiki/Polish_z%C5%82oty",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.UA.currency",
+      "entity": "UA",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Ukrainian hryvnia",
+          "sv": "ukrainsk hryvnia"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Ukrainian hryvnia”",
+        "url": "https://en.wikipedia.org/wiki/Ukrainian_hryvnia",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CZ.currency",
+      "entity": "CZ",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Czech koruna",
+          "sv": "tjeckisk koruna"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Czech koruna”",
+        "url": "https://en.wikipedia.org/wiki/Czech_koruna",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.HU.currency",
+      "entity": "HU",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Hungarian forint",
+          "sv": "ungersk forint"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Hungarian forint”",
+        "url": "https://en.wikipedia.org/wiki/Hungarian_forint",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.RO.currency",
+      "entity": "RO",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Romanian leu",
+          "sv": "rumänsk leu"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Romanian leu”",
+        "url": "https://en.wikipedia.org/wiki/Romanian_leu",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.JP.currency",
+      "entity": "JP",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Japanese yen",
+          "sv": "japansk yen"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "currency",
+        "east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Japanese yen”",
+        "url": "https://en.wikipedia.org/wiki/Japanese_yen",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CN.currency",
+      "entity": "CN",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Chinese yuan",
+          "sv": "kinesisk yuan"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency",
+        "east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Renminbi”",
+        "url": "https://en.wikipedia.org/wiki/Renminbi",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KR.currency",
+      "entity": "KR",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "South Korean won",
+          "sv": "sydkoreansk won"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency",
+        "east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “South Korean won”",
+        "url": "https://en.wikipedia.org/wiki/South_Korean_won",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KP.currency",
+      "entity": "KP",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "North Korean won",
+          "sv": "nordkoreansk won"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency",
+        "east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “North Korean won”",
+        "url": "https://en.wikipedia.org/wiki/North_Korean_won",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MN.currency",
+      "entity": "MN",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Mongolian tögrög",
+          "sv": "mongolisk tögrög"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency",
+        "east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Mongolian tögrög”",
+        "url": "https://en.wikipedia.org/wiki/Mongolian_t%C3%B6gr%C3%B6g",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ID.currency",
+      "entity": "ID",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Indonesian rupiah",
+          "sv": "indonesisk rupiah"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Indonesian rupiah”",
+        "url": "https://en.wikipedia.org/wiki/Indonesian_rupiah",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TH.currency",
+      "entity": "TH",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Thai baht",
+          "sv": "thailändsk baht"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Thai baht”",
+        "url": "https://en.wikipedia.org/wiki/Thai_baht",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.VN.currency",
+      "entity": "VN",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Vietnamese đồng",
+          "sv": "vietnamesisk đồng"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Vietnamese đồng”",
+        "url": "https://en.wikipedia.org/wiki/Vietnamese_%C4%91%E1%BB%93ng",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PH.currency",
+      "entity": "PH",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Philippine peso",
+          "sv": "filippinsk peso"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Philippine peso”",
+        "url": "https://en.wikipedia.org/wiki/Philippine_peso",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MY.currency",
+      "entity": "MY",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Malaysian ringgit",
+          "sv": "malaysisk ringgit"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Malaysian ringgit”",
+        "url": "https://en.wikipedia.org/wiki/Malaysian_ringgit",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.IN.currency",
+      "entity": "IN",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Indian rupee",
+          "sv": "indisk rupie"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency",
+        "south-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Indian rupee”",
+        "url": "https://en.wikipedia.org/wiki/Indian_rupee",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PK.currency",
+      "entity": "PK",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Pakistani rupee",
+          "sv": "pakistansk rupie"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency",
+        "south-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Pakistani rupee”",
+        "url": "https://en.wikipedia.org/wiki/Pakistani_rupee",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BD.currency",
+      "entity": "BD",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Bangladeshi taka",
+          "sv": "bangladeshisk taka"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency",
+        "south-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Bangladeshi taka”",
+        "url": "https://en.wikipedia.org/wiki/Bangladeshi_taka",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NP.currency",
+      "entity": "NP",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Nepalese rupee",
+          "sv": "nepalesisk rupie"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency",
+        "south-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Nepalese rupee”",
+        "url": "https://en.wikipedia.org/wiki/Nepalese_rupee",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.EG.currency",
+      "entity": "EG",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Egyptian pound",
+          "sv": "egyptiskt pund"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency",
+        "northern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Egyptian pound”",
+        "url": "https://en.wikipedia.org/wiki/Egyptian_pound",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MA.currency",
+      "entity": "MA",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Moroccan dirham",
+          "sv": "marockansk dirham"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency",
+        "northern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Moroccan dirham”",
+        "url": "https://en.wikipedia.org/wiki/Moroccan_dirham",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DZ.currency",
+      "entity": "DZ",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Algerian dinar",
+          "sv": "algerisk dinar"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency",
+        "northern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Algerian dinar”",
+        "url": "https://en.wikipedia.org/wiki/Algerian_dinar",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TN.currency",
+      "entity": "TN",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Tunisian dinar",
+          "sv": "tunisisk dinar"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency",
+        "northern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Tunisian dinar”",
+        "url": "https://en.wikipedia.org/wiki/Tunisian_dinar",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NG.currency",
+      "entity": "NG",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Nigerian naira",
+          "sv": "nigeriansk naira"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Nigerian naira”",
+        "url": "https://en.wikipedia.org/wiki/Nigerian_naira",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GH.currency",
+      "entity": "GH",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Ghanaian cedi",
+          "sv": "ghanansk cedi"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Ghanaian cedi”",
+        "url": "https://en.wikipedia.org/wiki/Ghanaian_cedi",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SN.currency",
+      "entity": "SN",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "West African CFA franc",
+          "sv": "västafrikansk CFA-franc"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “West African CFA franc”",
+        "url": "https://en.wikipedia.org/wiki/West_African_CFA_franc",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ML.currency",
+      "entity": "ML",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "West African CFA franc",
+          "sv": "västafrikansk CFA-franc"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “West African CFA franc”",
+        "url": "https://en.wikipedia.org/wiki/West_African_CFA_franc",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KE.currency",
+      "entity": "KE",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Kenyan shilling",
+          "sv": "kenyansk shilling"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Kenyan shilling”",
+        "url": "https://en.wikipedia.org/wiki/Kenyan_shilling",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ET.currency",
+      "entity": "ET",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Ethiopian birr",
+          "sv": "etiopisk birr"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Ethiopian birr”",
+        "url": "https://en.wikipedia.org/wiki/Ethiopian_birr",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.UG.currency",
+      "entity": "UG",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Ugandan shilling",
+          "sv": "ugandisk shilling"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Ugandan shilling”",
+        "url": "https://en.wikipedia.org/wiki/Ugandan_shilling",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TZ.currency",
+      "entity": "TZ",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Tanzanian shilling",
+          "sv": "tanzanisk shilling"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Tanzanian shilling”",
+        "url": "https://en.wikipedia.org/wiki/Tanzanian_shilling",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ZA.currency",
+      "entity": "ZA",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "South African rand",
+          "sv": "sydafrikansk rand"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency",
+        "southern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “South African rand”",
+        "url": "https://en.wikipedia.org/wiki/South_African_rand",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NA.currency",
+      "entity": "NA",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Namibian dollar",
+          "sv": "namibisk dollar"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency",
+        "southern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Namibian dollar”",
+        "url": "https://en.wikipedia.org/wiki/Namibian_dollar",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BW.currency",
+      "entity": "BW",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Botswana pula",
+          "sv": "botswansk pula"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency",
+        "southern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Botswana pula”",
+        "url": "https://en.wikipedia.org/wiki/Botswana_pula",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.US.currency",
+      "entity": "US",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "US dollar",
+          "sv": "amerikansk dollar"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "currency",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “United States dollar”",
+        "url": "https://en.wikipedia.org/wiki/United_States_dollar",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CA.currency",
+      "entity": "CA",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Canadian dollar",
+          "sv": "kanadensisk dollar"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Canadian dollar”",
+        "url": "https://en.wikipedia.org/wiki/Canadian_dollar",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MX.currency",
+      "entity": "MX",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Mexican peso",
+          "sv": "mexikansk peso"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Mexican peso”",
+        "url": "https://en.wikipedia.org/wiki/Mexican_peso",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CU.currency",
+      "entity": "CU",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Cuban peso",
+          "sv": "kubansk peso"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Cuban peso”",
+        "url": "https://en.wikipedia.org/wiki/Cuban_peso",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GT.currency",
+      "entity": "GT",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Guatemalan quetzal",
+          "sv": "guatemalansk quetzal"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Guatemalan quetzal”",
+        "url": "https://en.wikipedia.org/wiki/Guatemalan_quetzal",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CR.currency",
+      "entity": "CR",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Costa Rican colón",
+          "sv": "costarikansk colón"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Costa Rican colón”",
+        "url": "https://en.wikipedia.org/wiki/Costa_Rican_col%C3%B3n",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PA.currency",
+      "entity": "PA",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Panamanian balboa",
+          "sv": "panamansk balboa"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Panamanian balboa”",
+        "url": "https://en.wikipedia.org/wiki/Panamanian_balboa",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BR.currency",
+      "entity": "BR",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Brazilian real",
+          "sv": "brasiliansk real"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Brazilian real”",
+        "url": "https://en.wikipedia.org/wiki/Brazilian_real",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AR.currency",
+      "entity": "AR",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Argentine peso",
+          "sv": "argentinsk peso"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Argentine peso”",
+        "url": "https://en.wikipedia.org/wiki/Argentine_peso",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CL.currency",
+      "entity": "CL",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Chilean peso",
+          "sv": "chilensk peso"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Chilean peso”",
+        "url": "https://en.wikipedia.org/wiki/Chilean_peso",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PE.currency",
+      "entity": "PE",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Peruvian sol",
+          "sv": "peruansk sol"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Peruvian sol”",
+        "url": "https://en.wikipedia.org/wiki/Peruvian_sol",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CO.currency",
+      "entity": "CO",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Colombian peso",
+          "sv": "colombiansk peso"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Colombian peso”",
+        "url": "https://en.wikipedia.org/wiki/Colombian_peso",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AU.currency",
+      "entity": "AU",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Australian dollar",
+          "sv": "australisk dollar"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Australian dollar”",
+        "url": "https://en.wikipedia.org/wiki/Australian_dollar",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NZ.currency",
+      "entity": "NZ",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "New Zealand dollar",
+          "sv": "nyzeeländsk dollar"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “New Zealand dollar”",
+        "url": "https://en.wikipedia.org/wiki/New_Zealand_dollar",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.FJ.currency",
+      "entity": "FJ",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Fijian dollar",
+          "sv": "fijiansk dollar"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Fijian dollar”",
+        "url": "https://en.wikipedia.org/wiki/Fijian_dollar",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PG.currency",
+      "entity": "PG",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Papua New Guinean kina",
+          "sv": "papuansk kina"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Papua New Guinean kina”",
+        "url": "https://en.wikipedia.org/wiki/Papua_New_Guinean_kina",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "slow"
+    }
+  ]
+}
