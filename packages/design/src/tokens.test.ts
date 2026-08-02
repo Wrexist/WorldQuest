@@ -154,11 +154,18 @@ describe('primitives obey the token discipline', () => {
   })
 
   it('honours reduced motion wherever it animates', () => {
+    // Either it reads the setting itself, or it takes its timing from a helper that
+    // does. `motion.test.ts` owns the list of trusted helpers and proves each one
+    // actually honours the setting; this is the same rule stated from the token side.
     for (const { file, code } of sources) {
       if (!code.includes('Animated.')) continue
-      expect(code, `${file} animates without checking reduced motion`).toContain(
-        'isReduceMotionEnabled',
-      )
+      const honoured =
+        code.includes('isReduceMotionEnabled') ||
+        code.includes('useTiming') ||
+        code.includes('useAnimatedTo') ||
+        code.includes('useCelebration') ||
+        code.includes('useFacePress')
+      expect(honoured, `${file} animates without checking reduced motion`).toBe(true)
     }
   })
 
@@ -192,7 +199,7 @@ describe('type is set in a font that exists', () => {
     // different face entirely on Android, and close enough to miss on iOS.
     expect(FONT_FAMILIES.length).toBeGreaterThan(0)
     for (const family of FONT_FAMILIES) {
-      // `@expo-google-fonts` names files `Inter_600SemiBold`. The loader keys off
+      // `@expo-google-fonts` names files `Nunito_600SemiBold`. The loader keys off
       // exactly this string, so a typo here is a silently missing font.
       expect(family).toMatch(/^[A-Za-z0-9]+_\d{3}[A-Za-z]+$/)
     }
@@ -212,13 +219,13 @@ describe('type is set in a font that exists', () => {
   it('resolves a missing weight to the nearest one rather than to undefined', () => {
     // The fallback is a safety net, not a routine path — but a screen a user is
     // looking at should degrade to slightly-wrong type, never to a crash.
-    expect(fontFamily('display', '100')).toBe(typography.font.display['600'])
-    expect(fontFamily('body', '900')).toBe(typography.font.body['700'])
+    expect(fontFamily('display', '100')).toBe(typography.font.display['700'])
+    expect(fontFamily('body', '900')).toBe(typography.font.body['800'])
   })
 
   it('builds a complete style from one call', () => {
     const h2 = text('h2')
-    expect(h2.fontFamily).toBe('Baloo2_700Bold')
+    expect(h2.fontFamily).toBe('Nunito_800ExtraBold')
     expect(h2.fontSize).toBe(typography.scale.h2.size)
     expect(h2.lineHeight).toBe(typography.scale.h2.lineHeight)
 

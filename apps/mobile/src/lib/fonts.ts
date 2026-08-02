@@ -20,12 +20,12 @@ import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 import { FONT_FAMILIES } from '@worldquest/design'
 import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold,
-} from '@expo-google-fonts/inter'
-import { Baloo2_600SemiBold, Baloo2_700Bold } from '@expo-google-fonts/baloo-2'
+  Nunito_400Regular,
+  Nunito_600SemiBold,
+  Nunito_700Bold,
+  Nunito_800ExtraBold,
+  Nunito_900Black,
+} from '@expo-google-fonts/nunito'
 
 /**
  * Family name → font file.
@@ -33,14 +33,20 @@ import { Baloo2_600SemiBold, Baloo2_700Bold } from '@expo-google-fonts/baloo-2'
  * The keys are exactly the strings `text()` puts into `fontFamily`, which is why
  * `FONT_FAMILIES` can check them: a typo on either side is a font that silently
  * never applies.
+ *
+ * One family, five weights. This used to be Inter for body and Baloo 2 for headings,
+ * and the two were fighting: Inter is a neutral grotesque built for dashboards and
+ * Baloo 2 is a round display face, so every screen read as a serious app wearing a
+ * playful hat. A single rounded face at heavy weights is the thing that makes an
+ * interface feel like it is talking to a ten-year-old rather than filing a report —
+ * see the note in `tokens.json` under `typography`.
  */
 const FONTS: Record<string, number> = {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold,
-  Baloo2_600SemiBold,
-  Baloo2_700Bold,
+  Nunito_400Regular,
+  Nunito_600SemiBold,
+  Nunito_700Bold,
+  Nunito_800ExtraBold,
+  Nunito_900Black,
 }
 
 // Fails loudly at import rather than rendering a screen in the wrong face. This is

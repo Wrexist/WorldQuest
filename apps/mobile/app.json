@@ -7,7 +7,7 @@
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
-    "backgroundColor": "#001227",
+    "backgroundColor": "#0B1730",
     "ios": {
       "bundleIdentifier": "com.worldquest.app",
       "supportsTablet": false
@@ -15,7 +15,7 @@
     "android": {
       "package": "com.worldquest.app",
       "adaptiveIcon": {
-        "backgroundColor": "#001227"
+        "backgroundColor": "#0B1730"
       }
     },
     "plugins": ["expo-router"],

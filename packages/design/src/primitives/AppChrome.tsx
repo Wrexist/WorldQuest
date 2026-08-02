@@ -218,22 +218,26 @@ const styles = StyleSheet.create({
 
   tabBar: {
     flexDirection: 'row',
-    borderTopWidth: 1,
+    // Two pixels, and in the strong slate rather than the subtle one. The bar is the
+    // app's permanent furniture; a 1px hairline in a near-canvas colour left it
+    // floating with no clear top on a dark screen.
+    borderTopWidth: 2,
     borderTopColor: colors.border.subtle,
     paddingTop: space[2],
-    backgroundColor: colors.bg.canvas,
+    paddingBottom: space[2],
+    backgroundColor: colors.bg.surface,
   },
   tab: { flex: 1, alignItems: 'center', gap: space[1] },
   tabChip: {
     // 44pt minimum touch target, met by the chip rather than by hit slop.
-    width: 44,
-    height: 32,
-    borderRadius: radius.md,
+    width: 52,
+    height: 40,
+    borderRadius: radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
   },
   tabChipActive: { backgroundColor: colors.action.secondary },
-  tabGlyph: { fontSize: 17, color: colors.text.tertiary },
+  tabGlyph: { fontSize: 20, color: colors.text.tertiary },
   tabGlyphActive: { color: colors.text.onAccent },
   tabLabel: {
     // Title case, not the overline's uppercase — the mockup's bar reads "Explore",

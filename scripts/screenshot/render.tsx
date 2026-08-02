@@ -484,7 +484,7 @@ const { element, getStyleElement } = (
 /**
  * Embeds the REAL font files as data URIs.
  *
- * Until now these screenshots substituted DejaVu Sans, because Inter and Baloo 2 are
+ * Until now these screenshots substituted DejaVu Sans, because the real faces are
  * not installed in a build container — so every screenshot misrepresented the single
  * most visible part of the design. The fonts ship in node_modules via
  * @expo-google-fonts, so there is no reason to guess: embed them and the page renders
@@ -503,8 +503,7 @@ function fontFaces(): string {
     dirname(require_.resolve(`${pkg}/package.json`, { paths: from }))
 
   const dirs = {
-    Inter: resolve('@expo-google-fonts/inter'),
-    Baloo2: resolve('@expo-google-fonts/baloo-2'),
+    Nunito: resolve('@expo-google-fonts/nunito'),
   }
 
   return FONT_FAMILIES.map((family) => {

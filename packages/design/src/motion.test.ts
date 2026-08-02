@@ -75,15 +75,53 @@ describe('primitives honour reduced motion', () => {
     .filter((file) => file.endsWith('.tsx'))
     .map((file) => ({ file, code: read(join(primitivesDir, file)) }))
 
+  /**
+   * A primitive may animate if it reads the setting itself, or if it gets its timing
+   * from one of these. The list is checked against reality by the test below it —
+   * without that, this is an allowlist that anyone can widen by adding a name, which
+   * is the opposite of a guard.
+   */
+  const SAFE = [
+    'isReduceMotionEnabled',
+    'useReducedMotion',
+    'useTiming',
+    'useAnimatedTo',
+    'useCelebration',
+    'useFacePress',
+  ] as const
+
   it('never animates without checking the setting', () => {
     for (const { file, code } of sources) {
       if (!code.includes('Animated.')) continue
-      const checks =
-        code.includes('isReduceMotionEnabled') ||
-        code.includes('useReducedMotion') ||
-        code.includes('useTiming') ||
-        code.includes('useAnimatedTo')
+      const checks = SAFE.some((name) => code.includes(name))
       expect(checks, `${file} animates without honouring reduced motion`).toBe(true)
+    }
+  })
+
+  it('every helper on that list actually honours it', () => {
+    // The allowlist above says "these helpers can be trusted". This is what makes that
+    // true rather than asserted. `useFacePress` is the case that matters: it lives in
+    // press3d.tsx, animates the face of every button and answer option in the product,
+    // and honours the setting only because it takes its duration from `useTiming`. If
+    // someone inlines a duration there to "make the press snappier", the button stops
+    // respecting an accessibility setting and nothing else in the suite would notice.
+    const helperFiles = [
+      read(join(primitivesDir, '..', 'motion.ts')),
+      read(join(primitivesDir, 'press3d.tsx')),
+    ].join('\n')
+
+    for (const name of SAFE) {
+      if (name === 'isReduceMotionEnabled' || name === 'useReducedMotion') continue
+      const defined = new RegExp(`(function|const)\\s+${name}\\b`).test(helperFiles)
+      expect(defined, `${name} is trusted by the allowlist but defined nowhere`).toBe(true)
+    }
+
+    // And every one of those definitions sits in a file that reads the setting.
+    for (const code of [read(join(primitivesDir, '..', 'motion.ts')), read(join(primitivesDir, 'press3d.tsx'))]) {
+      expect(
+        code.includes('isReduceMotionEnabled') || code.includes('useTiming'),
+        'a trusted motion helper does not consult the reduced-motion setting',
+      ).toBe(true)
     }
   })
 

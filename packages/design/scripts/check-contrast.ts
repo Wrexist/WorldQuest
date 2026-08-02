@@ -77,15 +77,54 @@ const PAIRS: Pair[] = [
   {
     name: 'white on action.destructive (≥18px bold)',
     fg: p.text['1'],
-    bg: p.red['700'],
+    bg: p.red['600'],
     min: 3.0,
   },
 
+  // The edge under a pressable face. It is not decoration: it is the only thing that
+  // says "this can be pressed" once the face is flat, so it has to clear the 3:1 UI
+  // boundary floor against the canvas behind it — otherwise a button on a dark screen
+  // reads as a painted rectangle. Checked against canvas AND surface because buttons
+  // sit on both.
+  { name: 'action.primaryEdge on canvas', fg: p.green['600'], bg: p.space['800'], min: 3.0 },
+  { name: 'action.secondaryEdge on canvas', fg: p.blue['600'], bg: p.space['800'], min: 3.0 },
+  { name: 'option.idleEdge on canvas', fg: p.border.strong, bg: p.space['800'], min: 3.0 },
+  { name: 'option.idleEdge on surface', fg: p.border.strong, bg: p.surface['1'], min: 1.2 },
+
   // Reward and status colours carry meaning, so they are UI boundaries (≥3:1).
-  { name: 'reward.xp on surface', fg: p.gold['500'], bg: p.surface['1'], min: 3.0 },
+  { name: 'reward.xp on surface', fg: p.gold['400'], bg: p.surface['1'], min: 3.0 },
+  { name: 'reward.xp on canvas', fg: p.gold['400'], bg: p.space['800'], min: 3.0 },
   { name: 'status.streak on surface', fg: p.flame['500'], bg: p.surface['1'], min: 3.0 },
   { name: 'status.progress on surface', fg: p.green['400'], bg: p.surface['1'], min: 3.0 },
-  { name: 'feedback.correct on surface', fg: p.green['500'], bg: p.surface['1'], min: 3.0 },
+  {
+    name: 'status.progress on progressTrack',
+    fg: p.green['400'],
+    bg: p.surface['3'],
+    min: 3.0,
+    note: 'a progress bar is meaningless if the fill and its track look alike',
+  },
+  { name: 'feedback.correct on surface', fg: p.green['400'], bg: p.surface['1'], min: 3.0 },
+
+  // Correct and wrong feedback panels. The text on them is body copy, so 4.5:1 — the
+  // whole point of these surfaces is that the explanation stays readable.
+  {
+    name: 'text.primary on option.correct',
+    fg: p.text['1'],
+    bg: p.feedback.correctSurface,
+    min: 4.5,
+  },
+  {
+    name: 'text.primary on option.wrong',
+    fg: p.text['1'],
+    bg: p.feedback.wrongSurface,
+    min: 4.5,
+  },
+  {
+    name: 'text.secondary on option.correct',
+    fg: p.text['2'],
+    bg: p.feedback.correctSurface,
+    min: 4.5,
+  },
 
   // The favourite star. It lands at 4.42:1 — under the 4.5 small-text floor and over
   // the 3:1 large-text one, which is why both places that draw it use an ≥18px step.

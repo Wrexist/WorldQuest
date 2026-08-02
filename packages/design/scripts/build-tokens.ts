@@ -78,6 +78,7 @@ const body = [
   `export const colors = ${JSON.stringify(resolved.color, null, 2)} as const`,
   `export const space = ${JSON.stringify(resolved.space, null, 2)} as const`,
   `export const radius = ${JSON.stringify(resolved.radius, null, 2)} as const`,
+  `export const depth = ${JSON.stringify(resolved.depth, null, 2)} as const`,
   `export const elevation = ${JSON.stringify(resolved.elevation, null, 2)} as const`,
   `export const typography = ${JSON.stringify(resolved.typography, null, 2)} as const`,
   `export const motion = ${JSON.stringify(resolved.motion, null, 2)} as const`,
@@ -88,6 +89,7 @@ const body = [
   '',
   'export type Space = keyof typeof space',
   'export type Radius = keyof typeof radius',
+  'export type Depth = keyof typeof depth',
   'export type TypeScale = keyof typeof typography.scale',
   'export type MotionToken = keyof typeof motion',
 ].join('\n\n')
@@ -111,6 +113,7 @@ const flatten = (obj: Json, prefix: string): void => {
 flatten(resolved.color!, '-color')
 flatten(resolved.space!, '-space')
 flatten(resolved.radius!, '-radius')
+flatten(resolved.depth!, '-depth')
 cssLines.push('}')
 writeFileSync(join(root, 'src', 'tokens.css'), cssLines.join('\n') + '\n', 'utf8')
 

@@ -194,7 +194,7 @@ const CSS = `
   --wrongbg:${p.feedback.wrongSurface};
   --r-sm:${t.radius.sm}px; --r-md:${t.radius.md}px; --r-lg:${t.radius.lg}px; --r-xl:${t.radius.xl}px;
   --s2:${t.space['2']}px; --s3:${t.space['3']}px; --s4:${t.space['4']}px; --s5:${t.space['5']}px; --s6:${t.space['6']}px;
-  /* Stand-in stack. The app ships Baloo 2 + Inter — type is the one thing this
+  /* Stand-in stack. The app ships Nunito — type is the one thing this
      page cannot verify, because the CSP blocks font CDNs. */
   --ui:ui-rounded,"SF Pro Rounded",-apple-system,"Segoe UI Variable","Segoe UI",Roboto,system-ui,sans-serif;
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
@@ -354,7 +354,7 @@ const BODY = `
 
   <div class="note"><b>What this page can and cannot verify.</b> It verifies colour,
   spacing, radius, elevation, component states and screen composition. It cannot verify
-  <b>type</b> — the app ships Baloo&nbsp;2 and Inter, and this page falls back to a system
+  <b>type</b> — the app ships Nunito, and this page falls back to a system
   rounded stack because the sandbox blocks font CDNs. It also cannot verify motion, haptics
   or the real mascot and map art. Those need the device.</div>
 
@@ -508,7 +508,7 @@ const BODY = `
     <div class="tbl-wrap"><table>
       <thead><tr><th>Asset</th><th>Status</th><th>Needed by</th></tr></thead>
       <tbody>
-        <tr><td>Baloo 2 + Inter font files</td><td class="dim">Both OFL — download and bundle</td><td class="n">Week 3</td></tr>
+        <tr><td>Nunito font files</td><td class="dim">OFL — bundled via @expo-google-fonts</td><td class="n">Done</td></tr>
         <tr><td>Atlas the mascot</td><td class="dim">Concept art only; needs commissioning as a real sprite set</td><td class="n">Week 6</td></tr>
         <tr><td>Country vector geometry</td><td class="dim">Natural Earth, public domain — needs simplifying per zoom</td><td class="n">Week 3</td></tr>
         <tr><td>Flag SVGs ×195</td><td class="dim">Mostly public domain; licence must be recorded per set</td><td class="n">Week 4</td></tr>

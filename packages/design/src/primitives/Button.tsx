@@ -5,12 +5,13 @@
  * accessibility label, so a Button without one is a TYPE ERROR rather than a review
  * comment. That is deliberate — a11y that depends on remembering gets forgotten.
  *
+ * Solid variants are drawn as a face on an edge and sink when pressed; see
+ * `press3d.tsx` for the mechanic and why it is built the way it is.
+ *
  * Spec: docs/design/design-system.md §11
  */
 
-import { useCallback, useRef } from 'react'
 import {
-  AccessibilityInfo,
   ActivityIndicator,
   Animated,
   Pressable,
@@ -20,8 +21,9 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native'
-import { colors, motion, radius, space } from '../tokens.js'
+import { colors, depth, radius, space } from '../tokens.js'
 import { text } from '../typography.js'
+import { press3d, useFacePress } from './press3d.js'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'destructive' | 'ghost'
 export type ButtonSize = 'sm' | 'md' | 'lg'
@@ -42,30 +44,39 @@ export type ButtonProps = {
   testID?: string
 }
 
-const HEIGHTS: Record<ButtonSize, number> = { sm: 36, md: 48, lg: 56 }
+/** Face heights. The socket adds the edge on top of these, so the tap target is taller. */
+const HEIGHTS: Record<ButtonSize, number> = { sm: 36, md: 48, lg: 54 }
 
-const BACKGROUNDS: Record<ButtonVariant, string> = {
-  primary: colors.action.primary,
-  secondary: colors.action.secondary,
-  tertiary: 'transparent',
-  destructive: colors.action.destructive,
-  ghost: 'transparent',
-}
+type Skin = { face: string; edge: string; label: string; outlined?: boolean }
 
-const PRESSED: Record<ButtonVariant, string> = {
-  primary: colors.action.primaryPressed,
-  secondary: colors.action.secondaryPressed,
-  tertiary: colors.bg.surfacePressed,
-  destructive: colors.action.destructive,
-  ghost: colors.bg.surfacePressed,
-}
-
-const LABEL_COLORS: Record<ButtonVariant, string> = {
-  primary: colors.text.onAccent,
-  secondary: colors.text.onAccent,
-  tertiary: colors.text.primary,
-  destructive: colors.text.onAccent,
-  ghost: colors.text.secondary,
+const SKINS: Record<ButtonVariant, Skin> = {
+  primary: {
+    face: colors.action.primary,
+    edge: colors.action.primaryEdge,
+    label: colors.text.onAccent,
+  },
+  secondary: {
+    face: colors.action.secondary,
+    edge: colors.action.secondaryEdge,
+    label: colors.text.onAccent,
+  },
+  destructive: {
+    face: colors.action.destructive,
+    edge: colors.action.destructiveEdge,
+    label: colors.text.onAccent,
+  },
+  // Outlined: the "face" is the canvas showing through, and the edge doubles as the
+  // ring. Duolingo's secondary control, and the reason it still reads as pressable
+  // when it has no fill.
+  tertiary: {
+    face: colors.bg.surface,
+    edge: colors.action.tertiaryEdge,
+    label: colors.text.primary,
+    outlined: true,
+  },
+  // Genuinely flat. For "skip", "not now", "log out" — the actions we must offer
+  // without inviting.
+  ghost: { face: 'transparent', edge: 'transparent', label: colors.text.secondary },
 }
 
 export function Button({
@@ -81,95 +92,87 @@ export function Button({
   style,
   testID,
 }: ButtonProps) {
-  const scale = useRef(new Animated.Value(1)).current
   const isInert = disabled || loading
+  const flat = variant === 'ghost'
+  const edgeDepth = flat ? 0 : depth.button
+  const { translateY, onPressIn, onPressOut } = useFacePress(edgeDepth, isInert)
 
-  const animateTo = useCallback(
-    (to: number) => {
-      AccessibilityInfo.isReduceMotionEnabled().then((reduced) => {
-        if (reduced) return
-        Animated.timing(scale, {
-          toValue: to,
-          duration: motion.instant.duration,
-          useNativeDriver: true,
-        }).start()
-      })
-    },
-    [scale],
-  )
+  const skin = SKINS[variant]
+  const faceHeight = HEIGHTS[size]
+  const socketHeight = faceHeight + edgeDepth
+
+  const faceColor = isInert && !flat ? colors.action.disabled : skin.face
+  const edgeColor = isInert && !flat ? colors.action.disabledEdge : skin.edge
+  const labelColor = disabled ? colors.text.tertiary : skin.label
 
   return (
-    <Animated.View style={[{ transform: [{ scale }] }, fullWidth && styles.fullWidth, style]}>
-      <Pressable
-        accessible
-        role="button"
-        aria-label={accessibilityLabel ?? label}
-        accessibilityHint={accessibilityHint}
-        aria-disabled={isInert} aria-busy={loading}
-        // Reach the 44pt minimum target without growing the visual.
-        hitSlop={Math.max(0, (44 - HEIGHTS[size]) / 2)}
-        disabled={isInert}
-        onPress={onPress}
-        onPressIn={() => animateTo(0.96)}
-        onPressOut={() => animateTo(1)}
-        testID={testID}
-        style={({ pressed }) => [
-          styles.base,
-          { height: HEIGHTS[size], backgroundColor: BACKGROUNDS[variant] },
-          variant === 'tertiary' && styles.tertiaryBorder,
-          pressed && !isInert && { backgroundColor: PRESSED[variant] },
-          disabled && styles.disabled,
-          variant === 'primary' && !isInert && styles.accentGlow,
+    <Pressable
+      accessible
+      role="button"
+      aria-label={accessibilityLabel ?? label}
+      accessibilityHint={accessibilityHint}
+      aria-disabled={isInert}
+      aria-busy={loading}
+      // Reach the 44pt minimum target without growing the visual.
+      hitSlop={Math.max(0, (44 - socketHeight) / 2)}
+      disabled={isInert}
+      onPress={onPress}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
+      testID={testID}
+      style={[press3d.socket, { height: socketHeight }, fullWidth && styles.fullWidth, style]}
+    >
+      {!flat && (
+        <View
+          style={[press3d.edge, styles.edge, { top: edgeDepth, backgroundColor: edgeColor }]}
+        />
+      )}
+
+      <Animated.View
+        style={[
+          press3d.face,
+          styles.face,
+          {
+            height: faceHeight,
+            backgroundColor: faceColor,
+            transform: [{ translateY }],
+          },
+          // The outlined variant draws the edge colour as a ring too, so the shape is
+          // closed on all four sides rather than just underneath.
+          skin.outlined === true && !isInert && { borderWidth: 2, borderColor: edgeColor },
         ]}
       >
         {/* The label stays mounted while loading so the button does not change width. */}
-        <View style={styles.content}>
-          {loading ? (
-            <ActivityIndicator color={LABEL_COLORS[variant]} />
-          ) : (
-            <Text
-              numberOfLines={1}
-              style={[
-                styles.label,
-                { color: disabled ? colors.text.tertiary : LABEL_COLORS[variant] },
-                size === 'sm' && styles.labelSm,
-              ]}
-            >
-              {label}
-            </Text>
-          )}
-        </View>
-      </Pressable>
-    </Animated.View>
+        {loading ? (
+          <ActivityIndicator color={labelColor} />
+        ) : (
+          <Text
+            numberOfLines={1}
+            style={[styles.label, size === 'sm' && styles.labelSm, { color: labelColor }]}
+          >
+            {label}
+          </Text>
+        )}
+      </Animated.View>
+    </Pressable>
   )
 }
 
 const styles = StyleSheet.create({
-  base: {
-    borderRadius: radius.md,
+  fullWidth: { alignSelf: 'stretch' },
+  edge: { borderRadius: radius.lg },
+  face: {
+    borderRadius: radius.lg,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
+    gap: space[2],
     paddingHorizontal: space[5],
   },
-  fullWidth: { alignSelf: 'stretch' },
-  content: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
-  label: {
-    ...text('bodyStrong'),
-    textAlign: 'center',
-  },
+  // The `button` step is uppercase with open tracking — the shape of a label you are
+  // meant to hit rather than read.
+  label: { ...text('button'), textAlign: 'center' },
   // A whole step down, not just a smaller size — dropping fontSize alone leaves the
-  // line height and letter spacing of the larger step behind.
-  labelSm: text('caption', { weight: '600' }),
-  tertiaryBorder: { borderWidth: 1, borderColor: colors.border.subtle },
-  // elevation must be zeroed too — an iOS shadowOpacity of 0 does nothing on
-  // Android, so a disabled button would keep floating there.
-  disabled: { backgroundColor: colors.action.disabled, shadowOpacity: 0, elevation: 0 },
-  accentGlow: {
-    shadowColor: colors.action.primary,
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 0 },
-    // iOS shadows do not render on Android — always pair with elevation.
-    elevation: 8,
-  },
+  // line height and tracking of the larger step behind.
+  labelSm: text('overline'),
 })

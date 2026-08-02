@@ -63,12 +63,9 @@ importers:
       '@babel/runtime':
         specifier: ^7.29.7
         version: 7.29.7
-      '@expo-google-fonts/baloo-2':
-        specifier: ^0.2.3
-        version: 0.2.3
-      '@expo-google-fonts/inter':
-        specifier: ^0.2.3
-        version: 0.2.3
+      '@expo-google-fonts/nunito':
+        specifier: ^0.4.2
+        version: 0.4.2
       '@react-native-community/netinfo':
         specifier: 11.4.1
         version: 11.4.1(react-native@0.76.5(@babel/core@7.29.7)(@babel/preset-env@7.29.7(@babel/core@7.29.7))(@types/react@18.3.12)(react@18.3.1))
@@ -1270,11 +1267,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@expo-google-fonts/baloo-2@0.2.3':
-    resolution: {integrity: sha512-irXW8eqvMqR2IbeXncQw33Hj3P47Wrv11qF0NMGrcQ7zOqzncUOBzXhN/OngKQpGTPyeI6lmv/GAb4cpb9xA+Q==}
-
-  '@expo-google-fonts/inter@0.2.3':
-    resolution: {integrity: sha512-iHK9FI+dnE45X5c2Z5hSFwNH4zUWethizpbv3XUn0FIGw5jwvzriENz0a6wCdkI4/d+1QkurnHo5XHti7TbNJA==}
+  '@expo-google-fonts/nunito@0.4.2':
+    resolution: {integrity: sha512-1KCWphw/I2ugqfs9iRHUCkPTnomNgGPtF4AvqVquoEKxr0EL+mcLNLgeixsslbaSFevRR6/KJAE3sc8g0VaY0Q==}
 
   '@expo/bunyan@4.0.1':
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
@@ -5884,9 +5878,7 @@ snapshots:
   '@esbuild/win32-x64@0.28.1':
     optional: true
 
-  '@expo-google-fonts/baloo-2@0.2.3': {}
-
-  '@expo-google-fonts/inter@0.2.3': {}
+  '@expo-google-fonts/nunito@0.4.2': {}
 
   '@expo/bunyan@4.0.1':
     dependencies:

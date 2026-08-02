@@ -23,7 +23,7 @@
  */
 import type { ReactNode } from 'react'
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native'
-import { colors, gradient, radius, space } from '../tokens.js'
+import { colors, depth, gradient, radius, space } from '../tokens.js'
 
 export type CardProps = {
   children: ReactNode
@@ -116,7 +116,21 @@ export function Card({
     testID,
     // `clip` only when there is a gradient to clip: `overflow: 'hidden'` on every card
     // would silently crop anything a caller deliberately hangs over the edge.
-    style: [styles.base, LEVELS[level], wrapped ? styles.clip : null, style],
+    style: [
+      styles.base,
+      LEVELS[level],
+      wrapped ? styles.clip : null,
+      // A card you can press gets a thicker, lighter bottom border — the same "this
+      // object has a side" cue the buttons and answer options get from `press3d`.
+      //
+      // Done with a border rather than by wrapping the card in a socket, deliberately.
+      // The comment above is the record of what happened last time this component
+      // grew a second box, and a static bottom edge buys most of the affordance for
+      // none of that risk. It is also what Duolingo itself does — their pressables are
+      // one element with a fat `border-bottom`, not two stacked ones.
+      interactive ? styles.pressable : null,
+      style,
+    ],
   }
 
   const backdrop = wrapped ? (
@@ -194,27 +208,39 @@ function loadGradient(): GradientComponent | null {
   return cached
 }
 
+/**
+ * Every level carries a real 2px border, not just level 3.
+ *
+ * On a dark canvas a shadow is nearly invisible — it is dark on dark — so a card
+ * whose only edge is a shadow has, in practice, no edge, and a column of them melts
+ * into one field. The border is what draws the card, and the shadow is what lifts it.
+ * This is the same reason the answer options carry a ring: the boundary has to be a
+ * thing you can see, not a thing that is technically present.
+ */
 const LEVELS = StyleSheet.create({
   1: {
     backgroundColor: colors.bg.surface,
+    borderWidth: 2, borderColor: colors.border.subtle,
     shadowColor: '#000', shadowOpacity: 0.35, shadowRadius: 8,
     shadowOffset: { width: 0, height: 2 }, elevation: 2,
   },
   2: {
     backgroundColor: colors.bg.surfaceRaised,
+    borderWidth: 2, borderColor: colors.border.subtle,
     shadowColor: '#000', shadowOpacity: 0.45, shadowRadius: 16,
     shadowOffset: { width: 0, height: 6 }, elevation: 6,
   },
   3: {
     backgroundColor: colors.bg.surfaceRaised,
-    borderWidth: 1, borderColor: colors.border.subtle,
+    borderWidth: 2, borderColor: colors.border.strong,
     shadowColor: '#000', shadowOpacity: 0.55, shadowRadius: 32,
     shadowOffset: { width: 0, height: 12 }, elevation: 12,
   },
 })
 
 const styles = StyleSheet.create({
-  base: { borderRadius: radius.lg, padding: space[4] },
+  base: { borderRadius: radius.xl, padding: space[4] },
+  pressable: { borderBottomWidth: depth.button, borderBottomColor: colors.border.strong },
   // Keeps the gradient inside the corner radius. Nothing else needs it.
   clip: { overflow: 'hidden' },
 })

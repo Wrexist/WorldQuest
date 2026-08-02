@@ -4,8 +4,22 @@ The full spec. [`../../PROJECT.md §8`](../../PROJECT.md#8-design-system) has th
 summary; this is the reference you build components from.
 
 **Source of truth:** `packages/design/tokens.json`, which generates `tokens.ts`.
-Colour values were **sampled from [`assets/mockup-v1.png`](assets/mockup-v1.png)**, so
-the code and the mockup agree by construction.
+Structure and hue come from [`assets/mockup-v1.png`](assets/mockup-v1.png); the
+**interaction language** — a bright face sitting on a solid darker edge that sinks when
+pressed, one heavy rounded typeface everywhere, saturated accents that each mean exactly
+one thing — is modelled on Duolingo, which is the bar this product is measured against.
+
+Two things about that are worth stating plainly, because they are the questions anyone
+reading this will have:
+
+- **We do not use Duolingo's typeface.** Feather Bold is proprietary. Nunito is the
+  closest openly-licensed match and is what ships.
+- **We do not use Duolingo's exact accent values on text-bearing surfaces.** Their green
+  is `#58CC02`, which is 2.09:1 against white — it works on their white canvas, where a
+  green button reads as one bright object, and it does not work on our dark one. Every
+  accent that carries a label is darkened until white clears 3.15:1. The bright original
+  survives one step up the ramp and is used where nothing sits on top of it: progress
+  fills, glows, the sheen inside a bar. §1.4 has the derivation.
 
 **The rule:** components consume **semantic** tokens (`color.action.primary`), never
 raw palette tokens (`blue.500`). Raw tokens exist only inside `tokens.json`. This is
@@ -18,31 +32,42 @@ touching a single component.
 
 ### 1.1 Palette (raw)
 
-| Token | Hex | Sampled from |
+Every accent is a ramp. `*400` is the vivid step used where **nothing sits on top of
+it**; `*500` is the face that carries a white label; `*600` is the edge underneath it.
+
+| Token | Hex | Role |
 |---|---|---|
-| `space.900` | `#00050F` | page base, splash |
-| `space.800` | `#001227` | app background (most common colour in the mockup) |
-| `space.700` | `#052342` | gradient top |
-| `surface.1` | `#0A1F3C` | card |
-| `surface.2` | `#102A4D` | elevated card, sheet |
-| `surface.3` | `#16375C` | pressed |
-| `border.subtle` | `#1B3A63` | hairline |
-| `blue.400` | `#4C9BF0` | |
-| `blue.500` | `#1E86E8` | Get Started, Start Quest, active tab |
-| `blue.600` | `#1467C4` | pressed |
-| `green.300` | `#73DD5A` | progress bar highlight |
-| `green.400` | `#4FCB5C` | progress fill |
-| `green.500` | `#22A73A` | Continue, correct answer |
-| `green.600` | `#1B8D1F` | pressed |
-| `gold.400` | `#FBC24A` | |
-| `gold.500` | `#F5A61E` | XP, coins, trophies, premium |
-| `gold.600` | `#E08A22` | |
-| `flame.500` | `#FF6A14` | streak flame |
-| `red.500` | `#E5252A` | hearts |
-| `red.700` | `#B01216` | destructive (Log Out) |
+| `space.900` | `#050C1A` | page base, splash, gradient end |
+| `space.800` | `#0B1730` | app background |
+| `space.700` | `#152A4A` | gradient top |
+| `surface.1` | `#15274A` | card |
+| `surface.2` | `#1C3360` | elevated card, sheet |
+| `surface.3` | `#25437A` | pressed, progress track |
+| `border.subtle` | `#24406E` | card ring |
+| `border.strong` | `#5E6E88` | option ring, pressable card edge — **neutral slate, never blue** |
+| `blue.400` | `#1CB0F6` | non-text accent |
+| `blue.500` | `#199AD8` | secondary face |
+| `blue.600` | `#126F9C` | secondary edge |
+| `green.300` | `#8BE85C` | progress sheen |
+| `green.400` | `#58CC02` | progress fill, correct |
+| `green.500` | `#47A502` | primary face |
+| `green.600` | `#337701` | primary edge |
+| `gold.400` | `#FFC800` | XP, coins, trophies |
+| `gold.500` | `#E0A800` | |
+| `gold.600` | `#A87E00` | edge |
+| `flame.500` | `#FF9600` | streak flame |
+| `red.500` | `#FF5454` | hearts |
+| `red.600` | `#C93B3B` | destructive face |
+| `red.700` | `#9E2A2A` | destructive edge |
 | `text.1` | `#FFFFFF` | primary text |
-| `text.2` | `#9FB3D1` | secondary text |
-| `text.3` | `#6B82A6` | tertiary, disabled |
+| `text.2` | `#A9BEDC` | secondary text |
+| `text.3` | `#7B93B8` | tertiary — large text only |
+
+`border.strong` is a **neutral slate on purpose**. It has to clear 3:1 against the
+canvas to work as a visible edge, and the first version that did was a saturated blue —
+which made every idle answer option look selected, because blue is the selection colour.
+Luminance is the requirement; hue is free, and the free choice has to be the one that
+means nothing.
 
 **Continent identity** — used only in Explore and on continent chips:
 Europe `#4C7BF3` · Asia `#F59E3C` · Africa `#F2C230` · North America `#3FBF8F` ·
@@ -137,30 +162,76 @@ On a dark canvas, elevation is **surface lightness + glow**, not a black shadow.
 | 0 flat | `surface.1` | none | none |
 | 1 card | `surface.1` | none | `0 2 8 rgba(0,0,0,.35)` |
 | 2 raised | `surface.2` | none | `0 6 16 rgba(0,0,0,.45)` |
-| 3 sheet/modal | `surface.2` | 1px `border.subtle` | `0 12 32 rgba(0,0,0,.55)` |
-| accent CTA | `green.500` | none | `0 0 24 rgba(34,167,58,.35)` |
+| 3 sheet/modal | `surface.2` | 2px `border.strong` | `0 12 32 rgba(0,0,0,.55)` |
+| accent CTA | `green.500` | none | `0 0 24 rgba(88,204,2,.35)` |
+
+**Every level carries a real 2px border, not just level 3.** On a dark canvas a shadow
+is nearly invisible — dark on dark — so a card whose only edge is a shadow has, in
+practice, no edge, and a column of them melts into one field. The border draws the
+card; the shadow lifts it.
 
 Android: pair every shadow with `elevation` — iOS shadows do not render on Android.
 
+## 4a. Depth — the thing that makes a control pressable
+
+A solid control is two rectangles: a dark **edge** and, sitting on it and offset
+upwards, a bright **face**. At rest you see the face plus a few pixels of edge along the
+bottom. On press the face slides down by exactly the edge's thickness and lands flush,
+so the object looks compressed rather than moved.
+
+| Token | px | Applies to |
+|---|---|---|
+| `depth.button` | 4 | `Button`, pressable `Card` |
+| `depth.card` | 3 | `AnswerOption` |
+| `depth.chip` | 2 | small pills |
+| `depth.press` | 4 | how far the face travels — equals `button` |
+
+Implemented once, in `packages/design/src/primitives/press3d.tsx`. Two rules:
+
+1. **Only `translateY` is animated.** Height and margin cannot use the native driver,
+   so animating them puts the press on the JS thread — which stutters during exactly
+   the moments the app is busiest.
+2. **The socket owns the layout height.** Nothing below a button moves when it is
+   pressed.
+
+Under reduced motion the face still moves; it just arrives instantly, because
+`useTiming` collapses the duration to zero. The movement is the feedback that a press
+registered, not decoration.
+
+`Card` is the exception and does it with a fat `borderBottomWidth` instead of a socket.
+That is deliberate: the comment in `Card.tsx` records what happened the last time that
+component grew a second box, and a static bottom edge buys most of the affordance for
+none of the risk.
+
 ## 5. Typography
 
-**Display/headings** Baloo 2 (rounded, warm, excellent numerals) ·
-**UI/body** Inter · **numerals** tabular everywhere a number changes (scores, timers,
-XP, `172 / 195`).
+**One typeface, every weight heavy.** Nunito, 400–900. Numerals tabular everywhere a
+number changes (scores, timers, XP, `172 / 195`).
+
+This used to be Inter for body and Baloo 2 for headings, and the two were fighting:
+Inter is a neutral grotesque built for dashboards, Baloo 2 is a round display face, so
+every screen read as a serious app wearing a playful hat. Setting an entire interface in
+a single rounded face and almost never below semibold is most of why Duolingo reads as
+friendly rather than corporate — it is one decision, and it does more work than any
+other single value in this file.
 
 | Token | Size/LH | Weight | LS | Use |
 |---|---|---|---|---|
-| `display` | 34/40 | 700 | −0.5 | Onboarding headline |
-| `h1` | 28/34 | 700 | −0.3 | Screen title |
-| `h2` | 22/28 | 700 | −0.2 | Section header, question |
-| `h3` | 18/24 | 600 | 0 | Card title |
-| `body` | 16/24 | 400 | 0 | Default |
-| `bodyStrong` | 16/24 | 600 | 0 | Answer options, list rows |
-| `caption` | 13/18 | 500 | 0 | Metadata, progress counts |
-| `overline` | 11/14 | 700 | +0.8 | Tab labels, badge text (UPPERCASE) |
-| `numeric` | 20/24 | 700 | 0 | XP, timers, scores (tabular) |
+| `display` | 34/42 | 900 | −0.6 | Onboarding headline |
+| `h1` | 28/36 | 800 | −0.4 | Screen title |
+| `h2` | 22/30 | 800 | −0.2 | Section header, question |
+| `h3` | 18/24 | 800 | 0 | Card title |
+| `body` | 16/24 | 600 | 0 | Default |
+| `bodyStrong` | 16/24 | 800 | 0 | Answer options, list rows, stat chips |
+| `button` | 17/22 | 800 | +0.6 | Button labels (UPPERCASE) |
+| `caption` | 13/18 | 700 | 0 | Metadata, progress counts |
+| `overline` | 12/16 | 800 | +1 | Section labels, tab labels (UPPERCASE) |
+| `numeric` | 20/26 | 800 | 0 | XP, timers, scores (tabular) |
 
-**Rules** — max 2 fonts, ever. Never below 13 px. Line length ≤ 60 characters. All
+`body` is 600, not 400. On a dark canvas a 400-weight face at 16 px is thin enough to
+shimmer, and this is a product a ten-year-old reads on a bus.
+
+**Rules** — one font family, ever. Never below 13 px. Line length ≤ 60 characters. All
 sizes scale with the OS setting to **200 %** without clipping (use
 `allowFontScaling`, and test at 200 % as part of the DoD). Never centre more than two
 lines of body text.
@@ -178,7 +249,8 @@ alone is never a control unless it is universally understood (back, close, setti
 
 | Token | ms | Curve | Use |
 |---|---|---|---|
-| `motion.instant` | 100 | `easeOut` | Press (scale → 0.96) |
+| `motion.press` | 60 | `easeOut` | A button face travelling `depth.press` |
+| `motion.instant` | 100 | `easeOut` | Small state flips |
 | `motion.quick` | 180 | `easeOut` | Chips, toggles, tab switch |
 | `motion.base` | 260 | `easeInOut` | Screen transitions, sheets |
 | `motion.expressive` | 420 | `spring(damping 0.7, stiffness 180)` | Card entrance, mascot, celebration card |
@@ -248,17 +320,30 @@ snapshot test.
 
 ### Button spec
 
-| Variant | Background | Text | Use |
-|---|---|---|---|
-| primary | `action.primary` (green) | white | The one main action |
-| secondary | `action.secondary` (blue) | white | Navigation, start |
-| tertiary | transparent + border | `text.1` | Low-emphasis |
-| destructive | `action.destructive` | white | Log out, delete |
-| ghost | transparent | `text.2` | Inline, in-card |
+| Variant | Face | Edge | Label | Use |
+|---|---|---|---|---|
+| primary | `action.primary` | `action.primaryEdge` | white | The one main action |
+| secondary | `action.secondary` | `action.secondaryEdge` | white | Navigation, start |
+| tertiary | `bg.surface` + 2px ring | `action.tertiaryEdge` | `text.1` | Low-emphasis |
+| destructive | `action.destructive` | `action.destructiveEdge` | white | Log out, delete |
+| ghost | transparent | *none* | `text.2` | Inline, in-card |
 
-Sizes `sm 36` · `md 48` · `lg 56` (full-width CTAs are `lg`).
-States: default · pressed (scale 0.96 + darken) · disabled (`surface.3`, `text.3`,
-no shadow) · loading (spinner replaces the label, **width does not change**).
+Face heights `sm 36` · `md 48` · `lg 54`; the socket adds `depth.button` on top, so the
+tap target is 4 pt taller than the face and full-width CTAs are `lg`.
+
+Labels use the `button` step: **uppercase**, 17/22, weight 800, +0.6 tracking. Uppercase
+is a real trade — it is marginally harder to read than sentence case — and it is taken
+knowingly, because a button label is a target you hit rather than a sentence you read,
+and the uniform block shape is a large part of what makes the control look like a
+physical key. The screen-reader announcement is unaffected: `textTransform` changes
+rendering, not the accessible name.
+
+**States** — default · pressed (face sinks `depth.press`, edge disappears) · disabled
+(`action.disabled` face, `action.disabledEdge` edge, `text.3` label, no press) · loading
+(spinner replaces the label, **width does not change**).
+
+`ghost` is the only variant with no edge, and that is the point: it is for the actions
+we must offer without inviting — "skip", "not now", "log out".
 
 ## 12. Theming
 

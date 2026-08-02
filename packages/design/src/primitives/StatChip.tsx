@@ -36,7 +36,7 @@ export function StatChip({ kind, value, accessibilityLabel, style, testID }: Sta
     <View
       accessible
       aria-label={accessibilityLabel}
-      style={[styles.base, style]}
+      style={[styles.base, { borderColor: TINTS[kind] }, style]}
       testID={testID}
     >
       <Text style={[styles.glyph, { color: TINTS[kind] }]}>{GLYPHS[kind]}</Text>
@@ -48,9 +48,17 @@ export function StatChip({ kind, value, accessibilityLabel, style, testID }: Sta
 const styles = StyleSheet.create({
   base: {
     flexDirection: 'row', alignItems: 'center', gap: space[1],
-    paddingHorizontal: space[3], paddingVertical: space[1],
-    borderRadius: radius.full, backgroundColor: colors.bg.surface,
+    paddingHorizontal: space[3], paddingVertical: space[2],
+    borderRadius: radius.full,
+    backgroundColor: colors.bg.surfaceRaised,
+    // A ring in the chip's own meaning-colour is applied by the caller-facing tint
+    // below. Without it a chip on a raised card vanishes into the card.
+    borderWidth: 2,
+    minHeight: 34,
   },
-  glyph: { fontSize: 14 },
-  value: text('caption', { weight: '700', numeric: true }),
+  glyph: { fontSize: 16 },
+  // `bodyStrong`, not `caption`: the number is the entire point of a chip and it has
+  // to survive being read at arm's length, mid-lesson, by someone whose attention is
+  // on the question. Tabular so a streak ticking 9 → 10 does not jog the row.
+  value: text('bodyStrong', { numeric: true }),
 })
