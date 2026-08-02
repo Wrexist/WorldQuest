@@ -24,7 +24,7 @@ counts below look small and the work does not.
 | 2. Onboarding | ✅ — slides → age gate → goal → taster lesson, gated on first launch |
 | 3. Home | ✅ |
 | 4. Daily Quest | ✅ |
-| 5. Lesson runner ★ | ✅ *(2 of 5 question types)* |
+| 5. Lesson runner ★ | ✅ — 3 of 5 question types; the other two are licence-blocked, not unbuilt |
 | 6. Feedback | ✅ *(inline in the runner)* |
 | 7. Country page | 🟡 — About grid has capital only; no population, currency, language |
 | 8. Explore — globe | ⬜ — blocked on map-geometry licensing, not on effort |
@@ -156,6 +156,25 @@ multiplies across every fact. This is the cheapest content leverage available.
 | 5.2 | 🟡 **H7 done, scoped.** Not a blocking screen — a full-screen "no internet" would be a lie about this app: content ships in the binary and the queue replays on reconnect, so a lesson works in a tunnel. It disables the two controls that genuinely need a server (freeze, repair — spends against a server-authoritative balance, ADR 0006) and names the connection as the reason, before the coin gap, so a user who is offline *and* short is not sent looking for coins that would not have helped. **H10 sync conflict remains** — `reconcile()` exists in the engine with a notify threshold, but nothing calls it, so the UI would be unreachable until there is a server to disagree with. |
 | 5.3 | 🟡 **H13, H14 and the starred-collection empty state are done.** The rule they follow: an empty state names the *next step that fixes it*, and offers a way to take it. Achievements said "one lesson away" and gave you no way to start one — a signpost pointing at a wall. **H12 (friends) is deliberately not built**: the catalogue asks for an invite CTA, and there is no invite mechanism, no accounts, and no friends feature — building a button that cannot invite anyone is worse than the honest empty tile already on Home. It lands with friends, in v1.5. |
 | 5.4 | **H3 update required**, **H4 maintenance** — server-flagged |
+
+### Wave 6 — the states the engine already had and the UI never showed
+
+Three screens in a row turned out to be *unreachable* rather than unbuilt, which is
+now the first thing to check before building anything: the splash (the native one
+covered exactly its window), the offline banner (`isOffline` was a hardcoded `false`),
+and now **out of hearts**. The machine has set `outOfHearts` since it was written and
+had a `REVIVE` event to go with it; nothing rendered either, so the lesson carried on
+at zero hearts and the whole mechanic was decorative.
+
+| # | Work | Why |
+|---|---|---|
+| 6.1 | **Out of hearts** (lesson state, screen-catalog §5) | ✅ A fork, not a wall. The one sentence that matters is *the next lesson starts with a full set* — hearts reset per lesson, so this is never a lockout, but a ten-year-old who has just been stopped does not know that. It is said **before** any offer to spend coins. No countdown (the next lesson does not wait for a refill, so a clock would be both a lie and pressure); no way to buy coins; and `REVIVE` resumes at the *next* item, because paying to re-answer the one you just missed is paying for the answer. |
+| 6.2 | **Paused / network-lost mid-lesson** | ⬜ The machine has `PAUSE`/`RESUME`; nothing sends them. Same pattern again. |
+
+**The question types are 3 of 5, not 2.** Flag → country, country → capital and the
+speed round all ship; currency is a bonus fourth axis. The two missing —
+tap-the-country and landmark → country — are the map-geometry and photo-licensing
+decisions, so they are blocked rather than pending.
 
 ### Deliberately not built
 | Item | Why |

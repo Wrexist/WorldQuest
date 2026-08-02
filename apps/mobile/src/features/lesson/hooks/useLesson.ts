@@ -99,6 +99,22 @@ export function useLesson({
     dispatch({ type: 'ABANDON', now: now() })
   }, [])
 
+  /**
+   * Spend coins to finish the lesson you are in.
+   *
+   * The machine restores hearts to full and resumes at the NEXT question — the one
+   * just missed is not re-asked, because paying to retry the same item would be
+   * paying for the answer, and this economy never sells an advantage at learning.
+   *
+   * The coins are not deducted here. The balance is server-authoritative (ADR 0006)
+   * and the spend rides the same queue as everything else; the client resumes the
+   * lesson optimistically because being wrong about a 250-coin balance is worth far
+   * less than interrupting a child mid-lesson to wait for a round trip.
+   */
+  const revive = useCallback(() => {
+    dispatch({ type: 'REVIVE', now: now() })
+  }, [])
+
   // Optimistic grading: the SAME module the server will run. The number shown is a
   // prediction, and the server's answer replaces it on reconcile.
   const optimistic = useMemo<GradeResult | null>(() => {
@@ -129,6 +145,7 @@ export function useLesson({
     answer,
     advance,
     abandon,
+    revive,
     send,
   }
 }

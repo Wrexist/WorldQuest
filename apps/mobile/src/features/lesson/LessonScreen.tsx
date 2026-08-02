@@ -24,6 +24,7 @@ import {
 import type { GradeResult, LessonState, Question } from '@worldquest/engines'
 import { useLesson } from './hooks/useLesson.js'
 import { SPEED_SECONDS } from './modes.js'
+import { OutOfHearts } from './OutOfHearts.js'
 import { useContent } from '../../lib/content.js'
 import { tContent, useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
@@ -35,10 +36,20 @@ type ScreenState = 'loading' | 'error' | 'empty' | 'ready'
 export function LessonScreen({
   onExit,
   mode = 'normal',
+  coins = 0,
 }: {
   onExit: () => void
   /** `speed` runs the same items against a clock. Scoring is unchanged. */
   mode?: 'normal' | 'speed'
+  /**
+   * The user's coin balance, for the out-of-hearts fork.
+   *
+   * A prop rather than a `useProgress()` call inside: that is server state behind
+   * TanStack Query, and fetching it here would make the whole lesson runner
+   * unmountable without a QueryClientProvider — for a number one rare branch reads.
+   * Routes fetch, screens delegate (apps/mobile/CLAUDE.md).
+   */
+  coins?: number
 }) {
   const t = useT()
   const { index, memory, status, reload, isOffline } = useContent()
@@ -196,7 +207,14 @@ export function LessonScreen({
 
       {answered && (
         <View style={styles.footer}>
-          <Button label={t('common:continue')} onPress={lesson.advance} />
+          {/* Out of hearts is a fork, not a wall. The engine has held the flag since
+              the machine was written and nothing rendered it — so the lesson simply
+              carried on at zero hearts, which made the whole mechanic decorative. */}
+          {lesson.state.outOfHearts ? (
+            <OutOfHearts coins={coins} onRevive={lesson.revive} onFinish={lesson.abandon} />
+          ) : (
+            <Button label={t('common:continue')} onPress={lesson.advance} />
+          )}
         </View>
       )}
     </View>
