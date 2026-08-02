@@ -1514,6 +1514,131 @@
         "verifiedAt": "2026-08-01"
       },
       "volatility": "stable"
+    },
+    {
+      "id": "geo.UG.flag",
+      "entity": "UG",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-UG",
+        "names": {
+          "en": "six stripes — black, yellow, red, twice over — with a grey crowned crane on a white circle in the middle",
+          "sv": "sex ränder — svart, gult, rött, två gånger om — med en grå krontrana på en vit cirkel i mitten"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "eastern-africa",
+        "like:six-stripes",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Uganda”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Uganda",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TZ.flag",
+      "entity": "TZ",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-TZ",
+        "names": {
+          "en": "green above blue, split by a black diagonal band edged in yellow",
+          "sv": "grönt ovanför blått, delat av ett svart diagonalband kantat i gult"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "eastern-africa",
+        "like:diagonal-split",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Tanzania”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Tanzania",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NA.flag",
+      "entity": "NA",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-NA",
+        "names": {
+          "en": "a white-edged red diagonal band, with a gold sun on blue above and green below",
+          "sv": "ett rött diagonalband med vita kanter, med en gyllene sol på blått ovanför och grönt nedanför"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "southern-africa",
+        "like:diagonal-split",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Namibia”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Namibia",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BW.flag",
+      "entity": "BW",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-BW",
+        "names": {
+          "en": "a light blue field crossed by a black stripe with thin white edges",
+          "sv": "en ljusblå duk korsad av ett svart band med tunna vita kanter"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "southern-africa",
+        "like:horizontal-band",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Botswana”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Botswana",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZW.flag",
+      "entity": "ZW",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-ZW",
+        "names": {
+          "en": "seven stripes in green, gold, red and black, with a white triangle holding a bird and a red star",
+          "sv": "sju ränder i grönt, guld, rött och svart, med en vit triangel som rymmer en fågel och en röd stjärna"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "southern-africa",
+        "like:triangle-at-hoist",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Zimbabwe”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Zimbabwe",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
     }
   ]
 }

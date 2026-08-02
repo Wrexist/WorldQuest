@@ -255,14 +255,26 @@ function resolveShallow(
 export function isSelfAnswering(index: ContentIndex, item: Item, locale: string): boolean {
   const resolved = resolveShallow(index, item, locale)
   if (resolved === null) return false
+  return Object.values(resolved.promptParams).some((value) =>
+    namesAnswer(value, resolved.correctLabel),
+  )
+}
 
-  // Whole words, not substrings. A plain `includes` also rejected "What is the capital
-  // of Tunisia?" — because "Tunisia" happens to start with "Tunis" — and that is a
-  // question every geography course asks. The prompt has to NAME the answer, not
-  // merely contain its letters.
-  const answer = normalise(resolved.correctLabel).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  const namesIt = new RegExp(`(^|\\W)${answer}($|\\W)`)
-  return Object.values(resolved.promptParams).some((value) => namesIt.test(normalise(value)))
+/**
+ * Whether `text` names `answer` — as a whole word, not as a run of letters.
+ *
+ * Exported so the authoring tools apply the SAME rule the engine does. They did not,
+ * once: `pnpm content:preview` kept a plain `includes` after the engine moved to word
+ * boundaries, and immediately failed CI on "What is the capital of Tunisia?" → "Tunis",
+ * a question the engine had just correctly decided to allow. Two copies of a rule are
+ * one copy and one bug waiting for the input that separates them.
+ *
+ * The tools check the RENDERED prompt rather than its params, which catches the case
+ * this cannot: a catalogue string that gives the answer away in its own literal text.
+ */
+export function namesAnswer(text: string, answer: string): boolean {
+  const escaped = normalise(answer).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return new RegExp(`(^|\\W)${escaped}($|\\W)`).test(normalise(text))
 }
 
 /**

@@ -412,6 +412,61 @@
       }
     },
     {
+      "id": "UG",
+      "type": "country",
+      "names": { "en": "Uganda", "sv": "Uganda" },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "geometry": "geo/countries/UG.svg",
+      "assets": {
+        "flag": { "path": "flags/UG.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "TZ",
+      "type": "country",
+      "names": { "en": "Tanzania", "sv": "Tanzania" },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "geometry": "geo/countries/TZ.svg",
+      "assets": {
+        "flag": { "path": "flags/TZ.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "NA",
+      "type": "country",
+      "names": { "en": "Namibia", "sv": "Namibia" },
+      "region": "AF",
+      "subregion": "southern-africa",
+      "geometry": "geo/countries/NA.svg",
+      "assets": {
+        "flag": { "path": "flags/NA.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "BW",
+      "type": "country",
+      "names": { "en": "Botswana", "sv": "Botswana" },
+      "region": "AF",
+      "subregion": "southern-africa",
+      "geometry": "geo/countries/BW.svg",
+      "assets": {
+        "flag": { "path": "flags/BW.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "ZW",
+      "type": "country",
+      "names": { "en": "Zimbabwe", "sv": "Zimbabwe" },
+      "region": "AF",
+      "subregion": "southern-africa",
+      "geometry": "geo/countries/ZW.svg",
+      "assets": {
+        "flag": { "path": "flags/ZW.svg", "license": "public-domain" }
+      }
+    },
+    {
       "id": "JP",
       "type": "country",
       "names": { "en": "Japan", "sv": "Japan" },

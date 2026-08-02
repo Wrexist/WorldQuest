@@ -29,6 +29,7 @@ import {
   buildIndex,
   buildQuestion,
   isSelfAnswering,
+  namesAnswer,
   seededRng,
   type Entity,
   type Fact,
@@ -151,8 +152,14 @@ for (const item of index.items) {
   if (correct !== undefined && question.hint === correct.label) {
     complain('the hint repeats the answer')
   }
-  if (correct !== undefined && prompt.includes(correct.label)) {
-    complain('the prompt contains the answer')
+  // `namesAnswer`, not `includes` — the same rule the engine applies, from the same
+  // function. When this script kept its own copy they disagreed the moment the engine
+  // moved to word boundaries, and CI went red on a question that was perfectly fine.
+  //
+  // Broader than the engine's check on purpose: this reads the RENDERED prompt, so it
+  // also catches a catalogue string that gives the answer away in its own literal text.
+  if (correct !== undefined && namesAnswer(prompt, correct.label)) {
+    complain('the prompt names the answer')
   }
   if (prompt.includes(question.promptKey)) {
     complain('the prompt key has no entry in the catalogue')

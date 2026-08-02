@@ -57,7 +57,7 @@ blocked by anything.
 
 | # | Work | Notes | State |
 |---|---|---|---|
-| D1 | **Beyond 5 countries** | The long pole. Every fact needs `source` + `verifiedAt`. Ship in subregion-sized batches so progress is visible. | 🟡 *(all six continents — 60 countries, 120 facts, 296 items, 293 of 293 askable ones reachable)* |
+| D1 | **Beyond 5 countries** | The long pole. Every fact needs `source` + `verifiedAt`. Ship in subregion-sized batches so progress is visible. | 🟡 *(all six continents, 14 subregions, none below four members — 65 countries, 130 facts, 321 items, 318 of 318 askable ones reachable)* |
 | D2 | **More question templates** | `tpl.flag-of-country.mc4` — country → flag description, the reverse of the existing pair. Five templates now; each multiplies across every fact already written. | ✅ |
 | D3 | **Authoring ergonomics** | `content:preview` (reads every generated question, gates CI) and `content:stats` (says which subregion to author next). Both were advertised in `package.json` and neither existed. | ✅ |
 
@@ -187,9 +187,20 @@ Both authoring tools now separate *"skipped by design"* from *"needs more
 neighbours"*. They previously printed "add more entities to those subregions" for
 every unbuildable item, which for Guatemala City is advice that cannot possibly work.
 
-Still thin and named by `stats`: `southern-africa` (1) and `eastern-africa` (2). Uganda
-and Tanzania were dropped from the Africa batch because the flag descriptions came back
-incomplete — unverified is not authored.
+Uganda, Tanzania, Namibia, Botswana and Zimbabwe closed the last two thin subregions.
+**Every one of the 14 now has at least four members**, which is the threshold below
+which a four-option question cannot be built at all — so nothing in the library falls
+back for want of neighbours any more.
+
+That last batch also caught a disagreement worth recording. `content:preview` kept its
+own `includes` check after the engine moved to word boundaries, so CI went red on
+*"What is the capital of Tunisia?" → "Tunis"* — a question the engine had just
+correctly decided to allow. Two copies of a rule are one copy and one bug waiting for
+the input that separates them. `namesAnswer` is now exported and both call it; the
+tool still checks the **rendered** prompt rather than its params, which catches the
+case the engine cannot — a catalogue string that gives the answer away in its own text.
+
+**65 countries · 130 facts · 321 items · 318 of 318 askable ones reachable.**
 
 E2 is deliberately last and deliberately not started here: a Maestro flow written
 without ever running it against a device is a file full of guesses about selectors and

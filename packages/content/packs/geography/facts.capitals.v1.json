@@ -1408,6 +1408,122 @@
         "verifiedAt": "2026-08-01"
       },
       "volatility": "stable"
+    },
+    {
+      "id": "geo.UG.capital",
+      "entity": "UG",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Kampala",
+          "sv": "Kampala"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Kampala”",
+        "url": "https://en.wikipedia.org/wiki/Kampala",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "$comment": "Dodoma is the capital; Dar es Salaam remains the largest city and holds many government offices. The move was decided in 1973 and completed over decades — settled, not contested, so this stays quizzable. Dar es Salaam is a good country-page fact.",
+      "id": "geo.TZ.capital",
+      "entity": "TZ",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Dodoma",
+          "sv": "Dodoma"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Dodoma”",
+        "url": "https://en.wikipedia.org/wiki/Dodoma",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NA.capital",
+      "entity": "NA",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Windhoek",
+          "sv": "Windhoek"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "southern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Windhoek”",
+        "url": "https://en.wikipedia.org/wiki/Windhoek",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BW.capital",
+      "entity": "BW",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Gaborone",
+          "sv": "Gaborone"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "southern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Gaborone”",
+        "url": "https://en.wikipedia.org/wiki/Gaborone",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZW.capital",
+      "entity": "ZW",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Harare",
+          "sv": "Harare"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "southern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Harare”",
+        "url": "https://en.wikipedia.org/wiki/Harare",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
     }
   ]
 }
