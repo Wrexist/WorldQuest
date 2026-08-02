@@ -19,6 +19,7 @@ import { readOnboarding } from '../src/features/onboarding/useOnboarding.js'
 import { SplashScreen, useSplashPhase } from '../src/features/splash/SplashScreen.js'
 import { useReturnVisit } from '../src/features/welcome/useReturnVisit.js'
 import { useAppFonts } from '../src/lib/fonts.js'
+import { setChildAccount } from '../src/lib/analytics.js'
 import { t } from '../src/lib/i18n.js'
 import { useDeviceLocale } from '../src/lib/locale.js'
 import { QueryProvider } from '../src/lib/query.js'
@@ -65,8 +66,27 @@ function useReturnGate(ready: boolean, onboarded: boolean): void {
   }, [ready, onboarded, daysAway, pathname])
 }
 
+/**
+ * Tells analytics who it is talking to, before anything can track.
+ *
+ * Read synchronously from device storage for the same reason the age answer lives
+ * there: this decision has to be correct on the very first frame, and a flag we have
+ * to wait for is a window in which a child is treated as an adult.
+ *
+ * `isChild` is undefined until the age gate is answered, and that stays unknown rather
+ * than becoming `false` — `track` treats unknown as a child, because unknown is not
+ * permission.
+ */
+function useAnalyticsAudience(): void {
+  const { completed, isChild } = readOnboarding()
+  useEffect(() => {
+    if (completed && isChild !== undefined) setChildAccount(isChild)
+  }, [completed, isChild])
+}
+
 export default function RootLayout() {
   const fontsReady = useAppFonts()
+  useAnalyticsAudience()
   const phase = useSplashPhase(fontsReady)
   useDeviceLocale()
   useOnboardingGate(fontsReady)

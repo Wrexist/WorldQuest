@@ -60,7 +60,7 @@ That is a real floor, and it is not the same as done.
 
 | Box | State |
 |---|---|
-| Analytics per spec | 🟡 Three events fire. The spec lists more. |
+| Analytics per spec | 🟡 Two of 28 declared events fire. **The child no-op was broken** — see below; fixed. |
 | Serves a named persona | ✅ |
 | Copy against the voice guide | ✅ And asserted, not trusted: no-shame, no-guilt, no-dark-pattern rules are tests in the streak, welcome-back, out-of-hearts, paused and sync screens. |
 | Docs updated | ✅ |
@@ -80,6 +80,32 @@ That is a real floor, and it is not the same as done.
    chime. The Settings toggle still writes a preference nothing reads.
 3. **Sentry.** Blocked on a **DSN and an authorised account**, neither of which exists
    in this environment. The `ErrorBoundary` logs to console and says so.
-4. **A device.** Not something code can fix. Every claim in this repo should be read
+4. **A device.** Not something code can fix.
+
+---
+
+## The one that was not a gap but a defect
+
+`track()` no-ops for child accounts — the rule its own comment calls "the rule a
+developer must not be able to bypass by forgetting a UI condition". It was bypassed by
+nobody wiring it at all: `setChildAccount` was exported and **never called from
+anywhere**, so the flag could only ever hold its default of `false`.
+
+Two things kept it hidden, and either alone would have been survivable:
+
+1. The setter had no caller, so the no-op could not fire.
+2. `packages/analytics/package.json` declared `"main": "./src/index.ts"` and that file
+   did not exist. Metro resolved the package anyway — the events are in the shipped
+   bundle — but **vitest could not**, so `lib/analytics.ts` was not importable by any
+   test in the mobile package.
+
+Nothing has leaked: `track` only console-logs until PostHog lands. The severity is
+entirely in the timing — the day the transport arrived, every child account would have
+emitted third-party analytics from the first frame, and it would have shipped looking
+correct.
+
+The default is now `null`, meaning *we have not asked yet*, and unknown is treated as a
+child. `useOnboarding` already states the principle for that window: the safe thing to
+do when we do not know who is holding the phone is nothing at all. Every claim in this repo should be read
    against it — including the haptics above, which is the one feature whose entire
    output is invisible to every test and screenshot we have.
