@@ -9,6 +9,7 @@
 
 import { useMemo } from 'react'
 import { worldProgress } from '@worldquest/engines'
+import { useWeekActivity } from '../../src/features/profile/useWeekActivity.js'
 import { ProfileScreen } from '../../src/features/profile/ProfileScreen.js'
 import { useProgress } from '../../src/features/home/useProgress.js'
 import { useContent } from '../../src/lib/content.js'
@@ -16,6 +17,7 @@ import { useContent } from '../../src/lib/content.js'
 export default function ProfileRoute() {
   const { data, status } = useProgress()
   const { index, memory } = useContent()
+  const week = useWeekActivity()
 
   const world = useMemo(() => {
     if (index === null) return null
@@ -43,6 +45,7 @@ export default function ProfileRoute() {
               factsMastered: data.factsMastered,
             }
       }
+      week={week}
       world={world}
       loading={status === 'loading'}
       // The account prompt appears only while there is no account. It disappears with

@@ -26,6 +26,7 @@ import { useLesson } from './hooks/useLesson.js'
 import { useContent } from '../../lib/content.js'
 import { tContent, useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
+import { recordLessonCompleted } from '../profile/useWeekActivity.js'
 import { enqueueLesson } from '../../lib/sync.js'
 
 type ScreenState = 'loading' | 'error' | 'empty' | 'ready'
@@ -49,6 +50,11 @@ export function LessonScreen({ onExit }: { onExit: () => void }) {
       startedAt: state.startedAt ?? Date.now(),
       answers: state.answers,
     })
+    // Local, immediate, and independent of the queue. The weekly chart on Profile
+    // must be right the moment the lesson ends — waiting for the server round trip
+    // would show an empty week to anyone who finishes a lesson offline.
+    recordLessonCompleted()
+
     track('lesson_completed', {
       lesson_id: state.lessonId,
       kind: 'lesson',

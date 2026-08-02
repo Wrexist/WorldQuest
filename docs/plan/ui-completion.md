@@ -32,7 +32,7 @@ counts below look small and the work does not.
 | 10. Flags collection | ✅ — plus a countries twin, search, and three filters |
 | 11. Landmarks collection | ⬜ — blocked on photo licensing |
 | 12. Leagues | ⛔ **v2.0** — out of scope by the roadmap |
-| 13. Profile | 🟡 — no level title, no XP bar, no weekly activity |
+| 13. Profile | ✅ — level, earned title, band-relative XP bar, seven-day activity |
 | 14. Achievements | ✅ |
 | 15. Settings | ✅ |
 
@@ -97,9 +97,9 @@ Every number below already exists in an engine and is invisible in the UI.
 
 | # | Work | Why now |
 |---|---|---|
-| 3.1 | **Level + title + XP bar** on Profile | `Level 38 – Navigator`. The curve is in the balance table; nothing renders it. |
+| 3.1 | **Level + title + XP bar** on Profile | ✅ `Level 20 · Navigator`. The maths moved into `levelProgress` in the engine — the curve is exponential, so progress is the position *inside* the band, and computing that in a component is how a bar ends up disagreeing with the number beside it. Found on the way: `TITLES` pointed at a `titles:` namespace that did not exist, so every title would have rendered as a raw key. |
 | 3.2 | **Streak UI** — flame, freeze, repair | C4 shipped the whole engine. A streak the user cannot see is not a streak. |
-| 3.3 | **Weekly activity bars** on Profile | Seven bars. The data is in `review_log`. |
+| 3.3 | **Weekly activity bars** on Profile | ✅ Seven fixed slots, scaled to the user's own best day rather than to a goal, recorded locally the instant a lesson ends so the chart is right offline. |
 | 3.4 | **Shop / coin sink** | Coins are earned and cannot be spent. An economy with no sink is a number, not an economy — and `xp-economy.md` prices hearts and freezes already. |
 
 ### Wave 4 — more game, from content rather than code

@@ -27,7 +27,7 @@ import {
   space,
   text,
 } from '@worldquest/design'
-import { levelForXp, xpForLevel, type WorldProgress } from '@worldquest/engines'
+import { levelProgress, type WorldProgress } from '@worldquest/engines'
 import { formatCompact, useT, currentLocale, type TranslationKey } from '../../lib/i18n.js'
 import { REGIONS, type RegionCode } from '../explore/ExploreScreen.js'
 
@@ -49,15 +49,25 @@ export type ProfileStats = {
   readonly factsMastered: number
 }
 
+/**
+ * Lessons completed per day, oldest first, always seven entries.
+ *
+ * Seven fixed slots rather than "days with activity": a week with two active days
+ * should read as two bars among five empty ones, not as a full-looking chart of two.
+ */
+export type WeekActivity = readonly { readonly day: string; readonly count: number }[]
+
 export type ProfileScreenProps = {
   readonly stats: ProfileStats | null
+  /** Absent while it is still loading; an all-zero week is a real, renderable answer. */
+  readonly week?: WeekActivity | undefined
   readonly world: WorldProgress | null
   readonly loading: boolean
   /** Absent once the user has an account — the prompt disappears with the reason. */
   readonly onCreateAccount?: (() => void) | undefined
 }
 
-export function ProfileScreen({ stats, world, loading, onCreateAccount }: ProfileScreenProps) {
+export function ProfileScreen({ stats, week, world, loading, onCreateAccount }: ProfileScreenProps) {
   const t = useT()
   const locale = currentLocale()
 
@@ -75,10 +85,10 @@ export function ProfileScreen({ stats, world, loading, onCreateAccount }: Profil
     )
   }
 
-  const level = levelForXp(stats.xpTotal)
-  const floor = xpForLevel(level)
-  const ceiling = xpForLevel(level + 1)
-  const remaining = Math.max(0, ceiling - stats.xpTotal)
+  // One call, in the engine, tested there. The curve is exponential, so "progress to
+  // the next level" is the position INSIDE the band — computing it in a component is
+  // how a bar ends up disagreeing with the number printed beside it.
+  const progress = levelProgress(stats.xpTotal)
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
@@ -90,21 +100,32 @@ export function ProfileScreen({ stats, world, loading, onCreateAccount }: Profil
       </View>
 
       <Card style={styles.levelCard}>
+        {/* The title is the reward here, not the number. Levels are a ladder; a title
+            is something a user says out loud, and it is the cheapest status reward
+            that exists (xp-economy.md). */}
+        <Text style={styles.levelTitle}>
+          {t('profile:levelTitle', {
+            level: progress.level,
+            title: t(progress.titleKey as TranslationKey),
+          })}
+        </Text>
         <ProgressBar
-          current={stats.xpTotal - floor}
-          total={Math.max(1, ceiling - floor)}
+          current={progress.earnedInLevel}
+          total={Math.max(1, progress.levelSpan)}
           showCount={false}
-          label={t('profile:level', { level })}
+          label={t('profile:level', { level: progress.level })}
         />
         <Text style={styles.levelNext}>
-          {/* `xpForLevel` grows without bound, so there is always a next level — but
-              the copy exists for the day a cap is introduced rather than being added
-              in a hurry then. */}
-          {remaining > 0
-            ? t('profile:level.next', { remaining, level: level + 1 })
-            : t('profile:level.max')}
+          {progress.remaining === null
+            ? t('profile:level.max')
+            : t('profile:level.next', {
+                remaining: progress.remaining,
+                level: progress.level + 1,
+              })}
         </Text>
       </Card>
+
+      {week !== undefined && <WeeklyActivity week={week} />}
 
       <Section title={t('profile:stats.title')}>
         <View style={styles.statGrid}>
@@ -200,7 +221,59 @@ function ProfileSkeleton() {
   )
 }
 
+/**
+ * Seven bars, one per day.
+ *
+ * Heights are relative to the user's own best day, not to a fixed target. A chart
+ * scaled to a goal makes a five-lesson day look like a failure next to a ten-lesson
+ * one; scaled to the week, it shows the shape of the week, which is the only thing
+ * seven bars can honestly say.
+ */
+function WeeklyActivity({ week }: { readonly week: WeekActivity }) {
+  const t = useT()
+  const peak = Math.max(...week.map((d) => d.count))
+
+  return (
+    <Section title={t('profile:week.title')}>
+      {peak === 0 ? (
+        <Text style={styles.weekEmpty}>{t('profile:week.none')}</Text>
+      ) : (
+        <View style={styles.week}>
+          {week.map((day) => (
+            <View
+              key={day.day}
+              accessible
+              accessibilityLabel={t('profile:week.day', { day: day.day, count: day.count })}
+              style={styles.weekDay}
+            >
+              <View style={styles.weekTrack}>
+                <View
+                  style={[
+                    styles.weekBar,
+                    // A day with activity always shows something. A 1-lesson day next
+                    // to a 12-lesson one would otherwise round to an invisible sliver,
+                    // which reads as "you did nothing" — the opposite of the truth.
+                    { height: `${day.count === 0 ? 0 : Math.max(12, (day.count / peak) * 100)}%` },
+                  ]}
+                />
+              </View>
+              <Text style={styles.weekLabel}>{day.day}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+    </Section>
+  )
+}
+
 const styles = StyleSheet.create({
+  levelTitle: { ...text('h3'), color: colors.text.primary, marginBottom: space[2] },
+  week: { flexDirection: 'row', justifyContent: 'space-between', gap: space[2], height: 96 },
+  weekDay: { flex: 1, alignItems: 'center', gap: space[1] },
+  weekTrack: { flex: 1, width: '100%', justifyContent: 'flex-end' },
+  weekBar: { width: '100%', borderRadius: radius.sm, backgroundColor: colors.status.progress },
+  weekLabel: { ...text('overline'), color: colors.text.tertiary },
+  weekEmpty: { ...text('body'), color: colors.text.secondary },
   screen: { flex: 1, backgroundColor: colors.bg.canvas },
   content: { padding: space[4], gap: space[4] },
   centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },
