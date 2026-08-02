@@ -253,6 +253,18 @@ const step = (name, ok, detail = '') => {
   step('deep route /region/EU lists real countries', found.length >= 3, found.join(', '))
   await page.screenshot({ path: path.join(SHOTS, 'region.png') })
 
+  // ── the content-as-data claim, end to end ──────────────────────────────────
+  //
+  // Currency was authored as a pack and a template. If it reaches the country page
+  // without anyone editing a screen, the architecture's central bet is holding. If it
+  // ever stops, that is the leak worth knowing about immediately.
+  await page.goto(`http://localhost:${PORT}/country/SE`, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(1200)
+  const country = await body()
+  step('a new ATTRIBUTE reaches the country page with no screen change',
+       /currency/i.test(country), (country.match(/Currency[^\n]*/) ?? [''])[0])
+  await page.screenshot({ path: path.join(SHOTS, 'country.png') })
+
   // ── the screen whose absence is a white screen ─────────────────────────────
   await page.goto(`http://localhost:${PORT}/no-such-route`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(900)
