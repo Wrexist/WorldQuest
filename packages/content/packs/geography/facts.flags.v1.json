@@ -489,6 +489,131 @@
         "verifiedAt": "2026-08-01"
       },
       "volatility": "stable"
+    },
+    {
+      "id": "geo.BR.flag",
+      "entity": "BR",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-BR",
+        "names": {
+          "en": "a blue globe on a yellow diamond, on a green field",
+          "sv": "en blå glob på en gul romb, på grön botten"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "south-america",
+        "like:emblem-on-plain-field",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Brazil”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Brazil",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AR.flag",
+      "entity": "AR",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-AR",
+        "names": {
+          "en": "three horizontal bands — light blue, white, light blue — with a golden sun in the middle",
+          "sv": "tre vågräta band — ljusblått, vitt, ljusblått — med en gyllene sol i mitten"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "south-america",
+        "like:horizontal-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Argentina”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Argentina",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CO.flag",
+      "entity": "CO",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-CO",
+        "names": {
+          "en": "three horizontal bands — yellow, blue, red — the yellow one twice as tall",
+          "sv": "tre vågräta band — gult, blått, rött — det gula dubbelt så högt"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "south-america",
+        "like:horizontal-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Colombia”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Colombia",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CL.flag",
+      "entity": "CL",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-CL",
+        "names": {
+          "en": "a white band above a red one, with a white star on a blue square in the top corner",
+          "sv": "ett vitt band ovanför ett rött, med en vit stjärna på en blå kvadrat i övre hörnet"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "south-america",
+        "like:star-in-canton",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Chile”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Chile",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PE.flag",
+      "entity": "PE",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-PE",
+        "names": {
+          "en": "three vertical bands — red, white, red",
+          "sv": "tre lodräta band — rött, vitt, rött"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "south-america",
+        "like:vertical-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Peru”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Peru",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
     }
   ]
 }

@@ -66,6 +66,61 @@
       }
     },
     {
+      "id": "BR",
+      "type": "country",
+      "names": { "en": "Brazil", "sv": "Brasilien" },
+      "region": "SA",
+      "subregion": "south-america",
+      "geometry": "geo/countries/BR.svg",
+      "assets": {
+        "flag": { "path": "flags/BR.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "AR",
+      "type": "country",
+      "names": { "en": "Argentina", "sv": "Argentina" },
+      "region": "SA",
+      "subregion": "south-america",
+      "geometry": "geo/countries/AR.svg",
+      "assets": {
+        "flag": { "path": "flags/AR.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "CL",
+      "type": "country",
+      "names": { "en": "Chile", "sv": "Chile" },
+      "region": "SA",
+      "subregion": "south-america",
+      "geometry": "geo/countries/CL.svg",
+      "assets": {
+        "flag": { "path": "flags/CL.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "PE",
+      "type": "country",
+      "names": { "en": "Peru", "sv": "Peru" },
+      "region": "SA",
+      "subregion": "south-america",
+      "geometry": "geo/countries/PE.svg",
+      "assets": {
+        "flag": { "path": "flags/PE.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "CO",
+      "type": "country",
+      "names": { "en": "Colombia", "sv": "Colombia" },
+      "region": "SA",
+      "subregion": "south-america",
+      "geometry": "geo/countries/CO.svg",
+      "assets": {
+        "flag": { "path": "flags/CO.svg", "license": "public-domain" }
+      }
+    },
+    {
       "id": "IT",
       "type": "country",
       "names": { "en": "Italy", "sv": "Italien" },

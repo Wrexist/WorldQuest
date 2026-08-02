@@ -1,6 +1,6 @@
 {
   "$schema": "../../schema/pack.schema.json",
-  "$comment": "Capital facts. One pack per attribute keeps IDs unique and lets a locale or a correction ship without touching unrelated content.",
+  "$comment": "Capital facts. One pack per attribute keeps IDs unique and lets a locale or a correction ship without touching unrelated content. `value.id` is the ISO 3166-2 code of the subdivision the city sits in, and it is DOCUMENTATION — nothing reads it. It is present only where the code was confirmed at authoring time; absent means unconfirmed, never irrelevant. A wrong code is worse than no code.",
   "packId": "geography.facts.capitals",
   "version": "1.0.0",
   "subject": "geography",
@@ -392,7 +392,6 @@
       "quizzable": false
     },
     {
-      "$comment": "The ISO 3166-2 subdivision code for this city was not confirmed at authoring time, so it is omitted rather than guessed. `value.id` is documentation — nothing reads it — and a wrong code is worse than an absent one.",
       "id": "geo.IT.capital",
       "entity": "IT",
       "attribute": "capital",
@@ -417,7 +416,6 @@
       "volatility": "stable"
     },
     {
-      "$comment": "The ISO 3166-2 subdivision code for this city was not confirmed at authoring time, so it is omitted rather than guessed. `value.id` is documentation — nothing reads it — and a wrong code is worse than an absent one.",
       "id": "geo.ES.capital",
       "entity": "ES",
       "attribute": "capital",
@@ -467,7 +465,6 @@
       "volatility": "stable"
     },
     {
-      "$comment": "The ISO 3166-2 subdivision code for this city was not confirmed at authoring time, so it is omitted rather than guessed. `value.id` is documentation — nothing reads it — and a wrong code is worse than an absent one.",
       "id": "geo.GR.capital",
       "entity": "GR",
       "attribute": "capital",
@@ -487,6 +484,121 @@
       "source": {
         "name": "English Wikipedia, “Athens”",
         "url": "https://en.wikipedia.org/wiki/Athens",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BR.capital",
+      "entity": "BR",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Brasília",
+          "sv": "Brasília"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Brasília”",
+        "url": "https://en.wikipedia.org/wiki/Bras%C3%ADlia",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AR.capital",
+      "entity": "AR",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Buenos Aires",
+          "sv": "Buenos Aires"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Buenos Aires”",
+        "url": "https://en.wikipedia.org/wiki/Buenos_Aires",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CL.capital",
+      "entity": "CL",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Santiago",
+          "sv": "Santiago"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Santiago”",
+        "url": "https://en.wikipedia.org/wiki/Santiago",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PE.capital",
+      "entity": "PE",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Lima",
+          "sv": "Lima"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Lima”",
+        "url": "https://en.wikipedia.org/wiki/Lima",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CO.capital",
+      "entity": "CO",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Bogotá",
+          "sv": "Bogotá"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Bogotá”",
+        "url": "https://en.wikipedia.org/wiki/Bogot%C3%A1",
         "verifiedAt": "2026-08-01"
       },
       "volatility": "stable"
