@@ -90,6 +90,328 @@
       }
     },
     {
+      "id": "ID",
+      "type": "country",
+      "names": { "en": "Indonesia", "sv": "Indonesien" },
+      "region": "AS",
+      "subregion": "south-east-asia",
+      "geometry": "geo/countries/ID.svg",
+      "assets": {
+        "flag": { "path": "flags/ID.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "TH",
+      "type": "country",
+      "names": { "en": "Thailand", "sv": "Thailand" },
+      "region": "AS",
+      "subregion": "south-east-asia",
+      "geometry": "geo/countries/TH.svg",
+      "assets": {
+        "flag": { "path": "flags/TH.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "VN",
+      "type": "country",
+      "names": { "en": "Vietnam", "sv": "Vietnam" },
+      "region": "AS",
+      "subregion": "south-east-asia",
+      "geometry": "geo/countries/VN.svg",
+      "assets": {
+        "flag": { "path": "flags/VN.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "PH",
+      "type": "country",
+      "names": { "en": "Philippines", "sv": "Filippinerna" },
+      "$comment": "English takes the article inside a sentence but not in a list. Swedish 'Filippinerna' carries its own definite ending.",
+      "namesInSentence": {"en": "the Philippines"},
+      "region": "AS",
+      "subregion": "south-east-asia",
+      "geometry": "geo/countries/PH.svg",
+      "assets": {
+        "flag": { "path": "flags/PH.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "MY",
+      "type": "country",
+      "names": { "en": "Malaysia", "sv": "Malaysia" },
+      "region": "AS",
+      "subregion": "south-east-asia",
+      "geometry": "geo/countries/MY.svg",
+      "assets": {
+        "flag": { "path": "flags/MY.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "AU",
+      "type": "country",
+      "names": { "en": "Australia", "sv": "Australien" },
+      "region": "OC",
+      "subregion": "oceania",
+      "geometry": "geo/countries/AU.svg",
+      "assets": {
+        "flag": { "path": "flags/AU.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "NZ",
+      "type": "country",
+      "names": { "en": "New Zealand", "sv": "Nya Zeeland" },
+      "region": "OC",
+      "subregion": "oceania",
+      "geometry": "geo/countries/NZ.svg",
+      "assets": {
+        "flag": { "path": "flags/NZ.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "FJ",
+      "type": "country",
+      "names": { "en": "Fiji", "sv": "Fiji" },
+      "region": "OC",
+      "subregion": "oceania",
+      "geometry": "geo/countries/FJ.svg",
+      "assets": {
+        "flag": { "path": "flags/FJ.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "PG",
+      "type": "country",
+      "names": { "en": "Papua New Guinea", "sv": "Papua Nya Guinea" },
+      "region": "OC",
+      "subregion": "oceania",
+      "geometry": "geo/countries/PG.svg",
+      "assets": {
+        "flag": { "path": "flags/PG.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "PL",
+      "type": "country",
+      "names": { "en": "Poland", "sv": "Polen" },
+      "region": "EU",
+      "subregion": "eastern-europe",
+      "geometry": "geo/countries/PL.svg",
+      "assets": {
+        "flag": { "path": "flags/PL.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "UA",
+      "type": "country",
+      "names": { "en": "Ukraine", "sv": "Ukraina" },
+      "region": "EU",
+      "subregion": "eastern-europe",
+      "geometry": "geo/countries/UA.svg",
+      "assets": {
+        "flag": { "path": "flags/UA.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "CZ",
+      "type": "country",
+      "names": { "en": "Czechia", "sv": "Tjeckien" },
+      "region": "EU",
+      "subregion": "eastern-europe",
+      "geometry": "geo/countries/CZ.svg",
+      "assets": {
+        "flag": { "path": "flags/CZ.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "HU",
+      "type": "country",
+      "names": { "en": "Hungary", "sv": "Ungern" },
+      "region": "EU",
+      "subregion": "eastern-europe",
+      "geometry": "geo/countries/HU.svg",
+      "assets": {
+        "flag": { "path": "flags/HU.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "RO",
+      "type": "country",
+      "names": { "en": "Romania", "sv": "Rumänien" },
+      "region": "EU",
+      "subregion": "eastern-europe",
+      "geometry": "geo/countries/RO.svg",
+      "assets": {
+        "flag": { "path": "flags/RO.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "IN",
+      "type": "country",
+      "names": { "en": "India", "sv": "Indien" },
+      "region": "AS",
+      "subregion": "south-asia",
+      "geometry": "geo/countries/IN.svg",
+      "assets": {
+        "flag": { "path": "flags/IN.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "PK",
+      "type": "country",
+      "names": { "en": "Pakistan", "sv": "Pakistan" },
+      "region": "AS",
+      "subregion": "south-asia",
+      "geometry": "geo/countries/PK.svg",
+      "assets": {
+        "flag": { "path": "flags/PK.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "BD",
+      "type": "country",
+      "names": { "en": "Bangladesh", "sv": "Bangladesh" },
+      "region": "AS",
+      "subregion": "south-asia",
+      "geometry": "geo/countries/BD.svg",
+      "assets": {
+        "flag": { "path": "flags/BD.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "NP",
+      "type": "country",
+      "names": { "en": "Nepal", "sv": "Nepal" },
+      "region": "AS",
+      "subregion": "south-asia",
+      "geometry": "geo/countries/NP.svg",
+      "assets": {
+        "flag": { "path": "flags/NP.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "EG",
+      "type": "country",
+      "names": { "en": "Egypt", "sv": "Egypten" },
+      "region": "AF",
+      "subregion": "northern-africa",
+      "geometry": "geo/countries/EG.svg",
+      "assets": {
+        "flag": { "path": "flags/EG.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "MA",
+      "type": "country",
+      "names": { "en": "Morocco", "sv": "Marocko" },
+      "region": "AF",
+      "subregion": "northern-africa",
+      "geometry": "geo/countries/MA.svg",
+      "assets": {
+        "flag": { "path": "flags/MA.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "DZ",
+      "type": "country",
+      "names": { "en": "Algeria", "sv": "Algeriet" },
+      "region": "AF",
+      "subregion": "northern-africa",
+      "geometry": "geo/countries/DZ.svg",
+      "assets": {
+        "flag": { "path": "flags/DZ.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "TN",
+      "type": "country",
+      "names": { "en": "Tunisia", "sv": "Tunisien" },
+      "region": "AF",
+      "subregion": "northern-africa",
+      "geometry": "geo/countries/TN.svg",
+      "assets": {
+        "flag": { "path": "flags/TN.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "NG",
+      "type": "country",
+      "names": { "en": "Nigeria", "sv": "Nigeria" },
+      "region": "AF",
+      "subregion": "western-africa",
+      "geometry": "geo/countries/NG.svg",
+      "assets": {
+        "flag": { "path": "flags/NG.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "GH",
+      "type": "country",
+      "names": { "en": "Ghana", "sv": "Ghana" },
+      "region": "AF",
+      "subregion": "western-africa",
+      "geometry": "geo/countries/GH.svg",
+      "assets": {
+        "flag": { "path": "flags/GH.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "SN",
+      "type": "country",
+      "names": { "en": "Senegal", "sv": "Senegal" },
+      "region": "AF",
+      "subregion": "western-africa",
+      "geometry": "geo/countries/SN.svg",
+      "assets": {
+        "flag": { "path": "flags/SN.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "ML",
+      "type": "country",
+      "names": { "en": "Mali", "sv": "Mali" },
+      "region": "AF",
+      "subregion": "western-africa",
+      "geometry": "geo/countries/ML.svg",
+      "assets": {
+        "flag": { "path": "flags/ML.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "KE",
+      "type": "country",
+      "names": { "en": "Kenya", "sv": "Kenya" },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "geometry": "geo/countries/KE.svg",
+      "assets": {
+        "flag": { "path": "flags/KE.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "ET",
+      "type": "country",
+      "names": { "en": "Ethiopia", "sv": "Etiopien" },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "geometry": "geo/countries/ET.svg",
+      "assets": {
+        "flag": { "path": "flags/ET.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "ZA",
+      "type": "country",
+      "$comment": "Its capital fact lives in sample.capitals.v1.json and is review-required — South Africa has three (Pretoria, Cape Town, Bloemfontein) and the policy is to flag that, not pick one. The entity and the flag are uncontested, so they ship.",
+      "names": { "en": "South Africa", "sv": "Sydafrika" },
+      "region": "AF",
+      "subregion": "southern-africa",
+      "geometry": "geo/countries/ZA.svg",
+      "assets": {
+        "flag": { "path": "flags/ZA.svg", "license": "public-domain" }
+      }
+    },
+    {
       "id": "JP",
       "type": "country",
       "names": { "en": "Japan", "sv": "Japan" },

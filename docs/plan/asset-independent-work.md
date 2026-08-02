@@ -57,7 +57,7 @@ blocked by anything.
 
 | # | Work | Notes | State |
 |---|---|---|---|
-| D1 | **Beyond 5 countries** | The long pole. Every fact needs `source` + `verifiedAt`. Ship in subregion-sized batches so progress is visible. | 🟡 *(3 subregions added — 19 countries, 39 facts, 93 items, all reachable)* |
+| D1 | **Beyond 5 countries** | The long pole. Every fact needs `source` + `verifiedAt`. Ship in subregion-sized batches so progress is visible. | 🟡 *(all six continents — 60 countries, 120 facts, 296 items, 293 of 293 askable ones reachable)* |
 | D2 | **More question templates** | `tpl.flag-of-country.mc4` — country → flag description, the reverse of the existing pair. Five templates now; each multiplies across every fact already written. | ✅ |
 | D3 | **Authoring ergonomics** | `content:preview` (reads every generated question, gates CI) and `content:stats` (says which subregion to author next). Both were advertised in `package.json` and neither existed. | ✅ |
 
@@ -162,9 +162,34 @@ Two facts are now flagged for review and `pnpm content:validate` reports both. T
 capitals carry no `value.id`: the ISO 3166-2 subdivision code was not confirmed while
 authoring, and nothing reads that field, so it is absent rather than guessed.
 
-**19 countries · 39 facts · 93 items · 93 of 93 reachable.** The next batch is
-whichever subregion `pnpm content:stats` says is thinnest — the tool picks, not
-taste.
+Then the rest of the world, in subregion batches, each one chosen by what `stats`
+said was thinnest: south-america, north-america, south-east-asia, oceania,
+eastern-europe, south-asia, and northern/western/eastern Africa.
+
+**60 countries · 120 facts · 296 items · 293 of 293 askable ones reachable.**
+
+North America produced the third bug the tools caught, and the largest class:
+**"Guatemala City is the capital of which country?"** The prompt contains the answer.
+So does Panama City, Mexico City, Kuwait, Luxembourg, Djibouti, Singapore — enough of
+them that catching it by hand is a matter of time, not diligence. `buildQuestion` now
+refuses any question whose prompt *names* its answer.
+
+Two refinements came from reading the output, both of which matter more than they look:
+
+- The rule rejects the **prompt giving away the answer**, not the answer echoing the
+  prompt — so "What is the capital of Mexico?" → "Mexico City" survives. That
+  direction is how the place is named, and rejecting it would delete real content to
+  fix a different bug.
+- It matches **whole words**. A substring check also rejected "What is the capital of
+  Tunisia?" → "Tunis", which is a question every geography course asks.
+
+Both authoring tools now separate *"skipped by design"* from *"needs more
+neighbours"*. They previously printed "add more entities to those subregions" for
+every unbuildable item, which for Guatemala City is advice that cannot possibly work.
+
+Still thin and named by `stats`: `southern-africa` (1) and `eastern-africa` (2). Uganda
+and Tanzania were dropped from the Africa batch because the flag descriptions came back
+incomplete — unverified is not authored.
 
 E2 is deliberately last and deliberately not started here: a Maestro flow written
 without ever running it against a device is a file full of guesses about selectors and

@@ -262,9 +262,14 @@ function resolveShallow(
 export function isSelfAnswering(index: ContentIndex, item: Item, locale: string): boolean {
   const resolved = resolveShallow(index, item, locale)
   if (resolved === null) return false
-  return Object.values(resolved.promptParams).some((value) =>
-    normalise(value).includes(normalise(resolved.correctLabel)),
-  )
+
+  // Whole words, not substrings. A plain `includes` also rejected "What is the capital
+  // of Tunisia?" — because "Tunisia" happens to start with "Tunis" — and that is a
+  // question every geography course asks. The prompt has to NAME the answer, not
+  // merely contain its letters.
+  const answer = normalise(resolved.correctLabel).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const namesIt = new RegExp(`(^|\\W)${answer}($|\\W)`)
+  return Object.values(resolved.promptParams).some((value) => namesIt.test(normalise(value)))
 }
 
 export function buildQuestion(

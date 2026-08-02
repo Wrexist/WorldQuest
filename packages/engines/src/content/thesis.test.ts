@@ -263,6 +263,17 @@ describe('question construction', () => {
     }
   })
 
+  it('matches whole words, not the letters that happen to line up', () => {
+    // "What is the capital of Tunisia?" → "Tunis". A substring check rejected this,
+    // because Tunisia starts with Tunis — and that is a question every geography
+    // course asks. The prompt has to NAME the answer, not merely contain its letters.
+    const item = index.itemsByFact
+      .get('geo.TN.capital')!
+      .find((i) => i.templateId === 'tpl.capital.mc4')!
+    expect(isSelfAnswering(index, item, 'en')).toBe(false)
+    expect(buildQuestion(index, item, 'en', seededRng(1))).not.toBeNull()
+  })
+
   it('keeps the direction that is naming rather than leaking', () => {
     // "What is the capital of Mexico?" → "Mexico City". The answer echoes the prompt,
     // which is how the place is named — not a giveaway, and a fact worth learning.
