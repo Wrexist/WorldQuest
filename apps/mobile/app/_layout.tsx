@@ -10,18 +10,43 @@
  * bar staying visible would invite the user to leave halfway through.
  */
 
-import { Stack } from 'expo-router'
+import { useEffect } from 'react'
+import { Stack, router, usePathname } from 'expo-router'
 import { SafeAreaView, StatusBar, StyleSheet } from 'react-native'
 import { colors, motion } from '@worldquest/design'
 import { ErrorBoundary } from '../src/components/ErrorBoundary.js'
+import { readOnboarding } from '../src/features/onboarding/useOnboarding.js'
 import { useAppFonts } from '../src/lib/fonts.js'
 import { t } from '../src/lib/i18n.js'
 import { useDeviceLocale } from '../src/lib/locale.js'
 import { QueryProvider } from '../src/lib/query.js'
 
+/**
+ * Sends a first-time user to onboarding, once.
+ *
+ * `replace`, never `push`: onboarding is not somewhere you go back from, and leaving
+ * Home underneath it means the back gesture lands on a Home the user has not earned
+ * yet — with no streak, no progress, and no idea what the app is.
+ *
+ * Reading storage synchronously is what makes this a redirect rather than a flash of
+ * Home. It is also why the age answer is on device (see useOnboarding): the child
+ * branch has to be decided before the first frame, not after a round trip.
+ */
+function useOnboardingGate(ready: boolean): void {
+  const pathname = usePathname()
+
+  useEffect(() => {
+    if (!ready) return
+    if (pathname.startsWith('/onboarding')) return
+    if (readOnboarding().completed) return
+    router.replace('/onboarding')
+  }, [ready, pathname])
+}
+
 export default function RootLayout() {
   const fontsReady = useAppFonts()
   useDeviceLocale()
+  useOnboardingGate(fontsReady)
 
   // The native splash is still covering the screen here, so there is nothing to see.
   // Rendering before the fonts land means laying out in the system font and jumping
@@ -41,6 +66,10 @@ export default function RootLayout() {
             }}
           >
             <Stack.Screen name="(tabs)" />
+            {/* No back gesture: onboarding is a one-way flow, and swiping out of the
+                age gate would leave the app not knowing whether it is talking to a
+                child. The only ways forward are the buttons. */}
+            <Stack.Screen name="(auth)/onboarding" options={{ gestureEnabled: false }} />
             <Stack.Screen name="region/[code]" />
             <Stack.Screen name="country/[code]" />
             <Stack.Screen name="achievements" />

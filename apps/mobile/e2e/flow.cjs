@@ -90,16 +90,56 @@ const step = (name, ok, detail = '') => {
     await page.waitForTimeout(800)
   }
 
-  // ── cold start ────────────────────────────────────────────────────────────
+  // ── first launch: a brand-new user meets onboarding, not Home ─────────────
   await home()
-  await page.waitForTimeout(1200)
-  step('cold start renders Home', (await body()).includes('Explorer'))
+  await page.waitForTimeout(1500)
+  let text = await body()
+  step('first launch opens onboarding, not Home', /five minutes a day|Get started|Next/i.test(text))
+  await page.screenshot({ path: path.join(SHOTS, 'onboarding-slide.png') })
+
+  // Three value slides.
+  for (let i = 0; i < 2; i++) {
+    await page.getByText('Next', { exact: true }).first().click()
+    await page.waitForTimeout(400)
+  }
+  await page.getByText('Get started', { exact: true }).first().click()
+  await page.waitForTimeout(600)
+  text = await body()
+  step('age gate asks for a birth year, never "are you over 13?"',
+       /When were you born/i.test(text) && !/over 13|13\+/i.test(text))
+  await page.screenshot({ path: path.join(SHOTS, 'onboarding-age.png') })
+
+  // An adult year, so the flow continues past the child branch.
+  const adultYear = String(new Date().getFullYear() - 30)
+  await page.getByText(adultYear, { exact: true }).first().click()
+  await page.waitForTimeout(300)
+  await page.getByText('Continue', { exact: true }).first().click()
+  await page.waitForTimeout(600)
+  step('daily goal picker appears', /How much a day|min/i.test(await body()))
+  await page.screenshot({ path: path.join(SHOTS, 'onboarding-goal.png') })
+
+  await page.getByText('Continue', { exact: true }).first().click()
+  await page.waitForTimeout(600)
+  step('taster promises a lesson with no account', /no account needed/i.test(await body()))
+
+  await page.getByText('Start learning', { exact: true }).first().click()
+  await page.waitForTimeout(1800)
+  text = await body()
+  step('onboarding ends INSIDE a lesson, before any sign-up ask',
+       /capital of|flag/i.test(text) && !/sign up|create account/i.test(text))
+  await page.screenshot({ path: path.join(SHOTS, 'onboarding-taster.png') })
+
+  // ── onboarding is remembered ──────────────────────────────────────────────
+  await home()
+  await page.waitForTimeout(1500)
+  const afterOnboarding = await body()
+  step('a returning user goes straight to Home', afterOnboarding.includes('Explorer'))
   await page.screenshot({ path: path.join(SHOTS, 'home.png') })
 
   // ── the taster lesson, which is the whole product in one flow ─────────────
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(1500)
-  let text = await body()
+  text = await body()
   const prompt = text.split('\n').find((line) => /capital of|flag/i.test(line))
   step('Continue opens a lesson', prompt !== undefined, prompt)
 

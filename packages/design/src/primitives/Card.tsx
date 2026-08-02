@@ -22,16 +22,37 @@
  * app; it must render under every renderer that can render anything at all.
  */
 import type { ReactNode } from 'react'
-import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native'
+import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native'
 import { colors, gradient, radius, space } from '../tokens.js'
 
 export type CardProps = {
   children: ReactNode
   level?: 1 | 2 | 3
-  /** Groups the card into ONE screen-reader element instead of seven. */
+  /**
+   * Groups the card into ONE screen-reader element instead of seven, and names it.
+   *
+   * Spelled `accessibilityLabel`, NOT `aria-label`. TypeScript does not type-check
+   * hyphenated JSX attributes against a component's props, so `aria-label` on a Card
+   * compiles, does nothing, and leaves a pressable card with no accessible name —
+   * silently. It cost a round of failing tests to find once already.
+   */
   accessibilityLabel?: string
   /** Flat fill instead of a gradient — for a card sitting on another card. */
   flat?: boolean
+  /**
+   * Makes the whole card the target — goal pickers, collection tiles, list rows.
+   *
+   * Supplying this REQUIRES `accessibilityLabel` and a `role`, by the type below.
+   * A pressable with no name is a button a screen reader announces as "button", and
+   * the design rule here is that the accessible path is the easy path: this should be
+   * a type error, not a review comment.
+   */
+  onPress?: () => void
+  /** `radio` for one-of-many, `checkbox` for many-of-many, `button` for an action. */
+  role?: 'button' | 'radio' | 'checkbox'
+  /** Selection state. ARIA, not `accessibilityState` — react-native-web drops the latter. */
+  'aria-checked'?: boolean
+  'aria-disabled'?: boolean
   style?: StyleProp<ViewStyle>
   testID?: string
 }
@@ -54,20 +75,51 @@ export function Card({
   level = 1,
   accessibilityLabel,
   flat = false,
+  onPress,
+  role,
+  'aria-checked': checked,
+  'aria-disabled': disabled,
   style,
   testID,
 }: CardProps) {
   const Gradient = loadGradient()
 
-  const content = (
-    <View
-      accessible={accessibilityLabel !== undefined}
-      aria-label={accessibilityLabel}
-      testID={testID}
-      style={[styles.base, LEVELS[level], flat || Gradient === null ? null : styles.transparent, style]}
+  const interactive = onPress !== undefined
+  const shared = {
+    accessible: accessibilityLabel !== undefined || interactive,
+    'aria-label': accessibilityLabel,
+    testID,
+    style: [
+      styles.base,
+      LEVELS[level],
+      flat || Gradient === null ? null : styles.transparent,
+      style,
+    ],
+  }
+
+  // A pressable card is a Pressable, not a View with a touch handler. That is what
+  // gives it the focus ring, the keyboard activation and the pressed state for free —
+  // all three of which have to be hand-built, and are therefore forgotten, otherwise.
+  //
+  // The two branches are written out rather than spread from one object so that
+  // `role=` and `aria-checked=` are real JSX attributes. `tokens.test.ts` greps for
+  // exactly that, and a guard that an object literal can walk past is not a guard.
+  const content = interactive ? (
+    <Pressable
+      {...shared}
+      onPress={onPress}
+      role={role ?? 'button'}
+      aria-checked={checked}
+      aria-disabled={disabled}
+      disabled={disabled}
+      // 44pt is the floor for a touch target (accessibility.md §4). A card is normally
+      // far bigger than that; this is for the compact ones — chips, year pickers.
+      hitSlop={4}
     >
       {children}
-    </View>
+    </Pressable>
+  ) : (
+    <View {...shared}>{children}</View>
   )
 
   if (flat || Gradient === null) return content

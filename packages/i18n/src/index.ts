@@ -20,6 +20,8 @@ import { IcuFormat } from './icu.js'
 import { pseudo } from './pseudo.js'
 import { NAMESPACES, type Namespace, type TranslationKey, type TranslationParams } from './keys.js'
 
+import enOnboarding from '../locales/en/onboarding.json' with { type: 'json' }
+import svOnboarding from '../locales/sv/onboarding.json' with { type: 'json' }
 import enAchievements from '../locales/en/achievements.json' with { type: 'json' }
 import enCommon from '../locales/en/common.json' with { type: 'json' }
 import enCountry from '../locales/en/country.json' with { type: 'json' }
@@ -83,6 +85,7 @@ export const PSEUDO_LOCALE = 'en-XA'
 const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
   en: {
     achievements: enAchievements,
+    onboarding: enOnboarding,
     common: enCommon,
     country: enCountry,
     errors: enErrors,
@@ -97,6 +100,7 @@ const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
   },
   sv: {
     achievements: svAchievements,
+    onboarding: svOnboarding,
     common: svCommon,
     country: svCountry,
     errors: svErrors,
