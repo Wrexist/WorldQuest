@@ -12,6 +12,7 @@
 
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 import { FailureState } from './FailureState.js'
+import { track } from '../lib/analytics.js'
 
 type Props = { readonly children: ReactNode }
 type State = { readonly error: Error | null }
@@ -24,6 +25,11 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   override componentDidCatch(error: Error, info: ErrorInfo): void {
+    // The domain and the code, never the message: a React error string can carry a
+    // prop value, and a prop value can carry a name a child typed. PII-free by
+    // construction rather than by remembering to redact.
+    track('error_occurred', { domain: 'render', code: error.name, is_fatal: true })
+
     // Reported to Sentry once it is connected. Logged unconditionally in the
     // meantime, because a crash nobody can see is a crash nobody fixes.
     console.error('[crash]', error, info.componentStack)

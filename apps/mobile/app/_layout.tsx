@@ -19,7 +19,7 @@ import { readOnboarding } from '../src/features/onboarding/useOnboarding.js'
 import { SplashScreen, useSplashPhase } from '../src/features/splash/SplashScreen.js'
 import { useReturnVisit } from '../src/features/welcome/useReturnVisit.js'
 import { useAppFonts } from '../src/lib/fonts.js'
-import { setChildAccount } from '../src/lib/analytics.js'
+import { setChildAccount, track } from '../src/lib/analytics.js'
 import { t } from '../src/lib/i18n.js'
 import { useDeviceLocale } from '../src/lib/locale.js'
 import { QueryProvider } from '../src/lib/query.js'
@@ -84,9 +84,23 @@ function useAnalyticsAudience(): void {
   }, [completed, isChild])
 }
 
+/**
+ * One `app_opened` per launch.
+ *
+ * `from: 'icon'` because at this layer we genuinely do not know: a push or a deep link
+ * would have to tell us, and neither exists yet. Recording the honest default beats
+ * inventing an attribution that a funnel would then be built on.
+ */
+function useAppOpened(): void {
+  useEffect(() => {
+    track('app_opened', { is_cold_start: true, from: 'icon' })
+  }, [])
+}
+
 export default function RootLayout() {
   const fontsReady = useAppFonts()
   useAnalyticsAudience()
+  useAppOpened()
   const phase = useSplashPhase(fontsReady)
   useDeviceLocale()
   useOnboardingGate(fontsReady)

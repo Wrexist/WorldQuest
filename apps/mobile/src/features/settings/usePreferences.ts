@@ -16,6 +16,7 @@ import { useCallback, useState } from 'react'
 import { SUPPORTED_LOCALES, setLocale, type Locale } from '@worldquest/i18n'
 import { readJson, writeJson } from '../../lib/storage.js'
 import { deviceLocale } from '../../lib/locale.js'
+import { track } from '../../lib/analytics.js'
 
 const KEY = 'preferences.v1'
 
@@ -73,6 +74,11 @@ export function usePreferences(): UsePreferences {
       const next = { ...preferences, [key]: value }
       writeJson(KEY, next)
       setPreferences(next)
+
+      // The setting and its new value, never anything about who changed it. A
+      // preference is a design input in aggregate — "12 % of users turn motion down"
+      // — and nobody's business individually.
+      track('setting_changed', { setting: key, value: String(value) })
 
       // Language applies immediately, without a restart (localization.md §7).
       if (key === 'language') {

@@ -60,7 +60,7 @@ That is a real floor, and it is not the same as done.
 
 | Box | State |
 |---|---|
-| Analytics per spec | 🟡 Two of 28 declared events fire. **The child no-op was broken** — see below; fixed. |
+| Analytics per spec | 🟡 **12 of 28** declared events fire (was 2). The rest are listed below with what blocks each. The child no-op was broken — see below; fixed. |
 | Serves a named persona | ✅ |
 | Copy against the voice guide | ✅ And asserted, not trusted: no-shame, no-guilt, no-dark-pattern rules are tests in the streak, welcome-back, out-of-hearts, paused and sync screens. |
 | Docs updated | ✅ |
@@ -81,6 +81,34 @@ That is a real floor, and it is not the same as done.
 3. **Sentry.** Blocked on a **DSN and an authorised account**, neither of which exists
    in this environment. The `ErrorBoundary` logs to console and says so.
 4. **A device.** Not something code can fix.
+
+---
+
+## Analytics: what fires, and what each missing event waits on
+
+**Firing (12):** `app_opened`, `lesson_started`, `question_answered`,
+`lesson_completed`, `lesson_abandoned`, `hearts_depleted`, `achievement_unlocked`,
+`quest_completed`, `country_viewed`, `offline_mode_entered`, `setting_changed`,
+`error_occurred`.
+
+**Not firing, and why** — none of these is "forgotten":
+
+| Event | Blocked on |
+|---|---|
+| `fact_mastered`, `fact_lapsed` | Real memory state, which is server-side. The local map is empty. |
+| `streak_extended`, `streak_broken`, `level_up` | Server-owned progression (ADR 0006). |
+| `signup_completed` | There are no accounts. |
+| `coins_spent` | The purchase path is server-side; the client never spends. |
+| `sync_conflict_resolved`, `xp_reconciliation_failed` | Need a server to disagree with. |
+| `notification_opened` | Push is not wired. |
+| `onboarding_slide_viewed`, `onboarding_goal_selected`, `taster_lesson_completed`, `onboarding_abandoned` | Buildable now — the next honest slice of this row. |
+| `screen_viewed`, `search_performed` | Buildable now. |
+| `a11y_feature_detected` | Buildable, but it reads OS accessibility settings and the spec marks it aggregate-only; worth doing deliberately rather than in a batch. |
+
+One property is deliberately omitted rather than invented: `achievement_unlocked`
+declares `days_to_unlock`, and nothing records when a user started. A number derived
+from the earliest locally-logged lesson would read as install-to-unlock and be wrong
+for every reinstall. Absent beats confidently wrong.
 
 ---
 

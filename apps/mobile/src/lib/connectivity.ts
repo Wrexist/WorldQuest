@@ -31,6 +31,7 @@
 import { useEffect, useState } from 'react'
 import NetInfo from '@react-native-community/netinfo'
 import { backendUrl } from './supabase.js'
+import { track } from './analytics.js'
 
 let online = true
 const listeners = new Set<() => void>()
@@ -39,6 +40,10 @@ const listeners = new Set<() => void>()
 function set(next: boolean): void {
   if (next === online) return
   online = next
+  // Only the transition INTO offline. The registry has no matching "came back"
+  // event, and a pair would be twice the volume for a number that is one
+  // subtraction away.
+  if (!next) track('offline_mode_entered', {})
   for (const listener of listeners) listener()
 }
 

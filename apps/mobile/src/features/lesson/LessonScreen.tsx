@@ -21,7 +21,7 @@ import {
   space,
   text,
 } from '@worldquest/design'
-import { lessonLength } from '@worldquest/engines'
+import { deriveRating, lessonLength } from '@worldquest/engines'
 import type { GradeResult, LessonState, Question } from '@worldquest/engines'
 import { useLesson } from './hooks/useLesson.js'
 import { SPEED_SECONDS } from './modes.js'
@@ -92,18 +92,29 @@ export function LessonScreen({
     // is still the authority on the coins an unlock pays out (ADR 0006). Without
     // this the achievements screen could never show a single unlock.
     const durationMs = Date.now() - (state.startedAt ?? Date.now())
-    recordLessonForAchievements({ accuracy: optimistic.accuracy, durationMs, at: Date.now() })
+    for (const unlock of recordLessonForAchievements({
+      accuracy: optimistic.accuracy,
+      durationMs,
+      at: Date.now(),
+    })) {
+      // `days_to_unlock` is not sent. We would have to know when the user started,
+      // and nothing records that — a number derived from "first lesson we happen to
+      // have logged locally" would read as install-to-unlock and be wrong for every
+      // reinstall. Better absent than confidently wrong.
+      track('achievement_unlocked', { achievement_id: unlock.achievementId, tier: unlock.tier })
+    }
 
     // Today's quest, advanced. Regenerated rather than held: it is deterministic per
     // (user, day), and a second copy of the seed logic would mean the screen showed
     // one quest while the lesson ticked another.
     if (index !== null) {
       const quest = todaysQuest(index.index, memory)
-      recordQuestEvent(quest, {
+      const done = recordQuestEvent(quest, {
         type: 'lesson_completed',
         accuracy: optimistic.accuracy,
         durationMs,
       })
+      if (done.length > 0) track('quest_completed', { quest_id: quest.date })
       for (const answer of state.answers) {
         if (answer.chosenOptionId === null) continue
         recordQuestEvent(quest, {
@@ -129,6 +140,18 @@ export function LessonScreen({
 
   const timeLimitMs = mode === 'speed' ? SPEED_SECONDS * 1000 : null
   const lesson = useLesson({ questions, memory, timeLimitMs, onComplete: handleComplete })
+
+  /**
+   * Watch this number. If it is high the mechanic is too punishing — which is the
+   * whole reason the balance table caps hearts per lesson rather than per day.
+   *
+   * Keyed on the flag rather than fired from the answer handler so it cannot double-
+   * fire on a re-render, and `outOfHearts` only ever goes false again via REVIVE.
+   */
+  useEffect(() => {
+    if (!lesson.state.outOfHearts) return
+    track('hearts_depleted', { at_item: lesson.state.index })
+  }, [lesson.state.outOfHearts, lesson.state.index])
 
   useEffect(() => {
     if (status === 'loading') return setScreen('loading')
@@ -162,7 +185,17 @@ export function LessonScreen({
       <Paused
         answered={lesson.state.answers.length}
         onResume={lesson.resume}
-        onFinish={lesson.abandon}
+        onFinish={() => {
+          // Where we lose people, and why. "paused" and "out_of_hearts" are very
+          // different products problems and a single drop-off number hides both.
+          track('lesson_abandoned', {
+            lesson_id: lesson.state.lessonId,
+            at_item: lesson.state.index,
+            of_items: lesson.state.questions.length,
+            reason: 'paused',
+          })
+          lesson.abandon()
+        }}
       />
     )
   }
@@ -232,6 +265,22 @@ export function LessonScreen({
                 // and reading `lastAnswer` here would buzz for the PREVIOUS question.
                 if (option.isCorrect) hapticCorrect()
                 else hapticWrong()
+
+                // The richest event we have, and the one that sets lesson length
+                // honestly: accuracy by POSITION is a measurement, not a guess.
+                // Timed from `shownAt` for the same reason the countdown is —
+                // the deadline belongs to when the question appeared.
+                const elapsedMs = Date.now() - (lesson.state.shownAt ?? Date.now())
+                track('question_answered', {
+                  lesson_id: lesson.state.lessonId,
+                  template_id: question.item.templateId,
+                  fact_id: question.item.factId,
+                  correct: option.isCorrect,
+                  elapsed_ms: elapsedMs,
+                  rating: deriveRating(option.isCorrect, elapsedMs, itemMs),
+                  position: lesson.state.index,
+                })
+
                 lesson.answer(option.id)
               }}
               aria-label={t('lesson:answer.label', { answer: option.label })}
@@ -289,7 +338,19 @@ export function LessonScreen({
               the machine was written and nothing rendered it — so the lesson simply
               carried on at zero hearts, which made the whole mechanic decorative. */}
           {lesson.state.outOfHearts ? (
-            <OutOfHearts coins={coins} onRevive={lesson.revive} onFinish={lesson.abandon} />
+            <OutOfHearts
+              coins={coins}
+              onRevive={lesson.revive}
+              onFinish={() => {
+                track('lesson_abandoned', {
+                  lesson_id: lesson.state.lessonId,
+                  at_item: lesson.state.index,
+                  of_items: lesson.state.questions.length,
+                  reason: 'out_of_hearts',
+                })
+                lesson.abandon()
+              }}
+            />
           ) : (
             <Button label={t('common:continue')} onPress={lesson.advance} />
           )}
