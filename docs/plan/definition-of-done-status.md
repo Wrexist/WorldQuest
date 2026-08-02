@@ -101,8 +101,29 @@ there is no browser setting to turn on. Doubling every inline `font-size` and
 `line-height` reproduces exactly what the native runtime does, on the real bundle, with
 the real layout engine. `maxFontScale` is 2.0 in the tokens, so this tests the ceiling.
 
-It found two bugs on its first run, both the exact failure the a11y spec names —
-a box sized to an English string at 100 %:
+It checks three things — the three failures the a11y spec names: nothing clipped,
+nothing overlapping, no sideways scroll. Getting the first two to mean what they say
+took four passes, and each pass was the check being wrong rather than the app:
+
+1. **Clipping only looked at each element's own scroll box.** Text is never cropped by
+   itself — the card around it does the cropping — so the check could not see the case
+   it was written for. Now it compares the layout box against the box its nearest
+   `overflow: hidden` ancestor allows.
+2. **That then walked the whole ancestor chain**, reached the scroll viewport, and
+   reported Home, Explore and the country page as broken because each has more in it
+   than one screenful. Below the fold is not clipped; it is content you scroll to.
+3. **Decorative glyphs were counted as text.** The "⚑" standing in for a flag is
+   deliberately cropped by its art slot. Only strings containing a letter or digit
+   count as copy.
+4. **The overlap check excluded the tab bar entirely** — to stop it comparing tab
+   labels against whatever had scrolled behind them — which made it blind to the tab
+   labels overlapping *each other*, the exact bug that motivated adding it. It now
+   compares within a layer, not across.
+
+Each of those was verified by putting the bug back and watching the check fail.
+
+It found three bugs, all the same defect the a11y spec names — a box sized to an
+English string at 100 %:
 
 - **Every button clipped its own label.** `Button` set a fixed `height` and capped the
   label at one line. At 200 % an uppercase label is twice as wide as the box drawn for
@@ -111,7 +132,16 @@ a box sized to an English string at 100 %:
 - **Collection tiles cut country names.** Two lines held every name in English at
   100 %; "Papua New Guinea" wants three at 200 % and was rendering as "Papua New". The
   name is the tile's identity — a country you cannot read is a tile that does nothing —
-  so it now has no line cap at all.
+  so it now has no line cap at all. That was not enough on its own: a country name is
+  one unbreakable word, and a three-column grid on a 390 pt screen gives it about
+  105 pt, which holds "Chile" and not "Argentina". The grid is now two columns, which
+  needs no platform branch and is simply wide enough at every text size.
+- **The five tab labels overlapped into a smear.** A tab is one fifth of the screen and
+  its label cannot hyphenate. Fixed with `maxFontSizeMultiplier={1.2}` — **not**
+  `allowFontScaling={false}`, which is the lazy version and the thing the spec forbids:
+  the label still scales, it just stops. It is the only capped string in the app, and
+  the cap is mirrored into the DOM as `data-max-scale` so the harness honours the same
+  ceiling the native runtime does rather than testing a state that cannot occur.
 
 **What this cannot say.** It measures layout, not experience: whether the reading order
 still makes sense at that size, how it feels to use, and anything about a platform's own

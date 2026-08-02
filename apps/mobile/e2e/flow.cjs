@@ -526,15 +526,28 @@ const step = (name, ok, detail = '') => {
     ['/profile', 'profile'],
   ]
 
-  /** Doubles every rendered font size, the way the OS setting does natively. */
+  /**
+   * Doubles every rendered font size, the way the OS setting does natively.
+   *
+   * Except where the component has declared a lower ceiling. React Native's
+   * `maxFontSizeMultiplier` bounds how far a given string may grow, and
+   * react-native-web has no way to express it — so a component that uses it
+   * (currently only the tab labels) mirrors the value into `data-max-scale`, and this
+   * honours it. Otherwise the harness would test a configuration the runtime cannot
+   * produce and report a failure nobody can act on.
+   */
   const scaleText = () =>
     page.evaluate(() => {
       for (const node of Array.from(document.querySelectorAll('*'))) {
         const size = parseFloat(getComputedStyle(node).fontSize)
         if (!Number.isFinite(size) || size === 0) continue
-        node.style.setProperty('font-size', `${size * 2}px`, 'important')
+        const capped = node.closest('[data-max-scale]')
+        const factor = capped ? parseFloat(capped.getAttribute('data-max-scale')) || 2 : 2
+        node.style.setProperty('font-size', `${size * factor}px`, 'important')
         const lh = parseFloat(getComputedStyle(node).lineHeight)
-        if (Number.isFinite(lh)) node.style.setProperty('line-height', `${lh * 2}px`, 'important')
+        if (Number.isFinite(lh)) {
+          node.style.setProperty('line-height', `${lh * factor}px`, 'important')
+        }
       }
     })
 
@@ -551,28 +564,124 @@ const step = (name, ok, detail = '') => {
       // Text that has been cut off rather than wrapped. `text-overflow: ellipsis` and
       // a fixed height are the two ways this happens, and both are the same defect:
       // a box sized to an English string at 100 %.
+      /**
+       * Leaf elements whose text is language rather than ornament.
+       *
+       * The letter-or-digit test is what separates copy from the decorative glyphs —
+       * "⚑", "◉", "✦" — that stand in for artwork we do not have yet. Those are
+       * deliberately cropped by their art slots, and counting that as a defect
+       * reported the collection grid as broken while it was working correctly.
+       */
+      const isCopy = (node) =>
+        node.children.length === 0 && /[\p{L}\p{N}]/u.test((node.textContent ?? '').trim())
+
+      /**
+       * The part of an element its own component lets you see.
+       *
+       * Intersected with the NEAREST `overflow: hidden` ancestor only, not the whole
+       * chain. That ancestor is the box that would crop the text — the card, the art
+       * slot, the tile. Walking further up reaches the scroll viewport, and being
+       * below the fold of a ScrollView is not clipping: it is content you scroll to.
+       * The first version walked to the root and duly reported Home, Explore and the
+       * country page as broken because each had more in it than one screenful.
+       *
+       * `getBoundingClientRect` alone is not enough either: it returns the LAYOUT box,
+       * which for a glyph inside a clipping container can be twice the height of the
+       * container that crops it. Both halves are needed.
+       */
+      const visibleRect = (node) => {
+        const rect = node.getBoundingClientRect()
+        let cropper = null
+        for (let p = node.parentElement; p !== null; p = p.parentElement) {
+          const style = getComputedStyle(p)
+          if (style.overflowX === 'hidden' || style.overflowY === 'hidden') {
+            cropper = { box: p.getBoundingClientRect(), style }
+            break
+          }
+        }
+        if (cropper === null) return rect
+        const { box, style } = cropper
+        const left = style.overflowX === 'hidden' ? Math.max(rect.left, box.left) : rect.left
+        const right = style.overflowX === 'hidden' ? Math.min(rect.right, box.right) : rect.right
+        const top = style.overflowY === 'hidden' ? Math.max(rect.top, box.top) : rect.top
+        const bottom =
+          style.overflowY === 'hidden' ? Math.min(rect.bottom, box.bottom) : rect.bottom
+        return { left, top, right, bottom, width: right - left, height: bottom - top }
+      }
+
+      // Text cut off by an ancestor, which is how it actually happens: the Text itself
+      // never overflows, the card around it does the cropping. The first version of
+      // this looked only at each element's own scroll box and therefore could not see
+      // the case it was written for — a country name spilling out of its tile.
       const clipped = Array.from(document.querySelectorAll('*'))
+        .filter(isCopy)
         .filter((node) => {
-          if (node.children.length > 0 || (node.textContent ?? '').trim() === '') return false
-          const style = getComputedStyle(node)
-          if (style.overflow === 'visible') return false
-          return (
-            node.scrollHeight - node.clientHeight > 2 || node.scrollWidth - node.clientWidth > 2
-          )
+          const laid = node.getBoundingClientRect()
+          const seen = visibleRect(node)
+          return laid.width - seen.width > 2 || laid.height - seen.height > 2
         })
         // Named, not counted. "2 clipped" sends whoever sees it hunting through a
         // screenshot; the actual string tells them which component to open.
+        // Named, not counted. "2 clipped" sends whoever sees it hunting through a
+        // screenshot; the actual string tells them which component to open.
         .map((node) => JSON.stringify((node.textContent ?? '').trim().slice(0, 40)))
-      return { sideways, clipped }
+
+      // Text that has run into other text. This is the third failure the a11y spec
+      // names and the first version of this check could not see it: the tab bar's five
+      // labels overlapped into an unreadable smear at 200 %, and because nothing was
+      // clipped and the page did not scroll sideways, every assertion passed. It was
+      // caught by looking at the screenshot, which is exactly the thing a check is
+      // supposed to make unnecessary.
+      const texts = Array.from(document.querySelectorAll('*')).filter((node) => {
+        if (!isCopy(node)) return false
+        const style = getComputedStyle(node)
+        // Absolutely-positioned glyphs sit on top of their siblings on purpose —
+        // the correctness tick, the favourite star. Overlap is their job.
+        return style.position !== 'absolute' && style.visibility !== 'hidden'
+      })
+
+      // Whether two elements are even comparable.
+      //
+      // The tab bar is fixed chrome and the page scrolls underneath it, so measuring a
+      // tab label against whatever happens to be behind it measures the scroll
+      // position. But the five labels DO have to be measured against each other —
+      // overlapping one another is precisely the bug this check was written for, and
+      // an earlier version excluded the whole bar and was therefore blind to it.
+      const sameLayer = (a, b) =>
+        (a.closest('[role="tablist"]') === null) === (b.closest('[role="tablist"]') === null)
+
+      const overlapping = []
+      for (let i = 0; i < texts.length; i++) {
+        for (let j = i + 1; j < texts.length; j++) {
+          if (!sameLayer(texts[i], texts[j])) continue
+          const a = visibleRect(texts[i])
+          const b = visibleRect(texts[j])
+          if (a.width <= 0 || b.width <= 0 || a.height <= 0 || b.height <= 0) continue
+          const x = Math.min(a.right, b.right) - Math.max(a.left, b.left)
+          const y = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top)
+          if (x > 2 && y > 2) {
+            overlapping.push(
+              `${JSON.stringify((texts[i].textContent ?? '').trim().slice(0, 16))}/${JSON.stringify((texts[j].textContent ?? '').trim().slice(0, 16))}`,
+            )
+          }
+        }
+      }
+      return { sideways, clipped, overlapping }
     })
 
     await page.screenshot({ path: path.join(SHOTS, `scale200-${name}.png`), fullPage: true })
+    const problems = [
+      ...overflow.clipped.map((c) => `clipped ${c}`),
+      ...overflow.overlapping.map((o) => `overlap ${o}`),
+    ]
+    // A grid gone wrong reports every tile in it — 59 country names on one line, once.
+    // The first four name the component; the count says how bad it is.
+    const reported =
+      problems.length > 4 ? `${problems.slice(0, 4).join(' · ')} · +${problems.length - 4} more` : problems.join(' · ')
     step(
-      `200 % text on ${name}: no sideways scroll, nothing clipped`,
-      overflow.sideways <= 2 && overflow.clipped.length === 0,
-      overflow.clipped.length > 0
-        ? `clipped: ${overflow.clipped.join(', ')}`
-        : `overflow ${overflow.sideways}px`,
+      `200 % text on ${name}: nothing clipped, nothing overlapping`,
+      overflow.sideways <= 2 && problems.length === 0,
+      problems.length > 0 ? reported : `overflow ${overflow.sideways}px`,
     )
   }
 

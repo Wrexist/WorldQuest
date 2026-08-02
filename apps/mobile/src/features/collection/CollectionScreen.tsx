@@ -282,7 +282,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: space[4],
     paddingBottom: space[6],
   },
-  tile: { width: '31%', minHeight: 104, padding: space[2], alignItems: 'center', justifyContent: 'center', gap: space[1] },
+  // Two up, not three.
+  //
+  // A country name is one unbreakable word and a three-column grid on a 390 pt screen
+  // gives it about 105 pt. That holds "Chile" and does not hold "Argentina" — at the
+  // 200 % text setting the names ran straight out of their tiles and over the ones
+  // beside them, which the overlap check in `pnpm e2e` now catches.
+  //
+  // The alternatives were worse. Shrinking the text to fit is `adjustsFontSizeToFit`,
+  // which react-native-web does not implement, so it would be a fix nothing here could
+  // verify. Reflowing on `fontScale` is the textbook answer and would be invisible to
+  // the harness for the same reason — react-native-web reports a scale of 1 whatever
+  // the OS says — so it would be a device-only fix taken on trust.
+  //
+  // Two columns needs no platform branch and no conditional: it is simply wide enough,
+  // at every text size, on every renderer. The tiles are chunkier for it, which suits
+  // the rest of the system.
+  tile: { width: '48%', minHeight: 116, padding: space[3], alignItems: 'center', justifyContent: 'center', gap: space[1] },
   // Dimmed, never hidden. See the header comment — this is the whole design.
   tileDim: { opacity: 0.45 },
   tileName: { ...text('caption', { weight: '700' }), color: colors.text.primary, textAlign: 'center' },

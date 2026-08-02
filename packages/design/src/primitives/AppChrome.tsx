@@ -150,6 +150,16 @@ export type TabBarProps = {
  * its icon — that chip is what makes the bar read as the mockup's rather than as
  * a default navigator.
  */
+/**
+ * How far a tab label may grow. See the comment at the label itself.
+ *
+ * Deliberately not a design token: it is not a value anyone should reach for
+ * elsewhere. Every other string in this app scales all the way to `maxFontScale`,
+ * and the moment a second component wants a cap, the right move is to ask why its
+ * layout cannot hold its own text.
+ */
+const TAB_LABEL_MAX_SCALE = 1.2
+
 export function TabBar({ items, activeKey, onSelect }: TabBarProps) {
   return (
     <View role="tablist" style={styles.tabBar}>
@@ -180,7 +190,30 @@ export function TabBar({ items, activeKey, onSelect }: TabBarProps) {
             <View style={[styles.tabChip, active && styles.tabChipActive]}>
               <Text style={[styles.tabGlyph, active && styles.tabGlyphActive]}>{item.glyph}</Text>
             </View>
-            <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>{item.label}</Text>
+            {/*
+              Bounded scaling, and this is the one place in the app that gets it.
+              A tab is one fifth of the screen width and its label is a word that
+              cannot be hyphenated, so at the 200 % text setting "Explore" is wider
+              than the tab that holds it and the five labels overlap into an unreadable
+              smear. That is worse for the user who turned the setting on than a label
+              that grows only so far.
+
+              `maxFontSizeMultiplier`, NOT `allowFontScaling={false}`: the label still
+              scales, it just stops at 1.2×. Refusing to scale at all is the thing the
+              accessibility spec forbids, and it is the lazy version of this fix.
+
+              `dataSet` mirrors the cap into the DOM as `data-max-scale`, which is how
+              the 200 %-text check in `e2e/flow.cjs` knows to respect it. Without that
+              the harness would test a configuration the runtime cannot produce and
+              report a failure nobody can act on.
+            */}
+            <Text
+              maxFontSizeMultiplier={TAB_LABEL_MAX_SCALE}
+              dataSet={{ maxScale: String(TAB_LABEL_MAX_SCALE) }}
+              style={[styles.tabLabel, active && styles.tabLabelActive]}
+            >
+              {item.label}
+            </Text>
           </Pressable>
         )
       })}
