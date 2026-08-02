@@ -28,6 +28,7 @@ import { SPEED_SECONDS } from './modes.js'
 import { OutOfHearts } from './OutOfHearts.js'
 import { Paused } from './Paused.js'
 import { recordPace, useItemPace } from './usePace.js'
+import { recordLessonForAchievements } from '../achievements/progress.js'
 import { useContent } from '../../lib/content.js'
 import { tContent, useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
@@ -82,6 +83,12 @@ export function LessonScreen({
     recordLessonCompleted()
     // The user's pace, from the answers just given. Sizes every later lesson.
     recordPace(state.answers)
+
+    // Achievements, evaluated on device. Optimistic like the XP above — the server
+    // is still the authority on the coins an unlock pays out (ADR 0006). Without
+    // this the achievements screen could never show a single unlock.
+    const durationMs = Date.now() - (state.startedAt ?? Date.now())
+    recordLessonForAchievements({ accuracy: optimistic.accuracy, durationMs, at: Date.now() })
 
     track('lesson_completed', {
       lesson_id: state.lessonId,

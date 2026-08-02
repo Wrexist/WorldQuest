@@ -325,6 +325,41 @@ const step = (name, ok, detail = '') => {
        /Sweden/.test(starred) && !/Mongolia/.test(starred))
   await page.screenshot({ path: path.join(SHOTS, 'collection-starred.png') })
 
+  // ── achievements actually move ─────────────────────────────────────────────
+  //
+  // Until now `useAchievements()` was called with no progress map, so every row read
+  // "Not yet" forever and no lesson could ever change that. This plays a lesson to
+  // the end and then checks the screen, which is the only way to tell the difference
+  // between "locked" and "cannot ever unlock".
+  await page.goto(`http://localhost:${PORT}/achievements`, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(1200)
+  const beforeAch = await body()
+  const lockedBefore = (beforeAch.match(/Not yet/g) ?? []).length
+
+  await page.goto(`http://localhost:${PORT}/lesson`, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(1800)
+  // Answer every question, then leave — the lesson must reach its summary for the
+  // completion event to fire at all.
+  for (let i = 0; i < 25; i++) {
+    const options = await page.getByTestId('answer-option').all()
+    if (options.length === 0) break
+    await options[0].click()
+    await page.waitForTimeout(250)
+    const next = page.getByRole('button', { name: 'Continue' })
+    if (await next.count()) await next.first().click()
+    await page.waitForTimeout(250)
+  }
+  await page.waitForTimeout(800)
+
+  await page.goto(`http://localhost:${PORT}/achievements`, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(1200)
+  const afterAch = await body()
+  step('finishing a lesson moves an achievement off zero',
+       /1 to go|2 to go|3 to go|4 to go/.test(afterAch) ||
+       (afterAch.match(/Not yet/g) ?? []).length < lockedBefore,
+       `${lockedBefore} locked before`)
+  await page.screenshot({ path: path.join(SHOTS, 'achievements.png') })
+
   // ── the way out of a lesson ────────────────────────────────────────────────
   //
   // The route disables the back gesture on purpose, so this control is the ONLY exit

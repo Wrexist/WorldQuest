@@ -193,7 +193,7 @@ not fail the build: they are a backlog, not a regression.
 
 | # | Gap | Why it matters |
 |---|---|---|
-| 7.1 | **Achievements never evaluate** | `useAchievements()` is called with no progress map, so every achievement is permanently locked and the screen can never show a single unlock. The definitions, the tier maths, the sort and the copy are all built and none of it can ever fire. |
+| 7.1 | ~~Achievements never evaluate~~ | ✅ Evaluated on device from `lesson_completed`, which is the one event the client observes *completely* — the count, the accuracy and the duration are all measured here. Three achievements become genuinely reachable: lessons finished, perfect lessons, and perfect lessons under a minute. Optimistic like XP, since unlocks pay coins and the server is the authority. The rest stay locked **on purpose**: `fact_mastered` needs real memory state, `streak_extended` is server-owned, and `region_started`/`daily_quest_completed` have no producer. An achievement that unlocks on nothing is worse than one that stays locked. |
 | 7.2 | **Quests are not wired** | The screen renders its empty state and no quest is ever generated. `applyQuestEvent`, `SLOTS` and `hasExpired` have no caller. |
 | 7.3 | **The sync queue never backs off** | `backoffMs` is unused — a failing server is retried at full speed. |
 | 7.4 | **Parked mutations are invisible** | The engine parks work that exhausted its retries specifically so it is never silently dropped, and nothing surfaces it. `retryParked` has no caller. |

@@ -84,6 +84,8 @@ const ALLOWED: Record<string, string> = {
   relegationZone: 'Leagues are v2.0',
 
   // ── consumed by another engine rather than by a screen
+  evaluate: 'the single-definition form; the client calls evaluateAll',
+  backfill: 'for a pack that adds an achievement to users who already earned it — needs server-side history',
   candidatePool: 'used inside composeLesson',
   pickItemForFact: 'used inside composeLesson — including the screen-reader-only sibling pick',
   applySoftCap: 'used inside gradeLesson, which the server runs',
@@ -114,9 +116,6 @@ const ALLOWED: Record<string, string> = {
  * Each one is a row in docs/plan/ui-completion.md. Emptying this list is the work.
  */
 const KNOWN_GAPS: Record<string, string> = {
-  evaluate: 'ACHIEVEMENTS NEVER EVALUATE — useAchievements() is called with no progress map, so every achievement is permanently locked. The screen cannot show a single unlock.',
-  evaluateAll: 'same: nothing evaluates the catalogue against a user',
-  backfill: 'unreachable until achievements evaluate at all',
   isMilestone: 'no streak milestone is ever celebrated',
   regionProgress: 'the region screen computes its own totals instead',
   SLOTS: 'QUESTS ARE NOT WIRED — the screen renders an empty state and no quest is ever generated',

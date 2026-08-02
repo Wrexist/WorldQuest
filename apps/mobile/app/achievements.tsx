@@ -9,10 +9,12 @@
 import { router } from 'expo-router'
 import { AchievementsScreen } from '../src/features/achievements/AchievementsScreen.js'
 import { useAchievements } from '../src/features/achievements/useAchievements.js'
+import { useAchievementProgress } from '../src/features/achievements/progress.js'
 
 export default function AchievementsRoute() {
-  // Progress arrives from the server once the table exists. Until then everything
-  // reads as locked, which is the truth rather than a placeholder.
-  const rows = useAchievements()
+  // Evaluated on device from the events the client can actually observe, and merged
+  // with the server's view when there is one. Before this it was called with nothing,
+  // so every achievement was permanently locked — see features/achievements/progress.
+  const rows = useAchievements(useAchievementProgress())
   return <AchievementsScreen rows={rows} onStartLesson={() => router.push('/lesson')} />
 }
