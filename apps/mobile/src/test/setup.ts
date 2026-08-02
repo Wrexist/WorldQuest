@@ -64,6 +64,20 @@ vi.mock('@react-native-community/netinfo', () => ({
 }))
 
 /**
+ * Haptics reach a native module. Stubbed rather than asserted-on: what matters is
+ * WHICH pattern each outcome uses, and that is a source-level rule the design guard
+ * checks. A test that asserts "notificationAsync was called" would pass just as
+ * happily with the punishing error pattern.
+ */
+vi.mock('expo-haptics', () => ({
+  notificationAsync: async () => {},
+  impactAsync: async () => {},
+  selectionAsync: async () => {},
+  NotificationFeedbackType: { Success: 'success', Warning: 'warning', Error: 'error' },
+  ImpactFeedbackStyle: { Light: 'light', Medium: 'medium', Heavy: 'heavy' },
+}))
+
+/**
  * react-native-web warns about `shadow*` and `props.pointerEvents` being deprecated.
  * They come from inside react-native-web's own components, not from our code, so the
  * warnings are noise that hides the ones worth reading.

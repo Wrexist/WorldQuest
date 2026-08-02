@@ -44,7 +44,7 @@ That is a real floor, and it is not the same as done.
 |---|---|
 | Tokens only | ✅ Guarded by `tokens.test.ts` and `design:contrast`. |
 | Reduced motion **verified** | 🟡 The code path is guarded and unit-tested; it has not been watched on a device with the setting on. |
-| Haptics on every meaningful outcome | ⬜ **Not implemented at all.** No `expo-haptics` anywhere. `apps/mobile/CLAUDE.md` specifies `impactMedium` on a wrong answer; nothing fires. |
+| Haptics on every meaningful outcome | 🟡 Built and wired to the answer path and lesson completion, honouring the Settings toggle that until now wrote a preference nothing read. **Unverified on a device** — like everything else here, and a vibration is the one thing a screenshot can never show. |
 | Sound respects the Settings toggle | ⬜ **There is no sound.** The toggle in Settings writes a preference nothing reads — the same shape of bug as the daily goal was before Wave 7. |
 
 ## 🟡 Inclusion
@@ -67,12 +67,19 @@ That is a real floor, and it is not the same as done.
 
 ---
 
-## The four that are not "not yet" but "never started"
+## What is left, and what each is actually blocked on
 
-1. **Haptics.** Specified, zero implementation.
-2. **Sound.** A settings toggle wired to nothing.
-3. **Sentry.** An error boundary that logs to a console nobody reads in production.
-4. **A device.** Everything above ultimately reduces to this one.
-
-The first three are buildable now and are the honest next wave. The fourth is not
-something code can fix, and every claim in this repo should be read against it.
+1. ~~**Haptics.**~~ Built. The wrong-answer pattern is `impactMedium`, never
+   `Notification.Error` — that one is two sharp knocks, the pattern iOS uses for a
+   failed payment, and this app does not punish a child for not knowing something yet.
+   A test asserts the source never reaches for it, because a runtime test would pass
+   just as happily with the punishing pattern: both spellings are "a function was
+   called".
+2. **Sound.** Blocked on **assets**, not on code. There are no audio files, and the
+   same licensing question that holds up flags and landmarks holds up a correct-answer
+   chime. The Settings toggle still writes a preference nothing reads.
+3. **Sentry.** Blocked on a **DSN and an authorised account**, neither of which exists
+   in this environment. The `ErrorBoundary` logs to console and says so.
+4. **A device.** Not something code can fix. Every claim in this repo should be read
+   against it — including the haptics above, which is the one feature whose entire
+   output is invisible to every test and screenshot we have.

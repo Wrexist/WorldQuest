@@ -28,6 +28,7 @@ import { SPEED_SECONDS } from './modes.js'
 import { OutOfHearts } from './OutOfHearts.js'
 import { Paused } from './Paused.js'
 import { recordPace, useItemPace } from './usePace.js'
+import { hapticCelebrate, hapticCorrect, hapticWrong } from '../../lib/haptics.js'
 import { recordLessonForAchievements } from '../achievements/progress.js'
 import { todaysQuest } from '../quests/useDailyQuest.js'
 import { recordQuestEvent } from '../quests/questProgress.js'
@@ -83,6 +84,7 @@ export function LessonScreen({
     // must be right the moment the lesson ends — waiting for the server round trip
     // would show an empty week to anyone who finishes a lesson offline.
     recordLessonCompleted()
+    hapticCelebrate()
     // The user's pace, from the answers just given. Sizes every later lesson.
     recordPace(state.answers)
 
@@ -224,7 +226,14 @@ export function LessonScreen({
               key={option.id}
               label={option.label}
               state={optionState(option.isCorrect, option.id, answered, lastAnswer?.chosenOptionId)}
-              onPress={() => lesson.answer(option.id)}
+              onPress={() => {
+                // Fired from the option's own correctness rather than from the
+                // state after dispatch: the reducer has not run yet at this point,
+                // and reading `lastAnswer` here would buzz for the PREVIOUS question.
+                if (option.isCorrect) hapticCorrect()
+                else hapticWrong()
+                lesson.answer(option.id)
+              }}
               aria-label={t('lesson:answer.label', { answer: option.label })}
               // So tests can select answers POSITIVELY. The helper used to take every
               // button that was not labelled "Continue", which silently swallowed the
