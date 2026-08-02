@@ -10,10 +10,12 @@ import {
   type QueuedMutation,
   type SyncQueue,
   acknowledge,
+  backoffMs,
   emptyQueue,
   enqueue,
   fail,
   nextBatch,
+  retryParked,
 } from '@worldquest/engines'
 import type { AnsweredItem } from '@worldquest/engines'
 import { submitLesson } from '@worldquest/api'
@@ -35,7 +37,39 @@ let queue: SyncQueue = readJson<SyncQueue>(QUEUE_KEY) ?? emptyQueue()
 function commit(next: SyncQueue): void {
   queue = next
   writeJson(QUEUE_KEY, queue)
+  for (const listener of listeners) listener()
 }
+
+const listeners = new Set<() => void>()
+
+/** Fires whenever the queue changes, so Settings can show what is waiting. */
+export function onQueueChange(listener: () => void): () => void {
+  listeners.add(listener)
+  return () => listeners.delete(listener)
+}
+
+/**
+ * When each failed mutation may next be tried, by id.
+ *
+ * In memory rather than on disk on purpose. A backoff exists to stop us hammering a
+ * server that is struggling right now, and "right now" does not survive an app
+ * restart — persisting it would make a user who reopened the app wait out a delay
+ * aimed at a server that has probably recovered.
+ *
+ * `backoffMs` had no caller at all before this: `flush()` failed a mutation and the
+ * very next flush retried it immediately, so a failing server got five attempts back
+ * to back and the mutation parked in about a second.
+ */
+const nextAttemptAt = new Map<string, number>()
+
+/**
+ * Jitter, so a fleet of clients does not sync in lockstep after an outage.
+ *
+ * `Math.random` is correct HERE and banned three metres away: the engines are pure and
+ * take an injected `Rng`, and this file is the impure adapter that supplies it.
+ */
+const ready = (mutation: QueuedMutation, now: number): boolean =>
+  (nextAttemptAt.get(mutation.id) ?? 0) <= now
 
 export type LessonSubmission = {
   lessonId: string
@@ -71,14 +105,37 @@ export async function flush(): Promise<void> {
   // hammering a broken server, not to punish a commute.
   if (!isOnline()) return
 
+  const now = Date.now()
   for (const mutation of nextBatch(queue)) {
+    // Still cooling off from its last failure. Skipped rather than delayed, so one
+    // slow item cannot hold up the rest of the batch behind it.
+    if (!ready(mutation, now)) continue
+
     try {
       await send(mutation)
+      nextAttemptAt.delete(mutation.id)
       commit(acknowledge(queue, mutation.id))
     } catch (error) {
-      commit(fail(queue, mutation.id, String(error), isPermanent(error)))
+      const permanent = isPermanent(error)
+      commit(fail(queue, mutation.id, String(error), permanent))
+      if (permanent) nextAttemptAt.delete(mutation.id)
+      else nextAttemptAt.set(mutation.id, Date.now() + backoffMs(mutation.attempts, Math.random()))
     }
   }
+}
+
+/**
+ * Try a parked mutation again, at the user's request.
+ *
+ * Parked means it exhausted its retries — the engine keeps it rather than dropping it,
+ * because "I lost my progress" is the most trust-destroying bug a learning app has.
+ * Nothing could ever un-park one until now, so the guarantee was only half kept: the
+ * work was preserved and unreachable.
+ */
+export function retryParkedMutation(id: string): void {
+  nextAttemptAt.delete(id)
+  commit(retryParked(queue, id))
+  void flush()
 }
 
 /**

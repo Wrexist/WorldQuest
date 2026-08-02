@@ -4,6 +4,9 @@
   "settings:section.learning": "Lärande",
   "settings:section.sound": "Ljud & känsla",
   "settings:section.language": "Språk",
+  "settings:section.sync": "Väntar på synk",
+  "settings:sync.waiting": "{count, plural, one {# lektion har inte nått servern än} other {# lektioner har inte nått servern än}}. Inget är borta — appen försöker igen.",
+  "settings:sync.retry": "Försök skicka igen",
   "settings:section.privacy": "Integritet & data",
   "settings:section.about": "Om",
 

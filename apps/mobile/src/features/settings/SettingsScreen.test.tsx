@@ -95,3 +95,51 @@ describe('Settings', () => {
     expect(container.textContent).not.toMatch(/\{[a-zA-Z_]+[,}]/)
   })
 })
+
+describe('Settings — work waiting to sync', () => {
+  const withSync = (parked: number, onRetry = vi.fn()) => {
+    render(
+      <SettingsScreen
+        version="1.0.0"
+        preferences={DEFAULTS}
+        onChange={vi.fn()}
+        sync={{ parked, onRetry }}
+      />,
+    )
+    return onRetry
+  }
+
+  it('says nothing at all when nothing is waiting', () => {
+    // A permanent "0 items waiting" row is anxiety with no cause.
+    const { container } = render(
+      <SettingsScreen version="1.0.0" preferences={DEFAULTS} onChange={vi.fn()} sync={{ parked: 0, onRetry: vi.fn() }} />,
+    )
+    expect(container.textContent).not.toMatch(/waiting to sync/i)
+  })
+
+  it('names what is waiting, and says it is safe', () => {
+    withSync(2)
+    expect(screen.getByText(/2 lessons haven't reached the server yet/i)).toBeTruthy()
+    expect(screen.getByText(/Nothing is lost/i)).toBeTruthy()
+  })
+
+  it('handles the singular without reading like a template', () => {
+    withSync(1)
+    expect(screen.getByText(/1 lesson hasn't reached the server yet/i)).toBeTruthy()
+  })
+
+  it('never says sync failed', () => {
+    // The work IS safe — it just has not arrived. A child reading "failed" hears
+    // "your lessons are gone".
+    const { container } = render(
+      <SettingsScreen version="1.0.0" preferences={DEFAULTS} onChange={vi.fn()} sync={{ parked: 3, onRetry: vi.fn() }} />,
+    )
+    expect(container.textContent).not.toMatch(/failed|error|couldn'?t sync|problem/i)
+  })
+
+  it('offers a way to try again', () => {
+    const onRetry = withSync(2)
+    fireEvent.click(screen.getByText('Try sending again'))
+    expect(onRetry).toHaveBeenCalledOnce()
+  })
+})

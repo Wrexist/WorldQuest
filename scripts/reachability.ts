@@ -121,8 +121,6 @@ const ALLOWED: Record<string, string> = {
 const KNOWN_GAPS: Record<string, string> = {
   isMilestone: 'no streak milestone is ever celebrated',
   regionProgress: 'the region screen computes its own totals instead',
-  backoffMs: 'the sync adapter retries with no delay at all — it never backs off',
-  retryParked: 'parked mutations are never surfaced, so nothing can retry them',
   hasUnsyncedProgress: 'meant to warn before sign-out; there is no sign-out yet',
 }
 

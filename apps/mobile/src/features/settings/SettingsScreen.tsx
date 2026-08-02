@@ -30,6 +30,16 @@ export type SettingsScreenProps = {
   readonly version: string
   readonly preferences: Preferences
   readonly onChange: <K extends keyof Preferences>(key: K, value: Preferences[K]) => void
+  /**
+   * Work the queue could not deliver, and the user's way to try again.
+   *
+   * The engine PARKS a mutation that exhausted its retries rather than dropping it,
+   * because "I lost my progress" is the most trust-destroying bug a learning app has.
+   * Nothing surfaced them, so that promise was only half kept: the work was preserved
+   * and completely unreachable. Absent (rather than zero) when there is nothing
+   * waiting — a permanent "0 items waiting" row is anxiety with no cause.
+   */
+  readonly sync?: { readonly parked: number; readonly onRetry: () => void } | undefined
   readonly onOpenPrivacyPolicy?: (() => void) | undefined
   readonly onOpenTerms?: (() => void) | undefined
   readonly onOpenLicences?: (() => void) | undefined
@@ -48,6 +58,7 @@ export function SettingsScreen({
   version,
   preferences,
   onChange: set,
+  sync,
   onOpenPrivacyPolicy,
   onOpenTerms,
   onOpenLicences,
@@ -119,6 +130,16 @@ export function SettingsScreen({
           onChange={(value) => set('language', value)}
         />
       </Section>
+
+      {sync !== undefined && sync.parked > 0 && (
+        <Section title={t('settings:section.sync')}>
+          {/* States what is true and what happens next. Never "sync failed" — the
+              work is safe, it just has not arrived, and a child reading "failed"
+              hears "your lessons are gone". */}
+          <Note body={t('settings:sync.waiting', { count: sync.parked })} />
+          <LinkRow label={t('settings:sync.retry')} onPress={sync.onRetry} />
+        </Section>
+      )}
 
       <Section title={t('settings:section.privacy')}>
         <SwitchRow

@@ -10,6 +10,7 @@ import { openURL } from 'expo-linking'
 import Constants from 'expo-constants'
 import { SettingsScreen } from '../../src/features/settings/SettingsScreen.js'
 import { usePreferences } from '../../src/features/settings/usePreferences.js'
+import { useSyncStatus } from '../../src/features/settings/useSyncStatus.js'
 
 /**
  * Real URLs, not placeholders.
@@ -28,12 +29,14 @@ const open = (url: string | undefined) =>
 
 export default function MoreRoute() {
   const { preferences, set } = usePreferences()
+  const sync = useSyncStatus()
 
   return (
     <SettingsScreen
       version={Constants.expoConfig?.version ?? '0.0.0'}
       preferences={preferences}
       onChange={set}
+      sync={sync}
       onOpenPrivacyPolicy={open(PRIVACY_URL)}
       onOpenTerms={open(TERMS_URL)}
       onOpenLicences={open(LICENCES_URL)}
