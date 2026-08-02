@@ -494,6 +494,88 @@ const step = (name, ok, detail = '') => {
   step('and is not still on the splash', !/Getting your world ready/i.test(booted))
   await cold.close()
 
+  // ── 200 % text ─────────────────────────────────────────────────────────────
+  //
+  // The Definition of Done has asked for this since the first week and nothing has
+  // ever checked it. Larger text is, by an order of magnitude, the most-used
+  // accessibility feature on both platforms — this is not a niche case, and two of the
+  // eight personas depend on it directly.
+  //
+  // ## How this simulates it, and why that is honest
+  //
+  // React Native multiplies every `fontSize` by the OS accessibility scale before it
+  // reaches the view. react-native-web does not — it writes the number straight into
+  // an inline style — so the browser has no equivalent to turn on. Doubling every
+  // inline `font-size` and `line-height` in the document reproduces exactly what the
+  // native runtime does, on the real bundle, with the real layout engine.
+  //
+  // What it therefore CAN prove: that nothing clips, nothing overlaps, and the page
+  // does not start scrolling sideways when every string doubles. Those are the three
+  // failures the a11y spec names, and all three are layout consequences that jsdom
+  // cannot see because it does not lay anything out.
+  //
+  // What it CANNOT prove: how it feels, whether the reading order still makes sense,
+  // or anything about the platform's own scaling curve. `maxFontScale` is 2.0 in the
+  // tokens and this tests exactly that ceiling.
+  const KEY_SCREENS = [
+    ['/', 'home'],
+    ['/lesson', 'lesson'],
+    ['/explore', 'explore'],
+    ['/collection/flags', 'collection'],
+    ['/country/SE', 'country'],
+    ['/profile', 'profile'],
+  ]
+
+  /** Doubles every rendered font size, the way the OS setting does natively. */
+  const scaleText = () =>
+    page.evaluate(() => {
+      for (const node of Array.from(document.querySelectorAll('*'))) {
+        const size = parseFloat(getComputedStyle(node).fontSize)
+        if (!Number.isFinite(size) || size === 0) continue
+        node.style.setProperty('font-size', `${size * 2}px`, 'important')
+        const lh = parseFloat(getComputedStyle(node).lineHeight)
+        if (Number.isFinite(lh)) node.style.setProperty('line-height', `${lh * 2}px`, 'important')
+      }
+    })
+
+  for (const [route, name] of KEY_SCREENS) {
+    await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'networkidle' })
+    await page.waitForTimeout(1200)
+    await scaleText()
+    await page.waitForTimeout(400)
+
+    const overflow = await page.evaluate(() => {
+      const doc = document.documentElement
+      // A few pixels of slack: sub-pixel rounding on a scaled layout is not a bug.
+      const sideways = doc.scrollWidth - doc.clientWidth
+      // Text that has been cut off rather than wrapped. `text-overflow: ellipsis` and
+      // a fixed height are the two ways this happens, and both are the same defect:
+      // a box sized to an English string at 100 %.
+      const clipped = Array.from(document.querySelectorAll('*'))
+        .filter((node) => {
+          if (node.children.length > 0 || (node.textContent ?? '').trim() === '') return false
+          const style = getComputedStyle(node)
+          if (style.overflow === 'visible') return false
+          return (
+            node.scrollHeight - node.clientHeight > 2 || node.scrollWidth - node.clientWidth > 2
+          )
+        })
+        // Named, not counted. "2 clipped" sends whoever sees it hunting through a
+        // screenshot; the actual string tells them which component to open.
+        .map((node) => JSON.stringify((node.textContent ?? '').trim().slice(0, 40)))
+      return { sideways, clipped }
+    })
+
+    await page.screenshot({ path: path.join(SHOTS, `scale200-${name}.png`), fullPage: true })
+    step(
+      `200 % text on ${name}: no sideways scroll, nothing clipped`,
+      overflow.sideways <= 2 && overflow.clipped.length === 0,
+      overflow.clipped.length > 0
+        ? `clipped: ${overflow.clipped.join(', ')}`
+        : `overflow ${overflow.sideways}px`,
+    )
+  }
+
   // ── the screen whose absence is a white screen ─────────────────────────────
   await page.goto(`http://localhost:${PORT}/no-such-route`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(900)

@@ -233,14 +233,17 @@ function Tile({
         <ArtSlot tint={colors.bg.surfaceRaised} glyph="⚑" width={72} height={48} />
       ) : (
         tile.subtitle !== undefined && (
-          <Text style={styles.tileSub} numberOfLines={2}>
+          <Text style={styles.tileSub} numberOfLines={3}>
             {tile.subtitle}
           </Text>
         )
       )}
-      <Text style={styles.tileName} numberOfLines={2}>
-        {tile.name}
-      </Text>
+      {/* No line cap. The name is the tile's identity — a country the user cannot
+          read is a tile that does nothing — and the card grows because it is sized
+          with `minHeight`. Two lines held every name in English at 100 %, which is
+          exactly the assumption the 200 %-text check exists to break: "Papua New
+          Guinea" wants three lines at that size and was being cut to "Papua New". */}
+      <Text style={styles.tileName}>{tile.name}</Text>
       {tile.favourite === true && (
         // Decoration only — the state is already in the label above, so this is
         // hidden from the screen reader rather than read out a second time.

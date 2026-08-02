@@ -120,7 +120,11 @@ export function Button({
       onPressIn={onPressIn}
       onPressOut={onPressOut}
       testID={testID}
-      style={[press3d.socket, { height: socketHeight }, fullWidth && styles.fullWidth, style]}
+      // `minHeight`, never `height`. At the 200 % text setting an uppercase label is
+      // twice as wide as the box that was drawn for it in English, and a fixed height
+      // turns that into a clipped label rather than a taller button. The a11y spec's
+      // rule is the blunt version: never fix a height to an English string.
+      style={[press3d.socket, { minHeight: socketHeight }, fullWidth && styles.fullWidth, style]}
     >
       {!flat && (
         <View
@@ -133,7 +137,7 @@ export function Button({
           press3d.face,
           styles.face,
           {
-            height: faceHeight,
+            minHeight: faceHeight,
             backgroundColor: faceColor,
             transform: [{ translateY }],
           },
@@ -147,7 +151,10 @@ export function Button({
           <ActivityIndicator color={labelColor} />
         ) : (
           <Text
-            numberOfLines={1}
+            // Two lines, so a long label at a large text size wraps instead of being
+            // cut. Three would mean the button has swallowed a sentence, which is a
+            // copy problem rather than a layout one.
+            numberOfLines={2}
             style={[styles.label, size === 'sm' && styles.labelSm, { color: labelColor }]}
           >
             {label}
@@ -163,6 +170,7 @@ const styles = StyleSheet.create({
   edge: { borderRadius: radius.lg },
   face: {
     borderRadius: radius.lg,
+    paddingVertical: space[2],
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',

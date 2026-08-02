@@ -13,9 +13,9 @@ the single fact that most of the rest follows from.
 ## Automated: green
 
 `pnpm verify` runs typecheck, 611 tests across seven packages, content validation,
-i18n completeness, contrast, `lint:a11y` and `reachability`. `pnpm e2e` runs 41 steps
-against the real Metro bundle in Chromium, and `pnpm edge:test` runs 14 against the
-vendored edge bundle.
+i18n completeness, 23 contrast pairs, `lint:a11y` and `reachability`. `pnpm e2e` runs
+47 steps against the real Metro bundle in Chromium — including six screens re-measured
+at 200 % text — and `pnpm edge:test` runs 14 against the vendored edge bundle.
 
 That is a real floor, and it is not the same as done. The section at the bottom on
 what the lesson actually asked is the argument for why: every one of those numbers was
@@ -36,7 +36,7 @@ green while two thirds of the authored content was unreachable.
 
 | Box | State |
 |---|---|
-| Unit + component tests | ✅ 358 passing. |
+| Unit + component tests | ✅ 611 passing, plus 14 against the edge bundle. |
 | No `any`, no `@ts-expect-error` | ✅ Zero of both outside tests. |
 | Performance on a **mid-tier Android** | ⬜ Not measured. There is no device. |
 | Errors to Sentry with PII-free context | ⬜ `ErrorBoundary` logs to console and says "reported once it is connected". Sentry is not connected. |
@@ -45,8 +45,8 @@ green while two thirds of the authored content was unreachable.
 
 | Box | State |
 |---|---|
-| Tokens only | ✅ Guarded by `tokens.test.ts` and `design:contrast`. |
-| Reduced motion **verified** | 🟡 The code path is guarded and unit-tested; it has not been watched on a device with the setting on. |
+| Tokens only | ✅ Guarded by `tokens.test.ts` and `design:contrast`. The whole system was rebuilt around one rounded face and pressable depth — see `docs/design/design-system.md` §4a and §5. |
+| Reduced motion **verified** | 🟡 The code path is guarded and unit-tested — and the guard now proves the helpers it trusts actually consult the setting, which it did not before. Still not watched on a device with the setting on. |
 | Haptics on every meaningful outcome | 🟡 Built and wired to the answer path and lesson completion, honouring the Settings toggle that until now wrote a preference nothing read. **Unverified on a device** — like everything else here, and a vibration is the one thing a screenshot can never show. |
 | Sound respects the Settings toggle | ⬜ **There is no sound.** The toggle in Settings writes a preference nothing reads — the same shape of bug as the daily goal was before Wave 7. |
 
@@ -56,8 +56,8 @@ green while two thirds of the authored content was unreachable.
 |---|---|
 | Every string an i18n key, `en` + `sv` | ✅ 350 keys, both locales complete, ICU plurals, translator notes. |
 | Screen reader verified with VoiceOver **and** TalkBack | ⬜ Neither exists here. Labels and roles are asserted in tests; *focus order and task completion are not verified*, and the skill is explicit that this is the part that matters. |
-| Contrast ≥ 4.5:1, targets ≥ 44 pt | ✅ 14 pairs checked; targets sized in code. |
-| Survives 200 % text and RTL | 🟡 RTL is now linted (`lint:a11y`) after two real bugs. **200 % text is unverified** — no scale harness exists. |
+| Contrast ≥ 4.5:1, targets ≥ 44 pt | ✅ 23 pairs checked; targets sized in code. |
+| Survives 200 % text and RTL | ✅ RTL is linted (`lint:a11y`) after two real bugs. 200 % text is now measured on six screens in `pnpm e2e` — see below. |
 
 ## 🟡 Product
 
@@ -84,6 +84,40 @@ green while two thirds of the authored content was unreachable.
 3. **Sentry.** Blocked on a **DSN and an authorised account**, neither of which exists
    in this environment. The `ErrorBoundary` logs to console and says so.
 4. **A device.** Not something code can fix.
+
+---
+
+## 200 % text: what is now checked, and what still is not
+
+The Definition of Done has asked for this since the first week and nothing had ever
+looked. `pnpm e2e` now doubles every rendered font size on six screens — Home, the
+lesson, Explore, a collection grid, a country page and Profile — and asserts that
+nothing clips and the page does not scroll sideways.
+
+**Why doubling the CSS is the honest simulation, not a shortcut.** React Native
+multiplies every `fontSize` by the OS accessibility scale before it reaches the view.
+react-native-web does not — it writes the number straight into an inline style — so
+there is no browser setting to turn on. Doubling every inline `font-size` and
+`line-height` reproduces exactly what the native runtime does, on the real bundle, with
+the real layout engine. `maxFontScale` is 2.0 in the tokens, so this tests the ceiling.
+
+It found two bugs on its first run, both the exact failure the a11y spec names —
+a box sized to an English string at 100 %:
+
+- **Every button clipped its own label.** `Button` set a fixed `height` and capped the
+  label at one line. At 200 % an uppercase label is twice as wide as the box drawn for
+  it, so "Practise this country" became "Practise this cou". Now `minHeight` and two
+  lines.
+- **Collection tiles cut country names.** Two lines held every name in English at
+  100 %; "Papua New Guinea" wants three at 200 % and was rendering as "Papua New". The
+  name is the tile's identity — a country you cannot read is a tile that does nothing —
+  so it now has no line cap at all.
+
+**What this cannot say.** It measures layout, not experience: whether the reading order
+still makes sense at that size, how it feels to use, and anything about a platform's own
+scaling curve past 2.0. Those need a device. It also covers six screens, not fifteen —
+the six were picked as the ones with the densest text and the tightest boxes, and the
+other nine are unchecked.
 
 ---
 
