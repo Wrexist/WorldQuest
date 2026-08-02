@@ -16,6 +16,7 @@ import { SafeAreaView, StatusBar, StyleSheet } from 'react-native'
 import { colors, motion } from '@worldquest/design'
 import { ErrorBoundary } from '../src/components/ErrorBoundary.js'
 import { readOnboarding } from '../src/features/onboarding/useOnboarding.js'
+import { useReturnVisit } from '../src/features/welcome/useReturnVisit.js'
 import { useAppFonts } from '../src/lib/fonts.js'
 import { t } from '../src/lib/i18n.js'
 import { useDeviceLocale } from '../src/lib/locale.js'
@@ -43,10 +44,31 @@ function useOnboardingGate(ready: boolean): void {
   }, [ready, pathname])
 }
 
+/**
+ * Sends a returning user to the welcome-back screen, once per return.
+ *
+ * Ordered AFTER the onboarding gate deliberately: a first-time user has never been
+ * away, and greeting them "back" would be the app's first lie. `useReturnVisit`
+ * already refuses to fire without prior activity, so this is belt and braces on the
+ * one screen where getting it wrong is most obvious.
+ */
+function useReturnGate(ready: boolean, onboarded: boolean): void {
+  const pathname = usePathname()
+  const { daysAway } = useReturnVisit()
+
+  useEffect(() => {
+    if (!ready || !onboarded) return
+    if (daysAway === null) return
+    if (pathname.startsWith('/welcome-back') || pathname.startsWith('/onboarding')) return
+    router.replace('/welcome-back')
+  }, [ready, onboarded, daysAway, pathname])
+}
+
 export default function RootLayout() {
   const fontsReady = useAppFonts()
   useDeviceLocale()
   useOnboardingGate(fontsReady)
+  useReturnGate(fontsReady, readOnboarding().completed)
 
   // The native splash is still covering the screen here, so there is nothing to see.
   // Rendering before the fonts land means laying out in the system font and jumping
@@ -75,6 +97,7 @@ export default function RootLayout() {
             <Stack.Screen name="collection/[kind]" />
             <Stack.Screen name="achievements" />
             <Stack.Screen name="streak" />
+            <Stack.Screen name="welcome-back" options={{ gestureEnabled: false }} />
             <Stack.Screen
               name="lesson"
               options={{

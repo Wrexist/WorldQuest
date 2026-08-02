@@ -122,7 +122,7 @@ multiplies across every fact. This is the cheapest content leverage available.
 ### Wave 5 — the hidden screens that are not gated on auth
 | # | Work |
 |---|---|
-| 5.1 | **H2 Welcome back** (7+ days) — "The world missed you", streak repair offered, no guilt |
+| 5.1 | ✅ **H2 Welcome back** (7+ days). Gated on the local activity log, shown once per return, and it says the one thing a returning user needs: *everything you learned is still here*, with the counts beside it as evidence. Due facts are "ready for review", never "overdue". There is a way out that is not a lesson. |
 | 5.2 | **H7 blocking no-internet**, **H10 sync conflict** |
 | 5.3 | **H12/H13/H14 empty states** — friends, achievements, search |
 | 5.4 | **H3 update required**, **H4 maintenance** — server-flagged |

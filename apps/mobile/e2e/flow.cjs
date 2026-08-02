@@ -253,6 +253,24 @@ const step = (name, ok, detail = '') => {
   step('deep route /region/EU lists real countries', found.length >= 3, found.join(', '))
   await page.screenshot({ path: path.join(SHOTS, 'region.png') })
 
+  // ── the returning user ─────────────────────────────────────────────────────
+  //
+  // Reached by the gate in real use; driven directly here because faking a week of
+  // absence would mean writing to MMKV from the test, which couples the E2E to a
+  // storage key rather than to the screen.
+  await page.goto(`http://localhost:${PORT}/welcome-back`, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(1200)
+  const welcome = await body()
+  step('welcome-back renders', /missed you|still here/i.test(welcome))
+  await page.screenshot({ path: path.join(SHOTS, 'welcome-back.png') })
+
+  // The no-guilt rule from voice-and-tone.md, asserted in the shipped bundle. This is
+  // the screen most likely to acquire a "you haven't practised in 12 days!" in a
+  // later well-meaning edit.
+  step('welcome-back copy carries no guilt and no deadline',
+       !/you haven'?t|you missed|at risk|don'?t lose|overdue|behind|last chance/i.test(welcome) &&
+       /still here/i.test(welcome))
+
   // ── the content-as-data claim, end to end ──────────────────────────────────
   //
   // Currency was authored as a pack and a template. If it reaches the country page
