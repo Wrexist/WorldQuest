@@ -29,7 +29,7 @@
  * writes it to storage.
  */
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   ArtSlot,
@@ -91,8 +91,22 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
   const [step, setStep] = useState<Step>('slides')
   const [slide, setSlide] = useState(0)
   const [birthYear, setBirthYear] = useState<number | null>(null)
+  /**
+   * Decade first, then year — never one grid of ninety chips.
+   *
+   * Ninety targets is not a picker, it is a phone book: nothing is glanceable, the
+   * hit areas fight each other, and the whole screen becomes a wall the user has to
+   * read. Two rows of at most ten reduce it to two easy taps, and the second row only
+   * ever holds the ten years that can follow the first.
+   *
+   * Nothing is pre-selected. Defaulting the decade would quietly bias the answer
+   * toward whichever one we guessed, and the answer decides whether a child gets the
+   * child experience — the one number on this screen we must not nudge.
+   */
+  const [decade, setDecade] = useState<number | null>(null)
   const [goal, setGoal] = useState<DailyGoal>(10)
 
+  const decades = useMemo(() => decadesFor(currentYear), [currentYear])
   const isChild = birthYear !== null && currentYear - birthYear < CHILD_AGE
   const stepIndex = STEPS.indexOf(step) + 1
 
@@ -112,7 +126,7 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
         <ProgressBar current={stepIndex} total={STEPS.length} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {step === 'slides' && (
           <>
             <ArtSlot tint={SLIDE_TINT[slide] ?? SLIDE_TINT[0]!} glyph="🌍" width={200} height={200} />
@@ -146,20 +160,45 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
             <Text style={styles.title}>{t('onboarding:age.title')}</Text>
             <Text style={styles.body}>{t('onboarding:age.body')}</Text>
 
-            <Text style={styles.label}>{t('onboarding:age.year')}</Text>
-            <View style={styles.years}>
-              {/* A 90-year scroller, newest first: the people using this app are
-                  mostly young, and making a child scroll past 1935 to find 2015 is a
-                  small cruelty that also skews the answer. */}
-              {Array.from({ length: 90 }, (_, i) => currentYear - i).map((year) => (
-                <YearChip
-                  key={year}
-                  year={year}
-                  selected={birthYear === year}
-                  onPress={() => setBirthYear(year)}
+            {/* The answer, large, so the one thing that matters is the one thing you
+                see. Everything below it is machinery for changing it. */}
+            <Text style={birthYear === null ? styles.yearHeroEmpty : styles.yearHero}>
+              {birthYear ?? t('onboarding:age.none')}
+            </Text>
+
+            <Text style={styles.label}>{t('onboarding:age.decade')}</Text>
+            {/* Wrapped, not a horizontal scroller. Eleven decades in a side-scrolling
+                row hides most of them behind a gesture with no affordance — the user
+                cannot see that 1950s exists, and neither could the E2E, which is how
+                this got noticed. Three tidy rows show every option at once. */}
+            <View style={styles.decades}>
+              {decades.map((start) => (
+                <Chip
+                  key={start}
+                  label={t('onboarding:age.decadeLabel', { decade: start })}
+                  selected={decade === start}
+                  onPress={() => setDecade(start)}
+                  span="third"
                 />
               ))}
             </View>
+
+            <Text style={styles.label}>{t('onboarding:age.year')}</Text>
+            {decade === null ? (
+              <Text style={styles.hint}>{t('onboarding:age.pickDecade')}</Text>
+            ) : (
+              <View style={styles.years}>
+                {yearsIn(decade, currentYear).map((year) => (
+                  <Chip
+                    key={year}
+                    label={String(year)}
+                    selected={birthYear === year}
+                    onPress={() => setBirthYear(year)}
+                    span="quarter"
+                  />
+                ))}
+              </View>
+            )}
 
             {isChild && (
               <Card level={2} style={styles.childNote}>
@@ -246,25 +285,58 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
   )
 }
 
-function YearChip({
-  year,
+/**
+ * The oldest birth year we offer, and the decades that reach it.
+ *
+ * A hundred years rather than ninety: the oldest verified people alive are past 115,
+ * and a picker that cannot express a real user's age is a picker that makes them lie.
+ */
+const OLDEST = 100
+
+function decadesFor(currentYear: number): readonly number[] {
+  const newest = Math.floor(currentYear / 10) * 10
+  const oldest = Math.floor((currentYear - OLDEST) / 10) * 10
+  const out: number[] = []
+  for (let start = newest; start >= oldest; start -= 10) out.push(start)
+  return out
+}
+
+/** The years inside one decade, clamped so we never offer a year in the future. */
+function yearsIn(decade: number, currentYear: number): readonly number[] {
+  const out: number[] = []
+  for (let year = decade; year <= Math.min(decade + 9, currentYear); year++) out.push(year)
+  return out
+}
+
+function Chip({
+  label,
   selected,
   onPress,
+  span,
 }: {
-  readonly year: number
+  readonly label: string
   readonly selected: boolean
   readonly onPress: () => void
+  /** How many fit per row. Decades read "2020s" and need more room than "2020". */
+  readonly span?: 'third' | 'quarter'
 }) {
   return (
     <Card
       level={selected ? 3 : 1}
       role="radio"
       aria-checked={selected}
-      accessibilityLabel={String(year)}
+      accessibilityLabel={label}
       onPress={onPress}
-      style={[styles.year, selected && styles.yearOn]}
+      style={[
+        styles.chip,
+        span === 'third' && styles.chipThird,
+        span === 'quarter' && styles.chipQuarter,
+        selected && styles.chipOn,
+      ]}
     >
-      <Text style={selected ? styles.yearTextOn : styles.yearText}>{year}</Text>
+      <Text style={selected ? styles.chipTextOn : styles.chipText} numberOfLines={1}>
+        {label}
+      </Text>
     </Card>
   )
 }
@@ -272,6 +344,10 @@ function YearChip({
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg.canvas },
   progress: { paddingHorizontal: space[4], paddingTop: space[2] },
+  // The scroll container. Separate from `body`, which is a TEXT style — handing a
+  // text style to a ScrollView carried its font and padding onto the layout and
+  // squeezed the year grid down to two columns.
+  content: { alignItems: 'center', paddingBottom: space[5] },
   body: {
     ...text('body'),
     color: colors.text.secondary,
@@ -285,26 +361,64 @@ const styles = StyleSheet.create({
     marginTop: space[5],
     marginBottom: space[2],
   },
-  label: { ...text('overline'), color: colors.text.tertiary, marginTop: space[5] },
+  label: { ...text('overline'), color: colors.text.tertiary, marginTop: space[5], textAlign: 'center' },
   dots: { flexDirection: 'row', gap: space[2], marginTop: space[6] },
   dot: { width: 8, height: 8, borderRadius: radius.full, backgroundColor: colors.bg.surfaceRaised },
   dotOn: { backgroundColor: colors.action.primary, width: 24 },
+  yearHero: { ...text('display', { numeric: true }), color: colors.text.primary, marginTop: space[5], textAlign: 'center' },
+  yearHeroEmpty: { ...text('h2'), color: colors.text.tertiary, marginTop: space[5], textAlign: 'center' },
+  hint: { ...text('body'), color: colors.text.tertiary, marginTop: space[3], textAlign: 'center' },
+  decades: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: space[2],
+    justifyContent: 'center',
+    marginTop: space[3],
+    paddingHorizontal: space[4],
+    alignSelf: 'stretch',
+  },
   years: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: space[2],
     justifyContent: 'center',
     marginTop: space[3],
+    paddingHorizontal: space[4],
+    alignSelf: 'stretch',
   },
-  year: { paddingVertical: space[2], paddingHorizontal: space[3], minWidth: 72, alignItems: 'center' },
-  yearOn: { borderColor: colors.action.primary, borderWidth: 2 },
-  yearText: { ...text('body'), color: colors.text.secondary },
-  yearTextOn: { ...text('body', { weight: '700' }), color: colors.text.primary },
+  chip: {
+    paddingVertical: space[3],
+    paddingHorizontal: space[4],
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 48,
+    // The border is ALWAYS 2px, transparent until selected. Adding it on selection
+    // shrinks the content box by 4px at the exact moment the user taps, which was
+    // enough to wrap "1996" onto two lines and nudge every neighbouring chip.
+    // Selection must change colour, never layout.
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  // Three across for decades ("2020s" is five characters), four for years. Getting
+  // this wrong truncates the label to "20…", which is not a choice anyone can make.
+  chipThird: { width: '31%', paddingHorizontal: space[1] },
+  chipQuarter: { width: '23%', paddingHorizontal: space[0] },
+  chipOn: { borderColor: colors.action.primary },
+  chipText: { ...text('body', { numeric: true }), color: colors.text.secondary },
+  chipTextOn: { ...text('body', { weight: '700', numeric: true }), color: colors.text.primary },
   childNote: { marginTop: space[5], padding: space[4], alignItems: 'center' },
   childTitle: { ...text('h3'), color: colors.text.primary, marginBottom: space[2] },
   goals: { gap: space[3], marginTop: space[5], alignSelf: 'stretch' },
-  goal: { padding: space[4], flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  goalOn: { borderColor: colors.action.primary, borderWidth: 2 },
+  goal: {
+    padding: space[4],
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    // Reserved, as above — selection changes colour, not layout.
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  goalOn: { borderColor: colors.action.primary },
   goalMinutes: { ...text('h2'), color: colors.text.primary },
   goalLabel: { ...text('body'), color: colors.text.secondary },
   actions: { padding: space[4], gap: space[2] },

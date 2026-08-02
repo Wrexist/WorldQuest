@@ -9,7 +9,9 @@ const advanceToAgeStep = (): void => {
   fireEvent.click(screen.getByRole('button', { name: 'Skip' }))
 }
 
+/** Decade, then year — the picker is two taps by design, not one grid of ninety. */
 const pickYear = (year: number): void => {
+  fireEvent.click(screen.getByRole('radio', { name: `${Math.floor(year / 10) * 10}s` }))
   fireEvent.click(screen.getByRole('radio', { name: String(year) }))
 }
 
@@ -99,6 +101,41 @@ describe('OnboardingScreen', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
     fireEvent.click(screen.getByRole('button', { name: /Start learning/i }))
     expect(onFinish.mock.calls[0]![0].dailyGoalMinutes).toBe(10)
+  })
+
+  it('shows no years until a decade narrows them down', () => {
+    // Ninety targets at once is not a picker, it is a wall. The second row only ever
+    // holds the ten years that can follow the first.
+    render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    advanceToAgeStep()
+    expect(screen.queryByRole('radio', { name: '1996' })).toBeNull()
+    fireEvent.click(screen.getByRole('radio', { name: '1990s' }))
+    expect(screen.getByRole('radio', { name: '1996' })).toBeTruthy()
+    expect(screen.queryByRole('radio', { name: '1985' })).toBeNull()
+  })
+
+  it('pre-selects no decade, because that would nudge the one answer that must not be', () => {
+    // The birth year decides whether a child gets the child experience.
+    render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    advanceToAgeStep()
+    for (const decade of ['2020s', '2010s', '1990s']) {
+      expect(screen.getByRole('radio', { name: decade }).getAttribute('aria-checked')).toBe('false')
+    }
+  })
+
+  it('never offers a year in the future', () => {
+    render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    advanceToAgeStep()
+    fireEvent.click(screen.getByRole('radio', { name: '2020s' }))
+    expect(screen.getByRole('radio', { name: String(YEAR) })).toBeTruthy()
+    expect(screen.queryByRole('radio', { name: String(YEAR + 1) })).toBeNull()
+  })
+
+  it('reaches back far enough for a real person to answer honestly', () => {
+    // A picker that cannot express a user's age is a picker that makes them lie.
+    render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    advanceToAgeStep()
+    expect(screen.getByRole('radio', { name: '1930s' })).toBeTruthy()
   })
 
   it('leaves no raw key or unformatted placeholder on screen', () => {

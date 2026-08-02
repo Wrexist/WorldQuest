@@ -109,9 +109,12 @@ const step = (name, ok, detail = '') => {
        /When were you born/i.test(text) && !/over 13|13\+/i.test(text))
   await page.screenshot({ path: path.join(SHOTS, 'onboarding-age.png') })
 
-  // An adult year, so the flow continues past the child branch.
-  const adultYear = String(new Date().getFullYear() - 30)
-  await page.getByText(adultYear, { exact: true }).first().click()
+  // An adult year, so the flow continues past the child branch. Decade first — the
+  // picker is deliberately two taps rather than one wall of ninety chips.
+  const adultYear = new Date().getFullYear() - 30
+  await page.getByRole('radio', { name: `${Math.floor(adultYear / 10) * 10}s` }).click()
+  await page.waitForTimeout(300)
+  await page.getByRole('radio', { name: String(adultYear) }).click()
   await page.waitForTimeout(300)
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(600)

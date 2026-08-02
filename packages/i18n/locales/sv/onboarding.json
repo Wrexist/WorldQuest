@@ -24,5 +24,10 @@
   "onboarding:taster.title": "Vi provar en",
   "onboarding:taster.body": "En kort lektion. Inget konto behövs.",
   "onboarding:taster.start": "Börja lära",
-  "onboarding:progress": "Steg {step} av {total}"
+  "onboarding:progress": "Steg {step} av {total}",
+  "onboarding:age.decade": "Årtionde",
+  "onboarding:age.decadeLabel": "{decade}-talet",
+  "onboarding:age.pickDecade": "Välj ett årtionde för att se åren",
+  "onboarding:age.selected": "Född {year}",
+  "onboarding:age.none": "Välj ett år"
 }

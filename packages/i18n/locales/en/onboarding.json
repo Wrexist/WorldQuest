@@ -50,5 +50,15 @@
   "onboarding:taster.start": "Start learning",
   "onboarding:taster.start__note": "Begins the taster lesson.",
   "onboarding:progress": "Step {step} of {total}",
-  "onboarding:progress__note": "Accessibility label for onboarding progress. Read aloud by screen readers."
+  "onboarding:progress__note": "Accessibility label for onboarding progress. Read aloud by screen readers.",
+  "onboarding:age.decade": "Decade",
+  "onboarding:age.decade__note": "Label for the decade row in the birth-year picker.",
+  "onboarding:age.decadeLabel": "{decade}s",
+  "onboarding:age.decadeLabel__note": "A decade chip — 1990 renders as '1990s'. Adapt for languages that do not form decades this way.",
+  "onboarding:age.pickDecade": "Pick a decade to see the years",
+  "onboarding:age.pickDecade__note": "Hint shown in the year area before a decade is chosen. Never phrased as an error.",
+  "onboarding:age.selected": "Born in {year}",
+  "onboarding:age.selected__note": "Confirms the chosen year in the large display.",
+  "onboarding:age.none": "Choose a year",
+  "onboarding:age.none__note": "Placeholder in the large display before a year is chosen."
 }
