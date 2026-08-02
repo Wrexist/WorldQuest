@@ -51,6 +51,16 @@ export type LessonState = {
   readonly shownAt: number | null
   readonly heartsEnabled: boolean
   readonly outOfHearts: boolean
+  /**
+   * Milliseconds allowed per question, or null for an untimed lesson.
+   *
+   * A LESSON property, not a template one. `Template.timeLimitMs` exists and stays
+   * null everywhere: whether a question is timed is a property of the mode the user
+   * chose, not of the way the fact happens to be asked. Putting it on the template
+   * would mean a speed round could only ever contain templates somebody remembered to
+   * mark, which is the wrong axis entirely.
+   */
+  readonly timeLimitMs: number | null
 }
 
 export type LessonEvent =
@@ -63,8 +73,12 @@ export type LessonEvent =
   | { type: 'ABANDON'; now: number }
   /** Spending coins to keep going after running out of hearts. */
   | { type: 'REVIVE'; now: number }
+  /** The clock ran out on a timed question. Only meaningful when `timeLimitMs` is set. */
+  | { type: 'TIMEOUT'; now: number }
 
-export function initialState(options: { heartsEnabled?: boolean } = {}): LessonState {
+export function initialState(
+  options: { heartsEnabled?: boolean; timeLimitMs?: number | null } = {},
+): LessonState {
   return {
     phase: 'idle',
     lessonId: '',
@@ -78,6 +92,7 @@ export function initialState(options: { heartsEnabled?: boolean } = {}): LessonS
     // Off in Relaxed Mode and Classroom Mode, and for Premium.
     heartsEnabled: options.heartsEnabled ?? true,
     outOfHearts: false,
+    timeLimitMs: options.timeLimitMs ?? null,
   }
 }
 
@@ -161,6 +176,44 @@ export function transition(state: LessonState, event: LessonEvent): LessonState 
         hearts,
         correctRun,
         outOfHearts: state.heartsEnabled && hearts === 0,
+      }
+    }
+
+    case 'TIMEOUT': {
+      // Only in a timed lesson, and only while a question is on screen. Firing this
+      // in an untimed lesson would be a bug in the caller, and silently accepting it
+      // would mark an answer the user never had a chance to give.
+      if (state.phase !== 'presenting') return state
+      if (state.timeLimitMs === null) return state
+      const timedOut = currentQuestion(state)
+      if (!timedOut) return state
+
+      /**
+       * A timeout is recorded as unanswered, not as a wrong guess.
+       *
+       * `chosenOptionId: null` is the difference, and it matters downstream: the
+       * scheduler should treat "ran out of time" as weaker evidence than "chose the
+       * wrong country", and a review of the answer log should be able to tell them
+       * apart. The user is told the right answer in the same calm words either way.
+       */
+      const missed: AnsweredItem = {
+        itemId: timedOut.item.id,
+        factId: timedOut.item.factId,
+        templateId: timedOut.item.templateId,
+        chosenOptionId: null,
+        wasCorrect: false,
+        elapsedMs: state.timeLimitMs,
+        answeredAt: event.now,
+      }
+
+      // No heart is lost. Hearts are for getting something wrong; a clock running out
+      // is the mode being hard, and charging for it twice turns a speed round into a
+      // punishment. See docs/design/voice-and-tone.md — we do not punish.
+      return {
+        ...state,
+        phase: 'answered',
+        answers: [...state.answers, missed],
+        correctRun: 0,
       }
     }
 

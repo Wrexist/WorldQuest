@@ -445,3 +445,59 @@ describe('the walking skeleton, end to end', () => {
     }
   })
 })
+
+describe('the timed mode', () => {
+  const timed = (): LessonState => started(makeQuestions(2), { timeLimitMs: 10_000 })
+
+  it('is off unless the mode asks for it', () => {
+    // A LESSON property, not a template one. Whether a question is timed depends on
+    // the mode the user chose, not on how the fact happens to be asked.
+    expect(initialState().timeLimitMs).toBeNull()
+    expect(initialState({ timeLimitMs: 8_000 }).timeLimitMs).toBe(8_000)
+  })
+
+  it('records a timeout as unanswered rather than as a wrong guess', () => {
+    // The scheduler should treat "ran out of time" as weaker evidence than "chose the
+    // wrong country", and the answer log has to be able to tell them apart.
+    const s = transition(timed(), { type: 'TIMEOUT', now: T0 + 10_000 })
+    expect(s.phase).toBe('answered')
+    expect(s.answers).toHaveLength(1)
+    expect(s.answers[0]!.chosenOptionId).toBeNull()
+    expect(s.answers[0]!.wasCorrect).toBe(false)
+  })
+
+  it('costs no heart', () => {
+    // Hearts are for getting something wrong. A clock running out is the mode being
+    // hard, and charging twice for it turns a speed round into a punishment.
+    const before = timed()
+    const after = transition(before, { type: 'TIMEOUT', now: T0 + 10_000 })
+    expect(after.hearts).toBe(before.hearts)
+    expect(after.outOfHearts).toBe(false)
+  })
+
+  it('breaks the correct run, because the answer was not given', () => {
+    const s = transition(timed(), { type: 'TIMEOUT', now: T0 + 10_000 })
+    expect(s.correctRun).toBe(0)
+  })
+
+  it('is ignored in an untimed lesson', () => {
+    // Firing this without a time limit is a caller bug; accepting it would mark an
+    // answer the user never had a chance to give.
+    const untimed = started(makeQuestions(1))
+    expect(transition(untimed, { type: 'TIMEOUT', now: 999_999 })).toEqual(untimed)
+  })
+
+  it('is ignored once the question has already been answered', () => {
+    const answered = answerCorrectly(timed(), T0 + 500)
+    expect(transition(answered, { type: 'TIMEOUT', now: T0 + 10_000 })).toEqual(answered)
+  })
+
+  it('advances like any other answered question', () => {
+    const s = transition(
+      transition(timed(), { type: 'TIMEOUT', now: T0 + 10_000 }),
+      { type: 'CONTINUE', now: T0 + 10_100 },
+    )
+    expect(s.phase).toBe('presenting')
+    expect(s.index).toBe(1)
+  })
+})

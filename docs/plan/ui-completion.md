@@ -115,9 +115,9 @@ multiplies across every fact. This is the cheapest content leverage available.
 | # | Work | Why now |
 |---|---|---|
 | 4.1 | **Currency facts** | ✅ 64 countries, `slow` volatility, full names ("Swedish krona", not "krona") so the value identifies the country wherever it can. Zimbabwe is absent: its currency changed twice in five years and the USD circulates — a fact already drifting is worse than a gap. **Language is deliberately still open** — Belgium, Switzerland, Canada, India and South Africa have several official languages, and picking one is exactly the unilateral call the content policy forbids. |
-| 4.2 | **Population** (`slow` volatility) | Shown with `as of <year>`, and **never a quiz answer** — volatile facts may not be. |
+| 4.2 | **Population** (`slow` volatility) | ⬜ **Deliberately not started.** 65 populations means 65 numbers that must each be right and dated, and approximate figures are the worst kind of wrong in a learning app. It needs one authoritative dataset with a citable release, not sixty-five searches. |
 | 4.3 | **Templates for the new attributes** | ✅ `tpl.currency.mc4` and `tpl.currency-reverse.mc4`. 449 items now, 415 askable. |
-| 4.4 | **Speed round** | A lesson mode, not a screen. Same items, a clock, different scoring. |
+| 4.4 | **Speed round** | 🟡 The engine half is done — `timeLimitMs` on the lesson (not the template) and a `TIMEOUT` event that records the question as *unanswered* rather than as a wrong guess, and costs no heart. The timer UI and the mode entry point are still to build. |
 
 ### Wave 5 — the hidden screens that are not gated on auth
 | # | Work |
