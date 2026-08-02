@@ -13,6 +13,8 @@
     "verify": "pnpm generate && pnpm typecheck && pnpm test && pnpm content:validate && pnpm i18n:check && pnpm design:contrast",
     "typecheck": "pnpm -r --filter './packages/*' --filter './apps/*' typecheck",
     "test": "pnpm -r --filter './packages/*' --filter './apps/*' test && vitest run --config vitest.edge.config.ts",
+    "$comment:e2e": "Exports the real bundle through Metro and drives it in Chromium via react-native-web. Not a device — see apps/mobile/e2e/flow.cjs for exactly what that does and does not prove. The export step is the point as much as the driving: it is the only thing in this repo that runs the bundler.",
+    "e2e": "pnpm --filter @worldquest/mobile exec expo export --platform web --output-dir ../../node_modules/.cache/wq-web && node apps/mobile/e2e/flow.cjs node_modules/.cache/wq-web node_modules/.cache/wq-e2e-shots",
     "content:validate": "pnpm --filter @worldquest/content validate",
     "content:preview": "pnpm --filter @worldquest/content preview",
     "content:stats": "pnpm --filter @worldquest/content stats",

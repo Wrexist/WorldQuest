@@ -65,6 +65,23 @@ jobs:
       - name: Economy health
         run: pnpm engines:simulate
 
+      # The only step here that runs METRO. typecheck runs tsc and test runs
+      # vitest; both resolve TypeScript's `.js`-means-`.ts` imports, and the
+      # bundler does not. That gap hid a repo where the app had never bundled on
+      # any platform, through a green pipeline. This exports the real bundle and
+      # plays a lesson in it — see apps/mobile/e2e/flow.cjs for what that does and
+      # does not prove. It is not a device.
+      - name: App bundles and a lesson can be played
+        run: pnpm e2e
+
+      - name: Upload E2E screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-screens
+          path: node_modules/.cache/wq-e2e-shots
+          if-no-files-found: ignore
+
   # ── the two checks that need more than Node ────────────────────────────────
 
   database:

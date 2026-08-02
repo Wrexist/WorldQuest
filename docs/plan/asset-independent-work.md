@@ -72,7 +72,7 @@ the one lesson component test happened to draw a flag question.
 | # | Work | State |
 |---|---|---|
 | E1 | Component tests for every screen's five states | ✅ *(all seven screens — 65 tests)* |
-| E2 | Maestro E2E: first launch → taster lesson → progress persists | ⬜ |
+| E2 | E2E: first launch → taster lesson → every tab → deep route → 404 | ✅ *(browser, not a device — see below)* |
 | E3 | CI: RLS tests on a local stack, migrations from empty, economy health, generated files, and content that reads correctly | ✅ *(re-done — see below)* |
 | E4 | `en-XA` pseudo-locale — `enablePseudoLocale()` builds it in memory from the English bundle at runtime, so it can never be stale | ✅ |
 
@@ -116,7 +116,7 @@ migrations now.
 
 ~~A1 → A2 → A3 → F1 → B1 → B2 → C1 → B4 → C2 → C3 → C4~~ — done.
 
-**Remaining:** the rest of B6 (gated on accounts and social) · E2 (Maestro) · D1 (content volume).
+**Remaining:** the rest of B6 (gated on accounts and social) · D1 (content volume) · a real device pass.
 
 `pnpm content:stats` names each batch directly. It reported **23 of 25 questions
 reachable**, both gaps in `east-asia`, which had one member — so that subregion was
@@ -202,10 +202,31 @@ case the engine cannot — a catalogue string that gives the answer away in its 
 
 **65 countries · 130 facts · 321 items · 318 of 318 askable ones reachable.**
 
-E2 is deliberately last and deliberately not started here: a Maestro flow written
-without ever running it against a device is a file full of guesses about selectors and
-timing. It needs one session on a machine with a simulator, and until then writing it
-would be the same false-green as a CI step that checks nothing.
+### E2, and the thing it found
+
+Maestro against a simulator was not possible here — no iOS Simulator without macOS, no
+Android emulator without `/dev/kvm` — and a Maestro flow nobody had watched run would
+have been the same false-green as a CI step that checks nothing.
+
+So `pnpm e2e` runs the **real exported bundle** instead: Metro builds it, Chromium
+drives it through react-native-web, and it plays a lesson start to finish, visits all
+five tabs, follows a deep route and hits the 404. Eleven steps, and any uncaught error
+on any screen fails the run.
+
+**It is not a device.** MMKV, haptics, gestures, iOS/Android layout, fonts and splash
+on real hardware, the store build — none of that is covered, and a green run here does
+not mean the app works on a phone. That pass still has to happen.
+
+What it did prove, on its very first run, is that **the app had never bundled — on any
+platform**. 71 imports use TypeScript's `.js`-means-`.ts` convention, which `tsc` and
+vitest both understand and Metro does not; `pnpm dev` would have failed on the first
+file it read. Two dependency versions were also far past what Expo 52 supports, and
+`@babel/runtime` was undeclared.
+
+Nothing in a green pipeline could have caught it, because **nothing in the pipeline ran
+the bundler.** `pnpm typecheck` is tsc, `pnpm test` is vitest. That is the actual
+lesson here, and it is why the CI step exports the bundle rather than only driving it —
+verified by disabling the resolver and watching the job go red.
 
 The starter catalogue is 12 definitions, deliberately. The ~300 in
 [`../systems/achievements.md`](../systems/achievements.md) arrive in batches once the
