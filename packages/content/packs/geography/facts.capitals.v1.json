@@ -602,6 +602,167 @@
         "verifiedAt": "2026-08-01"
       },
       "volatility": "stable"
+    },
+    {
+      "id": "geo.US.capital",
+      "entity": "US",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Washington, D.C.",
+          "sv": "Washington, D.C."
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Washington, D.C.”",
+        "url": "https://en.wikipedia.org/wiki/Washington,_D.C.",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CA.capital",
+      "entity": "CA",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Ottawa",
+          "sv": "Ottawa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Ottawa”",
+        "url": "https://en.wikipedia.org/wiki/Ottawa",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MX.capital",
+      "entity": "MX",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Mexico City",
+          "sv": "Mexico City"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Mexico City”",
+        "url": "https://en.wikipedia.org/wiki/Mexico_City",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CU.capital",
+      "entity": "CU",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Havana",
+          "sv": "Havanna"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Havana”",
+        "url": "https://en.wikipedia.org/wiki/Havana",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GT.capital",
+      "entity": "GT",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Guatemala City",
+          "sv": "Guatemala City"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Guatemala City”",
+        "url": "https://en.wikipedia.org/wiki/Guatemala_City",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CR.capital",
+      "entity": "CR",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "San José",
+          "sv": "San José"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “San José, Costa Rica”",
+        "url": "https://en.wikipedia.org/wiki/San_Jos%C3%A9,_Costa_Rica",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PA.capital",
+      "entity": "PA",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Panama City",
+          "sv": "Panama City"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Panama City”",
+        "url": "https://en.wikipedia.org/wiki/Panama_City",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
     }
   ]
 }

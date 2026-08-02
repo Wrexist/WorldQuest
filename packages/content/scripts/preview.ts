@@ -28,6 +28,7 @@ import { fileURLToPath } from 'node:url'
 import {
   buildIndex,
   buildQuestion,
+  isSelfAnswering,
   seededRng,
   type Entity,
   type Fact,
@@ -103,11 +104,21 @@ let unreadable = 0
  * countries before its facts are teachable — so it reports without failing the run.
  */
 const uncovered: string[] = []
+/**
+ * A question the engine refuses because its prompt would contain its own answer.
+ *
+ * Permanent and correct, not a gap. Reported separately so nobody tries to fix it by
+ * authoring more countries — the other template for the same fact still works.
+ */
+const selfAnswering: string[] = []
 
 for (const item of index.items) {
   const question = buildQuestion(index, item, locale, rng)
   if (question === null) {
-    uncovered.push(`${item.factId} × ${item.templateId}`)
+    // Two very different reasons, and telling an author to add countries when the
+    // real cause is "Guatemala City is the capital of which country?" wastes a day.
+    if (isSelfAnswering(index, item, locale)) selfAnswering.push(item.id)
+    else uncovered.push(`${item.factId} × ${item.templateId}`)
     continue
   }
 
@@ -147,6 +158,14 @@ for (const item of index.items) {
     complain('the prompt key has no entry in the catalogue')
   }
   show()
+}
+
+if (selfAnswering.length > 0) {
+  // Not a gap and not fixable — the prompt names the answer. Listed so it reads as a
+  // decision rather than an omission.
+  console.log(`  ${selfAnswering.length} item(s) would give the answer away, and are skipped:`)
+  for (const item of selfAnswering) show(`    · ${item}`)
+  console.log()
 }
 
 if (uncovered.length > 0) {

@@ -11,6 +11,85 @@
   "generatedAt": "2026-07-31",
   "items": [
     {
+      "id": "US",
+      "type": "country",
+      "names": { "en": "United States", "sv": "USA" },
+      "$comment": "English takes the article inside a sentence but not in a list. Swedish 'USA' needs none.",
+      "namesInSentence": {"en": "the United States"},
+      "region": "NA",
+      "subregion": "north-america",
+      "geometry": "geo/countries/US.svg",
+      "assets": {
+        "flag": { "path": "flags/US.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "CA",
+      "type": "country",
+      "names": { "en": "Canada", "sv": "Kanada" },
+      "region": "NA",
+      "subregion": "north-america",
+      "geometry": "geo/countries/CA.svg",
+      "assets": {
+        "flag": { "path": "flags/CA.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "MX",
+      "type": "country",
+      "names": { "en": "Mexico", "sv": "Mexiko" },
+      "region": "NA",
+      "subregion": "north-america",
+      "geometry": "geo/countries/MX.svg",
+      "assets": {
+        "flag": { "path": "flags/MX.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "CU",
+      "type": "country",
+      "names": { "en": "Cuba", "sv": "Kuba" },
+      "region": "NA",
+      "subregion": "north-america",
+      "geometry": "geo/countries/CU.svg",
+      "assets": {
+        "flag": { "path": "flags/CU.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "GT",
+      "type": "country",
+      "names": { "en": "Guatemala", "sv": "Guatemala" },
+      "region": "NA",
+      "subregion": "north-america",
+      "geometry": "geo/countries/GT.svg",
+      "assets": {
+        "flag": { "path": "flags/GT.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "CR",
+      "type": "country",
+      "names": { "en": "Costa Rica", "sv": "Costa Rica" },
+      "region": "NA",
+      "subregion": "north-america",
+      "geometry": "geo/countries/CR.svg",
+      "assets": {
+        "flag": { "path": "flags/CR.svg", "license": "public-domain" }
+      }
+    },
+    {
+      "id": "PA",
+      "type": "country",
+      "names": { "en": "Panama", "sv": "Panama" },
+      "region": "NA",
+      "subregion": "north-america",
+      "geometry": "geo/countries/PA.svg",
+      "assets": {
+        "flag": { "path": "flags/PA.svg", "license": "public-domain" }
+      }
+    },
+    {
       "id": "JP",
       "type": "country",
       "names": { "en": "Japan", "sv": "Japan" },

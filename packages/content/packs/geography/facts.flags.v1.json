@@ -614,6 +614,181 @@
         "verifiedAt": "2026-08-01"
       },
       "volatility": "stable"
+    },
+    {
+      "id": "geo.US.flag",
+      "entity": "US",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-US",
+        "names": {
+          "en": "thirteen red and white stripes, with fifty white stars on a blue square in the top corner",
+          "sv": "tretton röda och vita ränder, med femtio vita stjärnor på en blå kvadrat i övre hörnet"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "flag",
+        "north-america",
+        "like:star-in-canton",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of the United States”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_the_United_States",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CA.flag",
+      "entity": "CA",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-CA",
+        "names": {
+          "en": "a red maple leaf on a white square, between two red bands",
+          "sv": "ett rött lönnlöv på en vit kvadrat, mellan två röda band"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "flag",
+        "north-america",
+        "like:emblem-on-plain-field",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Canada”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Canada",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MX.flag",
+      "entity": "MX",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-MX",
+        "names": {
+          "en": "three vertical bands — green, white, red — with an eagle on a cactus in the middle",
+          "sv": "tre lodräta band — grönt, vitt, rött — med en örn på en kaktus i mitten"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "north-america",
+        "like:vertical-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Mexico”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Mexico",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CU.flag",
+      "entity": "CU",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-CU",
+        "names": {
+          "en": "five blue and white stripes, with a white star on a red triangle at the left",
+          "sv": "fem blå och vita ränder, med en vit stjärna på en röd triangel till vänster"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "north-america",
+        "like:triangle-at-hoist",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Cuba”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Cuba",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GT.flag",
+      "entity": "GT",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-GT",
+        "names": {
+          "en": "three vertical bands — light blue, white, light blue — with a coat of arms in the middle",
+          "sv": "tre lodräta band — ljusblått, vitt, ljusblått — med ett riksvapen i mitten"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "north-america",
+        "like:vertical-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Guatemala”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Guatemala",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CR.flag",
+      "entity": "CR",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-CR",
+        "names": {
+          "en": "five horizontal bands — blue, white, red, white, blue — the red one widest",
+          "sv": "fem vågräta band — blått, vitt, rött, vitt, blått — det röda bredast"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "north-america",
+        "like:five-stripes",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Costa Rica”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Costa_Rica",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PA.flag",
+      "entity": "PA",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-PA",
+        "names": {
+          "en": "four quarters — a blue star, plain red, plain blue, and a red star",
+          "sv": "fyra fält — en blå stjärna, enfärgat rött, enfärgat blått, och en röd stjärna"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "north-america",
+        "like:quartered",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Panama”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Panama",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
     }
   ]
 }

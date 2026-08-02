@@ -192,13 +192,27 @@ function hintFor(
   return value
 }
 
-export function buildQuestion(
+/**
+ * Everything a question needs that does NOT depend on the distractors.
+ *
+ * Split out so the two cheap rejections — no label, prompt gives itself away — can
+ * happen before the expensive pool search, and so tooling can ask *why* an item is
+ * unaskable without duplicating the rules that decide it.
+ */
+function resolveShallow(
   index: ContentIndex,
   item: Item,
   locale: string,
-  rng: Rng,
-  opts: { isNew?: boolean } = {},
-): Question | null {
+):
+  | {
+      fact: Fact
+      template: Template
+      entity: Entity
+      nameOf: (names: Readonly<Record<string, string>> | undefined) => string | undefined
+      correctLabel: string
+      promptParams: Record<string, string>
+    }
+  | null {
   const fact = index.facts.get(item.factId)
   const template = index.templates.get(item.templateId)
   const entity = index.entities.get(item.entityId)
@@ -210,6 +224,61 @@ export function buildQuestion(
   const correctLabel =
     template.answer.from === 'entity.names' ? nameOf(entity.names) : nameOf(fact.value.names)
   if (correctLabel === undefined) return null
+
+  const promptParams: Record<string, string> = {}
+  for (const param of template.prompt.params ?? []) {
+    // The sentence form when the content supplies one, the citation form otherwise.
+    // Answer OPTIONS deliberately keep the citation form: "the Netherlands" belongs
+    // in "the capital of the Netherlands", not in a list of four countries.
+    if (param === 'entityName') {
+      promptParams[param] =
+        nameOf(entity.namesInSentence) ?? nameOf(entity.names) ?? entity.id
+    }
+    if (param === 'valueName') promptParams[param] = nameOf(fact.value.names) ?? ''
+    if (param === 'description') promptParams[param] = nameOf(fact.value.names) ?? ''
+  }
+
+  return { fact, template, entity, nameOf, correctLabel, promptParams }
+}
+
+/**
+ * Whether this item's prompt would contain its own answer.
+ *
+ * "Guatemala City is the capital of which country?" — and the same for Panama,
+ * Mexico, Kuwait, Luxembourg, Djibouti, Singapore and every other country whose
+ * capital carries its name. There are enough of them that catching this by hand is a
+ * matter of time, not diligence.
+ *
+ * The asymmetry is deliberate. This rejects the PROMPT giving away the answer; it
+ * does not reject the answer echoing the prompt, so "What is the capital of Mexico?"
+ * → "Mexico City" survives. That one is not a leak, it is how the place is named,
+ * and it is a fact worth learning.
+ *
+ * Exported because it is the difference between two very different messages from the
+ * authoring tools: "this can never be asked, by design" and "this needs more
+ * neighbours before it can be asked". Advising an author to add countries to fix
+ * Guatemala City would waste an afternoon.
+ */
+export function isSelfAnswering(index: ContentIndex, item: Item, locale: string): boolean {
+  const resolved = resolveShallow(index, item, locale)
+  if (resolved === null) return false
+  return Object.values(resolved.promptParams).some((value) =>
+    normalise(value).includes(normalise(resolved.correctLabel)),
+  )
+}
+
+export function buildQuestion(
+  index: ContentIndex,
+  item: Item,
+  locale: string,
+  rng: Rng,
+  opts: { isNew?: boolean } = {},
+): Question | null {
+  const resolved = resolveShallow(index, item, locale)
+  if (resolved === null) return null
+  const { fact, template, entity, nameOf, correctLabel, promptParams } = resolved
+
+  if (isSelfAnswering(index, item, locale)) return null
 
   const spec = template.distractors
   const options: AnswerOption[] = [
@@ -266,19 +335,6 @@ export function buildQuestion(
     // A question with too few plausible options is worse than no question.
     if (chosen.length < spec.count) return null
     options.push(...chosen)
-  }
-
-  const promptParams: Record<string, string> = {}
-  for (const param of template.prompt.params ?? []) {
-    // The sentence form when the content supplies one, the citation form otherwise.
-    // Answer OPTIONS deliberately keep the citation form: "the Netherlands" belongs in
-    // "the capital of the Netherlands", not in a list of four countries.
-    if (param === 'entityName') {
-      promptParams[param] =
-        nameOf(entity.namesInSentence) ?? nameOf(entity.names) ?? entity.id
-    }
-    if (param === 'valueName') promptParams[param] = nameOf(fact.value.names) ?? ''
-    if (param === 'description') promptParams[param] = nameOf(fact.value.names) ?? ''
   }
 
   const hint = hintFor(template, fact, nameOf, promptParams)

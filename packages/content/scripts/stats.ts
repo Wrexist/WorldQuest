@@ -23,6 +23,7 @@ import {
   buildIndex,
   buildQuestion,
   isQuizzable,
+  isSelfAnswering,
   seededRng,
   type Entity,
   type Fact,
@@ -158,11 +159,18 @@ console.log()
 
 const rng = seededRng(1)
 const blocked = new Map<string, string[]>()
+const selfAnswering: string[] = []
 let askable = 0
 
 for (const item of index.items) {
   if (buildQuestion(index, item, 'en', rng) !== null) {
     askable++
+    continue
+  }
+  // Refused by design, not for want of neighbours. Counting it as a coverage gap
+  // would send an author off to add countries that cannot possibly help.
+  if (isSelfAnswering(index, item, 'en')) {
+    selfAnswering.push(item.id)
     continue
   }
   const entity = index.entities.get(item.entityId)
@@ -176,6 +184,10 @@ const unquizzable = facts.filter((f) => !isQuizzable(f))
 
 console.log('  askability')
 console.log(`    askable today     ${askable}/${index.items.length}`)
+if (selfAnswering.length > 0) {
+  console.log(`    self-answering    ${selfAnswering.length} (skipped by design)`)
+  for (const id of selfAnswering) console.log(`         · ${id}`)
+}
 if (unquizzable.length > 0) {
   // Not a gap to fill: a `fast` or `review-required` fact is deliberately never a
   // quiz answer. It still teaches — it just teaches on a country page.
@@ -194,6 +206,9 @@ if (blocked.size > 0) {
   console.log()
 }
 
+const reachable = index.items.length - selfAnswering.length
 console.log(
-  `  ${askable} of ${index.items.length} authored questions are reachable by a user today.\n`,
+  `  ${askable} of ${reachable} askable questions are reachable by a user today` +
+    (selfAnswering.length > 0 ? ` (${selfAnswering.length} more give the answer away).` : '.') +
+    '\n',
 )

@@ -16,7 +16,7 @@ import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { seededRng } from '../shared/index.js'
-import { buildIndex, buildQuestion, pickItemForFact } from './index.js'
+import { buildIndex, buildQuestion, isSelfAnswering, pickItemForFact } from './index.js'
 import type { Entity, Fact, Template } from './types.js'
 
 const packsDir = join(import.meta.dirname, '..', '..', '..', 'content', 'packs', 'geography')
@@ -248,6 +248,32 @@ describe('question construction', () => {
     // PROMPT this time, so the hint says "Sweden is Stockholm." Found by
     // `pnpm content:preview`, which exists to be read.
     expect(hintOf('geo.SE.capital', 'tpl.capital-reverse.mc4')).toBeUndefined()
+  })
+
+  it('refuses a question whose prompt contains its own answer', () => {
+    // "Guatemala City is the capital of which country?" is a free point. So is Panama
+    // City, and Mexico City, and Kuwait, and Luxembourg, and Djibouti, and Singapore.
+    // There are enough of them that catching this by hand is a matter of time.
+    for (const factId of ['geo.GT.capital', 'geo.PA.capital', 'geo.MX.capital'] as const) {
+      const item = index.itemsByFact
+        .get(factId)!
+        .find((i) => i.templateId === 'tpl.capital-reverse.mc4')!
+      expect(isSelfAnswering(index, item, 'en'), factId).toBe(true)
+      expect(buildQuestion(index, item, 'en', seededRng(1)), factId).toBeNull()
+    }
+  })
+
+  it('keeps the direction that is naming rather than leaking', () => {
+    // "What is the capital of Mexico?" → "Mexico City". The answer echoes the prompt,
+    // which is how the place is named — not a giveaway, and a fact worth learning.
+    // Rejecting this direction too would delete real content to fix a different bug.
+    const item = index.itemsByFact
+      .get('geo.MX.capital')!
+      .find((i) => i.templateId === 'tpl.capital.mc4')!
+    expect(isSelfAnswering(index, item, 'en')).toBe(false)
+    const q = buildQuestion(index, item, 'en', seededRng(1))
+    expect(q).not.toBeNull()
+    expect(q!.options.find((o) => o.isCorrect)!.label).toBe('Mexico City')
   })
 
   it('uses the sentence form in a prompt and the citation form in an option', () => {
