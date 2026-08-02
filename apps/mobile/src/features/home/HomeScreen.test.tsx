@@ -112,3 +112,54 @@ describe('Home — behaviour', () => {
     expect(screen.getByLabelText('Inbox')).toBeTruthy()
   })
 })
+
+describe('Home — the daily goal', () => {
+  it('shows the goal in lessons, the unit the user experiences', () => {
+    render(
+      <HomeScreen
+        progress={RETURNING}
+        loading={false}
+        isOffline={false}
+        onStartLesson={() => {}}
+        goal={{ done: 1, target: 3 }}
+      />,
+    )
+    expect(screen.getByText('1 of 3 lessons today')).toBeTruthy()
+  })
+
+  it('congratulates on reaching it without telling the user to stop', () => {
+    // Passing the goal is a good thing, not an end. Nothing here may read as
+    // "you're done, go away".
+    const { container } = render(
+      <HomeScreen
+        progress={RETURNING}
+        loading={false}
+        isOffline={false}
+        onStartLesson={() => {}}
+        goal={{ done: 3, target: 3 }}
+      />,
+    )
+    expect(screen.getByText(/goal met/i)).toBeTruthy()
+    expect(container.textContent).not.toMatch(/come back tomorrow|that'?s enough|stop now|finished for today/i)
+  })
+
+  it('never frames an unmet goal as failure', () => {
+    const { container } = render(
+      <HomeScreen
+        progress={RETURNING}
+        loading={false}
+        isOffline={false}
+        onStartLesson={() => {}}
+        goal={{ done: 0, target: 3 }}
+      />,
+    )
+    expect(container.textContent).not.toMatch(/behind|missed|failed|you haven'?t|at risk/i)
+  })
+
+  it('says nothing when there is no goal to show', () => {
+    const { container } = render(
+      <HomeScreen progress={RETURNING} loading={false} isOffline={false} onStartLesson={() => {}} />,
+    )
+    expect(container.textContent).not.toMatch(/lessons today/)
+  })
+})

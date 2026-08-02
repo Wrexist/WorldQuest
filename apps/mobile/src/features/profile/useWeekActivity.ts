@@ -38,6 +38,18 @@ export function useWeekActivity(): readonly WeekDay[] {
   }, [])
 }
 
+/**
+ * Lessons finished today.
+ *
+ * Read straight from the same local log the weekly chart uses, so the daily-goal
+ * line on Home and the bars on Profile can never disagree — and so both are right
+ * the instant a lesson ends rather than after a sync.
+ */
+export function lessonsToday(now: Date = new Date()): number {
+  const log = readJson<Record<string, number>>(KEY) ?? {}
+  return log[isoDay(now)] ?? 0
+}
+
 /** Called when a lesson finishes. Idempotent per call, not per lesson id. */
 export function recordLessonCompleted(now: Date = new Date()): void {
   const log = readJson<Record<string, number>>(KEY) ?? {}

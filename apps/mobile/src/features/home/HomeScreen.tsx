@@ -53,6 +53,15 @@ export type HomeScreenProps = {
   readonly onStartLesson: () => void
   /** Optional so the screenshot renderer and component tests mount without a router. */
   readonly onOpenStreak?: (() => void) | undefined
+  /**
+   * Today's daily goal, as lessons done and lessons targeted.
+   *
+   * The goal was asked for during onboarding, stored, and shown in Settings — and
+   * read by nothing. `lessonsPerDay()` existed in the engine and was never called,
+   * so picking 5 minutes or 20 minutes changed precisely nothing. This is where the
+   * user finally sees the answer to the question they were asked.
+   */
+  readonly goal?: { readonly done: number; readonly target: number } | undefined
 }
 
 function greetingKey(hour: number): TranslationKey {
@@ -61,7 +70,14 @@ function greetingKey(hour: number): TranslationKey {
   return 'home:greeting.evening'
 }
 
-export function HomeScreen({ progress, loading, isOffline, onStartLesson, onOpenStreak }: HomeScreenProps) {
+export function HomeScreen({
+  progress,
+  loading,
+  isOffline,
+  onStartLesson,
+  onOpenStreak,
+  goal,
+}: HomeScreenProps) {
   // Before the early return: hooks cannot be conditional, and the skeleton needs
   // translated copy too.
   const t = useT()
@@ -133,6 +149,17 @@ export function HomeScreen({ progress, loading, isOffline, onStartLesson, onOpen
               tone="reward"
               label={t('home:quest.progress')}
             />
+          )}
+
+          {/* The daily goal, in the unit the user actually experiences: lessons, not
+              minutes. Reached rather than exceeded — passing the goal is not a reason
+              to stop, so the copy congratulates and the bar simply fills. */}
+          {goal !== undefined && (
+            <Text style={styles.goalLine}>
+              {goal.done >= goal.target
+                ? t('home:goal.met', { count: goal.done })
+                : t('home:goal.progress', { done: goal.done, target: goal.target })}
+            </Text>
           )}
 
           <Button label={t('common:continue')} onPress={onStartLesson} />
@@ -235,6 +262,7 @@ const styles = StyleSheet.create({
   questBody: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   questText: { flex: 1, gap: space[1] },
   questTitle: { ...text('h2'), color: colors.text.primary },
+  goalLine: { ...text('caption'), color: colors.text.secondary },
 
   challengeCard: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   challengeText: { flex: 1, gap: space[1] },

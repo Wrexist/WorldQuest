@@ -9,6 +9,10 @@
 import { useRouter } from 'expo-router'
 import { HomeScreen, type HomeProgress } from '../../src/features/home/HomeScreen.js'
 import { useProgress } from '../../src/features/home/useProgress.js'
+import { lessonsToday } from '../../src/features/profile/useWeekActivity.js'
+import { useItemPace } from '../../src/features/lesson/usePace.js'
+import { usePreferences } from '../../src/features/settings/usePreferences.js'
+import { lessonsPerDay } from '@worldquest/engines'
 
 /**
  * Zeroed rather than invented. A first launch shows the real empty state — and a
@@ -25,6 +29,16 @@ const COLD_START: HomeProgress = {
 export default function HomeRoute() {
   const router = useRouter()
   const { data, status, isStale } = useProgress()
+
+  // The daily goal, finally connected to something. It was asked for in onboarding,
+  // stored, shown in Settings, and read by nothing — `lessonsPerDay()` sat unused in
+  // the engine, so choosing 5 minutes or 20 minutes changed precisely nothing.
+  const { preferences } = usePreferences()
+  const itemMs = useItemPace()
+  const goal = {
+    done: lessonsToday(),
+    target: lessonsPerDay(preferences.dailyGoalMinutes, itemMs),
+  }
 
   const progress: HomeProgress = data
     ? {
@@ -48,6 +62,7 @@ export default function HomeRoute() {
       isOffline={isStale || status === 'error'}
       onOpenStreak={() => router.push('/streak')}
       onStartLesson={() => router.push('/lesson')}
+      goal={goal}
     />
   )
 }

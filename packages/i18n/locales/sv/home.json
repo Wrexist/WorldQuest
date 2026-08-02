@@ -3,6 +3,8 @@
   "home:greeting.afternoon": "God eftermiddag,",
   "home:greeting.evening": "God kväll,",
   "home:streak.days": "{count, plural, =0 {Ingen svit än} one {# dags svit} other {# dagars svit}}",
+  "home:goal.progress": "{done} av {target} lektioner idag",
+  "home:goal.met": "{count, plural, one {# lektion idag — målet nått} other {# lektioner idag — målet nått}}",
   "home:quest.today": "Dagens uppdrag",
   "home:quest.empty": "Starta din första lektion",
   "home:challenge.next": "Ny utmaning om",

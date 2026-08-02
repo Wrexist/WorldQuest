@@ -21,11 +21,13 @@ import {
   space,
   text,
 } from '@worldquest/design'
+import { lessonLength } from '@worldquest/engines'
 import type { GradeResult, LessonState, Question } from '@worldquest/engines'
 import { useLesson } from './hooks/useLesson.js'
 import { SPEED_SECONDS } from './modes.js'
 import { OutOfHearts } from './OutOfHearts.js'
 import { Paused } from './Paused.js'
+import { recordPace, useItemPace } from './usePace.js'
 import { useContent } from '../../lib/content.js'
 import { tContent, useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
@@ -56,10 +58,14 @@ export function LessonScreen({
   const { index, memory, status, reload, isOffline } = useContent()
   const [screen, setScreen] = useState<ScreenState>('loading')
 
+  // Sized from the user's own pace, not a hardcoded ten. `lessonLength` aims at a
+  // two-minute lesson so that "five minutes a day" is a real promise rather than a
+  // number in Settings — see features/lesson/usePace.ts for why this was inert.
+  const itemMs = useItemPace()
   const questions = useMemo<readonly Question[]>(() => {
     if (status !== 'ready' || !index) return []
-    return index.compose({ count: 10 })
-  }, [status, index])
+    return index.compose({ count: lessonLength(itemMs) })
+  }, [status, index, itemMs])
 
   const handleComplete = useCallback((state: LessonState, optimistic: GradeResult) => {
     // Enqueue, never await. A lesson finishing must not depend on the network —
@@ -74,6 +80,8 @@ export function LessonScreen({
     // must be right the moment the lesson ends — waiting for the server round trip
     // would show an empty week to anyone who finishes a lesson offline.
     recordLessonCompleted()
+    // The user's pace, from the answers just given. Sizes every later lesson.
+    recordPace(state.answers)
 
     track('lesson_completed', {
       lesson_id: state.lessonId,

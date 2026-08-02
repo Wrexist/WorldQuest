@@ -10,10 +10,10 @@
     "dev": "pnpm --filter @worldquest/mobile start",
     "generate": "pnpm design:tokens && pnpm i18n:types",
     "prepare": "pnpm generate",
-    "verify": "pnpm generate && pnpm typecheck && pnpm test && pnpm content:validate && pnpm i18n:check && pnpm design:contrast",
+    "verify": "pnpm generate && pnpm typecheck && pnpm test && pnpm content:validate && pnpm i18n:check && pnpm design:contrast && pnpm reachability",
     "typecheck": "pnpm -r --filter './packages/*' --filter './apps/*' typecheck",
     "test": "pnpm -r --filter './packages/*' --filter './apps/*' test && vitest run --config vitest.edge.config.ts",
-    "$comment:e2e": "Exports the real bundle through Metro and drives it in Chromium via react-native-web. Not a device — see apps/mobile/e2e/flow.cjs for exactly what that does and does not prove. The export step is the point as much as the driving: it is the only thing in this repo that runs the bundler.",
+    "$comment:e2e": "Exports the real bundle through Metro and drives it in Chromium via react-native-web. Not a device \u2014 see apps/mobile/e2e/flow.cjs for exactly what that does and does not prove. The export step is the point as much as the driving: it is the only thing in this repo that runs the bundler.",
     "e2e": "pnpm --filter @worldquest/mobile exec expo export --platform web --output-dir ../../node_modules/.cache/wq-web && node apps/mobile/e2e/flow.cjs node_modules/.cache/wq-web node_modules/.cache/wq-e2e-shots",
     "content:validate": "pnpm --filter @worldquest/content validate",
     "content:preview": "pnpm --filter @worldquest/content preview",
@@ -32,7 +32,8 @@
     "db:test": "supabase test db",
     "edge:build": "tsx supabase/functions/build.ts submit-lesson",
     "edge:deploy": "supabase functions deploy submit-lesson --project-ref tjdjogidudjobxipibqb",
-    "screenshot": "esbuild scripts/screenshot/render.tsx --bundle --platform=node --format=cjs --jsx=automatic --alias:react-native=react-native-web --define:__DEV__=false --alias:expo-linear-gradient=./scripts/screenshot/linear-gradient-web.tsx --loader:.json=json --outfile=node_modules/.cache/wq-render.cjs && node node_modules/.cache/wq-render.cjs > node_modules/.cache/wq-app.html && node scripts/screenshot/shoot.cjs node_modules/.cache/wq-app.html docs/design/assets/screens"
+    "screenshot": "esbuild scripts/screenshot/render.tsx --bundle --platform=node --format=cjs --jsx=automatic --alias:react-native=react-native-web --define:__DEV__=false --alias:expo-linear-gradient=./scripts/screenshot/linear-gradient-web.tsx --loader:.json=json --outfile=node_modules/.cache/wq-render.cjs && node node_modules/.cache/wq-render.cjs > node_modules/.cache/wq-app.html && node scripts/screenshot/shoot.cjs node_modules/.cache/wq-app.html docs/design/assets/screens",
+    "reachability": "tsx scripts/reachability.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

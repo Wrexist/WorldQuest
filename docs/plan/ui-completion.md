@@ -177,6 +177,33 @@ speed round all ship; currency is a bonus fourth axis. The two missing —
 tap-the-country and landmark → country — are the map-geometry and photo-licensing
 decisions, so they are blocked rather than pending.
 
+### Wave 7 — the backlog `pnpm reachability` found
+
+Four unreachable states in a row were each found by accident, one commit apart, and
+every one had passing tests around it. Tests prove a function is correct; nothing
+proved anything ever *calls* it. So that question is now a check —
+[`scripts/reachability.ts`](../../scripts/reachability.ts), part of `pnpm verify` —
+which lists every value the engine exports and asks whether the app or the content
+scripts mention it.
+
+It found twelve more on its first honest run. They are tracked in the script's
+`KNOWN_GAPS`, kept deliberately separate from the legitimate allowances so that
+folding them in cannot quietly make the check pass. It reports them loudly and does
+not fail the build: they are a backlog, not a regression.
+
+| # | Gap | Why it matters |
+|---|---|---|
+| 7.1 | **Achievements never evaluate** | `useAchievements()` is called with no progress map, so every achievement is permanently locked and the screen can never show a single unlock. The definitions, the tier maths, the sort and the copy are all built and none of it can ever fire. |
+| 7.2 | **Quests are not wired** | The screen renders its empty state and no quest is ever generated. `applyQuestEvent`, `SLOTS` and `hasExpired` have no caller. |
+| 7.3 | **The sync queue never backs off** | `backoffMs` is unused — a failing server is retried at full speed. |
+| 7.4 | **Parked mutations are invisible** | The engine parks work that exhausted its retries specifically so it is never silently dropped, and nothing surfaces it. `retryParked` has no caller. |
+| 7.5 | **No streak milestone is celebrated** | `isMilestone` has no caller, so 7, 30 and 100 days pass unremarked. |
+| 7.6 | `regionProgress` | The region screen computes its own totals, so two code paths can disagree about the same number. |
+
+Deliberately NOT in that list, because they are right: everything server-authoritative
+(`applyActivity`, `grantFreeze`, `markBroken`, the reward maths), everything Leagues
+(v2.0), and everything consumed by another engine.
+
 ### Deliberately not built
 | Item | Why |
 |---|---|
