@@ -31,6 +31,7 @@ import {
   type Slot,
 } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
+import { SPEED_SECONDS } from '../lesson/modes.js'
 
 const SLOT_TITLE: Record<Slot, TranslationKey> = {
   locate: 'quests:slot.locate',
@@ -50,9 +51,14 @@ export type QuestScreenProps = {
   readonly quest: DailyQuest | null
   readonly loading: boolean
   readonly onStart: () => void
+  /**
+   * Optional so the screenshot renderer and component tests mount without a router,
+   * like every other callback here.
+   */
+  readonly onStartSpeedRound?: (() => void) | undefined
 }
 
-export function QuestScreen({ quest, loading, onStart }: QuestScreenProps) {
+export function QuestScreen({ quest, loading, onStart, onStartSpeedRound }: QuestScreenProps) {
   const t = useT()
 
   if (loading) return <QuestSkeleton />
@@ -112,7 +118,23 @@ export function QuestScreen({ quest, loading, onStart }: QuestScreenProps) {
       {/* One primary action. A quest screen whose only affordance is reading is a
           screen the user leaves. */}
       {!quest.complete && <Button label={t('common:continue')} onPress={onStart} />}
-    </ScrollView>
+    
+      {/* The speed round lives here rather than on Home: it is a variation for
+          someone already in a practising frame of mind, and putting a second CTA
+          beside "Continue" on Home would split the one primary action. */}
+      {onStartSpeedRound !== undefined && (
+        <Card level={2} style={styles.speed}>
+          <Text style={styles.speedTitle}>{t('lesson:speed.title')}</Text>
+          <Text style={styles.subtitle}>{t('lesson:speed.body', { seconds: SPEED_SECONDS })}</Text>
+          <Button
+            variant="secondary"
+            label={t('lesson:speed.start')}
+            onPress={onStartSpeedRound}
+          />
+        </Card>
+      )}
+
+      </ScrollView>
   )
 }
 
@@ -169,6 +191,8 @@ function QuestSkeleton() {
 }
 
 const styles = StyleSheet.create({
+  speed: { padding: space[4], gap: space[2], marginTop: space[3] },
+  speedTitle: { ...text('h3'), color: colors.text.primary },
   screen: { flex: 1, backgroundColor: colors.bg.canvas },
   content: { padding: space[4], gap: space[3] },
   centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },

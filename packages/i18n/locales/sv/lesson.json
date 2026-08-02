@@ -22,5 +22,10 @@
   "lesson:prompt.flag_described": "Vilket lands flagga är {description}?",
   "lesson:feedback.wrong.bodyPlain": "Svaret är {correct}.",
   "lesson:prompt.currency_of": "Vilka pengar använder man i {entityName}?",
-  "lesson:prompt.currency_reverse": "Vilket land använder {valueName}?"
+  "lesson:prompt.currency_reverse": "Vilket land använder {valueName}?",
+  "lesson:speed.title": "Snabbrunda",
+  "lesson:speed.body": "Tio frågor, {seconds} sekunder var. Att missa en kostar ingenting.",
+  "lesson:speed.start": "Starta snabbrunda",
+  "lesson:speed.remaining": "{seconds} sekunder kvar",
+  "lesson:speed.timeUp": "Tiden tog slut på den."
 }

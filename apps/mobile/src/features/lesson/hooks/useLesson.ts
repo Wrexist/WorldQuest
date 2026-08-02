@@ -9,7 +9,7 @@
  * Spec: PROJECT.md §6 · docs/engineering/architecture.md
  */
 
-import { useCallback, useMemo, useReducer, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
 import {
   accuracy,
   currentQuestion,
@@ -29,6 +29,8 @@ export type UseLessonOptions = {
   /** The user's current memory state, for optimistic grading. */
   readonly memory: ReadonlyMap<string, MemoryState>
   readonly heartsEnabled?: boolean
+  /** Milliseconds per question, or null for an untimed lesson. */
+  readonly timeLimitMs?: number | null
   /** Called once the lesson ends. Enqueues the submit; never awaits the network. */
   readonly onComplete: (state: LessonState, optimistic: GradeResult) => void
 }
@@ -43,15 +45,38 @@ export function useLesson({
   questions,
   memory,
   heartsEnabled = true,
+  timeLimitMs = null,
   onComplete,
 }: UseLessonOptions) {
   const [state, dispatch] = useReducer(transition, undefined, () =>
-    initialState({ heartsEnabled }),
+    initialState({ heartsEnabled, timeLimitMs }),
   )
   // Completion must fire exactly once even if React re-renders or double-invokes.
   const completed = useRef(false)
 
   const send = useCallback((event: LessonEvent) => dispatch(event), [])
+
+  /**
+   * The countdown, in a timed lesson.
+   *
+   * One timeout per question, cleared on every phase or index change — so answering
+   * cancels it, and it can never fire against a question the user has already left.
+   * Without that cleanup a slow reader gets a TIMEOUT recorded on the NEXT question,
+   * which is the worst possible version of this feature.
+   *
+   * `shownAt` rather than a fresh interval: the deadline is anchored to when the
+   * question appeared, so a re-render does not restart the clock and give a bonus
+   * second to anyone whose device happened to re-layout.
+   */
+  useEffect(() => {
+    if (state.timeLimitMs === null) return
+    if (state.phase !== 'presenting') return
+    if (state.shownAt === null) return
+
+    const remaining = state.shownAt + state.timeLimitMs - now()
+    const timer = setTimeout(() => dispatch({ type: 'TIMEOUT', now: now() }), Math.max(0, remaining))
+    return () => clearTimeout(timer)
+  }, [state.phase, state.index, state.shownAt, state.timeLimitMs])
 
   const start = useCallback(
     (lessonId: string) => {

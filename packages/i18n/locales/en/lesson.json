@@ -44,5 +44,15 @@
   "lesson:prompt.currency_of": "What money do people use in {entityName}?",
   "lesson:prompt.currency_of__note": "Currency question. Deliberately plain — 'What is the currency of X?' is a phrase a ten-year-old reads past. {entityName} is a localised country name.",
   "lesson:prompt.currency_reverse": "Which country uses the {valueName}?",
-  "lesson:prompt.currency_reverse__note": "Reverse currency question. Only generated when the currency belongs to exactly one country — the engine refuses it for the euro."
+  "lesson:prompt.currency_reverse__note": "Reverse currency question. Only generated when the currency belongs to exactly one country — the engine refuses it for the euro.",
+  "lesson:speed.title": "Speed round",
+  "lesson:speed.title__note": "Name of the timed lesson mode.",
+  "lesson:speed.body": "Ten questions, {seconds} seconds each. Missing one costs nothing.",
+  "lesson:speed.body__note": "Explains the mode before it starts. The last sentence matters — it is what makes the mode playful rather than punishing.",
+  "lesson:speed.start": "Start speed round",
+  "lesson:speed.start__note": "Begins a timed lesson.",
+  "lesson:speed.remaining": "{seconds} seconds left",
+  "lesson:speed.remaining__note": "Accessibility label for the countdown. Read on demand, never announced every second.",
+  "lesson:speed.timeUp": "Time's up on that one.",
+  "lesson:speed.timeUp__note": "Shown when a question times out. Neutral and brief — it is the clock's doing, not a failure. NEVER 'Too slow!'."
 }

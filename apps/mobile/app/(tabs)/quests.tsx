@@ -61,6 +61,7 @@ export default function QuestsRoute() {
     <QuestScreen
       quest={quest}
       loading={status === 'loading'}
+      onStartSpeedRound={() => router.push('/lesson?mode=speed')}
       onStart={() => router.push('/lesson')}
     />
   )

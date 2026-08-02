@@ -253,6 +253,20 @@ const step = (name, ok, detail = '') => {
   step('deep route /region/EU lists real countries', found.length >= 3, found.join(', '))
   await page.screenshot({ path: path.join(SHOTS, 'region.png') })
 
+  // ── the speed round ────────────────────────────────────────────────────────
+  await page.goto(`http://localhost:${PORT}/lesson?mode=speed`, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(1800)
+  const speed = await body()
+  step('speed round starts a timed lesson', /capital of|flag|money do people/i.test(speed))
+  await page.screenshot({ path: path.join(SHOTS, 'speed-round.png') })
+
+  // The clock must run out on its own and the copy must stay neutral. Ten seconds
+  // plus slack — this is the one step that genuinely has to wait.
+  await page.waitForTimeout(11_000)
+  const timedOut = await body()
+  step("a timeout says the clock ran out, never 'too slow'",
+       /Time's up/i.test(timedOut) && !/too slow|hurry|failed/i.test(timedOut))
+
   // ── the returning user ─────────────────────────────────────────────────────
   //
   // Reached by the gate in real use; driven directly here because faking a week of

@@ -23,6 +23,7 @@ import {
 } from '@worldquest/design'
 import type { GradeResult, LessonState, Question } from '@worldquest/engines'
 import { useLesson } from './hooks/useLesson.js'
+import { SPEED_SECONDS } from './modes.js'
 import { useContent } from '../../lib/content.js'
 import { tContent, useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
@@ -31,7 +32,14 @@ import { enqueueLesson } from '../../lib/sync.js'
 
 type ScreenState = 'loading' | 'error' | 'empty' | 'ready'
 
-export function LessonScreen({ onExit }: { onExit: () => void }) {
+export function LessonScreen({
+  onExit,
+  mode = 'normal',
+}: {
+  onExit: () => void
+  /** `speed` runs the same items against a clock. Scoring is unchanged. */
+  mode?: 'normal' | 'speed'
+}) {
   const t = useT()
   const { index, memory, status, reload, isOffline } = useContent()
   const [screen, setScreen] = useState<ScreenState>('loading')
@@ -68,7 +76,8 @@ export function LessonScreen({ onExit }: { onExit: () => void }) {
     })
   }, [isOffline])
 
-  const lesson = useLesson({ questions, memory, onComplete: handleComplete })
+  const timeLimitMs = mode === 'speed' ? SPEED_SECONDS * 1000 : null
+  const lesson = useLesson({ questions, memory, timeLimitMs, onComplete: handleComplete })
 
   useEffect(() => {
     if (status === 'loading') return setScreen('loading')
@@ -117,6 +126,13 @@ export function LessonScreen({ onExit }: { onExit: () => void }) {
           value={lesson.state.hearts}
           accessibilityLabel={t('lesson:hearts.remaining', { count: lesson.state.hearts })}
         />
+        {mode === 'speed' && (
+          <Countdown
+            key={lesson.state.index}
+            seconds={SPEED_SECONDS}
+            running={lesson.state.phase === 'presenting'}
+          />
+        )}
       </View>
 
       <ScrollView contentContainerStyle={styles.body}>
@@ -153,7 +169,14 @@ export function LessonScreen({ onExit }: { onExit: () => void }) {
               // Never "Wrong!". State the truth, name the right answer, move on.
               <>
                 <Text style={styles.feedbackTitle}>
-                  {t('lesson:feedback.wrong.title', { chosen: chosenLabel(question, lastAnswer?.chosenOptionId) })}
+                  {/* A timeout has no chosen option. "That's undefined." is what the
+                      normal branch would render, and the clock running out is not the
+                      user choosing wrongly — it deserves its own neutral sentence. */}
+                  {lastAnswer?.chosenOptionId == null
+                    ? t('lesson:speed.timeUp')
+                    : t('lesson:feedback.wrong.title', {
+                        chosen: chosenLabel(question, lastAnswer.chosenOptionId),
+                      })}
                 </Text>
                 <Text style={styles.feedbackBody}>
                   {question.hint
@@ -176,6 +199,38 @@ export function LessonScreen({ onExit }: { onExit: () => void }) {
           <Button label={t('common:continue')} onPress={lesson.advance} />
         </View>
       )}
+    </View>
+  )
+}
+
+/**
+ * The clock, as a bar that empties.
+ *
+ * A bar rather than a number counting down: digits ticking demand attention that
+ * belongs on the question, and a bar is read peripherally. It is keyed on the question
+ * index by the caller, so each question gets a fresh one rather than an animation
+ * resuming mid-flight.
+ *
+ * The accessible label is the seconds remaining, available on demand — never
+ * announced every second, which would make the mode unusable with a screen reader.
+ */
+function Countdown({ seconds, running }: { seconds: number; running: boolean }) {
+  const t = useT()
+  const [left, setLeft] = useState(seconds)
+
+  useEffect(() => {
+    if (!running) return
+    const tick = setInterval(() => setLeft((n) => Math.max(0, n - 1)), 1000)
+    return () => clearInterval(tick)
+  }, [running])
+
+  return (
+    <View
+      accessible
+      accessibilityLabel={t('lesson:speed.remaining', { seconds: left })}
+      style={styles.clockTrack}
+    >
+      <View style={[styles.clockFill, { width: `${(left / seconds) * 100}%` }]} />
     </View>
   )
 }
@@ -294,6 +349,14 @@ function SummaryState({
 }
 
 const styles = StyleSheet.create({
+  clockTrack: {
+    width: 56,
+    height: 6,
+    borderRadius: radius.full,
+    backgroundColor: colors.bg.surfaceRaised,
+    overflow: 'hidden',
+  },
+  clockFill: { height: '100%', backgroundColor: colors.status.streak },
   screen: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[4] },
   centered: { alignItems: 'center', justifyContent: 'center' },
   flex: { flex: 1 },
