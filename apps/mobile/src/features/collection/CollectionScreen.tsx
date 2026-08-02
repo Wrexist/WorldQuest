@@ -294,7 +294,9 @@ const styles = StyleSheet.create({
     color: colors.action.secondary,
     position: 'absolute',
     top: space[1],
-    right: space[1],
+    // `end`, not `right`: in Arabic or Hebrew the tile mirrors and a physical `right`
+    // would leave the star on the wrong corner, overlapping the name.
+    end: space[1],
   },
   tileSub: { ...text('caption'), color: colors.text.tertiary, textAlign: 'center' },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[2] },

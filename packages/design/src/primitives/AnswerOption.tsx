@@ -120,7 +120,9 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     textAlign: 'center',
   },
-  glyphWrap: { position: 'absolute', right: space[4] },
+  // `end`, not `right`. The whole row mirrors in RTL and the correctness glyph has to
+  // travel with the text it belongs to, not stay pinned to a physical edge.
+  glyphWrap: { position: 'absolute', end: space[4] },
   // A tick or a cross, not type — it comes from the system emoji/symbol font, so
   // there is no custom family to pick a weight from.
   glyph: { fontSize: 18, color: colors.text.onAccent },

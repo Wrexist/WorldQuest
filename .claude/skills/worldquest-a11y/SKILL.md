@@ -15,13 +15,20 @@ is not a niche case.
 ## Run the automated checks first
 
 ```bash
-pnpm lint:a11y          # eslint-plugin-react-native-a11y
+pnpm lint:a11y          # RTL, ARIA spelling, touch handlers, unlabelled controls
 pnpm design:contrast    # every token pair
-pnpm test:a11y          # RNTL role/label queries
-pnpm test:scale         # screenshots at 100% and 200%
 ```
 
-Then do the manual pass. **The manual pass cannot be automated away.**
+Both run inside `pnpm verify`, so they are already green by the time you read this —
+their value is that they *stay* green.
+
+**Still not built**, and named here rather than listed as if they were: a scale
+harness that screenshots at 100 % and 200 %, and role/label queries across every
+screen. Until they exist, 200 % text and focus order are manual, every time.
+
+Then do the manual pass. **The manual pass cannot be automated away** — and the three
+commands this file used to promise did not exist, which is worse than promising
+nothing, because a step that always fails is a step people learn to skip.
 
 ## The manual pass
 
