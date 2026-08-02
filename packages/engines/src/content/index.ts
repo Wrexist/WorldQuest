@@ -34,9 +34,9 @@ export function isQuizzable(fact: Fact): boolean {
  * Build the index a lesson is composed from.
  *
  * The item count is the platform thesis made arithmetic: N facts × M matching
- * templates. Five countries with two attributes and four templates yields far more
- * questions than anyone would hand-write, and adding a sixth country adds its share
- * without touching a line of code.
+ * templates. Sixty countries with two attributes and five templates yield far more
+ * questions than anyone would hand-write, and the sixty-first adds its share without
+ * touching a line of code — which is the claim the whole package exists to make good.
  */
 export function buildIndex(input: {
   entities: readonly Entity[]
@@ -154,13 +154,6 @@ const normalise = (s: string): string =>
   s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
 
 /**
- * Build a renderable question.
- *
- * Returns null when there are not enough plausible distractors — a short lesson is
- * better than a question with an absurd option, which teaches nothing and makes the
- * app feel cheap.
- */
-/**
  * The wrong-answer hint, or nothing.
  *
  * Two ways a hint can be worthless, and both shipped before this function existed:
@@ -272,6 +265,19 @@ export function isSelfAnswering(index: ContentIndex, item: Item, locale: string)
   return Object.values(resolved.promptParams).some((value) => namesIt.test(normalise(value)))
 }
 
+/**
+ * Build a renderable question, or nothing.
+ *
+ * Three reasons it declines, and the callers that care can tell them apart:
+ *
+ * 1. **Too few plausible distractors.** A short lesson beats a question with an
+ *    absurd option, which teaches nothing and makes the app feel cheap. Fixable by
+ *    authoring more countries into that subregion — `pnpm content:stats` says which.
+ * 2. **The prompt names its own answer** — see `isSelfAnswering`. Not fixable, and
+ *    not a gap: the other template for the same fact still works.
+ * 3. The item references content that is not in the index at all, which is a bug in
+ *    the pack rather than in the question.
+ */
 export function buildQuestion(
   index: ContentIndex,
   item: Item,

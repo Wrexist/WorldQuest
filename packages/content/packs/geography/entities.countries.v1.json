@@ -1,6 +1,6 @@
 {
   "$schema": "../../schema/pack.schema.json",
-  "$comment": "Phase 1 walking-skeleton entity set. The exit criterion for Phase 1 is that adding a sixth country means editing THIS FILE (plus its facts) and nothing else — no engine change, no screen change. packages/engines/src/content/thesis.test.ts asserts exactly that.",
+  "$comment": "Every country the app knows. The Phase 1 exit criterion — adding a country means editing THIS FILE (plus its facts) and nothing else, no engine change, no screen change — has now been exercised fifty-five times rather than argued about. packages/engines/src/content/thesis.test.ts still asserts it. Author by SUBREGION: a subregion with fewer than four members cannot fill a four-option question, so a country added alone teaches nobody until its neighbours land. `pnpm content:stats` says which are thin.",
   "packId": "geography.entities",
   "version": "1.0.0",
   "subject": "geography",

@@ -31,8 +31,9 @@ const index = buildIndex({ entities, facts, templates })
 
 describe('the platform thesis', () => {
   it('generates far more items than facts, from templates alone', () => {
-    // 9 facts × the templates that match their attribute. Hand-writing this many
-    // questions is exactly the work the architecture exists to avoid.
+    // Every authored fact × the templates that match its attribute. The ratio is the
+    // architecture's whole claim, and it has held from 9 facts to 120: hand-writing
+    // this many questions is exactly the work the design exists to avoid.
     expect(index.items.length).toBeGreaterThan(facts.length)
     expect(index.items.length).toBeGreaterThanOrEqual(16)
   })
