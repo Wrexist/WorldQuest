@@ -47,3 +47,9 @@ packages/design/preview/
 
 # Generated pseudo-locale — rebuild with `pnpm i18n:pseudo`
 packages/i18n/locales/en-XA/
+
+# tsx's compilation cache. It lands in the working directory, which for a workspace
+# script run from the root is the REPO root — so three of these were committed before
+# anyone noticed them in a file listing.
+tsx-0/
+.tsx-*/
