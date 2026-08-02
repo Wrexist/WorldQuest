@@ -48,11 +48,16 @@ const REGION_NAME: Record<RegionCode, TranslationKey> = {
 
 export type ExploreScreenProps = {
   readonly world: WorldProgress | null
+  /**
+   * Opens a collection. Optional so the screenshot renderer and the component tests
+   * can mount Explore without a router — the same reason every other callback here is.
+   */
+  readonly onOpenCollection?: ((kind: 'flags' | 'countries') => void) | undefined
   readonly loading: boolean
   readonly onSelectRegion: (region: RegionCode) => void
 }
 
-export function ExploreScreen({ world, loading, onSelectRegion }: ExploreScreenProps) {
+export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection }: ExploreScreenProps) {
   const t = useT()
 
   if (loading || world === null) return <ExploreSkeleton />
@@ -82,6 +87,34 @@ export function ExploreScreen({ world, loading, onSelectRegion }: ExploreScreenP
           })}
         </Text>
       </Card>
+
+      {/* Collections sit ABOVE the continent grid deliberately. The grid is
+          navigation — where do I go next — while these two answer "what do I have",
+          which is the question that brings someone back on day nine. */}
+      {onOpenCollection !== undefined && (
+        <View style={styles.collections}>
+          <Card
+            level={2}
+            role="button"
+            accessibilityLabel={t('collection:flags.title')}
+            onPress={() => onOpenCollection('flags')}
+            style={styles.collection}
+          >
+            <Text style={styles.collectionGlyph}>⚑</Text>
+            <Text style={styles.collectionName}>{t('collection:flags.title')}</Text>
+          </Card>
+          <Card
+            level={2}
+            role="button"
+            accessibilityLabel={t('collection:countries.title')}
+            onPress={() => onOpenCollection('countries')}
+            style={styles.collection}
+          >
+            <Text style={styles.collectionGlyph}>◎</Text>
+            <Text style={styles.collectionName}>{t('collection:countries.title')}</Text>
+          </Card>
+        </View>
+      )}
 
       <View style={styles.grid}>
         {REGIONS.map((region) => {
@@ -156,6 +189,10 @@ function ExploreSkeleton() {
 }
 
 const styles = StyleSheet.create({
+  collections: { flexDirection: 'row', gap: space[2], paddingHorizontal: space[4], marginBottom: space[3] },
+  collection: { flex: 1, padding: space[3], alignItems: 'center', gap: space[1] },
+  collectionGlyph: { ...text('h1'), color: colors.text.primary },
+  collectionName: { ...text('caption', { weight: '700' }), color: colors.text.secondary },
   screen: { flex: 1, backgroundColor: colors.bg.canvas },
   content: { padding: space[4], gap: space[4] },
   header: { gap: space[1] },

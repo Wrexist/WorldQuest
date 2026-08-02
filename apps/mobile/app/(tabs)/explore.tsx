@@ -26,6 +26,7 @@ export default function ExploreRoute() {
     <ExploreScreen
       world={world}
       loading={status === 'loading'}
+      onOpenCollection={(kind) => router.push(`/collection/${kind}`)}
       onSelectRegion={(region) => router.push(`/region/${region}`)}
     />
   )

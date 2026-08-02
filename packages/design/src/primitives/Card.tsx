@@ -85,16 +85,26 @@ export function Card({
   const Gradient = loadGradient()
 
   const interactive = onPress !== undefined
+  const wrapped = !flat && Gradient !== null
+
+  /**
+   * `style` lands on the OUTERMOST element only, and never on both.
+   *
+   * When the gradient wraps, the caller's style used to be applied to the wrapper AND
+   * to the inner view. Margins doubled silently; percentage widths compounded, so a
+   * `width: '31%'` tile became 31% of 31% and rendered its label one character per
+   * line. It looked like a text-wrapping bug and was a layout one.
+   *
+   * The inner view stretches to fill instead, and keeps only what it owns: padding,
+   * radius, and the transparent fill that lets the gradient through.
+   */
   const shared = {
     accessible: accessibilityLabel !== undefined || interactive,
     'aria-label': accessibilityLabel,
     testID,
-    style: [
-      styles.base,
-      LEVELS[level],
-      flat || Gradient === null ? null : styles.transparent,
-      style,
-    ],
+    style: wrapped
+      ? [styles.base, LEVELS[level], styles.transparent, styles.fill]
+      : [styles.base, LEVELS[level], style],
   }
 
   // A pressable card is a Pressable, not a View with a touch handler. That is what
@@ -122,13 +132,13 @@ export function Card({
     <View {...shared}>{children}</View>
   )
 
-  if (flat || Gradient === null) return content
+  if (!wrapped) return content
 
   // The gradient sits BEHIND the card rather than wrapping it, so the card keeps
   // owning its own padding, radius and accessibility grouping. Wrapping would put a
   // second element between the screen reader and the label.
   return (
-    <View style={[styles.wrap, LEVELS[level], style]}>
+    <View style={[styles.wrap, LEVELS[level], style]} pointerEvents="box-none">
       <Gradient colors={stops(level)} start={START} end={END} style={StyleSheet.absoluteFill} />
       {content}
     </View>
@@ -184,7 +194,9 @@ const LEVELS = StyleSheet.create({
 
 const styles = StyleSheet.create({
   base: { borderRadius: radius.lg, padding: space[4] },
-  // The wrapper carries the fill and the clip; the inner view must not paint over it.
+  // The wrapper carries the fill, the clip and the caller's layout; the inner view
+  // must not paint over it, and must not receive the layout a second time.
   wrap: { borderRadius: radius.lg, overflow: 'hidden' },
+  fill: { flex: 1, width: '100%' },
   transparent: { backgroundColor: 'transparent', shadowOpacity: 0, elevation: 0 },
 })

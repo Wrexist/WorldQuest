@@ -29,7 +29,7 @@ counts below look small and the work does not.
 | 7. Country page | 🟡 — About grid has capital only; no population, currency, language |
 | 8. Explore — globe | ⬜ — blocked on map-geometry licensing, not on effort |
 | 9. Explore — continents | ✅ |
-| 10. Flags collection | ⬜ — pure data, 65 countries already have flag facts |
+| 10. Flags collection | ✅ — plus a countries twin, search, and three filters |
 | 11. Landmarks collection | ⬜ — blocked on photo licensing |
 | 12. Leagues | ⛔ **v2.0** — out of scope by the roadmap |
 | 13. Profile | 🟡 — no level title, no XP bar, no weekly activity |
@@ -70,10 +70,27 @@ surface that shows a user what they have.
 
 | # | Work | Why now |
 |---|---|---|
-| 2.1 | **Flags collection** (#10) | Grid, `172 / 195`, locked tiles dimmed but **visible** — seeing what you have not collected is the motivation. Needs no art: the tile is the flag description until SVGs land. |
-| 2.2 | **Countries collection** | Same grid, keyed on entity mastery, which `packages/engines/progression` already computes. |
-| 2.3 | **Favourites** | The Country page already draws a heart that does nothing. |
-| 2.4 | **Search** (+ H14 empty) | 65 countries is past the point where scrolling is the answer. |
+| 2.1 | **Flags collection** (#10) | ✅ Grid, `0 / 65`, uncollected tiles dimmed but **visible**. Each tile holds a 3:2 art slot, so the sourced SVGs drop in without a relayout. |
+| 2.2 | **Countries collection** | ✅ Same route, keyed on entity mastery from `packages/engines/progression`. `mastered` is the bar, not `burnished` — a collection you can only finish by overlearning every entry is one nobody finishes. |
+| 2.3 | **Favourites** | ⬜ The Country page already draws a heart that does nothing. |
+| 2.4 | **Search** (+ H14 empty) | ✅ Diacritic-insensitive, with an empty state that offers a way onward. |
+
+Building the collection screen surfaced two bugs in `Card`, both invisible until a
+percentage-width tile existed:
+
+- **The caller's `style` was applied twice** — once to the gradient wrapper and once to
+  the inner view. Margins had been silently doubling on every card in the app; a
+  `width: '31%'` tile became 31% of 31% and rendered its label one character per line.
+- And the one that mattered most: **the tab bar was a `View` with `onTouchEnd`**.
+  That fires for a finger and nothing else — no mouse click, no keyboard, and no
+  screen-reader activation, because VoiceOver dispatches an accessibility action rather
+  than a touch sequence. The app's primary navigation was inert on web and unreachable
+  with a screen reader **on every platform**. There is now a guard against
+  `onTouchEnd`/`onTouchStart` in any primitive.
+
+The E2E was complicit: its tab steps asserted `text.length > 40`, which Home satisfies,
+so four tabs "passed" while never leaving Home. They now click by ARIA role, assert
+`aria-selected`, and require text only that screen shows.
 
 ### Wave 3 — progression the user can feel
 Every number below already exists in an engine and is invisible in the UI.

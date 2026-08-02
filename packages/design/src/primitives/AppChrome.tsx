@@ -9,7 +9,7 @@
  * Spec: docs/design/design-system.md · mockup screen 3
  */
 
-import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native'
+import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native'
 import { colors, radius, space } from '../tokens.js'
 import { fontFamily, text } from '../typography.js'
 
@@ -127,20 +127,32 @@ export function TabBar({ items, activeKey, onSelect }: TabBarProps) {
       {items.map((item) => {
         const active = item.key === activeKey
         return (
-          <View
+          <Pressable
             key={item.key}
             accessible
             role="tab"
             aria-label={item.label}
             aria-selected={active}
             style={styles.tab}
-            onTouchEnd={() => onSelect(item.key)}
+            // Pressable + onPress, NOT a View with onTouchEnd.
+            //
+            // `onTouchEnd` fires for a finger and for nothing else. A mouse click does
+            // not produce a touch sequence, so on web the entire tab bar was inert —
+            // the app's primary navigation, unusable with a trackpad. Neither does
+            // VoiceOver's activate gesture, which dispatches an accessibility action,
+            // so the bar was also unreachable with a screen reader ON EVERY PLATFORM.
+            // And there was no keyboard activation, no focus ring, no pressed state.
+            //
+            // It looked fine, and it worked when tested with a finger, which is why it
+            // survived. `pnpm e2e` found it the moment the tab assertions got strict
+            // enough to notice they were passing while sitting on Home.
+            onPress={() => onSelect(item.key)}
           >
             <View style={[styles.tabChip, active && styles.tabChipActive]}>
               <Text style={[styles.tabGlyph, active && styles.tabGlyphActive]}>{item.glyph}</Text>
             </View>
             <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>{item.label}</Text>
-          </View>
+          </Pressable>
         )
       })}
     </View>

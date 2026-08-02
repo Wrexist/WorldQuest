@@ -135,6 +135,24 @@ describe('primitives obey the token discipline', () => {
     }
   })
 
+  it('never puts a handler on a View instead of a Pressable', () => {
+    // `onTouchEnd` fires for a finger and for nothing else — no mouse click, no
+    // keyboard, and crucially no screen-reader activation, because VoiceOver
+    // dispatches an accessibility action rather than a touch sequence.
+    //
+    // The TabBar shipped this way: the app's primary navigation, inert on web and
+    // unreachable with a screen reader on every platform. It looked right and it
+    // worked when poked with a finger, which is exactly why nobody caught it.
+    for (const { file, code } of sources) {
+      expect(code, `${file} uses onTouchEnd — use a Pressable with onPress`).not.toMatch(
+        /onTouchEnd=\{/,
+      )
+      expect(code, `${file} uses onTouchStart — use a Pressable with onPress`).not.toMatch(
+        /onTouchStart=\{/,
+      )
+    }
+  })
+
   it('honours reduced motion wherever it animates', () => {
     for (const { file, code } of sources) {
       if (!code.includes('Animated.')) continue

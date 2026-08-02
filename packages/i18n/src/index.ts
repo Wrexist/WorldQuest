@@ -20,6 +20,8 @@ import { IcuFormat } from './icu.js'
 import { pseudo } from './pseudo.js'
 import { NAMESPACES, type Namespace, type TranslationKey, type TranslationParams } from './keys.js'
 
+import enCollection from '../locales/en/collection.json' with { type: 'json' }
+import svCollection from '../locales/sv/collection.json' with { type: 'json' }
 import enOnboarding from '../locales/en/onboarding.json' with { type: 'json' }
 import svOnboarding from '../locales/sv/onboarding.json' with { type: 'json' }
 import enAchievements from '../locales/en/achievements.json' with { type: 'json' }
@@ -86,6 +88,7 @@ const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
   en: {
     achievements: enAchievements,
     onboarding: enOnboarding,
+    collection: enCollection,
     common: enCommon,
     country: enCountry,
     errors: enErrors,
@@ -101,6 +104,7 @@ const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
   sv: {
     achievements: svAchievements,
     onboarding: svOnboarding,
+    collection: svCollection,
     common: svCommon,
     country: svCountry,
     errors: svErrors,

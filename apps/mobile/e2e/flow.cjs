@@ -170,14 +170,63 @@ const step = (name, ok, detail = '') => {
   }
 
   // ── every tab, because a white screen on one of five is a shipped white screen ──
-  for (const tab of ['Explore', 'Quests', 'Profile', 'More']) {
+  //
+  // By ROLE, not by text. Clicking the tab's label hits the Text inside the Pressable
+  // and never fires the handler, so an earlier version of this loop "passed" on four
+  // tabs while sitting on Home the whole time — the assertion was `length > 40`, which
+  // Home satisfies. Both halves were wrong: the click did nothing and the check could
+  // not tell. Now the tab must actually become selected AND the screen must show
+  // something only that screen says.
+  const TABS = [
+    { name: 'Explore', proof: /continents/i },
+    { name: 'Quests', proof: /quest/i },
+    { name: 'Profile', proof: /level|streak|explorer/i },
+    { name: 'More', proof: /settings|about|language/i },
+  ]
+  const homeText = await (async () => {
     await home()
-    await page.getByText(tab, { exact: true }).first().click()
-    await page.waitForTimeout(900)
+    return body()
+  })()
+
+  for (const tab of TABS) {
+    await home()
+    await page.getByRole('tab', { name: tab.name }).click()
+    await page.waitForTimeout(1000)
     const shown = await body()
-    step(`${tab} tab renders`, shown.length > 40 && !/Something broke/.test(shown))
-    if (tab === 'Explore') await page.screenshot({ path: path.join(SHOTS, 'explore.png') })
+    const selected = await page
+      .getByRole('tab', { name: tab.name })
+      .getAttribute('aria-selected')
+    step(
+      `${tab.name} tab navigates and renders its own screen`,
+      selected === 'true' && shown !== homeText && tab.proof.test(shown) && !/Something broke/.test(shown),
+    )
+    if (tab.name === 'Explore') await page.screenshot({ path: path.join(SHOTS, 'explore.png') })
   }
+
+  // ── the collection, reached the way a user reaches it ──────────────────────
+  await home()
+  await page.getByRole('tab', { name: 'Explore' }).click()
+  await page.waitForTimeout(1000)
+  await page.getByText('Flags', { exact: true }).first().click()
+  await page.waitForTimeout(1200)
+  const collection = await body()
+  step('Explore opens the flag collection', /of 6[0-9]|Still to find/.test(collection))
+  await page.screenshot({ path: path.join(SHOTS, 'collection.png') })
+
+  // Uncollected tiles are DIMMED, never hidden — seeing the gap is the motivation,
+  // and a collection that hides what you lack feels smaller than it is.
+  const tiles = await page.evaluate(() => document.body.innerText.split('\n').length)
+  step('uncollected tiles are shown rather than hidden', tiles > 40, `${tiles} lines of tiles`)
+
+  // Search, which is the only way to navigate 65 tiles without scrolling.
+  await page.getByPlaceholder(/Search countries/i).fill('swed')
+  await page.waitForTimeout(700)
+  const searched = await body()
+  step('search narrows the collection', /Sweden/.test(searched) && !/Mongolia/.test(searched))
+
+  await page.getByPlaceholder(/Search countries/i).fill('zzzz')
+  await page.waitForTimeout(700)
+  step('a search with no match offers a way onward', /browse by continent/i.test(await body()))
 
   // ── a deep route, which is also a content check ────────────────────────────
   await page.goto(`http://localhost:${PORT}/region/EU`, { waitUntil: 'networkidle' })

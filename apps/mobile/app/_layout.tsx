@@ -72,6 +72,7 @@ export default function RootLayout() {
             <Stack.Screen name="(auth)/onboarding" options={{ gestureEnabled: false }} />
             <Stack.Screen name="region/[code]" />
             <Stack.Screen name="country/[code]" />
+            <Stack.Screen name="collection/[kind]" />
             <Stack.Screen name="achievements" />
             <Stack.Screen
               name="lesson"

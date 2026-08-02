@@ -30,7 +30,7 @@
  */
 
 import { useState } from 'react'
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   ArtSlot,
   Button,
@@ -123,12 +123,17 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
                 carousel that traps anyone who overshoots. */}
             <View style={styles.dots}>
               {SLIDES.map((s, i) => (
-                <View
+                <Pressable
                   key={s.title}
-                  role="button"
+                  role="tab"
                   aria-label={t('onboarding:progress', { step: i + 1, total: SLIDES.length })}
                   aria-selected={i === slide}
-                  onTouchEnd={() => setSlide(i)}
+                  // Pressable, not a View with onTouchEnd — see TabBar. onTouchEnd
+                  // responds to a finger and to nothing else: no mouse, no keyboard,
+                  // no screen-reader activation.
+                  onPress={() => setSlide(i)}
+                  // The dot is 8pt of paint; the target has to be 44.
+                  hitSlop={18}
                   style={[styles.dot, i === slide && styles.dotOn]}
                 />
               ))}
