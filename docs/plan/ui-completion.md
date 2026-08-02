@@ -26,7 +26,7 @@ counts below look small and the work does not.
 | 4. Daily Quest | ✅ |
 | 5. Lesson runner ★ | ✅ — 3 of 5 question types; the other two are licence-blocked, not unbuilt |
 | 6. Feedback | ✅ *(inline in the runner)* |
-| 7. Country page | 🟡 — About grid has capital only; no population, currency, language |
+| 7. Country page | 🟡 — capital, flag and currency, plus sources and a star. Population and language are open **content** decisions, not unbuilt UI |
 | 8. Explore — globe | ⬜ — blocked on map-geometry licensing, not on effort |
 | 9. Explore — continents | ✅ |
 | 10. Flags collection | ✅ — plus a countries twin, search, and three filters |
