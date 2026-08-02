@@ -60,5 +60,7 @@
   "onboarding:age.selected": "Born in {year}",
   "onboarding:age.selected__note": "Confirms the chosen year in the large display.",
   "onboarding:age.none": "Choose a year",
-  "onboarding:age.none__note": "Placeholder in the large display before a year is chosen."
+  "onboarding:age.none__note": "Placeholder in the large display before a year is chosen.",
+  "onboarding:age.changeDecade": "Change decade",
+  "onboarding:age.changeDecade__note": "Accessibility hint on the collapsed decade chip — tapping it reopens the decade list."
 }

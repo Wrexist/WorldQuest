@@ -138,6 +138,36 @@ describe('OnboardingScreen', () => {
     expect(screen.getByRole('radio', { name: '1930s' })).toBeTruthy()
   })
 
+  it('collapses the decade list once one is chosen, and reopens on tap', () => {
+    // Eleven decades plus ten years does not fit a phone screen, and the eleven stop
+    // being useful the moment one is picked.
+    render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    advanceToAgeStep()
+    fireEvent.click(screen.getByRole('radio', { name: '1990s' }))
+    expect(screen.queryByRole('radio', { name: '1980s' })).toBeNull()
+
+    // Nothing is behind a hidden gesture — the remaining chip is the way back.
+    fireEvent.click(screen.getByRole('radio', { name: /1990s, Change decade/i }))
+    expect(screen.getByRole('radio', { name: '1980s' })).toBeTruthy()
+  })
+
+  it('drops a chosen year when the decade changes underneath it', () => {
+    // Otherwise Continue stays enabled carrying a year the user can no longer see,
+    // and the age gate silently reports an answer nobody gave.
+    const onFinish = vi.fn()
+    render(<OnboardingScreen currentYear={YEAR} onFinish={onFinish} />)
+    advanceToAgeStep()
+    pickYear(1996)
+    // Absent, not "false" — an enabled control simply carries no aria-disabled.
+    expect(screen.getByRole('button', { name: 'Continue' }).getAttribute('aria-disabled')).toBeNull()
+
+    fireEvent.click(screen.getByRole('radio', { name: /1990s, Change decade/i }))
+    fireEvent.click(screen.getByRole('radio', { name: '1980s' }))
+    expect(screen.getByRole('button', { name: 'Continue' }).getAttribute('aria-disabled')).toBe(
+      'true',
+    )
+  })
+
   it('leaves no raw key or unformatted placeholder on screen', () => {
     const { container } = render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
     expect(container.textContent).not.toMatch(/\bonboarding:[a-z]/)

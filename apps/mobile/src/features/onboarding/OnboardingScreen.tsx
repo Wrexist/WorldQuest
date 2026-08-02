@@ -104,6 +104,15 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
    * child experience — the one number on this screen we must not nudge.
    */
   const [decade, setDecade] = useState<number | null>(null)
+  /**
+   * The decade list collapses to the chosen one once picked.
+   *
+   * Eleven decades plus ten years is more than a phone screen holds, and the eleven
+   * stop being useful the moment one is chosen. Collapsing keeps the whole question
+   * — hero, decade, years, Continue — visible without scrolling. Tapping the
+   * remaining chip brings them all back, so nothing is behind a hidden gesture.
+   */
+  const [pickingDecade, setPickingDecade] = useState(true)
   const [goal, setGoal] = useState<DailyGoal>(10)
 
   const decades = useMemo(() => decadesFor(currentYear), [currentYear])
@@ -172,15 +181,32 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
                 cannot see that 1950s exists, and neither could the E2E, which is how
                 this got noticed. Three tidy rows show every option at once. */}
             <View style={styles.decades}>
-              {decades.map((start) => (
-                <Chip
-                  key={start}
-                  label={t('onboarding:age.decadeLabel', { decade: start })}
-                  selected={decade === start}
-                  onPress={() => setDecade(start)}
-                  span="third"
-                />
-              ))}
+              {(pickingDecade ? decades : decades.filter((start) => start === decade)).map(
+                (start) => (
+                  <Chip
+                    key={start}
+                    label={t('onboarding:age.decadeLabel', { decade: start })}
+                    selected={decade === start}
+                    // Collapsed, the chip is the way back to the full list. Open, it
+                    // is the choice itself.
+                    hint={pickingDecade ? undefined : t('onboarding:age.changeDecade')}
+                    onPress={() => {
+                      if (!pickingDecade) {
+                        setPickingDecade(true)
+                        return
+                      }
+                      setDecade(start)
+                      setPickingDecade(false)
+                      // The years about to appear belong to a different decade, so a
+                      // year chosen from the old one is no longer the user's answer.
+                      if (birthYear !== null && Math.floor(birthYear / 10) * 10 !== start) {
+                        setBirthYear(null)
+                      }
+                    }}
+                    span="third"
+                  />
+                ),
+              )}
             </View>
 
             <Text style={styles.label}>{t('onboarding:age.year')}</Text>
@@ -313,19 +339,22 @@ function Chip({
   selected,
   onPress,
   span,
+  hint,
 }: {
   readonly label: string
   readonly selected: boolean
   readonly onPress: () => void
   /** How many fit per row. Decades read "2020s" and need more room than "2020". */
   readonly span?: 'third' | 'quarter'
+  /** Appended to the accessible name when pressing does something other than select. */
+  readonly hint?: string | undefined
 }) {
   return (
     <Card
       level={selected ? 3 : 1}
       role="radio"
       aria-checked={selected}
-      accessibilityLabel={label}
+      accessibilityLabel={hint === undefined ? label : `${label}, ${hint}`}
       onPress={onPress}
       style={[
         styles.chip,

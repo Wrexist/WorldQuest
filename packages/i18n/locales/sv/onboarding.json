@@ -29,5 +29,6 @@
   "onboarding:age.decadeLabel": "{decade}-talet",
   "onboarding:age.pickDecade": "Välj ett årtionde för att se åren",
   "onboarding:age.selected": "Född {year}",
-  "onboarding:age.none": "Välj ett år"
+  "onboarding:age.none": "Välj ett år",
+  "onboarding:age.changeDecade": "Byt årtionde"
 }
