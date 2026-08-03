@@ -184,3 +184,19 @@ export const STREAK_MILESTONES = [7, 30, 100, 365] as const
 
 export const isMilestone = (streak: number): boolean =>
   (STREAK_MILESTONES as readonly number[]).includes(streak)
+
+/**
+ * The next milestone this streak is working towards, or null past the last one.
+ *
+ * Null rather than a fifth invented milestone. Someone on day 400 has passed everything
+ * the balance table pays for, and inventing "500" here would promise a reward that
+ * `xp-economy.md` does not fund — a number in the UI that nothing in the ledger honours
+ * is a lie the user finds out about on the day they reach it.
+ *
+ * Strictly greater than, so the day you ARRIVE at a milestone the screen celebrates it
+ * rather than immediately pointing at the next one. That ordering is the whole
+ * difference between "you did it" and "keep going", on the one day it should be the
+ * first of those.
+ */
+export const nextMilestone = (streak: number): number | null =>
+  STREAK_MILESTONES.find((m) => m > streak) ?? null

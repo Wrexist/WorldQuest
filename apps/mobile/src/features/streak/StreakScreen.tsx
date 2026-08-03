@@ -33,11 +33,55 @@ import {
   FREEZE_PRICE,
   MAX_FREEZES,
   REPAIR_PRICE,
+  isMilestone,
+  nextMilestone,
   type RepairAvailability,
 } from '@worldquest/engines'
 import { useT } from '../../lib/i18n.js'
 import { Icon } from '../../components/Icon.js'
 import { Stat } from '../../components/Stat.js'
+
+/**
+ * Where this streak sits relative to the milestones that actually pay out.
+ *
+ * `isMilestone` has existed in the engine since streaks were built, and `xp-economy.md`
+ * funds days 7, 30, 100 and 365 at +50/+200/+500/+1000 XP — but no screen ever mentioned
+ * any of it, so the reward arrived with no explanation and the goal that earns it was
+ * invisible. `scripts/reachability.ts` has carried it as a tracked gap ("no streak
+ * milestone is ever celebrated") rather than letting it look intentional.
+ *
+ * The list of days itself stays behind `isMilestone` and `nextMilestone`; this screen
+ * asks those two questions and never reads the array, so which days count remains the
+ * engine's business and the balance table's.
+ *
+ * Three states, and the order matters:
+ *
+ * 1. **On a milestone today** — say so, and nothing else. Pointing at the next target on
+ *    the day someone reaches this one is the difference between "you did it" and "keep
+ *    going", and it should be the first of those exactly once.
+ * 2. **Working towards one** — the count remaining. A number, not a bar: a progress bar
+ *    from 100 to 365 is a sliver that moves imperceptibly for months, which reads as no
+ *    progress rather than as slow progress.
+ * 3. **Past the last one, or broken** — nothing. There is no fifth milestone in the
+ *    balance table, and inventing one would promise a reward no ledger honours. Silence
+ *    beats a target nobody is paid for.
+ *
+ * Never a countdown, never a warning, never "don't lose it" — the same rule the repair
+ * window follows. This is a thing to look forward to, not a thing to be afraid of.
+ */
+function MilestoneLine({ current, broken }: { current: number; broken: boolean }) {
+  const t = useT()
+  if (broken || current <= 0) return null
+
+  if (isMilestone(current)) {
+    return <Text style={styles.milestone}>{t('streak:milestone.reached', { count: current })}</Text>
+  }
+
+  const next = nextMilestone(current)
+  if (next === null) return null
+
+  return <Text style={styles.milestone}>{t('streak:milestone.next', { count: next - current })}</Text>
+}
 
 export type StreakScreenProps = {
   readonly current: number
@@ -115,6 +159,7 @@ export function StreakScreen({
               ? t('streak:intact')
               : t('streak:none')}
         </Text>
+        <MilestoneLine current={current} broken={broken} />
       </View>
 
       <View style={styles.balance}>
@@ -237,6 +282,14 @@ const styles = StyleSheet.create({
   count: { ...text('display', { numeric: true }), color: colors.text.primary },
   sub: { ...text('body'), color: colors.text.secondary },
   status: { ...text('body'), color: colors.text.tertiary, textAlign: 'center', marginTop: space[2] },
+  // The streak colour, because this line is about the streak's own progress — and
+  // `numeric` so "23 days to go" does not reflow as the number shrinks day by day.
+  milestone: {
+    ...text('caption', { weight: '700', numeric: true }),
+    color: colors.status.streak,
+    textAlign: 'center',
+    marginTop: space[1],
+  },
   balance: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   earned: { ...text('caption'), color: colors.text.tertiary, flex: 1 },
   card: { padding: space[4], gap: space[2] },

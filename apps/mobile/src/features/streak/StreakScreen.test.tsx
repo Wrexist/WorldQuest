@@ -25,6 +25,42 @@ describe('StreakScreen', () => {
     expect(screen.getByText(/Longest: 40 days/)).toBeTruthy()
   })
 
+  it('names the next milestone as something to reach, not something to lose', () => {
+    // The gap this closed: `isMilestone` and the +50/+200/+500/+1000 payouts existed
+    // in the engine and the balance table, and no screen ever mentioned them — so the
+    // reward arrived unexplained and the goal earning it was invisible.
+    render(<StreakScreen {...props({ current: 12 })} />)
+    expect(screen.getByText(/18 days to your next milestone/)).toBeTruthy()
+  })
+
+  it('celebrates the day you arrive, without pointing at the next one', () => {
+    // Today is for arriving. Naming day 30 on the day someone reaches day 7 turns "you
+    // did it" into "keep going", which is the one day it must not be.
+    render(<StreakScreen {...props({ current: 7 })} />)
+    expect(screen.getByText(/7 days — that's a milestone/)).toBeTruthy()
+    expect(screen.queryByText(/to your next milestone/)).toBeNull()
+  })
+
+  it('says nothing past the last milestone the balance table funds', () => {
+    // 7/30/100/365 and no more. A fifth target would promise a reward no ledger
+    // honours, which the user finds out about on the day they reach it.
+    render(<StreakScreen {...props({ current: 400, longest: 400 })} />)
+    expect(screen.queryByText(/milestone/i)).toBeNull()
+  })
+
+  it('does not dangle a milestone at someone whose streak just broke', () => {
+    // "3 days to your next milestone" beside "Your streak ended" reads as a taunt.
+    render(
+      <StreakScreen
+        {...props({
+          current: 0,
+          repair: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 3_600_000 },
+        })}
+      />,
+    )
+    expect(screen.queryByText(/milestone/i)).toBeNull()
+  })
+
   it('hides the repair card while the streak is intact', () => {
     render(<StreakScreen {...props()} />)
     expect(screen.queryByText(/Your streak ended/i)).toBeNull()

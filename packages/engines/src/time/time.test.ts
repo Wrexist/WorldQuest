@@ -3,6 +3,7 @@ import {
   applyActivity,
   daysBetween,
   isMilestone,
+  nextMilestone,
   localDate,
   startOfLocalDay,
   type StreakState,
@@ -216,5 +217,26 @@ describe('milestones', () => {
     expect(isMilestone(365)).toBe(true)
     expect(isMilestone(8)).toBe(false)
     expect(isMilestone(0)).toBe(false)
+  })
+
+  it('points at the next milestone from anywhere below it', () => {
+    expect(nextMilestone(0)).toBe(7)
+    expect(nextMilestone(6)).toBe(7)
+    expect(nextMilestone(8)).toBe(30)
+    expect(nextMilestone(99)).toBe(100)
+  })
+
+  it('looks past the one you are standing on', () => {
+    // Strictly greater than. On the day you reach 7 the screen should say "you did it",
+    // not "23 days to go" — and it decides that by asking `isMilestone` first, which
+    // only works if this does not also return 7.
+    expect(nextMilestone(7)).toBe(30)
+    expect(nextMilestone(365)).toBeNull()
+  })
+
+  it('returns null past the last funded milestone rather than inventing one', () => {
+    // The balance table pays for 7/30/100/365 and nothing else. A fifth number here
+    // would promise a reward no ledger entry honours.
+    expect(nextMilestone(400)).toBeNull()
   })
 })
