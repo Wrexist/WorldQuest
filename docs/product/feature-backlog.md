@@ -37,7 +37,7 @@ nobody stays in.
 |---|---|---|---|---|---|
 | 1 | **The rest of the world, and more facts per country** | ●●●●● | ●●○○○ | Content | v1.0 |
 | 2 | **Map questions — "where is Chad?"** | ●●●●● | ●●●○○ | Content + engine | v1.0 (4 question types) |
-| 3 | **The shop — somewhere for coins to go** | ●●●●○ | ●●○○○ | Feature | v1.5 |
+| 3 | **The shop — somewhere for coins to go** ✅ **shipped (titles)** | ●●●●○ | ●●○○○ | Feature | v1.0 |
 | 4 | **Collections that complete** | ●●●●○ | ●●○○○ | Feature | v1.5 |
 | 5 | **Weekly quests and a season arc** | ●●●○○ | ●●○○○ | Config | v1.5 / v2.0 |
 | 6 | **Landmarks, illustrated** | ●●●●○ | ●●●●○ | Content + art | v1.5 |
@@ -109,7 +109,21 @@ docs have not caught up.
 
 ---
 
-## 3. The shop — somewhere for coins to go
+## 3. The shop — somewhere for coins to go ✅ shipped (titles)
+
+> **Shipped as titles**, in `f9b21b2`. The reasoning below stood up except for one
+> claim, which was wrong in a way worth recording rather than quietly deleting.
+>
+> "`mapSkin` and `theme` are nearly free now" — they are not. A theme *is* design
+> tokens, and this repo's tokens are semantic precisely so that swap is possible, but
+> `colors` resolves at module load inside 34 `StyleSheet.create` calls. Runtime
+> theming needs a context and a re-architecture of every stylesheet. That is real
+> work, and it is **architecture, not art** — filing it under "cosmetics need an
+> illustrator" would send the next person to the wrong place entirely.
+>
+> So the split is: titles shipped (a string); avatar items, pets, map skins and
+> celebrations are genuinely illustration-bound; themes wait on runtime theming.
+> See [`xp-economy.md`](../systems/xp-economy.md#what-the-shop-actually-sells-today).
 
 **Pros**
 - Coins are currently **noise**, and the Product Bible says so in principle 10: *"If it
@@ -121,12 +135,15 @@ docs have not caught up.
   building against numbers that already exist.
 - It converts every other feature's rewards into progress toward something chosen. That
   is the "grind towards" the brief asks for, and it costs no new content.
-- `mapSkin` and `theme` are nearly free now: both map layers are alpha masks tinted from
-  design tokens, so a theme recolours the maps with everything else.
+- ~~`mapSkin` and `theme` are nearly free now: both map layers are alpha masks tinted
+  from design tokens, so a theme recolours the maps with everything else.~~ **Wrong** —
+  the maps do tint, but a theme cannot change at runtime while `colors` is resolved at
+  module load. See the note above.
 
 **Cons**
 - Cosmetics need art, and avatars are one of the three genuinely illustration-bound
-  rows. Titles, themes and map skins do not — start there.
+  rows. Titles do not, which is why the shop opened with them. Map skins do (the
+  *skin* is artwork, even though the outline it recolours is not).
 - A shop invites a store. **Coins must never be purchasable**: this is a children's app,
   and the moment coins have a price the economy is a monetisation surface with a
   regulator attached.
