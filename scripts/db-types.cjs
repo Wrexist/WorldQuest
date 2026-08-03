@@ -44,6 +44,17 @@ const OUT = join(__dirname, '..', 'packages', 'api', 'src', 'database.types.ts')
  * stack built from them. Generating from the hosted project instead produces whatever
  * happens to be deployed there — which today is one migration behind — and that is how a
  * types file starts describing a schema nobody can reproduce.
+ *
+ * The two sources do not merely differ in content; they differ in SHAPE, and the
+ * committed file was originally generated from the hosted project:
+ *
+ *   - hosted emits `__InternalSupabase: { PostgrestVersion }`; local does not
+ *   - local emits the whole `graphql_public` schema (pg_graphql is enabled in the local
+ *     stack); hosted did not
+ *
+ * Neither difference touches a table, so nothing was ever wrong at a call site — but it
+ * is the reason the first honest run of this check still reported a diff after the
+ * tables themselves matched exactly. One source, and it has to be the one CI builds.
  */
 const generate = () => {
   try {
