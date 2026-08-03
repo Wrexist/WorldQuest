@@ -42,7 +42,9 @@
     "five-states": "tsx scripts/five-states.ts",
     "lint:a11y": "tsx scripts/a11y.ts",
     "$comment:escape-hatches": "Fails on `any`, @ts-expect-error, @ts-ignore or eslint-disable outside tests. PROJECT.md §12 has banned all four since week one and nothing checked — the DoD ✅ rested on nobody having broken it yet. Deliberate exceptions live in an allowlist with a written reason, and a stale entry fails the same as a violation.",
-    "escape-hatches": "tsx scripts/escape-hatches.ts"
+    "escape-hatches": "tsx scripts/escape-hatches.ts",
+    "$comment:a11y:tree": "Walks Chromium's computed accessibility tree over ten routes — the thing a screen reader actually consumes. lint:a11y reads source and design:shots accepts textContent as a label, so a button whose only content is an emoji passed both. This is the mechanical half of the VoiceOver/TalkBack box; the manual pass in docs/plan/device-pass.md is still required.",
+    "a11y:tree": "pnpm --filter @worldquest/mobile exec expo export --platform web --output-dir ../../node_modules/.cache/wq-web && node scripts/a11y-tree.cjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

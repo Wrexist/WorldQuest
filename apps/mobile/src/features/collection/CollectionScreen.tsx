@@ -24,6 +24,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import { ScreenHeader } from '../../components/ScreenHeader.js'
 import {
   ArtSlot,
   Button,
@@ -67,6 +68,16 @@ export type CollectionScreenProps = {
   readonly loading?: boolean
   readonly onOpen?: ((id: string) => void) | undefined
   readonly onStartLesson?: (() => void) | undefined
+  /**
+   * Renders the back control. Optional so component tests and the screenshot
+   * renderer can mount this without a router; a route must always pass it.
+   *
+   * This screen had no way back at all — the root Stack sets `headerShown: false`
+   * and nothing replaced it, so `pnpm a11y:tree` found a route a keyboard or screen
+   * reader could enter and not leave.
+   */
+  readonly onBack?: (() => void) | undefined
+
 }
 
 const FILTERS: readonly CollectionFilter[] = ['all', 'collected', 'missing', 'favourites']
@@ -82,6 +93,7 @@ const normalise = (value: string): string =>
   value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
 
 export function CollectionScreen({
+  onBack,
   title,
   tiles,
   art = false,
@@ -136,6 +148,7 @@ export function CollectionScreen({
 
   return (
     <View style={styles.root}>
+      {onBack !== undefined && <ScreenHeader onBack={onBack} />}
       <View style={styles.header}>
         <Text style={styles.title} role="heading" aria-level={1}>
           {title}

@@ -27,6 +27,7 @@
  */
 
 import { StyleSheet, Text, View } from 'react-native'
+import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { Button, Card, StatChip, colors, space, text } from '@worldquest/design'
 import {
   FREEZE_PRICE,
@@ -62,9 +63,20 @@ export type StreakScreenProps = {
    * reconnect, and a lesson works exactly as well in a tunnel.
    */
   readonly offline?: boolean
+  /**
+   * Renders the back control. Optional so component tests and the screenshot
+   * renderer can mount this without a router; a route must always pass it.
+   *
+   * This screen had no way back at all — the root Stack sets `headerShown: false`
+   * and nothing replaced it, so `pnpm a11y:tree` found a route a keyboard or screen
+   * reader could enter and not leave.
+   */
+  readonly onBack?: (() => void) | undefined
+
 }
 
 export function StreakScreen({
+  onBack,
   current,
   longest,
   freezesHeld,
@@ -87,6 +99,7 @@ export function StreakScreen({
 
   return (
     <View style={styles.root}>
+      {onBack !== undefined && <ScreenHeader onBack={onBack} />}
       <View style={styles.hero}>
         <Text style={styles.flame}>🔥</Text>
         <Text style={styles.count} role="heading" aria-level={1}>

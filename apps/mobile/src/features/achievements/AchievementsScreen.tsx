@@ -25,6 +25,7 @@ import {
   type Tier,
 } from '@worldquest/engines'
 import { tContent, useT, type TranslationKey } from '../../lib/i18n.js'
+import { ScreenHeader } from '../../components/ScreenHeader.js'
 
 const TIER_LABEL: Record<Tier, TranslationKey> = {
   bronze: 'achievements:tier.bronze',
@@ -59,6 +60,14 @@ export type AchievementsScreenProps = {
   readonly rows: readonly AchievementRow[]
   /** H13. Optional so the screenshot renderer can mount this without a router. */
   readonly onStartLesson?: (() => void) | undefined
+  /**
+   * Optional for the same reason as `onStartLesson`, but a route MUST pass it.
+   *
+   * This screen had no back control at all — `pnpm a11y:tree` reported zero
+   * interactive nodes on `/achievements`, so a screen-reader or keyboard user could
+   * reach it and not leave.
+   */
+  readonly onBack?: (() => void) | undefined
 }
 
 /**
@@ -70,7 +79,7 @@ export type AchievementsScreenProps = {
 const nameKey = (id: string): string => `achievements:${id.slice('ach.'.length)}.name`
 const descKey = (id: string): string => `achievements:${id.slice('ach.'.length)}.desc`
 
-export function AchievementsScreen({ rows, onStartLesson }: AchievementsScreenProps) {
+export function AchievementsScreen({ rows, onStartLesson, onBack }: AchievementsScreenProps) {
   const t = useT()
 
   const unlocked = rows.filter((row) => row.progress.tier !== null).length
@@ -103,10 +112,18 @@ export function AchievementsScreen({ rows, onStartLesson }: AchievementsScreenPr
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      {onBack !== undefined && (
+        <ScreenHeader title={t('achievements:title')} onBack={onBack} />
+      )}
       <View style={styles.header}>
-        <Text style={styles.title} role="heading">
-          {t('achievements:title')}
-        </Text>
+        {/* The title moves into the header row when there is one, so it is not said
+            twice. Without a router — the screenshot renderer — it stays here rather
+            than vanishing. */}
+        {onBack === undefined && (
+          <Text style={styles.title} role="heading">
+            {t('achievements:title')}
+          </Text>
+        )}
         <Text style={styles.body}>
           {t('achievements:progress', { unlocked, total: rows.length })}
         </Text>

@@ -74,6 +74,7 @@ export default function CountryRoute() {
   return (
     <ContentGate status={status} onRetry={reload} isOffline={isOffline} showLoading>
       <CountryScreen
+        onBack={() => (router.canGoBack() ? router.back() : router.replace('/explore'))}
         name={view.name}
         region={view.region}
         facts={view.facts}

@@ -30,6 +30,31 @@ describe('Settings', () => {
     expect(haptics.getAttribute('aria-checked')).toBe('true')
   })
 
+  it('actually toggles when the announced element is activated', () => {
+    // The bug this exists for: the element that announced itself as a switch was a
+    // plain View and did nothing, while the real control next to it had no name.
+    // Every existing test read `aria-checked` and none ever activated one, so a
+    // toggle that could be heard and not used passed the whole suite.
+    //
+    // On native it was worse — `accessible` collapses children there, so the working
+    // control was hidden outright and settings were unusable with VoiceOver.
+    const { onChange } = renderSettings()
+    fireEvent.click(screen.getByRole('switch', { name: 'Vibration' }))
+    expect(onChange).toHaveBeenCalledWith('haptics', false)
+  })
+
+  it('exposes exactly one switch per setting, not two', () => {
+    // react-native-web honours neither `accessibilityElementsHidden` (iOS) nor
+    // `importantForAccessibility` (Android), so the inner control stayed in the tree
+    // as a second, unlabelled switch on every row. `aria-hidden` is the one that
+    // crosses over.
+    renderSettings()
+    const switches = screen.getAllByRole('switch')
+    for (const node of switches) {
+      expect(node.getAttribute('aria-label'), 'a switch with no name').toBeTruthy()
+    }
+  })
+
   it('starts with sound OFF, because nobody has been asked yet', () => {
     // design-system.md §9. A game that starts making noise on a bus, in a classroom,
     // or next to a sleeping baby has made an enemy in its first ten seconds. This

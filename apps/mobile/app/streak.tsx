@@ -12,6 +12,7 @@
  */
 
 import { useMemo } from 'react'
+import { router } from 'expo-router'
 import { repairAvailability, type RecoveryState } from '@worldquest/engines'
 import { StreakScreen } from '../src/features/streak/StreakScreen.js'
 import { useProgress } from '../src/features/home/useProgress.js'
@@ -46,6 +47,7 @@ export default function StreakRoute() {
 
   return (
     <StreakScreen
+      onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))}
       current={state.current}
       longest={state.longest}
       freezesHeld={state.freezesHeld}

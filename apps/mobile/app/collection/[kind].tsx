@@ -71,6 +71,7 @@ export default function CollectionRoute() {
   return (
     <ContentGate status={status} onRetry={reload} isOffline={isOffline}>
       <CollectionScreen
+        onBack={() => (router.canGoBack() ? router.back() : router.replace('/explore'))}
         title={t(which === 'flags' ? 'collection:flags.title' : 'collection:countries.title')}
         tiles={tiles}
         art={which === 'flags'}

@@ -47,15 +47,24 @@ export function SwitchRow({
   accessibilityLabel,
 }: SwitchRowProps) {
   return (
-    <View
-      // One element, not four. `role="switch"` plus the state is what
-      // makes a reader say "Sound effects, on, switch" rather than reading a label,
-      // then a paragraph, then an unlabelled control.
+    <Pressable
+      // One element, not four. `role="switch"` plus the state is what makes a reader
+      // say "Sound effects, on, switch" rather than reading a label, then a
+      // paragraph, then an unlabelled control.
+      //
+      // `Pressable`, not `View` — and that is a fix, not a preference. This wrapper
+      // announced itself as a switch while being completely inert: the element a
+      // reader focuses and activates did nothing, and the element that worked had no
+      // name. On native it was worse than on web, because `accessible` genuinely does
+      // collapse children there, so the working control was hidden outright and the
+      // toggles were announced but impossible to operate. Found by `pnpm a11y:tree`
+      // reading the tree Chromium actually computes.
       accessible
       role="switch"
       aria-label={accessibilityLabel ?? label}
       accessibilityHint={help}
       aria-checked={value}
+      onPress={() => onChange(!value)}
       style={styles.row}
     >
       <View style={styles.rowText}>
@@ -64,15 +73,25 @@ export function SwitchRow({
       </View>
       <Switch
         value={value}
-        onValueChange={onChange}
         trackColor={{ false: colors.bg.canvas, true: colors.action.primary }}
         thumbColor={colors.text.primary}
-        // The wrapper above is the accessible element; the raw control must not
-        // announce itself a second time.
+        // Presentational. The row owns the gesture and the semantics; this draws the
+        // state and nothing else. It deliberately has no `onValueChange`: with the
+        // row also handling press, two handlers would fire on one tap and cancel out
+        // — a toggle that flips and flips back reads as broken.
+        pointerEvents="none"
+        // Hidden from the tree on all three platforms, which took three props.
+        // `accessibilityElementsHidden` is iOS-only and `importantForAccessibility`
+        // is Android-only; react-native-web honours NEITHER, which is why this
+        // shipped as a second, unlabelled switch on every settings row. Same family
+        // as the `accessibilityState` bug this repo already hit — RN's platform props
+        // silently no-op on web, and only the ARIA ones cross over.
+        aria-hidden
+        focusable={false}
         accessibilityElementsHidden
         importantForAccessibility="no-hide-descendants"
       />
-    </View>
+    </Pressable>
   )
 }
 

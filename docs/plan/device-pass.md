@@ -83,6 +83,17 @@ zero**. The a11y skill is explicit that this is the part that matters.
 > Tab and scored with Enter. That rules out the mechanical failure — the one that once
 > shipped the tab bar inert on web and unreachable by reader on every platform. It says
 > nothing about whether any of it is comprehensible when heard.
+>
+> `pnpm a11y:tree` now goes further and reads Chromium's computed accessibility tree —
+> every control's real accessible name and role, across ten routes. It found two things
+> this checklist would otherwise have found the hard way: **settings toggles that
+> announced correctly and could not be operated at all**, and four full-screen routes
+> with no back control. Both are fixed and both are now guarded.
+>
+> Chromium is not VoiceOver and is not TalkBack — they differ in flattening, grouping
+> and what they announce on focus — so every box above still needs ticking. It does
+> mean this section should now be about whether the app makes *sense* when heard,
+> rather than about finding unlabelled buttons.
 
 ## 5 · Feel — invisible to every screenshot
 

@@ -24,7 +24,14 @@ export default function AchievementsRoute() {
 
   return (
     <ContentGate status={status} onRetry={reload} isOffline={isOffline} showLoading>
-      <AchievementsScreen rows={rows} onStartLesson={() => router.push('/lesson')} />
+      <AchievementsScreen
+        rows={rows}
+        onStartLesson={() => router.push('/lesson')}
+        // `back()` when there is somewhere to go back to, otherwise Profile — this
+        // route is deep-linkable, and `back()` on a cold open does nothing at all,
+        // which is the same dead end in a different disguise.
+        onBack={() => (router.canGoBack() ? router.back() : router.replace('/profile'))}
+      />
     </ContentGate>
   )
 }

@@ -16,8 +16,9 @@ the single fact that most of the rest follows from.
 i18n completeness, 23 contrast pairs, `lint:a11y`, `escape-hatches`, `reachability`
 and `five-states`.
 `pnpm e2e` runs 51 steps against the real Metro bundle in Chromium — including six
-screens re-measured at 200 % text — `pnpm design:shots` renders 10 routes at
-320/390/768, `pnpm bundle:native` builds both native platforms against a 4.5 MB size
+screens re-measured at 200 % text — `pnpm a11y:tree` walks Chromium's computed
+accessibility tree over 10 routes, `pnpm design:shots` renders those routes at
+320/390/768, `pnpm bundle:native` builds both native platforms against a 6.0 MB size
 budget, and `pnpm edge:test` runs 14 against the vendored edge bundle.
 
 That is a real floor, and it is not the same as done. The section at the bottom on
@@ -58,7 +59,7 @@ green while two thirds of the authored content was unreachable.
 | Box | State |
 |---|---|
 | Every string an i18n key, `en` + `sv` | ✅ 350 keys, both locales complete, ICU plurals, translator notes. |
-| Screen reader verified with VoiceOver **and** TalkBack | ⬜ Neither exists here. Labels and roles are asserted in tests, and **the primary task is now completable with the keyboard alone** — Tab to an answer, Enter to score it, no pointer (`pnpm e2e`). That is the same accessibility action a reader dispatches, so it rules out the failure mode that shipped the tab bar inert. It does not verify announcement quality, focus order as a person experiences it, or the reader's own gestures. |
+| Screen reader verified with VoiceOver **and** TalkBack | ⬜ Neither exists here — but the **mechanical half is now checked against the tree a reader consumes**, not against source. `pnpm a11y:tree` walks Chromium's computed accessibility tree over 10 routes and fails on a control with no accessible name, a name that is only a glyph, a name that describes an icon rather than an action, a full-screen route with no way back, or focus order that fights reading order. It found two real defects immediately (see below) — including settings toggles that would have been **announced but impossible to operate with VoiceOver**. The primary task is also completable with the keyboard alone (`pnpm e2e`). What remains genuinely device-bound: announcement quality, the readers' own gestures and grouping, and whether any of it is comprehensible when heard with the screen off. |
 | Contrast ≥ 4.5:1, targets ≥ 44 pt | ✅ 23 pairs checked; targets sized in code. |
 | Survives 200 % text and RTL | ✅ RTL is linted (`lint:a11y`) after two real bugs. 200 % text is now measured on six screens in `pnpm e2e` — see below. |
 
@@ -133,12 +134,58 @@ green while two thirds of the authored content was unreachable.
      action rather than a touch sequence, which is precisely how the tab bar once
      shipped inert on web *and* unreachable by screen reader on every platform. A
      lesson can now be answered with Tab and Enter alone.
+   - **The accessibility tree.** "Screen readers need a device" was true of whether
+     the app is *comprehensible* when heard, and untrue of whether it is *operable*.
+     Chromium computes a real accessibility tree with real accessible names, and
+     nothing was reading it: `lint:a11y` reads source, `design:shots` accepted
+     `textContent` as a label (so a button whose only content is `✕` passed), and the
+     E2E proved one keyboard path. `pnpm a11y:tree` reads the tree itself, and found
+     two real defects on its first run — see below. The manual pass in
+     [`device-pass.md`](device-pass.md) §4 is still required and still not done.
    - **Bundle size.** "Performance needs a device" was true of frame times and memory
      and quietly untrue of the one input to cold start you can weigh without hardware.
      Hermes reads the whole bundle before the first frame, so on the three-year-old
      Android this app is aimed at, megabytes are seconds. `pnpm bundle:native` now
      fails over 4.5 MB per platform. The remaining performance work is genuinely
      device-bound; this part was not.
+
+---
+
+## The accessibility tree: what that audit found
+
+Two defects, both of which every existing test passed.
+
+**Settings toggles were announced and unusable.** `SwitchRow` put `role="switch"`,
+the label and the state on a wrapper `View` — and a `View` is not pressable. The
+element a reader focuses and activates did nothing; the element that worked was the
+inner `<Switch>`, which had no name. So the tree carried *two* switches per row, one
+named and inert, one working and anonymous.
+
+It was meant to be hidden. The code already carried `accessibilityElementsHidden` and
+`importantForAccessibility="no-hide-descendants"` — but the first is iOS-only, the
+second Android-only, and **react-native-web honours neither**. Same family as the
+`accessibilityState` bug this repo hit before: RN's platform a11y props silently no-op
+on web, and only the ARIA ones cross over.
+
+On native it was worse than on web. There `accessible` genuinely does collapse
+children, so the working control was hidden outright — every settings toggle would
+have been announced correctly and been impossible to operate with VoiceOver.
+
+Eleven tests touched those switches. Every one read `aria-checked`; not one ever
+activated a toggle, which is exactly the gap that let "announced but inert" pass.
+
+**Four full-screen routes had no way back.** The root `Stack` sets
+`headerShown: false` so the app owns its chrome, and nothing replaced the back button.
+`/achievements` reported **zero interactive nodes** — a screen a keyboard or screen
+reader user can enter and not leave. `/streak`, `/country/[code]` and
+`/collection/[kind]` were the same: their only controls were content.
+
+Android's hardware key and iOS's edge-swipe hid this from anyone testing by hand. On
+web it is a dead end with no escape. The mockup had it right the whole time — screens
+7, 10, 11 and 14 all open with a back arrow — and `common:back` ("Back", with a
+translator note saying *describe the action, not the icon*) had existed unused since
+week one. `ScreenHeader` is that row; the audit now fails any of those routes that
+loses it.
 
 ---
 
