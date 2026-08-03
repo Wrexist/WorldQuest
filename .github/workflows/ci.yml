@@ -14,8 +14,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # No `version:` here. `package.json` declares `packageManager: pnpm@9.15.0`, and
+      # action-setup v4 REFUSES to run when both are set:
+      #
+      #   Error: Multiple versions of pnpm specified:
+      #     - version 9 in the GitHub Action config with the key "version"
+      #     - version pnpm@9.15.0 in the package.json with the key "packageManager"
+      #
+      # It reads `packageManager` on its own, so one source of truth is also the fix.
+      # Corepack and this action both use that field; a `version:` beside it is the
+      # thing that can drift, and it drifted into a hard failure.
       - uses: pnpm/action-setup@v4
-        with: { version: 9 }
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm }
 
@@ -88,8 +97,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # No `version:` here. `package.json` declares `packageManager: pnpm@9.15.0`, and
+      # action-setup v4 REFUSES to run when both are set:
+      #
+      #   Error: Multiple versions of pnpm specified:
+      #     - version 9 in the GitHub Action config with the key "version"
+      #     - version pnpm@9.15.0 in the package.json with the key "packageManager"
+      #
+      # It reads `packageManager` on its own, so one source of truth is also the fix.
+      # Corepack and this action both use that field; a `version:` beside it is the
+      # thing that can drift, and it drifted into a hard failure.
       - uses: pnpm/action-setup@v4
-        with: { version: 9 }
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm }
       - uses: supabase/setup-cli@v1
