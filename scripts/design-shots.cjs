@@ -63,6 +63,10 @@ const DEFAULT_ROUTES = [
   '/country/SE',
   '/achievements',
   '/streak',
+  // `?source=settings` so it opens on the plans page. From onboarding it opens on
+  // "you just learned N countries", which is the right screen there and an empty one
+  // here — the harness has no lesson behind it.
+  '/paywall?source=settings',
 ]
 
 const TYPES = {

@@ -8,9 +8,16 @@
 
 import { openURL } from 'expo-linking'
 import Constants from 'expo-constants'
-import { SettingsScreen } from '../../src/features/settings/SettingsScreen.js'
+import { router } from 'expo-router'
+import {
+  SettingsScreen,
+  type PremiumStatus,
+} from '../../src/features/settings/SettingsScreen.js'
 import { usePreferences } from '../../src/features/settings/usePreferences.js'
 import { useSyncStatus } from '../../src/features/settings/useSyncStatus.js'
+import { useEntitlement } from '../../src/features/paywall/useEntitlement.js'
+import { usePurchases } from '../../src/features/paywall/usePurchases.js'
+import { useOnboarding } from '../../src/features/onboarding/useOnboarding.js'
 
 /**
  * Real URLs, not placeholders.
@@ -30,6 +37,32 @@ const open = (url: string | undefined) =>
 export default function MoreRoute() {
   const { preferences, set } = usePreferences()
   const sync = useSyncStatus()
+  const entitlement = useEntitlement()
+  const purchases = usePurchases()
+  const { state } = useOnboarding()
+
+  /**
+   * Absent entirely on a child account.
+   *
+   * Not hidden, not disabled — absent. Apple requires commerce behind a parental gate
+   * for under-13s, and "manage subscription" is commerce. A disabled row would still
+   * be a purchasing opportunity in the listing sense, and it would also be a row that
+   * tells a ten-year-old they are missing something.
+   */
+  const premium: PremiumStatus | undefined =
+    state.isChild === true
+      ? undefined
+      : {
+          isPremium: entitlement.isPremium,
+          isTrialing: entitlement.isTrialing,
+          trialDaysLeft: entitlement.trialDaysLeft,
+          needsBillingFix: entitlement.needsBillingFix,
+          isPaused: entitlement.isPaused,
+          isEnding: entitlement.winbackWorthShowing,
+          onFixBilling: purchases.manageBilling,
+          onSeePlans: () => router.push('/paywall?source=settings'),
+          onRestore: () => void purchases.restore(),
+        }
 
   return (
     <SettingsScreen
@@ -37,6 +70,7 @@ export default function MoreRoute() {
       preferences={preferences}
       onChange={set}
       sync={sync}
+      premium={premium}
       onOpenPrivacyPolicy={open(PRIVACY_URL)}
       onOpenTerms={open(TERMS_URL)}
       onOpenLicences={open(LICENCES_URL)}

@@ -436,6 +436,41 @@ const step = (name, ok, detail = '') => {
        !/buy coins|get coins|top up|last chance|hurry|expires soon|double xp|skip/i.test(streak) &&
        /never from money/i.test(streak))
 
+  // ── the paywall, in the shipped bundle ─────────────────────────────────────
+  //
+  // Three of these assertions are App Review and FTC exposure rather than preferences,
+  // which is why they are checked against the real bundle and not only against jsdom:
+  // learning is never gated, the exit is always there, and nothing on the screen
+  // applies pressure. The fourth is the one that only the real bundle can answer —
+  // with no billing SDK installed the store is genuinely unreachable here, so this is
+  // the store-failure path running for real rather than a mocked version of it.
+  await page.goto(`http://localhost:${PORT}/paywall?source=settings`, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(1200)
+  const paywall = await body()
+  step('paywall renders', /premium|every lesson stays free/i.test(paywall))
+  await page.screenshot({ path: path.join(SHOTS, 'paywall.png') })
+
+  step('paywall promises learning stays free', /every lesson stays free/i.test(paywall))
+  step('paywall applies no urgency, scarcity or shame',
+       !/hurry|limited time|expires soon|only \d+ (left|spots)|last chance|don'?t miss|you'?ll lose/i
+         .test(paywall))
+  // With no SDK the store cannot answer, and the screen must say so and stay usable
+  // rather than showing a price it invented or a spinner that never stops.
+  step('paywall survives a store it cannot reach',
+       /couldn'?t reach the store|nothing to buy here yet|checking prices/i.test(paywall) &&
+       /not now/i.test(paywall))
+
+  const dismissed = await page.getByText('Not now', { exact: true }).first().isVisible()
+  step('paywall is escapable on the first frame, at full size', dismissed)
+
+  // ── Settings owns the subscription, and does not bury cancelling ───────────
+  await page.goto(`http://localhost:${PORT}/more`, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(1200)
+  const more = await body()
+  step('Settings has a Premium section', /premium/i.test(more))
+  step('Settings offers restore, which both stores require', /restore purchases/i.test(more))
+  await page.screenshot({ path: path.join(SHOTS, 'settings-premium.png') })
+
   // ── a deep route, which is also a content check ────────────────────────────
   await page.goto(`http://localhost:${PORT}/region/EU`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(1200)
@@ -787,6 +822,10 @@ const step = (name, ok, detail = '') => {
     ['/collection/flags', 'collection'],
     ['/country/SE', 'country'],
     ['/profile', 'profile'],
+    // Text-heavy, with a fixed footer holding two buttons and a link. The screen most
+    // likely to clip its own exit at 200 %, and the one where clipping the exit is a
+    // review-team problem rather than a cosmetic one.
+    ['/paywall?source=settings', 'paywall'],
   ]
 
   /**

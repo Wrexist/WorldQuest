@@ -64,13 +64,26 @@ const FLAG_PROMPT_WIDTH = 200
  */
 const LOCATOR_WIDTH = 200
 
+/**
+ * What the lesson tells whoever mounted it on the way out.
+ *
+ * The route decides where the user goes next, and after the taster that decision
+ * depends on what just happened — the paywall's first page is about the countries
+ * this lesson covered. Passing the count out beats the route re-deriving it from
+ * content it does not have.
+ */
+export type LessonExit = {
+  /** Entity ids, in the order they were practised. Stable codes, safe in a URL. */
+  readonly practised: readonly string[]
+}
+
 export function LessonScreen({
   onExit,
   mode = 'normal',
   coins = 0,
   isTaster = false,
 }: {
-  onExit: () => void
+  onExit: (summary: LessonExit) => void
   /** `speed` runs the same items against a clock. Scoring is unchanged. */
   mode?: 'normal' | 'speed'
   /**
@@ -220,16 +233,17 @@ export function LessonScreen({
   if (screen === 'empty') return <EmptyState />
 
   if (lesson.state.phase === 'summary' || lesson.state.phase === 'abandoned') {
+    const practised = practisedCountries(index?.index, lesson.state.answers)
     return (
       <LessonSummary
         result={lesson.optimistic}
-        practised={practisedCountries(index?.index, lesson.state.answers)}
+        practised={practised}
         // The two phases arrive here for very different reasons and the screen says so.
         // Running out of hearts is NOT one of them — the machine sends that to
         // `summary`, because the lesson ended rather than the user leaving it.
         wasAbandoned={lesson.state.phase === 'abandoned'}
         isOffline={isOffline}
-        onExit={onExit}
+        onExit={() => onExit({ practised: practised.map((c) => c.id) })}
       />
     )
   }

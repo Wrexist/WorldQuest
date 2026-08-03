@@ -43,6 +43,7 @@ import enNav from '../locales/en/nav.json' with { type: 'json' }
 import enNotifications from '../locales/en/notifications.json' with { type: 'json' }
 import enProfile from '../locales/en/profile.json' with { type: 'json' }
 import enQuests from '../locales/en/quests.json' with { type: 'json' }
+import enPaywall from '../locales/en/paywall.json' with { type: 'json' }
 import enSettings from '../locales/en/settings.json' with { type: 'json' }
 import svAchievements from '../locales/sv/achievements.json' with { type: 'json' }
 import svCommon from '../locales/sv/common.json' with { type: 'json' }
@@ -55,6 +56,7 @@ import svNav from '../locales/sv/nav.json' with { type: 'json' }
 import svNotifications from '../locales/sv/notifications.json' with { type: 'json' }
 import svProfile from '../locales/sv/profile.json' with { type: 'json' }
 import svQuests from '../locales/sv/quests.json' with { type: 'json' }
+import svPaywall from '../locales/sv/paywall.json' with { type: 'json' }
 import svSettings from '../locales/sv/settings.json' with { type: 'json' }
 
 export * from './format.js'
@@ -111,6 +113,7 @@ const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
     notifications: enNotifications,
     profile: enProfile,
     quests: enQuests,
+    paywall: enPaywall,
     settings: enSettings,
   },
   sv: {
@@ -131,6 +134,7 @@ const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
     notifications: svNotifications,
     profile: svProfile,
     quests: svQuests,
+    paywall: svPaywall,
     settings: svSettings,
   },
 }

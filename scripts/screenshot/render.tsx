@@ -53,6 +53,8 @@ import { ProfileScreen } from '../../apps/mobile/src/features/profile/ProfileScr
 import { QuestScreen } from '../../apps/mobile/src/features/quests/QuestScreen.js'
 import { SettingsScreen } from '../../apps/mobile/src/features/settings/SettingsScreen.js'
 import { DEFAULTS as SETTINGS_DEFAULTS } from '../../apps/mobile/src/features/settings/usePreferences.js'
+import { PaywallScreen } from '../../apps/mobile/src/features/paywall/PaywallScreen.js'
+import { SAMPLE_PLANS } from '../../apps/mobile/src/features/paywall/purchases.js'
 
 // ── real content, loaded from the real packs ────────────────────────────────
 const packs = join(process.cwd(), 'packages', 'content', 'packs', 'geography')
@@ -137,6 +139,12 @@ const practisedFrom = (count: number) => {
     }]
   })
 }
+
+/**
+ * The countries the paywall's first page names — the SAME ones the summary frame
+ * shows, because in the app they are the same lesson thirty seconds apart.
+ */
+const PAYWALL_COUNTRIES = practisedFrom(6)
 
 /** Exactly the state the mockup depicts, so the two can be compared directly. */
 const MOCKUP_STATE = {
@@ -510,6 +518,81 @@ function Gallery() {
             onChange={() => {}}
             onOpenPrivacyPolicy={() => {}}
             onOpenTerms={() => {}}
+            premium={{
+              isPremium: false,
+              isTrialing: false,
+              trialDaysLeft: null,
+              needsBillingFix: false,
+              isPaused: false,
+              isEnding: false,
+              onFixBilling: () => {},
+              onSeePlans: () => {},
+              onRestore: () => {},
+            }}
+          />
+        </Phone>
+
+        {/* The declined-card path, as its own frame. It is the highest-value screen in
+            the monetisation surface and the one nobody ever looks at, because you have
+            to break a real card to reach it. */}
+        <Phone label="More · payment declined" id="settings-billing" tab="more">
+          <SettingsScreen
+            version="0.1.0"
+            preferences={SETTINGS_DEFAULTS}
+            onChange={() => {}}
+            premium={{
+              isPremium: true,
+              isTrialing: false,
+              trialDaysLeft: null,
+              needsBillingFix: true,
+              isPaused: true,
+              isEnding: false,
+              onFixBilling: () => {},
+              onSeePlans: () => {},
+              onRestore: () => {},
+            }}
+          />
+        </Phone>
+
+        {/* Page 1, exactly as it lands after the taster lesson: what the user just did,
+            before anything is asked of them. */}
+        <Phone label="Paywall · after the taster" id="paywall-value">
+          <PaywallScreen
+            isChild={false}
+            plans={SAMPLE_PLANS}
+            countries={PAYWALL_COUNTRIES}
+            onPurchase={async () => ({ kind: 'cancelled' })}
+            onRestore={async () => ({ kind: 'cancelled' })}
+            onDismiss={() => {}}
+            source="onboarding"
+          />
+        </Phone>
+
+        {/* The plans page, reached directly from Settings. Laid out against "€39,00"
+            rather than "€39" on purpose — a paywall built around a tidy string breaks
+            the moment somebody sees "1 234,56 kr". */}
+        <Phone label="Paywall · plans" id="paywall">
+          <PaywallScreen
+            isChild={false}
+            plans={SAMPLE_PLANS}
+            countries={[]}
+            onPurchase={async () => ({ kind: 'cancelled' })}
+            onRestore={async () => ({ kind: 'cancelled' })}
+            onDismiss={() => {}}
+            source="settings"
+          />
+        </Phone>
+
+        {/* What an under-13 sees instead. No price, no plan, no "you're missing out". */}
+        <Phone label="Paywall · child account" id="paywall-child">
+          <PaywallScreen
+            isChild
+            plans={SAMPLE_PLANS}
+            countries={PAYWALL_COUNTRIES}
+            onPurchase={async () => ({ kind: 'cancelled' })}
+            onRestore={async () => ({ kind: 'cancelled' })}
+            onDismiss={() => {}}
+            source="onboarding"
           />
         </Phone>
 

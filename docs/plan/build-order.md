@@ -84,6 +84,11 @@ a lesson you haven't built. Teams that build onboarding first end up rewriting i
 8. Push notifications (daily reminder + streak-at-risk only)
 9. Full a11y pass, all screens
 10. Performance pass on a mid-tier Android
+11. **Subscriptions** — see [`monetization.md`](../systems/monetization.md). The client
+    half is built (state machine, paywall, entitlement cache, Settings); what remains
+    is a billing SDK behind `PurchasePort`, the `subscriptions` table with RLS, and the
+    App Store Server Notification / Play RTDN handlers that write it. Ship the grace
+    period with it, not after — it is a third of Android churn and it is invisible.
 
 ---
 

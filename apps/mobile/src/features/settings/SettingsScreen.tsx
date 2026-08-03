@@ -25,6 +25,42 @@ import {
   type Preferences,
 } from './usePreferences.js'
 
+/**
+ * What Settings needs to know about a subscription — and nothing else.
+ *
+ * A flattened shape rather than the `EntitlementView` itself, so this screen stays
+ * mountable by a component test and by the screenshot renderer with no engine, no
+ * storage and no store SDK behind it. The route maps one to the other.
+ *
+ * The four booleans are not redundant. `isPaused` is a subscriber whose card failed —
+ * they must see "fix your payment", NOT a paywall, and showing the wrong one loses a
+ * subscriber who wanted to stay. That distinction is the entire reason this section
+ * exists rather than a single "Premium: yes/no" row.
+ */
+export type PremiumStatus = {
+  readonly isPremium: boolean
+  readonly isTrialing: boolean
+  /** Days until the trial charges. Null when there is no trial running. */
+  readonly trialDaysLeft: number | null
+  /** Grace or hold: the store could not take the money and is retrying. */
+  readonly needsBillingFix: boolean
+  /** Extras are paused pending a fixed card. Learning is untouched, and we say so. */
+  readonly isPaused: boolean
+  /**
+   * They have turned renewal off but have not left yet — still a subscriber, still
+   * here. Stated as a fact, once, with no offer attached: reactivation after somebody
+   * has actually gone is 5 %, and this window is the only one with real odds. Nagging
+   * inside it would spend that odds on nothing.
+   */
+  readonly isEnding: boolean
+  /** Opens the store's own payment settings. The only thing that fixes a declined card. */
+  readonly onFixBilling: () => void
+  /** Opens the paywall. Never auto-shown from here — the user asked. */
+  readonly onSeePlans: () => void
+  /** Required by both stores, and by anyone who changed phone. */
+  readonly onRestore: () => void
+}
+
 export type SettingsScreenProps = {
   /** From app.json at build time; passed in so the screen stays testable. */
   readonly version: string
@@ -40,6 +76,13 @@ export type SettingsScreenProps = {
    * waiting — a permanent "0 items waiting" row is anxiety with no cause.
    */
   readonly sync?: { readonly parked: number; readonly onRetry: () => void } | undefined
+  /**
+   * Absent on a child account, and that is deliberate rather than a shortcut: Apple
+   * requires commerce behind a parental gate for under-13s, and "manage subscription"
+   * is commerce. The route decides; this screen simply has no premium section without
+   * it, which means a new caller cannot accidentally show one.
+   */
+  readonly premium?: PremiumStatus | undefined
   readonly onOpenPrivacyPolicy?: (() => void) | undefined
   readonly onOpenTerms?: (() => void) | undefined
   readonly onOpenLicences?: (() => void) | undefined
@@ -59,6 +102,7 @@ export function SettingsScreen({
   preferences,
   onChange: set,
   sync,
+  premium,
   onOpenPrivacyPolicy,
   onOpenTerms,
   onOpenLicences,
@@ -77,6 +121,12 @@ export function SettingsScreen({
       <Text style={styles.title} role="heading">
         {t('settings:title')}
       </Text>
+
+      {/* A declined card goes FIRST — it is a problem the user needs to fix, and it is
+          the difference between recovering a subscriber and losing one. An upsell does
+          not, and sits down beside About instead. Same section, ordered by whose
+          problem it is. */}
+      {premium?.needsBillingFix === true && <PremiumSection premium={premium} />}
 
       <Section title={t('settings:section.learning')}>
         <ChoiceRow<string>
@@ -131,6 +181,10 @@ export function SettingsScreen({
         />
       </Section>
 
+      {premium !== undefined && premium.needsBillingFix === false && (
+        <PremiumSection premium={premium} />
+      )}
+
       {sync !== undefined && sync.parked > 0 && (
         <Section title={t('settings:section.sync')}>
           {/* States what is true and what happens next. Never "sync failed" — the
@@ -164,6 +218,55 @@ export function SettingsScreen({
 
       <View style={styles.tail} />
     </ScrollView>
+  )
+}
+
+/**
+ * Everything about the subscription, in one place a user can find.
+ *
+ * Three audiences, three different first rows:
+ *
+ * - **A card that failed.** The body says the learning is safe BEFORE it offers the
+ *   fix, because the fear is losing the streak, not the cosmetics. A third of Play
+ *   Store cancellations are involuntary; this row is how they come back.
+ * - **A subscriber.** Status, and the honest place to cancel. Burying cancellation is
+ *   the oldest dark pattern in subscriptions and it converts into one-star reviews and
+ *   chargebacks rather than retention.
+ * - **Everyone else.** One row, no badge, no red dot. They came here for the sound
+ *   toggle.
+ *
+ * Restore is always present. Both stores require it, and phones get replaced.
+ */
+function PremiumSection({ premium }: { premium: PremiumStatus }) {
+  const t = useT()
+
+  return (
+    <Section title={t('settings:section.premium')}>
+      {premium.needsBillingFix ? (
+        <>
+          <Note title={t('paywall:billing.title')} body={t('paywall:billing.body')} />
+          <LinkRow label={t('paywall:billing.fix')} onPress={premium.onFixBilling} />
+        </>
+      ) : premium.isEnding ? (
+        <Note body={t('settings:premium.ending')} />
+      ) : premium.isTrialing && premium.trialDaysLeft !== null ? (
+        // Says when the charge lands, unprompted. Apple sends its own reminder; ours
+        // arrives first and is friendlier, and a user who knows the date does not file
+        // the chargeback that costs us the revenue AND the fee.
+        <Note body={t('settings:premium.trial', { count: premium.trialDaysLeft })} />
+      ) : premium.isPremium ? (
+        <Note body={t('settings:premium.active')} />
+      ) : (
+        <LinkRow label={t('settings:premium.see')} onPress={premium.onSeePlans} />
+      )}
+
+      {premium.isPremium && (
+        // Cancelling lives in the store, not here — neither platform lets an app do it,
+        // and a row that pretends otherwise sends the user in a circle.
+        <LinkRow label={t('settings:premium.manage')} onPress={premium.onFixBilling} />
+      )}
+      <LinkRow label={t('paywall:restore')} onPress={premium.onRestore} />
+    </Section>
   )
 }
 

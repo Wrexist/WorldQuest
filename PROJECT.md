@@ -563,15 +563,25 @@ FSRS write → XP ledger → progress on Home. Proves the architecture.
 ### v1.0 — MVP *(the mockup, shipped)*
 Screens 1–8, 10, 15 of the mockup. Countries · flags · capitals · lesson runner ·
 daily quest · streaks · XP + coins · hearts · Explore globe · country pages · settings ·
-offline lessons · en + sv. **Exit:** D7 retention ≥ 25 % in beta; WLD ≥ 3.0.
+offline lessons · en + sv · **Premium subscription**.
+**Exit:** D7 retention ≥ 25 % in beta; WLD ≥ 3.0.
+
+> **Premium moved from v2.0 to v1.0** — a deliberate change, recorded rather than made
+> quietly. Retrofitting monetisation is not a feature bolt-on: the paywall's placement
+> depends on where the value moment is, the entitlement has to be server-authoritative
+> from the first migration, and a subscription added after launch cannot be offered to
+> the users who installed before it. What did **not** move is Rule 1 of
+> [`monetization.md`](docs/systems/monetization.md): Premium sells depth, never access.
+> Every lesson is free in v1.0 and stays free, so WLD and D7 above are unaffected by
+> it. Family mode and the teacher tier remain v2.0.
 
 ### v1.5 — Depth
 Landmarks (screen 11) · collections · achievements (screen 14) · friend challenges ·
 weekly quests · avatar customisation (the first real coin sink).
 
 ### v2.0 — Social & business
-Leagues + seasons (screen 12) · seasonal live-ops · **Premium** · Family mode ·
-Teacher/classroom mode · es/de/fr/pt.
+Leagues + seasons (screen 12) · seasonal live-ops · Family mode ·
+Teacher/classroom mode · es/de/fr/pt. *(Premium itself ships in v1.0 — see above.)*
 
 ### v3.0 — Beyond geography *(the thesis pays off)*
 History · culture · food · wildlife · UNESCO · AI-generated explanations for wrong

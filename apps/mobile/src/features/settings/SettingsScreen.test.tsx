@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
-import { SettingsScreen } from './SettingsScreen.js'
+import { SettingsScreen, type PremiumStatus } from './SettingsScreen.js'
 import { DEFAULTS } from './usePreferences.js'
 
 const renderSettings = (overrides: Partial<Parameters<typeof SettingsScreen>[0]> = {}) => {
@@ -179,5 +179,132 @@ describe('Settings — work waiting to sync', () => {
     const onRetry = withSync(2)
     fireEvent.click(screen.getByText('Try sending again'))
     expect(onRetry).toHaveBeenCalledOnce()
+  })
+})
+
+/**
+ * The subscription section.
+ *
+ * Three of these are money rather than polish: a paused subscriber must be offered a
+ * fix rather than a paywall, cancelling must not be buried, and a child must not be
+ * shown commerce at all. The first loses a subscriber who wanted to stay, the second
+ * is the oldest dark pattern in subscriptions, and the third is an App Review problem.
+ */
+const PREMIUM: PremiumStatus = {
+  isPremium: false,
+  isTrialing: false,
+  trialDaysLeft: null,
+  needsBillingFix: false,
+  isPaused: false,
+  isEnding: false,
+  onFixBilling: vi.fn(),
+  onSeePlans: vi.fn(),
+  onRestore: vi.fn(),
+}
+
+const withPremium = (over: Partial<PremiumStatus> = {}) => {
+  const premium = { ...PREMIUM, ...over, onFixBilling: vi.fn(), onSeePlans: vi.fn(), onRestore: vi.fn() }
+  const view = render(
+    <SettingsScreen version="1.0.0" preferences={DEFAULTS} onChange={vi.fn()} premium={premium} />,
+  )
+  return { ...view, premium }
+}
+
+describe('Settings — the subscription', () => {
+  it('shows nothing at all when there is no premium to manage', () => {
+    // The child-account path. Absent, not disabled: a disabled row is still a
+    // purchasing opportunity in the listing sense, and it also tells a ten-year-old
+    // they are missing something.
+    const { container } = renderSettings()
+    expect(container.textContent).not.toMatch(/premium|restore purchases|subscription/i)
+  })
+
+  it('offers a fix, not a paywall, when the card was declined', () => {
+    // A paused subscriber wanted to stay. Showing them the sales pitch instead of the
+    // repair is how a bank's fraud heuristic turns into a cancelled subscription.
+    const { premium } = withPremium({ needsBillingFix: true, isPaused: true })
+    expect(screen.getByText(/Your payment didn't go through/i)).toBeTruthy()
+    expect(screen.queryByText('See Premium')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Update payment' }))
+    expect(premium.onFixBilling).toHaveBeenCalledOnce()
+  })
+
+  it('promises the learning is safe BEFORE it asks for a card', () => {
+    // The fear is losing the streak, not the cosmetics. Reversing these two sentences
+    // is the difference between a fix and a panic.
+    const { container } = withPremium({ needsBillingFix: true, isPaused: true })
+    const body = container.textContent ?? ''
+    expect(body.indexOf('safe')).toBeGreaterThan(-1)
+    expect(body.indexOf('safe')).toBeLessThan(body.indexOf('Update payment'))
+  })
+
+  it('puts a declined card above everything else in Settings', () => {
+    // It is a problem the user needs to fix. An upsell is not, and sits at the bottom.
+    const { container } = withPremium({ needsBillingFix: true })
+    const body = container.textContent ?? ''
+    expect(body.indexOf('Premium')).toBeLessThan(body.indexOf('Learning'))
+  })
+
+  it('keeps an upsell below the settings people actually came for', () => {
+    const { container } = withPremium()
+    const body = container.textContent ?? ''
+    expect(body.indexOf('See Premium')).toBeGreaterThan(body.indexOf('Sound & feel'))
+  })
+
+  it('says when a trial charges, unprompted', () => {
+    // Apple sends its own reminder; ours arrives first and is friendlier. It is the
+    // cheapest chargeback reduction available.
+    withPremium({ isPremium: true, isTrialing: true, trialDaysLeft: 3 })
+    expect(screen.getByText(/3 days left of your free trial/i)).toBeTruthy()
+  })
+
+  it('handles the last day without reading like a template', () => {
+    withPremium({ isPremium: true, isTrialing: true, trialDaysLeft: 0 })
+    expect(screen.getByText(/free trial ends today/i)).toBeTruthy()
+  })
+
+  it('does not bury cancelling', () => {
+    // Neither store lets an app cancel in-app, so the honest thing is one clearly
+    // named row that opens the place where it lives.
+    const { premium } = withPremium({ isPremium: true })
+    fireEvent.click(screen.getByRole('button', { name: 'Manage subscription' }))
+    expect(premium.onFixBilling).toHaveBeenCalledOnce()
+  })
+
+  it('states the facts to a leaver and makes them no offer', () => {
+    // Reactivation after somebody has actually gone is 5%. Nagging inside the only
+    // window with real odds spends it on nothing.
+    const { container } = withPremium({ isPremium: true, isEnding: true })
+    expect(screen.getByText(/runs until the end of the period/i)).toBeTruthy()
+    expect(container.textContent).not.toMatch(/are you sure|don'?t lose|discount|% off|last chance/i)
+  })
+
+  it('offers restore to everyone, because phones get replaced', () => {
+    const { premium } = withPremium()
+    fireEvent.click(screen.getByRole('button', { name: 'Restore purchases' }))
+    expect(premium.onRestore).toHaveBeenCalledOnce()
+  })
+
+  it('opens the paywall only when the user asks for it', () => {
+    const { premium } = withPremium()
+    expect(premium.onSeePlans).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: 'See Premium' }))
+    expect(premium.onSeePlans).toHaveBeenCalledOnce()
+  })
+
+  it('never uses urgency or shame anywhere in the section', () => {
+    for (const state of [
+      { isPremium: false },
+      { isPremium: true },
+      { isPremium: true, isEnding: true },
+      { needsBillingFix: true, isPaused: true },
+      { isPremium: true, isTrialing: true, trialDaysLeft: 1 },
+    ]) {
+      const { container, unmount } = withPremium(state)
+      expect(container.textContent).not.toMatch(
+        /hurry|expires soon|only \d+ (left|spots)|last chance|you'?ll lose|don'?t miss/i,
+      )
+      unmount()
+    }
   })
 })

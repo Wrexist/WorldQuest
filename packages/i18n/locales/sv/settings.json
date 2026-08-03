@@ -9,6 +9,13 @@
   "settings:sync.retry": "Försök skicka igen",
   "settings:section.privacy": "Integritet & data",
   "settings:section.about": "Om",
+  "settings:section.premium": "Premium",
+
+  "settings:premium.active": "Premium är på. Tack — det betalar för kartorna.",
+  "settings:premium.trial": "{count, plural, =0 {Din gratisperiod slutar i dag} one {# dag kvar av din gratisperiod} other {# dagar kvar av din gratisperiod}}. Vi påminner dig innan den förnyas.",
+  "settings:premium.ending": "Premium gäller perioden ut som du redan betalat för. Att slå på förnyelsen igen är ett tryck i butiken, när du vill.",
+  "settings:premium.see": "Se Premium",
+  "settings:premium.manage": "Hantera prenumeration",
 
   "settings:goal.label": "Dagligt mål",
   "settings:goal.value": "{minutes, plural, one {# minut om dagen} other {# minuter om dagen}}",

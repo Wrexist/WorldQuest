@@ -111,6 +111,53 @@ export const EVENTS = {
   },
   quest_completed: { description: 'Daily or weekly quest completed', properties: { quest_id: 'string' } },
 
+  // ── monetisation ──────────────────────────────────────────────────────────
+  //
+  // The whole funnel, so the industry benchmarks in docs/systems/monetization.md can
+  // be CHECKED against our own numbers rather than believed. `paywall_shown` fires for
+  // the parental-gate variant too — otherwise the funnel silently under-counts and the
+  // child branch looks like it converts at zero.
+  //
+  // None of these fire on a child account: `track` no-ops there, and that must stay
+  // true. A purchase event attached to an under-13 user is a COPPA problem, not a
+  // metric.
+  paywall_shown: {
+    description: 'Paywall or parental gate presented',
+    properties: { source: 'string', variant: 'string' },
+  },
+  paywall_dismissed: {
+    description: 'Paywall closed without a purchase — a decision, not a failure',
+    properties: { source: 'string', page: 'number' },
+  },
+  plan_selected: {
+    description: 'Purchase started for a plan',
+    properties: { plan: 'string', with_trial: 'boolean' },
+  },
+  trial_started: { description: 'Free trial began', properties: { plan: 'string' } },
+  trial_converted: { description: 'Trial charged successfully', properties: { plan: 'string' } },
+  trial_cancelled: {
+    description: 'Trial cancelled before charging',
+    properties: { plan: 'string', day: 'number' },
+  },
+  purchase_failed: { description: 'Store rejected the purchase', properties: { reason: 'string' } },
+  // The two that pay for themselves. A third of Google Play cancellations are failed
+  // charges rather than decisions; without these events that loss is invisible and
+  // indistinguishable from ordinary churn.
+  billing_issue_detected: {
+    description: 'Renewal failed; grace period started',
+    properties: { store: 'string' },
+  },
+  billing_issue_resolved: {
+    description: 'Payment fixed before access lapsed — recovered revenue',
+    properties: { store: 'string', days_in_grace: 'number' },
+  },
+  subscription_cancelled: {
+    description: 'Auto-renew turned off',
+    properties: { plan: 'string', days_subscribed: 'number' },
+  },
+  winback_shown: { description: 'Win-back offer presented at cancel', properties: { plan: 'string' } },
+  winback_accepted: { description: 'Win-back offer taken', properties: { plan: 'string' } },
+
   // ── navigation & content ──────────────────────────────────────────────────
   screen_viewed: { description: 'A screen was shown', properties: { screen: 'string', from: 'string?' } },
   country_viewed: { description: 'A country page was opened', properties: { country: 'string', source: 'string' } },
