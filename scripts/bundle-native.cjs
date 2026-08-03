@@ -26,6 +26,25 @@
  *
  * It is the floor below "runs on a device", and the floor was missing.
  *
+ * ## The size budget
+ *
+ * Bundle size is the only performance property in this repo measurable without a
+ * phone, and it was ungated until now. Every other performance claim in
+ * `docs/plan/device-pass.md` waits on hardware; this one does not, so it should not
+ * wait.
+ *
+ * It matters because of who this app is for. The budget is written against a mid-tier
+ * Android three or four years old — the phone a ten-year-old is actually handed — and
+ * on that device the JS bundle is not just download weight, it is startup work: Hermes
+ * has to read every byte of it before the first frame. The 3 s cold-start target in
+ * the device pass is bought or lost here.
+ *
+ * The limit below is deliberately close to the current measurement. A generous budget
+ * is not a budget — it is a number that gets crossed once, quietly, by an import
+ * nobody weighed, and then raised. A tight one fails on the commit that added the
+ * weight, while the person who added it is still looking. Raising it is fine, but it
+ * should be a decision with a reason next to it, not a side effect.
+ *
  * Run: pnpm bundle:native
  */
 
@@ -35,6 +54,22 @@ const { join } = require('node:path')
 
 const OUT = join(process.cwd(), 'node_modules', '.cache', 'wq-native')
 const MOBILE = join(process.cwd(), 'apps', 'mobile')
+
+/**
+ * The ceiling for the Hermes bytecode bundle, per platform, in MB.
+ *
+ * Measured at 3.80 MB on both platforms when this was written. 4.5 leaves room for
+ * the screens v1.0 still owes — the map question type, the globe — without leaving
+ * room for a chart library somebody imported for one sparkline.
+ *
+ * If a legitimate change needs more: raise this number in the same commit, and say in
+ * the message what bought the weight. The number is not sacred. Crossing it silently
+ * is the thing being prevented.
+ */
+const BUDGET_MB = 4.5
+
+/** Warn from 90 % of the budget, so the wall is visible before it is hit. */
+const WARN_AT = BUDGET_MB * 0.9
 
 /** Largest .hbc under a directory, in bytes — the bundle itself. */
 function bundleSize(dir) {
@@ -53,6 +88,8 @@ function bundleSize(dir) {
 console.log('Native bundles\n')
 
 let failed = 0
+let overBudget = 0
+let nearBudget = 0
 for (const platform of ['ios', 'android']) {
   const dir = join(OUT, platform)
   rmSync(dir, { recursive: true, force: true })
@@ -63,11 +100,24 @@ for (const platform of ['ios', 'android']) {
       maxBuffer: 1 << 26,
     })
     const size = bundleSize(dir)
+    const mb = size / 1024 / 1024
     if (size === 0) {
       failed++
       console.log(`  ✗ ${platform.padEnd(8)} export succeeded but produced no .hbc bundle`)
+    } else if (mb > BUDGET_MB) {
+      overBudget++
+      console.log(
+        `  ✗ ${platform.padEnd(8)} ${mb.toFixed(2)} MB — over the ${BUDGET_MB} MB budget by ` +
+          `${(mb - BUDGET_MB).toFixed(2)} MB`,
+      )
+    } else if (mb > WARN_AT) {
+      nearBudget++
+      console.log(
+        `  ⚠ ${platform.padEnd(8)} ${mb.toFixed(2)} MB — within ${(BUDGET_MB - mb).toFixed(2)} MB ` +
+          `of the ${BUDGET_MB} MB budget`,
+      )
     } else {
-      console.log(`  ✓ ${platform.padEnd(8)} ${(size / 1024 / 1024).toFixed(2)} MB`)
+      console.log(`  ✓ ${platform.padEnd(8)} ${mb.toFixed(2)} MB  (budget ${BUDGET_MB} MB)`)
     }
   } catch (error) {
     failed++
@@ -86,8 +136,24 @@ if (failed > 0) {
   console.error(`✗ ${failed} platform(s) do not bundle — the app cannot ship to them\n`)
   process.exit(1)
 }
+if (overBudget > 0) {
+  console.error(
+    `✗ ${overBudget} platform(s) over the ${BUDGET_MB} MB bundle budget.\n\n` +
+      '  The app still compiles — this is a startup-cost failure, not a build failure.\n' +
+      '  Hermes reads the whole bundle before the first frame, so on the mid-tier Android\n' +
+      '  this budget is written for, these megabytes are seconds of cold start.\n\n' +
+      '  Find what grew (`npx expo export --platform android --dump-sourcemap`), and either\n' +
+      '  remove it, load it lazily, or raise BUDGET_MB in this file and say in the commit\n' +
+      '  message what bought the weight.\n',
+  )
+  process.exit(1)
+}
 console.log(
-  '✓ both platforms bundle.\n' +
-    '  This proves the graph compiles for each platform. It does NOT prove the app runs:\n' +
-    '  nothing here executes the bundle. That still needs a device.\n',
+  (nearBudget > 0
+    ? `✓ both platforms bundle, under the ${BUDGET_MB} MB budget but close to it — the next\n` +
+      '  dependency is likely the one that breaks it.\n'
+    : `✓ both platforms bundle, both within the ${BUDGET_MB} MB budget.\n`) +
+    '  This proves the graph compiles for each platform and that it is not getting quietly\n' +
+    '  heavier. It does NOT prove the app runs: nothing here executes the bundle, and size\n' +
+    '  is only one of the things that make a cold start slow. That still needs a device.\n',
 )

@@ -12,11 +12,13 @@ the single fact that most of the rest follows from.
 
 ## Automated: green
 
-`pnpm verify` runs typecheck, 631 tests across seven packages, content validation,
-i18n completeness, 23 contrast pairs, `lint:a11y`, `reachability` and `five-states`.
-`pnpm e2e` runs 47 steps against the real Metro bundle in Chromium — including six
+`pnpm verify` runs typecheck, 627 tests across seven packages, content validation,
+i18n completeness, 23 contrast pairs, `lint:a11y`, `escape-hatches`, `reachability`
+and `five-states`.
+`pnpm e2e` runs 50 steps against the real Metro bundle in Chromium — including six
 screens re-measured at 200 % text — `pnpm design:shots` renders 10 routes at
-320/390/768, and `pnpm edge:test` runs 14 against the vendored edge bundle.
+320/390/768, `pnpm bundle:native` builds both native platforms against a 4.5 MB size
+budget, and `pnpm edge:test` runs 14 against the vendored edge bundle.
 
 That is a real floor, and it is not the same as done. The section at the bottom on
 what the lesson actually asked is the argument for why: every one of those numbers was
@@ -28,7 +30,7 @@ green while two thirds of the authored content was unreachable.
 
 | Box | State |
 |---|---|
-| iOS **and** Android, phone and tablet, to 320 pt | ⬜ **Never run on either.** No iOS Simulator without macOS, no Android emulator without `/dev/kvm`. Every layout claim in this repo is a claim about Chromium, now checked at 320/390/768. **Both platforms do now bundle** — `pnpm bundle:native`, 3.74 MB iOS and 3.75 MB Android of Hermes bytecode. Until that script existed the app had only ever been bundled for web. |
+| iOS **and** Android, phone and tablet, to 320 pt | ⬜ **Never run on either.** No iOS Simulator without macOS, no Android emulator without `/dev/kvm`. Every layout claim in this repo is a claim about Chromium, now checked at 320/390/768. **Both platforms do now bundle** — `pnpm bundle:native`, 3.80 MB of Hermes bytecode each, against a 4.5 MB budget the script enforces. Until that script existed the app had only ever been bundled for web. |
 | Five states everywhere | ✅ **Audited, and the audit is a script.** `pnpm five-states` checks all 14 screens; 15 states are waived with a recorded reason and the script fails on a waiver the code has outgrown. See below for what it found. |
 | Offline behaviour | ✅ Queue, replay on reconnect, backoff, parked work surfaced. Real connectivity as of Wave 7. |
 | Server-authoritative rewards | ✅ Nothing on the client writes a balance. Achievements, quests and XP all render predictions and say so. |
@@ -37,9 +39,9 @@ green while two thirds of the authored content was unreachable.
 
 | Box | State |
 |---|---|
-| Unit + component tests | ✅ 631 passing, plus 14 against the edge bundle. |
-| No `any`, no `@ts-expect-error` | ✅ Zero of both outside tests. |
-| Performance on a **mid-tier Android** | ⬜ Not measured. There is no device. |
+| Unit + component tests | ✅ 627 passing, plus 14 against the edge bundle. |
+| No `any`, no `@ts-expect-error` | ✅ Zero of both outside tests — **and now checked**, by `pnpm escape-hatches` in `pnpm verify`. This box was true but unenforced: verified by hand, once, resting on nobody having broken it. Two `eslint-disable`s are allowlisted with written reasons (both lazy/static `require`s that cannot be expressed otherwise), and a stale allowance fails the build like a violation. |
+| Performance on a **mid-tier Android** | ⬜ Not measured — there is no device. **One property of it now is:** `pnpm bundle:native` enforces a 4.5 MB per-platform ceiling on the Hermes bundle (3.80 MB today), because Hermes reads every byte before the first frame and that is the part of cold start visible without hardware. Frame times, memory and actual startup remain unmeasured. |
 | Errors to Sentry with PII-free context | ⬜ `ErrorBoundary` logs to console and says "reported once it is connected". Sentry is not connected. |
 
 ## 🟡 Craft
@@ -108,8 +110,7 @@ green while two thirds of the authored content was unreachable.
    shipped iPhone-only against its own spec. It is `true` now and has never been seen on
    a tablet, so expect that row of the checklist to find things.
 
-   Two things that were being deferred
-   to it turned out not to need it:
+   Three things that were being deferred to it turned out not to need it:
 
    - **Native bundling.** `pnpm e2e` exported `--platform web` and nothing else, so the
      app had **never been bundled for iOS or Android at all**. Metro resolves per
@@ -123,6 +124,12 @@ green while two thirds of the authored content was unreachable.
      action rather than a touch sequence, which is precisely how the tab bar once
      shipped inert on web *and* unreachable by screen reader on every platform. A
      lesson can now be answered with Tab and Enter alone.
+   - **Bundle size.** "Performance needs a device" was true of frame times and memory
+     and quietly untrue of the one input to cold start you can weigh without hardware.
+     Hermes reads the whole bundle before the first frame, so on the three-year-old
+     Android this app is aimed at, megabytes are seconds. `pnpm bundle:native` now
+     fails over 4.5 MB per platform. The remaining performance work is genuinely
+     device-bound; this part was not.
 
 ---
 

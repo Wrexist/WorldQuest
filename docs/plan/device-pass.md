@@ -102,6 +102,11 @@ zero**. The a11y skill is explicit that this is the part that matters.
 Not a flagship. The budget is about a mid-tier Android — a device three or four years
 old, which is what a ten-year-old is most likely to be handed.
 
+One input to this is already measured: `pnpm bundle:native` fails if the Hermes bundle
+passes 4.5 MB per platform (3.80 MB today). Hermes reads every byte of it before the
+first frame, so if cold start comes in over 3 s below, bundle size is the one cause you
+can rule out on the way in.
+
 - [ ] Cold start under 3 s.
 - [ ] Scroll the 65-tile collection. No visible jank.
 - [ ] Answer ten questions quickly. No lag between tap and feedback.

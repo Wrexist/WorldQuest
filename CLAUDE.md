@@ -139,8 +139,12 @@ unless asked. Full rules: [`PROJECT.md §11`](PROJECT.md#11-git-workflow).
 ## Environment notes
 
 - pnpm workspaces — install from the repo root, never inside a package.
-- `pnpm dev` (Expo) · `pnpm test` · `pnpm typecheck` · `pnpm lint` ·
-  `pnpm content:validate` · `pnpm i18n:check`
+- `pnpm dev` (Expo) · `pnpm test` · `pnpm typecheck` · `pnpm content:validate` ·
+  `pnpm i18n:check` · `pnpm verify` (all of it, and the gate that matters)
+- There is **no ESLint in this repo yet**, so there is no `pnpm lint`. The rules a
+  linter would carry are enforced by scripts instead: `pnpm escape-hatches` (`any`,
+  `@ts-expect-error`, `eslint-disable`), `pnpm lint:a11y`, `pnpm design:contrast`,
+  `pnpm reachability`, `pnpm five-states`. All are in `pnpm verify`.
 - `pnpm design:shots` — renders 10 routes × 320/390/768 and measures what a picture
   cannot show (targets under 44 pt, sideways scroll, unlabelled controls). Not a gate.
 - `pnpm design:measure <url>` — measures a reference in this repo's token shape.

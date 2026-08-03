@@ -10,14 +10,14 @@
     "dev": "pnpm --filter @worldquest/mobile start",
     "generate": "pnpm design:tokens && pnpm i18n:types",
     "prepare": "pnpm generate",
-    "verify": "pnpm generate && pnpm typecheck && pnpm test && pnpm content:validate && pnpm i18n:check && pnpm design:contrast && pnpm lint:a11y && pnpm reachability && pnpm five-states",
+    "verify": "pnpm generate && pnpm typecheck && pnpm test && pnpm content:validate && pnpm i18n:check && pnpm design:contrast && pnpm lint:a11y && pnpm escape-hatches && pnpm reachability && pnpm five-states",
     "typecheck": "pnpm -r --filter './packages/*' --filter './apps/*' typecheck",
     "test": "pnpm -r --filter './packages/*' --filter './apps/*' test && vitest run --config vitest.edge.config.ts",
     "$comment:e2e": "Exports the real bundle through Metro and drives it in Chromium via react-native-web. Not a device — see apps/mobile/e2e/flow.cjs for exactly what that does and does not prove. The export step is the point as much as the driving: it is the only thing in this repo that runs the bundler.",
     "e2e": "pnpm --filter @worldquest/mobile exec expo export --platform web --output-dir ../../node_modules/.cache/wq-web && node apps/mobile/e2e/flow.cjs node_modules/.cache/wq-web node_modules/.cache/wq-e2e-shots",
     "$comment:design:shots": "Screenshots any set of routes from the exported bundle at 320/390/768 and reports the things a picture cannot show — touch targets under 44pt, sideways scroll, unlabelled controls. Feeds /design-review. Never a gate: verify and e2e are the gates.",
     "design:shots": "pnpm --filter @worldquest/mobile exec expo export --platform web --output-dir ../../node_modules/.cache/wq-web && node scripts/design-shots.cjs",
-    "$comment:bundle:native": "Bundles for iOS and Android. Until this existed the app had only ever been bundled for web, and Metro resolves per platform — a native-only resolution failure was invisible. Proves the graph compiles, NOT that the app runs.",
+    "$comment:bundle:native": "Bundles for iOS and Android, and enforces a per-platform size budget. Until this existed the app had only ever been bundled for web, and Metro resolves per platform — a native-only resolution failure was invisible. The budget is here because Hermes reads the whole bundle before the first frame, making size the one cold-start input measurable without a phone. Proves the graph compiles and is not growing quietly; NOT that the app runs.",
     "bundle:native": "node scripts/bundle-native.cjs",
     "design:measure": "node scripts/measure-design.cjs",
     "content:validate": "pnpm --filter @worldquest/content validate",
@@ -40,7 +40,9 @@
     "screenshot": "esbuild scripts/screenshot/render.tsx --bundle --platform=node --format=cjs --jsx=automatic --alias:react-native=react-native-web --define:__DEV__=false --alias:expo-linear-gradient=./scripts/screenshot/linear-gradient-web.tsx --loader:.json=json --outfile=node_modules/.cache/wq-render.cjs && node node_modules/.cache/wq-render.cjs > node_modules/.cache/wq-app.html && node scripts/screenshot/shoot.cjs node_modules/.cache/wq-app.html docs/design/assets/screens",
     "reachability": "tsx scripts/reachability.ts",
     "five-states": "tsx scripts/five-states.ts",
-    "lint:a11y": "tsx scripts/a11y.ts"
+    "lint:a11y": "tsx scripts/a11y.ts",
+    "$comment:escape-hatches": "Fails on `any`, @ts-expect-error, @ts-ignore or eslint-disable outside tests. PROJECT.md §12 has banned all four since week one and nothing checked — the DoD ✅ rested on nobody having broken it yet. Deliberate exceptions live in an allowlist with a written reason, and a stale entry fails the same as a violation.",
+    "escape-hatches": "tsx scripts/escape-hatches.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

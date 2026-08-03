@@ -27,7 +27,7 @@ Read `docs/design/design-system.md`. Then hunt for:
 - A component with > 8 props that wants splitting
 - A local re-implementation of an existing primitive
 
-Run the automated checks first (`pnpm design:contrast`, `pnpm lint`), then read the
+Run the automated checks first (`pnpm design:contrast`, `pnpm escape-hatches`), then read the
 diff — most violations are not lintable.
 
 For each finding: the file and line, what rule it breaks, and the exact token to use
