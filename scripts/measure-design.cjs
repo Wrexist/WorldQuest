@@ -24,6 +24,7 @@
  */
 
 const { chromium } = require('playwright')
+const { launchOptions } = require('./chromium.cjs')
 
 const url = process.argv[2]
 const mobile = process.argv.includes('--mobile')
@@ -107,10 +108,9 @@ const caSpki = proxyCaSpki()
    * below rather than swallowed.
    */
   const proxyUrl = process.env.HTTPS_PROXY ?? process.env.https_proxy
-  const browser = await chromium.launch({
-    executablePath: process.env.WQ_CHROMIUM ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
+  const browser = await chromium.launch(
+    launchOptions({
     args: [
-      '--no-sandbox',
       /**
        * The proxy terminates TLS with its own CA, and Chromium reads certificates from
        * an NSS database rather than the system bundle — which this image has no
@@ -138,7 +138,8 @@ const caSpki = proxyCaSpki()
           },
         }
       : {}),
-  })
+    }),
+  )
   const page = await browser.newPage({
     viewport: mobile ? { width: 390, height: 844 } : { width: 1440, height: 900 },
     deviceScaleFactor: 2,

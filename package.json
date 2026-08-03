@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "pnpm --filter @worldquest/mobile start",
-    "generate": "pnpm design:tokens && pnpm i18n:types",
+    "generate": "pnpm design:tokens && pnpm i18n:types && pnpm edge:build",
     "prepare": "pnpm generate",
     "verify": "pnpm generate && pnpm typecheck && pnpm test && pnpm content:validate && pnpm i18n:check && pnpm design:contrast && pnpm lint:a11y && pnpm escape-hatches && pnpm reachability && pnpm five-states",
     "typecheck": "pnpm -r --filter './packages/*' --filter './apps/*' typecheck",
@@ -43,6 +43,7 @@
     "$comment:db:types": "--local, not --project-id: the migrations in this repo are the source of truth, and CI diffs this file against a stack built from them. Generating from the hosted project instead produces whatever happens to be deployed there, which is how a types file starts describing a schema nobody can reproduce.",
     "db:types": "supabase gen types typescript --local > packages/api/src/database.types.ts",
     "db:test": "supabase test db",
+    "$comment:edge:build": "Verifies the deploy bundle is self-contained AND writes its generated half — `_content/answers.ts`, the fact→entity answer key derived from the packs. Until this wrote anything, the function on disk imported a file no checkout had ever contained, so `supabase start` and `supabase functions deploy` both failed on it. Part of `generate`, so a fresh clone can start the local stack.",
     "edge:build": "tsx supabase/functions/build.ts submit-lesson",
     "edge:deploy": "supabase functions deploy submit-lesson --project-ref tjdjogidudjobxipibqb",
     "$comment:screenshot": "`.png=dataurl` rather than `file`: this harness emits ONE standalone HTML file into a cache directory and shoots it there, so a relative asset path would resolve to nothing and every flag would render blank — which looks exactly like the placeholder it replaced. Inlining costs ~900 KB in a throwaway file and cannot half-work.",

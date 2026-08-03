@@ -37,6 +37,7 @@
  */
 
 const { chromium } = require('playwright')
+const { launchOptions } = require('./chromium.cjs')
 const http = require('node:http')
 const fs = require('node:fs')
 const path = require('node:path')
@@ -169,10 +170,7 @@ const finding = (route, kind, detail) => findings.push({ route, kind, detail })
   }
 
   await new Promise((resolve) => server.listen(PORT, resolve))
-  const browser = await chromium.launch({
-    executablePath: process.env.WQ_CHROMIUM ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
-    args: ['--no-sandbox'],
-  })
+  const browser = await chromium.launch(launchOptions())
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } })
 
   // Same reason as design-shots: without this the whole tool audits the onboarding

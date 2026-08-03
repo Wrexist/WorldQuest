@@ -74,6 +74,14 @@ jobs:
       - name: Economy health
         run: pnpm engines:simulate
 
+      # The development container ships a Chromium at /opt/pw-browsers and sets
+      # PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD, so nothing here ever downloaded one. A runner
+      # has neither. `scripts/chromium.cjs` falls back to Playwright's own resolution
+      # when the image's browser is absent — this is the step that gives it something to
+      # resolve to.
+      - name: Install Chromium for Playwright
+        run: pnpm exec playwright install --with-deps chromium
+
       # The only step here that runs METRO. typecheck runs tsc and test runs
       # vitest; both resolve TypeScript's `.js`-means-`.ts` imports, and the
       # bundler does not. That gap hid a repo where the app had never bundled on
@@ -114,6 +122,14 @@ jobs:
         with: { version: latest }
 
       - run: pnpm install --frozen-lockfile
+
+      # `submit-lesson/index.ts` imports `./_content/answers.ts`, which is derived from
+      # the fact packs and deliberately not committed. `supabase start` reads the
+      # functions directory off disk and refuses to start without it. This is also
+      # `pnpm generate`'s job — running it explicitly is cheap and says why it matters
+      # here.
+      - name: Generate the edge function's answer key
+        run: pnpm edge:build
 
       # Against a LOCAL stack, never a hosted project. A migration that drops a
       # column is a migration that drops a column, and CI must be free to find

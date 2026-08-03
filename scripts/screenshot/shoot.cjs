@@ -9,6 +9,7 @@
  * Run: pnpm screenshot
  */
 const { chromium } = require('playwright')
+const { launchOptions } = require('../chromium.cjs')
 const path = require('path')
 
 const SHOTS = [
@@ -21,10 +22,7 @@ const SHOTS = [
 
 ;(async () => {
   const [, , htmlPath, outDir] = process.argv
-  const browser = await chromium.launch({
-    executablePath: process.env.CHROMIUM_PATH ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
-    args: ['--no-sandbox'],
-  })
+  const browser = await chromium.launch(launchOptions())
   // deviceScaleFactor 2 so the output is legible when zoomed, like a retina capture.
   const page = await browser.newPage({
     viewport: { width: 1400, height: 1000 },

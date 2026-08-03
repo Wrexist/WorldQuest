@@ -43,6 +43,7 @@
  */
 
 const { chromium } = require('playwright')
+const { launchOptions } = require('../../../scripts/chromium.cjs')
 const http = require('node:http')
 const fs = require('node:fs')
 const path = require('node:path')
@@ -85,11 +86,10 @@ const step = (name, ok, detail = '') => {
   fs.mkdirSync(SHOTS, { recursive: true })
   await new Promise((resolve) => server.listen(PORT, resolve))
 
-  const browser = await chromium.launch({
-    // Provided by the image; never downloaded. See PLAYWRIGHT_BROWSERS_PATH.
-    executablePath: process.env.WQ_CHROMIUM ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
-    args: ['--no-sandbox'],
-  })
+  // Resolved by scripts/chromium.cjs: the image's browser when there is one, and
+  // Playwright's own download when there is not. Hardcoding the image's path here is
+  // what killed this step on CI for the first run that ever reached it.
+  const browser = await chromium.launch(launchOptions())
   // iPhone 14-ish. The layout is phone-first and a desktop viewport hides overflow bugs.
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } })
 

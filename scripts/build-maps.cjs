@@ -72,6 +72,7 @@
  */
 
 const { chromium } = require('playwright')
+const { launchOptions } = require('./chromium.cjs')
 const { readFileSync, writeFileSync, mkdirSync, rmSync } = require('node:fs')
 const { join } = require('node:path')
 
@@ -357,10 +358,7 @@ ${contextEntries}
   mkdirSync(OUT_CONTEXT, { recursive: true })
   mkdirSync(OUT_COUNTRIES, { recursive: true })
 
-  const browser = await chromium.launch({
-    executablePath: process.env.WQ_CHROMIUM ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
-    args: ['--no-sandbox'],
-  })
+  const browser = await chromium.launch(launchOptions())
   const page = await browser.newPage({
     viewport: { width: WIDTH, height: HEIGHT },
     deviceScaleFactor: 1,

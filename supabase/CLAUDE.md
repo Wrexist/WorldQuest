@@ -38,4 +38,10 @@ It is backed by a partial index on `user_facts (user_id, due_at)`. Protect it.
 pnpm db:start · pnpm db:reset · pnpm db:types · pnpm db:test
 ```
 
+`functions/submit-lesson/_content/answers.ts` is **generated**, not committed — it is the
+fact → correct-entity key the server grades against, projected from the content packs by
+`pnpm edge:build` (which `pnpm generate` runs on install). A committed copy could
+disagree with the packs, and that disagreement marks a user wrong for a right answer.
+`supabase start` reads the functions directory off disk, so it needs the file to exist.
+
 Spec: [`../docs/engineering/data-model.md`](../docs/engineering/data-model.md)

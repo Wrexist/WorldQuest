@@ -14,7 +14,7 @@
  * Run: pnpm edge:build   (or import buildFunction from a deploy script)
  */
 
-import { readFileSync, readdirSync, statSync } from 'node:fs'
+import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -134,6 +134,51 @@ export function buildFunction(name: string): DeployFile[] {
 }
 
 /**
+ * The bundle files that have no on-disk counterpart, and therefore have to be written.
+ *
+ * Everything else this script produces is a REWRITE of something already in the repo:
+ * `index.ts` with its import paths remapped, the engine modules copied under
+ * `_engines/`. Writing those would clobber the sources they came from. `_content/` is
+ * different — it is derived from the content packs and exists nowhere until it is
+ * generated.
+ *
+ * That distinction was invisible for as long as this script only ever printed. The
+ * bundle was assembled in memory, verified, described, and dropped on the floor — so
+ * `supabase/functions/submit-lesson/index.ts` sat on disk importing
+ * `./_content/answers.ts`, a file no checkout has ever contained. The first CI run that
+ * got as far as `supabase start` said so:
+ *
+ *   failed to read file: open supabase/functions/submit-lesson/_content/answers.ts:
+ *   no such file or directory
+ *
+ * and `pnpm edge:deploy` would have failed identically, from any machine, at any point
+ * in this project's history. Nothing caught it because `build.test.ts` asserts things
+ * about the in-memory bundle, which was always correct — it was just never anywhere.
+ *
+ * Generated, not committed, for the reason `.gitignore` gives for tokens and keys: the
+ * answer key is a projection of the fact packs, so a committed copy is a copy that can
+ * disagree with them. `pnpm generate` runs this on install, which is what makes a fresh
+ * clone able to start the local stack.
+ */
+const GENERATED = ['_content/answers.ts']
+
+/** Write the generated-only files into the function directory. Returns what it wrote. */
+export function writeGenerated(name: string): string[] {
+  const built = buildFunction(name)
+  const written: string[] = []
+
+  for (const file of built) {
+    if (!GENERATED.includes(file.name)) continue
+    const target = join(here, name, file.name)
+    mkdirSync(dirname(target), { recursive: true })
+    writeFileSync(target, file.content)
+    written.push(relative(join(here, '..', '..'), target))
+  }
+
+  return written
+}
+
+/**
  * Assert the bundle is self-contained before anyone deploys it.
  *
  * Checks imports specifically, not raw text — doc comments legitimately mention
@@ -155,11 +200,13 @@ export function verifyBundle(files: DeployFile[]): string[] {
   return problems
 }
 
-// Allow `tsx supabase/functions/build.ts submit-lesson` for inspection.
+// `tsx supabase/functions/build.ts submit-lesson` — verify the bundle, and write the
+// generated half of it so the local stack and `functions deploy` can read it.
 if (process.argv[2]) {
-  const built = buildFunction(process.argv[2])
+  const name = process.argv[2]
+  const built = buildFunction(name)
   const problems = verifyBundle(built)
-  console.log(`Built "${process.argv[2]}" — ${built.length} files:`)
+  console.log(`Built "${name}" — ${built.length} files:`)
   for (const f of built) console.log(`  ${f.name.padEnd(28)} ${f.content.length} bytes`)
   if (problems.length) {
     console.error('\n✗ bundle is not self-contained:')
@@ -167,4 +214,6 @@ if (process.argv[2]) {
     process.exit(1)
   }
   console.log('\n✓ bundle is self-contained')
+
+  for (const path of writeGenerated(name)) console.log(`  wrote ${path}`)
 }

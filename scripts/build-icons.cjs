@@ -54,6 +54,7 @@
  */
 
 const { chromium } = require('playwright')
+const { launchOptions } = require('./chromium.cjs')
 const { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } = require('node:fs')
 const { join, dirname } = require('node:path')
 const { createRequire } = require('node:module')
@@ -195,10 +196,7 @@ const page = (svg) => `<!doctype html>
   const src = lucideDir()
   mkdirSync(OUT, { recursive: true })
 
-  const browser = await chromium.launch({
-    executablePath: process.env.WQ_CHROMIUM ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
-    args: ['--no-sandbox'],
-  })
+  const browser = await chromium.launch(launchOptions())
   const tab = await browser.newPage({
     viewport: { width: SIZE, height: SIZE },
     deviceScaleFactor: 1,
