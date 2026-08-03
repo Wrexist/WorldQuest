@@ -56,5 +56,7 @@
   "lesson:speed.remaining": "{seconds} sekunder kvar",
   "lesson:speed.timeUp": "Tiden tog slut på den.",
   "lesson:prompt.which_country_map": "Vilket land är markerat?",
-  "lesson:prompt.location_of": "Var i världen ligger {entityName}?"
+  "lesson:prompt.location_of": "Var i världen ligger {entityName}?",
+  "lesson:answer.correct": "{answer}, rätt svar",
+  "lesson:answer.wrong": "{answer}, inte svaret"
 }

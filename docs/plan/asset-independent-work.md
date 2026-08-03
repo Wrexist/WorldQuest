@@ -57,7 +57,7 @@ blocked by anything.
 
 | # | Work | Notes | State |
 |---|---|---|---|
-| D1 | **Beyond 5 countries** | The long pole. Every fact needs `source` + `verifiedAt`. Ship in subregion-sized batches so progress is visible. | 🟡 *(all six continents, 14 subregions, none below four members — 65 countries, 130 facts, 321 items, 318 of 318 askable ones reachable)* |
+| D1 | **Beyond 5 countries** | The long pole. Every fact needs `source` + `verifiedAt`. Ship in subregion-sized batches so progress is visible. | 🟡 *(all six continents, 14 subregions, none below four members — 65 countries, 259 facts, 579 items)* |
 | D2 | **More question templates** | `tpl.flag-of-country.mc4` — country → flag description, the reverse of the existing pair. Five templates now; each multiplies across every fact already written. | ✅ |
 | D3 | **Authoring ergonomics** | `content:preview` (reads every generated question, gates CI) and `content:stats` (says which subregion to author next). Both were advertised in `package.json` and neither existed. | ✅ |
 
@@ -200,7 +200,11 @@ the input that separates them. `namesAnswer` is now exported and both call it; t
 tool still checks the **rendered** prompt rather than its params, which catches the
 case the engine cannot — a catalogue string that gives the answer away in its own text.
 
-**65 countries · 130 facts · 321 items · 318 of 318 askable ones reachable.**
+**65 countries · 259 facts · 579 items · 9 packs.**
+
+*(Those counts were last written as "130 facts · 321 items" and were a wave out of date.
+They are emitted by `pnpm content:stats`, so re-read them rather than trusting this line —
+the same rule the rest of this file applies to code.)*
 
 ### E2, and the thing it found
 

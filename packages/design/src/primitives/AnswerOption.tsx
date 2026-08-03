@@ -36,8 +36,17 @@ export type AnswerOptionProps = {
   label: string
   state?: AnswerState
   onPress: () => void
-  /** Announced instead of the bare label, e.g. "Japan, correct answer". */
-  accessibilityLabel?: string
+  /**
+   * Announced instead of the bare label, e.g. "Japan, correct answer".
+   *
+   * This prop carried that example in its own doc comment and **nothing ever passed
+   * it**, so the correct/wrong state reached a screen reader through exactly nothing:
+   * the mark is `aria-hidden` artwork and the surface colour is invisible to a reader.
+   * A user heard "Berlin", four times, with no way to tell which one they got wrong.
+   * `| undefined` explicitly, because `exactOptionalPropertyTypes` distinguishes an
+   * absent prop from one passed as undefined and the caller computes it per state.
+   */
+  accessibilityLabel?: string | undefined
   /**
    * The correct/wrong mark, supplied by the caller as a node.
    *

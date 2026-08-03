@@ -401,6 +401,18 @@ export function LessonScreen({
               key={option.id}
               label={option.label}
               state={state}
+              // The state, spoken. `AnswerOption` documents this prop with the example
+              // "Japan, correct answer" and nothing had ever passed it — so the mark
+              // was `aria-hidden` artwork, the surface colour did the rest, and a
+              // screen-reader user heard "Berlin" with no indication it was the one
+              // they got wrong. Colour plus an unlabelled icon was the entire signal.
+              accessibilityLabel={
+                state === 'correct'
+                  ? t('lesson:answer.correct', { answer: option.label })
+                  : state === 'wrong'
+                    ? t('lesson:answer.wrong', { answer: option.label })
+                    : undefined
+              }
               // The non-colour half of the signal, as artwork rather than a character.
               // The wrong-answer mark used to be `→`, which points the same way in an
               // RTL layout as in an LTR one — an arrow that means "the right answer is
@@ -445,7 +457,6 @@ export function LessonScreen({
 
                 lesson.answer(option.id)
               }}
-              aria-label={t('lesson:answer.label', { answer: option.label })}
               // So tests can select answers POSITIVELY. The helper used to take every
               // button that was not labelled "Continue", which silently swallowed the
               // close button the moment one existed and made two tests click pause

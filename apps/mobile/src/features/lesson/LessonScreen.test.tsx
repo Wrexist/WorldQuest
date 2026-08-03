@@ -133,3 +133,33 @@ describe('Lesson — pausing', () => {
     expect(screen.getByRole('heading').textContent).not.toBe(prompt)
   })
 })
+
+describe('Lesson — correctness reaches a screen reader', () => {
+  it('names which option was right and which was chosen', () => {
+    // The gap this closes: the tick and the wrong-mark are BOTH `aria-hidden`
+    // artwork, and the surface colour is invisible to a reader — so the entire
+    // correct/wrong signal on an answered question was unavailable non-visually.
+    // `AnswerOption` has carried an `accessibilityLabel` prop documented with the
+    // example "Japan, correct answer" since it was written, and nothing passed it.
+    render(<LessonScreen onExit={() => {}} />)
+    // Answer, wrongly or rightly — either way BOTH labels must appear, because the
+    // correct option is revealed in green whichever was chosen.
+    fireEvent.click(answerButtons()[1]!)
+
+    const labels = answerButtons().map((o) => o.getAttribute('aria-label') ?? '')
+    expect(labels.some((l) => /correct answer$/.test(l))).toBe(true)
+    // Only the chosen option is marked wrong; the untouched distractors stay bare.
+    expect(labels.filter((l) => /not the answer$/.test(l)).length).toBeLessThanOrEqual(1)
+    expect(labels.every((l) => l.length > 0)).toBe(true)
+  })
+
+  it('never shouts at the user in the label a reader hears', () => {
+    // The visible copy is "That's Berlin. The answer is Paris." — plain, no
+    // exclamation, no "Oops". The spoken label has to keep the same register: a
+    // screen-reader user is the one person who cannot see how gentle the screen is.
+    const { container } = render(<LessonScreen onExit={() => {}} />)
+    fireEvent.click(answerButtons()[1]!)
+    const spoken = container.innerHTML
+    expect(spoken).not.toMatch(/wrong answer|incorrect|oops|try again/i)
+  })
+})

@@ -112,5 +112,9 @@
   "lesson:prompt.which_country_map": "Which country is highlighted?",
   "lesson:prompt.which_country_map__note": "Map question — the locator map IS the prompt, with the country picked out against the land around it. \"Highlighted\" rather than \"shown\", because the map shows several countries and only one is coloured. Never shown to a screen-reader user; tpl.location-of.mc4 tests the same fact by ear.",
   "lesson:prompt.location_of": "Where in the world is {entityName}?",
-  "lesson:prompt.location_of__note": "The screen-reader-safe sibling of the map question, and a good question in its own right. Answers are subregions — \"Northern Europe\", \"West Africa\". {entityName} takes the sentence form, so English gets \"the United States\"."
+  "lesson:prompt.location_of__note": "The screen-reader-safe sibling of the map question, and a good question in its own right. Answers are subregions — \"Northern Europe\", \"West Africa\". {entityName} takes the sentence form, so English gets \"the United States\".",
+  "lesson:answer.correct": "{answer}, correct answer",
+  "lesson:answer.correct__note": "Accessibility label for the option that IS the answer, once feedback is showing. The tick beside it is `aria-hidden` artwork, so without this a screen-reader user hears only the option text and has no way to tell which one was right — colour and an unlabelled icon are the whole signal on screen.",
+  "lesson:answer.wrong": "{answer}, not the answer",
+  "lesson:answer.wrong__note": "Accessibility label for the option the user chose when it was wrong. Deliberately NOT 'incorrect' or 'wrong answer' shouted at the user — it states which option is not the answer, in the same register as the visible copy 'That's Berlin. The answer is Paris.' See docs/design/voice-and-tone.md."
 }

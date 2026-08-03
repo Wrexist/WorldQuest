@@ -12,14 +12,14 @@ the single fact that most of the rest follows from.
 
 ## Automated: green
 
-`pnpm verify` runs typecheck, **823 tests** across seven packages and the edge bundle,
-content validation, i18n completeness, **26 contrast pairs**, `lint:a11y`,
+`pnpm verify` runs typecheck, **841 tests** across seven packages plus **90** against the
+edge functions, content validation, i18n completeness, **26 contrast pairs**, `lint:a11y`,
 `escape-hatches`, `reachability` and `five-states`.
 `pnpm e2e` runs **67 steps** against the real Metro bundle in Chromium — including six
 screens re-measured at 200 % text — `pnpm a11y:tree` walks Chromium's computed
 accessibility tree over 10 routes, `pnpm design:shots` renders those routes at
 320/390/768, and `pnpm bundle:native` builds both native platforms against a 6.0 MB
-size budget. The **17** edge-bundle guards run inside `pnpm test` rather than under a
+size budget. The **24** edge-bundle guards run inside `pnpm test` rather than under a
 separate `pnpm edge:test`, which no longer exists.
 
 **CI is green on both jobs**, which it had never been. Every failure between runners
@@ -49,7 +49,7 @@ green while two thirds of the authored content was unreachable.
 
 | Box | State |
 |---|---|
-| Unit + component tests | ✅ **823 passing**, 17 of them against the edge bundle. Two screens gained their first tests this wave — `RegionScreen` had none at all, which is why a reachability check rather than a failing assertion found it re-deriving totals the engine already owned. |
+| Unit + component tests | ✅ **931 passing** — 841 across the workspace and 90 against the edge functions, 24 of those guarding the deploy bundle. Two screens gained their first tests this wave — `RegionScreen` had none at all, which is why a reachability check rather than a failing assertion found it re-deriving totals the engine already owned. |
 | No `any`, no `@ts-expect-error` | ✅ Zero of both outside tests — **and now checked**, by `pnpm escape-hatches` in `pnpm verify`. This box was true but unenforced: verified by hand, once, resting on nobody having broken it. Three `eslint-disable`s are allowlisted with written reasons (all lazy or static `require`s that cannot be expressed otherwise), and a stale allowance fails the build like a violation. |
 | Performance on a **mid-tier Android** | ⬜ Not measured — there is no device. **One property of it now is:** `pnpm bundle:native` enforces a per-platform ceiling on the Hermes bundle, because Hermes reads every byte before the first frame and that is the part of cold start visible without hardware. It has already earned its keep twice. Adding Sentry pushed the bundle 3.80 → **5.72 MB** and the budget failed the build, turning a silent 50 % growth into a recorded decision (budget now 6.0). And when 701 KB of flag artwork landed against 250 KB of headroom, the script now reports assets separately and showed the real cost to the bundle was **0.03 MB** — Metro ships images beside the bytecode rather than inside it, so the obvious reaction (shrink the flags) would have degraded the artwork for nothing. Frame times, memory and actual startup remain unmeasured. |
 | Errors to Sentry with PII-free context | 🟡 **Transport built, round trip unverified.** `@sentry/react-native` installed, `lib/reporting.ts` wires it, `ErrorBoundary` reports through it, init at module scope so a first-render crash is caught. No-op until `EXPO_PUBLIC_SENTRY_DSN` is set — no half-configured state. PII-free is enforced by the **type** (`CrashReport` has no free-text field) plus a `beforeSend` scrubber, both tested. What is missing is a DSN and proof an event arrives. Cost: **1.92 MB** of bundle. |
@@ -67,7 +67,7 @@ green while two thirds of the authored content was unreachable.
 
 | Box | State |
 |---|---|
-| Every string an i18n key, `en` + `sv` | ✅ 430 keys, both locales complete, ICU plurals, translator notes. |
+| Every string an i18n key, `en` + `sv` | ✅ **441 keys**, both locales complete, ICU plurals, 397 translator notes. |
 | Screen reader verified with VoiceOver **and** TalkBack | ⬜ Neither exists here — but the **mechanical half is now checked against the tree a reader consumes**, not against source. `pnpm a11y:tree` walks Chromium's computed accessibility tree over 10 routes and fails on a control with no accessible name, a name that is only a glyph, a name that describes an icon rather than an action, a full-screen route with no way back, or focus order that fights reading order. It found two real defects immediately (see below) — including settings toggles that would have been **announced but impossible to operate with VoiceOver**. The primary task is also completable with the keyboard alone (`pnpm e2e`). What remains genuinely device-bound: announcement quality, the readers' own gestures and grouping, and whether any of it is comprehensible when heard with the screen off. |
 | Contrast ≥ 4.5:1, targets ≥ 44 pt | ✅ 26 pairs checked; targets sized in code. |
 | Survives 200 % text and RTL | ✅ RTL is linted (`lint:a11y`) after two real bugs. 200 % text is now measured on six screens in `pnpm e2e` — see below. |
