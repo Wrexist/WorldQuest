@@ -12,7 +12,7 @@ the single fact that most of the rest follows from.
 
 ## Automated: green
 
-`pnpm verify` runs typecheck, 616 tests across seven packages, content validation,
+`pnpm verify` runs typecheck, 631 tests across seven packages, content validation,
 i18n completeness, 23 contrast pairs, `lint:a11y`, `reachability` and `five-states`.
 `pnpm e2e` runs 47 steps against the real Metro bundle in Chromium — including six
 screens re-measured at 200 % text — `pnpm design:shots` renders 10 routes at
@@ -37,7 +37,7 @@ green while two thirds of the authored content was unreachable.
 
 | Box | State |
 |---|---|
-| Unit + component tests | ✅ 616 passing, plus 14 against the edge bundle. |
+| Unit + component tests | ✅ 631 passing, plus 14 against the edge bundle. |
 | No `any`, no `@ts-expect-error` | ✅ Zero of both outside tests. |
 | Performance on a **mid-tier Android** | ⬜ Not measured. There is no device. |
 | Errors to Sentry with PII-free context | ⬜ `ErrorBoundary` logs to console and says "reported once it is connected". Sentry is not connected. |
