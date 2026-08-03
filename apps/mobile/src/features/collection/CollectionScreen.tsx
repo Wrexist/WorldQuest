@@ -165,12 +165,18 @@ export function CollectionScreen({
         </Text>
 
         {/* The count, not a percentage. "62 of 195" says how far the next one is;
-            "32%" says nothing a user can act on. */}
+            "32%" says nothing a user can act on.
+
+            The label says what is counted, not how many: `showCount` already renders
+            the number on the right, and passing the count here too printed "0 of 65"
+            and "0 / 65" side by side. A screen reader still hears the figure — it
+            comes from `accessibilityValue`, not from this string. */}
         <ProgressBar
           current={collected}
           total={tiles.length}
           showCount
-          label={t('collection:progress', { collected, total: tiles.length })}
+          label={t('collection:progress.label')}
+          valueText={t('collection:progress', { collected, total: tiles.length })}
         />
 
         <TextInput

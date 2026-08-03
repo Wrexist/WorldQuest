@@ -29,6 +29,16 @@ export type ProgressBarProps = {
   /** Renders "172 / 195" beside the bar. Strongly preferred. */
   showCount?: boolean
   label?: string
+  /**
+   * What a screen reader announces as the value — a localised "172 of 195".
+   *
+   * This package cannot import `@worldquest/i18n` (design depends on nothing, which is
+   * what lets the token layer be reused), so the fallback is an English template. That
+   * fallback was the only behaviour until now, which meant every Swedish user with
+   * VoiceOver on heard the count in English while the screen around it was translated.
+   * Callers that have a translator pass the localised string here.
+   */
+  valueText?: string
   height?: number
   style?: StyleProp<ViewStyle>
   testID?: string
@@ -52,6 +62,7 @@ export function ProgressBar({
   tone = 'progress',
   showCount = true,
   label,
+  valueText,
   height = 16,
   style,
   testID,
@@ -65,11 +76,17 @@ export function ProgressBar({
       accessible
       role="progressbar"
       aria-label={label}
+      // Set explicitly as well as via `accessibilityValue`. react-native-web carries
+      // that prop's numeric fields across but drops `text`, so the localised value was
+      // announced on native and silently missing on web — the third time in this repo
+      // that an RN platform a11y prop has no-opped on web while looking correct in
+      // source. Only the ARIA spelling can be trusted to reach the DOM.
+      aria-valuetext={valueText}
       accessibilityValue={{
         min: 0,
         max: safeTotal,
         now: current,
-        text: `${current} of ${total}`,
+        text: valueText ?? `${current} of ${total}`,
       }}
       style={[styles.wrap, style]}
       testID={testID}

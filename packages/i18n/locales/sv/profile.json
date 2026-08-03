@@ -18,6 +18,7 @@
   "profile:account.cta": "Skapa ett konto",
   "profile:empty.title": "Inget att visa ännu",
   "profile:empty.body": "Gör din första lektion så börjar dina siffror här.",
+  "profile:empty.cta": "Starta en lektion",
   "profile:levelTitle": "Nivå {level} · {title}",
   "profile:week.title": "Denna vecka",
   "profile:week.none": "Inga lektioner än denna vecka",

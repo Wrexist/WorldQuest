@@ -32,7 +32,30 @@ describe('Home — the five states', () => {
     )
     expect(screen.getByText('Europe II')).toBeTruthy()
     expect(screen.getByText('Gold I')).toBeTruthy()
-    expect(screen.getByText('14:22:18')).toBeTruthy()
+  })
+
+  it('never renders a placeholder dash where a value belongs', () => {
+    // What this caught: Home shipped "New challenge in —" and "League —" for every
+    // user on every day, because nothing produced either value. A dash is not an empty
+    // state, it is a missing one, and on the screen users open daily it read as broken.
+    //
+    // The challenge card is gone (no producer — same defect the quests audit found one
+    // card over) and the league tile says plainly that it is not open yet.
+    const { container } = render(
+      <HomeScreen progress={COLD} loading={false} isOffline={false} onStartLesson={() => {}} />,
+    )
+    expect(container.textContent).not.toMatch(/—/)
+    expect(screen.getByText('Not open yet')).toBeTruthy()
+  })
+
+  it('shows a real league standing once there is one', () => {
+    // The tile is not hardcoded to its closed state — it renders what it is given, so
+    // wiring Leagues up later is data rather than a rewrite.
+    render(
+      <HomeScreen progress={RETURNING} loading={false} isOffline={false} onStartLesson={() => {}} />,
+    )
+    expect(screen.getByText('Top 15%')).toBeTruthy()
+    expect(screen.queryByText('Not open yet')).toBeNull()
   })
 
   it('shows a skeleton, not a spinner, while loading', () => {

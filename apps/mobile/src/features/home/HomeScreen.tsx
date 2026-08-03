@@ -172,20 +172,16 @@ export function HomeScreen({
           <Button label={t('common:continue')} onPress={onStartLesson} />
         </Card>
 
-        {/* Daily Challenge. */}
-        <Card style={styles.challengeCard}>
-          <View style={styles.challengeText}>
-            <Text style={styles.cardTitle}>{t('home:challenge.title')}</Text>
-            <Text style={styles.cardLabel}>{t('home:challenge.next')}</Text>
-            <Text style={styles.countdown}>{progress?.challengeIn ?? '—'}</Text>
-          </View>
-          <ArtSlot
-            tint={palette.gold['500']}
-            art={<Icon name="trophy" size={32} color={palette.gold['500']} />}
-            width={72}
-            height={72}
-          />
-        </Card>
+        {/* The Daily Challenge card is deliberately not here — see
+            docs/design/mockup-fidelity.md. Nothing produces `challengeIn`, so it
+            rendered "New challenge in —" for every user on every day, and an em-dash
+            where a countdown belongs reads as broken rather than as pending.
+
+            This is the same defect the quests audit found one card over: the shell was
+            built, ticked as done, and never checked for a producer. "A daily quest that
+            cannot be completed is worse than none — it is a promise on the home screen
+            the app quietly breaks every day." The challenge had not even got as far as
+            being uncompletable; it never arrived at all. */}
 
         {/* Friends / League pair. */}
         <View style={styles.twoUp}>
@@ -197,8 +193,19 @@ export function HomeScreen({
           </Card>
           <Card style={styles.tile} accessibilityLabel={t('home:league.label')}>
             <Text style={styles.cardTitle}>{t('home:league.title')}</Text>
-            <Text style={styles.leagueTier}>{progress?.leagueTier ?? '—'}</Text>
-            <Text style={styles.cardLabel}>{progress?.leaguePercentile ?? ''}</Text>
+            {/* Leagues are v2.0 and the tile stays, per the roadmap — but it stayed as
+                an em-dash, which is not an empty state, it is a missing value. A tile
+                that says plainly it is not open yet is honest; a dash is a rendering
+                bug the user has to interpret. No date and no teaser: a promise with a
+                month attached is a promise to break. */}
+            {progress?.leagueTier === undefined ? (
+              <Text style={styles.cardLabel}>{t('home:league.closed')}</Text>
+            ) : (
+              <>
+                <Text style={styles.leagueTier}>{progress.leagueTier}</Text>
+                <Text style={styles.cardLabel}>{progress.leaguePercentile ?? ''}</Text>
+              </>
+            )}
           </Card>
         </View>
 

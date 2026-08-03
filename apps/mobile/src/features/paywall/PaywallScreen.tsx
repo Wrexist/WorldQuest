@@ -261,9 +261,22 @@ export function PaywallScreen({
               </Text>
             )}
             {plans.length === 0 && plansFailed && !isOffline && onRetryPlans !== undefined && (
-              <Pressable onPress={onRetryPlans} style={styles.dismiss} role="button">
-                <Text style={styles.dismissLabel}>{t('common:retry')}</Text>
-              </Pressable>
+              /* A real control, not a text link. When the store is unreachable this is
+                 the ONLY thing on the page that can change the outcome — every other
+                 control is disabled for want of a price — and it was rendering as
+                 secondary-coloured body text with no ring and no depth. The target was
+                 already 44pt; what was missing was any sign it could be pressed.
+
+                 `tertiary`, so it reads as pressable without competing with the primary
+                 purchase button sitting disabled below it. */
+              <Button
+                label={t('common:retry')}
+                onPress={onRetryPlans}
+                variant="tertiary"
+                size="sm"
+                fullWidth={false}
+                style={styles.retry}
+              />
             )}
 
             {annual !== undefined && (
@@ -462,6 +475,7 @@ const styles = StyleSheet.create({
   dot: { width: 8, height: 8, borderRadius: radius.full, backgroundColor: colors.bg.surfaceRaised },
   dotOn: { backgroundColor: colors.action.primary },
   dismiss: { minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  retry: { alignSelf: 'center', marginTop: space[2] },
   dismissLabel: { ...text('bodyStrong'), color: colors.text.secondary },
   restore: { ...text('caption'), color: colors.text.secondary },
 })

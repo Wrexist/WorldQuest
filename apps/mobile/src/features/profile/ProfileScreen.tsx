@@ -77,6 +77,14 @@ export type ProfileScreenProps = {
   readonly wornTitleKey?: string | undefined
   /** Opens the shop. Absent hides the row rather than showing a dead control. */
   readonly onOpenShop?: (() => void) | undefined
+  /**
+   * Starts a lesson from the empty state.
+   *
+   * The empty state told the user to finish a lesson and gave them no way to start
+   * one — a screen that names its own exit and does not open it. Optional for the same
+   * reason as the two above: absent hides the control rather than rendering a dead one.
+   */
+  readonly onStartLesson?: (() => void) | undefined
 }
 
 export function ProfileScreen({
@@ -87,6 +95,7 @@ export function ProfileScreen({
   onCreateAccount,
   wornTitleKey,
   onOpenShop,
+  onStartLesson,
 }: ProfileScreenProps) {
   const t = useT()
   const locale = currentLocale()
@@ -101,6 +110,17 @@ export function ProfileScreen({
           {t('profile:empty.title')}
         </Text>
         <Text style={styles.subtitle}>{t('profile:empty.body')}</Text>
+        {/* The empty state named the way out and did not open it. An empty state that
+            tells you what to do next and then makes you find it yourself is a dead
+            end — the one place a new user is most likely to be looking for a way in. */}
+        {onStartLesson !== undefined && (
+          <Button
+            label={t('profile:empty.cta')}
+            onPress={onStartLesson}
+            fullWidth={false}
+            style={styles.emptyCta}
+          />
+        )}
       </View>
     )
   }
@@ -308,6 +328,7 @@ const styles = StyleSheet.create({
   weekBar: { width: '100%', borderRadius: radius.sm, backgroundColor: colors.status.progress },
   weekLabel: { ...text('overline'), color: colors.text.tertiary },
   weekEmpty: { ...text('body'), color: colors.text.secondary },
+  emptyCta: { marginTop: space[4] },
   screen: { flex: 1, backgroundColor: colors.bg.canvas },
   content: { padding: space[4], gap: space[4] },
   centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },

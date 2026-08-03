@@ -45,6 +45,8 @@
   "home:friends.label": "Friends",
   "home:friends.label__note": "Accessibility label grouping the friends tile.",
   "home:league.title": "League",
+  "home:league.closed": "Not open yet",
+  "home:league.closed__note": "Shown on the Home league tile while Leagues are unbuilt (v2.0). Deliberately carries NO date and no teaser — a promise with a month attached is a promise to break. It replaced an em-dash, which is a missing value rather than an empty state. Max 16 characters.",
   "home:league.title__note": "Tile title.",
   "home:league.label": "League standing",
   "home:league.label__note": "Accessibility label grouping the league tile."

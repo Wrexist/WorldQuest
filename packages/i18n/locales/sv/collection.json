@@ -2,6 +2,7 @@
   "collection:flags.title": "Flaggor",
   "collection:countries.title": "Länder",
   "collection:progress": "{collected} av {total}",
+  "collection:progress.label": "Framsteg",
   "collection:locked": "Inte samlad än",
   "collection:collected": "Samlad",
   "collection:filter.all": "Alla",

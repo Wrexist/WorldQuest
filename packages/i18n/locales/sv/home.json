@@ -23,5 +23,6 @@
   "home:friends.title": "Vänner",
   "home:friends.label": "Vänner",
   "home:league.title": "Liga",
+  "home:league.closed": "Inte öppen än",
   "home:league.label": "Ligaplacering"
 }

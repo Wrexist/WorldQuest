@@ -15,7 +15,7 @@
  *
  * | Category | Needs | Status |
  * |---|---|---|
- * | avatarItem, pet, mapSkin, celebration | Illustration (asset-prompts §6, §11) | Genuinely blocked |
+ * | avatarItem, pet, mapSkin, celebration | Illustration (asset-prompts §16, §17) | Briefed, not drawn |
  * | theme | Runtime theming | Blocked, but on ARCHITECTURE, not art |
  * | titleUnlock | A string | **Not blocked at all** |
  *

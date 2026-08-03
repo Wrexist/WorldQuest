@@ -5,6 +5,8 @@
   "collection:countries.title__note": "Screen title for the country collection.",
   "collection:progress": "{collected} of {total}",
   "collection:progress__note": "Collection progress. Reads as a count, never a percentage — a percentage hides how close the next one is.",
+  "collection:progress.label": "Progress",
+  "collection:progress.label__note": "Left of the collection progress bar; the count renders on the right, so this says WHAT is being counted rather than repeating the number. Must NOT be 'Collected' — that is already the name of a filter chip on the same screen, and two controls sharing an accessible name is ambiguous to a screen reader. Max 14 characters.",
   "collection:locked": "Not collected yet",
   "collection:locked__note": "Accessibility label suffix for a tile the user has not mastered. Never 'locked' in the UI — nothing is being withheld.",
   "collection:collected": "Collected",

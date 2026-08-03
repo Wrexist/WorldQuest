@@ -33,6 +33,8 @@
   "profile:account.cta__note": "Button label. Max 20 characters.",
   "profile:empty.title": "Nothing to show yet",
   "profile:empty.body": "Finish your first lesson and your numbers will start here.",
+  "profile:empty.cta": "Start a lesson",
+  "profile:empty.cta__note": "Button in the Profile empty state. The body copy tells the user to finish a lesson; this is the control that starts one. Max 18 characters.",
   "profile:levelTitle": "Level {level} · {title}",
   "profile:levelTitle__note": "Level and earned title together, e.g. 'Level 20 · Navigator'.",
   "profile:week.title": "This week",

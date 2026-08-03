@@ -160,7 +160,13 @@ export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection
                     tone={progress.factsDue > 0 ? 'reward' : 'progress'}
                   />
                   <Text style={styles.regionDue}>
-                    {t('explore:region.due', { count: progress.factsDue })}
+                    {/* Zero due means "nothing is waiting for you", which is only true
+                        once something has been learned. On a continent at 0 of 56 the
+                        same branch rendered "Up to date" — an invitation turned into a
+                        claim that the user had finished it. */}
+                    {progress.factsLearned === 0
+                      ? t('explore:region.notStarted')
+                      : t('explore:region.due', { count: progress.factsDue })}
                   </Text>
                 </>
               )}

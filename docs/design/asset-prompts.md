@@ -93,11 +93,96 @@ Applies to every asset unless stated otherwise.
 | Budget | ≤ 120 KB per `@3x` asset after compression |
 | Licence | Record it. CI rejects an asset with no `license` field. |
 
+## Five rules that apply to every asset on this page
+
+These are the ones that get skipped, and each of them has a screen behind it.
+
+1. **The silhouette must carry the meaning, not the colour.** Around 8 % of men are
+   red/green colour-blind and a large share of the core audience is ten-year-old boys.
+   A bronze and a gold medal that differ only in hue are the same medal to them. Test
+   every set by desaturating it: if two members become indistinguishable, the shapes
+   are wrong. Same rule as `accessibility.md` §4.
+2. **Everything lands on a near-black canvas** (`#001227`). A dark asset with a dark
+   edge disappears into it. Every asset needs either a light-side rim or a soft glow
+   beneath it — that is why the Style Block specifies both, and why "no baked drop
+   shadow" is not the same instruction as "no separation".
+3. **Anything animated needs a static end frame shipped beside it.** Reduced motion is
+   a Definition of Done box, and the implementation is "show the last frame", so the
+   last frame is an asset somebody has to deliver. An animation with no still is a
+   blank rectangle for every user who turned motion off.
+4. **Nothing mirrors for RTL except by explicit decision.** Arabic and Hebrew layouts
+   flip the interface; they do not flip a photograph, a flag, or a map. A paper
+   aeroplane pointing "forward" is directional and should mirror. A landmark is not.
+   Say which, per asset, when you hand it over.
+5. **Check it at 96 px before you accept it.** Most generated art collapses into mush
+   at real size. This is the step everyone skips and the one that decides whether the
+   asset was worth generating.
+
 ---
 
 # P0 — blocks v1.0 launch
 
-## 1. App icon
+## 1. Logo and wordmark
+
+**The gap that mattered most, and it was hiding in plain sight** — the splash prompt
+below has always said "that space is reserved for the logo, which is composited by the
+app", and no section ever specified the logo. The app currently has no wordmark, no
+mark, and no icon lockup anywhere in it. Every other item on this page is a screen;
+this one is the reason the product does not yet *look like itself*.
+
+### 1a. The mark
+
+`docs/design/assets/brand/mark.png` · 1024×1024 · plus SVG
+
+```
+[STYLE BLOCK]
+
+A single emblem combining a rounded globe and a location pin: the pin sits at the
+upper right of the globe and its point meets the surface, so the two shapes read as
+one object rather than two stacked ones. The globe's surface carries two or three
+abstract simplified landmass shapes — not any recognisable real continent. Rendered
+in deep teal and navy with a warm gold pin and a soft gold glow where the pin meets
+the globe. Bold, symmetrical, instantly readable as a silhouette at 32px.
+
+[NEGATIVE BLOCK], text, letters, recognisable continents, real geography, country
+borders, multiple pins
+```
+
+> **Deliver a flat single-colour silhouette version too** (`brand/mark-mono.png`,
+> white on transparent). Android's notification icon, the web favicon at 16 px and any
+> future press kit all need the mark with every gradient removed, and flattening a
+> rendered 3D mark after the fact never works — the shape has to survive on its own.
+
+### 1b. The wordmark
+
+**Do not generate this.** Image models garble letterforms, which is the whole reason
+for the "no text" rule in the negative block. A wordmark with a subtly malformed `Q`
+is a brand you cannot use and cannot fix.
+
+Set it instead, in **Baloo 2 ExtraBold** — the display face this app already ships and
+licences (OFL) — as `WorldQuest`, one word, capital W and capital Q. Then:
+
+- Convert to outlines and deliver as SVG.
+- `brand/wordmark-light.svg` — near-white `#F2F6FF`, for the dark canvas.
+- `brand/wordmark-gold.svg` — the warm gold `#F5A61E`, for the splash and store art.
+- Optical spacing pass by hand. The default kerning between `d` and `Q` is loose.
+
+### 1c. The lockup
+
+`docs/design/assets/brand/lockup-vertical.svg` and `brand/lockup-horizontal.svg`
+
+Mark above wordmark (splash, store icon) and mark beside wordmark (headers, press).
+Fix the ratio once, here, so it is never re-eyeballed: **mark height = 2.4× cap height
+of the wordmark**, gap between them = 0.5× cap height. Written down because a lockup
+re-measured per use is a lockup that drifts.
+
+## 2. App icon, and its three platform variants
+
+One drawing, four exports. The variants are not optional polish — two of them are
+store submission requirements and one of them is the difference between a notification
+that shows your mark and one that shows a white blob.
+
+### 2a. iOS / store icon
 
 `apps/mobile/assets/icon.png` · 1024×1024 · **no transparency** (stores reject it)
 
@@ -117,7 +202,38 @@ legible at 48px.
 > "Not any recognisable real continent" is deliberate: an icon showing a real,
 > subtly-wrong world map is the same wrong-fact problem as a generated flag.
 
-## 2. Splash screen
+### 2b. Android adaptive icon
+
+`apps/mobile/assets/adaptive-icon.png` · 1024×1024 · **foreground layer, transparent**
+
+Android composites a foreground over a background and then masks the pair to whatever
+shape the launcher wants — circle, squircle, teardrop. A single flat icon handed to
+that system gets its corners cut off.
+
+Deliver the **mark alone, no background plate**, occupying the **centre 66 %** of the
+frame. The outer third will be cropped on some launchers and must contain nothing.
+The background is a solid colour, not art: `#001227`, set in `app.json`.
+
+### 2c. Android notification icon
+
+`apps/mobile/assets/notification-icon.png` · 96×96 · **flat white on transparent**
+
+Android renders this as an alpha mask: every colour is discarded and every non-
+transparent pixel becomes white. A full-colour icon supplied here appears as a solid
+white blob, which is one of the most common shipping bugs in the category.
+
+Use `brand/mark-mono.png` from §1a, scaled. Nothing else, no gradient, no interior
+detail below 1/8 of the frame.
+
+### 2d. Web favicon
+
+`apps/mobile/assets/favicon.png` · 48×48 · opaque
+
+The mark on the navy plate, with interior detail removed until it survives 16 px.
+Same reasoning as the notification icon: this is not a scaled-down app icon, it is a
+different drawing of the same idea.
+
+## 3. Splash screen
 
 `apps/mobile/assets/splash.png` · 2048×2048 · centred logo, safe to crop to any ratio
 
@@ -132,7 +248,9 @@ the logo, which is composited by the app. Atmospheric, calm, spacious.
 [NEGATIVE BLOCK], central subject, mascot, globe, foreground objects
 ```
 
-## 3. Atlas — the mascot
+The logo composited into that empty centre is `brand/lockup-vertical.svg` from §1c.
+
+## 4. Atlas — the mascot
 
 A small robot explorer in a safari hat: curious, encouraging, **never disappointed in
 you**. His emotional range is *excited → interested → encouraging*. He has no guilt
@@ -167,11 +285,42 @@ Then each pose, `1024×1024`, referencing the sheet:
 | `atlas/encouraging.png` | `Atlas leaning forward slightly with one arm extended offering an open hand, visor warm and steady. Reassuring, patient, not pitying. Full body, centred.` |
 | `atlas/waving-back.png` | `Atlas seen from a low angle waving with both arms, satchel swinging, as if greeting someone returning after a long time. Warm, glad, no sadness. Full body, centred.` |
 | `atlas/broken-compass.png` | `Atlas looking at a small compass whose needle is spinning, head tilted, visor a neutral soft blue. Mildly puzzled, still cheerful. For error screens. Full body, centred.` |
+| `atlas/resting.png` | `Atlas sitting on a small rounded rock with his hat over one knee, visor dimmed to a soft calm cyan, relaxed and unhurried. For the out-of-hearts screen — waiting, not punished. Full body, centred.` |
 
 > **Atlas is never sad, never disappointed, never scolding.** If a pose reads as
 > guilt-tripping, regenerate it — that tone is on the product's permanent no-list.
+> `atlas/resting.png` is the one most likely to go wrong: the brief is a break, not a
+> penalty, and a slumped posture turns "come back soon" into "you failed".
 
-## 4. Empty and error states
+## 5. Onboarding scenes
+
+`docs/design/assets/onboarding/*.png` · 1024×1024 · one per value slide
+
+Mockup screen 2 is a full composition, not an Atlas pose on a plain field — he is
+descending by parachute over the planet. The pose set above cannot produce it, which
+is why onboarding currently has no art at all.
+
+These are the first thing a new user ever sees, and the taster lesson runs
+immediately after, so this is the whole first impression.
+
+```
+[STYLE BLOCK]
+
+{SCENE}. Atlas rendered consistently with the character sheet — rounded cream-and-
+brass body, glowing cyan visor, tan safari hat, leather satchel. Wide atmospheric
+composition with generous negative space in the upper third for a headline the app
+renders. Deep navy sky, warm rim light, soft particle glow.
+
+[NEGATIVE BLOCK], text, headline, UI chrome, multiple characters
+```
+
+| File | `{SCENE}` |
+|---|---|
+| `onboarding/explore.png` | `Atlas descending gently by parachute towards a large curved planet below him, satchel swinging, visor bright with excitement. The planet's surface is abstract simplified landmasses, not real geography. A sense of arriving somewhere` |
+| `onboarding/learn.png` | `Atlas sitting cross-legged with a softly glowing open book on his knees, small gold motes of light drifting upward from its pages. Absorbed and content` |
+| `onboarding/conquer.png` | `Atlas standing on a summit with one foot on a small rock, planting a gold pennant, a wide starfield behind him. Triumphant but calm — an achievement, not a conquest` |
+
+## 6. Empty, error and waiting states
 
 `docs/design/assets/states/*.png` · 1024×1024
 
@@ -181,12 +330,41 @@ Then each pose, `1024×1024`, referencing the sheet:
 | `states/empty-no-friends.png` | `Two small rounded signal beacons on a dark landscape, one lit gold and one unlit, with a faint dotted arc between them suggesting a connection about to form. Hopeful, not lonely. Centred.` |
 | `states/error-generic.png` | `A small rounded compass lying on dark ground, its needle spinning, with a faint warm glow underneath. Calm and recoverable, not alarming. Centred.` |
 | `states/offline.png` | `A small rounded paper aeroplane hovering above a dark landscape with a soft dotted trail behind it, moving steadily. Self-sufficient, still going. Centred.` |
+| `states/empty-profile.png` | `A rounded blank explorer's journal lying open on dark ground, its pages faintly luminous and completely empty, a gold pen resting in the gutter. Ready to be filled, not sad. Centred.` |
+| `states/empty-collection.png` | `A rounded wooden display case with a few empty velvet-lined slots and one slot softly lit from within, waiting. Anticipation, not absence. Centred.` |
+| `states/hearts-empty.png` | `A rounded glass hourglass with warm gold sand part-way through and a soft glow beneath it. Time passing, something replenishing on its own. Patient and calm — never a lock, a barrier, or a cross.` |
+
+> The last one is the constraint that matters. Out of hearts is the single easiest
+> place in this app to accidentally punish a child, and the visual language decides it
+> before the copy gets a chance. An hourglass says *this comes back*. A padlock says
+> *you are shut out*, and a padlock is on the permanent no-list.
+
+## 7. The celebration moment
+
+`docs/design/assets/celebration/*` — mockup screen 6, and **the most important frame in
+the product**. It is the payoff for every question answered, it fires more often than
+any other art in the app, and it does not exist.
+
+| File | Spec | Prompt body |
+|---|---|---|
+| `celebration/burst.png` | 1024×1024 | `A radial burst of small rounded confetti pieces and soft gold motes frozen mid-explosion, radiating from an empty centre, in signal green, warm gold, sky blue and ember orange. The centre 30% is completely empty — content is composited there. Joyful, weightless, no single dominant direction.` |
+| `celebration/sparkle-sheet.png` | 2048×512 | `A horizontal strip of eight small rounded sparkle and star shapes at increasing sizes, flat single-colour warm gold on transparent, evenly spaced with consistent optical weight. A sprite sheet, not a scene.` |
+| `celebration/rays.png` | 1024×1024 | `A soft radial sunburst of pale warm light rays fanning from an empty centre, low contrast, fading to nothing at the edges. Atmospheric backing layer, not a subject.` |
+
+**Deliver the still frame as well as any animation.** Reduced motion is a Definition of
+Done box and the implementation shows the last frame — so `celebration/burst.png` at
+its settled state *is* a deliverable, not a by-product. An animation with no still is a
+blank space for every user who turned motion off, which is disproportionately the users
+who most need the feedback.
+
+Confetti must be `accessibilityElementsHidden` in code; it is decoration and a screen
+reader announcing it is noise. That is a code note, but it belongs beside the asset.
 
 ---
 
 # P1 — v1.0 polish
 
-## 5. Continent cards
+## 8. Continent cards
 
 `packages/content/assets/continents/*.png` · 512×512 · one per continent
 
@@ -213,7 +391,13 @@ borders — purely atmospheric texture. Dominant accent colour {ACCENT}.
 | Oceania | bright turquoise shallow water and open sky | `#39C0D6` |
 | Antarctica | pale blue ice light, very high key, almost white | `#A7C7E7` |
 
-## 6. Avatar set
+> **Generate Antarctica even though the app currently shows six continents.** It has no
+> countries, so it holds no quizzable facts and the Explore grid omits it — but the
+> moment any non-country content lands (ice, wildlife, research stations) it is the
+> seventh card, and a set of six that later needs a seventh generated in a different
+> session never matches.
+
+## 9. Avatar set
 
 `packages/content/assets/avatars/*.png` · 512×512 · **12 to start**
 
@@ -251,7 +435,7 @@ Generate all twelve, varying `{DESCRIPTOR}` and keeping everything else identica
 > Cover a real range of skin tones, ages, hair textures and head coverings. Emma and
 > Ingrid should both find themselves here.
 
-## 7. Reward and progression art
+## 10. Reward and progression art
 
 `packages/content/assets/rewards/*.png` · 512×512
 
@@ -263,8 +447,101 @@ Generate all twelve, varying `{DESCRIPTOR}` and keeping everything else identica
 | `rewards/streak-flame.png` | `A stylised rounded flame in warm orange and gold with a soft cyan core, curling gently upward. Lively and warm, never threatening.` |
 | `rewards/heart.png` | `A rounded glossy red heart with a soft highlight, slightly three-dimensional, gently glowing. Friendly, not clinical.` |
 | `rewards/streak-freeze.png` | `A rounded flame encased in translucent pale-blue ice with soft frost crystals at its base. Preserved, protected, calm.` |
+| `rewards/xp-orb.png` | `A small rounded orb of soft signal-green light with a brighter core and a faint trailing wisp, as if drifting upward. Energetic, weightless, not a gem.` |
 
-## 8. League tier badges
+> `xp-orb` is new because XP is the most-awarded thing in the app and had no mark of
+> its own, so every XP number renders as bare type while coins and gems have artwork.
+> It must not read as a gem: XP and coins are deliberately different currencies
+> (ADR 0011) and the art is the fastest way to teach that.
+
+## 11. Achievement medals
+
+`packages/content/assets/achievements/*.png` · 512×512 · 5 tier frames + ~13 glyphs
+
+**Moved up from P2, and the review that moved it is worth recording.** The
+achievements screen ships in v1.0 and currently renders as twelve identical grey rows —
+title, description, empty bar, "Not yet", twelve times. It is the single clearest case
+in the app of what the design skill calls the generated look: every row weighs exactly
+the same, so nothing is worth looking at. The medals are not decoration on that screen;
+they are the only thing that would make it a collection rather than a to-do list.
+
+Generate the **five tier frames** once, then the **category glyphs** separately and
+composite. That is 18 assets instead of 65, and adding a category later costs one
+glyph rather than five medals.
+
+Tier frame:
+
+```
+[STYLE BLOCK]
+
+An empty circular medal frame with a bevelled {METAL} rim and a subtly textured
+recessed centre, with a soft {GLOW} glow behind it. The centre is completely empty —
+a glyph is composited into it later. Symmetrical, centred.
+
+[NEGATIVE BLOCK], text, central symbol, ribbon
+```
+
+`{METAL}` / `{GLOW}`: bronze/amber · silver/pale blue · gold/warm gold ·
+platinum/white · iridescent violet/aurora.
+
+> **The five tiers must differ in shape, not only in metal.** Desaturate them: bronze,
+> gold and platinum collapse into three near-identical grey discs, which is exactly the
+> failure rule 1 at the top of this page describes. Vary the rim — plain, notched,
+> scalloped, double-ringed, star-pointed — so the tier is legible without colour and at
+> 32 px.
+
+Category glyph (flat, single-colour, composited into the frame):
+
+```
+[STYLE BLOCK]
+
+A single simple symbolic glyph representing {CATEGORY}, drawn as a solid rounded
+silhouette in one flat colour on a transparent background. No detail smaller than
+1/12 of the frame. Bold, instantly readable at 32px, centred.
+
+[NEGATIVE BLOCK], text, gradient, outline, multiple objects
+```
+
+`{CATEGORY}`: a compass rose (exploration) · a globe (countries) · a pennant (flags) ·
+a capital building (capitals) · a monument arch (landmarks) · a bullseye (perfect) ·
+a calendar (consistency) · a stacked set of cards (collections) · a firework (events) ·
+two linked rings (social) · a crown (premium) · a keyhole (hidden) · a laurel wreath
+(legendary).
+
+## 12. Level insignia
+
+`packages/content/assets/levels/*.png` · 256×256 · 8 ranks
+
+The profile shows a level *and a title* — "Level 38 – Navigator" in the mockup — and
+the title ladder has no art, so a rank that takes weeks to earn arrives as a word.
+
+```
+[STYLE BLOCK]
+
+A small rounded rank insignia: {INSIGNIA}, rendered as a compact emblem in {METAL}
+with a soft glow beneath. Simple enough to read at 24px, distinct in silhouette from
+the other ranks in the set.
+
+[NEGATIVE BLOCK], text, numerals, shield, medal frame, laurel
+```
+
+| Rank | `{INSIGNIA}` | `{METAL}` |
+|---|---|---|
+| Wanderer | a single simple footprint | weathered pewter |
+| Scout | a folded paper map corner | warm bronze |
+| Pathfinder | a compass needle pointing up | brushed bronze |
+| Navigator | a sextant arc | brushed silver |
+| Cartographer | a rolled chart with a ribbon | polished silver |
+| Voyager | a stylised sailing pennant | warm gold |
+| Pioneer | a mountain peak with a flag | polished gold |
+| Worldkeeper | a small globe held in an open hand | iridescent violet |
+
+> The names must match `packages/content/packs/shop/titles.v1.json` and the level
+> ladder in `docs/systems/progression.md`. **Check them before generating** — a rank
+> insignia for a title that does not exist is eight wasted assets, and renaming a title
+> is a migration rather than a rename because it ships in save data.
+
+## 13. League tier badges
 
 `packages/content/assets/leagues/*.png` · 512×512 · 7 tiers
 
@@ -293,50 +570,40 @@ collectible, symmetrical. Centred.
 
 ---
 
+# P0-ship — needed to submit, not to build
+
+Neither store will accept a listing without these, and both are easy to discover on
+submission day rather than before it.
+
+## 14. Store listing art
+
+| Asset | Spec | What it is |
+|---|---|---|
+| Play feature graphic | **1024×500**, no alpha | Mandatory. Shown at the top of the Play listing. The lockup on the splash field, wordmark legible at thumbnail size, nothing in the outer 10 % (Play crops it in some placements). |
+| Play icon | **512×512**, no alpha | The §2a icon, re-exported. |
+| iOS App Store icon | **1024×1024**, no alpha | The §2a icon. Apple flattens alpha to black, so never submit transparency. |
+| Phone screenshots | `TODO(verify)` against the current App Store Connect and Play Console requirements — Apple changes required device sizes most years, and a guessed pixel dimension is a rejected submission | 5–8 per platform. |
+| Tablet screenshots | `TODO(verify)`, same reason | `supportsTablet` is now `true`, so Apple will ask for these. |
+
+Screenshots are **composites, not raw captures**: a device frame, one short headline
+per shot, and the real screen inside it. Use the real rendered screens from
+`pnpm design:shots` rather than mockups — a listing that shows a screen the app does
+not have is a refund request and, on the App Store, a rejection.
+
+Shot list, in order, because the first two are the only ones most people see:
+
+1. The lesson mid-question with the map — this is the product
+2. The flags collection — this is the reason to come back
+3. Home with a live streak
+4. The country page with its sources
+5. Quests
+6. The celebration moment
+
+---
+
 # P2 — v1.5
 
-## 9. Achievement medals
-
-`packages/content/assets/achievements/*.png` · 512×512 · 5 tiers × ~13 categories
-
-Generate the **five tier frames** once, then the **category glyphs** separately and
-composite. That is 18 assets instead of 65, and adding a category later costs one
-glyph rather than five medals.
-
-Tier frame:
-
-```
-[STYLE BLOCK]
-
-An empty circular medal frame with a bevelled {METAL} rim and a subtly textured
-recessed centre, with a soft {GLOW} glow behind it. The centre is completely empty —
-a glyph is composited into it later. Symmetrical, centred.
-
-[NEGATIVE BLOCK], text, central symbol, ribbon
-```
-
-`{METAL}` / `{GLOW}`: bronze/amber · silver/pale blue · gold/warm gold ·
-platinum/white · iridescent violet/aurora.
-
-Category glyph (flat, single-colour, composited into the frame):
-
-```
-[STYLE BLOCK]
-
-A single simple symbolic glyph representing {CATEGORY}, drawn as a solid rounded
-silhouette in one flat colour on a transparent background. No detail smaller than
-1/12 of the frame. Bold, instantly readable at 32px, centred.
-
-[NEGATIVE BLOCK], text, gradient, outline, multiple objects
-```
-
-`{CATEGORY}`: a compass rose (exploration) · a globe (countries) · a pennant (flags) ·
-a capital building (capitals) · a monument arch (landmarks) · a bullseye (perfect) ·
-a calendar (consistency) · a stacked set of cards (collections) · a firework (events) ·
-two linked rings (social) · a crown (premium) · a keyhole (hidden) · a laurel wreath
-(legendary).
-
-## 10. Landmark illustrations
+## 15. Landmark illustrations
 
 `packages/content/assets/landmarks/*.png` · 768×512 · ~300 eventually
 
@@ -360,10 +627,14 @@ central two-thirds.
 > number of arches is a wrong fact. Every generated landmark needs a human check
 > against a reference photo before it ships, and a `source` recorded in the pack —
 > same standard as any other fact.
+>
+> **Places of worship and contested sites need the same care as a disputed border.**
+> `content-pipeline.md` §5 governs them: neutral, sourced, never a right/wrong answer.
+> Decide before generating, not after.
 
-## 11. Pets and cosmetics
+## 16. Pets
 
-`packages/content/assets/cosmetics/*.png` · 512×512
+`packages/content/assets/cosmetics/pets/*.png` · 512×512
 
 The main coin sink, and Emma's whole reason for being here.
 
@@ -382,6 +653,79 @@ detail. Centred with generous padding.
 a stubby camel with a woven saddle blanket · a tiny elephant with rounded tusks ·
 a fluffy red panda · a small snowy owl · a rounded sea turtle · a chunky llama.
 
+## 17. The other three cosmetic categories
+
+`BALANCE.prices` names six sellable categories and this page previously specified two
+of them. The shop ships with **titles only** — one category, every item priced
+identically — because the rest have no artwork. These are the missing briefs.
+
+### 17a. Avatar items
+
+`packages/content/assets/cosmetics/avatar-items/*.png` · 512×512
+
+Worn *over* an avatar from §9, so they must register against all twelve heads.
+
+```
+[STYLE BLOCK]
+
+A single wearable accessory shown alone on a transparent background, angled as if worn
+by a head facing three-quarter left: {ITEM}. No head, no face, no mannequin — the
+item only, positioned exactly as it would sit when worn.
+
+[NEGATIVE BLOCK], head, face, person, mannequin, stand, text
+```
+
+`{ITEM}`: a explorer's pith helmet · a knitted winter hat with a pompom · aviator
+goggles · a wide straw sun hat · a pair of round spectacles · a woven friendship band ·
+a small gold laurel circlet · a snorkel mask pushed up.
+
+> Register them against the avatar set before generating all eight. One item, one
+> avatar, checked at real size — an accessory drawn at the wrong angle floats beside
+> the head instead of sitting on it, and that is invisible in a 512 px preview.
+
+### 17b. Map skins
+
+`packages/content/assets/cosmetics/map-skins/*.png` · 512×512 · tileable
+
+A **texture**, not a scene, composited under the Natural Earth geometry the same way
+the continent cards are. The geometry never changes; only what fills it does.
+
+```
+[STYLE BLOCK]
+
+A seamless tileable texture: {TEXTURE}. Even overall value with no focal point, no
+directional lighting, and no recognisable objects — it will be masked into arbitrary
+country shapes at arbitrary scales. Tiles cleanly on all four edges.
+
+[NEGATIVE BLOCK], landmass, coastline, map, border, focal point, directional light,
+text, horizon
+```
+
+`{TEXTURE}`: aged parchment with soft fibre grain · deep ocean blue with faint caustic
+light · brushed brass with fine circular tooling · night sky with scattered small stars
+· soft topographic contour lines in one hue · pale marble with restrained veining.
+
+> "No focal point" is the whole brief. A texture with a bright spot puts that spot in
+> the middle of one random country and nowhere else, and it reads as a rendering bug.
+
+### 17c. Celebrations
+
+`packages/content/assets/cosmetics/celebrations/*.png` · 1024×1024
+
+Alternate burst art for §7 — the same slot, a different flavour, bought with coins.
+Deliver each with the same empty centre 30 % and the same static-still rule.
+
+`{BURST}`: gold coins and sparkles · autumn leaves in amber and ember · small
+paper aeroplanes on arcing trails · snowflakes and pale blue motes · tiny flags on
+short poles, **no national flags — plain coloured pennants only** · musical notes in
+sky blue.
+
+> **Themes are not on this list on purpose.** `BALANCE.prices.theme` exists and there
+> is nothing to draw: a theme is design tokens. What blocks it is that `colors`
+> resolves at module load inside 34 `StyleSheet.create` calls, so runtime theming is a
+> re-architecture rather than an art commission. Filed here so nobody commissions a
+> theme, and cross-referenced from `packages/engines/src/shop/index.ts`.
+
 ---
 
 ## Workflow
@@ -394,14 +738,23 @@ a fluffy red panda · a small snowy owl · a rounded sea turtle · a chunky llam
 5. Drop into the path above and record the `license` field.
 6. **Check it at 96 px.** Most generated art collapses into mush at real size — this
    is the step people skip, and it is the one that matters.
-7. Run `pnpm content:validate` — CI rejects an asset with no recorded licence.
+7. **Desaturate the set** and check nothing collapsed into its neighbour.
+8. Run `pnpm content:validate` — CI rejects an asset with no recorded licence.
 
 ## Priority
 
-| Wave | Assets | Blocks |
-|---|---|---|
-| **P0** | App icon, splash, Atlas ×7, states ×4 | v1.0 launch |
-| **P1** | Continents ×7, avatars ×12, rewards ×6, leagues ×7 | v1.0 polish |
-| **P2** | Achievements ×18, landmarks ×300, cosmetics ×8 | v1.5 |
+| Wave | Assets | Count | Blocks |
+|---|---|---|---|
+| **P0** | Brand (mark, wordmark, 2 lockups), icon ×4, splash, Atlas sheet + ×7, onboarding ×3, states ×7, celebration ×3 | **31** | v1.0 launch |
+| **P1** | Continents ×7, avatars ×12, rewards ×7, achievements ×18, levels ×8, leagues ×7 | **59** | v1.0 polish |
+| **P0-ship** | Feature graphic, 2 store icons, screenshots ×6 per platform | **~15** | Store submission |
+| **P2** | Landmarks ×300, pets ×8, avatar items ×8, map skins ×6, celebrations ×6 | **328** | v1.5 |
 
-**P0 is 13 assets.** That is a realistic first commission.
+**P0 is 31 assets, and the first five of them are the brand.** Nothing else on this
+page makes the product look like itself until the mark, the wordmark and the lockups
+exist — every other asset is a screen, and screens can only carry an identity that has
+already been decided.
+
+If only one thing gets commissioned: **§1 and §4**. A logo and Atlas turn a competent
+dark-mode app into WorldQuest, and everything after that is polish on something that
+already has a face.

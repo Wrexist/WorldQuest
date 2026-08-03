@@ -31,9 +31,28 @@ describe('Collection — the tiles', () => {
   })
 
   it('counts rather than reporting a percentage', () => {
-    // "2 of 4" says how far the next one is. "50%" says nothing a user can act on.
+    // "2 / 4" says how far the next one is. "50%" says nothing a user can act on.
     renderCollection()
-    expect(screen.getByText('2 of 4')).toBeTruthy()
+    expect(screen.getByText('2 / 4')).toBeTruthy()
+  })
+
+  it('states the count once, not on both sides of the same bar', () => {
+    // The header rendered "2 of 4" as the bar's label and "2 / 4" as its count — the
+    // same fact twice, a hand's width apart, which reads as a rendering fault rather
+    // than as emphasis. The label now says WHAT is counted; the number says how many.
+    const { container } = renderCollection()
+    expect(screen.getByText('Collected')).toBeTruthy()
+    expect(container.textContent).not.toMatch(/2 of 4/)
+  })
+
+  it('still announces the figure to a screen reader, in the user\'s language', () => {
+    // Dropping the visible duplicate must not drop the value. It moved to
+    // `accessibilityValue`, which is where a progressbar's value belongs — and it is
+    // passed in translated rather than built from an English template inside the
+    // design package, which cannot import a translator.
+    const { container } = renderCollection()
+    const bar = container.querySelector('[role="progressbar"]')
+    expect(bar?.getAttribute('aria-valuetext')).toBe('2 of 4')
   })
 
   it('puts collected state in the label, not only in the dimming', () => {

@@ -74,7 +74,37 @@ describe('Explore', () => {
   it('says how many reviews are waiting, and says so plainly when none are', () => {
     render(<ExploreScreen world={world()} loading={false} onSelectRegion={() => {}} />)
     expect(screen.getByText('2 reviews due')).toBeTruthy()
-    expect(screen.getAllByText('Up to date').length).toBeGreaterThan(0)
+  })
+
+  it('does not tell a user they are up to date on a continent they have never opened', () => {
+    // This test previously asserted the bug. Asia in the fixture is 0 of 2 learned with
+    // 0 due, and "no reviews waiting" rendered as "Up to date" — which beside "0 of 2
+    // learned" reads as "you have finished this", on the one screen whose entire job is
+    // to invite. Zero due only means "caught up" once something has been started.
+    render(<ExploreScreen world={world()} loading={false} onSelectRegion={() => {}} />)
+    expect(screen.getByText('Not started yet')).toBeTruthy()
+    expect(screen.queryByText('Up to date')).toBeNull()
+  })
+
+  it('still says "up to date" once there is something to be up to date on', () => {
+    // The other half, so the fix cannot be "delete the caught-up state". A continent
+    // with facts learned and nothing due is genuinely caught up and should say so.
+    const caughtUp = world({
+      regions: [
+        {
+          region: 'EU',
+          entitiesTotal: 4,
+          entitiesComplete: 2,
+          entitiesStarted: 4,
+          factsTotal: 8,
+          factsLearned: 8,
+          factsDue: 0,
+          fraction: 1,
+        },
+      ],
+    })
+    render(<ExploreScreen world={caughtUp} loading={false} onSelectRegion={() => {}} />)
+    expect(screen.getByText('Up to date')).toBeTruthy()
   })
 
   it('shows a skeleton while loading', () => {

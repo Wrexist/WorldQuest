@@ -142,7 +142,16 @@ export function ShopScreen({
                 equipped={equippedId === item.id}
                 price={t('shop:price', { count: item.price })}
                 // A fact, once. No offer to buy coins — this app does not sell them.
-                short={short > 0 && !isOwned ? t('shop:short', { count: short }) : undefined}
+                //
+                // Suppressed at zero, where "1,000 coins to go" is the price restated:
+                // every row showed the same number twice, which reads as a rendering
+                // bug rather than as progress. The gap is only information once some
+                // of it has been closed.
+                short={
+                  short > 0 && !isOwned && coins > 0
+                    ? t('shop:short', { count: short })
+                    : undefined
+                }
                 canBuy={outcome.ok && !isOffline}
                 onBuy={() => onBuy(item)}
                 onEquip={() => onEquip(item.id)}

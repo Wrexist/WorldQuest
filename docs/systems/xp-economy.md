@@ -135,7 +135,7 @@ six categories by what each one actually needs:
 
 | Category | Needs | Status |
 |---|---|---|
-| Avatar item, pet, map skin, celebration | Illustration (`asset-prompts.md` §6, §11) | Genuinely blocked |
+| Avatar item, pet, map skin, celebration | Illustration (`asset-prompts.md` §16, §17) | **Briefed**, not drawn |
 | Theme | **Runtime theming**, not art | Blocked on architecture |
 | Title unlock | A string | **Shipped** |
 

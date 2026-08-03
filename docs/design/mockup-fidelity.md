@@ -142,6 +142,32 @@ things our own Definition of Done forbids.
 | `12,850 / 15,000 XP` on Profile | The real curve (`50·n^1.9`) | The mockup's numbers do not correspond to any coherent progression; see xp-economy.md |
 | No wrong-answer screen | A designed one | Users see it as often as the celebration. Leaving it undesigned is how apps end up making people feel stupid. |
 | Tab labels in title case at ~10 px | Title case at 11 px (`overline`, casing suppressed) | The size is on the scale; the casing follows the mockup rather than the type token, because five uppercase labels at that size read as a fence |
+| Daily Challenge card with a live countdown (screen 3) | **Not rendered at all** | Nothing produces `challengeIn`. It shipped as "New challenge in —" for every user on every day. See below. |
+| `Gold I` / `Top 15%` on the League tile (screen 3) | The tile stays; it says **"Not open yet"** until Leagues exist | Leagues are v2.0. An em-dash is a missing value, not an empty state, and the user has to interpret it as one |
+
+#### The two placeholders that shipped as em-dashes
+
+Both were ticked off in category 1 above as "buildable now — closed", and both were:
+the *shell* was built, correctly, from tokens. Nobody checked whether anything fed it.
+
+Rendered, Home carried `New challenge in —` and `League —` on the screen users open
+every day. A dash where a number belongs does not read as "pending", it reads as
+broken, and at 320 pt they were the most conspicuous thing below the fold.
+
+**The Daily Challenge card is now removed rather than fixed**, because there is no
+challenge behind it and a countdown to something that will never arrive is worse than
+no card. That is the same lesson the reachability audit recorded one card over — *"a
+daily quest that cannot be completed is worse than none: it is a promise on the home
+screen the app quietly breaks every day"* — except this one had not got as far as being
+uncompletable. It never arrived at all.
+
+A real countdown was the tempting fix and it is the wrong one twice over: it would still
+point at nothing, and this product's own rule on the streak screen is **never a
+countdown and never a warning**.
+
+The lesson for this file: "buildable now" was true of every one of these rows, and
+building it is not the same as wiring it. A row here is closed when something real is
+behind it, not when the shape is right.
 
 ---
 

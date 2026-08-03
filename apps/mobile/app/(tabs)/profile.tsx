@@ -76,6 +76,7 @@ export default function ProfileRoute() {
         onCreateAccount={undefined}
         wornTitleKey={worn}
         onOpenShop={() => router.push('/shop')}
+        onStartLesson={() => router.push('/lesson')}
       />
     </ContentGate>
   )
