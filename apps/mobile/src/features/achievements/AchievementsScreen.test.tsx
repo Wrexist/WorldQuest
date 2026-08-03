@@ -167,3 +167,44 @@ describe('Achievements — the empty state (H13)', () => {
     expect(container.textContent).not.toMatch(/you haven'?t|none earned|0 of|failed|\blocked\b/i)
   })
 })
+
+describe('Achievements — what leads the list', () => {
+  const def = (id: string, threshold: number) => ({
+    id,
+    rule: { kind: 'count' as const, event: 'lesson_completed' as const },
+    tiers: [{ tier: 'bronze' as const, threshold, xp: 10, coins: 5 }],
+  })
+
+  const row = (id: string, threshold: number, value = 0) => ({
+    def: def(id, threshold) as never,
+    progress: { achievementId: id, value, seen: [], tier: null } as never,
+  })
+
+  it('leads with the nearest target when every row is at zero', () => {
+    // The case every new user sees, and the one the comparator could not decide: at
+    // 0% the fraction tiebreak is a no-op, so the list came out in pack order — a
+    // file's ordering deciding what a user is shown, which is exactly the defect that
+    // made lessons all-capitals for the first 65 countries.
+    const { container } = render(
+      <AchievementsScreen
+        rows={[row('ach.far', 50), row('ach.near', 3), row('ach.mid', 10)]}
+      />,
+    )
+    const order = ['ach.near', 'ach.mid', 'ach.far'].map(
+      (id) => container.textContent!.indexOf(`${id.slice(4)}.name`),
+    )
+    expect(order[0]).toBeLessThan(order[1]!)
+    expect(order[1]).toBeLessThan(order[2]!)
+  })
+
+  it('still ranks by proportion when there is real progress to compare', () => {
+    // The absolute tiebreak must not override the fraction: 45 of 50 is nearer than
+    // 1 of 3, even though 2 remaining is a smaller number than 5.
+    const { container } = render(
+      <AchievementsScreen rows={[row('ach.early', 3, 1), row('ach.nearlythere', 50, 45)]} />,
+    )
+    expect(container.textContent!.indexOf('nearlythere.name')).toBeLessThan(
+      container.textContent!.indexOf('early.name'),
+    )
+  })
+})

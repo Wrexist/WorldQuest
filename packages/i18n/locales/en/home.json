@@ -49,5 +49,17 @@
   "home:league.closed__note": "Shown on the Home league tile while Leagues are unbuilt (v2.0). Deliberately carries NO date and no teaser — a promise with a month attached is a promise to break. It replaced an em-dash, which is a missing value rather than an empty state. Max 16 characters.",
   "home:league.title__note": "Tile title.",
   "home:league.label": "League standing",
-  "home:league.label__note": "Accessibility label grouping the league tile."
+  "home:league.label__note": "Accessibility label grouping the league tile.",
+  "home:world.title": "Your world",
+  "home:world.title__note": "Card title on Home summarising overall progress. Max 16 characters.",
+  "home:world.label": "Your world progress",
+  "home:world.label__note": "Accessibility label grouping the Home world card.",
+  "home:world.countries": "{complete} of {total} countries",
+  "home:world.countries__note": "Countries FINISHED (every quizzable fact mastered) out of those the packs contain. Whole numbers.",
+  "home:world.facts": "{learned} of {total} facts",
+  "home:world.facts__note": "Label on the Home world progress bar, and what a screen reader announces as its value. Counts facts, not countries, so the bar moves every session.",
+  "home:world.due": "{count, plural, one {# fact ready to review} other {# facts ready to review}}",
+  "home:world.due__note": "Shown only when at least one fact is due. ICU plural. \"Ready to review\" rather than \"overdue\" or \"waiting\" — a spaced-repetition prompt must never read as a debt the user has fallen behind on.",
+  "home:world.open": "Explore",
+  "home:world.open__note": "Button on the Home world card, opening the continents grid. Max 12 characters."
 }

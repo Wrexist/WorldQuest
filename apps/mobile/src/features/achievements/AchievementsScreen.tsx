@@ -107,7 +107,21 @@ export function AchievementsScreen({ rows, onStartLesson, onBack }: Achievements
     const tierA = a.progress.tier === null ? -1 : TIERS.indexOf(a.progress.tier)
     const tierB = b.progress.tier === null ? -1 : TIERS.indexOf(b.progress.tier)
     if (tierA !== tierB) return tierB - tierA
-    return tierProgress(b.def, b.progress).fraction - tierProgress(a.def, a.progress).fraction
+
+    const progA = tierProgress(a.def, a.progress)
+    const progB = tierProgress(b.def, b.progress)
+    if (progA.fraction !== progB.fraction) return progB.fraction - progA.fraction
+
+    // Fractions tie constantly, and the case where they tie hardest is the one every
+    // user sees first: on a fresh account EVERY row is 0 %, so this comparator did
+    // nothing and the list came out in whatever order the pack happened to list them.
+    // That is the same defect as the lesson composer taking pack-import order as
+    // "easiest first" — a file's ordering quietly deciding what a user is shown.
+    //
+    // Broken by what is actually nearest in absolute terms: 3 countries is a closer
+    // target than 7 flags even though both sit at zero. The screen's whole job is to
+    // suggest what to do next, and "next" has to mean something on day one.
+    return remainingToNextTier(a) - remainingToNextTier(b)
   })
 
   return (
@@ -136,13 +150,33 @@ export function AchievementsScreen({ rows, onStartLesson, onBack }: Achievements
   )
 }
 
+/**
+ * How many more of the thing this row needs, in its own unit.
+ *
+ * The same arithmetic `AchievementCard` renders as "3 to go", lifted out so the sort
+ * and the label cannot disagree about which row is closest — which is the bug that
+ * would replace the one this fixed.
+ *
+ * `Infinity` for a fully-earned achievement, so a maxed row sorts last among ties
+ * rather than first: it needs nothing, and "needs nothing" is not "nearly there".
+ */
+function remainingToNextTier({ def, progress }: AchievementRow): number {
+  const { next } = tierProgress(def, progress)
+  if (next === null) return Infinity
+  const target = def.tiers.find((tier) => tier.tier === next)?.threshold ?? 0
+  return Math.max(0, target - progress.value)
+}
+
 function AchievementCard({ row }: { row: AchievementRow }) {
   const t = useT()
   const { def, progress } = row
   const { next, fraction } = tierProgress(def, progress)
 
-  const target = def.tiers.find((tier) => tier.tier === next)?.threshold ?? 0
-  const remaining = Math.max(0, target - progress.value)
+  // The threshold this row is working towards, for the description's `{threshold}`.
+  // Falls back to the first tier once everything is earned, so a maxed row reads
+  // "Master the flag of 5 countries" rather than "…of 0".
+  const target = def.tiers.find((tier) => tier.tier === next)?.threshold ?? def.tiers[0]!.threshold
+  const remaining = remainingToNextTier(row)
 
   return (
     <Card
@@ -157,7 +191,7 @@ function AchievementCard({ row }: { row: AchievementRow }) {
           {/* Locked rows still say what they ask for. A grey question mark is a
               thing you cannot aim at. */}
           <Text style={styles.body}>
-            {tContent(descKey(def.id), { threshold: target || def.tiers[0]!.threshold })}
+            {tContent(descKey(def.id), { threshold: target })}
           </Text>
         </View>
         <Text

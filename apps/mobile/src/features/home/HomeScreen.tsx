@@ -36,8 +36,14 @@ export type HomeProgress = {
   readonly xpTotal: number
   readonly coins: number
   readonly streak: number
-  readonly factsMastered: number
-  readonly factsTotal: number
+  /**
+   * `factsMastered` and `factsTotal` used to live here and were read by nothing. The
+   * route filled the second one with a hardcoded `10` beside a comment saying the packs
+   * were five countries deep; they are 65. A wrong constant feeding a field no
+   * component renders is worse than an absent one, because the next person to reach for
+   * it wires it up and ships the 10. Coverage now comes from `world`, which is computed
+   * by the engine from the content index.
+   */
   readonly questTitle?: string
   readonly questDone?: number
   readonly questTotal?: number
@@ -63,6 +69,32 @@ export type HomeScreenProps = {
    * user finally sees the answer to the question they were asked.
    */
   readonly goal?: { readonly done: number; readonly target: number } | undefined
+  /**
+   * How much of the world this user has actually covered.
+   *
+   * Home had one real thing on it — the quest card — and for a new user everything
+   * below it was a stub or empty, so the bottom 40 % of the screen was void. This is
+   * the section that fills it with something true, and it is deliberately the same
+   * `worldProgress` call Explore makes rather than a second count assembled here.
+   *
+   * It leads with what is DUE, because in a spaced-repetition app that is the only
+   * time-sensitive fact on the screen and it was previously visible nowhere except
+   * two taps into Explore. When nothing is due it shows the shape of what is left —
+   * the same argument the collection screen already makes for showing uncollected
+   * tiles: seeing the gap is the motivation, and hiding it reads as a smaller world.
+   */
+  readonly world?: HomeWorld | undefined
+  /** Opens Explore. Absent renders the card without its control rather than a dead one. */
+  readonly onOpenWorld?: (() => void) | undefined
+}
+
+/** The subset of the engine's `WorldProgress` this screen draws. */
+export type HomeWorld = {
+  readonly entitiesTotal: number
+  readonly entitiesComplete: number
+  readonly factsTotal: number
+  readonly factsLearned: number
+  readonly factsDue: number
 }
 
 function greetingKey(hour: number): TranslationKey {
@@ -78,6 +110,8 @@ export function HomeScreen({
   onStartLesson,
   onOpenStreak,
   goal,
+  world,
+  onOpenWorld,
 }: HomeScreenProps) {
   // Before the early return: hooks cannot be conditional, and the skeleton needs
   // translated copy too.
@@ -209,6 +243,62 @@ export function HomeScreen({
           </Card>
         </View>
 
+        {/* Your world — the section that was missing rather than broken.
+
+            Home's lower half was empty for every new user: one real card, two stubs,
+            and then nothing. This is real, local, and works offline, because mastery
+            lives on the device. */}
+        {world !== undefined && world.factsTotal > 0 && (
+          <Card style={styles.worldCard} accessibilityLabel={t('home:world.label')}>
+            <View style={styles.worldHead}>
+              <Text style={styles.cardTitle}>{t('home:world.title')}</Text>
+              <Text style={styles.worldCountries}>
+                {t('home:world.countries', {
+                  complete: world.entitiesComplete,
+                  total: world.entitiesTotal,
+                })}
+              </Text>
+            </View>
+
+            <ProgressBar
+              current={world.factsLearned}
+              total={world.factsTotal}
+              showCount={false}
+              // Gold when something is waiting, so "come back to this" reads the same
+              // here as it does on the continent cards.
+              tone={world.factsDue > 0 ? 'reward' : 'progress'}
+              label={t('home:world.facts', {
+                learned: world.factsLearned,
+                total: world.factsTotal,
+              })}
+              valueText={t('home:world.facts', {
+                learned: world.factsLearned,
+                total: world.factsTotal,
+              })}
+            />
+
+            {/* Due first: it is the only time-sensitive number on this screen, and it
+                was previously reachable only two taps into Explore. Silent at zero —
+                "0 reviews waiting" is a row that exists to say nothing, and a daily
+                nudge that fires on an empty inbox is how an app trains people to
+                ignore it. */}
+            {world.factsDue > 0 && (
+              <Text style={styles.worldDue}>
+                {t('home:world.due', { count: world.factsDue })}
+              </Text>
+            )}
+
+            {onOpenWorld !== undefined && (
+              <Button
+                label={t('home:world.open')}
+                onPress={onOpenWorld}
+                variant="tertiary"
+                size="sm"
+              />
+            )}
+          </Card>
+        )}
+
         {/* Level bar, which the mockup carries on Profile rather than Home. */}
         {progress && !isNewUser && (
           <Card style={styles.levelCard} accessibilityLabel={t('home:stats.label')}>
@@ -292,6 +382,10 @@ const styles = StyleSheet.create({
   tile: { flex: 1, gap: space[1] },
   leagueTier: { ...text('h3', { weight: '700' }), color: colors.reward.xp },
 
+  worldCard: { gap: space[3] },
+  worldHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
+  worldCountries: { ...text('caption', { weight: '700', numeric: true }), color: colors.text.secondary },
+  worldDue: { ...text('caption', { weight: '700' }), color: colors.reward.xp },
   levelCard: { gap: space[3] },
   chips: { flexDirection: 'row', gap: space[2] },
 

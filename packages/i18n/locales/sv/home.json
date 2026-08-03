@@ -24,5 +24,11 @@
   "home:friends.label": "Vänner",
   "home:league.title": "Liga",
   "home:league.closed": "Inte öppen än",
-  "home:league.label": "Ligaplacering"
+  "home:league.label": "Ligaplacering",
+  "home:world.title": "Din värld",
+  "home:world.label": "Dina framsteg i världen",
+  "home:world.countries": "{complete} av {total} länder",
+  "home:world.facts": "{learned} av {total} fakta",
+  "home:world.due": "{count, plural, one {# fakta redo att repetera} other {# fakta redo att repetera}}",
+  "home:world.open": "Utforska"
 }

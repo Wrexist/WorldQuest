@@ -6,8 +6,6 @@ const RETURNING: HomeProgress = {
   xpTotal: 4820,
   coins: 430,
   streak: 12,
-  factsMastered: 7,
-  factsTotal: 10,
   questTitle: 'Europe II',
   questDone: 7,
   questTotal: 10,
@@ -21,8 +19,6 @@ const COLD: HomeProgress = {
   xpTotal: 0,
   coins: 0,
   streak: 0,
-  factsMastered: 0,
-  factsTotal: 10,
 }
 
 describe('Home — the five states', () => {
@@ -184,5 +180,76 @@ describe('Home — the daily goal', () => {
       <HomeScreen progress={RETURNING} loading={false} isOffline={false} onStartLesson={() => {}} />,
     )
     expect(container.textContent).not.toMatch(/lessons today/)
+  })
+})
+
+describe('Home — your world', () => {
+  const WORLD = {
+    entitiesTotal: 65,
+    entitiesComplete: 4,
+    factsTotal: 259,
+    factsLearned: 31,
+    factsDue: 7,
+  }
+
+  const withWorld = (world = WORLD, onOpenWorld?: () => void) =>
+    render(
+      <HomeScreen
+        progress={RETURNING}
+        loading={false}
+        isOffline={false}
+        onStartLesson={() => {}}
+        world={world}
+        {...(onOpenWorld ? { onOpenWorld } : {})}
+      />,
+    )
+
+  it('fills the half of the screen that had nothing real on it', () => {
+    // Home had ONE real card. Everything under it was a stub or empty, so for a new
+    // user the bottom 40% was void. This is the section that is true.
+    withWorld()
+    expect(screen.getByText('4 of 65 countries')).toBeTruthy()
+    expect(screen.getByText('31 of 259 facts')).toBeTruthy()
+  })
+
+  it('surfaces what is due, which was previously two taps into Explore', () => {
+    // The only time-sensitive number in a spaced-repetition app, and Home never said it.
+    withWorld()
+    expect(screen.getByText('7 facts ready to review')).toBeTruthy()
+  })
+
+  it('says nothing at all when nothing is due', () => {
+    // "0 facts ready to review" is a row that exists to say nothing, and a daily nudge
+    // that fires on an empty inbox trains people to ignore it.
+    const { container } = withWorld({ ...WORLD, factsDue: 0 })
+    expect(container.textContent).not.toMatch(/ready to review/)
+  })
+
+  it('never frames the gap as a debt', () => {
+    // A review queue is not a backlog and must never read as one — the same rule the
+    // streak screen follows. "Overdue" is the word that turns study into homework.
+    const { container } = withWorld()
+    expect(container.textContent).not.toMatch(/overdue|behind|owe|catch up|late/i)
+  })
+
+  it('is absent rather than empty when the content index has not loaded', () => {
+    const { container } = render(
+      <HomeScreen progress={RETURNING} loading={false} isOffline={false} onStartLesson={() => {}} />,
+    )
+    expect(container.textContent).not.toMatch(/Your world/)
+  })
+
+  it('opens Explore rather than duplicating it', () => {
+    const onOpenWorld = vi.fn()
+    withWorld(WORLD, onOpenWorld)
+    fireEvent.click(screen.getByRole('button', { name: 'Explore' }))
+    expect(onOpenWorld).toHaveBeenCalledOnce()
+  })
+
+  it('renders no control when there is nowhere to go', () => {
+    // Same rule as the shop row and the streak badge: absent hides the control rather
+    // than drawing a dead one.
+    withWorld()
+    expect(screen.queryByRole('button', { name: 'Explore' })).toBeNull()
   })
 })
