@@ -217,32 +217,6 @@ export function HomeScreen({
             the app quietly breaks every day." The challenge had not even got as far as
             being uncompletable; it never arrived at all. */}
 
-        {/* Friends / League pair. */}
-        <View style={styles.twoUp}>
-          <Card style={styles.tile} accessibilityLabel={t('home:friends.label')}>
-            <Text style={styles.cardTitle}>{t('home:friends.title')}</Text>
-            <Text style={styles.cardLabel}>
-              {t('home:friends.online', { count: progress?.friendsOnline ?? 0 })}
-            </Text>
-          </Card>
-          <Card style={styles.tile} accessibilityLabel={t('home:league.label')}>
-            <Text style={styles.cardTitle}>{t('home:league.title')}</Text>
-            {/* Leagues are v2.0 and the tile stays, per the roadmap — but it stayed as
-                an em-dash, which is not an empty state, it is a missing value. A tile
-                that says plainly it is not open yet is honest; a dash is a rendering
-                bug the user has to interpret. No date and no teaser: a promise with a
-                month attached is a promise to break. */}
-            {progress?.leagueTier === undefined ? (
-              <Text style={styles.cardLabel}>{t('home:league.closed')}</Text>
-            ) : (
-              <>
-                <Text style={styles.leagueTier}>{progress.leagueTier}</Text>
-                <Text style={styles.cardLabel}>{progress.leaguePercentile ?? ''}</Text>
-              </>
-            )}
-          </Card>
-        </View>
-
         {/* Your world — the section that was missing rather than broken.
 
             Home's lower half was empty for every new user: one real card, two stubs,
@@ -298,6 +272,38 @@ export function HomeScreen({
             )}
           </Card>
         )}
+
+        {/* Friends / League pair, LAST rather than first.
+
+            Both are unbuilt — Friends is v1.5, Leagues v2.0 — and they were sitting
+            directly under the primary action, above the only section on this screen
+            with real numbers in it. A new user read two tiles about features that do
+            not exist before reaching the one that describes their actual progress.
+            Order is the cheapest hierarchy there is: what is true goes first. */}
+        <View style={styles.twoUp}>
+          <Card style={styles.tile} accessibilityLabel={t('home:friends.label')}>
+            <Text style={styles.cardTitle}>{t('home:friends.title')}</Text>
+            <Text style={styles.cardLabel}>
+              {t('home:friends.online', { count: progress?.friendsOnline ?? 0 })}
+            </Text>
+          </Card>
+          <Card style={styles.tile} accessibilityLabel={t('home:league.label')}>
+            <Text style={styles.cardTitle}>{t('home:league.title')}</Text>
+            {/* Leagues are v2.0 and the tile stays, per the roadmap — but it stayed as
+                an em-dash, which is not an empty state, it is a missing value. A tile
+                that says plainly it is not open yet is honest; a dash is a rendering
+                bug the user has to interpret. No date and no teaser: a promise with a
+                month attached is a promise to break. */}
+            {progress?.leagueTier === undefined ? (
+              <Text style={styles.cardLabel}>{t('home:league.closed')}</Text>
+            ) : (
+              <>
+                <Text style={styles.leagueTier}>{progress.leagueTier}</Text>
+                <Text style={styles.cardLabel}>{progress.leaguePercentile ?? ''}</Text>
+              </>
+            )}
+          </Card>
+        </View>
 
         {/* Level bar, which the mockup carries on Profile rather than Home. */}
         {progress && !isNewUser && (
