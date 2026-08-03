@@ -45,6 +45,24 @@ day's work once the components existed:
 
   ![The flag question](assets/screens/lesson-flag-image.png)
 
+- **The lesson summary** (mockup screen 6). It was a heading, two chips and a button —
+  the app's biggest emotional moment, rendered inert, while `gradeLesson` was already
+  computing accuracy, `perfect` and `masteryChanges` and the screen threw all three
+  away. It now counts the XP up from zero, varies its headline by outcome, and shows
+  **facts stronger** — the one number here a quiz app could not also show.
+
+  It also shows the flags of the countries you just answered about, which is the point
+  of the change rather than a decoration: a screen made only of XP, coins and a
+  percentage is a scoreboard, and this product is about the world. The artwork already
+  shipped for the collection, so the row cost nothing.
+
+  ![The lesson summary](assets/screens/lesson-summary.png)
+
+  A lesson you walked out of gets its own treatment — no celebration, no shame, the
+  same numbers, and a door. Both phases used to render identically.
+
+  ![Leaving a lesson early](assets/screens/lesson-summary-early.png)
+
 ### 2. Needs assets — blocked on a decision, not on code
 
 The mockup's imagery is generated art. Matching it needs real assets:

@@ -94,6 +94,25 @@ const PAIRS: Pair[] = [
   // Reward and status colours carry meaning, so they are UI boundaries (≥3:1).
   { name: 'reward.xp on surface', fg: p.gold['400'], bg: p.surface['1'], min: 3.0 },
   { name: 'reward.xp on canvas', fg: p.gold['400'], bg: p.space['800'], min: 3.0 },
+  // The lesson summary's hero number sits on a LEVEL 2 card, which is `surface.2` —
+  // lighter than `surface.1`, so the pair above does not vouch for it. A gold number
+  // on a raised card was the single largest piece of type in the app and no row here
+  // covered the surface it was actually drawn on.
+  { name: 'reward.xp on surfaceRaised', fg: p.gold['400'], bg: p.surface['2'], min: 3.0 },
+  {
+    name: 'reward.gem on surface',
+    fg: p.purple['400'],
+    bg: p.surface['1'],
+    min: 3.0,
+    note: 'the facts-stronger count on the lesson summary',
+  },
+  {
+    name: 'text.secondary on surfaceRaised',
+    fg: p.text['2'],
+    bg: p.surface['2'],
+    min: 4.5,
+    note: 'the "XP" unit label under the hero number, and any caption on a level-2 card',
+  },
   { name: 'status.streak on surface', fg: p.flame['500'], bg: p.surface['1'], min: 3.0 },
   { name: 'status.progress on surface', fg: p.green['400'], bg: p.surface['1'], min: 3.0 },
   {

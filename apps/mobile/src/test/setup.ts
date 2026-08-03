@@ -78,6 +78,29 @@ vi.mock('expo-haptics', () => ({
 }))
 
 /**
+ * Every test in this suite runs in REDUCED MOTION, and nothing here chose that.
+ *
+ * jsdom does not implement `window.matchMedia`, and react-native-web answers
+ * `AccessibilityInfo.isReduceMotionEnabled()` with `true` when it cannot query the
+ * media query. So `useReducedMotion()` resolves true in every component test.
+ *
+ * Two consequences worth knowing before writing a test about anything that moves:
+ *
+ * 1. The reduced-motion branch is the one under test, always. That is the branch the
+ *    Definition of Done cares most about, so this is a happy accident — but it means
+ *    a green suite says nothing about the animated path.
+ * 2. The animated path cannot be observed here anyway: `Animated.timing` in jsdom
+ *    finishes in a single frame, so a value is at its target on the first render
+ *    whether it animated or not. A test asserting "it counts up" would pass against a
+ *    hook that does nothing.
+ *
+ * Motion is therefore guarded at the source (`packages/design/src/motion.test.ts`)
+ * and by eye on a device. Deliberately NOT patched to report false: flipping the
+ * default would change the branch every existing test exercises, in exchange for an
+ * animation jsdom still cannot render.
+ */
+
+/**
  * react-native-web warns about `shadow*` and `props.pointerEvents` being deprecated.
  * They come from inside react-native-web's own components, not from our code, so the
  * warnings are noise that hides the ones worth reading.

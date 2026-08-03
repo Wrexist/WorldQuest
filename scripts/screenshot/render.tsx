@@ -34,6 +34,7 @@ import {
   composeLesson,
   emptyProgress,
   generateDailyQuest,
+  gradeLesson,
   seededRng,
   worldProgress,
   type Entity,
@@ -45,6 +46,7 @@ import { HomeScreen } from '../../apps/mobile/src/features/home/HomeScreen.js'
 import { AchievementsScreen } from '../../apps/mobile/src/features/achievements/AchievementsScreen.js'
 import { CATALOGUE } from '../../apps/mobile/src/features/achievements/useAchievements.js'
 import { CountryScreen } from '../../apps/mobile/src/features/explore/CountryScreen.js'
+import { LessonSummary } from '../../apps/mobile/src/features/lesson/LessonSummary.js'
 import { ExploreScreen } from '../../apps/mobile/src/features/explore/ExploreScreen.js'
 import { ProfileScreen } from '../../apps/mobile/src/features/profile/ProfileScreen.js'
 import { QuestScreen } from '../../apps/mobile/src/features/quests/QuestScreen.js'
@@ -84,6 +86,56 @@ const flagQuestion =
  * sighted and a screen-reader user each get for the same fact.
  */
 const flagImageQuestion = questions.find((q) => q.item.templateId === 'tpl.flag-to-country.mc4')
+
+/**
+ * Two graded lessons for the summary frames — GRADED, not hand-written.
+ *
+ * Every other number in this file is a display value with no arithmetic behind it, so
+ * a literal is honest. These are not: XP and coins come out of the balance table
+ * through `gradeLesson`, and typing "+62 XP" here would put a figure on a screenshot
+ * that the economy cannot actually produce. Running the real grader means the picture
+ * is a claim we can defend, and it moves when the balance moves.
+ */
+const answeredAt = Date.parse('2026-07-31T19:02:00Z')
+const answersFrom = (correct: readonly boolean[]) =>
+  questions.slice(0, correct.length).map((q, i) => ({
+    itemId: q.item.id,
+    factId: q.item.factId,
+    templateId: q.item.templateId,
+    chosenOptionId: q.options.find((o) => o.isCorrect === correct[i])?.id ?? null,
+    wasCorrect: correct[i]!,
+    // Above MIN_CREDIBLE_ANSWER_MS and above the speed-bonus threshold, so the frames
+    // show an ordinary lesson rather than a best case nobody will match.
+    elapsedMs: 5_200,
+    answeredAt: answeredAt + i * 5_200,
+  }))
+
+const graded = (correct: readonly boolean[]) =>
+  gradeLesson({
+    lessonId: 'shot',
+    answers: answersFrom(correct),
+    memory: new Map(),
+    now: answeredAt,
+  })
+
+const PERFECT_LESSON = graded([true, true, true, true, true, true])
+/** Left after three questions, one of them wrong — the shape of a real early exit. */
+const SHORT_LESSON = graded([true, false, true])
+
+/** The countries those lessons touched — real entities, so the flags are the right ones. */
+const practisedFrom = (count: number) => {
+  const seen = new Set<string>()
+  return questions.slice(0, count).flatMap((q) => {
+    const entity = index.entities.get(q.item.entityId)
+    if (entity === undefined || seen.has(entity.id)) return []
+    seen.add(entity.id)
+    return [{
+      id: entity.id,
+      flagPath: entity.assets?.['flag']?.path,
+      name: entity.names?.['en'] ?? entity.id,
+    }]
+  })
+}
 
 /** Exactly the state the mockup depicts, so the two can be compared directly. */
 const MOCKUP_STATE = {
@@ -320,6 +372,28 @@ function Gallery() {
 
         <Phone label="Lesson · screen-reader-safe flag question" id="lesson-flag">
           <LessonView question={flagQuestion} answered={false} />
+        </Phone>
+
+        {/* The real component, not a reconstruction — the summary is presentational,
+            so unlike the four frames above it can be rendered straight from source. */}
+        <Phone label="Lesson · summary (perfect)" id="lesson-summary">
+          <LessonSummary
+            result={PERFECT_LESSON}
+            practised={practisedFrom(6)}
+            wasAbandoned={false}
+            isOffline={false}
+            onExit={() => {}}
+          />
+        </Phone>
+
+        <Phone label="Lesson · summary (left early)" id="lesson-summary-early">
+          <LessonSummary
+            result={SHORT_LESSON}
+            practised={practisedFrom(3)}
+            wasAbandoned
+            isOffline={false}
+            onExit={() => {}}
+          />
         </Phone>
 
         <Phone label="Achievements" id="achievements">

@@ -26,6 +26,19 @@
  * and Metro does not rewrite `.js` to `.ts`. `pnpm typecheck` runs tsc and `pnpm test`
  * runs vitest; neither one is the bundler, so neither could ever have caught it.
  *
+ * ## A driver has to behave like a person
+ *
+ * This flow answered questions in ~250ms for most of its life, and grading discards
+ * anything under 400ms as not credible (`MIN_CREDIBLE_ANSWER_MS`; xp-economy.md §
+ * "Impossibly fast answers"). So every lesson it ever played graded to zero XP, zero
+ * coins and zero scheduling — the anti-cheat path, not the normal one — and no step
+ * noticed, because the steps that ran afterwards did not depend on a reward.
+ *
+ * The general shape is worth remembering: an automated driver is faster than any human
+ * and will therefore trip anything that exists to catch inhuman behaviour. Where a rate
+ * limit, a debounce or a credibility floor exists, the test has to be slower than it,
+ * or it is silently exercising the defence rather than the feature.
+ *
  * Run: pnpm e2e
  */
 
@@ -514,6 +527,13 @@ const step = (name, ok, detail = '') => {
   for (let i = 0; i < 25; i++) {
     const options = await page.getByTestId('answer-option').all()
     if (options.length === 0) break
+    // Think first. `MIN_CREDIBLE_ANSWER_MS` is 400 and grading DISCARDS anything
+    // faster — no XP, no coins, and deliberately no reach into the scheduler, because
+    // a sub-400ms answer is a bot and letting one through would corrupt the memory
+    // model. This loop used to answer in ~250ms, which meant every lesson it ever
+    // played graded to zero and the summary it produced was the rejected-everything
+    // case. The quest and achievement steps below passed anyway, so nothing said so.
+    await page.waitForTimeout(600)
     await options[0].click()
     await page.waitForTimeout(250)
     const next = page.getByRole('button', { name: 'Continue' })
@@ -521,6 +541,48 @@ const step = (name, ok, detail = '') => {
     await page.waitForTimeout(250)
   }
   await page.waitForTimeout(800)
+
+  // ── the summary, in the only place its animation is real ───────────────────
+  //
+  // jsdom cannot check any of this. It has no `matchMedia`, so react-native-web reports
+  // reduce-motion as ON for every component test, and its `Animated.timing` finishes in
+  // a single frame either way — a count-up that did nothing at all would pass there.
+  // Chromium runs the actual animation, so this is the one place the tally can be
+  // caught short.
+  //
+  // Longer than `motion.celebrate` (900ms), because the assertion is that the number
+  // LANDS. An `Animated` listener is throttled and its final frame is not guaranteed;
+  // without the completion callback in `useCountUp` this reads 79 of 80.
+  await page.waitForTimeout(1400)
+  const summary = await body()
+  const headline = await page.getByRole('heading').first().textContent()
+  step('the lesson ends on a real headline, not a key',
+       /^(Flawless\.|Nice work\.|Lesson complete\.)$/.test((headline ?? '').trim()),
+       headline ?? 'no heading')
+
+  const xpCard = page.getByTestId('summary-xp')
+  const xpShown = ((await xpCard.textContent()) ?? '').match(/\+(\d+)/)?.[1]
+  const xpSpoken = ((await xpCard.getAttribute('aria-label')) ?? '').match(/(\d+)/)?.[1]
+  // Non-zero matters as much as the two agreeing: zero is what the anti-cheat path
+  // produces, and a lesson answered at human speed must never land there.
+  step('the XP tally finishes on the figure the screen reader was given',
+       xpShown !== undefined && xpShown === xpSpoken && Number(xpShown) > 0,
+       `shown +${xpShown ?? '?'} · spoken ${xpSpoken ?? '?'}`)
+
+  step('the summary reports facts moved forward, not just points',
+       /Facts stronger/.test(summary))
+
+  // The flags of the countries just answered about. Same check as the lesson prompt:
+  // a broken image and a missing one look identical in a screenshot.
+  const practisedFlags = await page
+    .getByTestId('summary-practised')
+    .locator('img')
+    .evaluateAll((imgs) => imgs.map((i) => ({ w: i.naturalWidth, alt: i.getAttribute('alt') })))
+  step('and draws real flags for where the user just was',
+       practisedFlags.length > 0 &&
+         practisedFlags.every((f) => f.w > 0 && (f.alt ?? '').length > 0),
+       `${practisedFlags.length} flag(s)`)
+  await page.screenshot({ path: path.join(SHOTS, 'lesson-summary.png') })
 
   // The quest, checked in the same pass — the lesson above is what should have moved
   // it. Until now `applyQuestEvent` had no caller, so five tasks read 0/5 forever no

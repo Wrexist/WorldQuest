@@ -68,6 +68,30 @@ describe('the motion helper', () => {
     const native = source.match(/useNativeDriver:\s*true/g) ?? []
     expect(native.length).toBeGreaterThanOrEqual(timings.length - 1)
   })
+
+  it('keeps the one JS-driven animation to the one that has to be', () => {
+    // The rule above allows a single exception, and this names it so the slack cannot
+    // be spent silently by the next animation somebody adds.
+    //
+    // `useCountUp` animates TEXT CONTENT, so the value has to be readable in JS. A
+    // native-driven value lives on the UI thread and its JS listener never fires — the
+    // animation would run perfectly and the number on screen would never move. That is
+    // a bug with no symptom in review and no symptom in these tests, because jsdom
+    // completes every animation in one frame regardless.
+    const exceptions = source.match(/useNativeDriver:\s*false/g) ?? []
+    expect(exceptions).toHaveLength(1)
+    const countUp = source.slice(source.indexOf('export function useCountUp'))
+    expect(countUp.slice(0, countUp.indexOf('export function', 1))).toContain(
+      'useNativeDriver: false',
+    )
+  })
+
+  it('lands the count-up on its target rather than one short', () => {
+    // Animated listeners are throttled and the final frame is not guaranteed, so a
+    // count-up that only listens reliably stops at 39 of 40. The completion callback
+    // is what makes the number true.
+    expect(source).toMatch(/\}\)\.start\(\(\)\s*=>\s*setValue\(target\)\)/)
+  })
 })
 
 describe('primitives honour reduced motion', () => {

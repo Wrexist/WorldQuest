@@ -22,7 +22,7 @@
  * Spec: docs/design/design-system.md §8 · docs/design/accessibility.md
  */
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { AccessibilityInfo, Animated, Easing } from 'react-native'
 import { motion } from './tokens.js'
 
@@ -115,6 +115,72 @@ export function useAnimatedTo(target: number, step: MotionStep = 'base'): Animat
 
   return value
 }
+
+/**
+ * A number that counts up to its target — the XP tally on the summary screen.
+ *
+ * Returns a plain `number` rather than an `Animated.Value` because the thing being
+ * animated here is TEXT CONTENT, and `Animated.Value` can only drive a style. That is
+ * the whole reason this hook exists next to `useAnimatedTo` instead of being one of
+ * its callers.
+ *
+ * ## Two details that are easy to get wrong
+ *
+ * `useNativeDriver: false` is load-bearing. A native-driven value lives on the UI
+ * thread and its JS listener never fires — the animation would run perfectly and the
+ * number on screen would stay at zero. Reading the value in JS is the entire point, so
+ * this one animates in JS.
+ *
+ * The final value is set from the completion callback as well as from the listener.
+ * Listeners are throttled and the last frame is not guaranteed, so without it a
+ * "+40 XP" reliably lands on 39.
+ *
+ * Under reduced motion the target applies immediately — the number is still correct,
+ * it just does not travel. And the caller must hide the ticking text from screen
+ * readers: a reader announcing "1, 2, 3, …, 40" is worse than useless.
+ */
+export function useCountUp(target: number, step: MotionStep = 'celebrate'): number {
+  const reduced = useReducedMotion()
+  const animated = useRef(new Animated.Value(target)).current
+  // Seeded with the TARGET, not zero. Anything that renders without running effects
+  // sees the true figure: the screenshot harness is a `renderToStaticMarkup` pass, and
+  // seeded at zero it published a summary reading "+0 XP" under the headline
+  // "Flawless." A component's effect-free render has to be correct, not just early.
+  const [value, setValue] = useState(target)
+
+  useIsomorphicLayoutEffect(() => {
+    if (reduced) {
+      setValue(target)
+      return
+    }
+
+    const id = animated.addListener(({ value: frame }) => setValue(Math.round(frame)))
+    animated.setValue(0)
+    setValue(0)
+    const token = motion[step] as { duration: number; easing: string }
+    Animated.timing(animated, {
+      toValue: target,
+      duration: token.duration,
+      easing: EASINGS[token.easing] ?? Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    }).start(() => setValue(target))
+
+    return () => animated.removeListener(id)
+  }, [target, reduced, step, animated])
+
+  return value
+}
+
+/**
+ * `useLayoutEffect` on a client, `useEffect` where there is no DOM.
+ *
+ * The count-up above has to reset its seed to zero BEFORE the first paint, or the
+ * final figure flashes for a frame and the tally looks like a glitch. That is what
+ * `useLayoutEffect` is for — but React warns when it runs during a server render, and
+ * this package is rendered server-side by `pnpm screenshot`. The standard isomorphic
+ * swap keeps both paths honest without a platform branch inside the hook.
+ */
+const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
 
 /**
  * The celebration scale — a quick pop, then settle.

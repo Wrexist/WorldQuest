@@ -22,9 +22,10 @@ import {
   text,
 } from '@worldquest/design'
 import { deriveRating, lessonLength } from '@worldquest/engines'
-import type { GradeResult, LessonState, Question } from '@worldquest/engines'
+import type { ContentIndex, GradeResult, LessonState, Question } from '@worldquest/engines'
 import { Flag } from '../../components/Flag.js'
 import { useLesson } from './hooks/useLesson.js'
+import { LessonSummary, type PractisedCountry } from './LessonSummary.js'
 import { SPEED_SECONDS } from './modes.js'
 import { OutOfHearts } from './OutOfHearts.js'
 import { Paused } from './Paused.js'
@@ -35,7 +36,7 @@ import { recordLessonForAchievements } from '../achievements/progress.js'
 import { todaysQuest } from '../quests/useDailyQuest.js'
 import { recordQuestEvent } from '../quests/questProgress.js'
 import { useContent } from '../../lib/content.js'
-import { tContent, useT } from '../../lib/i18n.js'
+import { currentLocale, tContent, useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
 import { recordLessonCompleted } from '../profile/useWeekActivity.js'
 import { enqueueLesson } from '../../lib/sync.js'
@@ -208,7 +209,18 @@ export function LessonScreen({
   if (screen === 'empty') return <EmptyState />
 
   if (lesson.state.phase === 'summary' || lesson.state.phase === 'abandoned') {
-    return <SummaryState result={lesson.optimistic} isOffline={isOffline} onExit={onExit} />
+    return (
+      <LessonSummary
+        result={lesson.optimistic}
+        practised={practisedCountries(index?.index, lesson.state.answers)}
+        // The two phases arrive here for very different reasons and the screen says so.
+        // Running out of hearts is NOT one of them — the machine sends that to
+        // `summary`, because the lesson ended rather than the user leaving it.
+        wasAbandoned={lesson.state.phase === 'abandoned'}
+        isOffline={isOffline}
+        onExit={onExit}
+      />
+    )
   }
 
   // Replaces the runner rather than covering it: an overlay leaves the question in
@@ -501,6 +513,44 @@ function LoadingState() {
   )
 }
 
+/**
+ * The countries behind the answers just given, in the order they were asked.
+ *
+ * Lives in the screen rather than in `LessonSummary` because it needs the content
+ * index, and the summary is presentational — it is handed things to draw. The index
+ * is optional so the summary still renders if content failed to load; a lesson that
+ * somehow finished without it should end with fewer flags, not a crash.
+ *
+ * Deduplicated by entity: a lesson can ask two facts about Sweden, and two identical
+ * flags in the row looks like a bug rather than like emphasis.
+ */
+function practisedCountries(
+  index: ContentIndex | undefined,
+  answers: readonly LessonState['answers'][number][],
+): readonly PractisedCountry[] {
+  if (index === undefined) return []
+  const locale = currentLocale()
+  const seen = new Set<string>()
+  const out: PractisedCountry[] = []
+
+  for (const answer of answers) {
+    const entityId = index.facts.get(answer.factId)?.entity
+    if (entityId === undefined || seen.has(entityId)) continue
+    const entity = index.entities.get(entityId)
+    if (entity === undefined) continue
+    seen.add(entityId)
+    out.push({
+      id: entity.id,
+      flagPath: entity.assets?.['flag']?.path,
+      // A country name is a fact from the pack, never a translated string. English is
+      // the fallback, and never a machine translation.
+      name: entity.names?.[locale] ?? entity.names?.['en'] ?? entity.id,
+    })
+  }
+
+  return out
+}
+
 function ErrorState({ onRetry }: { onRetry: () => void }) {
   const t = useT()
 
@@ -531,40 +581,6 @@ function OfflineBanner() {
   return (
     <View style={styles.offline} role="alert">
       <Text style={styles.offlineText}>{t('common:offline.banner')}</Text>
-    </View>
-  )
-}
-
-function SummaryState({
-  result,
-  isOffline,
-  onExit,
-}: {
-  result: GradeResult | null
-  isOffline: boolean
-  onExit: () => void
-}) {
-  const t = useT()
-
-  return (
-    <View style={[styles.screen, styles.centered]}>
-      {isOffline && <OfflineBanner />}
-      <Text style={styles.prompt}>{t('lesson:summary.title')}</Text>
-      {result && (
-        <View style={styles.rewards}>
-          <StatChip
-            kind="xp"
-            value={`+${result.xpAwarded}`}
-            accessibilityLabel={t('lesson:reward.xp', { amount: result.xpAwarded })}
-          />
-          <StatChip
-            kind="coin"
-            value={`+${result.coinsAwarded}`}
-            accessibilityLabel={t('lesson:reward.coins', { amount: result.coinsAwarded })}
-          />
-        </View>
-      )}
-      <Button label={t('common:continue')} onPress={onExit} style={styles.retry} />
     </View>
   )
 }

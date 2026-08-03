@@ -17,7 +17,9 @@ capability is gone.
 space    0 4 8 12 16 24 32 40 48 64      (4 only for icon↔label pairs)
 radius   sm 8 · md 12 · lg 16 · xl 20 · 2xl 28 · full 999
 motion   instant 100 · quick 180 · base 260 · expressive 420 · celebrate 900
-type     display 34 · h1 28 · h2 22 · h3 18 · body 16 · caption 13 · overline 11
+type     hero 56 · display 34 · h1 28 · h2 22 · h3 18 · body 16 · caption 13 · overline 12
+         (`hero` is for a single number standing alone — currently only the
+          lesson summary's XP tally. Reach for `display` first.)
 ```
 
 ## Type: never set `fontWeight`

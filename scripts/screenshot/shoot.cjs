@@ -14,6 +14,7 @@ const path = require('path')
 const SHOTS = [
   'home-first', 'home-returning', 'home-loading', 'home-offline',
   'lesson-question', 'lesson-correct', 'lesson-wrong', 'lesson-flag-image', 'lesson-flag',
+  'lesson-summary', 'lesson-summary-early',
   'explore', 'country', 'quests', 'profile', 'achievements', 'settings',
 ]
 
@@ -31,7 +32,11 @@ const SHOTS = [
   // Absolute, always. `file://` + a relative path is not a URL Chromium will accept,
   // and the failure reads as ERR_INVALID_URL rather than "path was relative".
   await page.goto(`file://${path.resolve(htmlPath)}`)
-  await page.waitForTimeout(500)
+  // Longer than the longest motion token (`celebrate`, 900ms). The summary's XP tally
+  // animates on mount, and at 500ms this caught it mid-count — a screenshot showing
+  // "+31 XP" for a lesson that awarded 62, which reads as an economy bug rather than
+  // as a frame of an animation.
+  await page.waitForTimeout(1500)
 
   await page.screenshot({ path: path.join(outDir, 'app-overview.png'), fullPage: true })
   console.log('  app-overview.png')

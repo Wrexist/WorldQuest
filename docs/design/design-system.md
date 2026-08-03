@@ -217,6 +217,7 @@ other single value in this file.
 
 | Token | Size/LH | Weight | LS | Use |
 |---|---|---|---|---|
+| `hero` | 56/64 | 900 | −1.2 | One number, alone: the lesson summary's XP (tabular) |
 | `display` | 34/42 | 900 | −0.6 | Onboarding headline |
 | `h1` | 28/36 | 800 | −0.4 | Screen title |
 | `h2` | 22/30 | 800 | −0.2 | Section header, question |

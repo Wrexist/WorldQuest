@@ -13,6 +13,7 @@
 
 import { BALANCE } from '../xp/balance.js'
 import { deriveRating, masteryOf, review } from '../learning/fsrs.js'
+import { MASTERY_ORDER } from '../progression/index.js'
 import {
   MIN_CREDIBLE_ANSWER_MS,
   type FactId,
@@ -181,6 +182,26 @@ export function gradeLesson(input: GradeInput): GradeResult {
     perfect,
     rejected,
   }
+}
+
+/**
+ * How many facts ended the lesson knowing more than they started it.
+ *
+ * The number the summary screen leads with, and the only one on it a quiz app could
+ * not also show: XP and coins measure activity, this measures learning.
+ *
+ * Filtered rather than `masteryChanges.length`, because that records movement in BOTH
+ * directions — a lesson that knocked two facts back to `learning` would otherwise
+ * report them as progress. Overstating what somebody learned is the same class of
+ * error as shipping a wrong fact, and much harder to notice.
+ *
+ * Lives here rather than in the screen so the ordering has exactly one definition
+ * (`MASTERY_ORDER`, in progression) and the server can compute the same figure.
+ */
+export function factsStrengthened(result: GradeResult): number {
+  return result.masteryChanges.filter(
+    (change) => MASTERY_ORDER.indexOf(change.to) > MASTERY_ORDER.indexOf(change.from),
+  ).length
 }
 
 /**
