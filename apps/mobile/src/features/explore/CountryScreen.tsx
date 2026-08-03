@@ -46,6 +46,7 @@ import {
 import type { EntityProgress, Mastery } from '@worldquest/engines'
 import { formatDate, useT, currentLocale, type TranslationKey } from '../../lib/i18n.js'
 import type { RegionCode } from './ExploreScreen.js'
+import { Icon } from '../../components/Icon.js'
 
 const ATTRIBUTE_LABEL: Record<string, TranslationKey> = {
   capital: 'country:attribute.capital',
@@ -170,9 +171,15 @@ export function CountryScreen({
             hitSlop={space[2]}
             style={styles.star}
           >
-            <Text style={favourite ? styles.starOn : styles.starOff}>
-              {favourite ? '★' : '☆'}
-            </Text>
+            {/* One shape, tinted. `★` vs `☆` were two different characters that
+                happened to exist in the system font; on a device missing one of
+                them the control silently loses its state. The label already
+                carries the state for a screen reader. */}
+            <Icon
+              name="star"
+              size={24}
+              color={favourite ? colors.action.secondary : colors.text.tertiary}
+            />
           </Pressable>
         )}
       </View>

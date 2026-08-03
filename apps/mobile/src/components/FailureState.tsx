@@ -11,6 +11,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { ArtSlot, Button, colors, palette, space, text } from '@worldquest/design'
 import { useT, type TranslationKey } from '../lib/i18n.js'
+import { Icon } from './Icon.js'
 
 export type FailureStateProps = {
   readonly titleKey: TranslationKey
@@ -37,7 +38,12 @@ export function FailureState({
     <View style={styles.screen}>
       {/* Atlas with a broken compass, when the mascot exists. The slot holds its
           place so the layout does not move when the art lands. */}
-      <ArtSlot tint={palette.blue['500']} glyph="⌖" width={96} height={96} />
+      <ArtSlot
+        tint={palette.blue['500']}
+        art={<Icon name="failure" size={40} color={colors.text.secondary} />}
+        width={96}
+        height={96}
+      />
 
       <Text style={styles.title} role="heading">
         {t(titleKey)}

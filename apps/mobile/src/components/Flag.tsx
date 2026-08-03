@@ -25,6 +25,7 @@
 
 import { Image, StyleSheet, View } from 'react-native'
 import { ArtSlot, colors, radius } from '@worldquest/design'
+import { Icon } from './Icon.js'
 import { flagHeight, flagSource } from '../lib/flags.js'
 
 export type FlagProps = {
@@ -50,7 +51,12 @@ export function Flag({ path, width, tint, label }: FlagProps) {
   const height = flagHeight(width)
 
   if (source === undefined) {
-    return <ArtSlot tint={tint ?? colors.bg.surfaceRaised} glyph="⚑" width={width} height={height} />
+    return <ArtSlot
+        tint={tint ?? colors.bg.surfaceRaised}
+        art={<Icon name="flag" size={Math.round(width * 0.4)} color={colors.text.tertiary} />}
+        width={width}
+        height={height}
+      />
   }
 
   return (

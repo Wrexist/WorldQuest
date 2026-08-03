@@ -20,7 +20,6 @@ import {
   Card,
   ProgressBar,
   Skeleton,
-  StatChip,
   TabBar,
   FONT_FAMILIES,
   colors,
@@ -42,6 +41,9 @@ import {
   type Template,
 } from '@worldquest/engines'
 import { Flag } from '../../apps/mobile/src/components/Flag.js'
+import { Icon } from '../../apps/mobile/src/components/Icon.js'
+import { Stat } from '../../apps/mobile/src/components/Stat.js'
+import type { IconName } from '../../apps/mobile/src/lib/icons.generated.js'
 import { CountryMap } from '../../apps/mobile/src/components/CountryMap.js'
 import { HomeScreen } from '../../apps/mobile/src/features/home/HomeScreen.js'
 import { AchievementsScreen } from '../../apps/mobile/src/features/achievements/AchievementsScreen.js'
@@ -146,6 +148,20 @@ const practisedFrom = (count: number) => {
  */
 const PAYWALL_COUNTRIES = practisedFrom(6)
 
+/**
+ * The correct/wrong mark on an answer, exactly as LessonScreen draws it.
+ *
+ * `AnswerOption` falls back to `✓` and `→` when no mark is passed, and the arrow is
+ * the one this app stopped using — it points the same way in an RTL layout as in an
+ * LTR one. A harness that took the fallback would draw a picture of the old bug.
+ */
+const answerMark = (state: string) =>
+  state === 'correct' ? (
+    <Icon name="check" size={20} color={colors.feedback.correct} />
+  ) : state === 'wrong' ? (
+    <Icon name="forward" size={20} color={colors.text.secondary} />
+  ) : undefined
+
 /** Exactly the state the mockup depicts, so the two can be compared directly. */
 const MOCKUP_STATE = {
   xpTotal: 4820,
@@ -197,12 +213,25 @@ const PROFILE_WORLD = worldProgress(
  * one users see.
  */
 const TABS = [
-  { key: 'index', glyph: '⌂', label: nav['nav:home'] },
-  { key: 'explore', glyph: '◎', label: nav['nav:explore'] },
-  { key: 'quests', glyph: '◈', label: nav['nav:quests'] },
-  { key: 'profile', glyph: '☺', label: nav['nav:profile'] },
-  { key: 'more', glyph: '⋯', label: nav['nav:more'] },
-]
+  { key: 'index', icon: 'home', label: nav['nav:home'] },
+  { key: 'explore', icon: 'explore', label: nav['nav:explore'] },
+  { key: 'quests', icon: 'quests', label: nav['nav:quests'] },
+  { key: 'profile', icon: 'profile', label: nav['nav:profile'] },
+  { key: 'more', icon: 'more', label: nav['nav:more'] },
+].map((t) => ({
+  key: t.key,
+  label: t.label,
+  // The real icons, drawn exactly as the app draws them — these frames exist to
+  // catch a bar that looks wrong, and a harness with its own icon set would hide
+  // precisely the problem it is here to find.
+  icon: (active: boolean) => (
+    <Icon
+      name={t.icon as IconName}
+      size={22}
+      color={active ? colors.text.onAccent : colors.text.tertiary}
+    />
+  ),
+}))
 
 /** A phone-sized frame, so screenshots are comparable to the mockup. */
 function Phone({
@@ -252,7 +281,7 @@ function LessonView({
       <View style={s.lessonHeader}>
         <ProgressBar current={2} total={6} showCount={false} style={s.flex} />
         <Text style={s.counter}>2 / 6</Text>
-        <StatChip kind="hearts" value={answered && chosenId ? 4 : 5} accessibilityLabel="hearts" />
+        <Stat kind="hearts" value={answered && chosenId ? 4 : 5} accessibilityLabel="hearts" />
       </View>
 
       <Text style={s.prompt}>{prompt}</Text>
@@ -277,22 +306,27 @@ function LessonView({
       )}
 
       <View style={s.options}>
-        {question.options.map((o) => (
-          <AnswerOption
-            key={o.id}
-            label={o.label}
-            state={
-              !answered
-                ? 'idle'
-                : o.isCorrect
-                  ? 'correct'
-                  : o.id === chosenId
-                    ? 'wrong'
-                    : 'disabled'
-            }
-            onPress={() => {}}
-          />
-        ))}
+        {question.options.map((o) => {
+          const state = !answered
+            ? 'idle'
+            : o.isCorrect
+              ? 'correct'
+              : o.id === chosenId
+                ? 'wrong'
+                : 'disabled'
+          return (
+            <AnswerOption
+              key={o.id}
+              label={o.label}
+              state={state}
+              // Passed here for the same reason the tab icons are: these frames exist
+              // to show what the app shows, and AnswerOption's character fallback is
+              // exactly the thing the app stopped using.
+              mark={answerMark(state)}
+              onPress={() => {}}
+            />
+          )
+        })}
       </View>
 
       {answered && (
@@ -301,8 +335,8 @@ function LessonView({
             <>
               <Text style={s.feedbackOk}>Perfect!</Text>
               <View style={s.row}>
-                <StatChip kind="xp" value="+10" accessibilityLabel="10 XP" />
-                <StatChip kind="coin" value="+5" accessibilityLabel="5 coins" />
+                <Stat kind="xp" value="+10" accessibilityLabel="10 XP" />
+                <Stat kind="coin" value="+5" accessibilityLabel="5 coins" />
               </View>
             </>
           ) : (
@@ -620,20 +654,20 @@ function Gallery() {
           <Text style={s.cellLabel}>Answer states</Text>
           <AnswerOption label="Idle" onPress={() => {}} />
           <AnswerOption label="Selected" state="selected" onPress={() => {}} />
-          <AnswerOption label="Correct" state="correct" onPress={() => {}} />
-          <AnswerOption label="Wrong" state="wrong" onPress={() => {}} />
+          <AnswerOption label="Correct" state="correct" mark={answerMark('correct')} onPress={() => {}} />
+          <AnswerOption label="Wrong" state="wrong" mark={answerMark('wrong')} onPress={() => {}} />
         </View>
         <View style={s.cell}>
           <Text style={s.cellLabel}>Progress &amp; chips</Text>
           <ProgressBar current={172} total={195} label="Flags" />
           <ProgressBar current={7} total={10} label="Today" />
           <View style={s.row}>
-            <StatChip kind="xp" value={12850} accessibilityLabel="xp" />
-            <StatChip kind="coin" value={430} accessibilityLabel="coins" />
+            <Stat kind="xp" value={12850} accessibilityLabel="xp" />
+            <Stat kind="coin" value={430} accessibilityLabel="coins" />
           </View>
           <View style={s.row}>
-            <StatChip kind="streak" value={12} accessibilityLabel="streak" />
-            <StatChip kind="hearts" value={5} accessibilityLabel="hearts" />
+            <Stat kind="streak" value={12} accessibilityLabel="streak" />
+            <Stat kind="hearts" value={5} accessibilityLabel="hearts" />
           </View>
         </View>
         <View style={s.cell}>

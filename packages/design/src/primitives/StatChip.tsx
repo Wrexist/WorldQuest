@@ -13,6 +13,16 @@ export type ChipKind = 'xp' | 'coin' | 'streak' | 'hearts' | 'gem'
 export type StatChipProps = {
   kind: ChipKind
   value: number | string
+  /**
+   * The picture, supplied by the caller.
+   *
+   * A node rather than a name, because the artwork is an app ASSET and this package
+   * may not reach into `apps/mobile/assets` — the dependency rule runs one way. It
+   * used to be a literal `'🔥'` in a map here, which is how the app shipped a colour
+   * emoji that ignores `color` and renders in Apple's house style beside our flat
+   * cards. `src/components/Stat.tsx` owns the kind → icon pairing so it cannot drift.
+   */
+  icon: React.ReactNode
   /** Full-sentence label for screen readers, e.g. "12 day streak". */
   accessibilityLabel: string
   style?: StyleProp<ViewStyle>
@@ -27,11 +37,10 @@ const TINTS: Record<ChipKind, string> = {
   gem: colors.reward.gem,
 }
 
-const GLYPHS: Record<ChipKind, string> = {
-  xp: '✦', coin: '●', streak: '🔥', hearts: '♥', gem: '◆',
-}
+/** The colour the caller should tint its icon, so the pair always matches. */
+export const chipTint = (kind: ChipKind): string => TINTS[kind]
 
-export function StatChip({ kind, value, accessibilityLabel, style, testID }: StatChipProps) {
+export function StatChip({ kind, value, icon, accessibilityLabel, style, testID }: StatChipProps) {
   return (
     <View
       accessible
@@ -39,7 +48,7 @@ export function StatChip({ kind, value, accessibilityLabel, style, testID }: Sta
       style={[styles.base, { borderColor: TINTS[kind] }, style]}
       testID={testID}
     >
-      <Text style={[styles.glyph, { color: TINTS[kind] }]}>{GLYPHS[kind]}</Text>
+      {icon}
       <Text style={[styles.value, { color: TINTS[kind] }]}>{value}</Text>
     </View>
   )
@@ -56,7 +65,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     minHeight: 34,
   },
-  glyph: { fontSize: 16 },
   // `bodyStrong`, not `caption`: the number is the entire point of a chip and it has
   // to survive being read at arm's length, mid-lesson, by someone whose attention is
   // on the question. Tabular so a streak ticking 9 → 10 does not jog the row.

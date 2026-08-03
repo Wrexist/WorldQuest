@@ -34,6 +34,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { colors, layout, space, text } from '@worldquest/design'
 import { t } from '../lib/i18n.js'
+import { Icon } from './Icon.js'
 
 export type ScreenHeaderProps = {
   /**
@@ -63,10 +64,9 @@ export function ScreenHeader({ title, onBack, trailing }: ScreenHeaderProps) {
         style={styles.back}
       >
         {/* Decorative: the button already announces its purpose. Without this the
-            reader says "Back, left arrow" — the icon read out after the action. */}
-        <Text style={styles.glyph} aria-hidden>
-          ←
-        </Text>
+            reader says "Back, left arrow" — the icon read out after the action.
+            The icon also MIRRORS for RTL, which the `←` character never did. */}
+        <Icon name="back" size={22} color={colors.text.primary} />
       </Pressable>
 
       {title === undefined ? (

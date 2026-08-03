@@ -17,7 +17,7 @@ factual error or a legal problem.
 |---|---|---|
 | **Flags** ✅ **done** | A generated flag has the wrong number of stars, the wrong proportions, the wrong shade. In a learning app that is a **wrong fact** — our worst class of bug. | **`flag-icons` 7.5.0, MIT.** `pnpm build:flags` rasterises all 65 to `apps/mobile/assets/flags/`; the licence is recorded per entity in the countries pack. |
 | **Country / continent geometry** ✅ **done** | Generated maps have invented coastlines and wrong borders. That is both a wrong fact and a political problem. | **Natural Earth** (public domain), via `world-atlas` 2.0.2 (ISC). `pnpm build:maps` projects and rasterises 6 region + 65 country layers; licence recorded per entity in `assets.map`. |
-| **UI icons** (tab bar, chevrons, close) | Generated icons drift in weight and optical size, and none of them mirror correctly for RTL. | **Lucide** (ISC) or **Phosphor** (MIT). |
+| **UI icons** (tab bar, chevrons, close) ✅ **done** | Generated icons drift in weight and optical size, and none of them mirror correctly for RTL. | **Lucide 1.28.0, ISC.** `pnpm build:icons` rasterises 26 to `apps/mobile/assets/icons/` as white-on-transparent alpha masks, recoloured at runtime with `tintColor`. |
 | **Fonts** | — | **Inter** and **Baloo 2**, both OFL, from Google Fonts. |
 | **Real landmark photography** | Licensing. Wikimedia is mixed-licence and much of it is non-commercial. | Commission illustration (recommended), or licence a stock set. Never generate a "photo" of a real place — it will be subtly wrong and read as fake. |
 
@@ -33,9 +33,19 @@ Everything below this line is safe to generate.
 > because they must not be drawn, and something already drawn them correctly.
 >
 > "Do not generate this" and "we cannot have this yet" point in opposite directions,
-> and reading the first as the second cost months. Two other rows here name a source
-> rather than a brief — geometry and icons. Neither is blocked on anybody's decision
-> either.
+> and reading the first as the second cost months.
+>
+> **It then happened three more times.** Geometry was filed as blocked while this table
+> named Natural Earth. Icons were filed as blocked while this row named Lucide, and the
+> tab bar shipped `⌂ ◎ ◈ ☺ ⋯` as literal text characters in the meantime — a different
+> typeface on every device, four of them colour emoji that ignore every colour token we
+> own, and `☺` announcing itself to a screen reader as "white smiling face" in the
+> middle of a tab label. Four rows, four filing errors, and the fix each time was to
+> re-read this table rather than to commission anything.
+>
+> Every row above with a named package is a build script waiting to be written. The
+> ones that genuinely need an illustrator are the **mascot**, the **avatars** and the
+> **trophy** — and photography, which needs a licence rather than a drawing.
 
 ---
 

@@ -20,7 +20,6 @@ import {
   Card,
   ProgressBar,
   Skeleton,
-  StatChip,
   StreakBadge,
   colors,
   palette,
@@ -30,6 +29,8 @@ import {
 } from '@worldquest/design'
 import { levelForXp, xpForLevel } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
+import { Icon } from '../../components/Icon.js'
+import { Stat } from '../../components/Stat.js'
 
 export type HomeProgress = {
   readonly xpTotal: number
@@ -102,7 +103,7 @@ export function HomeScreen({
           <Avatar initials="EX" accessibilityLabel={t('home:avatar.label')} />
           <View style={styles.spacer} />
           <View style={styles.bell} accessible aria-label={t('home:inbox.label')}>
-            <Text style={styles.bellGlyph}>◉</Text>
+            <Icon name="bell" size={20} color={colors.text.secondary} />
           </View>
         </View>
 
@@ -122,6 +123,7 @@ export function HomeScreen({
             <StreakBadge
               days={progress.streak}
               label={t('home:streak.label')}
+              icon={<Icon name="streak" size={20} color={colors.status.streak} />}
               accessibilityLabel={t('home:streak.days', { count: progress.streak })}
               // The badge is the way in to freezes and repair. A streak you can see
               // but cannot protect is a number, not a feature.
@@ -139,7 +141,12 @@ export function HomeScreen({
                 {progress?.questTitle ?? t('home:quest.empty')}
               </Text>
             </View>
-            <ArtSlot tint={palette.continent.EU} glyph="🗺" width={92} height={92} />
+            <ArtSlot
+              tint={palette.continent.EU}
+              art={<Icon name="map" size={40} color={palette.continent.EU} />}
+              width={92}
+              height={92}
+            />
           </View>
 
           {!isNewUser && (
@@ -172,7 +179,12 @@ export function HomeScreen({
             <Text style={styles.cardLabel}>{t('home:challenge.next')}</Text>
             <Text style={styles.countdown}>{progress?.challengeIn ?? '—'}</Text>
           </View>
-          <ArtSlot tint={palette.gold['500']} glyph="🏆" width={72} height={72} />
+          <ArtSlot
+            tint={palette.gold['500']}
+            art={<Icon name="trophy" size={32} color={palette.gold['500']} />}
+            width={72}
+            height={72}
+          />
         </Card>
 
         {/* Friends / League pair. */}
@@ -199,12 +211,12 @@ export function HomeScreen({
               label={t('home:level', { level })}
             />
             <View style={styles.chips}>
-              <StatChip
+              <Stat
                 kind="xp"
                 value={progress.xpTotal}
                 accessibilityLabel={t('home:stats.xp', { amount: progress.xpTotal })}
               />
-              <StatChip
+              <Stat
                 kind="coin"
                 value={progress.coins}
                 accessibilityLabel={t('home:stats.coins', { amount: progress.coins })}

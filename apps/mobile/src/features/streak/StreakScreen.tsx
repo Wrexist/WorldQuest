@@ -28,7 +28,7 @@
 
 import { StyleSheet, Text, View } from 'react-native'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
-import { Button, Card, StatChip, colors, space, text } from '@worldquest/design'
+import { Button, Card, colors, space, text } from '@worldquest/design'
 import {
   FREEZE_PRICE,
   MAX_FREEZES,
@@ -36,6 +36,8 @@ import {
   type RepairAvailability,
 } from '@worldquest/engines'
 import { useT } from '../../lib/i18n.js'
+import { Icon } from '../../components/Icon.js'
+import { Stat } from '../../components/Stat.js'
 
 export type StreakScreenProps = {
   readonly current: number
@@ -101,7 +103,7 @@ export function StreakScreen({
     <View style={styles.root}>
       {onBack !== undefined && <ScreenHeader onBack={onBack} />}
       <View style={styles.hero}>
-        <Text style={styles.flame}>🔥</Text>
+        <Icon name="streak" size={44} color={colors.status.streak} />
         <Text style={styles.count} role="heading" aria-level={1}>
           {t('streak:days', { count: current })}
         </Text>
@@ -116,7 +118,7 @@ export function StreakScreen({
       </View>
 
       <View style={styles.balance}>
-        <StatChip kind="coin" value={coins} accessibilityLabel={t('streak:coins', { count: coins })} />
+        <Stat kind="coin" value={coins} accessibilityLabel={t('streak:coins', { count: coins })} />
         {/* Standing reassurance, and a promise the code has to keep. */}
         <Text style={styles.earned}>{t('streak:earned')}</Text>
       </View>

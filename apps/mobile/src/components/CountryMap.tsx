@@ -28,6 +28,7 @@
 
 import { Image, StyleSheet, View } from 'react-native'
 import { ArtSlot, colors, radius } from '@worldquest/design'
+import { Icon } from './Icon.js'
 import { mapHeight, mapSource } from '../lib/maps.js'
 
 export type CountryMapProps = {
@@ -61,7 +62,12 @@ export function CountryMap({ path, contextPath, width, baseTint, tint, label }: 
   // shows rather than bare land with no highlight — which would read as a map of
   // somewhere, captioned as a map of somewhere else.
   if (country === undefined) {
-    return <ArtSlot tint={baseTint ?? colors.bg.surfaceRaised} glyph="◍" width={width} height={height} />
+    return <ArtSlot
+        tint={baseTint ?? colors.bg.surfaceRaised}
+        art={<Icon name="map" size={Math.round(width * 0.3)} color={colors.text.tertiary} />}
+        width={width}
+        height={height}
+      />
   }
 
   return (

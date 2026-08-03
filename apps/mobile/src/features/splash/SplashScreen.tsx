@@ -33,6 +33,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Animated, StyleSheet, Text, View } from 'react-native'
 import { Button, colors, space, text, useAnimatedTo } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
+import { Icon } from '../../components/Icon.js'
 
 /** Past this, say something. Under it, say nothing — see the header. */
 export const SLOW_AFTER_MS = 1200
@@ -78,7 +79,7 @@ export function SplashScreen({ phase = 'booting', onRetry }: SplashScreenProps) 
       }
     >
       <Animated.View style={[styles.mark, { transform: [{ scale }] }]}>
-        <Text style={styles.glyph}>🌍</Text>
+        <Icon name="globe" size={64} color={colors.action.primary} />
       </Animated.View>
 
       <Text style={styles.wordmark}>{t('splash:wordmark')}</Text>

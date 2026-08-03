@@ -38,6 +38,7 @@ import { Flag } from '../../components/Flag.js'
 import { useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
 import { yearlySavingPercent, type Plan, type PurchaseResult } from './purchases.js'
+import { Icon } from '../../components/Icon.js'
 
 /** One country the taster covered, resolved from the pack by the route. */
 export type PaywallCountry = {
@@ -222,11 +223,9 @@ export function PaywallScreen({
             <View style={styles.perks}>
               {PERKS.map((key) => (
                 <View key={key} style={styles.perk}>
-                  {/* The tick is decorative — the row already reads as its own text,
-                      and a reader saying "check mark" four times is noise. */}
-                  <Text style={styles.tick} aria-hidden>
-                    ✓
-                  </Text>
+                  {/* Decorative — the row already reads as its own text, and a
+                      reader saying "check mark" four times is noise. */}
+                  <Icon name="check" size={20} color={colors.status.progress} />
                   <Text style={styles.perkLabel}>{t(key)}</Text>
                 </View>
               ))}

@@ -38,6 +38,14 @@ export type AnswerOptionProps = {
   onPress: () => void
   /** Announced instead of the bare label, e.g. "Japan, correct answer". */
   accessibilityLabel?: string
+  /**
+   * The correct/wrong mark, supplied by the caller as a node.
+   *
+   * The artwork is an app asset and this package may not reach into
+   * `apps/mobile/assets`. Falls back to a geometric character when absent — see
+   * GLYPHS below for why that fallback is tolerable and still not preferred.
+   */
+  mark?: React.ReactNode
   style?: StyleProp<ViewStyle>
   testID?: string
 }
@@ -72,7 +80,15 @@ const SKINS: Record<AnswerState, Skin> = {
   },
 }
 
-/** The non-colour half of every state signal. */
+/**
+ * The non-colour half of every state signal — colour may never carry meaning alone
+ * (docs/design/accessibility.md), and ~8 % of men are red/green colour-blind.
+ *
+ * A fallback, not the plan: the caller SHOULD pass `mark`, and the lesson does. These
+ * two survive because they are geometric characters rather than emoji — monochrome,
+ * present in every font, and they respect `color`. The arrow is still the weak one:
+ * `→` does not mirror for RTL, which is exactly why `mark` exists.
+ */
 const GLYPHS: Record<AnswerState, string | null> = {
   idle: null,
   selected: null,
@@ -88,6 +104,7 @@ export function AnswerOption({
   state = 'idle',
   onPress,
   accessibilityLabel,
+  mark,
   style,
   testID,
 }: AnswerOptionProps) {
@@ -128,9 +145,13 @@ export function AnswerOption({
           {label}
         </Text>
 
-        {GLYPHS[state] !== null && (
-          <View style={styles.glyphWrap} importantForAccessibility="no-hide-descendants">
-            <Text style={styles.glyph}>{GLYPHS[state]}</Text>
+        {(mark ?? GLYPHS[state]) !== null && (
+          <View
+            style={styles.glyphWrap}
+            importantForAccessibility="no-hide-descendants"
+            aria-hidden
+          >
+            {mark ?? <Text style={styles.glyph}>{GLYPHS[state]}</Text>}
           </View>
         )}
       </Animated.View>

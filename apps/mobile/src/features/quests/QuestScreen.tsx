@@ -32,6 +32,7 @@ import {
 } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { SPEED_SECONDS } from '../lesson/modes.js'
+import { Icon } from '../../components/Icon.js'
 
 const SLOT_TITLE: Record<Slot, TranslationKey> = {
   locate: 'quests:slot.locate',
@@ -166,9 +167,11 @@ function TaskRow({ task, step }: { task: QuestTask; step: number }) {
         style={[styles.step, task.complete && styles.stepDone]}
         aria-hidden
       >
-        <Text style={[styles.stepText, task.complete && styles.stepTextDone]}>
-          {task.complete ? '✓' : String(step)}
-        </Text>
+        {task.complete ? (
+          <Icon name="check" size={16} color={colors.text.onAccent} />
+        ) : (
+          <Text style={styles.stepText}>{String(step)}</Text>
+        )}
       </View>
 
       <View style={styles.taskText}>

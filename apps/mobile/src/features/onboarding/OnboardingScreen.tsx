@@ -45,6 +45,7 @@ import {
 import { useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
 import { DAILY_GOALS, type DailyGoal } from '../settings/usePreferences.js'
+import { Icon } from '../../components/Icon.js'
 
 /** The age at which the child branch applies. COPPA; GDPR-K varies by country and is stricter in places. */
 export const CHILD_AGE = 13
@@ -173,7 +174,12 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {step === 'slides' && (
           <>
-            <ArtSlot tint={SLIDE_TINT[slide] ?? SLIDE_TINT[0]!} glyph="🌍" width={200} height={200} />
+            <ArtSlot
+              tint={SLIDE_TINT[slide] ?? SLIDE_TINT[0]!}
+              art={<Icon name="globe" size={88} color={SLIDE_TINT[slide] ?? SLIDE_TINT[0]!} />}
+              width={200}
+              height={200}
+            />
             <Text style={styles.title}>{t(SLIDES[slide]!.title)}</Text>
             <Text style={styles.body}>{t(SLIDES[slide]!.body)}</Text>
 
@@ -295,7 +301,12 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
 
         {step === 'taster' && (
           <>
-            <ArtSlot tint={palette.green[500]} glyph="🗺" width={200} height={200} />
+            <ArtSlot
+              tint={palette.green[500]}
+              art={<Icon name="map" size={88} color={palette.green[500]} />}
+              width={200}
+              height={200}
+            />
             <Text style={styles.title}>{t('onboarding:taster.title')}</Text>
             <Text style={styles.body}>{t('onboarding:taster.body')}</Text>
           </>

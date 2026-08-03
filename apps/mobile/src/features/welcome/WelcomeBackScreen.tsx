@@ -29,6 +29,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { ArtSlot, Button, Card, colors, palette, space, text } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
+import { Icon } from '../../components/Icon.js'
 
 export type WelcomeBackScreenProps = {
   /** Days since the last completed lesson. */
@@ -53,7 +54,12 @@ export function WelcomeBackScreen({
   return (
     <View style={styles.root}>
       <View style={styles.hero}>
-        <ArtSlot tint={palette.blue[500]} glyph="🌍" width={160} height={160} />
+        <ArtSlot
+        tint={palette.blue[500]}
+        art={<Icon name="globe" size={70} color={palette.blue[500]} />}
+        width={160}
+        height={160}
+      />
         <Text style={styles.title} role="heading" aria-level={1}>
           {t('welcome:title')}
         </Text>

@@ -52,7 +52,9 @@ describe('CountryMap', () => {
     // Land drawn with no country on it is a map of somewhere, captioned as a map of
     // somewhere else. Better to show the reserved space.
     const { container } = render(<CountryMap path={undefined} contextPath="geo/context/SE.png" width={240} />)
-    expect(imgs(container)).toHaveLength(0)
+    // The map LAYERS, not every image: the placeholder now draws its own icon, so
+    // counting all `<img>` would pass for a component rendering a bare outline.
+    expect(imgs(container).filter((i) => /geo\//.test(i.getAttribute('src') ?? ''))).toHaveLength(0)
   })
 
   it('keeps both layers the same size, because that is what registers them', () => {

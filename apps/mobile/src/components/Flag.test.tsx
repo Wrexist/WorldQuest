@@ -3,6 +3,19 @@ import { render } from '@testing-library/react'
 import { Flag } from './Flag.js'
 import { flagHeight } from '../lib/flags.js'
 
+/**
+ * Any FLAG artwork on screen, ignoring the placeholder's own icon.
+ *
+ * "no `<img>`" used to mean "no flag", because the placeholder was a text glyph.
+ * The placeholder now holds a real icon, so the blunt check would pass for a
+ * component that rendered Poland's flag for Sweden — the exact bug these two tests
+ * exist to catch. Match on the flags directory instead.
+ */
+const flagArtwork = (container: HTMLElement): HTMLImageElement | null =>
+  Array.from(container.querySelectorAll('img')).find((i) =>
+    /flags\//.test(i.getAttribute('src') ?? ''),
+  ) ?? null
+
 describe('Flag', () => {
   it('draws the real artwork for a path the bundle has', () => {
     const { container } = render(<Flag path="flags/SE.png" width={72} />)
@@ -17,12 +30,12 @@ describe('Flag', () => {
     // this repo treats as unshippable, so missing must render nothing rather than
     // something plausible.
     const { container } = render(<Flag path="flags/ZZ.png" width={72} />)
-    expect(container.querySelector('img')).toBeNull()
+    expect(flagArtwork(container)).toBeNull()
   })
 
   it('draws the placeholder when the pack declares no flag at all', () => {
     const { container } = render(<Flag path={undefined} width={72} />)
-    expect(container.querySelector('img')).toBeNull()
+    expect(flagArtwork(container)).toBeNull()
   })
 
   it('is 4:3, which is what the source set draws', () => {

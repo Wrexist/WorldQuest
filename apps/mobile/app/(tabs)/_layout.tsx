@@ -11,20 +11,29 @@
  */
 
 import { Tabs } from 'expo-router'
-import { TabBar } from '@worldquest/design'
+import { TabBar, colors } from '@worldquest/design'
+import { Icon } from '../../src/components/Icon.js'
+import type { IconName } from '../../src/lib/icons.generated.js'
 import { useT, type TranslationKey } from '../../src/lib/i18n.js'
 
 /**
- * Route name → tab identity. The glyphs are placeholders for the commissioned icon
- * set (docs/design/asset-prompts.md); everything else about the bar is final.
+ * Route name → tab identity.
+ *
+ * Real icons, from Lucide (ISC), rasterised by `pnpm build:icons`. These were
+ * `⌂ ◎ ◈ ☺ ⋯` — literal text characters, so the bar rendered in a different
+ * typeface on every device and `☺` announced itself to some screen readers as
+ * "white smiling face" in the middle of a tab label.
  */
-const TABS: readonly { name: string; glyph: string; labelKey: TranslationKey }[] = [
-  { name: 'index', glyph: '⌂', labelKey: 'nav:home' },
-  { name: 'explore', glyph: '◎', labelKey: 'nav:explore' },
-  { name: 'quests', glyph: '◈', labelKey: 'nav:quests' },
-  { name: 'profile', glyph: '☺', labelKey: 'nav:profile' },
-  { name: 'more', glyph: '⋯', labelKey: 'nav:more' },
+const TABS: readonly { name: string; icon: IconName; labelKey: TranslationKey }[] = [
+  { name: 'index', icon: 'home', labelKey: 'nav:home' },
+  { name: 'explore', icon: 'explore', labelKey: 'nav:explore' },
+  { name: 'quests', icon: 'quests', labelKey: 'nav:quests' },
+  { name: 'profile', icon: 'profile', labelKey: 'nav:profile' },
+  { name: 'more', icon: 'more', labelKey: 'nav:more' },
 ]
+
+/** The icon is decorative — the tab is already labelled and announces its own name. */
+const TAB_ICON_SIZE = 22
 
 export default function TabsLayout() {
   const t = useT()
@@ -36,7 +45,16 @@ export default function TabsLayout() {
         <TabBar
           items={TABS.map((tab) => ({
             key: tab.name,
-            glyph: tab.glyph,
+            // Tinted per state rather than dimmed with opacity: the inactive colour
+            // is a token that passes contrast on the bar's own background, and an
+            // opacity would quietly take it below the floor.
+            icon: (active: boolean) => (
+              <Icon
+                name={tab.icon}
+                size={TAB_ICON_SIZE}
+                color={active ? colors.text.onAccent : colors.text.tertiary}
+              />
+            ),
             label: t(tab.labelKey),
           }))}
           activeKey={state.routes[state.index]?.name ?? 'index'}

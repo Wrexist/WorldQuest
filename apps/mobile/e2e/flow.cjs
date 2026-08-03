@@ -382,6 +382,34 @@ const step = (name, ok, detail = '') => {
     return body()
   })()
 
+  // ── the tab icons actually decode ──────────────────────────────────────────
+  //
+  // `naturalWidth > 0`, for the same reason the flag question checks it: a broken
+  // asset reference renders an `<img>` with the right src, the right size and the
+  // right alt, and shows NOTHING. Every structural assertion in this repo passes over
+  // a blank rectangle, and the tab bar is five of them across the app's primary
+  // navigation. This is the check that would have caught a build:icons run that never
+  // happened, or an index that drifted from the files on disk.
+  //
+  // These replaced `⌂ ◎ ◈ ☺ ⋯` — literal text characters, which is why the bar used
+  // to need no asset check at all and also why it rendered in a different typeface on
+  // every device.
+  const tabIcons = await page.evaluate(() => {
+    const bar = document.querySelector('[role="tablist"]')
+    if (bar === null) return null
+    return Array.from(bar.querySelectorAll('img')).map((i) => ({
+      w: i.naturalWidth,
+      src: i.getAttribute('src') ?? '',
+    }))
+  })
+  step(
+    'the five tab icons are real artwork, not blank rectangles',
+    tabIcons !== null &&
+      tabIcons.length === 5 &&
+      tabIcons.every((i) => i.w > 0 && /icons\//.test(i.src)),
+    tabIcons === null ? 'no tablist' : `${tabIcons.filter((i) => i.w > 0).length}/5 decoded`,
+  )
+
   for (const tab of TABS) {
     await home()
     await page.getByRole('tab', { name: tab.name }).click()

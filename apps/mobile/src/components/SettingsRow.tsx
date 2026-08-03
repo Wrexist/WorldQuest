@@ -14,6 +14,7 @@
 
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native'
 import { colors, layout, radius, space, text } from '@worldquest/design'
+import { Icon } from './Icon.js'
 
 // ── section ─────────────────────────────────────────────────────────────────
 
@@ -174,7 +175,7 @@ export function LinkRow({
       <Text style={styles.rowLabel}>{label}</Text>
       <View style={styles.spacer} />
       {value !== undefined && <Text style={styles.rowValue}>{value}</Text>}
-      {onPress !== undefined && <Text style={styles.chevron}>›</Text>}
+      {onPress !== undefined && <Icon name="chevron" size={18} color={colors.text.tertiary} />}
     </>
   )
 

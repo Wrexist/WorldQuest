@@ -15,7 +15,6 @@ import {
   Card,
   ProgressBar,
   Skeleton,
-  StatChip,
   colors,
   radius,
   space,
@@ -41,6 +40,8 @@ import { currentLocale, tContent, useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
 import { recordLessonCompleted } from '../profile/useWeekActivity.js'
 import { enqueueLesson } from '../../lib/sync.js'
+import { Icon } from '../../components/Icon.js'
+import { Stat } from '../../components/Stat.js'
 
 type ScreenState = 'loading' | 'error' | 'empty' | 'ready'
 
@@ -293,7 +294,7 @@ export function LessonScreen({
           hitSlop={space[2]}
           style={styles.close}
         >
-          <Text style={styles.closeGlyph}>✕</Text>
+          <Icon name="close" size={20} color={colors.text.secondary} />
         </Pressable>
         <ProgressBar
           current={lesson.progress.current}
@@ -301,7 +302,7 @@ export function LessonScreen({
           label={t('lesson:progress.label')}
           style={styles.flex}
         />
-        <StatChip
+        <Stat
           kind="hearts"
           value={lesson.state.hearts}
           accessibilityLabel={t('lesson:hearts.remaining', { count: lesson.state.hearts })}
@@ -365,11 +366,29 @@ export function LessonScreen({
         )}
 
         <View style={styles.options}>
-          {question.options.map((option) => (
+          {question.options.map((option) => {
+            const state = optionState(
+              option.isCorrect,
+              option.id,
+              answered,
+              lastAnswer?.chosenOptionId,
+            )
+            return (
             <AnswerOption
               key={option.id}
               label={option.label}
-              state={optionState(option.isCorrect, option.id, answered, lastAnswer?.chosenOptionId)}
+              state={state}
+              // The non-colour half of the signal, as artwork rather than a character.
+              // The wrong-answer mark used to be `→`, which points the same way in an
+              // RTL layout as in an LTR one — an arrow that means "the right answer is
+              // over there" and gets it backwards for half the world's readers.
+              mark={
+                state === 'correct' ? (
+                  <Icon name="check" size={20} color={colors.feedback.correct} />
+                ) : state === 'wrong' ? (
+                  <Icon name="forward" size={20} color={colors.text.secondary} />
+                ) : undefined
+              }
               onPress={() => {
                 // Fired from the option's own correctness rather than from the
                 // state after dispatch: the reducer has not run yet at this point,
@@ -410,7 +429,8 @@ export function LessonScreen({
               // while believing they were answering.
               testID="answer-option"
             />
-          ))}
+            )
+          })}
         </View>
 
         {answered && (
@@ -419,8 +439,8 @@ export function LessonScreen({
               <>
                 <Text style={styles.feedbackTitleOk}>{t('lesson:feedback.correct.title')}</Text>
                 <View style={styles.rewards}>
-                  <StatChip kind="xp" value="+10" accessibilityLabel={t('lesson:reward.xp', { amount: 10 })} />
-                  <StatChip kind="coin" value="+5" accessibilityLabel={t('lesson:reward.coins', { amount: 5 })} />
+                  <Stat kind="xp" value="+10" accessibilityLabel={t('lesson:reward.xp', { amount: 10 })} />
+                  <Stat kind="coin" value="+5" accessibilityLabel={t('lesson:reward.coins', { amount: 5 })} />
                 </View>
               </>
             ) : (

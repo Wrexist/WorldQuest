@@ -50,6 +50,12 @@ export type StreakBadgeProps = {
   days: number
   /** "Day streak" — passed in so the component stays i18n-agnostic. */
   label: string
+  /**
+   * The flame, supplied by the caller for the same reason the tab icons are:
+   * this was a literal `'🔥'`, which renders in the platform's own house style
+   * and ignores every colour token this package owns.
+   */
+  icon: React.ReactNode
   accessibilityLabel: string
   /**
    * Makes the badge the way in to streak freezes and repair.
@@ -65,11 +71,11 @@ export type StreakBadgeProps = {
  * Flame, count, then a caption underneath — the mockup's vertical stack rather
  * than a pill. The count is the loudest thing in the header after the greeting.
  */
-export function StreakBadge({ days, label, accessibilityLabel, onPress }: StreakBadgeProps) {
+export function StreakBadge({ days, label, icon, accessibilityLabel, onPress }: StreakBadgeProps) {
   const inner = (
     <>
       <View style={styles.streakRow}>
-        <Text style={styles.flame}>🔥</Text>
+        {icon}
         <Text style={styles.streakCount}>{days}</Text>
       </View>
       <Text style={styles.streakLabel}>{label}</Text>
@@ -103,8 +109,14 @@ export function StreakBadge({ days, label, accessibilityLabel, onPress }: Streak
 export type ArtSlotProps = {
   /** Tint drawn from the continent palette or a reward colour. */
   tint: string
-  /** A single glyph stands in until real artwork is commissioned. */
-  glyph?: string
+  /**
+   * What sits in the middle — an `<Icon>` from the app, or nothing.
+   *
+   * A node rather than a glyph string. The artwork is an app asset and this package
+   * may not reach into `apps/mobile/assets`; a slot that renders whatever it is
+   * handed also stops being a place where emoji accumulate.
+   */
+  art?: React.ReactNode
   width?: number
   height?: number
   style?: StyleProp<ViewStyle>
@@ -118,15 +130,16 @@ export type ArtSlotProps = {
  * place at the right size so layout and rhythm are correct now, and swapping in
  * the real asset is a one-line change rather than a redesign.
  */
-export function ArtSlot({ tint, glyph, width = 96, height = 96, style }: ArtSlotProps) {
+export function ArtSlot({ tint, art, width = 96, height = 96, style }: ArtSlotProps) {
   return (
     <View
       // Decorative: the card already carries its meaning in text.
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"
+      aria-hidden
       style={[styles.art, { width, height, backgroundColor: `${tint}22` }, style]}
     >
-      {glyph !== undefined && <Text style={styles.artGlyph}>{glyph}</Text>}
+      {art}
     </View>
   )
 }
@@ -135,7 +148,12 @@ export function ArtSlot({ tint, glyph, width = 96, height = 96, style }: ArtSlot
 
 export type TabItem = {
   key: string
-  glyph: string
+  /**
+   * Rendered by the caller so it can tint per state — the active tab's icon is
+   * `action.primary` inside a filled chip, the inactive one is `text.secondary`.
+   * Receives `active` rather than being two props, so the two can never disagree.
+   */
+  icon: (active: boolean) => React.ReactNode
   label: string
 }
 
@@ -187,9 +205,7 @@ export function TabBar({ items, activeKey, onSelect }: TabBarProps) {
             // enough to notice they were passing while sitting on Home.
             onPress={() => onSelect(item.key)}
           >
-            <View style={[styles.tabChip, active && styles.tabChipActive]}>
-              <Text style={[styles.tabGlyph, active && styles.tabGlyphActive]}>{item.glyph}</Text>
-            </View>
+            <View style={[styles.tabChip, active && styles.tabChipActive]}>{item.icon(active)}</View>
             {/*
               Bounded scaling, and this is the one place in the app that gets it.
               A tab is one fifth of the screen width and its label is a word that
@@ -247,7 +263,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
   },
-  artGlyph: { fontSize: 40 },
 
   tabBar: {
     flexDirection: 'row',
@@ -270,8 +285,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   tabChipActive: { backgroundColor: colors.action.secondary },
-  tabGlyph: { fontSize: 20, color: colors.text.tertiary },
-  tabGlyphActive: { color: colors.text.onAccent },
   tabLabel: {
     // Title case, not the overline's uppercase — the mockup's bar reads "Explore",
     // not "EXPLORE", and five uppercase labels at this size become a fence.

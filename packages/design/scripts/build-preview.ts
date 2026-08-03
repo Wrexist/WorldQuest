@@ -94,6 +94,11 @@ const home = `
     ${['Home', 'Explore', 'Quests', 'Profile', 'More']
       .map(
         (l, i) =>
+          // Glyphs, and only here. This file emits ONE standalone HTML page with no
+          // bundler behind it, so it cannot import the app's icon PNGs — and inlining
+          // twenty-five data URIs into a token swatch would double its size for a
+          // picture of a tab bar. The app itself uses Lucide (`pnpm build:icons`);
+          // this row is a shape reference for spacing, not a specimen of the icons.
           `<div class="tab${i === 0 ? ' on' : ''}"><span class="tg">${
             ['⌂', '◎', '☰', '☺', '⋯'][i]
           }</span><span class="t-ov">${l}</span></div>`,

@@ -45,7 +45,11 @@ describe('Quests — the five states', () => {
     const steps = Array.from(container.querySelectorAll('[aria-hidden="true"]'))
       .map((el) => el.textContent?.trim())
       .filter((s) => s !== undefined && s !== '')
-    expect(steps).toEqual(['1', '✓', '3', '4', '5'])
+    // The done step draws an icon rather than a character, so it contributes no
+    // text — which is the point: `✓` was a glyph whose presence depended on the
+    // system font having it.
+    expect(steps).toEqual(['1', '3', '4', '5'])
+    expect(container.querySelectorAll('img')).toHaveLength(1)
   })
 
   it('keeps the step number out of the screen reader', () => {

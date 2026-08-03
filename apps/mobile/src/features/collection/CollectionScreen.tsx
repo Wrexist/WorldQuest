@@ -38,6 +38,7 @@ import {
 } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
+import { Icon } from '../../components/Icon.js'
 
 /** One tile. `subtitle` is the flag description for flags, the capital for countries. */
 export type CollectionTile = {
@@ -303,9 +304,7 @@ function Tile({
       {tile.favourite === true && (
         // Decoration only — the state is already in the label above, so this is
         // hidden from the screen reader rather than read out a second time.
-        <Text style={styles.tileStar} aria-hidden>
-          ★
-        </Text>
+        <Icon name="star" size={14} color={colors.action.secondary} />
       )}
     </Card>
   )

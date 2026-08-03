@@ -27,6 +27,7 @@ import {
 } from '@worldquest/design'
 import type { WorldProgress } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
+import { Icon } from '../../components/Icon.js'
 
 /**
  * Every continent, in the order the grid shows them — most-populated first rather
@@ -100,7 +101,7 @@ export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection
             onPress={() => onOpenCollection('flags')}
             style={styles.collection}
           >
-            <Text style={styles.collectionGlyph}>⚑</Text>
+            <Icon name="flag" size={26} color={colors.action.primary} />
             <Text style={styles.collectionName}>{t('collection:flags.title')}</Text>
           </Card>
           <Card
@@ -110,7 +111,7 @@ export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection
             onPress={() => onOpenCollection('countries')}
             style={styles.collection}
           >
-            <Text style={styles.collectionGlyph}>◎</Text>
+            <Icon name="explore" size={26} color={colors.action.primary} />
             <Text style={styles.collectionName}>{t('collection:countries.title')}</Text>
           </Card>
         </View>
