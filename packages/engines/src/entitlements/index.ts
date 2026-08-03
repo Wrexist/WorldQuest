@@ -81,6 +81,17 @@ export type Subscription = {
   readonly willRenew: boolean
   /** Whether this subscription has ever consumed a free trial, for offer eligibility. */
   readonly hasUsedTrial: boolean
+  /**
+   * When the store sent the last notification we applied.
+   *
+   * Optional because the client never sees it — `fetchSubscription` does not select it,
+   * and the identity assignment from the API row to this type is what proves the two
+   * shapes agree. It exists for `applyStoreNotification`, which needs it to refuse a
+   * notification that arrives out of order: both stores retry until acknowledged, so a
+   * delayed failure can land after the renewal that resolved it, and applying that would
+   * revoke a paying customer's access.
+   */
+  readonly notifiedAt?: number | null
 }
 
 export const NO_SUBSCRIPTION: Subscription = {

@@ -181,7 +181,8 @@ subscription for anyone willing to change a device clock.
 | The append-only store-notification log | `subscription_events` | Built |
 | Reading the row into the entitlement cache | `…/paywall/useSubscriptionSync.ts` | Built, 4 tests |
 | The billing SDK itself | `…/paywall/purchases.ts` → `UNAVAILABLE` | **Stub** |
-| The store notification handlers that WRITE the row | `supabase/functions/` | **Not built** |
+| Notification → subscription state, both stores | `packages/engines/src/entitlements/store.ts` | Built, 18 tests |
+| The handler that verifies signatures and calls it | `supabase/functions/` | **Not built — needs credentials** |
 
 `UNAVAILABLE` is deliberately a stub that **fails** rather than a fake that succeeds.
 Every caller therefore handles "the store would not answer" from the first day, which
@@ -196,10 +197,38 @@ client deciding it was Premium is the hole, and the absence of any writer made t
 impossible. But a paying user would have been shown the paywall, which is the other half
 of ADR 0006 — the server decides, and the client has to go and read the decision.
 
-The remaining gap is the writer. Apple and Google notifications have a table to land in,
-a unique `notification_id` to make redelivery a no-op, and a status enum to write; what
-they do not yet have is the edge function that receives them. Until it exists every user
-is free, which is the correct answer rather than a placeholder.
+The remaining gap is the writer, and it is now smaller and sharper than "build the
+handler".
+
+**What each notification MEANS is built and tested** — `applyStoreNotification` maps
+Apple's `notificationType`/`subtype` and Google's `subscriptionNotificationType` onto the
+five-state machine, purely, with 18 tests. That split is deliberate: the decision is
+where the money is lost, and a decision living inside a webhook cannot be exercised
+without Apple, Google, and a card. Five properties matter more than the mapping table and
+each has a test:
+
+- an **unknown type changes nothing** — both stores add types, and a `default:` falling
+  through to `active` makes every future store release a possible giveaway;
+- a **sandbox notification never touches production access**, and vice versa;
+- **cancelling is not losing access** — `willRenew` goes false and the paid-through date
+  stands, because ending it at the moment of cancelling is taking money for nothing;
+- **`hasUsedTrial` only ever goes true**, so nobody is offered a second free week the
+  till will refuse;
+- **notifications arrive out of order**, so a delayed `DID_FAIL_TO_RENEW` landing after
+  the `DID_RENEW` that fixed it is refused rather than applied — that one revokes a
+  paying customer.
+
+Apple's two meanings for `DID_FAIL_TO_RENEW` are why the subtype is carried end to end:
+with `GRACE_PERIOD` access continues, without it access pauses. Google's on-hold and
+grace differ by one digit in the API (5 and 6), which is why the handler maps integers to
+names before the decision sees them — a transposed digit in a switch on integers is
+invisible in review.
+
+What genuinely waits on credentials is **signature verification**: Apple's JWS x5c chain
+against the Apple root CA, and Google's Pub/Sub OIDC token. A handler that skipped it
+would be a worse hole than the one it closes, so it is not written rather than written
+unverified. Until then every user is free, which is the correct answer rather than a
+placeholder.
 
 ### Where the paywall opens
 
