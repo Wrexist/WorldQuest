@@ -182,7 +182,8 @@ subscription for anyone willing to change a device clock.
 | Reading the row into the entitlement cache | `…/paywall/useSubscriptionSync.ts` | Built, 4 tests |
 | The billing SDK itself | `…/paywall/purchases.ts` → `UNAVAILABLE` | **Stub** |
 | Notification → subscription state, both stores | `packages/engines/src/entitlements/store.ts` | Built, 18 tests |
-| The handler that verifies signatures and calls it | `supabase/functions/` | **Not built — needs credentials** |
+| The verification POLICY — pinning, expiry, audience, replay | `supabase/functions/_src/_shared/store-verification.ts` | Built, 17 tests |
+| The handler that wires signature + policy + write | `supabase/functions/` | **Not built — needs credentials** |
 
 `UNAVAILABLE` is deliberately a stub that **fails** rather than a fake that succeeds.
 Every caller therefore handles "the store would not answer" from the first day, which
@@ -224,11 +225,39 @@ grace differ by one digit in the API (5 and 6), which is why the handler maps in
 names before the decision sees them — a transposed digit in a switch on integers is
 invisible in review.
 
-What genuinely waits on credentials is **signature verification**: Apple's JWS x5c chain
-against the Apple root CA, and Google's Pub/Sub OIDC token. A handler that skipped it
-would be a worse hole than the one it closes, so it is not written rather than written
-unverified. Until then every user is free, which is the correct answer rather than a
-placeholder.
+### Verifying the signature is not the same as trusting the sender
+
+The second half is also split, for the same reason and with a sharper edge.
+
+**The classic App Store Server Notification bug is a correct signature check.** The
+handler verifies that Apple signed the payload, concludes it is authentic, grants the
+subscription — and never checks *which app the notification is about*. Apple signs
+notifications for every app on the store, so anyone with a developer account can obtain a
+genuine, valid, correctly signed notification for their own bundle and post it at your
+endpoint. A signature-only handler accepts it and hands out Premium.
+
+So `store-verification.ts` holds the checks that a valid signature does **not** give you,
+pure and tested attack-first:
+
+- **`bundleId` must be ours.** The difference between "Apple sent this" and "Apple sent
+  this about us", and only the second means anything.
+- **The chain must TERMINATE at the pinned root**, not merely contain it — appending the
+  real Apple root to your own chain defeats a check that only asks whether the trusted
+  root is present.
+- **Every link is verified in order**, and **every** certificate's validity window is
+  checked, not just the leaf's: an expired intermediate invalidates everything under it.
+- **A replay window.** A signature never expires, so without one a captured `SUBSCRIBED`
+  can be posted again next year to resurrect a lapsed subscription. Wide enough to
+  survive Apple's three-day retry schedule, and finite.
+- **Sandbox is rejected on production**, again — belt and braces with the state machine.
+
+What is deliberately NOT in that file is the cryptography. `issuedBy` is injected, and
+the adapter is one line of `node:crypto` — `cert.verify(parent.publicKey)`. Hand-rolling
+ASN.1 parsing or ECDSA verification would be the worst decision available here.
+
+What still waits on credentials is the handler that wires the three together and the
+Apple root fingerprint to pin. Until it exists every user is free, which is the correct
+answer rather than a placeholder.
 
 ### Where the paywall opens
 
