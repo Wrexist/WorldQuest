@@ -11,6 +11,30 @@
  *   1. `../../../packages/engines/src/x` → `./_engines/x`
  *   2. `./y.js` → `./y.ts`   — TypeScript's NodeNext style, which Deno cannot resolve
  *
+ * ## Why the source lives in `_src/` and the function directory is generated
+ *
+ * The authored entrypoint and the deployable function are NOT the same graph, and for
+ * a long time this script produced the second while the Supabase CLI read the first.
+ *
+ * On disk, `index.ts` imports `packages/engines/src/grading/index.ts`, which imports
+ * `AnsweredItem` from `lesson/machine.ts`, which drags in `content/types.js` — a
+ * specifier with a `.js` extension pointing at a `.ts` file, which is legal TypeScript
+ * and unresolvable to Deno. In the bundle that chain does not exist: `machine.ts` is
+ * replaced by a shim, so nothing reaches `content/`. Both facts were true and neither
+ * was visible, because the bundle was assembled in memory and the CLI never saw it:
+ *
+ *   failed to read file: open packages/engines/src/content/types.js:
+ *   no such file or directory
+ *
+ * So `supabase/functions/submit-lesson/` is now GENERATED — it is the bundle, written
+ * out — and the hand-written source moved to `supabase/functions/_src/submit-lesson/`.
+ * A leading underscore is the CLI's own convention for a directory that is not a
+ * function (the same rule that makes `_shared/` work), so the source is not deployed
+ * twice. The generated directory is gitignored and rebuilt by `pnpm generate`.
+ *
+ * That makes `supabase functions deploy` and `supabase start` read the artefact this
+ * script actually produces, rather than a similar-looking one that cannot run.
+ *
  * Run: pnpm edge:build   (or import buildFunction from a deploy script)
  */
 
@@ -54,6 +78,40 @@ export type AnsweredItem = {
   readonly answeredAt: number
 }
 `
+
+/**
+ * `MASTERY_ORDER`, lifted out of `progression/index.ts` verbatim.
+ *
+ * `grading` imports exactly one binding from that module, and vendoring the module to
+ * get it would pull in `content/index.ts` and `content/types.ts` — the content engine
+ * the bundle exists to leave behind, and the same reason `lesson/machine.ts` is shimmed.
+ *
+ * EXTRACTED, not retyped. This is an ordered list whose INDICES are compared to decide
+ * whether a user's mastery went up:
+ *
+ *     MASTERY_ORDER.indexOf(change.to) > MASTERY_ORDER.indexOf(change.from)
+ *
+ * A hand-copied shim that drifted by one entry would not throw. It would quietly award
+ * the wrong thing, on the server, for everyone. Copying the declaration out of the
+ * source at build time makes drift impossible rather than merely tested.
+ */
+function masteryOrderShim(): string {
+  const source = readFileSync(join(enginesSrc, 'progression', 'index.ts'), 'utf8')
+  const match = /export const MASTERY_ORDER: readonly Mastery\[\] = \[[\s\S]*?\n\]/.exec(source)
+  if (match === null) {
+    throw new Error(
+      'build.ts: MASTERY_ORDER not found in progression/index.ts. `grading` imports it, ' +
+        'and the bundle cannot vendor progression itself because that drags in the ' +
+        'content engine. If the declaration moved or changed shape, fix this extractor — ' +
+        'do not retype the array here.',
+    )
+  }
+  return `/** Extracted verbatim from progression/index.ts by build.ts — do not edit. */
+import type { Mastery } from '../learning/types.ts'
+
+${match[0]}
+`
+}
 
 /**
  * The answer key: fact id → the entity id that is the correct option.
@@ -100,8 +158,11 @@ export const ANSWER_BY_FACT: Record<string, string> = ${JSON.stringify(key, null
 const rewriteImports = (code: string): string =>
   code.replace(/(from\s+['"])(\.[^'"]*?)\.js(['"])/g, '$1$2.ts$3')
 
+/** Where the hand-written entrypoints live. Not a function directory — see the header. */
+const SRC = join(here, '_src')
+
 export function buildFunction(name: string): DeployFile[] {
-  const entrypoint = readFileSync(join(here, name, 'index.ts'), 'utf8')
+  const entrypoint = readFileSync(join(SRC, name, 'index.ts'), 'utf8')
 
   const files: DeployFile[] = [
     {
@@ -117,7 +178,10 @@ export function buildFunction(name: string): DeployFile[] {
     files.push({ name: `_engines/${module}`, content: rewriteImports(source) })
   }
 
+  // Shimmed rather than vendored: each of these is one small binding behind a module
+  // that would drag the content engine into every cold start. See the two shims.
   files.push({ name: '_engines/lesson/machine.ts', content: ANSWERED_ITEM_SHIM })
+  files.push({ name: '_engines/progression/index.ts', content: masteryOrderShim() })
   files.push({ name: '_content/answers.ts', content: buildAnswerKey() })
 
   // Deno needs to know these are ES modules with the same strictness we use.
@@ -134,41 +198,28 @@ export function buildFunction(name: string): DeployFile[] {
 }
 
 /**
- * The bundle files that have no on-disk counterpart, and therefore have to be written.
+ * Write the bundle out as the function directory the Supabase CLI reads.
  *
- * Everything else this script produces is a REWRITE of something already in the repo:
- * `index.ts` with its import paths remapped, the engine modules copied under
- * `_engines/`. Writing those would clobber the sources they came from. `_content/` is
- * different — it is derived from the content packs and exists nowhere until it is
- * generated.
+ * The whole bundle, not a subset. For as long as this script only printed, the deploy
+ * artefact existed for the duration of one process and was then dropped on the floor,
+ * while `supabase functions deploy` and `supabase start` read a directory of authored
+ * sources that resembled it and could not run. Both are now the same bytes.
  *
- * That distinction was invisible for as long as this script only ever printed. The
- * bundle was assembled in memory, verified, described, and dropped on the floor — so
- * `supabase/functions/submit-lesson/index.ts` sat on disk importing
- * `./_content/answers.ts`, a file no checkout has ever contained. The first CI run that
- * got as far as `supabase start` said so:
- *
- *   failed to read file: open supabase/functions/submit-lesson/_content/answers.ts:
- *   no such file or directory
- *
- * and `pnpm edge:deploy` would have failed identically, from any machine, at any point
- * in this project's history. Nothing caught it because `build.test.ts` asserts things
- * about the in-memory bundle, which was always correct — it was just never anywhere.
- *
- * Generated, not committed, for the reason `.gitignore` gives for tokens and keys: the
- * answer key is a projection of the fact packs, so a committed copy is a copy that can
- * disagree with them. `pnpm generate` runs this on install, which is what makes a fresh
- * clone able to start the local stack.
+ * Generated rather than committed, for the reason `.gitignore` gives for tokens and
+ * keys: every file here is a projection of something else in the repo — the entrypoint,
+ * the engine modules, the fact packs — and a committed projection is a copy that can
+ * disagree with its source. `pnpm generate` runs this on install, so a fresh clone can
+ * start the local stack and deploy without a separate incantation.
  */
-const GENERATED = ['_content/answers.ts']
-
-/** Write the generated-only files into the function directory. Returns what it wrote. */
 export function writeGenerated(name: string): string[] {
   const built = buildFunction(name)
-  const written: string[] = []
+  const problems = verifyBundle(built)
+  if (problems.length > 0) {
+    throw new Error(`refusing to write an unresolvable bundle:\n  ${problems.join('\n  ')}`)
+  }
 
+  const written: string[] = []
   for (const file of built) {
-    if (!GENERATED.includes(file.name)) continue
     const target = join(here, name, file.name)
     mkdirSync(dirname(target), { recursive: true })
     writeFileSync(target, file.content)
@@ -183,25 +234,48 @@ export function writeGenerated(name: string): string[] {
  *
  * Checks imports specifically, not raw text — doc comments legitimately mention
  * `packages/engines`, and a substring search would flag those forever.
+ *
+ * The third check is the one that was missing, and it is the one that matters. The
+ * first two ask whether a specifier LOOKS resolvable; neither asks whether the file it
+ * names is actually in the bundle. `grading/index.ts` imports `AnsweredItem` from
+ * `lesson/machine.ts`, which the bundle replaces with a shim precisely so that nothing
+ * reaches `content/types.ts` — and if that shim were ever dropped from the file list,
+ * every existing check would still pass while the deployed function failed to boot on
+ * a missing module. Resolving each specifier against the set of names actually being
+ * shipped is a two-line check that makes "self-contained" mean what it says.
  */
 export function verifyBundle(files: DeployFile[]): string[] {
   const problems: string[] = []
+  const present = new Set(files.map((f) => f.name))
+
   for (const file of files) {
     for (const match of file.content.matchAll(/from\s+['"]([^'"]+)['"]/g)) {
       const spec = match[1]!
-      if (spec.startsWith('.') && !spec.endsWith('.ts')) {
-        problems.push(`${file.name}: unresolvable import "${spec}"`)
+      if (!spec.startsWith('.')) {
+        // A bare specifier is a remote module (`jsr:`, `npm:`, `https:`) that Deno
+        // fetches itself. Not ours to resolve.
+        if (spec.includes('packages/engines')) {
+          problems.push(`${file.name}: escaped the bundle via "${spec}"`)
+        }
+        continue
       }
-      if (spec.includes('packages/engines')) {
-        problems.push(`${file.name}: escaped the bundle via "${spec}"`)
+      if (!spec.endsWith('.ts')) {
+        problems.push(`${file.name}: unresolvable import "${spec}"`)
+        continue
+      }
+      // Resolve relative to the importing file's directory, then normalise back to a
+      // bundle-relative name so it can be compared with what is being written.
+      const resolved = join(dirname(file.name), spec).replace(/\\/g, '/')
+      if (!present.has(resolved)) {
+        problems.push(`${file.name}: imports "${spec}", which the bundle does not contain`)
       }
     }
   }
   return problems
 }
 
-// `tsx supabase/functions/build.ts submit-lesson` — verify the bundle, and write the
-// generated half of it so the local stack and `functions deploy` can read it.
+// `tsx supabase/functions/build.ts submit-lesson` — verify the bundle and write it out
+// as the function directory the Supabase CLI reads.
 if (process.argv[2]) {
   const name = process.argv[2]
   const built = buildFunction(name)
@@ -213,7 +287,8 @@ if (process.argv[2]) {
     for (const p of problems) console.error('  ' + p)
     process.exit(1)
   }
-  console.log('\n✓ bundle is self-contained')
 
-  for (const path of writeGenerated(name)) console.log(`  wrote ${path}`)
+  const written = writeGenerated(name)
+  console.log(`\n✓ bundle is self-contained — wrote ${written.length} files to`)
+  console.log(`  supabase/functions/${name}/`)
 }

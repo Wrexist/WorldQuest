@@ -38,10 +38,17 @@ It is backed by a partial index on `user_facts (user_id, due_at)`. Protect it.
 pnpm db:start · pnpm db:reset · pnpm db:types · pnpm db:test
 ```
 
-`functions/submit-lesson/_content/answers.ts` is **generated**, not committed — it is the
-fact → correct-entity key the server grades against, projected from the content packs by
-`pnpm edge:build` (which `pnpm generate` runs on install). A committed copy could
-disagree with the packs, and that disagreement marks a user wrong for a right answer.
-`supabase start` reads the functions directory off disk, so it needs the file to exist.
+**`functions/<name>/` is generated. `functions/_src/<name>/` is the source.**
+
+The authored entrypoint and the deployable function are not the same graph: on disk
+`index.ts` reaches `grading` → `lesson/machine` → `content/types.js`, a specifier Deno
+cannot resolve, while the bundle cuts that chain with a shim. So `pnpm edge:build`
+writes the bundle out as the function directory the Supabase CLI reads — entrypoint with
+imports rewritten, vendored engine modules, and the fact → correct-entity answer key the
+server grades against. `pnpm generate` runs it on install; the output is gitignored,
+because every file in it is a projection of something tracked and a committed projection
+is a copy that can disagree with its source.
+
+Edit `_src/`. Never edit the generated directory — the next build overwrites it.
 
 Spec: [`../docs/engineering/data-model.md`](../docs/engineering/data-model.md)

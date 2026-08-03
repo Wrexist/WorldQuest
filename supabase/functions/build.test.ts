@@ -8,7 +8,7 @@
 
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { buildFunction, verifyBundle } from './build.js'
 
 const files = buildFunction('submit-lesson')
@@ -64,6 +64,45 @@ describe('submit-lesson bundle', () => {
     }
 
     expect(fieldsOf(shim)).toEqual(fieldsOf(machine))
+  })
+
+  it('resolves every relative import to a file it actually ships', () => {
+    // This is the check that was missing, and its absence was not theoretical:
+    // `grading` imports MASTERY_ORDER from `progression`, which was in nobody's list,
+    // so the bundle passed every guard here and would have failed to boot on deploy.
+    // The old verifyBundle asked whether a specifier LOOKED resolvable, never whether
+    // the file it names was being shipped.
+    const names = new Set(files.map((f) => f.name))
+    for (const file of files) {
+      for (const match of file.content.matchAll(/from\s+['"](\.[^'"]+)['"]/g)) {
+        const resolved = join(dirname(file.name), match[1]!).replace(/\\/g, '/')
+        expect(names, `${file.name} imports ${match[1]}`).toContain(resolved)
+      }
+    }
+  })
+
+  it('refuses a bundle whose imports point at nothing', () => {
+    // A regression test for the guard itself. Drop the shim `grading` depends on and
+    // verifyBundle must object — otherwise it is decoration.
+    const missing = files.filter((f) => f.name !== '_engines/progression/index.ts')
+    expect(verifyBundle(missing).join('\n')).toMatch(/progression\/index\.ts.*does not contain/)
+  })
+
+  it('carries the same mastery ladder the client ranks with', () => {
+    // Extracted from progression/index.ts rather than retyped, because these INDICES
+    // decide whether mastery went up — a shim off by one entry awards the wrong thing
+    // silently rather than throwing. This asserts the ladder itself, so reordering it
+    // is a deliberate act with a failing test attached.
+    const shim = byName.get('_engines/progression/index.ts')!
+    const ladder = [...shim.matchAll(/'(\w+)'/g)].map((m) => m[1])
+    expect(ladder).toEqual([
+      'unseen',
+      'learning',
+      'familiar',
+      'proficient',
+      'mastered',
+      'burnished',
+    ])
   })
 
   it('does not ship the state machine, the content engine, or selection', () => {

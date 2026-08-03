@@ -34,11 +34,13 @@ packages/design/src/tokens.ts
 packages/design/src/tokens.css
 # from packages/i18n/locales/
 packages/i18n/src/keys.ts
-# from packages/content/packs/geography/facts.*.json, by `pnpm edge:build`. The answer
-# key the server grades against is a projection of the fact packs; a committed copy is a
-# copy that can disagree with them, and the disagreement would be a user marked wrong
-# for a right answer.
-supabase/functions/*/_content/
+# from supabase/functions/_src/, packages/engines/src/ and the fact packs, by
+# `pnpm edge:build`. This directory IS the deploy bundle, written out — the entrypoint
+# with its imports rewritten, the vendored engine modules, and the answer key the server
+# grades against. Every file in it is a projection of something else in this repo, and a
+# committed projection is a copy that can disagree with its source. The source of truth
+# is `_src/`, which is tracked.
+supabase/functions/submit-lesson/
 
 # NOT ignored: packages/api/src/database.types.ts. It is generated too, but only by a
 # running Postgres, which the `verify` CI job does not have — so it is committed, and

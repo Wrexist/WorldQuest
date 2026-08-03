@@ -123,12 +123,19 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # `submit-lesson/index.ts` imports `./_content/answers.ts`, which is derived from
-      # the fact packs and deliberately not committed. `supabase start` reads the
-      # functions directory off disk and refuses to start without it. This is also
-      # `pnpm generate`'s job — running it explicitly is cheap and says why it matters
-      # here.
-      - name: Generate the edge function's answer key
+      # `supabase/functions/submit-lesson/` IS the deploy bundle, written out, and it is
+      # gitignored — the tracked source is `supabase/functions/_src/`. `supabase start`
+      # reads the functions directory off disk, so it has to exist before the next step.
+      #
+      # The edge runtime is deliberately NOT excluded from `supabase start` below. It is
+      # the only thing in this pipeline that reads the deploy artefact as a deployment
+      # would, and the first two runs that reached it found two bugs that had been true
+      # since the code landed: a generated answer key that was never written anywhere,
+      # and an engine module `grading` imports that the bundle did not contain. Both are
+      # now caught earlier — `pnpm edge:build` refuses to write an unresolvable bundle,
+      # and `pnpm test` asserts every relative import resolves to a file being shipped —
+      # but the boot is what proved they were real.
+      - name: Build the edge function bundle
         run: pnpm edge:build
 
       # Against a LOCAL stack, never a hosted project. A migration that drops a
