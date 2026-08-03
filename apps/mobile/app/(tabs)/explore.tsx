@@ -11,11 +11,12 @@ import { useMemo } from 'react'
 import { useRouter } from 'expo-router'
 import { worldProgress } from '@worldquest/engines'
 import { ExploreScreen } from '../../src/features/explore/ExploreScreen.js'
+import { ContentGate } from '../../src/components/ContentGate.js'
 import { useContent } from '../../src/lib/content.js'
 
 export default function ExploreRoute() {
   const router = useRouter()
-  const { index, memory, status } = useContent()
+  const { index, memory, status, reload, isOffline } = useContent()
 
   const world = useMemo(
     () => (index === null ? null : worldProgress(index.index, memory, Date.now())),
@@ -23,11 +24,16 @@ export default function ExploreRoute() {
   )
 
   return (
-    <ExploreScreen
-      world={world}
-      loading={status === 'loading'}
-      onOpenCollection={(kind) => router.push(`/collection/${kind}`)}
-      onSelectRegion={(region) => router.push(`/region/${region}`)}
-    />
+    // `status` was destructured here and only ever read as `=== 'loading'`, so a
+    // content load that failed rendered an empty grid with no explanation and no way
+    // to retry. `scripts/five-states.ts` is what found it.
+    <ContentGate status={status} onRetry={reload} isOffline={isOffline}>
+      <ExploreScreen
+        world={world}
+        loading={status === 'loading'}
+        onOpenCollection={(kind) => router.push(`/collection/${kind}`)}
+        onSelectRegion={(region) => router.push(`/region/${region}`)}
+      />
+    </ContentGate>
   )
 }

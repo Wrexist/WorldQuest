@@ -16,6 +16,7 @@ import {
   CollectionScreen,
   type CollectionTile,
 } from '../../src/features/collection/CollectionScreen.js'
+import { ContentGate } from '../../src/components/ContentGate.js'
 import { useContent } from '../../src/lib/content.js'
 import { useFavourites } from '../../src/features/favourites/useFavourites.js'
 import { currentLocale, useT } from '../../src/lib/i18n.js'
@@ -27,7 +28,7 @@ const isKind = (value: string): value is Kind => (KINDS as readonly string[]).in
 
 export default function CollectionRoute() {
   const { kind } = useLocalSearchParams<{ kind: string }>()
-  const { index, memory, status } = useContent()
+  const { index, memory, status, reload, isOffline } = useContent()
   const { favourites } = useFavourites()
   const t = useT()
 
@@ -68,13 +69,15 @@ export default function CollectionRoute() {
   }, [index, memory, which, favourites])
 
   return (
-    <CollectionScreen
-      title={t(which === 'flags' ? 'collection:flags.title' : 'collection:countries.title')}
-      tiles={tiles}
-      art={which === 'flags'}
-      loading={status === 'loading'}
-      onOpen={(id) => router.push(`/country/${id}`)}
-      onStartLesson={() => router.push('/lesson')}
-    />
+    <ContentGate status={status} onRetry={reload} isOffline={isOffline}>
+      <CollectionScreen
+        title={t(which === 'flags' ? 'collection:flags.title' : 'collection:countries.title')}
+        tiles={tiles}
+        art={which === 'flags'}
+        loading={status === 'loading'}
+        onOpen={(id) => router.push(`/country/${id}`)}
+        onStartLesson={() => router.push('/lesson')}
+      />
+    </ContentGate>
   )
 }

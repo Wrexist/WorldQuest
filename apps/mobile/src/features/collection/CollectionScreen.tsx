@@ -22,7 +22,7 @@
  * Purely presentational. Mastery comes in already computed.
  */
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
 import {
   ArtSlot,
@@ -36,6 +36,7 @@ import {
   text,
 } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
+import { track } from '../../lib/analytics.js'
 
 /** One tile. `subtitle` is the flag description for flags, the capital for countries. */
 export type CollectionTile = {
@@ -104,6 +105,34 @@ export function CollectionScreen({
       return true
     })
   }, [tiles, filter, query])
+
+  /**
+   * `search_performed`, once per search — not once per keystroke.
+   *
+   * A per-keystroke event would record "swe" and "swed" and "swede" as three searches
+   * and make the average query length meaningless. Firing 700 ms after typing stops
+   * records the query the user actually meant.
+   *
+   * `query_length` rather than the query itself, on purpose: a free-text field on a
+   * child's device is the easiest place in this app to accidentally collect something
+   * personal, and the length answers every question the spec asks of it. `selected` is
+   * left to the tile press so this stays a fact about the search, not a prediction.
+   */
+  const settled = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => {
+    if (query.trim().length === 0) return
+    if (settled.current !== null) clearTimeout(settled.current)
+    settled.current = setTimeout(() => {
+      track('search_performed', {
+        query_length: query.trim().length,
+        result_count: shown.length,
+        selected: false,
+      })
+    }, 700)
+    return () => {
+      if (settled.current !== null) clearTimeout(settled.current)
+    }
+  }, [query, shown.length])
 
   return (
     <View style={styles.root}>

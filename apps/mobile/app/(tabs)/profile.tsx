@@ -12,11 +12,14 @@ import { worldProgress } from '@worldquest/engines'
 import { useWeekActivity } from '../../src/features/profile/useWeekActivity.js'
 import { ProfileScreen } from '../../src/features/profile/ProfileScreen.js'
 import { useProgress } from '../../src/features/home/useProgress.js'
+import { ContentGate } from '../../src/components/ContentGate.js'
 import { useContent } from '../../src/lib/content.js'
 
 export default function ProfileRoute() {
   const { data, status } = useProgress()
-  const { index, memory } = useContent()
+  // Renamed: `useProgress` already owns `status` on this screen, and two different
+  // meanings behind one name is how the wrong one gets read.
+  const { index, memory, status: contentStatus, reload, isOffline } = useContent()
   const week = useWeekActivity()
 
   const world = useMemo(() => {
@@ -33,24 +36,26 @@ export default function ProfileRoute() {
   }, [index, memory])
 
   return (
-    <ProfileScreen
-      stats={
-        data === null
-          ? null
-          : {
-              xpTotal: data.xpTotal,
-              coins: data.coins,
-              streak: data.streak,
-              longestStreak: data.longestStreak,
-              factsMastered: data.factsMastered,
-            }
-      }
-      week={week}
-      world={world}
-      loading={status === 'loading'}
-      // The account prompt appears only while there is no account. It disappears with
-      // its own reason rather than becoming a permanent piece of furniture.
-      onCreateAccount={undefined}
-    />
+    <ContentGate status={contentStatus} onRetry={reload} isOffline={isOffline}>
+      <ProfileScreen
+        stats={
+          data === null
+            ? null
+            : {
+                xpTotal: data.xpTotal,
+                coins: data.coins,
+                streak: data.streak,
+                longestStreak: data.longestStreak,
+                factsMastered: data.factsMastered,
+              }
+        }
+        week={week}
+        world={world}
+        loading={status === 'loading'}
+        // The account prompt appears only while there is no account. It disappears with
+        // its own reason rather than becoming a permanent piece of furniture.
+        onCreateAccount={undefined}
+      />
+    </ContentGate>
   )
 }

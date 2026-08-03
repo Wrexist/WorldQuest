@@ -44,6 +44,7 @@ export function LessonScreen({
   onExit,
   mode = 'normal',
   coins = 0,
+  isTaster = false,
 }: {
   onExit: () => void
   /** `speed` runs the same items against a clock. Scoring is unchanged. */
@@ -57,6 +58,15 @@ export function LessonScreen({
    * Routes fetch, screens delegate (apps/mobile/CLAUDE.md).
    */
   coins?: number
+  /**
+   * True only for the one lesson handed over from onboarding.
+   *
+   * Finishing it is the single biggest predictor of a user coming back, so it gets
+   * its own event. Inferring it later from "the first `lesson_completed` we ever saw"
+   * would be wrong for every reinstall, and activation numbers that quietly count
+   * reinstalls are worse than no activation numbers.
+   */
+  isTaster?: boolean
 }) {
   const t = useT()
   const { index, memory, status, reload, isOffline } = useContent()
@@ -136,7 +146,17 @@ export function LessonScreen({
       xp_awarded: optimistic.xpAwarded,
       was_offline: isOffline,
     })
-  }, [isOffline, index, memory])
+
+    // Fired ALONGSIDE `lesson_completed`, never instead of it. The taster is a real
+    // lesson and belongs in the lesson numbers too; this is an extra fact about it,
+    // not a different kind of thing.
+    if (isTaster) {
+      track('taster_lesson_completed', {
+        accuracy: optimistic.accuracy,
+        duration_ms: Date.now() - (state.startedAt ?? Date.now()),
+      })
+    }
+  }, [isOffline, index, memory, isTaster])
 
   const timeLimitMs = mode === 'speed' ? SPEED_SECONDS * 1000 : null
   const lesson = useLesson({ questions, memory, timeLimitMs, onComplete: handleComplete })

@@ -10,7 +10,7 @@
     "dev": "pnpm --filter @worldquest/mobile start",
     "generate": "pnpm design:tokens && pnpm i18n:types",
     "prepare": "pnpm generate",
-    "verify": "pnpm generate && pnpm typecheck && pnpm test && pnpm content:validate && pnpm i18n:check && pnpm design:contrast && pnpm lint:a11y && pnpm reachability",
+    "verify": "pnpm generate && pnpm typecheck && pnpm test && pnpm content:validate && pnpm i18n:check && pnpm design:contrast && pnpm lint:a11y && pnpm reachability && pnpm five-states",
     "typecheck": "pnpm -r --filter './packages/*' --filter './apps/*' typecheck",
     "test": "pnpm -r --filter './packages/*' --filter './apps/*' test && vitest run --config vitest.edge.config.ts",
     "$comment:e2e": "Exports the real bundle through Metro and drives it in Chromium via react-native-web. Not a device — see apps/mobile/e2e/flow.cjs for exactly what that does and does not prove. The export step is the point as much as the driving: it is the only thing in this repo that runs the bundler.",
@@ -37,6 +37,7 @@
     "edge:deploy": "supabase functions deploy submit-lesson --project-ref tjdjogidudjobxipibqb",
     "screenshot": "esbuild scripts/screenshot/render.tsx --bundle --platform=node --format=cjs --jsx=automatic --alias:react-native=react-native-web --define:__DEV__=false --alias:expo-linear-gradient=./scripts/screenshot/linear-gradient-web.tsx --loader:.json=json --outfile=node_modules/.cache/wq-render.cjs && node node_modules/.cache/wq-render.cjs > node_modules/.cache/wq-app.html && node scripts/screenshot/shoot.cjs node_modules/.cache/wq-app.html docs/design/assets/screens",
     "reachability": "tsx scripts/reachability.ts",
+    "five-states": "tsx scripts/five-states.ts",
     "lint:a11y": "tsx scripts/a11y.ts"
   },
   "devDependencies": {

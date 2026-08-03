@@ -15,6 +15,7 @@ import {
   CountryScreen,
   type CountryFact,
 } from '../../src/features/explore/CountryScreen.js'
+import { ContentGate } from '../../src/components/ContentGate.js'
 import { useContent } from '../../src/lib/content.js'
 import { useFavourites } from '../../src/features/favourites/useFavourites.js'
 import { currentLocale } from '../../src/lib/i18n.js'
@@ -25,7 +26,7 @@ const isRegion = (value: string | undefined): value is RegionCode =>
 
 export default function CountryRoute() {
   const { code } = useLocalSearchParams<{ code: string }>()
-  const { index, memory } = useContent()
+  const { index, memory, status, reload, isOffline } = useContent()
   const { isFavourite, toggle } = useFavourites()
 
   const view = useMemo(() => {
@@ -71,15 +72,17 @@ export default function CountryRoute() {
   }, [code, view.name])
 
   return (
-    <CountryScreen
-      name={view.name}
-      region={view.region}
-      facts={view.facts}
-      progress={view.progress}
-      onPractise={() => router.push('/lesson')}
-      {...(starrable
-        ? { favourite: isFavourite(code), onToggleFavourite: () => toggle(code) }
-        : {})}
-    />
+    <ContentGate status={status} onRetry={reload} isOffline={isOffline} showLoading>
+      <CountryScreen
+        name={view.name}
+        region={view.region}
+        facts={view.facts}
+        progress={view.progress}
+        onPractise={() => router.push('/lesson')}
+        {...(starrable
+          ? { favourite: isFavourite(code), onToggleFavourite: () => toggle(code) }
+          : {})}
+      />
+    </ContentGate>
   )
 }

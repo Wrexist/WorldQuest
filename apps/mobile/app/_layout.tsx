@@ -10,7 +10,7 @@
  * bar staying visible would invite the user to leave halfway through.
  */
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Stack, router, usePathname } from 'expo-router'
 import { SafeAreaView, StatusBar, StyleSheet } from 'react-native'
 import { colors, motion } from '@worldquest/design'
@@ -85,6 +85,31 @@ function useAnalyticsAudience(): void {
 }
 
 /**
+ * One `screen_viewed` per navigation, and none on a redirect.
+ *
+ * `usePathname` fires for every route change including the gates above, so a first
+ * launch would otherwise record Home → onboarding as two screens the user "viewed"
+ * when they saw one. Recording the previous path as `from` is what makes the event
+ * worth having: a list of screens is a popularity contest, and a list of transitions
+ * is a map of how people actually move.
+ *
+ * Sampled at 1.0 in the registry, which is deliberate — this is the event every funnel
+ * is built from, and a sampled funnel is a funnel nobody trusts.
+ */
+function useScreenViews(ready: boolean): void {
+  const pathname = usePathname()
+  const previous = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (!ready) return
+    if (previous.current === pathname) return
+    const from = previous.current
+    previous.current = pathname
+    track('screen_viewed', { screen: pathname, ...(from !== null ? { from } : {}) })
+  }, [ready, pathname])
+}
+
+/**
  * One `app_opened` per launch.
  *
  * `from: 'icon'` because at this layer we genuinely do not know: a push or a deep link
@@ -103,6 +128,7 @@ export default function RootLayout() {
   useAppOpened()
   const phase = useSplashPhase(fontsReady)
   useDeviceLocale()
+  useScreenViews(fontsReady)
   useOnboardingGate(fontsReady)
   useReturnGate(fontsReady, readOnboarding().completed)
 

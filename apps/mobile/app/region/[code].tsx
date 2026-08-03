@@ -12,6 +12,7 @@ import { router, useLocalSearchParams } from 'expo-router'
 import { entityProgress } from '@worldquest/engines'
 import { REGIONS, type RegionCode } from '../../src/features/explore/ExploreScreen.js'
 import { RegionScreen, type CountryRow } from '../../src/features/explore/RegionScreen.js'
+import { ContentGate } from '../../src/components/ContentGate.js'
 import { useContent } from '../../src/lib/content.js'
 import { currentLocale, type TranslationKey } from '../../src/lib/i18n.js'
 
@@ -30,7 +31,7 @@ const isRegion = (value: string): value is RegionCode =>
 
 export default function RegionRoute() {
   const { code } = useLocalSearchParams<{ code: string }>()
-  const { index, memory } = useContent()
+  const { index, memory, status, reload, isOffline } = useContent()
 
   // A deep link can carry anything. An unknown code goes home rather than rendering
   // an empty continent that looks like a bug.
@@ -53,12 +54,14 @@ export default function RegionRoute() {
   }, [index, memory, region])
 
   return (
-    <RegionScreen
-      region={region}
-      regionNameKey={REGION_NAME[region]}
-      countries={countries}
-      onSelectCountry={(id) => router.push(`/country/${id}`)}
-      onStartLesson={() => router.push('/lesson')}
-    />
+    <ContentGate status={status} onRetry={reload} isOffline={isOffline} showLoading>
+      <RegionScreen
+        region={region}
+        regionNameKey={REGION_NAME[region]}
+        countries={countries}
+        onSelectCountry={(id) => router.push(`/country/${id}`)}
+        onStartLesson={() => router.push('/lesson')}
+      />
+    </ContentGate>
   )
 }

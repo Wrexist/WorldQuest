@@ -10,11 +10,21 @@ import { router } from 'expo-router'
 import { AchievementsScreen } from '../src/features/achievements/AchievementsScreen.js'
 import { useAchievements } from '../src/features/achievements/useAchievements.js'
 import { useAchievementProgress } from '../src/features/achievements/progress.js'
+import { ContentGate } from '../src/components/ContentGate.js'
+import { useContent } from '../src/lib/content.js'
 
 export default function AchievementsRoute() {
   // Evaluated on device from the events the client can actually observe, and merged
   // with the server's view when there is one. Before this it was called with nothing,
   // so every achievement was permanently locked — see features/achievements/progress.
   const rows = useAchievements(useAchievementProgress())
-  return <AchievementsScreen rows={rows} onStartLesson={() => router.push('/lesson')} />
+  // Achievement definitions ship in a content pack, so this screen has the same three
+  // non-content states as the browse screens and had none of them.
+  const { status, reload, isOffline } = useContent()
+
+  return (
+    <ContentGate status={status} onRetry={reload} isOffline={isOffline} showLoading>
+      <AchievementsScreen rows={rows} onStartLesson={() => router.push('/lesson')} />
+    </ContentGate>
+  )
 }

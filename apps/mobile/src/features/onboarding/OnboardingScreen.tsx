@@ -29,7 +29,7 @@
  * writes it to storage.
  */
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   ArtSlot,
@@ -43,6 +43,7 @@ import {
   text,
 } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
+import { track } from '../../lib/analytics.js'
 import { DAILY_GOALS, type DailyGoal } from '../settings/usePreferences.js'
 
 /** The age at which the child branch applies. COPPA; GDPR-K varies by country and is stricter in places. */
@@ -115,6 +116,39 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
   const [pickingDecade, setPickingDecade] = useState(true)
   const [goal, setGoal] = useState<DailyGoal>(10)
 
+  /**
+   * Onboarding instrumentation.
+   *
+   * This funnel is the one place the product can lose someone before they have
+   * experienced anything, so `onboarding_abandoned` carries the step they left from:
+   * "we lose 40 % of people" is a fact you cannot act on, and "we lose 40 % of people
+   * on the age gate" is a Monday morning's work.
+   *
+   * The events fire from the screen rather than the route because the screen is what
+   * holds the step state. `track()` no-ops for child accounts, and at this point in
+   * the flow the age answer has not been stored yet — so the audience is still unknown
+   * and `track` treats unknown as a child. That is the correct conservative default
+   * and it means these events are only ever recorded for users we know are adults.
+   */
+  const finished = useRef(false)
+  // Kept in a ref because the unmount cleanup below closes over the FIRST render's
+  // `step`, and the step they abandoned on is the whole point of the event.
+  const stepRef = useRef<Step>(step)
+  stepRef.current = step
+
+  useEffect(() => {
+    if (step === 'slides') track('onboarding_slide_viewed', { index: slide })
+  }, [step, slide])
+
+  useEffect(
+    () => () => {
+      // A user who completed the flow left through `finish`, which sets this —
+      // everyone else abandoned.
+      if (!finished.current) track('onboarding_abandoned', { last_step: stepRef.current })
+    },
+    [],
+  )
+
   const decades = useMemo(() => decadesFor(currentYear), [currentYear])
   const isChild = birthYear !== null && currentYear - birthYear < CHILD_AGE
   const stepIndex = STEPS.indexOf(step) + 1
@@ -123,6 +157,7 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
     // `birthYear` cannot be null here — the age step is the only way past it — but the
     // type says it can, and a cast would be a lie that outlives this function.
     if (birthYear === null) return
+    finished.current = true
     onFinish({ birthYear, isChild, dailyGoalMinutes: goal })
   }
 
@@ -289,7 +324,15 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
         )}
 
         {step === 'goal' && (
-          <Button label={t('onboarding:age.continue')} onPress={() => setStep('taster')} />
+          <Button
+            label={t('onboarding:age.continue')}
+            onPress={() => {
+              // On leaving the step, not on each chip tap: what matters is the goal
+              // they settled on, and firing per tap would record every one they tried.
+              track('onboarding_goal_selected', { minutes: goal })
+              setStep('taster')
+            }}
+          />
         )}
 
         {step === 'taster' && (

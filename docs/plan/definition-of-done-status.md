@@ -12,10 +12,11 @@ the single fact that most of the rest follows from.
 
 ## Automated: green
 
-`pnpm verify` runs typecheck, 611 tests across seven packages, content validation,
-i18n completeness, 23 contrast pairs, `lint:a11y` and `reachability`. `pnpm e2e` runs
-47 steps against the real Metro bundle in Chromium — including six screens re-measured
-at 200 % text — and `pnpm edge:test` runs 14 against the vendored edge bundle.
+`pnpm verify` runs typecheck, 616 tests across seven packages, content validation,
+i18n completeness, 23 contrast pairs, `lint:a11y`, `reachability` and `five-states`.
+`pnpm e2e` runs 47 steps against the real Metro bundle in Chromium — including six
+screens re-measured at 200 % text — `pnpm design:shots` renders 10 routes at
+320/390/768, and `pnpm edge:test` runs 14 against the vendored edge bundle.
 
 That is a real floor, and it is not the same as done. The section at the bottom on
 what the lesson actually asked is the argument for why: every one of those numbers was
@@ -28,7 +29,7 @@ green while two thirds of the authored content was unreachable.
 | Box | State |
 |---|---|
 | iOS **and** Android, phone and tablet, to 320 pt | ⬜ **Never run on either.** No iOS Simulator without macOS, no Android emulator without `/dev/kvm`. Every layout claim in this repo is a claim about Chromium at 390×844. |
-| Five states everywhere | 🟡 Built on the screens that have them; not audited screen-by-screen against the catalogue. |
+| Five states everywhere | ✅ **Audited, and the audit is a script.** `pnpm five-states` checks all 14 screens; 15 states are waived with a recorded reason and the script fails on a waiver the code has outgrown. See below for what it found. |
 | Offline behaviour | ✅ Queue, replay on reconnect, backoff, parked work surfaced. Real connectivity as of Wave 7. |
 | Server-authoritative rewards | ✅ Nothing on the client writes a balance. Achievements, quests and XP all render predictions and say so. |
 
@@ -36,7 +37,7 @@ green while two thirds of the authored content was unreachable.
 
 | Box | State |
 |---|---|
-| Unit + component tests | ✅ 611 passing, plus 14 against the edge bundle. |
+| Unit + component tests | ✅ 616 passing, plus 14 against the edge bundle. |
 | No `any`, no `@ts-expect-error` | ✅ Zero of both outside tests. |
 | Performance on a **mid-tier Android** | ⬜ Not measured. There is no device. |
 | Errors to Sentry with PII-free context | ⬜ `ErrorBoundary` logs to console and says "reported once it is connected". Sentry is not connected. |
@@ -63,7 +64,7 @@ green while two thirds of the authored content was unreachable.
 
 | Box | State |
 |---|---|
-| Analytics per spec | 🟡 **12 of 28** declared events fire (was 2). The rest are listed below with what blocks each. The child no-op was broken — see below; fixed. |
+| Analytics per spec | 🟡 **18 of 28** declared events fire (was 2). Every remaining one is blocked on a server, an account, or push — none is forgotten. The child no-op was broken; fixed. |
 | Serves a named persona | ✅ |
 | Copy against the voice guide | ✅ And asserted, not trusted: no-shame, no-guilt, no-dark-pattern rules are tests in the streak, welcome-back, out-of-hearts, paused and sync screens. |
 | Docs updated | ✅ |
@@ -84,6 +85,41 @@ green while two thirds of the authored content was unreachable.
 3. **Sentry.** Blocked on a **DSN and an authorised account**, neither of which exists
    in this environment. The `ErrorBoundary` logs to console and says so.
 4. **A device.** Not something code can fix.
+
+---
+
+## Five states: what the audit found
+
+The rule has been in `PROJECT.md` since week one and this box sat at 🟡 "not audited"
+for just as long. `pnpm five-states` is that audit, in `pnpm verify` so it stays true.
+
+It found a real, systematic gap on its first run. **`useContent()` can return
+`status === 'error'` and every browse screen ignored it.** Explore, Collection, Country
+and Region all destructured `status` and read only `status === 'loading'`, so a content
+load that failed rendered an empty grid — indistinguishable from an empty collection,
+with no explanation and no retry.
+
+Nobody had noticed because content ships in the binary and therefore essentially never
+fails. It starts failing the day packs are downloaded (architecture.md §3, week 9), on
+exactly the users with the worst connections.
+
+Fixed with `ContentGate`, a wrapper the thin routes use, rather than two more props
+threaded through nine presentational screens — the tenth would have forgotten. Routes
+are the layer that fetches, so error and offline belong to them; screens keep `loading`
+and `empty`, which are about the shape of the data.
+
+Two things about the script itself, because both were the check being wrong:
+
+- **It audits the route and its screen together.** Auditing screens alone reported
+  twelve of fourteen as broken when the states were simply in the other half of a
+  deliberate split.
+- **A stale waiver fails the build.** A waiver that the code has outgrown is a lie
+  sitting in a script, and it found one immediately — the achievements screen had
+  grown an empty state while its waiver still claimed it could not have one.
+
+15 states are waived across 14 screens, each with a reason that says why the state
+*cannot occur* rather than that it is unimportant. "A paused lesson always has a
+question behind it" is a decision; "it does not need it" would not be.
 
 ---
 
@@ -153,10 +189,19 @@ other nine are unchecked.
 
 ## Analytics: what fires, and what each missing event waits on
 
-**Firing (12):** `app_opened`, `lesson_started`, `question_answered`,
+**Firing (18):** `app_opened`, `screen_viewed`, `lesson_started`, `question_answered`,
 `lesson_completed`, `lesson_abandoned`, `hearts_depleted`, `achievement_unlocked`,
-`quest_completed`, `country_viewed`, `offline_mode_entered`, `setting_changed`,
-`error_occurred`.
+`quest_completed`, `country_viewed`, `search_performed`, `offline_mode_entered`,
+`setting_changed`, `error_occurred`, `onboarding_slide_viewed`,
+`onboarding_goal_selected`, `onboarding_abandoned`, `taster_lesson_completed`.
+
+The onboarding six were the last unblocked row. Two decisions worth recording:
+`search_performed` sends `query_length`, never the query — a free-text field on a
+child's device is the easiest place in this app to collect something personal by
+accident, and the length answers every question the spec asks of it. And
+`taster_lesson_completed` is driven by a `?taster=1` flag from the onboarding hand-off
+rather than inferred from "the first `lesson_completed` we ever saw", which would count
+every reinstall as an activation.
 
 **Not firing, and why** — none of these is "forgotten":
 
@@ -168,9 +213,7 @@ other nine are unchecked.
 | `coins_spent` | The purchase path is server-side; the client never spends. |
 | `sync_conflict_resolved`, `xp_reconciliation_failed` | Need a server to disagree with. |
 | `notification_opened` | Push is not wired. |
-| `onboarding_slide_viewed`, `onboarding_goal_selected`, `taster_lesson_completed`, `onboarding_abandoned` | Buildable now — the next honest slice of this row. |
-| `screen_viewed`, `search_performed` | Buildable now. |
-| `a11y_feature_detected` | Buildable, but it reads OS accessibility settings and the spec marks it aggregate-only; worth doing deliberately rather than in a batch. |
+| `a11y_feature_detected` | Reads OS accessibility settings; the spec marks it aggregate-only, so it is worth doing deliberately rather than in a batch. |
 
 One property is deliberately omitted rather than invented: `achievement_unlocked`
 declares `days_to_unlock`, and nothing records when a user started. A number derived

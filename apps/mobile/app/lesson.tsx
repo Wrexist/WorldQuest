@@ -13,7 +13,7 @@ import { useProgress } from '../src/features/home/useProgress.js'
 export default function LessonRoute() {
   // `/lesson?mode=speed`. A query param rather than a second route: it is the same
   // runner, the same items and the same scoring — only the clock differs.
-  const { mode } = useLocalSearchParams<{ mode?: string }>()
+  const { mode, taster } = useLocalSearchParams<{ mode?: string; taster?: string }>()
   // Fetched here rather than in the screen: server state belongs to the route, and
   // the runner should stay mountable without a QueryClientProvider.
   const { data } = useProgress()
@@ -21,6 +21,11 @@ export default function LessonRoute() {
   return (
     <LessonScreen
       mode={mode === 'speed' ? 'speed' : 'normal'}
+      // Set only by the onboarding hand-off. Finishing this one lesson is the single
+      // biggest predictor of a user coming back, so it gets its own event rather than
+      // being inferred later from "first lesson_completed", which is wrong for anyone
+      // who reinstalls.
+      isTaster={taster === '1'}
       coins={data?.coins ?? 0}
       onExit={() => {
         // Opened from a notification there is no history to pop, and `back()` would
