@@ -40,5 +40,7 @@
   "profile:week.none": "No lessons yet this week",
   "profile:week.none__note": "Empty state for the weekly bars. Neutral — never 'you missed 7 days'.",
   "profile:week.day": "{day}: {count, plural, =0 {no lessons} one {# lesson} other {# lessons}}",
-  "profile:week.day__note": "Accessibility label for one activity bar. {day} is a weekday name."
+  "profile:week.day__note": "Accessibility label for one activity bar. {day} is a weekday name.",
+  "profile:shop.cta": "Shop",
+  "profile:shop.cta__note": "Row on Profile that opens the shop. Sits under the title it changes; never on Home, where it would put a purchase in front of somebody who opened the app to learn. Max 10 characters."
 }

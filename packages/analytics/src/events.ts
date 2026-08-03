@@ -105,6 +105,10 @@ export const EVENTS = {
     description: 'Coins spent in the shop',
     properties: { amount: 'number', item_id: 'string', balance_after: 'number' },
   },
+  cosmetic_equipped: {
+    description: 'A cosmetic was worn or taken off. `item_id` is "level_title" when the user returns to the title their level earned.',
+    properties: { item_id: 'string', kind: 'string' },
+  },
   achievement_unlocked: {
     description: 'Achievement or tier unlocked',
     properties: { achievement_id: 'string', tier: 'string', days_to_unlock: 'number' },

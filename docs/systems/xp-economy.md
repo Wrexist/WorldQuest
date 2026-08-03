@@ -126,6 +126,35 @@ slower and the shop feels pointless.
 **Never purchasable with coins:** content, lessons, difficulty skips, league position,
 XP. **Coins buy delight, never advantage.**
 
+### What the shop actually sells today
+
+The whole cosmetic half of that table was filed as "blocked on an illustrator" and
+shipped as nothing, which left coins earned everywhere and spendable on three utility
+items — a violation of Product Bible principle 10 sitting in plain sight. Sorting the
+six categories by what each one actually needs:
+
+| Category | Needs | Status |
+|---|---|---|
+| Avatar item, pet, map skin, celebration | Illustration (`asset-prompts.md` §6, §11) | Genuinely blocked |
+| Theme | **Runtime theming**, not art | Blocked on architecture |
+| Title unlock | A string | **Shipped** |
+
+Themes are worth stating precisely, because "we need an artist" would send the next
+person to the wrong place. A theme *is* design tokens, and this repo's tokens are
+deliberately semantic so exactly that swap is possible. What stops it is that `colors`
+resolves at module load inside 34 `StyleSheet.create` calls — runtime theming means a
+context and a re-architecture of every stylesheet. Real work, but not a commission.
+
+So the shop opened with titles, in `packages/content/packs/shop/titles.v1.json`. They
+are **flavour** titles, deliberately not rank titles: the level ladder in
+`packages/i18n/locales/*/titles.json` is earned and must stay earned, and selling
+"Circumnavigator" to a level-3 player would devalue every hour somebody spent climbing
+to it. A bought title is a different hat, and the level title is always one tap away.
+
+The "More to come" section on the shop screen is a heading and a sentence, **never** a
+row of greyed-out items with prices on them. A disabled price tag is a promise with a
+number attached, and the number is the part people remember.
+
 ---
 
 ## 3. Hearts — the friction mechanic, defanged

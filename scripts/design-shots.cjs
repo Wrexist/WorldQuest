@@ -67,6 +67,7 @@ const DEFAULT_ROUTES = [
   // "you just learned N countries", which is the right screen there and an empty one
   // here — the harness has no lesson behind it.
   '/paywall?source=settings',
+  '/shop',
 ]
 
 const TYPES = {

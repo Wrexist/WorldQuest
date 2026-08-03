@@ -8,7 +8,10 @@
  */
 
 import { useMemo } from 'react'
-import { worldProgress } from '@worldquest/engines'
+import { router } from 'expo-router'
+import { equippedTitleKey, levelProgress, worldProgress } from '@worldquest/engines'
+import { CATALOGUE } from '../../src/features/shop/catalogue.js'
+import { useShop } from '../../src/features/shop/useShop.js'
 import { useWeekActivity } from '../../src/features/profile/useWeekActivity.js'
 import { ProfileScreen } from '../../src/features/profile/ProfileScreen.js'
 import { useProgress } from '../../src/features/home/useProgress.js'
@@ -21,6 +24,22 @@ export default function ProfileRoute() {
   // meanings behind one name is how the wrong one gets read.
   const { index, memory, status: contentStatus, reload, isOffline } = useContent()
   const week = useWeekActivity()
+  const shop = useShop()
+
+  /**
+   * Which title is actually worn.
+   *
+   * Resolved HERE rather than in the screen, and through the engine rather than by
+   * hand: `equippedTitleKey` is the function that knows a stale local row can name
+   * something no longer owned, and falls back to the earned title instead of
+   * rendering "shop:title.mapNerd" at a child.
+   */
+  const worn = equippedTitleKey(
+    levelProgress(data?.xpTotal ?? 0).titleKey,
+    shop.equippedId,
+    CATALOGUE,
+    shop.owned,
+  )
 
   const world = useMemo(() => {
     if (index === null) return null
@@ -55,6 +74,8 @@ export default function ProfileRoute() {
         // The account prompt appears only while there is no account. It disappears with
         // its own reason rather than becoming a permanent piece of furniture.
         onCreateAccount={undefined}
+        wornTitleKey={worn}
+        onOpenShop={() => router.push('/shop')}
       />
     </ContentGate>
   )

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://worldquest.app/schema/pack.schema.json",
   "title": "WorldQuest content pack",
-  "description": "Content is data, never code. This schema is what CI enforces so that adding a country \u2014 or a whole subject \u2014 is an authoring task. See docs/systems/content-pipeline.md.",
+  "description": "Content is data, never code. This schema is what CI enforces so that adding a country — or a whole subject — is an authoring task. See docs/systems/content-pipeline.md.",
   "type": "object",
   "required": [
     "packId",
@@ -37,7 +37,8 @@
         "facts",
         "templates",
         "collections",
-        "achievements"
+        "achievements",
+        "cosmetics"
       ]
     },
     "locales": {
@@ -50,7 +51,7 @@
     },
     "license": {
       "type": "string",
-      "description": "SPDX identifier or a named licence. Required \u2014 CI rejects an asset with no recorded licence."
+      "description": "SPDX identifier or a named licence. Required — CI rejects an asset with no recorded licence."
     },
     "attribution": {
       "type": "string"
@@ -70,7 +71,7 @@
   "$defs": {
     "localizedText": {
       "type": "object",
-      "description": "Whole values per locale. Never assembled from fragments \u2014 word order differs by language.",
+      "description": "Whole values per locale. Never assembled from fragments — word order differs by language.",
       "patternProperties": {
         "^[a-z]{2}(-[A-Z]{2})?$": {
           "type": "string",
@@ -113,7 +114,7 @@
         "id": {
           "type": "string",
           "pattern": "^[A-Z0-9-]{2,12}$",
-          "description": "ISO 3166-1 alpha-2 where one exists. Permanent \u2014 it ships in save data."
+          "description": "ISO 3166-1 alpha-2 where one exists. Permanent — it ships in save data."
         },
         "type": {
           "type": "string",
@@ -134,7 +135,7 @@
         },
         "namesInSentence": {
           "$ref": "#/$defs/localizedText",
-          "description": "The form used inside a sentence, when it differs from `names` \u2014 \"the Netherlands\" in a prompt, \"Netherlands\" in a list. Localised rather than a boolean article flag, because languages with grammatical case need an oblique form here."
+          "description": "The form used inside a sentence, when it differs from `names` — \"the Netherlands\" in a prompt, \"Netherlands\" in a list. Localised rather than a boolean article flag, because languages with grammatical case need an oblique form here."
         },
         "region": {
           "type": "string"
@@ -235,7 +236,7 @@
             "slow",
             "fast"
           ],
-          "description": "fast facts (leaders, GDP, rankings) may never be quiz answers \u2014 CI enforces this."
+          "description": "fast facts (leaders, GDP, rankings) may never be quiz answers — CI enforces this."
         },
         "sensitivity": {
           "enum": [
@@ -282,7 +283,7 @@
           "properties": {
             "key": {
               "type": "string",
-              "description": "i18n key \u2014 never a literal string"
+              "description": "i18n key — never a literal string"
             },
             "params": {
               "type": "array",
@@ -323,7 +324,7 @@
                 "commonly-confused",
                 "random-global"
               ],
-              "description": "random-global is for test fixtures only \u2014 CI rejects it in a shipped pack."
+              "description": "random-global is for test fixtures only — CI rejects it in a shipped pack."
             },
             "fallback": {
               "enum": [
@@ -380,6 +381,9 @@
         },
         {
           "$ref": "#/$defs/achievement"
+        },
+        {
+          "$ref": "#/$defs/cosmetic"
         }
       ]
     },
@@ -509,6 +513,45 @@
         },
         "$comment": {
           "type": "string"
+        }
+      }
+    },
+    "cosmetic": {
+      "type": "object",
+      "description": "A purchasable cosmetic. Coins buy delight, never advantage (docs/systems/xp-economy.md) — so this shape deliberately has NO field that could grant XP, hearts, difficulty or league position, and CI would have to be changed to add one.",
+      "required": [
+        "id",
+        "kind",
+        "nameKey",
+        "price"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z]+\\.[a-z0-9-]+$",
+          "description": "Stable forever. Ships in user save data; renaming one is somebody's purchase disappearing."
+        },
+        "kind": {
+          "enum": [
+            "title",
+            "avatarItem",
+            "pet",
+            "mapSkin",
+            "theme",
+            "celebration"
+          ],
+          "description": "Only kinds in SELLABLE_KINDS may actually be listed; the engine refuses the rest so a priced item with no artwork cannot take real coins."
+        },
+        "nameKey": {
+          "type": "string",
+          "pattern": "^shop:[a-zA-Z0-9.]+$",
+          "description": "i18n key. Never a literal display string — see packages/i18n/CLAUDE.md."
+        },
+        "price": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Coins. Must match the balance table for its kind; the engine is the source of truth and this is checked against it."
         }
       }
     }

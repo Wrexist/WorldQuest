@@ -30,6 +30,7 @@ import {
 import { levelProgress, type WorldProgress } from '@worldquest/engines'
 import { formatCompact, useT, currentLocale, type TranslationKey } from '../../lib/i18n.js'
 import { REGIONS, type RegionCode } from '../explore/ExploreScreen.js'
+import { Icon } from '../../components/Icon.js'
 
 const REGION_NAME: Record<RegionCode, TranslationKey> = {
   EU: 'explore:region.EU',
@@ -65,9 +66,28 @@ export type ProfileScreenProps = {
   readonly loading: boolean
   /** Absent once the user has an account — the prompt disappears with the reason. */
   readonly onCreateAccount?: (() => void) | undefined
+  /**
+   * The title actually being worn — a bought one, or the level's own.
+   *
+   * Resolved by the route through `equippedTitleKey`, so this screen never has to
+   * know that a stale local row can name something no longer owned. Absent means
+   * nothing is equipped and the level title stands, which is also the answer for
+   * every user who has never opened the shop.
+   */
+  readonly wornTitleKey?: string | undefined
+  /** Opens the shop. Absent hides the row rather than showing a dead control. */
+  readonly onOpenShop?: (() => void) | undefined
 }
 
-export function ProfileScreen({ stats, week, world, loading, onCreateAccount }: ProfileScreenProps) {
+export function ProfileScreen({
+  stats,
+  week,
+  world,
+  loading,
+  onCreateAccount,
+  wornTitleKey,
+  onOpenShop,
+}: ProfileScreenProps) {
   const t = useT()
   const locale = currentLocale()
 
@@ -106,7 +126,10 @@ export function ProfileScreen({ stats, week, world, loading, onCreateAccount }: 
         <Text style={styles.levelTitle}>
           {t('profile:levelTitle', {
             level: progress.level,
-            title: t(progress.titleKey as TranslationKey),
+            // The worn title when there is one, the earned one otherwise. The level
+            // number stays either way: a bought title is a different hat, not a
+            // shortcut up the ladder.
+            title: t((wornTitleKey ?? progress.titleKey) as TranslationKey),
           })}
         </Text>
         <ProgressBar
@@ -171,6 +194,17 @@ export function ProfileScreen({ stats, week, world, loading, onCreateAccount }: 
             })}
           </Card>
         </Section>
+      )}
+
+      {onOpenShop !== undefined && (
+        // Right under the title it changes, and nowhere else. A shop entry on Home
+        // would put a purchase in front of somebody who opened the app to learn.
+        <Card level={1} onPress={onOpenShop} role="button" accessibilityLabel={t('profile:shop.cta')} style={styles.shopRow}>
+          <Icon name="shop" size={20} color={colors.reward.coin} />
+          <Text style={styles.shopLabel}>{t('profile:shop.cta')}</Text>
+          <View style={styles.spacer} />
+          <Icon name="chevron" size={18} color={colors.text.tertiary} />
+        </Card>
       )}
 
       {onCreateAccount !== undefined && (
@@ -306,6 +340,9 @@ const styles = StyleSheet.create({
   swatch: { width: 6, height: 28, borderRadius: radius.full },
   regionBar: { flex: 1 },
 
+  shopRow: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  shopLabel: { ...text('bodyStrong'), color: colors.text.primary },
+  spacer: { flex: 1 },
   accountCard: { gap: space[3] },
   cardTitle: { ...text('h3'), color: colors.text.primary },
 })

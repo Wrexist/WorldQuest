@@ -21,5 +21,6 @@
   "profile:levelTitle": "Nivå {level} · {title}",
   "profile:week.title": "Denna vecka",
   "profile:week.none": "Inga lektioner än denna vecka",
-  "profile:week.day": "{day}: {count, plural, =0 {inga lektioner} one {# lektion} other {# lektioner}}"
+  "profile:week.day": "{day}: {count, plural, =0 {inga lektioner} one {# lektion} other {# lektioner}}",
+  "profile:shop.cta": "Butik"
 }

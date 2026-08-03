@@ -57,6 +57,8 @@ import { SettingsScreen } from '../../apps/mobile/src/features/settings/Settings
 import { DEFAULTS as SETTINGS_DEFAULTS } from '../../apps/mobile/src/features/settings/usePreferences.js'
 import { PaywallScreen } from '../../apps/mobile/src/features/paywall/PaywallScreen.js'
 import { SAMPLE_PLANS } from '../../apps/mobile/src/features/paywall/purchases.js'
+import { ShopScreen } from '../../apps/mobile/src/features/shop/ShopScreen.js'
+import { CATALOGUE as SHOP_CATALOGUE } from '../../apps/mobile/src/features/shop/catalogue.js'
 
 // ── real content, loaded from the real packs ────────────────────────────────
 const packs = join(process.cwd(), 'packages', 'content', 'packs', 'geography')
@@ -627,6 +629,23 @@ function Gallery() {
             onRestore={async () => ({ kind: 'cancelled' })}
             onDismiss={() => {}}
             source="onboarding"
+          />
+        </Phone>
+
+        {/* The coin sink, at a balance where one title is affordable and the rest are
+            not — the state most users are actually in, and the one where the "coins to
+            go" copy has to read as a fact rather than a nag. */}
+        <Phone label="Shop · titles" id="shop">
+          <ShopScreen
+            catalogue={SHOP_CATALOGUE}
+            coins={1240}
+            owned={new Set(['title.flag-fanatic'])}
+            equippedId="title.flag-fanatic"
+            levelTitleKey="titles:scout"
+            loading={false}
+            isOffline={false}
+            onBuy={() => {}}
+            onEquip={() => {}}
           />
         </Phone>
 

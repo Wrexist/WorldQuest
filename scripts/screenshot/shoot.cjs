@@ -16,7 +16,7 @@ const SHOTS = [
   'lesson-question', 'lesson-correct', 'lesson-wrong', 'lesson-flag-image', 'lesson-flag',
   'lesson-summary', 'lesson-summary-early',
   'explore', 'country', 'quests', 'profile', 'achievements', 'settings',
-  'settings-billing', 'paywall-value', 'paywall', 'paywall-child',
+  'settings-billing', 'paywall-value', 'paywall', 'paywall-child', 'shop',
 ]
 
 ;(async () => {
