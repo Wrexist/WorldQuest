@@ -206,7 +206,7 @@ checking either. Quests generate fine, and `SPEED_ROUND_MS` (90 s, a whole lesso
 A file whose entire purpose is to hold true reasons is the worst possible place to
 guess, and the fix was to read the code before writing the row — which is also how the
 real, narrower gap turned up.
-| 7.6 | `regionProgress` | The region screen computes its own totals, so two code paths can disagree about the same number. |
+| 7.6 | ~~`regionProgress`~~ | ✅ The region screen added up `factsLearned` and `factsTotal` across its rows beside an engine function built to do exactly that. The two agreed — same per-entity numbers, same addition — which is what makes a duplicate dangerous rather than obviously broken: it agrees until one side changes, and `regionProgress` is the side that knows non-quizzable facts are excluded (otherwise a disputed capital makes a country permanently incompletable). The screen now takes `RegionProgress` and reports it. That also made `entitiesComplete` free, which the reduce could not have produced without duplicating the "is this country finished?" rule too — so the header gained "1 of 2 countries finished", a number a user actually wants from a continent. The screen had **no component test at all**, which is why a reachability check rather than a failing assertion found this; it has six now, and the one guarding the regression asserts a completed-count the rendered rows could not produce. |
 
 Deliberately NOT in that list, because they are right: everything server-authoritative
 (`applyActivity`, `grantFreeze`, `markBroken`, the reward maths), everything Leagues

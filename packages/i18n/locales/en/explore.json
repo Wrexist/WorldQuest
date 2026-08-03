@@ -2,7 +2,6 @@
   "explore:title": "Explore",
   "explore:title__note": "Screen title of the continents grid. Max 12 characters.",
   "explore:subtitle": "Seven continents. Start anywhere.",
-
   "explore:region.EU": "Europe",
   "explore:region.EU__note": "Continent name. Max 16 characters.",
   "explore:region.AS": "Asia",
@@ -17,26 +16,24 @@
   "explore:region.OC__note": "Continent name. Max 16 characters.",
   "explore:region.AN": "Antarctica",
   "explore:region.AN__note": "Continent name. Max 16 characters.",
-
   "explore:region.progress": "{learned} of {total} learned",
   "explore:region.progress__note": "Counts FACTS, not countries — 3 of 12 learned. Both are whole numbers.",
+  "explore:region.complete": "{complete} of {total} countries finished",
+  "explore:region.complete__note": "Under the region progress bar. 'Finished' means every quizzable fact about that country is mastered — it is a statement of fact, not a nudge. Never phrased as how many are left.",
   "explore:region.empty": "Nothing here yet",
   "explore:region.empty__note": "Shown on a continent with no content in the shipped packs. Max 20 characters.",
   "explore:region.due": "{count, plural, =0 {Up to date} one {# review due} other {# reviews due}}",
   "explore:region.due__note": "How many facts in this continent are due for review. ICU plural.",
   "explore:region.label": "{region}, {percent} complete",
   "explore:region.label__note": "Accessibility label grouping a continent card. {percent} already includes the % sign.",
-
   "explore:world.label": "Your world",
   "explore:world.label__note": "Heading above the overall progress bar. Max 16 characters.",
   "explore:world.countries": "{complete} of {total} countries",
   "explore:world.countries__note": "Overall count on the world progress bar. Whole numbers.",
-
   "explore:countries.title": "Countries",
   "explore:countries.title__note": "Heading of the list inside a continent. Max 14 characters.",
   "explore:countries.empty.title": "No countries here yet",
   "explore:countries.empty.body": "More of the world arrives with every content update.",
-
   "explore:mastery.unseen": "Not started",
   "explore:mastery.unseen__note": "A country the user has never been asked about. Max 14 characters.",
   "explore:mastery.learning": "Learning",

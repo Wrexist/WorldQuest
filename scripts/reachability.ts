@@ -119,7 +119,6 @@ const ALLOWED: Record<string, string> = {
  * Each one is a row in docs/plan/ui-completion.md. Emptying this list is the work.
  */
 const KNOWN_GAPS: Record<string, string> = {
-  regionProgress: 'the region screen computes its own totals instead',
   hasUnsyncedProgress: 'meant to warn before sign-out; there is no sign-out yet',
 }
 

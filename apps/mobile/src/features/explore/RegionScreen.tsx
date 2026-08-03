@@ -12,7 +12,7 @@
 
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Button, ProgressBar, colors, palette, radius, space, text } from '@worldquest/design'
-import type { EntityProgress, Mastery } from '@worldquest/engines'
+import type { EntityProgress, Mastery, RegionProgress } from '@worldquest/engines'
 import { collator, currentLocale, useT, type TranslationKey } from '../../lib/i18n.js'
 import type { RegionCode } from './ExploreScreen.js'
 
@@ -45,6 +45,21 @@ export type RegionScreenProps = {
   readonly region: RegionCode
   readonly regionNameKey: TranslationKey
   readonly countries: readonly CountryRow[]
+  /**
+   * The region's totals, from `regionProgress` in the engine.
+   *
+   * This screen used to add up `factsLearned` and `factsTotal` across the rows itself.
+   * That agreed with the engine by construction — same per-entity numbers, same
+   * addition — which is exactly what makes a second implementation dangerous rather
+   * than obviously wrong: it agrees until one of them changes. `regionProgress` already
+   * decides what counts (non-quizzable facts are excluded, or a disputed capital would
+   * make a country permanently incompletable), and now one place decides it.
+   *
+   * It also carries `entitiesComplete` and `entitiesStarted`, which the reduce could
+   * not produce without duplicating the "is this country finished?" rule as well — and
+   * which turn out to be the number a user actually wants from a continent.
+   */
+  readonly progress: RegionProgress | null
   readonly onSelectCountry: (id: string) => void
   readonly onStartLesson: () => void
 }
@@ -53,6 +68,7 @@ export function RegionScreen({
   region,
   regionNameKey,
   countries,
+  progress: regionTotals,
   onSelectCountry,
   onStartLesson,
 }: RegionScreenProps) {
@@ -60,7 +76,9 @@ export function RegionScreen({
   const compare = collator(currentLocale()).compare
   const sorted = [...countries].sort((a, b) => compare(a.name, b.name))
 
-  if (sorted.length === 0) {
+  // Null totals and no rows are the same situation — the content index has not
+  // resolved — and they are handled together so nothing downstream has to ask twice.
+  if (sorted.length === 0 || regionTotals === null) {
     return (
       <View style={[styles.screen, styles.centered]}>
         <Text style={styles.title} role="heading">
@@ -70,9 +88,6 @@ export function RegionScreen({
       </View>
     )
   }
-
-  const learned = sorted.reduce((n, c) => n + c.progress.factsLearned, 0)
-  const total = sorted.reduce((n, c) => n + c.progress.factsTotal, 0)
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
@@ -84,10 +99,18 @@ export function RegionScreen({
       </View>
 
       <ProgressBar
-        current={learned}
-        total={Math.max(1, total)}
+        current={regionTotals.factsLearned}
+        // `max(1, …)` because a region whose facts are all non-quizzable would divide
+        // by zero, and an empty continent should read as 0 %, not as NaN.
+        total={Math.max(1, regionTotals.factsTotal)}
         label={t('explore:countries.title')}
       />
+      <Text style={styles.totals}>
+        {t('explore:region.complete', {
+          complete: regionTotals.entitiesComplete,
+          total: regionTotals.entitiesTotal,
+        })}
+      </Text>
 
       <View style={styles.list}>
         {sorted.map(({ id, name, progress }) => (
@@ -138,6 +161,7 @@ const styles = StyleSheet.create({
   title: { ...text('h1'), color: colors.text.primary },
   subtitle: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
 
+  totals: { ...text('caption'), color: colors.text.tertiary },
   list: { backgroundColor: colors.bg.surface, borderRadius: radius.lg, overflow: 'hidden' },
   row: {
     flexDirection: 'row',

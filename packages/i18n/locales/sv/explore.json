@@ -1,7 +1,6 @@
 {
   "explore:title": "Utforska",
   "explore:subtitle": "Sju kontinenter. Börja var du vill.",
-
   "explore:region.EU": "Europa",
   "explore:region.AS": "Asien",
   "explore:region.AF": "Afrika",
@@ -9,19 +8,16 @@
   "explore:region.SA": "Sydamerika",
   "explore:region.OC": "Oceanien",
   "explore:region.AN": "Antarktis",
-
   "explore:region.progress": "{learned} av {total} inlärda",
+  "explore:region.complete": "{complete} av {total} länder klara",
   "explore:region.empty": "Inget här ännu",
   "explore:region.due": "{count, plural, =0 {Allt är repeterat} one {# repetition väntar} other {# repetitioner väntar}}",
   "explore:region.label": "{region}, {percent} klart",
-
   "explore:world.label": "Din värld",
   "explore:world.countries": "{complete} av {total} länder",
-
   "explore:countries.title": "Länder",
   "explore:countries.empty.title": "Inga länder här ännu",
   "explore:countries.empty.body": "Mer av världen kommer med varje innehållsuppdatering.",
-
   "explore:mastery.unseen": "Inte påbörjat",
   "explore:mastery.learning": "Lär mig",
   "explore:mastery.familiar": "Bekant",

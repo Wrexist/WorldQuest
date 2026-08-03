@@ -9,7 +9,7 @@
 
 import { useMemo } from 'react'
 import { router, useLocalSearchParams } from 'expo-router'
-import { entityProgress } from '@worldquest/engines'
+import { entityProgress, regionProgress } from '@worldquest/engines'
 import { REGIONS, type RegionCode } from '../../src/features/explore/ExploreScreen.js'
 import { RegionScreen, type CountryRow } from '../../src/features/explore/RegionScreen.js'
 import { ContentGate } from '../../src/components/ContentGate.js'
@@ -53,12 +53,28 @@ export default function RegionRoute() {
       }))
   }, [index, memory, region])
 
+  /**
+   * The region's totals from the engine, not added up again in the screen.
+   *
+   * `regionProgress` decides what counts — non-quizzable facts are excluded, so a
+   * disputed capital cannot make a country permanently incompletable — and it is the
+   * only thing that should.
+   */
+  const progress = useMemo(
+    () =>
+      index === null
+        ? null
+        : regionProgress(index.index, region, memory, Date.now()),
+    [index, memory, region],
+  )
+
   return (
     <ContentGate status={status} onRetry={reload} isOffline={isOffline} showLoading>
       <RegionScreen
         region={region}
         regionNameKey={REGION_NAME[region]}
         countries={countries}
+        progress={progress}
         onSelectCountry={(id) => router.push(`/country/${id}`)}
         onStartLesson={() => router.push('/lesson')}
       />
