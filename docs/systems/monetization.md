@@ -183,7 +183,8 @@ subscription for anyone willing to change a device clock.
 | The billing SDK itself | `…/paywall/purchases.ts` → `UNAVAILABLE` | **Stub** |
 | Notification → subscription state, both stores | `packages/engines/src/entitlements/store.ts` | Built, 18 tests |
 | The verification POLICY — pinning, expiry, audience, replay | `supabase/functions/_src/_shared/store-verification.ts` | Built, 17 tests |
-| The handler that wires signature + policy + write | `supabase/functions/` | **Not built — needs credentials** |
+| The sequence: verify → dedupe → match → decide → record | `…/_shared/store-notifications.ts` | Built, 10 tests |
+| The crypto adapter and the endpoint that mounts it | `supabase/functions/` | **Not built — needs credentials** |
 
 `UNAVAILABLE` is deliberately a stub that **fails** rather than a fake that succeeds.
 Every caller therefore handles "the store would not answer" from the first day, which
@@ -255,9 +256,32 @@ What is deliberately NOT in that file is the cryptography. `issuedBy` is injecte
 the adapter is one line of `node:crypto` — `cert.verify(parent.publicKey)`. Hand-rolling
 ASN.1 parsing or ECDSA verification would be the worst decision available here.
 
-What still waits on credentials is the handler that wires the three together and the
-Apple root fingerprint to pin. Until it exists every user is free, which is the correct
-answer rather than a placeholder.
+### The status code is an instruction, not a report
+
+The third piece is the sequence, and it is the smallest and the easiest to get wrong
+invisibly. A store retries any non-2xx — Apple for three days, Google's Pub/Sub until the
+message expires — so the response is not a report on how the request went. It tells the
+store whether to send it again.
+
+- **Authentic but unactionable → 200.** An unknown type, a subscription no user owns, a
+  redelivery: all of these will be exactly as unactionable on the fortieth attempt.
+  Returning 500 because "we did not do anything" turns one puzzling notification into a
+  permanent retry loop and buries the real failures inside it.
+- **Not authentic → 401, and nothing else.** "Wrong bundleId" versus "chain does not
+  terminate at the pinned root" is a free tutorial in what to fix.
+- **Our fault → 500.** A database that is down is the one case where a retry is exactly
+  what we want.
+
+Two orderings are asserted rather than assumed. Authenticity is established **before any
+database call**, so an unauthenticated caller cannot probe which notification ids we hold
+by timing the duplicate check. And the event is recorded **even when the decision
+declines** — the unknown types and out-of-order arrivals are precisely what somebody
+reads back when a subscription looks wrong, and dropping them keeps the table tidy while
+making the dispute unanswerable.
+
+What still waits on credentials is the crypto adapter (`cert.verify(parent.publicKey)`),
+the Apple root fingerprint to pin, and the endpoint that mounts the three. Until they
+exist every user is free, which is the correct answer rather than a placeholder.
 
 ### Where the paywall opens
 
