@@ -34,6 +34,16 @@ day's work once the components existed:
   only a full bar — at a glance 100 % and 95 % are the same picture, and a tick is not.
   The circle is `aria-hidden`: the row already announces its title and progress, and a
   reader saying "3" before every task is noise.
+- **Real flags** (mockup screens 5, 7 and 10). All 65, rasterised from `flag-icons`
+  (MIT) by `pnpm build:flags`. This closes the largest single visual gap in the app:
+  the collection was 65 identical `⚑` placeholders, which is a grid of nothing.
+
+  It also turns a **lesson question back on**. `tpl.flag-to-country.mc4` — "Which
+  country's flag is this?", the mockup's own lesson screen — is modality `image`, and
+  the app declared it could not draw one, so the composer filtered it out of every
+  lesson ever generated. See the note below on why this was never actually blocked.
+
+  ![The flag question](assets/screens/lesson-flag-image.png)
 
 ### 2. Needs assets — blocked on a decision, not on code
 
@@ -41,6 +51,7 @@ The mockup's imagery is generated art. Matching it needs real assets:
 
 | Asset | Mockup shows | Status |
 |---|---|---|
+| ~~Flags~~ | 65 national flags | ✅ **Done.** All 65 from `flag-icons` (MIT), 600×450 PNG, `pnpm build:flags`. Collection, country page and the lesson picture question. |
 | Map thumbnails | Rendered Europe with a pin | `ArtSlot` placeholder at the right size |
 | Trophy | 3D gold trophy | `ArtSlot` placeholder |
 | Avatar | Illustrated character | Initials in a ringed circle |
@@ -51,10 +62,23 @@ The mockup's imagery is generated art. Matching it needs real assets:
 
 Prompts for every one of these are in [`asset-prompts.md`](asset-prompts.md).
 
-`ArtSlot` exists so this is a one-line swap per slot rather than a redesign.
-Gradients are hours of work; the illustration set is the decision already flagged in
-the Phase 0 checklist (commission vs licence), and it is now the single biggest
-remaining visual gap.
+`ArtSlot` exists so this is a one-line swap per slot rather than a redesign — which is
+exactly how the flags landed: `Flag` falls back to the slot when a file is missing, so
+nothing had to be relaid out.
+
+**One row on this table was never actually blocked, and it was the biggest one.**
+Flags sat here for the whole project filed as "needs an illustrator", next to the
+mascot. But [`asset-prompts.md`](asset-prompts.md) has always listed flags under **do
+not generate** — *because* a hand-drawn flag with the wrong number of stars is a wrong
+fact — and named `flag-icons` as the source in the same row. "Never draw this" was read
+as "we cannot have this yet". They are opposite statements.
+
+This is the second time that exact confusion has cost this project months. The first
+was sound, which sat under "assets" until someone noticed that a correct-answer chime
+is a sine wave rather than somebody's copyrighted work (`src/lib/sound.ts`). The
+remaining rows are genuinely illustration: a robot explorer is nobody's public-domain
+SVG. But that is now a claim worth re-checking rather than assuming, and the geometry
+and icon rows in `asset-prompts.md` name sources too.
 
 ### 3. Deliberate deviations — we are not copying these
 

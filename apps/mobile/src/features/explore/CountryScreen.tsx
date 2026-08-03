@@ -19,10 +19,10 @@
  * shows both. A learning app that cannot say where a fact came from is asking to be
  * trusted on nothing — and a wrong fact here is the worst bug this product can have.
  *
- * The flag image is an `ArtSlot`: flags are SOURCED, never generated, and the files
- * are not in the bundle yet. The flag's DESCRIPTION is real content and is treated as
- * a fact like any other, which is also what makes the flag question screen-reader
- * safe.
+ * The flag image is the real artwork, from the content pack's own asset path — flags
+ * are SOURCED, never generated, because a drawn-from-memory flag with the wrong number
+ * of stars is a wrong fact. The flag's DESCRIPTION is separately real content, treated
+ * as a fact like any other, which is what makes the flag question screen-reader safe.
  *
  * ## The heart
  *
@@ -32,8 +32,8 @@
 
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
+import { Flag } from '../../components/Flag.js'
 import {
-  ArtSlot,
   Button,
   Card,
   ProgressBar,
@@ -76,6 +76,8 @@ export type CountryFact = {
 export type CountryScreenProps = {
   readonly name: string | null
   readonly region: RegionCode | null
+  /** The pack's `assets.flag.path`. Absent draws the placeholder, never another flag. */
+  readonly assetPath?: string | undefined
   readonly facts: readonly CountryFact[]
   readonly progress: EntityProgress | null
   readonly onPractise: () => void
@@ -101,6 +103,7 @@ export function CountryScreen({
   onBack,
   name,
   region,
+  assetPath,
   facts,
   progress,
   onPractise,
@@ -131,11 +134,13 @@ export function CountryScreen({
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       {onBack !== undefined && <ScreenHeader onBack={onBack} />}
       <View style={styles.header}>
-        <ArtSlot
-          tint={region ? palette.continent[region] : colors.bg.surfaceRaised}
-          glyph="⚑"
+        {/* Decorative: the heading beside it is the country's name, and the flag's
+            description is a fact in the list below, where a screen-reader user reads
+            it as content rather than as a caption. */}
+        <Flag
+          path={assetPath}
           width={72}
-          height={48}
+          tint={region ? palette.continent[region] : colors.bg.surfaceRaised}
         />
         <Text style={styles.title} role="heading">
           {name}

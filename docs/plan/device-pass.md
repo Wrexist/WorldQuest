@@ -76,7 +76,14 @@ zero**. The a11y skill is explicit that this is the part that matters.
 - [ ] Focus order matches reading order.
 - [ ] The answer feedback is announced — a correct/wrong state a blind user has to go
       hunting for is not feedback.
-- [ ] Confetti and decorative glyphs are silent.
+- [ ] Confetti and decorative glyphs are silent — including the flags on the
+      collection grid and the country page, which are illustration and should say
+      nothing (the tile's own label already reads the country and its description).
+- [ ] **Turn the reader on, then start a lesson.** No question should show a flag and
+      ask which country it is; every flag question should describe the flag in words
+      instead. That swap is `useScreenReader` → `screenReaderOnly`, and it is the guard
+      that made it safe to enable picture questions at all. If a picture question
+      appears, it is a heart lost on a question that cannot be answered by ear.
 - [ ] The tab bar is reachable and operable.
 
 > Keyboard operability is already asserted in `pnpm e2e`: an answer can be reached with
@@ -114,12 +121,16 @@ Not a flagship. The budget is about a mid-tier Android — a device three or fou
 old, which is what a ten-year-old is most likely to be handed.
 
 One input to this is already measured: `pnpm bundle:native` fails if the Hermes bundle
-passes 4.5 MB per platform (3.80 MB today). Hermes reads every byte of it before the
-first frame, so if cold start comes in over 3 s below, bundle size is the one cause you
-can rule out on the way in.
+passes 6.0 MB per platform (**5.75 MB** today), and reports the assets shipped beside
+it (**2.90 MB** — 2.09 MB fonts, 0.71 MB flags, 0.17 MB sounds). Hermes reads every
+byte of the *bundle* before the first frame; the assets are loaded on demand and are
+download weight rather than startup work. If cold start comes in over 3 s below, bundle
+size is the one cause you can rule out on the way in.
 
 - [ ] Cold start under 3 s.
-- [ ] Scroll the 65-tile collection. No visible jank.
+- [ ] Scroll the 65-tile collection. No visible jank. **This is a real test now** —
+      it was 65 placeholder glyphs until the flags landed, and it is 65 decoded
+      600×450 PNGs today. If anything in this section janks, start here.
 - [ ] Answer ten questions quickly. No lag between tap and feedback.
 - [ ] Watch memory across a full lesson. It should not climb monotonically.
 - [ ] The lesson works in aeroplane mode — content ships in the binary — and the queue
@@ -146,7 +157,9 @@ What is left is the round trip, which needs an account:
       own. Verify it on the wire anyway — the whole point is that this is the one place
       where being wrong is a child's typed text leaving the device.
 - [ ] Check what it cost. The SDK added **1.92 MB** to the bundle (3.80 → 5.72). If
-      cold start misses 3 s above, this is the first thing to weigh.
+      cold start misses 3 s above, this is the first thing to weigh — it is by far the
+      largest single contributor, and unlike the fonts and flags it is parsed before
+      the first frame.
 
 ---
 

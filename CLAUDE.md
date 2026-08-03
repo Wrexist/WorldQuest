@@ -148,6 +148,11 @@ unless asked. Full rules: [`PROJECT.md §11`](PROJECT.md#11-git-workflow).
 - `pnpm design:shots` — renders 10 routes × 320/390/768 and measures what a picture
   cannot show (targets under 44 pt, sideways scroll, unlabelled controls). Not a gate.
 - `pnpm design:measure <url>` — measures a reference in this repo's token shape.
+- `pnpm build:flags` — rasterises the country flags from `flag-icons` (MIT) and writes
+  `src/lib/flags.generated.ts`. The PNGs are committed, so run it only when the country
+  list changes. **Never hand-draw a replacement for a flag it cannot find** — that is
+  the wrong-fact bug `docs/design/asset-prompts.md` forbids, and the script says so and
+  exits rather than guessing.
 - Supabase local: `pnpm db:start`, `pnpm db:reset`, `pnpm db:types`.
 - The Supabase MCP server is available in this workspace — prefer it for schema
   inspection over guessing, and **never run destructive SQL against a remote project.**

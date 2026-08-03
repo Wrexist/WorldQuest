@@ -23,6 +23,7 @@ import {
 } from '@worldquest/design'
 import { deriveRating, lessonLength } from '@worldquest/engines'
 import type { GradeResult, LessonState, Question } from '@worldquest/engines'
+import { Flag } from '../../components/Flag.js'
 import { useLesson } from './hooks/useLesson.js'
 import { SPEED_SECONDS } from './modes.js'
 import { OutOfHearts } from './OutOfHearts.js'
@@ -40,6 +41,16 @@ import { recordLessonCompleted } from '../profile/useWeekActivity.js'
 import { enqueueLesson } from '../../lib/sync.js'
 
 type ScreenState = 'loading' | 'error' | 'empty' | 'ready'
+
+/**
+ * How wide the flag in an image question is drawn.
+ *
+ * 200pt, and the asset is rasterised at exactly 3x of it (`scripts/build-flags.cjs`)
+ * so it is never upscaled. Big enough that the question is a fair one — telling Mexico
+ * from Italy is a question about the coat of arms, and at tile size that is a smudge —
+ * and small enough that the four answers below it stay on screen at 320pt.
+ */
+const FLAG_PROMPT_WIDTH = 200
 
 export function LessonScreen({
   onExit,
@@ -274,6 +285,27 @@ export function LessonScreen({
               than by the compiler. */}
           {tContent(question.promptKey, question.promptParams)}
         </Text>
+
+        {/* The picture the prompt is asking about — "Which country's flag is this?".
+            Present only for image-modality templates, which the composer only selects
+            when `PRESENTABLE` says this app can draw one (src/lib/content.ts).
+
+            Labelled, unlike every other flag in the app. Elsewhere a flag illustrates
+            something the surrounding text already says; here it IS the question, and
+            an unannounced image would leave a reader with four country names and no
+            question. It should not arise — a reader user gets the described sibling
+            template instead — but "should not arise" is not a reason to ship an
+            unlabelled image, and the label is what makes that true rather than
+            assumed. */}
+        {question.promptAsset !== undefined && (
+          <View style={styles.promptArt} testID="prompt-art">
+            <Flag
+              path={question.promptAsset}
+              width={FLAG_PROMPT_WIDTH}
+              label={tContent(question.promptKey, question.promptParams)}
+            />
+          </View>
+        )}
 
         <View style={styles.options}>
           {question.options.map((option) => (
@@ -552,6 +584,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   body: { gap: space[5], paddingBottom: space[6] },
   prompt: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
+  promptArt: { alignItems: 'center' },
   options: { gap: space[2] },
   feedback: { gap: space[2] },
   feedbackTitle: { ...text('h3'), color: colors.text.primary },

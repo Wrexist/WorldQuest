@@ -49,7 +49,7 @@
  */
 
 const { execFileSync } = require('node:child_process')
-const { existsSync, readdirSync, statSync, rmSync } = require('node:fs')
+const { existsSync, readdirSync, readFileSync, statSync, rmSync } = require('node:fs')
 const { join } = require('node:path')
 
 const OUT = join(process.cwd(), 'node_modules', '.cache', 'wq-native')
@@ -102,6 +102,41 @@ function bundleSize(dir) {
   return largest
 }
 
+/**
+ * Everything shipped BESIDE the bundle, grouped by kind.
+ *
+ * The budget above is a cold-start number: Hermes reads the whole bundle before the
+ * first frame, so bytecode is parse time. Assets are not — Metro puts a registry
+ * number in the bundle and ships the file separately, loaded on demand.
+ *
+ * That distinction is worth printing rather than knowing, because it is genuinely
+ * counter-intuitive and it was nearly got wrong here. 701 KB of flag PNGs read like
+ * 701 KB against a budget with 250 KB of headroom; the actual cost to the bundle was
+ * **0.03 MB**, the registry entries. Without this breakdown the honest reaction to
+ * that number is to shrink the artwork for no reason.
+ *
+ * Reported, not gated. A download-size ceiling is a real thing to want, but it is a
+ * product decision with a number nobody here has justified yet, and inventing one to
+ * have something to check is how a budget stops meaning anything.
+ */
+function assetBreakdown(dir, platform) {
+  const meta = join(dir, 'metadata.json')
+  if (!existsSync(meta)) return null
+  const assets = JSON.parse(readFileSync(meta, 'utf8')).fileMetadata?.[platform]?.assets
+  if (!Array.isArray(assets)) return null
+
+  const byExt = new Map()
+  let total = 0
+  for (const asset of assets) {
+    const path = join(dir, asset.path)
+    if (!existsSync(path)) continue
+    const size = statSync(path).size
+    total += size
+    byExt.set(asset.ext, (byExt.get(asset.ext) ?? 0) + size)
+  }
+  return { total, count: assets.length, byExt: [...byExt].sort((a, b) => b[1] - a[1]) }
+}
+
 console.log('Native bundles\n')
 
 let failed = 0
@@ -135,6 +170,19 @@ for (const platform of ['ios', 'android']) {
       )
     } else {
       console.log(`  ✓ ${platform.padEnd(8)} ${mb.toFixed(2)} MB  (budget ${BUDGET_MB} MB)`)
+    }
+
+    // Not part of the budget — see `assetBreakdown`. Printed so the two numbers are
+    // never confused for each other again.
+    const assets = assetBreakdown(dir, platform)
+    if (assets !== null) {
+      const kinds = assets.byExt
+        .map(([ext, n]) => `${ext} ${(n / 1024).toFixed(0)} KB`)
+        .join(' · ')
+      console.log(
+        `      + ${(assets.total / 1024 / 1024).toFixed(2)} MB in ${assets.count} assets ` +
+          `(${kinds}) — shipped beside the bundle, not parsed at start`,
+      )
     }
   } catch (error) {
     failed++

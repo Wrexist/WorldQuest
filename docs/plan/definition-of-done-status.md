@@ -12,10 +12,10 @@ the single fact that most of the rest follows from.
 
 ## Automated: green
 
-`pnpm verify` runs typecheck, 644 tests across seven packages, content validation,
+`pnpm verify` runs typecheck, 670 tests across seven packages, content validation,
 i18n completeness, 23 contrast pairs, `lint:a11y`, `escape-hatches`, `reachability`
 and `five-states`.
-`pnpm e2e` runs 51 steps against the real Metro bundle in Chromium — including six
+`pnpm e2e` runs 54 steps against the real Metro bundle in Chromium — including six
 screens re-measured at 200 % text — `pnpm a11y:tree` walks Chromium's computed
 accessibility tree over 10 routes, `pnpm design:shots` renders those routes at
 320/390/768, `pnpm bundle:native` builds both native platforms against a 6.0 MB size
@@ -31,7 +31,7 @@ green while two thirds of the authored content was unreachable.
 
 | Box | State |
 |---|---|
-| iOS **and** Android, phone and tablet, to 320 pt | ⬜ **Never run on either.** No iOS Simulator without macOS, no Android emulator without `/dev/kvm`. Every layout claim in this repo is a claim about Chromium, now checked at 320/390/768. **Both platforms do now bundle** — `pnpm bundle:native`, 3.80 MB of Hermes bytecode each, against a 4.5 MB budget the script enforces. Until that script existed the app had only ever been bundled for web. |
+| iOS **and** Android, phone and tablet, to 320 pt | ⬜ **Never run on either.** No iOS Simulator without macOS, no Android emulator without `/dev/kvm`. Every layout claim in this repo is a claim about Chromium, now checked at 320/390/768. **Both platforms do now bundle** — `pnpm bundle:native`, **5.75 MB** of Hermes bytecode each against a 6.0 MB budget, plus **2.90 MB** of assets shipped beside it (2.09 MB fonts, 0.71 MB flags, 0.17 MB sounds). Until that script existed the app had only ever been bundled for web. |
 | Five states everywhere | ✅ **Audited, and the audit is a script.** `pnpm five-states` checks all 14 screens; 15 states are waived with a recorded reason and the script fails on a waiver the code has outgrown. See below for what it found. |
 | Offline behaviour | ✅ Queue, replay on reconnect, backoff, parked work surfaced. Real connectivity as of Wave 7. |
 | Server-authoritative rewards | ✅ Nothing on the client writes a balance. Achievements, quests and XP all render predictions and say so. |
@@ -40,9 +40,9 @@ green while two thirds of the authored content was unreachable.
 
 | Box | State |
 |---|---|
-| Unit + component tests | ✅ 644 passing, plus 14 against the edge bundle. |
-| No `any`, no `@ts-expect-error` | ✅ Zero of both outside tests — **and now checked**, by `pnpm escape-hatches` in `pnpm verify`. This box was true but unenforced: verified by hand, once, resting on nobody having broken it. Two `eslint-disable`s are allowlisted with written reasons (both lazy/static `require`s that cannot be expressed otherwise), and a stale allowance fails the build like a violation. |
-| Performance on a **mid-tier Android** | ⬜ Not measured — there is no device. **One property of it now is:** `pnpm bundle:native` enforces a per-platform ceiling on the Hermes bundle, because Hermes reads every byte before the first frame and that is the part of cold start visible without hardware. It has already earned its keep: adding Sentry pushed the bundle 3.80 → **5.72 MB** and the budget failed the build, which turned a silent 50 % growth into a recorded decision (budget now 6.0). Frame times, memory and actual startup remain unmeasured. |
+| Unit + component tests | ✅ 670 passing, plus 14 against the edge bundle. |
+| No `any`, no `@ts-expect-error` | ✅ Zero of both outside tests — **and now checked**, by `pnpm escape-hatches` in `pnpm verify`. This box was true but unenforced: verified by hand, once, resting on nobody having broken it. Three `eslint-disable`s are allowlisted with written reasons (all lazy or static `require`s that cannot be expressed otherwise), and a stale allowance fails the build like a violation. |
+| Performance on a **mid-tier Android** | ⬜ Not measured — there is no device. **One property of it now is:** `pnpm bundle:native` enforces a per-platform ceiling on the Hermes bundle, because Hermes reads every byte before the first frame and that is the part of cold start visible without hardware. It has already earned its keep twice. Adding Sentry pushed the bundle 3.80 → **5.72 MB** and the budget failed the build, turning a silent 50 % growth into a recorded decision (budget now 6.0). And when 701 KB of flag artwork landed against 250 KB of headroom, the script now reports assets separately and showed the real cost to the bundle was **0.03 MB** — Metro ships images beside the bytecode rather than inside it, so the obvious reaction (shrink the flags) would have degraded the artwork for nothing. Frame times, memory and actual startup remain unmeasured. |
 | Errors to Sentry with PII-free context | 🟡 **Transport built, round trip unverified.** `@sentry/react-native` installed, `lib/reporting.ts` wires it, `ErrorBoundary` reports through it, init at module scope so a first-render crash is caught. No-op until `EXPO_PUBLIC_SENTRY_DSN` is set — no half-configured state. PII-free is enforced by the **type** (`CrashReport` has no free-text field) plus a `beforeSend` scrubber, both tested. What is missing is a DSN and proof an event arrives. Cost: **1.92 MB** of bundle. |
 
 ## 🟡 Craft
@@ -84,11 +84,9 @@ green while two thirds of the authored content was unreachable.
    called".
 2. ~~**Sound.**~~ Built — and the reason it sat here for months was a bad
    classification, not a real blocker. It was filed next to flags and landmarks under
-   "assets", and it is not the same problem: a national flag is somebody's artwork with
-   a licence attached, and a correct-answer chime is a sine wave with an envelope.
-   `scripts/make-sounds.py` generates all six, so the project owns them with no licence
-   to track and nothing to take down.
-
+   "assets", and it is not the same problem: a correct-answer chime is a sine wave with
+   an envelope. `scripts/make-sounds.py` generates all six, so the project owns them
+   with no licence to track and nothing to take down.
    Three decisions worth keeping. **Wrong is a falling major second, not a buzzer and
    not a minor second** — the latter is the sound of a mistake in every film score ever
    written, and this app does not punish a child for not knowing something yet; it is
@@ -98,7 +96,25 @@ green while two thirds of the authored content was unreachable.
    the stored default read `true`, which cost nothing while nothing played and would
    have been wrong the moment it did — a game that starts making noise on a bus has made
    an enemy in ten seconds.
-3. **Sentry.** The *transport* turned out not to be blocked at all — only the round
+3. ~~**Flags.**~~ Built — **and the note above got the contrast wrong**, which is worth
+   recording because being half-right is what kept this shut. It said a flag is
+   somebody's artwork with a licence attached, unlike a chime. Both halves are true and
+   the conclusion does not follow: a flag *is* somebody's artwork with a licence
+   attached, and that licence is MIT. `docs/design/asset-prompts.md` had named
+   `flag-icons` as the source since the day it was written — in a row headed **do not
+   generate**, because a hand-drawn flag with the wrong number of stars is a wrong fact.
+   "Never draw this" was being read as "we cannot have this yet".
+
+   `pnpm build:flags` rasterises all 65 from flag-icons 7.5.0 (MIT) at 600×450, the
+   licence is recorded per entity in the countries pack, and the collection went from 65
+   identical `⚑` placeholders to the mockup's screen 10. It also turned the lesson's
+   picture question back on — see the section below on what the lesson actually asked.
+
+   The lesson to carry: two blockers on this list in a row turned out to be filing
+   errors rather than dependencies. Whatever is next on it deserves the same second
+   look before it is reported as blocked.
+
+4. **Sentry.** The *transport* turned out not to be blocked at all — only the round
    trip was. "Blocked on a DSN" had been standing in for "blocked on a DSN and also
    nobody has written any of it", and those are very different. The SDK is installed,
    wired, tested and bundling on both platforms; it needs a DSN to do anything, and
@@ -109,7 +125,7 @@ green while two thirds of the authored content was unreachable.
    on a physical device is the app that can least afford invisible crashes — but
    recorded in `scripts/bundle-native.cjs` as debt to revisit with real cold-start
    numbers rather than absorbed quietly.
-4. **A device.** Not something code can fix. Everything that can be prepared for it
+5. **A device.** Not something code can fix. Everything that can be prepared for it
    now is: `apps/mobile/eas.json` has a `preview` profile that produces an installable
    build, and [`device-pass.md`](device-pass.md) is the checklist for the sitting —
    written so the four remaining boxes close in one pass rather than being rediscovered.
@@ -363,9 +379,26 @@ uniformly among a fact's templates, so one flag question in three was a prompt a
 picture that did not exist — and a wrong answer costs a heart.
 
 The engine now carries `promptAsset` on the *question*, and a host declares what it can
-present (`modalities`). `apps/mobile` declares text only, with the reason in the
-constant. Nothing is lost: `tpl.flag-describe.mc4` asks the same fact in words, which
+present (`modalities`). `apps/mobile` declared text only, with the reason in the
+constant. Nothing was lost: `tpl.flag-describe.mc4` asks the same fact in words, which
 is the sibling `accessibility.md` §8 already relies on.
+
+> **Resolved.** That constant said to add `'image'` in the same change that landed the
+> flag assets and the renderer, never before. That change has landed —
+> `scripts/build-flags.cjs` rasterises all 65 flags from `flag-icons` (MIT),
+> `src/components/Flag.tsx` draws them, and `PRESENTABLE` is now `['text', 'image']`.
+> The picture question is back in the rotation and is asserted end to end: `pnpm e2e`
+> walks a lesson until it finds one and checks the artwork actually **decoded**
+> (`naturalWidth > 0`), because a broken asset reference renders a correctly-sized,
+> correctly-labelled blank rectangle that every structural assertion in this repo
+> passes over.
+>
+> The guard that had to ship with it: **nothing ever set `screenReaderOnly`**. It cost
+> nothing while no image question could reach anybody, and would have become a real
+> defect the moment one could — a VoiceOver user asked about a picture, losing a heart
+> on a guess. `src/lib/screenReader.ts` subscribes to `AccessibilityInfo` and the
+> composer swaps in the described sibling. Enabling the capability without the guard
+> would have moved this defect rather than fixed it.
 
 The asset was previously attached to every *option*, including distractors. Nothing
 rendered it, so it was wrong quietly — but the template is answered by country name,

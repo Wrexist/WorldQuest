@@ -197,11 +197,31 @@ Written down so they get solved rather than forgotten.
 | Problem | Approach |
 |---|---|
 | **Map tap questions with a screen reader** | Equivalent accessible list of candidates; same item, same FSRS state |
-| **Flag recognition for blind users** | Flags become descriptive questions ("Which country's flag is a red circle on white?") — a template variant, generated from the same fact |
+| **Flag recognition for blind users** | ✅ **Live.** Flags become descriptive questions ("Which country's flag is a red circle on white?") — a template variant, generated from the same fact, so the `user_facts` row comes out identical. `useScreenReader` → `composeLesson({ screenReaderOnly })` picks it. |
 | **The 3D globe** | Full accessible fallback = the continent grid (screen 9); the globe is never the only path |
 | **Speed rounds** | Opt-in; excluded from all required progression; off in Relaxed Mode |
 | **Streak anxiety** | Streak freeze, streak repair, and a full "hide streaks" setting |
 | **Colour-coded continents** | Always paired with name + silhouette shape |
+
+### A note on the flag row, because it was a trap
+
+That row was marked solved for most of the project's life while being **completely
+inert**. `composeLesson` had a `screenReaderOnly` option that swapped the picture
+question for the described one, the templates existed, the fact was shared, the tests
+passed — and **no caller ever set it**. The design was finished; the wire was not
+connected.
+
+It cost nothing at the time, for a reason that made it harder to see: the app could not
+draw a flag at all, so `PRESENTABLE` was `['text']` and no picture question reached
+anybody, sighted or not. The mechanism was dead code protecting against a case that
+could not occur. The moment flags shipped it would have become a live defect — a
+VoiceOver user asked which flag they were looking at, and a heart taken for guessing.
+
+So the wiring (`src/lib/screenReader.ts`) landed in the same change as the artwork, and
+the constant that enables picture questions says so. **The general shape** — a
+capability whose guard is inert because nothing yet triggers it — is the same failure as
+a settings toggle writing a value nothing reads, which this repo has now shipped five
+times. When something here is marked solved, check for the caller.
 
 ## 9. Statement of intent
 

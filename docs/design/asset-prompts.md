@@ -15,13 +15,27 @@ factual error or a legal problem.
 
 | Asset | Why not | Get it from |
 |---|---|---|
-| **Flags** | A generated flag has the wrong number of stars, the wrong proportions, the wrong shade. In a learning app that is a **wrong fact** — our worst class of bug. | `flag-icons` or `circle-flags` (public-domain SVG). Record the licence in the pack. |
+| **Flags** ✅ **done** | A generated flag has the wrong number of stars, the wrong proportions, the wrong shade. In a learning app that is a **wrong fact** — our worst class of bug. | **`flag-icons` 7.5.0, MIT.** `pnpm build:flags` rasterises all 65 to `apps/mobile/assets/flags/`; the licence is recorded per entity in the countries pack. |
 | **Country / continent geometry** | Generated maps have invented coastlines and wrong borders. That is both a wrong fact and a political problem. | **Natural Earth** (public domain), simplified per zoom. |
 | **UI icons** (tab bar, chevrons, close) | Generated icons drift in weight and optical size, and none of them mirror correctly for RTL. | **Lucide** (ISC) or **Phosphor** (MIT). |
 | **Fonts** | — | **Inter** and **Baloo 2**, both OFL, from Google Fonts. |
 | **Real landmark photography** | Licensing. Wikimedia is mixed-licence and much of it is non-commercial. | Commission illustration (recommended), or licence a stock set. Never generate a "photo" of a real place — it will be subtly wrong and read as fake. |
 
 Everything below this line is safe to generate.
+
+> **A note on how the first of these got unblocked**, because the same mistake is
+> probably still sitting on another row.
+>
+> Flags spent the whole project in the same mental bucket as the mascot — "needs an
+> illustrator" — and were reported as blocked on an art decision. This table said
+> otherwise from the day it was written: the "get it from" column names a package, not
+> a brief. The row is not on this list because flags are *hard to draw*. It is here
+> because they must not be drawn, and something already drawn them correctly.
+>
+> "Do not generate this" and "we cannot have this yet" point in opposite directions,
+> and reading the first as the second cost months. Two other rows here name a source
+> rather than a brief — geometry and icons. Neither is blocked on anybody's decision
+> either.
 
 ---
 

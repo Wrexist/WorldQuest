@@ -484,7 +484,13 @@ describe('presentation', () => {
   it('puts the image on the prompt, never on the options', () => {
     const q = buildQuestion(index, imageItem, 'en', seededRng(3))!
     expect(q.modality).toBe('image')
-    expect(q.promptAsset).toBe('flags/SE.svg')
+    // Compared against the pack rather than against a literal path. This used to say
+    // `flags/SE.svg`, and the day the flags actually shipped — as PNG, because
+    // rendering SVG on React Native needs a native module — this test failed for a
+    // reason that had nothing to do with what it was testing. The claim is "the prompt
+    // carries the entity's own declared asset", and the file extension is the content
+    // pack's business.
+    expect(q.promptAsset).toBe(index.entities.get('SE')!.assets!['flag']!.path)
 
     // The template is answered by country NAME. A flag beside each name would print
     // the answer next to it — the reason this moved off the options.

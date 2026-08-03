@@ -32,6 +32,16 @@ facts × 6 templates ≈ 1,500+ items.
 **Never invent a fact.** If you cannot source it, write `TODO(verify)`. A wrong fact
 in a learning app is a P1 bug — the worst defect this product can ship.
 
+**A picture is a fact too.** Flags carry `assets.flag` with a path, a `license` and an
+`attribution`, and the artwork is rasterised from `flag-icons` by `pnpm build:flags` —
+never drawn. A flag with the wrong number of stars is exactly the P1 above, arriving as
+an image instead of a string, where no proofreader will catch it. Adding a country means
+running that script; it fails loudly if the source set has no flag for the code, and the
+right answer to that is to find a public-domain source or drop the country, never to
+draw one. `apps/mobile` asserts at test time that every declared path resolves to a file
+we actually ship, so a pack that promises artwork nobody bundled fails rather than
+rendering a placeholder that looks deliberate.
+
 ## Sensitive content
 
 Disputed territories, contested capitals, unrecognised states and region-dependent

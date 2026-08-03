@@ -211,13 +211,18 @@ const step = (name, ok, detail = '') => {
       const first = document.querySelector('[data-testid="answer-option"]')
       if (!first) return null
       const optTop = first.getBoundingClientRect().top
-      // The LAST laid-out heading above the options, not the first in the DOM.
-      // expo-router leaves the previous route mounted, so `[role="heading"]` still
-      // matches Home's "Explorer!" at zero height — measuring from that reported a
-      // 160px gap for a screen whose real gap is 24px. Same shape as the
-      // first-button-in-the-DOM bug documented above: the selector was right about
-      // the role and wrong about which one.
-      const above = [...document.querySelectorAll('[role="heading"]')]
+      // The LAST laid-out piece of QUESTION above the options, not the first in the
+      // DOM.
+      //
+      // Two selectors, because a question is not always only text. expo-router leaves
+      // the previous route mounted, so `[role="heading"]` still matches Home's
+      // "Explorer!" at zero height — measuring from that reported a 160px gap for a
+      // screen whose real gap is 24px. And a flag question puts a 150pt image between
+      // the prompt and the answers, which is the question rather than a void; measuring
+      // past it to the heading would fail this step on the one screen the mockup cares
+      // most about. Same shape as the first-button-in-the-DOM bug above: the selector
+      // was right about the kind of thing and wrong about which ones.
+      const above = [...document.querySelectorAll('[role="heading"], [data-testid="prompt-art"]')]
         .map((h) => h.getBoundingClientRect())
         .filter((r) => r.height > 0 && r.bottom <= optTop)
       if (above.length === 0) return null
@@ -243,6 +248,106 @@ const step = (name, ok, detail = '') => {
     // would reach a child before it reached a reviewer.
     step('wrong-answer copy does not shame', !/Wrong!|Oops!|Incorrect!/i.test(text))
     await page.screenshot({ path: path.join(SHOTS, 'feedback.png') })
+
+    // ── the flag question, which is the mockup's lesson screen ──────────────
+    //
+    // "Which country's flag is this?" is an image-modality template that was filtered
+    // out of every lesson for the life of the project, because no flag file existed to
+    // draw. The unit tests prove the composer selects it again; only this proves it
+    // RENDERS — through Metro's asset pipeline, in the real bundle, with bytes that
+    // actually decode.
+    //
+    // `naturalWidth > 0` is the whole point. A broken asset reference renders an <img>
+    // with the right src, the right size and the right alt, and shows nothing: every
+    // structural assertion in this repo passes over a blank rectangle. The decoded
+    // width is the one property that cannot be faked by the DOM being correct.
+    //
+    // Walks forward rather than seeking: which question comes first is the composer's
+    // business, and a step that demanded one in a fixed position would be asserting
+    // the RNG. It gives up quietly after the lesson's length — reporting "not reached"
+    // instead of failing, because a lesson legitimately might not contain one.
+    // Clicks the Continue the USER can see.
+    //
+    // expo-router leaves the previous route mounted, so while a lesson is open Home's
+    // own "Continue" is still in the DOM — hidden, and first. `.first().click()` waits
+    // thirty seconds on it and then fails with "element is not visible". This is the
+    // third bug in this file caused by a selector matching the right kind of thing on
+    // the wrong route; the other two are the zero-height heading and the close button.
+    const clickVisibleContinue = async () => {
+      for (const candidate of await page.getByText('Continue', { exact: true }).all()) {
+        if (await candidate.isVisible()) {
+          await candidate.click()
+          return true
+        }
+      }
+      return false
+    }
+
+    let flag = null
+    for (let i = 0; i < 12 && flag === null; i++) {
+      // The block above already answered, so this arrives on the feedback card with
+      // every option disabled. Advance FIRST, and on every later lap too — an option
+      // that is present but disabled is exactly what Playwright waits thirty seconds
+      // on before failing with "element is not enabled".
+      const waiting = await page.getByTestId('answer-option').first().isDisabled()
+      if (waiting) {
+        if (!(await clickVisibleContinue())) break
+        await page.waitForTimeout(800)
+      }
+
+      const art = await page.evaluate(() => {
+        const slot = document.querySelector('[data-testid="prompt-art"]')
+        if (!slot) return null
+        const img = slot.querySelector('img')
+        if (!img) return { drawn: false, src: null, alt: null, w: 0, h: 0 }
+        // The IMAGE's box, not the slot's. The slot centres the flag and so spans the
+        // full content width — measuring that reported 358×150 for a 200×150 flag and
+        // called a correct 4:3 image a 2.39 one.
+        const box = img.getBoundingClientRect()
+        return {
+          drawn: img.naturalWidth > 0 && img.naturalHeight > 0,
+          src: img.getAttribute('src'),
+          alt: img.getAttribute('alt'),
+          w: Math.round(box.width),
+          h: Math.round(box.height),
+        }
+      })
+      if (art !== null) {
+        flag = art
+        break
+      }
+      const next = await page.getByTestId('answer-option').all()
+      if (next.length === 0) break
+      await next[0].click()
+      await page.waitForTimeout(700)
+    }
+
+    if (flag === null) {
+      step('flag question renders its artwork', true, 'not reached in this lesson')
+    } else {
+      step(
+        'flag question renders its artwork',
+        flag.drawn === true,
+        flag.drawn ? `${flag.src} decoded at ${flag.w}×${flag.h}` : `${flag.src} did not decode`,
+      )
+      // 4:3, measured off the laid-out box rather than trusted from the stylesheet.
+      // The slot this replaced was 3:2, and squeezing flag-icons' 4:3 artwork into it
+      // would stretch Japan's disc into an ellipse — a wrong fact, drawn.
+      const ratio = flag.h > 0 ? flag.w / flag.h : 0
+      step(
+        'and at the ratio the artwork was drawn for',
+        Math.abs(ratio - 4 / 3) < 0.05,
+        `${flag.w}×${flag.h} = ${ratio.toFixed(2)}`,
+      )
+      // It IS the question, so unlike every other flag in the app it must announce
+      // itself. react-native-web silently drops `alt` on `Image` — the first version
+      // of this component passed it and announced nothing.
+      step(
+        'and announces itself, because here the picture is the question',
+        typeof flag.alt === 'string' && flag.alt.length > 0,
+        flag.alt ?? '(none)',
+      )
+    }
   }
 
   // ── every tab, because a white screen on one of five is a shipped white screen ──

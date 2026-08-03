@@ -8,6 +8,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import { useOnline } from './connectivity.js'
+import { useScreenReader } from './screenReader.js'
 import { currentLocale } from './i18n.js'
 import {
   buildIndex,
@@ -35,20 +36,23 @@ export type LoadedContent = {
 /**
  * What this app can put on screen today.
  *
- * Text only, and that is an asset problem rather than a code one. The geography pack
- * ships `tpl.flag-to-country.mc4` — "Which country's flag is this?", modality `image`
- * — and no flag file exists in this repo, so the question rendered as a prompt about
- * a picture that was not there, above four country names. One in three flag questions
- * in a real lesson was that question, and a wrong answer on it costs a heart.
+ * This was `['text']` for most of the project's life, and the note here said to add
+ * `'image'` in the same change that landed the flag assets and the renderer, never
+ * before — because this constant is the one place that claims we can show a picture.
+ * That change is `scripts/build-flags.cjs`, `src/lib/flags.ts` and
+ * `src/components/Flag.tsx`, so `'image'` is now true rather than aspirational, and
+ * `tpl.flag-to-country.mc4` — "Which country's flag is this?", the mockup's lesson
+ * screen — is back in the rotation.
  *
- * Nothing is lost by narrowing it. The same fact is still asked, through
- * `tpl.flag-describe.mc4`, which describes the flag in words — the sibling template
- * `docs/design/accessibility.md` §8 already relies on for exactly this reason.
+ * `map` and `audio` stay out. The geography pack ships no template using either, so
+ * listing them would claim a capability nothing exercises; the globe and the
+ * pronunciation packs each add their own entry when they add their renderer.
  *
- * Add `'image'` here in the same change that lands the flag assets and the renderer,
- * never before: this constant is the one place that claims we can show a picture.
+ * The guard that had to land with it is `screenReaderOnly` below. An image question is
+ * unanswerable by ear, and enabling one without swapping in the described sibling
+ * would move this bug rather than fix it.
  */
-const PRESENTABLE = ['text'] as const
+const PRESENTABLE = ['text', 'image'] as const
 
 export function useContent() {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('ready')
@@ -57,6 +61,10 @@ export function useContent() {
   // entire life. Content itself is never offline — the packs are in the binary — so
   // this describes the connection, not the load.
   const online = useOnline()
+  // Read here, not in the lesson: it changes which QUESTIONS exist, not how they are
+  // drawn. Someone who switches VoiceOver on mid-session has told us they need it now,
+  // and the next lesson they start should already describe flags rather than show them.
+  const screenReaderOn = useScreenReader()
 
   // Real memory state arrives from Supabase in week 3. Empty here means every fact
   // reads as new, which is the correct cold-start behaviour anyway.
@@ -89,13 +97,18 @@ export function useContent() {
             locale: currentLocale(),
             count,
             modalities: PRESENTABLE,
+            // Swaps `tpl.flag-to-country.mc4` for `tpl.flag-describe.mc4` — same fact,
+            // same `user_facts` row, same scheduler, described in words instead of
+            // shown. accessibility.md §8. See `PRESENTABLE` above for why the two had
+            // to land together.
+            screenReaderOnly: screenReaderOn,
           }),
       }
     } catch {
       setStatus('error')
       return null
     }
-  }, [memory, nonce])
+  }, [memory, nonce, screenReaderOn])
 
   const reload = useCallback(() => {
     setStatus('ready')

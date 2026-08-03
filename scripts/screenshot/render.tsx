@@ -40,6 +40,7 @@ import {
   type Fact,
   type Template,
 } from '@worldquest/engines'
+import { Flag } from '../../apps/mobile/src/components/Flag.js'
 import { HomeScreen } from '../../apps/mobile/src/features/home/HomeScreen.js'
 import { AchievementsScreen } from '../../apps/mobile/src/features/achievements/AchievementsScreen.js'
 import { CATALOGUE } from '../../apps/mobile/src/features/achievements/useAchievements.js'
@@ -74,6 +75,15 @@ const capitalQuestion =
   questions.find((q) => q.item.templateId === 'tpl.capital.mc4') ?? questions[0]!
 const flagQuestion =
   questions.find((q) => q.item.templateId === 'tpl.flag-describe.mc4') ?? questions[1]!
+/**
+ * The PICTURE flag question — the mockup's lesson screen.
+ *
+ * It was unreachable for the life of the project: `PRESENTABLE` excluded `image`
+ * because no flag file existed, so this frame could not be drawn and the gallery
+ * showed only the described sibling beside it. Both belong here — they are what a
+ * sighted and a screen-reader user each get for the same fact.
+ */
+const flagImageQuestion = questions.find((q) => q.item.templateId === 'tpl.flag-to-country.mc4')
 
 /** Exactly the state the mockup depicts, so the two can be compared directly. */
 const MOCKUP_STATE = {
@@ -172,7 +182,9 @@ function LessonView({
   const correct = question.options.find((o) => o.isCorrect)!
   const prompt = question.promptKey.includes('capital_of')
     ? `What is the capital of ${question.promptParams['entityName']}?`
-    : `Which country's flag is ${question.promptParams['description']}?`
+    : question.promptKey.includes('which_flag')
+      ? `Which country's flag is this?`
+      : `Which country's flag is ${question.promptParams['description']}?`
 
   return (
     <View style={s.screen}>
@@ -183,6 +195,15 @@ function LessonView({
       </View>
 
       <Text style={s.prompt}>{prompt}</Text>
+
+      {/* The real `Flag` component and the real asset, unlike the rest of this
+          reconstruction — there is nothing stateful about an image, so there is no
+          reason to fake one. */}
+      {question.promptAsset !== undefined && (
+        <View style={s.promptArt}>
+          <Flag path={question.promptAsset} width={200} label={prompt} />
+        </View>
+      )}
 
       <View style={s.options}>
         {question.options.map((o) => (
@@ -291,6 +312,12 @@ function Gallery() {
           />
         </Phone>
 
+        {flagImageQuestion !== undefined && (
+          <Phone label="Lesson · flag question" id="lesson-flag-image">
+            <LessonView question={flagImageQuestion} answered={false} />
+          </Phone>
+        )}
+
         <Phone label="Lesson · screen-reader-safe flag question" id="lesson-flag">
           <LessonView question={flagQuestion} answered={false} />
         </Phone>
@@ -313,6 +340,10 @@ function Gallery() {
           <CountryScreen
             name="Sweden"
             region="EU"
+            // The real artwork, so this gallery shows what ships rather than the
+            // placeholder that stood in for it. See the warning below about the one
+            // frame here that is NOT the real component.
+            assetPath="flags/SE.png"
             facts={[
               {
                 id: 'geo.SE.capital',
@@ -465,6 +496,7 @@ const s = StyleSheet.create({
   flex: { flex: 1 },
   counter: { ...text('caption', { weight: '700', numeric: true }), color: colors.status.progress },
   prompt: { ...text('h2'), color: colors.text.primary, textAlign: 'center', marginTop: space[3] },
+  promptArt: { alignItems: 'center' },
   // No `marginTop: 'auto'` here — that is what the real screen does NOT do, and
   // putting it here bottom-anchored the answers and manufactured a half-screen void
   // above them that does not exist in the app. Measured in the shipped bundle at

@@ -32,7 +32,13 @@ export default function CountryRoute() {
   const view = useMemo(() => {
     const entity = index === null || code === undefined ? undefined : index.index.entities.get(code)
     if (index === null || entity === undefined) {
-      return { name: null, region: null, facts: [] as CountryFact[], progress: null }
+      return {
+        name: null,
+        region: null,
+        assetPath: undefined,
+        facts: [] as CountryFact[],
+        progress: null,
+      }
     }
 
     const locale = currentLocale()
@@ -57,6 +63,8 @@ export default function CountryRoute() {
     return {
       name: entity.names[locale] ?? entity.names['en'] ?? entity.id,
       region: isRegion(entity.region) ? entity.region : null,
+      // From the pack, never built from `code` — see the note in collection/[kind].
+      assetPath: entity.assets?.['flag']?.path,
       facts,
       progress: entityProgress(index.index, entity.id, memory, now),
     }
@@ -77,6 +85,7 @@ export default function CountryRoute() {
         onBack={() => (router.canGoBack() ? router.back() : router.replace('/explore'))}
         name={view.name}
         region={view.region}
+        assetPath={view.assetPath}
         facts={view.facts}
         progress={view.progress}
         onPractise={() => router.push('/lesson')}

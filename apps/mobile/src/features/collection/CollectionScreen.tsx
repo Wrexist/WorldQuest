@@ -25,8 +25,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
+import { Flag } from '../../components/Flag.js'
 import {
-  ArtSlot,
   Button,
   Card,
   ProgressBar,
@@ -44,6 +44,12 @@ export type CollectionTile = {
   readonly id: string
   readonly name: string
   readonly subtitle?: string | undefined
+  /**
+   * The content pack's `assets.flag.path`. Passed through rather than derived from
+   * `id` so the pack stays the thing that decides which file a country's flag is —
+   * see `lib/flags.ts`. Absent draws the placeholder.
+   */
+  readonly assetPath?: string | undefined
   /** Mastered — the user has actually learned this, not merely seen it once. */
   readonly collected: boolean
   /** Starred on the country page. A bookmark, orthogonal to `collected`. */
@@ -59,10 +65,13 @@ export type CollectionScreenProps = {
    * Renders the reserved art slot on each tile instead of the subtitle text.
    *
    * For flags, the artwork IS the content — a truncated uppercase sentence describing
-   * a flag is not a collectible, it is a caption with nowhere to go. The slot holds
-   * the right space at the right aspect ratio, so the sourced SVGs drop in without a
-   * relayout. The description stays in the accessibility label, where it is the only
-   * thing a screen-reader user has.
+   * a flag is not a collectible, it is a caption with nowhere to go. The description
+   * stays in the accessibility label, where it is the only thing a screen-reader user
+   * has.
+   *
+   * This used to reserve an empty slot at flag proportions against the day real
+   * artwork arrived. It has arrived (`components/Flag.tsx`), and the slot is now the
+   * fallback rather than the plan.
    */
   readonly art?: boolean
   readonly loading?: boolean
@@ -270,9 +279,14 @@ function Tile({
       style={[styles.tile, !tile.collected && styles.tileDim]}
     >
       {art ? (
-        // 3:2 — the aspect ratio of most national flags, so the sourced SVG replaces
-        // this without moving a single tile.
-        <ArtSlot tint={colors.bg.surfaceRaised} glyph="⚑" width={72} height={48} />
+        // The real flag, from the content pack's own asset path. `Flag` falls back to
+        // the placeholder this used to be if the bundle has no file for it — never to
+        // another country's artwork.
+        //
+        // Decorative: the tile's accessibility label above already reads the country,
+        // the flag's description and whether it is collected, so an announcing image
+        // would say the same things a second time.
+        <Flag path={tile.assetPath} width={72} />
       ) : (
         tile.subtitle !== undefined && (
           <Text style={styles.tileSub} numberOfLines={3}>

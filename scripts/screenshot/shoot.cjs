@@ -13,7 +13,7 @@ const path = require('path')
 
 const SHOTS = [
   'home-first', 'home-returning', 'home-loading', 'home-offline',
-  'lesson-question', 'lesson-correct', 'lesson-wrong', 'lesson-flag',
+  'lesson-question', 'lesson-correct', 'lesson-wrong', 'lesson-flag-image', 'lesson-flag',
   'explore', 'country', 'quests', 'profile', 'achievements', 'settings',
 ]
 

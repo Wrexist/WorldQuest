@@ -54,6 +54,11 @@ export default function CollectionRoute() {
           id: entity.id,
           name,
           subtitle: fact?.value.names?.[locale] ?? fact?.value.names?.['en'],
+          // Straight from the pack, never built from the id. The pack is what declares
+          // where a country's flag lives and under what licence — deriving the path
+          // here would mean a country whose artwork we do not ship still asks for a
+          // file, and gets whatever happens to be at that name.
+          assetPath: entity.assets?.['flag']?.path,
           // Mastery, not exposure. A country you saw once and got wrong is not
           // collected, and pretending otherwise makes the whole number meaningless.
           // `mastered` is the bar rather than `burnished`: burnished is the very top
