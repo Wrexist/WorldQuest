@@ -15,7 +15,7 @@ the single fact that most of the rest follows from.
 `pnpm verify` runs typecheck, 627 tests across seven packages, content validation,
 i18n completeness, 23 contrast pairs, `lint:a11y`, `escape-hatches`, `reachability`
 and `five-states`.
-`pnpm e2e` runs 50 steps against the real Metro bundle in Chromium — including six
+`pnpm e2e` runs 51 steps against the real Metro bundle in Chromium — including six
 screens re-measured at 200 % text — `pnpm design:shots` renders 10 routes at
 320/390/768, `pnpm bundle:native` builds both native platforms against a 4.5 MB size
 budget, and `pnpm edge:test` runs 14 against the vendored edge bundle.

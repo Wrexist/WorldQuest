@@ -114,8 +114,18 @@ const step = (name, ok, detail = '') => {
   const lessonPrompt = async () => {
     const options = await page.getByTestId('answer-option').all()
     if (options.length === 0) return undefined
-    const heading = await page.locator('[role="heading"]').first().textContent()
-    return heading?.trim() || undefined
+    // `.first()` matched the PREVIOUS route's heading — expo-router leaves it mounted
+    // at zero height, so this reported "Explorer!" as the lesson's question. The step
+    // still passed (a heading existed), which is exactly why it went unnoticed: the
+    // assertion was structural and only the printed detail was wrong. Filter to
+    // headings that are actually laid out.
+    const heading = await page.evaluate(() => {
+      const visible = [...document.querySelectorAll('[role="heading"]')].find(
+        (h) => h.getBoundingClientRect().height > 0,
+      )
+      return visible?.textContent ?? ''
+    })
+    return heading.trim() || undefined
   }
 
   // ── first launch: a brand-new user meets onboarding, not Home ─────────────
@@ -184,6 +194,41 @@ const step = (name, ok, detail = '') => {
     // green with an empty feedback string, which is the only reason it was caught.
     const options = await page.getByTestId('answer-option').all()
     const answered = options.length > 0
+
+    // The question and its answers must read as one thing.
+    //
+    // The screenshot harness's reconstruction of this screen carried
+    // `marginTop: 'auto'` on the options, which bottom-anchored them and opened a
+    // half-screen void under the prompt. It looked plausible in a gallery and it was
+    // never true of the app — but nothing here could tell, so the design docs showed
+    // that layout for as long as it existed.
+    //
+    // The app's own version of that mistake is one line away, so it is measured
+    // rather than trusted. 120px is generous: the real gap is 24px, and anything
+    // beyond ~a third of the viewport means the prompt and the answers have stopped
+    // being a single question.
+    const layout = await page.evaluate(() => {
+      const first = document.querySelector('[data-testid="answer-option"]')
+      if (!first) return null
+      const optTop = first.getBoundingClientRect().top
+      // The LAST laid-out heading above the options, not the first in the DOM.
+      // expo-router leaves the previous route mounted, so `[role="heading"]` still
+      // matches Home's "Explorer!" at zero height — measuring from that reported a
+      // 160px gap for a screen whose real gap is 24px. Same shape as the
+      // first-button-in-the-DOM bug documented above: the selector was right about
+      // the role and wrong about which one.
+      const above = [...document.querySelectorAll('[role="heading"]')]
+        .map((h) => h.getBoundingClientRect())
+        .filter((r) => r.height > 0 && r.bottom <= optTop)
+      if (above.length === 0) return null
+      return Math.round(optTop - Math.max(...above.map((r) => r.bottom)))
+    })
+    step(
+      'the answers sit with the question, not flung to the bottom',
+      layout !== null && layout < 120,
+      layout === null ? 'not measurable' : `${layout}px below the prompt`,
+    )
+
     if (answered) await options[0].click()
 
     await page.waitForTimeout(1200)

@@ -11,7 +11,7 @@
 
 import { AppRegistry, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
 import {
@@ -243,6 +243,14 @@ function Gallery() {
         Rendered from the app&apos;s own source via react-native-web. Questions come from
         the content engine over the shipped packs — not hand-written.
       </Text>
+      <Text style={s.lede}>
+        One exception, stated because an unmarked one is a lie: the four lesson frames
+        use a reconstruction of the lesson screen&apos;s presentational layer, not
+        LessonScreen itself, which owns its own state machine and cannot be frozen
+        mid-answer from here. Every other frame imports the real component. That
+        reconstruction has drifted once already — it bottom-anchored the answers and
+        invented a void the app never had.
+      </Text>
 
       <View style={s.phones}>
         <Phone label="Home · first launch" id="home-first" tab="index">
@@ -457,13 +465,21 @@ const s = StyleSheet.create({
   flex: { flex: 1 },
   counter: { ...text('caption', { weight: '700', numeric: true }), color: colors.status.progress },
   prompt: { ...text('h2'), color: colors.text.primary, textAlign: 'center', marginTop: space[3] },
-  options: { gap: space[2], marginTop: 'auto' },
+  // No `marginTop: 'auto'` here — that is what the real screen does NOT do, and
+  // putting it here bottom-anchored the answers and manufactured a half-screen void
+  // above them that does not exist in the app. Measured in the shipped bundle at
+  // 390×844: heading at y=76, first option at y=160, a 24px gap. The app flows from
+  // the top; only the footer is pinned.
+  options: { gap: space[2] },
   feedback: { gap: space[2] },
   feedbackOk: { ...text('h2'), color: colors.feedback.correct },
   feedbackTitle: { ...text('h3'), color: colors.text.primary },
   feedbackBody: { ...text('body'), color: colors.text.secondary },
   row: { flexDirection: 'row', gap: space[2] },
-  footer: { paddingBottom: space[2] },
+  // The real screen puts the footer OUTSIDE its ScrollView, so Continue sits at the
+  // bottom of the screen while the question scrolls. This flat column reproduces that
+  // with `marginTop: 'auto'` on the footer — the same visual result, same place.
+  footer: { paddingBottom: space[2], marginTop: 'auto' },
   bench: { flexDirection: 'row', flexWrap: 'wrap', gap: space[4] },
   cell: {
     width: 280, gap: space[3], padding: space[4],
@@ -506,14 +522,39 @@ function fontFaces(): string {
     Nunito: resolve('@expo-google-fonts/nunito'),
   }
 
-  return FONT_FAMILIES.map((family) => {
-    const dir = dirs[family.split('_')[0] as keyof typeof dirs]
-    const ttf = readFileSync(join(dir, `${family}.ttf`)).toString('base64')
-    // No `font-weight` descriptor on purpose: each file IS its own family here,
-    // exactly as React Native treats it. Declaring a weight would let the browser
-    // synthesise the others and hide the very mistake this mirrors.
-    return `@font-face{font-family:"${family}";src:url(data:font/ttf;base64,${ttf}) format("truetype")}`
-  }).join('')
+  // `FONT_FAMILIES` is derived from every weight named in tokens.json, so the same
+  // face appears once per role that uses it — Nunito_700Bold is both a heading and a
+  // button. Embedding it per occurrence would inline the same ~200 kB of base64 twice.
+  const unique = [...new Set(FONT_FAMILIES)]
+
+  return unique
+    .map((family) => {
+      // `Nunito_700Bold` → package root, then `700Bold/Nunito_700Bold.ttf`.
+      //
+      // @expo-google-fonts ships one directory per weight; the files are NOT flat at
+      // the package root. This script assumed flat and broke the moment the type
+      // system moved to Nunito — silently, in the sense that nobody runs `pnpm
+      // screenshot` on every commit, so the checked-in comparison images kept showing
+      // the previous typeface while the app had already changed.
+      const [prefix, ...rest] = family.split('_')
+      const dir = dirs[prefix as keyof typeof dirs]
+      const path = join(dir, rest.join('_'), `${family}.ttf`)
+      if (!existsSync(path)) {
+        throw new Error(
+          `Font file not found for "${family}":\n  ${path}\n\n` +
+            'The design tokens name a weight that @expo-google-fonts does not ship at ' +
+            'that path.\nCheck the weight exists in tokens.json AND in ' +
+            'apps/mobile/src/lib/fonts.ts — a screenshot in the wrong face is worse ' +
+            'than no screenshot, because it looks finished.',
+        )
+      }
+      const ttf = readFileSync(path).toString('base64')
+      // No `font-weight` descriptor on purpose: each file IS its own family here,
+      // exactly as React Native treats it. Declaring a weight would let the browser
+      // synthesise the others and hide the very mistake this mirrors.
+      return `@font-face{font-family:"${family}";src:url(data:font/ttf;base64,${ttf}) format("truetype")}`
+    })
+    .join('')
 }
 
 const body = renderToStaticMarkup(element as never)
