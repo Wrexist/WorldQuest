@@ -31,6 +31,9 @@ export default defineConfig({
     },
   },
   esbuild: { jsx: 'automatic' },
+  // Metro treats .wav as an asset and hands `require` a numeric handle; Vite has to be
+  // told, or it tries to parse the RIFF header as JavaScript.
+  assetsInclude: ['**/*.wav'],
   define: {
     // Metro defines this; jsdom does not. Without it, anything guarded by __DEV__
     // throws a ReferenceError before the first assertion runs.

@@ -88,3 +88,24 @@ console.warn = (...args: unknown[]) => {
   if (first.includes('deprecated') && first.includes('style props')) return
   realWarn(...args)
 }
+
+/**
+ * Audio reaches a native module and throws at import in jsdom, exactly like NetInfo
+ * and MMKV. The stub resolves so the module graph loads; nothing here asserts that a
+ * sound was heard, because a passing "a function was called" test would be equally
+ * happy with a buzzer. `sound.test.ts` asserts the rules against the source instead.
+ */
+vi.mock('expo-av', () => ({
+  Audio: {
+    setAudioModeAsync: async () => {},
+    Sound: {
+      createAsync: async () => ({
+        sound: {
+          setPositionAsync: async () => {},
+          playAsync: async () => {},
+          unloadAsync: async () => {},
+        },
+      }),
+    },
+  },
+}))

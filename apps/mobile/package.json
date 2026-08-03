@@ -23,6 +23,7 @@
     "@worldquest/engines": "workspace:*",
     "@worldquest/i18n": "workspace:*",
     "expo": "~52.0.0",
+    "expo-av": "^16.0.8",
     "expo-constants": "~17.0.0",
     "expo-font": "~13.0.0",
     "expo-haptics": "~14.0.0",

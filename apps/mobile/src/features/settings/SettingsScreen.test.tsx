@@ -24,14 +24,27 @@ describe('Settings', () => {
     // that has to sweep a label, then a paragraph, then an unlabelled control is a
     // toggle nobody flips.
     renderSettings()
-    const sound = screen.getByRole('switch', { name: 'Sound effects' })
-    expect(sound.getAttribute('aria-checked')).toBe('true')
+    // Haptics, not sound: haptics default ON and sound defaults OFF, so this is the
+    // one that proves a switch renders its state rather than a constant.
+    const haptics = screen.getByRole('switch', { name: 'Vibration' })
+    expect(haptics.getAttribute('aria-checked')).toBe('true')
+  })
+
+  it('starts with sound OFF, because nobody has been asked yet', () => {
+    // design-system.md §9. A game that starts making noise on a bus, in a classroom,
+    // or next to a sleeping baby has made an enemy in its first ten seconds. This
+    // default read `true` for as long as there was no sound to play, and would have
+    // been wrong the moment there was.
+    renderSettings()
+    expect(screen.getByRole('switch', { name: 'Sound effects' }).getAttribute('aria-checked')).toBe(
+      'false',
+    )
   })
 
   it('reflects a changed preference rather than its own state', () => {
-    renderSettings({ preferences: { ...DEFAULTS, sound: false } })
+    renderSettings({ preferences: { ...DEFAULTS, sound: true } })
     expect(screen.getByRole('switch', { name: 'Sound effects' }).getAttribute('aria-checked')).toBe(
-      'false',
+      'true',
     )
   })
 

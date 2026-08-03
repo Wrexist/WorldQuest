@@ -29,6 +29,7 @@ import { OutOfHearts } from './OutOfHearts.js'
 import { Paused } from './Paused.js'
 import { recordPace, useItemPace } from './usePace.js'
 import { hapticCelebrate, hapticCorrect, hapticWrong } from '../../lib/haptics.js'
+import { soundCorrect, soundLevelUp, soundWrong } from '../../lib/sound.js'
 import { recordLessonForAchievements } from '../achievements/progress.js'
 import { todaysQuest } from '../quests/useDailyQuest.js'
 import { recordQuestEvent } from '../quests/questProgress.js'
@@ -95,6 +96,7 @@ export function LessonScreen({
     // would show an empty week to anyone who finishes a lesson offline.
     recordLessonCompleted()
     hapticCelebrate()
+    soundLevelUp()
     // The user's pace, from the answers just given. Sizes every later lesson.
     recordPace(state.answers)
 
@@ -283,8 +285,17 @@ export function LessonScreen({
                 // Fired from the option's own correctness rather than from the
                 // state after dispatch: the reducer has not run yet at this point,
                 // and reading `lastAnswer` here would buzz for the PREVIOUS question.
-                if (option.isCorrect) hapticCorrect()
-                else hapticWrong()
+                // Sound and haptic together, both from the option's own correctness
+                // rather than from the state after dispatch — the reducer has not run
+                // yet, so reading `lastAnswer` here would fire for the PREVIOUS
+                // question. Both are no-ops when their toggle is off.
+                if (option.isCorrect) {
+                  hapticCorrect()
+                  soundCorrect()
+                } else {
+                  hapticWrong()
+                  soundWrong()
+                }
 
                 // The richest event we have, and the one that sets lesson length
                 // honestly: accuracy by POSITION is a measurement, not a guess.

@@ -49,7 +49,7 @@ green while two thirds of the authored content was unreachable.
 | Tokens only | ✅ Guarded by `tokens.test.ts` and `design:contrast`. The whole system was rebuilt around one rounded face and pressable depth — see `docs/design/design-system.md` §4a and §5. |
 | Reduced motion **verified** | 🟡 The code path is guarded and unit-tested — and the guard now proves the helpers it trusts actually consult the setting, which it did not before. Still not watched on a device with the setting on. |
 | Haptics on every meaningful outcome | 🟡 Built and wired to the answer path and lesson completion, honouring the Settings toggle that until now wrote a preference nothing read. **Unverified on a device** — like everything else here, and a vibration is the one thing a screenshot can never show. |
-| Sound respects the Settings toggle | ⬜ **There is no sound.** The toggle in Settings writes a preference nothing reads — the same shape of bug as the daily goal was before Wave 7. |
+| Sound respects the Settings toggle | ✅ Six sounds, **generated** rather than sourced, so the project owns them outright. Off by default per §9; the toggle that wrote a preference nothing read now drives them. |
 
 ## 🟡 Inclusion
 
@@ -79,9 +79,22 @@ green while two thirds of the authored content was unreachable.
    A test asserts the source never reaches for it, because a runtime test would pass
    just as happily with the punishing pattern: both spellings are "a function was
    called".
-2. **Sound.** Blocked on **assets**, not on code. There are no audio files, and the
-   same licensing question that holds up flags and landmarks holds up a correct-answer
-   chime. The Settings toggle still writes a preference nothing reads.
+2. ~~**Sound.**~~ Built — and the reason it sat here for months was a bad
+   classification, not a real blocker. It was filed next to flags and landmarks under
+   "assets", and it is not the same problem: a national flag is somebody's artwork with
+   a licence attached, and a correct-answer chime is a sine wave with an envelope.
+   `scripts/make-sounds.py` generates all six, so the project owns them with no licence
+   to track and nothing to take down.
+
+   Three decisions worth keeping. **Wrong is a falling major second, not a buzzer and
+   not a minor second** — the latter is the sound of a mistake in every film score ever
+   written, and this app does not punish a child for not knowing something yet; it is
+   the same rule that gives a wrong answer a muted surface instead of red.
+   **`playsInSilentModeIOS: false`**, because iOS defaults to playing through the silent
+   switch, which is what a music app wants and a game does not. And **off by default**:
+   the stored default read `true`, which cost nothing while nothing played and would
+   have been wrong the moment it did — a game that starts making noise on a bus has made
+   an enemy in ten seconds.
 3. **Sentry.** Blocked on a **DSN and an authorised account**, neither of which exists
    in this environment. The `ErrorBoundary` logs to console and says so.
 4. **A device.** Not something code can fix — but two things that were being deferred

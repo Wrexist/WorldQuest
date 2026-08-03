@@ -38,7 +38,7 @@ export type Preferences = {
 }
 
 /**
- * Ten minutes, reminders on, sound on, analytics ON for adults.
+ * Ten minutes, reminders on, **sound OFF**, analytics ON for adults.
  *
  * Analytics defaults differently for children — the client never decides that. The
  * account's `is_child` flag makes `track()` a no-op server-side and in
@@ -47,7 +47,11 @@ export type Preferences = {
 export const DEFAULTS: Preferences = {
   dailyGoalMinutes: 10,
   reminder: true,
-  sound: true,
+  // Off, per design-system.md §9. A game that starts making noise on a bus, in a
+  // classroom, or next to a sleeping baby has made an enemy in its first ten seconds.
+  // This read `true` until sound actually existed, which cost nothing while nothing
+  // played and would have been the wrong default the moment it did.
+  sound: false,
   haptics: true,
   reduceMotion: false,
   analytics: true,
