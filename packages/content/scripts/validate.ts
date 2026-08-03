@@ -174,6 +174,22 @@ for (const file of packFiles) {
         message: `${item.id}: random-global distractors are for test fixtures only`,
       })
     }
+    // `other-values` draws from every entity that has this attribute, which is right
+    // when the OPTIONS are values — four of fourteen subregions — and badly wrong when
+    // the options are entities: "which country's flag is this?" would offer any country
+    // on earth, turning a hard question into a free one. The distinction is exactly the
+    // one `visually-similar` was once missing.
+    const usesOtherValues =
+      item.distractors?.strategy === 'other-values' ||
+      item.distractors?.fallback === 'other-values'
+    if (usesOtherValues && item.answer?.from === 'entity.names') {
+      errors.push({
+        file: rel,
+        message:
+          `${item.id}: other-values distractors need a fact-value answer, not an entity ` +
+          `one — drawing entities globally for an entity-answer question makes it trivial`,
+      })
+    }
   }
 }
 

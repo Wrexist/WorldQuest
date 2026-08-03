@@ -13,7 +13,7 @@ import { selectItems, lessonLength } from '../learning/selection.js'
 import type { FactId, MemoryState } from '../learning/types.js'
 import {
   buildQuestion,
-  pickItemForFact,
+  itemsForFact,
   type ContentIndex,
   type Question,
   type Template,
@@ -106,15 +106,29 @@ export function composeLesson(input: ComposeInput): readonly Question[] {
 
   const questions: Question[] = []
   for (const factId of chosen) {
-    const item = pickItemForFact(index, factId, rng, {
+    /**
+     * Try every presentation this fact has, not only the first one drawn.
+     *
+     * This took a single pick and dropped the fact when it produced no question, which
+     * conflates two different situations: a fact that CANNOT be asked, and a fact whose
+     * randomly-chosen template happens to name its own answer while another template
+     * for the same fact is perfectly askable. `geo.MX.capital` is the second — with a
+     * screen reader it has two safe presentations and only `tpl.capital.mc4` can be
+     * asked, so half the time a blind user's lesson was one question shorter than
+     * everyone else's, at random, with nothing anywhere reporting it.
+     *
+     * A fact with no plausible distractors is still skipped rather than asked badly.
+     */
+    for (const item of itemsForFact(index, factId, rng, {
       ...(screenReaderOnly !== undefined ? { screenReaderOnly } : {}),
       ...(modalities !== undefined ? { modalities } : {}),
-    })
-    if (!item) continue
-
-    const question = buildQuestion(index, item, locale, rng, { isNew: !seen.has(factId) })
-    // A fact with no plausible distractors is skipped rather than asked badly.
-    if (question) questions.push(question)
+    })) {
+      const question = buildQuestion(index, item, locale, rng, { isNew: !seen.has(factId) })
+      if (question) {
+        questions.push(question)
+        break
+      }
+    }
   }
 
   return questions

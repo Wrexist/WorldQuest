@@ -221,12 +221,12 @@
         ]
       },
       "answer": {
-        "from": "fact.value"
+        "from": "fact.value.names"
       },
       "distractors": {
         "count": 3,
         "strategy": "same-region",
-        "fallback": "same-region",
+        "fallback": "other-values",
         "excludeSimilarStrings": true
       },
       "a11y": {

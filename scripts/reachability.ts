@@ -90,7 +90,7 @@ const ALLOWED: Record<string, string> = {
   SPEED_ROUND_MS: 'the whole-lesson goal for the speed_round quest slot, read inside advanceTask — NOT the same thing as SPEED_SECONDS, which is per question',
   hasExpired: 'the quest is regenerated per (user, day) by seed, so a stale one cannot be shown',
   candidatePool: 'used inside composeLesson',
-  pickItemForFact: 'used inside composeLesson — including the screen-reader-only sibling pick',
+  itemsForFact: 'used inside composeLesson — every presentation of a fact, including the screen-reader-safe siblings, so a template that cannot be asked costs the lesson nothing',
   applySoftCap: 'used inside gradeLesson, which the server runs',
   selectItems: 'used inside composeLesson',
   MIN_LESSON_ITEMS: 'bounds enforced inside lessonLength',

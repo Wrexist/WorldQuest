@@ -81,18 +81,29 @@ export function buildIndex(input: {
 const clampDifficulty = (n: number): number => Math.min(5, Math.max(1, n))
 
 /**
- * Pick which template to present a fact through.
+ * Every way this fact could be presented, in a shuffled order the caller walks.
  *
- * `screenReaderOnly` is not a downgrade — it selects the sibling template that tests
+ * `screenReaderOnly` is not a downgrade — it selects the sibling templates that test
  * the same fact without sight, so a blind user's `user_facts` row is identical to
  * anyone else's. See docs/design/accessibility.md §8.
+ *
+ * A LIST rather than a pick, and that is the whole point. Not every item builds into a
+ * question: a reverse template can name its own answer ("Mexico City is the capital of
+ * which country?"), and one that does is correctly refused by `buildQuestion`.
+ *
+ * This used to be `pickItemForFact`, returning one item, and `composeLesson` dropped
+ * the fact from the lesson when that one produced nothing. For `geo.MX.capital` in
+ * screen-reader mode that is a coin flip between a normal lesson and a lesson one
+ * question shorter — the fact has two safe presentations and only one of them can be
+ * asked. Being able to try the next one is what makes "the same facts, the same
+ * progress" true rather than approximately true.
  */
-export function pickItemForFact(
+export function itemsForFact(
   index: ContentIndex,
   factId: FactId,
   rng: Rng,
   options: { screenReaderOnly?: boolean; modalities?: readonly Template['modality'][] } = {},
-): Item | null {
+): Item[] {
   const candidates = index.itemsByFact.get(factId) ?? []
   const usable = candidates.filter((i) => {
     if (options.screenReaderOnly && !i.screenReaderSafe) return false
@@ -100,8 +111,7 @@ export function pickItemForFact(
     const modality = index.templates.get(i.templateId)?.modality
     return modality !== undefined && options.modalities.includes(modality)
   })
-  if (usable.length === 0) return null
-  return usable[Math.floor(rng.next() * usable.length)] ?? null
+  return shuffle(usable, rng)
 }
 
 /** Distractor pools, in the order the strategy prefers them. */
@@ -146,6 +156,32 @@ function candidatePool(
         return theirFact?.tags?.some((t) => tags.has(t)) ?? false
       })
     }
+    case 'other-values':
+      /**
+       * Every entity that has a value for this attribute, wherever it is.
+       *
+       * For a template whose answer is the fact VALUE, the option space is the set of
+       * values, not the set of entities — "Where in the world is Brazil?" picks four of
+       * fourteen subregions. Geography restrictions do not narrow that pool; they
+       * destroy it. `same-region` for Brazil returns other South American countries,
+       * every one of which answers "South America", so all three distractors collapse
+       * into the correct option and the question is dropped.
+       *
+       * That was not hypothetical: `tpl.location-of.mc4` — the screen-reader-safe
+       * sibling of the map question, and the only way a blind user can be asked where a
+       * country is — built for 35 of 65 countries. The 30 it skipped were every country
+       * in Asia, North America, Oceania and South America, because those regions hold
+       * three, one, one and one subregion respectively. A whole continent of questions
+       * was missing from the accessible path, silently, and the map question it stands
+       * in for was not.
+       *
+       * The filter is what separates this from `random-global`: an entity with no value
+       * for the attribute cannot supply an option, and including it would produce a
+       * blank one.
+       */
+      return all.filter((e) =>
+        [...index.facts.values()].some((f) => f.entity === e.id && f.attribute === fact.attribute),
+      )
     case 'random-global':
       // Rejected by content validation for shipped packs; kept for test fixtures.
       return all
@@ -376,36 +412,58 @@ export function buildQuestion(
   ]
 
   if (spec) {
-    let pool = candidatePool(index, entity, spec.strategy, fact)
-    if (pool.length < spec.count && spec.fallback) {
-      const extra = candidatePool(index, entity, spec.fallback, fact)
-      pool = [...new Set([...pool, ...extra])]
+    /** What this candidate would READ as, which is not always its own name. */
+    const labelOf = (candidate: Entity): string | undefined =>
+      template.answer.from === 'entity.names'
+        ? nameOf(candidate.names)
+        : nameOf(
+            [...index.facts.values()].find(
+              (f) => f.entity === candidate.id && f.attribute === fact.attribute,
+            )?.value.names,
+          )
+
+    const pick = (pool: readonly Entity[]): AnswerOption[] => {
+      const taken = new Set([normalise(correctLabel)])
+      const chosen: AnswerOption[] = []
+
+      for (const candidate of shuffle([...pool], rng)) {
+        if (chosen.length >= spec.count) break
+
+        const label = labelOf(candidate)
+        if (label === undefined) continue
+
+        // Never a distractor that is also correct, and never two options that read
+        // the same. Both make the question unanswerable rather than difficult.
+        const key = normalise(label)
+        if (taken.has(key)) continue
+        if (spec.excludeSimilarStrings !== false && key === normalise(correctLabel)) continue
+
+        taken.add(key)
+        chosen.push({ id: candidate.id, label, isCorrect: false })
+      }
+      return chosen
     }
 
-    const taken = new Set([normalise(correctLabel)])
-    const chosen: AnswerOption[] = []
+    const primary = candidatePool(index, entity, spec.strategy, fact)
+    let chosen = pick(primary)
 
-    for (const candidate of shuffle(pool, rng)) {
-      if (chosen.length >= spec.count) break
-
-      const label =
-        template.answer.from === 'entity.names'
-          ? nameOf(candidate.names)
-          : nameOf(
-              [...index.facts.values()].find(
-                (f) => f.entity === candidate.id && f.attribute === fact.attribute,
-              )?.value.names,
-            )
-      if (label === undefined) continue
-
-      // Never a distractor that is also correct, and never two options that read
-      // the same. Both make the question unanswerable rather than difficult.
-      const key = normalise(label)
-      if (taken.has(key)) continue
-      if (spec.excludeSimilarStrings !== false && key === normalise(correctLabel)) continue
-
-      taken.add(key)
-      chosen.push({ id: candidate.id, label, isCorrect: false })
+    /**
+     * Fall back on too few OPTIONS, not on too few candidates.
+     *
+     * This asked `pool.length < spec.count` — a count of entities — and the two numbers
+     * are the same only when every candidate reads as a different string. For a
+     * template whose answer is the fact value they routinely do not: `same-region` for
+     * Brazil returns four South American countries, comfortably more than the three
+     * distractors wanted, and all four answer "South America". They collapse into the
+     * correct option during deduplication and the question is dropped, having never
+     * consulted the fallback that would have rescued it, because the pool was not empty.
+     *
+     * That silence cost `tpl.location-of.mc4` — the only accessible way to ask where a
+     * country is — every question in Asia, North America, Oceania and South America.
+     */
+    if (chosen.length < spec.count && spec.fallback) {
+      const extra = candidatePool(index, entity, spec.fallback, fact)
+      chosen = pick([...new Set([...primary, ...extra])])
     }
 
     // A question with too few plausible options is worse than no question.

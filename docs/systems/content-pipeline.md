@@ -117,7 +117,34 @@ three options are absurd teaches nothing and feels cheap.
 | `same-region` | Same continent | Fallback when the subregion is too small |
 | `visually-similar` | Facts sharing a `like:` tag | Flag questions — Chad/Romania, Monaco/Indonesia |
 | `commonly-confused` | Facts sharing a `like:` tag | Slovenia/Slovakia, Austria/Australia |
+| `other-values` | Any entity holding a value for this attribute | Questions **answered with the fact value**, where the options are values, not entities |
 | `random-global` | Anything | **Never in production.** Test fixtures only. |
+
+### `other-values`, and why geography restrictions can destroy a question
+
+The four geography strategies narrow the pool of candidate **entities**, which is the
+right move when the entity is the answer: "which country's flag is this?" is only hard
+if the wrong answers are nearby countries.
+
+When the answer is the fact **value**, the option space is the set of values, and
+narrowing by geography does not make the question harder — past a point it makes it
+impossible. `same-region` for Brazil returns four South American countries, and every
+one of them answers "South America". They deduplicate into the correct option and the
+question is dropped. `tpl.location-of.mc4` lost every country in Asia, North America,
+Oceania and South America this way — 30 of 65 — and because it is the screen-reader
+sibling of the map question, the loss fell entirely on the accessible path.
+
+`other-values` draws from every entity that *has* a value for the attribute, so "Where
+in the world is Brazil?" picks four of fourteen subregions. That is not a lottery; it is
+the question. The filter is what separates it from `random-global`: an entity with no
+value for the attribute cannot supply an option, and including it would render a blank
+one. `pnpm content:validate` rejects it on any template answering with `entity.names`,
+because there it really would turn a hard question into a free one.
+
+**The fallback fires on too few OPTIONS, not too few candidates.** Those are the same
+number only when every candidate reads differently, which for value-answer templates is
+routinely false — and a fallback that waits for an *empty* pool never runs for a pool
+that is full of duplicates.
 
 ### `like:` tags — how similarity is authored
 

@@ -4,7 +4,17 @@
 -- like any other logic. Run: pnpm db:test
 
 begin;
-select plan(14);
+-- 13 = the 10 tables named in the RLS-enabled query below (one assertion each, because
+-- `select ok(...) from pg_class` emits a row per match) + 3 standalone assertions.
+--
+-- It said 14, and nothing noticed for as long as this file had never actually run:
+--
+--   Parse errors: Bad plan.  You planned 14 tests but ran 13.
+--
+-- The plan is worth keeping rather than replacing with `no_plan` — it is what catches a
+-- table quietly dropping out of the list. Adding a table means adding it to the query
+-- AND incrementing this number.
+select plan(13);
 
 -- Every table that holds user data must have RLS on. This catches the classic
 -- failure: a new table added months from now with RLS quietly left off.

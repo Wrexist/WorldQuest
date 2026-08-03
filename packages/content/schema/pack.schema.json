@@ -300,7 +300,11 @@
           ],
           "properties": {
             "from": {
-              "type": "string"
+              "$comment": "An enum, not a free string. `tpl.location-of.mc4` shipped \"fact.value\" while every other template said \"fact.value.names\", and nothing objected because the engine only tests for `entity.names` and treats everything else as the value branch. A misspelling would have been read as \"answer with the fact value\" rather than rejected.",
+              "enum": [
+                "fact.value.names",
+                "entity.names"
+              ]
             }
           }
         },
@@ -322,16 +326,18 @@
                 "same-region",
                 "visually-similar",
                 "commonly-confused",
+                "other-values",
                 "random-global"
               ],
-              "description": "random-global is for test fixtures only — CI rejects it in a shipped pack."
+              "description": "other-values draws from every entity with a value for this attribute — for templates whose ANSWER is the fact value, where the option space is the values, not the entities. random-global is for test fixtures only — CI rejects it in a shipped pack."
             },
             "fallback": {
               "enum": [
                 "same-subregion",
                 "same-region",
                 "visually-similar",
-                "commonly-confused"
+                "commonly-confused",
+                "other-values"
               ]
             },
             "excludeSimilarStrings": {

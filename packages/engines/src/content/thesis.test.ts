@@ -21,7 +21,7 @@ import {
   buildQuestion,
   isAmbiguous,
   isSelfAnswering,
-  pickItemForFact,
+  itemsForFact,
 } from './index.js'
 import type { Entity, Fact, Template } from './types.js'
 
@@ -166,7 +166,7 @@ describe('the platform thesis', () => {
     })
 
     expect(wildlife.items).toHaveLength(4)
-    const item = pickItemForFact(wildlife, 'wild.PANTHERA-LEO.habitat', seededRng(2))!
+    const item = itemsForFact(wildlife, 'wild.PANTHERA-LEO.habitat', seededRng(2))[0]!
     const question = buildQuestion(wildlife, item, 'en', seededRng(2))!
     expect(question.promptKey).toBe('lesson:prompt.habitat_of')
     expect(question.promptParams['entityName']).toBe('Lion')
@@ -485,9 +485,57 @@ describe('accessibility parity', () => {
   it('can present every fact without sight', () => {
     // The real guarantee: a screen-reader user reaches identical user_facts rows.
     for (const factId of index.itemsByFact.keys()) {
-      const item = pickItemForFact(index, factId, seededRng(1), { screenReaderOnly: true })
-      expect(item, `${factId} has no screen-reader-safe presentation`).not.toBeNull()
+      const item = itemsForFact(index, factId, seededRng(1), { screenReaderOnly: true })[0]
+      expect(item, `${factId} has no screen-reader-safe presentation`).toBeDefined()
       expect(item!.screenReaderSafe).toBe(true)
+    }
+  })
+
+  it('can ASK every fact without sight, not merely pick an item for it', () => {
+    /**
+     * The assertion above stops one step short of the thing it is named for. It proves
+     * a screen-reader-safe item EXISTS for every fact; it never asks whether that item
+     * composes into a question. Those came apart badly:
+     *
+     * `tpl.location-of.mc4` — the screen-reader sibling of the map question, and the
+     * only way a blind user can be asked where a country is — returned null for 30 of
+     * 65 countries. Every country in Asia, North America, Oceania and South America.
+     * The item existed and was flagged safe, so the test above was green while a third
+     * of the accessible curriculum did not exist. The sighted map question composed for
+     * all 65, so the two paths silently diverged in exactly the way this section is
+     * supposed to prevent.
+     *
+     * Building it is what makes the guard real. An item that cannot become a question
+     * is not a presentation.
+     */
+    for (const factId of index.itemsByFact.keys()) {
+      const safe = itemsForFact(index, factId, seededRng(1), { screenReaderOnly: true })
+      const asked = safe
+        .map((item) => buildQuestion(index, item, 'en', seededRng(1)))
+        .filter((q) => q !== null)
+      expect(
+        asked.length,
+        `${factId}: ${safe.length} screen-reader item(s), none of which builds a question`,
+      ).toBeGreaterThan(0)
+      expect(asked[0]!.options.length).toBeGreaterThanOrEqual(2)
+    }
+  })
+
+  it('asks a screen-reader user about a country in a one-subregion region', () => {
+    // The specific shape that broke: Brazil's region holds exactly one subregion, so
+    // every `same-region` distractor reads "South America" and they all deduplicate
+    // into the correct option. Named here so a future distractor change cannot quietly
+    // reintroduce it for the continents with the fewest subregions.
+    for (const entityId of ['BR', 'US', 'AU', 'JP']) {
+      const item = index.items.find(
+        (i) => i.templateId === 'tpl.location-of.mc4' && i.entityId === entityId,
+      )
+      expect(item, `no location item for ${entityId}`).toBeDefined()
+      const question = buildQuestion(index, item!, 'en', seededRng(3))
+      expect(question, `"where is ${entityId}?" cannot be asked`).not.toBeNull()
+      expect(question!.options).toHaveLength(4)
+      // Four options that read four different ways, which is the whole difficulty.
+      expect(new Set(question!.options.map((o) => o.label)).size).toBe(4)
     }
   })
 })
@@ -579,10 +627,10 @@ describe('presentation', () => {
     // flag is this?" above four country names, and a wrong answer on an unanswerable
     // question costs a heart.
     for (let seed = 1; seed <= 30; seed++) {
-      const item = pickItemForFact(index, 'geo.SE.flag', seededRng(seed), {
+      const item = itemsForFact(index, 'geo.SE.flag', seededRng(seed), {
         modalities: ['text'],
-      })
-      expect(item).not.toBeNull()
+      })[0]
+      expect(item).toBeDefined()
       expect(index.templates.get(item!.templateId)!.modality).toBe('text')
     }
   })
@@ -591,8 +639,8 @@ describe('presentation', () => {
     // Narrowing must not silently drop knowledge. Same facts, same progress — the
     // argument the screen-reader siblings already rest on.
     for (const factId of index.itemsByFact.keys()) {
-      const item = pickItemForFact(index, factId, seededRng(1), { modalities: ['text'] })
-      expect(item, `${factId} is unreachable without images`).not.toBeNull()
+      const item = itemsForFact(index, factId, seededRng(1), { modalities: ['text'] })[0]
+      expect(item, `${factId} is unreachable without images`).toBeDefined()
     }
   })
 })

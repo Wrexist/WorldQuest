@@ -71,6 +71,20 @@ export type DistractorStrategy =
   | 'same-region'
   | 'visually-similar'
   | 'commonly-confused'
+  /**
+   * Any entity that has a value for this attribute — for questions whose ANSWER is the
+   * fact value rather than the entity, where the option space is the set of values and
+   * not the set of entities.
+   *
+   * "Where in the world is Brazil?" has four options drawn from fourteen subregions, so
+   * a globally-drawn pool is not a lottery; it is the question. Restricting it by region
+   * is what breaks it: South America contains exactly one subregion, so every distractor
+   * reads "South America", they collapse to one option, and the question is dropped.
+   *
+   * Distinct from `random-global`, which is a test fixture. This one is only meaningful
+   * when `answer.from` is `fact.value.names`, and content validation says so.
+   */
+  | 'other-values'
   | 'random-global'
 
 export type Template = {

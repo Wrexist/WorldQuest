@@ -227,15 +227,26 @@ const step = (name, ok, detail = '') => {
       // The LAST laid-out piece of QUESTION above the options, not the first in the
       // DOM.
       //
-      // Two selectors, because a question is not always only text. expo-router leaves
-      // the previous route mounted, so `[role="heading"]` still matches Home's
-      // "Explorer!" at zero height — measuring from that reported a 160px gap for a
-      // screen whose real gap is 24px. And a flag question puts a 150pt image between
-      // the prompt and the answers, which is the question rather than a void; measuring
-      // past it to the heading would fail this step on the one screen the mockup cares
-      // most about. Same shape as the first-button-in-the-DOM bug above: the selector
-      // was right about the kind of thing and wrong about which ones.
-      const above = [...document.querySelectorAll('[role="heading"], [data-testid="prompt-art"]')]
+      // Every kind of thing a question is made of, because a question is not always
+      // only text. expo-router leaves the previous route mounted, so `[role="heading"]`
+      // still matches Home's "Explorer!" at zero height — measuring from that reported
+      // a 160px gap for a screen whose real gap is 24px. A flag question puts a 150pt
+      // image between the prompt and the answers, which is the question rather than a
+      // void. And a currency or capital question carries a locator map for context,
+      // which this list was missing: the first question the lesson happened to compose
+      // changed to "What money do people use in Japan?", the measurement ran straight
+      // over the map to the heading, and reported 198px for a screen whose layout was
+      // exactly right.
+      //
+      // Same shape as the first-button-in-the-DOM bug above, three times now: the
+      // selector was right about the kind of thing and wrong about which ones. The rule
+      // this step is actually asserting is "no VOID between the question and the
+      // answers", so everything the question is built from belongs in the list.
+      const above = [
+        ...document.querySelectorAll(
+          '[role="heading"], [data-testid="prompt-art"], [data-testid="prompt-map"], [data-testid="prompt-locator"]',
+        ),
+      ]
         .map((h) => h.getBoundingClientRect())
         .filter((r) => r.height > 0 && r.bottom <= optTop)
       if (above.length === 0) return null
