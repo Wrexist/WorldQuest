@@ -316,6 +316,36 @@ loses it.
 
 ---
 
+## Dead strings, and why the first sweep found none
+
+A sweep for i18n keys nothing references returned **zero** — and it was wrong. It was
+counting `packages/i18n/src/keys.ts` as a reference, and that file is **generated from
+the locale JSON**. Every key referenced itself, so a dead one could not be seen. The
+repo already knows this failure shape — *"a committed projection is a copy that can
+disagree with its source"* — and this is the same thing one step further on: a
+projection used as evidence about its own source.
+
+Excluding the generated catalogue, 55 keys have no reference. Most are not dead:
+
+- **Achievement `name`/`desc` (23)** are built by convention —
+  `achievements:${id.slice(4)}.name` — so they are never literal in source. A sweep
+  that cannot see a template will always flag them.
+- **`notifications:*` (4)** are written and waiting for push, which is not wired.
+  Deleting copy staged for a blocked feature is not cleanup.
+- The remainder — `common:close`, `settings:on`/`off`, `streak:title`, the eight
+  `nav:*.soon.*` — are genuinely unused and predate this wave.
+
+**Three were orphaned by this wave and are removed:** `home:challenge.title` and
+`home:challenge.next` went with the Daily Challenge card, and `lesson:answer.label`
+was the `"{answer}"` passthrough replaced by two state-bearing keys.
+
+The rest are recorded rather than deleted. A translated string removed on a hunch is
+two locales of work thrown away, and the sweep cannot yet tell "unused" from "used
+through a template". Making it able to — teaching it the two conventions this repo
+uses — is what would turn this paragraph into a check.
+
+---
+
 ## Five states: what the audit found
 
 The rule has been in `PROJECT.md` since week one and this box sat at 🟡 "not audited"
