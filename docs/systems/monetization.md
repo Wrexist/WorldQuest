@@ -184,7 +184,8 @@ subscription for anyone willing to change a device clock.
 | Notification → subscription state, both stores | `packages/engines/src/entitlements/store.ts` | Built, 18 tests |
 | The verification POLICY — pinning, expiry, audience, replay | `supabase/functions/_src/_shared/store-verification.ts` | Built, 17 tests |
 | The sequence: verify → dedupe → match → decide → record | `…/_shared/store-notifications.ts` | Built, 10 tests |
-| The crypto adapter and the endpoint that mounts it | `supabase/functions/` | **Not built — needs credentials** |
+| Decoding the JWS and the one signature check | `…/_shared/apple-jws.ts` | Built, 12 tests, against a real chain |
+| The endpoint that mounts the four, and the root to pin | `supabase/functions/` | **Not built — needs the developer account** |
 
 `UNAVAILABLE` is deliberately a stub that **fails** rather than a fake that succeeds.
 Every caller therefore handles "the store would not answer" from the first day, which
@@ -253,8 +254,30 @@ pure and tested attack-first:
 - **Sandbox is rejected on production**, again — belt and braces with the state machine.
 
 What is deliberately NOT in that file is the cryptography. `issuedBy` is injected, and
-the adapter is one line of `node:crypto` — `cert.verify(parent.publicKey)`. Hand-rolling
-ASN.1 parsing or ECDSA verification would be the worst decision available here.
+the adapter is `apple-jws.ts`, which does three things: split the compact JWS, turn the
+`x5c` header into certificates, and ask the platform whether the signature is good.
+Hand-rolling ASN.1 parsing or ECDSA verification would be the worst decision available
+here, so `X509Certificate` and `createVerify` do both — audited code, reachable from
+Deno through node compatibility, which is why the same file runs in the edge function
+and under Vitest here.
+
+Two details in it are the kind that pass review and fail in production:
+
+- **ECDSA has two encodings.** OpenSSL emits DER; JOSE requires the raw r‖s
+  concatenation. `dsaEncoding: 'ieee-p1363'` selects the second. Get it wrong and the
+  signature verifies with `openssl dgst` and fails in every JWT library on earth.
+- **`alg` is not a dispatch key.** ES256 or nothing. Reading the algorithm out of the
+  header and honouring it is the `alg: none` family of bugs — the sender does not get to
+  choose how their signature is checked.
+
+It is tested against **real DER**, not against objects shaped like what we hoped DER
+looks like: `scripts/make-jws-fixtures.cjs` builds a root → intermediate → leaf ES256
+chain with openssl, signs a payload with the leaf, and commits the result, so the tests
+need neither openssl nor a network. The cases that matter are the forgeries — a payload
+edited after signing, a signature made by the intermediate rather than the leaf, and an
+attacker chain in which every signature is genuine and only the pin rejects it. The
+first run of that suite failed on both details above, which is the argument for the
+fixtures in one sentence.
 
 ### The status code is an instruction, not a report
 
@@ -279,9 +302,9 @@ declines** — the unknown types and out-of-order arrivals are precisely what so
 reads back when a subscription looks wrong, and dropping them keeps the table tidy while
 making the dispute unanswerable.
 
-What still waits on credentials is the crypto adapter (`cert.verify(parent.publicKey)`),
-the Apple root fingerprint to pin, and the endpoint that mounts the three. Until they
-exist every user is free, which is the correct answer rather than a placeholder.
+What still waits on the developer account is the Apple root fingerprint to pin — a real
+value we cannot invent — and the endpoint that mounts the four pieces. Until they exist
+every user is free, which is the correct answer rather than a placeholder.
 
 ### Where the paywall opens
 

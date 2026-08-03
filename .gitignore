@@ -60,3 +60,9 @@ packages/i18n/locales/en-XA/
 # anyone noticed them in a file listing.
 tsx-0/
 .tsx-*/
+
+# Scratch keys from `node scripts/make-jws-fixtures.cjs`. Throwaway ES256 private keys
+# for a test chain — worthless, but a `*.key` in a diff is a fire drill, and the rule
+# "no private key is ever committed" is worth more than the exception it would earn.
+# The fixtures the tests read are committed; only the keys that made them are not.
+supabase/functions/_src/_shared/__fixtures__/.work/
