@@ -239,6 +239,34 @@ authored JSON
 policy · a missing locale for a shipped language · a duplicate ID · an unresolvable
 entity reference · an asset with no recorded licence.
 
+#### The source must be where the value actually came from
+
+CI can only check that a source is *present*. The rule it cannot check, and the one that
+matters, is that the citation names the thing somebody actually read.
+
+Every fact shipped so far does: `English Wikipedia, "Flag of Kenya"`,
+`Constitution of the Netherlands, Article 32`, `Finnish Flag Act (380/1978)`,
+`SWI swissinfo.ch, "Why Switzerland hasn't got a capital city"`. One named, linkable
+source per fact, dated — not one dataset cited 200 times.
+
+**This is the trap in bulk-generating content, and it is an easy one to walk into.**
+`countries-list` and similar packages hold capitals and currencies for every country on
+earth, and a script could emit 400 facts from them in a minute. Emitting those facts
+while citing *Wikipedia* — because that is what the neighbouring rows cite — would be a
+false citation: plausible, uncheckable by CI, and wrong about where the value came from.
+Emitting them citing the package is honest, but it lowers the bar for hundreds of facts
+at once, and nobody has read any of them.
+
+`build-locations.cjs` is the worked example of getting this right. It derives 65 facts
+mechanically and cites **the entities pack it derived them from**, explicitly refusing to
+cite UN M49 — a standard the grouping deliberately diverges from — because a citation you
+have diverged from is worse than no citation at all.
+
+So: generate the *shape* of a fact freely, and generate its *value* only from something
+this repo already owns. Everything else is authoring, one source at a time. That is slow
+on purpose — a wrong fact ships as a same-day hotfix precisely because it should never
+have shipped.
+
 ### Delivery
 - Core packs (countries, flags, capitals) **ship in the binary** — offline on first
   launch, no download wall.
