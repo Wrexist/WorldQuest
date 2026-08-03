@@ -15,7 +15,7 @@ begin;
 -- The plan is worth keeping rather than replacing with `no_plan` — it is what catches a
 -- table quietly dropping out of the list. Adding a table means adding it to the query
 -- AND incrementing this number.
-select plan(18);
+select plan(21);
 
 -- Every table that holds user data must have RLS on. This catches the classic
 -- failure: a new table added months from now with RLS quietly left off.
@@ -90,6 +90,41 @@ select throws_ok(
   null,
   'subscriptions rejects an unknown environment'
 );
+
+-- ── the notification handler's RPC ──────────────────────────────────────────
+--
+-- `record_subscription_event` is SECURITY DEFINER and writes the entitlement row.
+-- PostgREST publishes every function in `public` as an RPC endpoint, so leaving it
+-- granted is a /rest/v1/rpc/ call away from a free subscription for anyone holding the
+-- anon key — which ships in the app bundle and is not a secret.
+select is_empty(
+  $$ select p.proname
+       from pg_proc p
+       join pg_namespace n on n.oid = p.pronamespace
+      where n.nspname = 'public'
+        and p.proname = 'record_subscription_event'
+        and (has_function_privilege('anon', p.oid, 'EXECUTE')
+             or has_function_privilege('authenticated', p.oid, 'EXECUTE')) $$,
+  'record_subscription_event is not callable by a client over the REST API'
+);
+
+-- ...and still callable by the one caller that needs it. A revoke that took the grant
+-- away from service_role too would be a handler that cannot write anything, which fails
+-- as a permanent retry loop rather than as an error anyone reads.
+select ok(
+  (select has_function_privilege('service_role', p.oid, 'EXECUTE')
+     from pg_proc p
+     join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public' and p.proname = 'record_subscription_event'),
+  'record_subscription_event is callable by service_role'
+);
+
+-- The out-of-order guard needs somewhere to live. `applyStoreNotification` compares
+-- `notification.notifiedAt` against the subscription's own to refuse a delayed
+-- DID_FAIL_TO_RENEW landing after the DID_RENEW that fixed it — and with no column the
+-- comparison is always against null, so the guard is tested, present, and unreachable.
+select has_column('subscriptions', 'notified_at',
+  'subscriptions records when the last applied notification was sent');
 
 select * from finish();
 rollback;

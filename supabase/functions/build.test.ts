@@ -173,3 +173,72 @@ describe('the endpoint does not trust the client', () => {
     expect(index).toMatch(/chosenOptionId !== null/)
   })
 })
+
+describe('store-notifications bundle', () => {
+  const noteFiles = buildFunction('store-notifications')
+  const noteByName = new Map(noteFiles.map((f) => [f.name, f.content]))
+
+  it('is self-contained', () => {
+    expect(verifyBundle(noteFiles)).toEqual([])
+  })
+
+  it('vendors the real entitlement decision, not a copy', () => {
+    // The same rule as the grader, for the same reason and with a price attached: a
+    // hand-copied `applyStoreNotification` that drifted would decide entitlement
+    // differently on the server than the client displays, and one of those two answers
+    // is somebody paying for something they cannot see.
+    const bundled = noteByName.get('_engines/entitlements/store.ts')!
+    const source = readFileSync(
+      join(import.meta.dirname, '..', '..', 'packages', 'engines', 'src', 'entitlements', 'store.ts'),
+      'utf8',
+    )
+    expect(bundled).toBe(source.replace(/(from\s+['"])(\.[^'"]*?)\.js(['"])/g, '$1$2.ts$3'))
+  })
+
+  it('ships every verification layer, so none can be skipped by omission', () => {
+    // A bundle missing `apple-verify.ts` fails to boot, loudly. A bundle missing a layer
+    // the entrypoint imports only conditionally would not — which is why the list is
+    // asserted rather than assumed.
+    for (const name of [
+      '_shared/apple-jws.ts',
+      '_shared/apple-notification.ts',
+      '_shared/apple-verify.ts',
+      '_shared/store-verification.ts',
+      '_shared/store-notifications.ts',
+    ]) {
+      expect(noteByName.has(name)).toBe(true)
+    }
+  })
+
+  it('does not drag the grader or the content engine into a webhook', () => {
+    // Different function, different cold start. Vendoring by habit is a latency budget
+    // spent parsing code this function never calls.
+    for (const name of noteByName.keys()) {
+      expect(name).not.toMatch(/grading|content|learning|lesson/)
+    }
+  })
+
+  it('pins nothing — the root fingerprint is configuration, never a literal', () => {
+    // A fact about Apple's CA that we cannot source. Inventing one fails in the worst
+    // direction available: it either rejects every real notification or accepts a chain
+    // it should not. `docs/systems/monetization.md` records why it is still missing.
+    const entry = noteByName.get('index.ts')!
+    expect(entry).toMatch(/Deno\.env\.get\('APPLE_ROOT_FINGERPRINT'\)/)
+    // A SHA-256 fingerprint is 32 colon-separated hex pairs. None may appear in source.
+    expect(entry).not.toMatch(/(?:[0-9A-F]{2}:){10}/i)
+  })
+
+  it('refuses to serve at all when the pin or the bundle id is missing', () => {
+    // Not "skip that check". A verifier short one check says yes more often than it should.
+    const entry = noteByName.get('index.ts')!
+    expect(entry).toMatch(/if \(!rootFingerprint \|\| !bundleId\) return null/)
+  })
+})
+
+describe('a bundle nobody declared', () => {
+  it('is an error rather than an empty one', () => {
+    // The failure this prevents: a new function deploys with no engine modules, boots,
+    // and fails on its first request instead of at build time.
+    expect(() => buildFunction('does-not-exist')).toThrow(/no bundle spec/)
+  })
+})

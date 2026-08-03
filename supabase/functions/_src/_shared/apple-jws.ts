@@ -26,10 +26,14 @@
  */
 
 import { X509Certificate, createVerify } from 'node:crypto'
+// Imported rather than assumed global. `Buffer` is a global in Node and in Supabase's
+// edge runtime; it is NOT one in plain Deno, and a bundle that boots on the runtime we
+// happen to test on is not the property we want from the one file doing cryptography.
+import { Buffer } from 'node:buffer'
 import type { ChainCert } from './store-verification.js'
 
 export type DecodedJws = {
-  readonly header: { readonly alg?: string; readonly x5c?: readonly string[] }
+  readonly header: { readonly alg?: string | undefined; readonly x5c?: readonly string[] }
   readonly payload: Record<string, unknown>
   /** The bytes that were signed: `header.payload`, still base64url. */
   readonly signingInput: string
@@ -79,7 +83,7 @@ export function chainFrom(x5c: readonly string[] | undefined): ChainCert[] | nul
   try {
     const parsed = x5c.map((der) => new X509Certificate(Buffer.from(der, 'base64')))
 
-    return parsed.map((cert, index) => ({
+    return parsed.map((cert) => ({
       fingerprint256: cert.fingerprint256,
       validFrom: Date.parse(cert.validFrom),
       validTo: Date.parse(cert.validTo),

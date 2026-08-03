@@ -185,7 +185,12 @@ subscription for anyone willing to change a device clock.
 | The verification POLICY — pinning, expiry, audience, replay | `supabase/functions/_src/_shared/store-verification.ts` | Built, 17 tests |
 | The sequence: verify → dedupe → match → decide → record | `…/_shared/store-notifications.ts` | Built, 10 tests |
 | Decoding the JWS and the one signature check | `…/_shared/apple-jws.ts` | Built, 12 tests, against a real chain |
-| The endpoint that mounts the four, and the root to pin | `supabase/functions/` | **Not built — needs the developer account** |
+| Reading Apple's v2 payload | `…/_shared/apple-notification.ts` | Built, 13 tests |
+| The four checks composed, in order | `…/_shared/apple-verify.ts` | Built, 12 tests, against real forgeries |
+| The event + subscription write, one transaction | `supabase/migrations/…_record_subscription_event.sql` | Built, 3 RLS assertions |
+| The endpoint | `supabase/functions/_src/store-notifications/` | Built, 7 bundle guards |
+| The Apple root fingerprint to pin | `APPLE_ROOT_FINGERPRINT` | **Missing — needs the developer account** |
+| Google Play RTDN authenticity | — | **Not built.** The endpoint refuses Google rather than trusting it. |
 
 `UNAVAILABLE` is deliberately a stub that **fails** rather than a fake that succeeds.
 Every caller therefore handles "the store would not answer" from the first day, which
@@ -302,9 +307,46 @@ declines** — the unknown types and out-of-order arrivals are precisely what so
 reads back when a subscription looks wrong, and dropping them keeps the table tidy while
 making the dispute unanswerable.
 
-What still waits on the developer account is the Apple root fingerprint to pin — a real
-value we cannot invent — and the endpoint that mounts the four pieces. Until they exist
-every user is free, which is the correct answer rather than a placeholder.
+### The endpoint, and the one value that is still missing
+
+`supabase/functions/_src/store-notifications/` mounts the five pieces and does almost
+nothing itself: read the configuration, four queries, a `Response`. That is the shape the
+split was for — a webhook is the least testable place in a codebase, so everything that
+can be wrong expensively lives outside it, and what is left is wiring.
+
+Two things in the wiring turned out to be defects rather than plumbing, and both were
+found by building it:
+
+- **`subscriptions` had no `notified_at` column.** The out-of-order guard — the one that
+  stops a delayed `DID_FAIL_TO_RENEW` revoking a customer the `DID_RENEW` already fixed —
+  compares against the subscription's last `notifiedAt`. With nowhere to store it, that
+  comparison was always against `undefined`. The guard was written, tested, and could
+  never fire in production.
+- **The event and the subscription were two writes.** `NotificationDeps.record` is
+  specified as one transaction, and two `supabase-js` calls are two. The failure between
+  them writes the event, skips the subscription, returns 200 — after which the unique
+  index makes every redelivery a no-op and a paying customer silently stays free. It is
+  now one `record_subscription_event` RPC, with the event inserted *first* so a duplicate
+  aborts before anything is granted.
+
+`APPLE_ROOT_FINGERPRINT` is what remains, and it is not something to work around. It is a
+fact about Apple's certificate authority; this repo marks a fact it cannot source rather
+than inventing one, and a wrong pin fails in the worst direction available — it either
+rejects every real notification or accepts a chain it should not. So it is configuration,
+the function returns 500 without it rather than skipping the check, and a bundle guard
+asserts no fingerprint-shaped literal appears in the source.
+
+**Google is refused, not trusted.** Play's Real-Time Developer Notifications are not
+signed the way Apple's are: authenticity comes from the Pub/Sub push subscription — a
+Google-signed OIDC token verified against a rotating JWKS, with an `aud` that is this
+endpoint's URL and a service-account identity that only exists once the Play Console is
+configured. Pub/Sub delivers plain JSON, so a handler that parses it "for now" is an open
+endpoint that grants subscriptions to anyone who can POST. The engine already knows what
+Google's notification types mean, tested; only the proof that Google sent it is missing,
+and until it exists the Google branch returns 401 and applies nothing.
+
+Until the pin is set, every user is free — which is the correct answer rather than a
+placeholder.
 
 ### Where the paywall opens
 

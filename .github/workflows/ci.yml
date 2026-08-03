@@ -167,11 +167,20 @@ jobs:
       #
       # Running the same command the developer runs is the only version of this check
       # that means anything.
+      #
+      # The failure PRINTS THE DIFF. Regenerating this file needs a running Postgres, and
+      # not every contributor — or agent — has Docker. "It is stale" without saying how
+      # is a failure you cannot act on from anywhere but the machine that can already
+      # reproduce it; the diff in the log is the fix, copyable.
       - name: Generated database types are up to date
         run: |
           pnpm db:types
-          git diff --exit-code packages/api/src/database.types.ts \
-            || (echo "::error::database.types.ts is stale — run pnpm db:types and commit"; exit 1)
+          if ! git diff --quiet packages/api/src/database.types.ts; then
+            echo "::error::database.types.ts is stale — run pnpm db:types and commit."
+            echo "The generated file differs as follows (committed → generated):"
+            git --no-pager diff packages/api/src/database.types.ts
+            exit 1
+          fi
 
 # The edge function VENDORS the grading, FSRS and balance modules, because Deno
 # cannot import from a pnpm workspace. Vendored code drifts silently, and the

@@ -41,6 +41,7 @@ packages/i18n/src/keys.ts
 # committed projection is a copy that can disagree with its source. The source of truth
 # is `_src/`, which is tracked.
 supabase/functions/submit-lesson/
+supabase/functions/store-notifications/
 
 # NOT ignored: packages/api/src/database.types.ts. It is generated too, but only by a
 # running Postgres, which the `verify` CI job does not have — so it is committed, and

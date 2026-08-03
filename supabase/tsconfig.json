@@ -1,0 +1,26 @@
+{
+  "$comment": [
+    "The edge modules were the only TypeScript in this repo nobody typechecked.",
+    "Vitest transforms them with esbuild, which strips types without checking them, so",
+    "`pnpm test` went green on code that `tsc` would have rejected — and it is the code",
+    "that verifies signatures and decides who has paid. `strict`,",
+    "`noUncheckedIndexedAccess` and `exactOptionalPropertyTypes` were on for every other",
+    "package and off, silently, for this one.",
+    "",
+    "The entrypoints are excluded rather than fixed: `_src/*/index.ts` is Deno source. It",
+    "imports with `.ts` specifiers and calls `Deno.serve`, neither of which is valid under",
+    "this compiler, and adding Deno's types to a Node project to typecheck two files would",
+    "trade a real check for a fake one. What is checked here is everything the entrypoints",
+    "delegate to, which is where the decisions live."
+  ],
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "declaration": false,
+    "sourceMap": false,
+    "types": ["node"]
+  },
+  "include": ["functions/build.ts", "functions/build.test.ts", "functions/_src/_shared/**/*.ts"]
+}

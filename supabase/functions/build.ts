@@ -38,7 +38,7 @@
  * Run: pnpm edge:build   (or import buildFunction from a deploy script)
  */
 
-import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -48,15 +48,53 @@ const packsDir = join(here, '..', '..', 'packages', 'content', 'packs', 'geograp
 
 export type DeployFile = { name: string; content: string }
 
-/** Engine modules the function actually needs. Keep this list minimal. */
-const ENGINE_MODULES = [
-  'shared/index.ts',
-  'learning/types.ts',
-  'learning/fsrs.ts',
-  'xp/balance.ts',
-  'grading/index.ts',
-  'time/index.ts',
-]
+/**
+ * What each function's bundle contains.
+ *
+ * Per-function rather than one shared list, and deliberately minimal: every module here
+ * is parsed on every cold start, and a list that grows by habit is a latency budget spent
+ * on code the function does not call. `store-notifications` needs the entitlement state
+ * machine and nothing else from the engines; `submit-lesson` needs the grader.
+ */
+type FunctionSpec = {
+  /** Modules to vendor from `packages/engines/src`, by path. */
+  readonly engines: readonly string[]
+  /** Modules to vendor from `_src/_shared`, by filename. */
+  readonly shared: readonly string[]
+  /** Anything generated rather than copied. Evaluated at build time. */
+  readonly generated?: () => DeployFile[]
+}
+
+const FUNCTIONS: Record<string, FunctionSpec> = {
+  'submit-lesson': {
+    engines: [
+      'shared/index.ts',
+      'learning/types.ts',
+      'learning/fsrs.ts',
+      'xp/balance.ts',
+      'grading/index.ts',
+      'time/index.ts',
+    ],
+    shared: [],
+    generated: () => [
+      // Shimmed rather than vendored: each is one small binding behind a module that
+      // would drag the content engine into every cold start. See the two shims.
+      { name: '_engines/lesson/machine.ts', content: ANSWERED_ITEM_SHIM },
+      { name: '_engines/progression/index.ts', content: masteryOrderShim() },
+      { name: '_content/answers.ts', content: buildAnswerKey() },
+    ],
+  },
+  'store-notifications': {
+    engines: ['entitlements/index.ts', 'entitlements/store.ts'],
+    shared: [
+      'apple-jws.ts',
+      'apple-notification.ts',
+      'apple-verify.ts',
+      'store-verification.ts',
+      'store-notifications.ts',
+    ],
+  },
+}
 
 /**
  * `grading` imports AnsweredItem from `lesson/machine`, which drags in the whole
@@ -162,27 +200,43 @@ const rewriteImports = (code: string): string =>
 const SRC = join(here, '_src')
 
 export function buildFunction(name: string): DeployFile[] {
+  const spec = FUNCTIONS[name]
+  if (spec === undefined) {
+    throw new Error(
+      `build.ts: no bundle spec for "${name}". Add one to FUNCTIONS — a function whose ` +
+        'dependencies are inferred rather than declared is a function that deploys with ' +
+        'a module missing and fails to boot.',
+    )
+  }
+
   const entrypoint = readFileSync(join(SRC, name, 'index.ts'), 'utf8')
 
   const files: DeployFile[] = [
     {
       name: 'index.ts',
       content: rewriteImports(
-        entrypoint.replace(/\.\.\/\.\.\/\.\.\/packages\/engines\/src\//g, './_engines/'),
+        entrypoint
+          .replace(/\.\.\/\.\.\/\.\.\/packages\/engines\/src\//g, './_engines/')
+          // `_shared/` is a real directory the CLI understands, but only under
+          // `functions/`, and the source lives under `functions/_src/`. The bundle gets
+          // its own copy so the deployed function is self-contained rather than
+          // depending on a sibling that may or may not have been deployed with it.
+          .replace(/\.\.\/_shared\//g, './_shared/'),
       ),
     },
   ]
 
-  for (const module of ENGINE_MODULES) {
+  for (const module of spec.engines) {
     const source = readFileSync(join(enginesSrc, module), 'utf8')
     files.push({ name: `_engines/${module}`, content: rewriteImports(source) })
   }
 
-  // Shimmed rather than vendored: each of these is one small binding behind a module
-  // that would drag the content engine into every cold start. See the two shims.
-  files.push({ name: '_engines/lesson/machine.ts', content: ANSWERED_ITEM_SHIM })
-  files.push({ name: '_engines/progression/index.ts', content: masteryOrderShim() })
-  files.push({ name: '_content/answers.ts', content: buildAnswerKey() })
+  for (const module of spec.shared) {
+    const source = readFileSync(join(SRC, '_shared', module), 'utf8')
+    files.push({ name: `_shared/${module}`, content: rewriteImports(source) })
+  }
+
+  files.push(...(spec.generated?.() ?? []))
 
   // Deno needs to know these are ES modules with the same strictness we use.
   files.push({
@@ -274,14 +328,13 @@ export function verifyBundle(files: DeployFile[]): string[] {
   return problems
 }
 
-// `tsx supabase/functions/build.ts submit-lesson` — verify the bundle and write it out
-// as the function directory the Supabase CLI reads.
-if (process.argv[2]) {
-  const name = process.argv[2]
+// `tsx supabase/functions/build.ts submit-lesson store-notifications` — verify each
+// bundle and write it out as the function directory the Supabase CLI reads.
+for (const name of process.argv.slice(2)) {
   const built = buildFunction(name)
   const problems = verifyBundle(built)
   console.log(`Built "${name}" — ${built.length} files:`)
-  for (const f of built) console.log(`  ${f.name.padEnd(28)} ${f.content.length} bytes`)
+  for (const f of built) console.log(`  ${f.name.padEnd(32)} ${f.content.length} bytes`)
   if (problems.length) {
     console.error('\n✗ bundle is not self-contained:')
     for (const p of problems) console.error('  ' + p)
@@ -290,5 +343,5 @@ if (process.argv[2]) {
 
   const written = writeGenerated(name)
   console.log(`\n✓ bundle is self-contained — wrote ${written.length} files to`)
-  console.log(`  supabase/functions/${name}/`)
+  console.log(`  supabase/functions/${name}/\n`)
 }

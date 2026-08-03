@@ -42,14 +42,42 @@ pnpm db:types          # regenerate packages/api/src/database.types.ts
 pnpm dev               # then complete a lesson and watch user_facts.due_at move
 ```
 
-### Edge function
+### Edge functions
 
-`submit-lesson` is deployed with `verify_jwt: true`. It vendors the engine modules
-via `supabase/functions/build.ts` rather than importing across the workspace, which
-a deployed Deno function cannot do. Eight tests in `build.test.ts` assert the bundle
-is self-contained and that the vendored `gradeLesson`, `fsrs` and `balance` are
-byte-identical to the packages the client imports — so client and server cannot
-drift, which is the entire point of the endpoint.
+Both vendor their engine modules via `supabase/functions/build.ts` rather than
+importing across the workspace, which a deployed Deno function cannot do.
+`build.test.ts` asserts each bundle is self-contained and that what it vendors is
+byte-identical to the package the client imports — so client and server cannot
+drift, which is the entire point of both endpoints.
+
+| Function | `verify_jwt` | Vendors |
+|---|---|---|
+| `submit-lesson` | `true` — a user submitting their own lesson | `gradeLesson`, `fsrs`, `balance` |
+| `store-notifications` | **`false`** — Apple is not a user and holds no JWT | `applyStoreNotification` |
+
+`store-notifications` must be deployed with `--no-verify-jwt`. That is not a relaxed
+check: the store's own signature is what authenticates it, and it is a considerably
+stronger claim than a JWT — a pinned certificate chain, a per-payload ECDSA signature,
+and an audience check that the request is about *our* bundle. See
+[`../systems/monetization.md`](../systems/monetization.md).
+
+```bash
+supabase functions deploy store-notifications --no-verify-jwt
+```
+
+#### Secrets it needs
+
+Set with `supabase secrets set`, never in `.env`, never prefixed `EXPO_PUBLIC_`.
+
+| Name | What it is | Why it is not in the repo |
+|---|---|---|
+| `APPLE_ROOT_FINGERPRINT` | SHA-256 of Apple's root CA, `AA:BB:…` | A fact about Apple's CA. Guessing one either rejects every real notification or accepts a chain it should not — so it is marked missing rather than invented, per the repo's no-invented-facts rule. |
+| `APPLE_BUNDLE_ID` | Our bundle identifier | The check that separates "Apple sent this" from "Apple sent this *about us*". Worthless with a guessed value. |
+| `STORE_ENVIRONMENT` | `production` or `sandbox` | Defaults to `production`. A sandbox receipt reaching a production endpoint is normal and must grant nothing. |
+
+The function **refuses to serve** without the first two, returning 500 rather than
+skipping the checks they configure. A verifier short one check says yes more often
+than it should.
 
 ---
 

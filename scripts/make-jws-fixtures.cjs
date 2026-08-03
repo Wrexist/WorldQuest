@@ -71,11 +71,65 @@ makeCert('evilLeaf', '/CN=Attacker Leaf', 'evilRoot')
 
 const x5c = [derOf('leaf'), derOf('inter'), derOf('root')]
 const header = { alg: 'ES256', x5c }
+
+/**
+ * When these notifications claim to have been signed — derived from the chain, not chosen.
+ *
+ * A hardcoded constant here made every chain assertion fail the moment the certificates
+ * were regenerated: openssl stamps `validFrom` with the wall clock, so a fixed date that
+ * was comfortably inside the window last month is "certificate 0 is not yet valid" today.
+ * A day after the chain starts is inside every window by construction, for ever.
+ */
+const { X509Certificate: Cert } = require('node:crypto')
+const SIGNED_DATE =
+  Date.parse(new Cert(readFileSync(join(TMP, 'leaf.pem'))).validFrom) + 86_400_000
+
 const payload = {
   notificationType: 'DID_RENEW',
   notificationUUID: 'test-uuid-0001',
-  signedDate: 1_785_000_000_000,
+  signedDate: SIGNED_DATE,
   data: { bundleId: 'com.worldquest.app', environment: 'Production' },
+}
+
+/**
+ * A realistic App Store Server Notification v2, nested JWS and all.
+ *
+ * `signedTransactionInfo` is not a field inside the envelope — it is its own compact JWS
+ * with its own `x5c`, signed separately, and it is where `originalTransactionId` lives.
+ * That is the value which decides *whose* subscription a notification is about, so the
+ * fixtures have to reproduce the nesting or the verifier is never asked to walk into it.
+ */
+const transactionInfo = {
+  originalTransactionId: '2000000000000001',
+  transactionId: '2000000000000002',
+  bundleId: 'com.worldquest.app',
+  environment: 'Production',
+  purchaseDate: SIGNED_DATE - 30 * 86_400_000,
+  expiresDate: SIGNED_DATE + 30 * 86_400_000,
+  inAppOwnershipType: 'PURCHASED',
+  type: 'Auto-Renewable Subscription',
+}
+
+const notificationFor = (over = {}, txOver = {}, txKey = 'leaf') => {
+  const tx = sign(header, { ...transactionInfo, ...txOver }, txKey)
+  return sign(
+    header,
+    {
+      notificationType: 'DID_RENEW',
+      notificationUUID: 'apple-uuid-0001',
+      version: '2.0',
+      signedDate: SIGNED_DATE,
+      data: {
+        appAppleId: 1234567890,
+        bundleId: 'com.worldquest.app',
+        bundleVersion: '1',
+        environment: 'Production',
+        signedTransactionInfo: tx,
+        ...over,
+      },
+    },
+    'leaf',
+  )
 }
 
 const fixtures = {
@@ -84,6 +138,7 @@ const fixtures = {
     "shaped like Apple's so the verifier is exercised against real DER rather than " +
     'against objects shaped like what we hoped DER looks like.',
   rootFingerprint: null, // filled below, from the parsed certificate
+  signedDate: SIGNED_DATE,
   x5c,
   evilX5c: [derOf('evilLeaf'), derOf('evilRoot')],
   valid: sign(header, payload, 'leaf'),
@@ -96,10 +151,22 @@ const fixtures = {
     const evil = b64url(JSON.stringify({ ...payload, data: { ...payload.data, bundleId: 'com.attacker.app' } }))
     return `${h}.${evil}.${s}`
   })(),
+
+  // ── the full v2 shape ──────────────────────────────────────────────────────
+  appleValid: notificationFor(),
+  // A genuine, correctly signed notification about somebody ELSE'S app. Every signature
+  // in it is real; only the bundleId check rejects it, which is the entire reason that
+  // check exists.
+  appleWrongBundle: notificationFor({ bundleId: 'com.attacker.app' }),
+  appleSandbox: notificationFor({ environment: 'Sandbox' }),
+  // The envelope is perfect and its nested transaction is signed by the intermediate
+  // rather than the leaf. A handler that verifies only the outer JWS accepts this, and
+  // with it an originalTransactionId of the sender's choosing.
+  appleForgedTransaction: notificationFor({}, {}, 'inter'),
+  appleTrial: notificationFor({}, { offerType: 1, offerDiscountType: 'FREE_TRIAL' }),
 }
 
-const { X509Certificate } = require('node:crypto')
-fixtures.rootFingerprint = new X509Certificate(readFileSync(join(TMP, 'root.pem'))).fingerprint256
+fixtures.rootFingerprint = new Cert(readFileSync(join(TMP, 'root.pem'))).fingerprint256
 
 mkdirSync(OUT, { recursive: true })
 writeFileSync(join(OUT, 'jws.json'), JSON.stringify(fixtures, null, 2) + '\n')

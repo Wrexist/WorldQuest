@@ -44,6 +44,15 @@ export type VerifiedNotification<N> = {
   readonly notification: N
   /** The untouched payload, for the append-only log. */
   readonly payload: unknown
+  /**
+   * A second way to find the account, for a subscription nothing has linked yet.
+   *
+   * Every notification after the first is found by `storeRef`, because by then the
+   * subscription row carries it. The first one cannot be — that store subscription has
+   * never been connected to a user. Apple's `appAccountToken` and Google's
+   * `obfuscatedExternalAccountId` both fill this slot; what is in it is opaque here.
+   */
+  readonly accountRef?: string | null
 }
 
 export type NotificationDeps<S, N> = {
@@ -57,8 +66,15 @@ export type NotificationDeps<S, N> = {
   readonly verify: (raw: string) => Promise<VerifiedNotification<N> | null>
   /** Has this exact notification already been recorded? The store WILL redeliver. */
   readonly seen: (notificationId: string) => Promise<boolean>
-  /** Which user owns this store subscription, if any. */
-  readonly findUser: (platform: 'ios' | 'android', storeRef: string) => Promise<string | null>
+  /**
+   * Which user owns this store subscription, if any.
+   *
+   * Given the whole verified notification rather than its `storeRef`, because a first
+   * purchase has no row to match on and has to fall back to `accountRef`. Keeping that
+   * fallback inside one dependency is what stops the handler growing a second notion of
+   * "which user" that only runs on some paths.
+   */
+  readonly findUser: (event: VerifiedNotification<N>) => Promise<string | null>
   readonly load: (userId: string) => Promise<S>
   /** Append the event and, when there is one, the new subscription. One transaction. */
   readonly record: (userId: string, event: VerifiedNotification<N>, next: S | null) => Promise<void>
@@ -105,7 +121,7 @@ export async function handleStoreNotification<S, N>(
   }
 
   try {
-    const userId = await deps.findUser(verified.platform, verified.storeRef)
+    const userId = await deps.findUser(verified)
 
     // An authentic notification about a subscription we cannot match to a user. Real,
     // and permanent: a purchase made before the account was linked, or a refund for a

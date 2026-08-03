@@ -102,10 +102,10 @@ export function verifyChain(chain: readonly ChainCert[], policy: ChainPolicy): R
  * missing field must be a rejection rather than a type error.
  */
 export type NotificationClaims = {
-  readonly bundleId?: string
-  readonly environment?: string
+  readonly bundleId?: string | undefined
+  readonly environment?: string | undefined
   /** When the store signed it, epoch millis. */
-  readonly signedDate?: number
+  readonly signedDate?: number | undefined
 }
 
 export type ClaimPolicy = {

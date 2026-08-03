@@ -103,6 +103,16 @@ describe('what the store is told to do next', () => {
     expect(d.record).toHaveBeenCalledWith('user-1', verified, null)
   })
 
+  it('hands findUser the whole notification, not just the store reference', async () => {
+    // A first purchase has no row to match on: nothing has ever linked that store
+    // subscription to a user, so `storeRef` cannot find one and the only thread back is
+    // `accountRef`. Passing just the reference would make that fallback impossible to
+    // reach from inside the one dependency that is supposed to own it.
+    const d = deps()
+    await handleStoreNotification('jws', { ...d, verify: async () => ({ ...verified, accountRef: 'user-uuid' }) })
+    expect(d.findUser).toHaveBeenCalledWith(expect.objectContaining({ accountRef: 'user-uuid' }))
+  })
+
   it('asks the store to retry when OUR storage fails', async () => {
     // The one case where retrying is what we want: the next attempt might work.
     const d = deps({
