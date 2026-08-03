@@ -57,12 +57,12 @@ const FLAG_PROMPT_WIDTH = 200
 /**
  * The locator map beside a question.
  *
- * Smaller than the flag prompt on purpose. The flag IS the question when it appears;
- * this is context, and context that competes with the prompt for attention has stopped
- * being context. 160pt leaves the four answers on screen at 320pt with the map above
- * them, which is the layout the mockup shows.
+ * The same 200pt as the flag prompt, because it is now the same kind of object: the
+ * map is framed on the country rather than on its continent, so it carries real
+ * information at a glance instead of being a decorative smudge that had to be kept
+ * small to avoid wasting space. Four answers still fit below it at 320pt.
  */
-const LOCATOR_WIDTH = 160
+const LOCATOR_WIDTH = 200
 
 export function LessonScreen({
   onExit,
@@ -344,7 +344,7 @@ export function LessonScreen({
           <View style={styles.promptArt} testID="prompt-locator">
             <CountryMap
               path={question.locator.path}
-              region={question.locator.region}
+              contextPath={question.locator.contextPath}
               width={LOCATOR_WIDTH}
             />
           </View>

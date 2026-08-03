@@ -5,16 +5,11 @@
  * scripts/build-maps.cjs for the projection, the two-layer scheme, and why these are
  * PNG rather than SVG.
  *
- * Both layers are single-colour alpha masks: tint them with a design token rather than
- * treating them as artwork with a colour of their own.
+ * Two files per country, sharing that country's own zoom frame: the country itself,
+ * and the land around it. Both are single-colour alpha masks — tint them with a design
+ * token rather than treating them as artwork with a colour of their own.
  */
 
-import region_AF from '../../assets/geo/regions/AF.png'
-import region_AS from '../../assets/geo/regions/AS.png'
-import region_EU from '../../assets/geo/regions/EU.png'
-import region_NA from '../../assets/geo/regions/NA.png'
-import region_OC from '../../assets/geo/regions/OC.png'
-import region_SA from '../../assets/geo/regions/SA.png'
 import country_AR from '../../assets/geo/countries/AR.png'
 import country_AT from '../../assets/geo/countries/AT.png'
 import country_AU from '../../assets/geo/countries/AU.png'
@@ -80,17 +75,76 @@ import country_US from '../../assets/geo/countries/US.png'
 import country_VN from '../../assets/geo/countries/VN.png'
 import country_ZA from '../../assets/geo/countries/ZA.png'
 import country_ZW from '../../assets/geo/countries/ZW.png'
+import context_AR from '../../assets/geo/context/AR.png'
+import context_AT from '../../assets/geo/context/AT.png'
+import context_AU from '../../assets/geo/context/AU.png'
+import context_BD from '../../assets/geo/context/BD.png'
+import context_BE from '../../assets/geo/context/BE.png'
+import context_BR from '../../assets/geo/context/BR.png'
+import context_BW from '../../assets/geo/context/BW.png'
+import context_CA from '../../assets/geo/context/CA.png'
+import context_CH from '../../assets/geo/context/CH.png'
+import context_CL from '../../assets/geo/context/CL.png'
+import context_CN from '../../assets/geo/context/CN.png'
+import context_CO from '../../assets/geo/context/CO.png'
+import context_CR from '../../assets/geo/context/CR.png'
+import context_CU from '../../assets/geo/context/CU.png'
+import context_CZ from '../../assets/geo/context/CZ.png'
+import context_DE from '../../assets/geo/context/DE.png'
+import context_DK from '../../assets/geo/context/DK.png'
+import context_DZ from '../../assets/geo/context/DZ.png'
+import context_EG from '../../assets/geo/context/EG.png'
+import context_ES from '../../assets/geo/context/ES.png'
+import context_ET from '../../assets/geo/context/ET.png'
+import context_FI from '../../assets/geo/context/FI.png'
+import context_FJ from '../../assets/geo/context/FJ.png'
+import context_FR from '../../assets/geo/context/FR.png'
+import context_GH from '../../assets/geo/context/GH.png'
+import context_GR from '../../assets/geo/context/GR.png'
+import context_GT from '../../assets/geo/context/GT.png'
+import context_HU from '../../assets/geo/context/HU.png'
+import context_ID from '../../assets/geo/context/ID.png'
+import context_IN from '../../assets/geo/context/IN.png'
+import context_IT from '../../assets/geo/context/IT.png'
+import context_JP from '../../assets/geo/context/JP.png'
+import context_KE from '../../assets/geo/context/KE.png'
+import context_KP from '../../assets/geo/context/KP.png'
+import context_KR from '../../assets/geo/context/KR.png'
+import context_MA from '../../assets/geo/context/MA.png'
+import context_ML from '../../assets/geo/context/ML.png'
+import context_MN from '../../assets/geo/context/MN.png'
+import context_MX from '../../assets/geo/context/MX.png'
+import context_MY from '../../assets/geo/context/MY.png'
+import context_NA from '../../assets/geo/context/NA.png'
+import context_NG from '../../assets/geo/context/NG.png'
+import context_NL from '../../assets/geo/context/NL.png'
+import context_NO from '../../assets/geo/context/NO.png'
+import context_NP from '../../assets/geo/context/NP.png'
+import context_NZ from '../../assets/geo/context/NZ.png'
+import context_PA from '../../assets/geo/context/PA.png'
+import context_PE from '../../assets/geo/context/PE.png'
+import context_PG from '../../assets/geo/context/PG.png'
+import context_PH from '../../assets/geo/context/PH.png'
+import context_PK from '../../assets/geo/context/PK.png'
+import context_PL from '../../assets/geo/context/PL.png'
+import context_PT from '../../assets/geo/context/PT.png'
+import context_RO from '../../assets/geo/context/RO.png'
+import context_SE from '../../assets/geo/context/SE.png'
+import context_SN from '../../assets/geo/context/SN.png'
+import context_TH from '../../assets/geo/context/TH.png'
+import context_TN from '../../assets/geo/context/TN.png'
+import context_TZ from '../../assets/geo/context/TZ.png'
+import context_UA from '../../assets/geo/context/UA.png'
+import context_UG from '../../assets/geo/context/UG.png'
+import context_US from '../../assets/geo/context/US.png'
+import context_VN from '../../assets/geo/context/VN.png'
+import context_ZA from '../../assets/geo/context/ZA.png'
+import context_ZW from '../../assets/geo/context/ZW.png'
 
 import type { AssetModule } from './flags.generated.js'
 
 /** Content-pack asset path → the bundled image. */
 export const MAP_BY_PATH: Readonly<Record<string, AssetModule>> = {
-  'geo/regions/AF.png': region_AF,
-  'geo/regions/AS.png': region_AS,
-  'geo/regions/EU.png': region_EU,
-  'geo/regions/NA.png': region_NA,
-  'geo/regions/OC.png': region_OC,
-  'geo/regions/SA.png': region_SA,
   'geo/countries/AR.png': country_AR,
   'geo/countries/AT.png': country_AT,
   'geo/countries/AU.png': country_AU,
@@ -156,4 +210,69 @@ export const MAP_BY_PATH: Readonly<Record<string, AssetModule>> = {
   'geo/countries/VN.png': country_VN,
   'geo/countries/ZA.png': country_ZA,
   'geo/countries/ZW.png': country_ZW,
+  'geo/context/AR.png': context_AR,
+  'geo/context/AT.png': context_AT,
+  'geo/context/AU.png': context_AU,
+  'geo/context/BD.png': context_BD,
+  'geo/context/BE.png': context_BE,
+  'geo/context/BR.png': context_BR,
+  'geo/context/BW.png': context_BW,
+  'geo/context/CA.png': context_CA,
+  'geo/context/CH.png': context_CH,
+  'geo/context/CL.png': context_CL,
+  'geo/context/CN.png': context_CN,
+  'geo/context/CO.png': context_CO,
+  'geo/context/CR.png': context_CR,
+  'geo/context/CU.png': context_CU,
+  'geo/context/CZ.png': context_CZ,
+  'geo/context/DE.png': context_DE,
+  'geo/context/DK.png': context_DK,
+  'geo/context/DZ.png': context_DZ,
+  'geo/context/EG.png': context_EG,
+  'geo/context/ES.png': context_ES,
+  'geo/context/ET.png': context_ET,
+  'geo/context/FI.png': context_FI,
+  'geo/context/FJ.png': context_FJ,
+  'geo/context/FR.png': context_FR,
+  'geo/context/GH.png': context_GH,
+  'geo/context/GR.png': context_GR,
+  'geo/context/GT.png': context_GT,
+  'geo/context/HU.png': context_HU,
+  'geo/context/ID.png': context_ID,
+  'geo/context/IN.png': context_IN,
+  'geo/context/IT.png': context_IT,
+  'geo/context/JP.png': context_JP,
+  'geo/context/KE.png': context_KE,
+  'geo/context/KP.png': context_KP,
+  'geo/context/KR.png': context_KR,
+  'geo/context/MA.png': context_MA,
+  'geo/context/ML.png': context_ML,
+  'geo/context/MN.png': context_MN,
+  'geo/context/MX.png': context_MX,
+  'geo/context/MY.png': context_MY,
+  'geo/context/NA.png': context_NA,
+  'geo/context/NG.png': context_NG,
+  'geo/context/NL.png': context_NL,
+  'geo/context/NO.png': context_NO,
+  'geo/context/NP.png': context_NP,
+  'geo/context/NZ.png': context_NZ,
+  'geo/context/PA.png': context_PA,
+  'geo/context/PE.png': context_PE,
+  'geo/context/PG.png': context_PG,
+  'geo/context/PH.png': context_PH,
+  'geo/context/PK.png': context_PK,
+  'geo/context/PL.png': context_PL,
+  'geo/context/PT.png': context_PT,
+  'geo/context/RO.png': context_RO,
+  'geo/context/SE.png': context_SE,
+  'geo/context/SN.png': context_SN,
+  'geo/context/TH.png': context_TH,
+  'geo/context/TN.png': context_TN,
+  'geo/context/TZ.png': context_TZ,
+  'geo/context/UA.png': context_UA,
+  'geo/context/UG.png': context_UG,
+  'geo/context/US.png': context_US,
+  'geo/context/VN.png': context_VN,
+  'geo/context/ZA.png': context_ZA,
+  'geo/context/ZW.png': context_ZW,
 }

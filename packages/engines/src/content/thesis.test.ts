@@ -609,15 +609,15 @@ describe('the locator map', () => {
     // adds where rather than what. Two things learned for one look.
     const { q } = questionFor('tpl.capital.mc4')
     expect(q.locator?.path).toBe(index.entities.get('SE')!.assets!['map']!.path)
-    expect(q.locator?.region).toBe(index.entities.get('SE')!.region)
+    expect(q.locator?.contextPath).toBe(index.entities.get('SE')!.assets!['mapContext']!.path)
   })
 
-  it('carries the region, because a country with no continent locates nothing', () => {
-    // The picture is two layers. Given only the outline, a host can draw a shape
-    // floating in a void — which is decoration, not an answer to "where is this?".
+  it('carries both layers, because a country with nothing behind it locates nothing', () => {
+    // The picture is two layers drawn in one frame. Given only the outline, a host can
+    // draw a shape floating in a void — decoration, not an answer to "where is this?".
     const { q } = questionFor('tpl.capital.mc4')
     expect(q.locator).toBeDefined()
-    expect(Object.keys(q.locator!).sort()).toEqual(['path', 'region'])
+    expect(Object.keys(q.locator!).sort()).toEqual(['contextPath', 'path'])
   })
 
   it('is absent for an entity with no map, rather than half-built', () => {

@@ -24,12 +24,16 @@
  *
  * ## Two layers, both alpha masks
  *
- * `geo/regions/<REGION>.png` is the continent; `geo/countries/<CODE>.png` is one
- * country inside the same projection frame. Stacked, they line up. Both are white on
- * transparent, so the COLOUR IS THE CALLER'S: tint them from design tokens and the map
- * re-themes with everything else. Treating either as finished artwork with a colour of
- * its own would hard-code a palette into a PNG, which is the thing tokens exist to
+ * `geo/countries/<CODE>.png` is the country; `geo/context/<CODE>.png` is the land
+ * around it, drawn in that same country's frame. Stacked, they line up. Both are white
+ * on transparent, so the COLOUR IS THE CALLER'S: tint them from design tokens and the
+ * map re-themes with everything else. Treating either as finished artwork with a colour
+ * of its own would hard-code a palette into a PNG, which is the thing tokens exist to
  * prevent.
+ *
+ * The frame is fitted to the COUNTRY, not to its continent. The first version shared
+ * one projection per continent and Japan came out a 30px sliver of a 600px Asia —
+ * technically a locator map, and useless for actually locating anything.
  *
  * ## Missing is a placeholder, never a substitute
  *
@@ -57,8 +61,16 @@ export function mapSource(path: string | undefined): ImageSourcePropType | undef
   return typeof asset === 'string' ? { uri: asset } : asset
 }
 
-/** The region layer that shares a country layer's frame. */
-export const regionMapPath = (region: string): string => `geo/regions/${region}.png`
+/**
+ * The two layers are BOTH named by the pack — there is no path arithmetic here.
+ *
+ * An earlier version derived the background from the country's region
+ * (`geo/regions/EU.png`), which worked only because every country in a continent
+ * shared one projection. They no longer do: each country is framed on itself, so its
+ * backdrop is the land around THAT country and belongs to it alone. Deriving one path
+ * from another would also have put an unlicensed file in the app — `assets` is where a
+ * licence lives, and a path invented in code has none.
+ */
 
 /**
  * 4:3, the same box as a flag.

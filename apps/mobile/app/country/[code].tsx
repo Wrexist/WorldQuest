@@ -37,6 +37,7 @@ export default function CountryRoute() {
         region: null,
         assetPath: undefined,
         mapPath: undefined,
+        mapContextPath: undefined,
         facts: [] as CountryFact[],
         progress: null,
       }
@@ -67,6 +68,7 @@ export default function CountryRoute() {
       // From the pack, never built from `code` — see the note in collection/[kind].
       assetPath: entity.assets?.['flag']?.path,
       mapPath: entity.assets?.['map']?.path,
+      mapContextPath: entity.assets?.['mapContext']?.path,
       facts,
       progress: entityProgress(index.index, entity.id, memory, now),
     }
@@ -89,6 +91,7 @@ export default function CountryRoute() {
         region={view.region}
         assetPath={view.assetPath}
         mapPath={view.mapPath}
+        mapContextPath={view.mapContextPath}
         facts={view.facts}
         progress={view.progress}
         onPractise={() => router.push('/lesson')}

@@ -146,11 +146,12 @@ export type Question = {
    * answer printed beside the question. The rule is enforced where this is built, not
    * left to each screen to remember.
    *
-   * `region` travels with `path` because the picture is two layers — the continent and
-   * the country inside it — and a host that had one without the other could only draw
-   * a shape floating in a void, which locates nothing.
+   * Two paths because the picture is two layers — the country, and the land around it
+   * drawn in the same frame — and a host with one but not the other could only draw a
+   * shape floating in a void, which locates nothing. Both come from the pack rather
+   * than one being derived from the other: each is a separately licensed asset.
    */
-  readonly locator?: { readonly path: string; readonly region: string }
+  readonly locator?: { readonly path: string; readonly contextPath: string }
   readonly timeLimitMs: number | null
   /** For the wrong-answer explanation: "Japan is a red circle on white." */
   readonly hint?: string

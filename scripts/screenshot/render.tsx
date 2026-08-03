@@ -262,8 +262,8 @@ function LessonView({
         <View style={s.promptArt}>
           <CountryMap
             path={question.locator.path}
-            region={question.locator.region}
-            width={160}
+            contextPath={question.locator.contextPath}
+            width={200}
           />
         </View>
       )}
@@ -430,6 +430,7 @@ function Gallery() {
             // frame here that is NOT the real component.
             assetPath="flags/SE.png"
             mapPath="geo/countries/SE.png"
+            mapContextPath="geo/context/SE.png"
             facts={[
               {
                 id: 'geo.SE.capital',

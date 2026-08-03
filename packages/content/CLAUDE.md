@@ -42,12 +42,13 @@ draw one. `apps/mobile` asserts at test time that every declared path resolves t
 we actually ship, so a pack that promises artwork nobody bundled fails rather than
 rendering a placeholder that looks deliberate.
 
-**So is a map.** Country outlines carry `assets.map`, rasterised from Natural Earth
+**So is a map.** Country outlines carry `assets.map` and `assets.mapContext` — the
+country, and the land around it drawn in the same frame — both rasterised from Natural Earth
 (public domain) by `pnpm build:maps` — never traced, never approximated. An invented
 coastline is the same P1 as an invented capital, and an invented *border* is a
 political claim on top of it. The script fails rather than guessing, and it checks two
 things a reviewer cannot see: that every outline has real area, and that every country
-lands inside its region's frame. Both guards exist because both failed — Natural Earth
+comes out at the size its own frame was fitted to. Both guards exist because both failed — Natural Earth
 files "Ashmore and Cartier Is." under Australia's ISO code, and a keyed lookup silently
 drew two uninhabited sandbanks captioned "Australia".
 

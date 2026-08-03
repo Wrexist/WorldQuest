@@ -26,15 +26,22 @@
  *
  * ## What it produces, and why two layers
  *
- * The mockup's thumbnail is not a country floating in a void. It is **the region, with
- * the country lit up inside it** — which is also the only version that teaches
- * anything. A silhouette of Chad on its own tells you the shape of Chad; Africa with
- * Chad glowing tells you where Chad is, which is the question the app is asking.
+ * The mockup's thumbnail is not a country floating in a void, and it is not a continent
+ * with a speck on it either. It is **the country, big enough to recognise, with its
+ * neighbours around it**. A silhouette of Chad alone tells you the shape of Chad; Chad
+ * with Libya, Sudan and Niger around it tells you where Chad is, which is the question
+ * the app is asking.
  *
- * So each country gets two files that share one projection frame:
+ * So each country gets two files that share ITS OWN projection frame:
  *
- *   geo/regions/<REGION>.png     the region's land, drawn once   (6 files)
- *   geo/countries/<CODE>.png     that country, in the region frame (65 files)
+ *   geo/countries/<CODE>.png     the country, filling ~46% of the frame
+ *   geo/context/<CODE>.png       the land around it, same frame
+ *
+ * The first version framed each CONTINENT and shared that frame across its members.
+ * Every file was correct and the result was useless: Japan came out a 30px sliver in a
+ * 600px Asia. That is how an atlas index works, and it is not how anybody learns where
+ * a country is. Per-country framing costs 130 files instead of 71 and is the whole
+ * difference between a picture you read and a picture you skip.
  *
  * Stacked, they line up exactly. Kept apart, each is a single-colour alpha mask, so
  * `Image`'s `tintColor` paints them from design tokens at runtime — which is as close
@@ -53,11 +60,13 @@
  *
  * ## Projection
  *
- * `d3-geo`'s Mercator, fitted per region so every country in a region shares a frame.
- * Mercator because it is locally shape-correct, which is what makes an outline
- * recognisable, and because it is the projection every map a child has ever seen uses.
- * It inflates high latitudes badly — Greenland in the North America frame is the usual
- * victim — which is a known and conventional distortion rather than a wrong border.
+ * `d3-geo`'s Mercator, fitted per COUNTRY and rotated to that country's own central
+ * meridian. Mercator because it is locally shape-correct, which is what makes an
+ * outline recognisable, and because it is the projection every map a child has ever
+ * seen uses. The rotation is not a refinement: without it, a country spanning the
+ * antimeridian is drawn as two slivers at opposite edges of the image, which is what
+ * happened to Fiji twice — once through the projection and once through a bounding-box
+ * width computed by subtraction.
  *
  * Run: pnpm build:maps
  */
@@ -66,7 +75,7 @@ const { chromium } = require('playwright')
 const { readFileSync, writeFileSync, mkdirSync, rmSync } = require('node:fs')
 const { join } = require('node:path')
 
-const OUT_REGIONS = join(process.cwd(), 'apps', 'mobile', 'assets', 'geo', 'regions')
+const OUT_CONTEXT = join(process.cwd(), 'apps', 'mobile', 'assets', 'geo', 'context')
 const OUT_COUNTRIES = join(process.cwd(), 'apps', 'mobile', 'assets', 'geo', 'countries')
 const INDEX = join(process.cwd(), 'apps', 'mobile', 'src', 'lib', 'maps.generated.ts')
 const PACK = join(
@@ -88,8 +97,19 @@ const PACK = join(
 const WIDTH = 600
 const HEIGHT = 450
 
-/** 8% inset so a coastline never touches the edge — the delivery spec's safe area. */
-const PADDING = 48
+/**
+ * How much of the frame the country itself fills.
+ *
+ * 0.46 — the country is fitted into the middle 46 %, leaving 27 % of margin on every
+ * side for its neighbours. That margin is the whole point: a country alone in a box is
+ * a shape, and a shape does not tell you where anything is. Japan needs Korea and the
+ * Chinese coast beside it or it is just a squiggle.
+ *
+ * The first version framed each CONTINENT instead and shared that frame across all its
+ * countries. It was correct and useless: Japan came out a 30px sliver in a 600px Asia,
+ * which is how a real atlas index works and not how you learn where somewhere is.
+ */
+const SUBJECT_FRACTION = 0.46
 
 /**
  * 1:50m, not 1:110m.
@@ -123,16 +143,18 @@ function load(name) {
  * device only. Keyed by the content pack's own path so a pack promising a file we do
  * not ship misses the lookup and falls back to the placeholder.
  */
-function writeIndex(regions, codes) {
-  const regionImports = regions
-    .map((r) => `import region_${r} from '../../assets/geo/regions/${r}.png'`)
-    .join('\n')
+function writeIndex(codes) {
   const countryImports = codes
     .map((c) => `import country_${c} from '../../assets/geo/countries/${c}.png'`)
     .join('\n')
-  const regionEntries = regions.map((r) => `  'geo/regions/${r}.png': region_${r},`).join('\n')
+  const contextImports = codes
+    .map((c) => `import context_${c} from '../../assets/geo/context/${c}.png'`)
+    .join('\n')
   const countryEntries = codes
     .map((c) => `  'geo/countries/${c}.png': country_${c},`)
+    .join('\n')
+  const contextEntries = codes
+    .map((c) => `  'geo/context/${c}.png': context_${c},`)
     .join('\n')
 
   writeFileSync(
@@ -144,19 +166,20 @@ function writeIndex(regions, codes) {
  * scripts/build-maps.cjs for the projection, the two-layer scheme, and why these are
  * PNG rather than SVG.
  *
- * Both layers are single-colour alpha masks: tint them with a design token rather than
- * treating them as artwork with a colour of their own.
+ * Two files per country, sharing that country's own zoom frame: the country itself,
+ * and the land around it. Both are single-colour alpha masks — tint them with a design
+ * token rather than treating them as artwork with a colour of their own.
  */
 
-${regionImports}
 ${countryImports}
+${contextImports}
 
 import type { AssetModule } from './flags.generated.js'
 
 /** Content-pack asset path → the bundled image. */
 export const MAP_BY_PATH: Readonly<Record<string, AssetModule>> = {
-${regionEntries}
 ${countryEntries}
+${contextEntries}
 }
 `,
   )
@@ -208,7 +231,14 @@ ${countryEntries}
     // their mainland. Guiana, Curaçao and Svalbard do not.
     const kept = [ranked[0].p]
     let box = geoBounds(ranked[0].p)
-    const span = (b) => [Math.abs(b[1][0] - b[0][0]), Math.abs(b[1][1] - b[0][1])]
+    // Longitude span, WRAPPED. `geoBounds` reports an antimeridian-crossing shape as
+    // west 177°, east −178° — five degrees apart going east, and 355 apart if you
+    // subtract them. Naively subtracted, Fiji's bounding box looked like most of the
+    // planet, so no island could ever grow it by half again, so every scattered islet
+    // was kept and the frame was fitted to all of them: Fiji rendered as three specks
+    // in an empty Pacific. This is the same antimeridian bug as the projection's,
+    // wearing a different hat, which is why it is spelled out rather than inlined.
+    const span = (b) => [((b[1][0] - b[0][0] + 360) % 360), Math.abs(b[1][1] - b[0][1])]
 
     for (const { p } of ranked.slice(1)) {
       const merged = geoBounds({ type: 'GeometryCollection', geometries: [...kept, p] })
@@ -227,12 +257,21 @@ ${countryEntries}
   // The pack is the contract, exactly as with the flags. If it names a geometry file
   // this script does not write, the app draws a placeholder where a map should be.
   const mismatched = pack.items
-    .filter((i) => i.assets?.map?.path !== `geo/countries/${i.id}.png`)
-    .map((i) => `${i.id} → ${i.assets?.map?.path ?? '(no assets.map)'}`)
+    .filter(
+      (i) =>
+        i.assets?.map?.path !== `geo/countries/${i.id}.png` ||
+        i.assets?.mapContext?.path !== `geo/context/${i.id}.png`,
+    )
+    .map(
+      (i) =>
+        `${i.id} → ${i.assets?.map?.path ?? '(no assets.map)'}` +
+        ` + ${i.assets?.mapContext?.path ?? '(no assets.mapContext)'}`,
+    )
   if (mismatched.length > 0) {
     console.error(
       `✗ the pack names geometry files this script does not write:\n    ${mismatched.join('\n    ')}\n\n` +
-        '  Expected "geo/countries/<ID>.png" for each. Fix the pack, not this script.',
+        '  Expected "geo/countries/<ID>.png" and "geo/context/<ID>.png" for each.\n' +
+        '  Fix the pack, not this script.',
     )
     process.exit(1)
   }
@@ -306,9 +345,16 @@ ${countryEntries}
 
   const regions = [...new Set(entries.map((e) => e.region))].sort()
 
-  rmSync(OUT_REGIONS, { recursive: true, force: true })
+  // The per-region layer this script used to emit. Removed rather than left behind:
+  // a stale asset directory is dead weight in the download that no test would notice,
+  // and `CountryMap.test.tsx` asserts the inverse — that nothing ships unclaimed.
+  rmSync(join(process.cwd(), 'apps', 'mobile', 'assets', 'geo', 'regions'), {
+    recursive: true,
+    force: true,
+  })
+  rmSync(OUT_CONTEXT, { recursive: true, force: true })
   rmSync(OUT_COUNTRIES, { recursive: true, force: true })
-  mkdirSync(OUT_REGIONS, { recursive: true })
+  mkdirSync(OUT_CONTEXT, { recursive: true })
   mkdirSync(OUT_COUNTRIES, { recursive: true })
 
   const browser = await chromium.launch({
@@ -334,129 +380,101 @@ ${countryEntries}
 
   console.log(`Maps → ${WIDTH}×${HEIGHT} PNG, from Natural Earth 1:50m\n`)
 
+  /**
+   * Every landmass on Earth, dissolved into one shape, drawn once and reused.
+   *
+   * The context layer is "the land around here", not "this continent" — a neighbour
+   * can be across a continent boundary (Egypt's are in both Africa and Asia, Russia's
+   * in both Europe and Asia), and a context layer that stopped at a continent edge
+   * would show a coastline where a border belongs. Merging is what makes it read as
+   * land rather than as a jigsaw with every internal edge drawn.
+   */
+  const allLand = merge(topology, topology.objects.countries.geometries)
+
   let bytes = 0
   const codes = []
+  const sizes = []
 
-  for (const region of regions) {
-    const members = entries.filter((e) => e.region === region)
+  // Sorted so the output is stable run to run, which makes the size report diffable.
+  for (const member of [...entries].sort((a, b) => a.code.localeCompare(b.code))) {
+    const subject = mainMass(member.shape)
 
-    // The base layer is the WHOLE continent, not just the countries this pack teaches.
-    //
-    // The first version drew only our members and Africa came out moth-eaten — sixteen
-    // disconnected blobs that read as a rendering bug. It is also the wrong lesson: a
-    // highlight means "here, in Africa", and that needs an Africa to be inside. The
-    // continent per country comes from `countries-list`, which agrees with this pack's
-    // own `region` field on all 65 — two independent sources concurring, which is the
-    // only reason to trust either.
-    const continentGeometries = topology.objects.countries.geometries.filter((g) => {
-      const alpha2 = iso.numericToAlpha2(String(g.id))
-      return alpha2 !== undefined && isoTable[alpha2]?.continent === region
-    })
-
-    // One projection per region, so the country layer and the region layer share a
-    // frame and overlay exactly. Fitting each country to its own frame instead would
-    // put the highlight nowhere near where the country actually is, which is the whole
-    // point of the picture.
-    //
-    // Framed on the COUNTRIES THIS APP TEACHES, not on the whole continent.
-    //
-    // Framing on the continent put Siberia in the European frame — `countries-list`
-    // files Russia under EU — and squeezed the nineteen countries we actually teach
-    // into a third of the picture. Fixing that by deciding where Europe ends is not
-    // ours to do: contested boundaries follow a documented policy and are never
-    // resolved unilaterally (packages/content/CLAUDE.md § sensitive content). Framing
-    // on our own members sidesteps the question rather than answering it — it asserts
-    // nothing about continent membership, it just points the camera at the subject.
-    //
-    // The continent is still DRAWN in full behind it and runs off the edges, which is
-    // what a map should do: a window onto somewhere bigger, not a continent floating
-    // in a box.
-    //
-    // Main mass is taken per country, never from a merged shape. Merged first, the
-    // 98 % threshold is spent on a continent's worth of islands at once and enough of
-    // them survive to blow the frame open again — the Canaries and the Azores kept
-    // Europe a smudge in the corner through two attempts. Per country, Spain drops the
-    // Canaries and Portugal drops the Azores before either reaches the fit.
-    const frame = {
-      type: 'GeometryCollection',
-      geometries: members.map((m) => mainMass(m.shape)),
-    }
-    // Rotated to the region's own central meridian before fitting.
-    //
-    // Not a refinement — without it Oceania is a WRONG MAP. Its frame runs from 113°E
-    // east to −128°, crossing the antimeridian, and an unrotated Mercator puts the two
-    // halves of that at opposite edges of the image: Fiji spans 177°E to −178°, so it
-    // was drawn as two slivers 500px apart with the Pacific between them. The
-    // thumbnail read as "almost empty", which is how it nearly shipped — an empty-
-    // looking map invites you to blame the data, and the data was fine.
-    //
-    // `geoCentroid` computes the centre on the sphere, so it gets this right for a set
-    // that wraps. Every other region rotates by a few degrees and looks identical.
+    /**
+     * One projection per COUNTRY, rotated to that country's own meridian.
+     *
+     * The rotation is not optional. Fiji spans 177°E to −178°, and an unrotated
+     * Mercator puts those at opposite edges of the image — it was drawn as two slivers
+     * 500px apart, which read as "almost empty" rather than as broken.
+     *
+     * `fitExtent` into the middle band leaves the margin that carries the neighbours.
+     */
+    const inset = (1 - SUBJECT_FRACTION) / 2
     const projection = geoMercator()
-      .rotate([-geoCentroid(frame)[0], 0])
+      .rotate([-geoCentroid(subject)[0], 0])
       .fitExtent(
         [
-          [PADDING, PADDING],
-          [WIDTH - PADDING, HEIGHT - PADDING],
+          [WIDTH * inset, HEIGHT * inset],
+          [WIDTH * (1 - inset), HEIGHT * (1 - inset)],
         ],
-        frame,
+        subject,
       )
     const path = geoPath(projection)
 
-    // `merge` dissolves the shared borders, so the continent reads as one landmass
-    // rather than as a jigsaw with every internal edge drawn.
-    const regionPng = await shoot(path(merge(topology, continentGeometries)))
-    writeFileSync(join(OUT_REGIONS, `${region}.png`), regionPng)
-    bytes += regionPng.length
+    const contextPng = await shoot(path(allLand))
+    writeFileSync(join(OUT_CONTEXT, `${member.code}.png`), contextPng)
+    bytes += contextPng.length
 
-    for (const member of members) {
-      const png = await shoot(path(member.shape))
-      writeFileSync(join(OUT_COUNTRIES, `${member.code}.png`), png)
-      bytes += png.length
-      codes.push(member.code)
-    }
+    const countryPng = await shoot(path(member.shape))
+    writeFileSync(join(OUT_COUNTRIES, `${member.code}.png`), countryPng)
+    bytes += countryPng.length
 
-    // How big each highlight actually comes out, checked rather than assumed.
+    codes.push(member.code)
+
+    // How big the subject actually comes out, measured rather than trusted.
     //
-    // A country whose highlight lands outside the frame is a blank map and fails the
-    // build. One that lands inside but tiny is not a bug — Fiji really is a speck in a
-    // map of Oceania, and shrinking Oceania until Fiji is comfortable would be lying
-    // about where Fiji is — but it IS a number somebody should see rather than
-    // discover on a device, so the smallest few are printed every run.
-    const sizes = members.map((m) => {
-      const [[west, south], [east, north]] = geoBounds(mainMass(m.shape))
-      const a = projection([west, north])
-      const b = projection([east, south])
-      if (a === null || b === null) return { code: m.code, px: 0, outside: true }
-      const px = Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1]))
-      const outside = [a, b].some(([x, y]) => x < 0 || x > WIDTH || y < 0 || y > HEIGHT)
-      return { code: m.code, px, outside }
-    })
-
-    const clipped = sizes.filter((s) => s.outside)
-    if (clipped.length > 0) {
-      console.error(
-        `\n✗ ${region}: ${clipped.map((c) => c.code).join(', ')} fall outside the frame.\n` +
-          '  Their own map would be blank. Widen the fit rather than shipping it.',
-      )
-      process.exit(1)
-    }
-
-    const smallest = [...sizes].sort((a, b) => a.px - b.px).slice(0, 3)
-    console.log(
-      `  ${region}  ${String(members.length).padStart(2)} taught` +
-        `  ${String(continentGeometries.length).padStart(3)} drawn` +
-        `   smallest: ${smallest.map((s) => `${s.code} ${Math.round(s.px)}px`).join(', ')}`,
-    )
+    // Fitted to a fixed fraction of the frame, every country SHOULD land at roughly the
+    // same size — that is the point of framing per country rather than per continent.
+    // So unlike the old per-region report, an outlier here means something is wrong:
+    // a shape whose main mass is not what we think it is, or a projection that has
+    // folded. Printed every run so a regression is visible rather than discovered.
+    const [[west, south], [east, north]] = geoBounds(subject)
+    const a = projection([west, north])
+    const b = projection([east, south])
+    const px =
+      a === null || b === null
+        ? 0
+        : Math.max(Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1]))
+    sizes.push({ code: member.code, px })
   }
+
+  const target = Math.min(WIDTH, HEIGHT) * SUBJECT_FRACTION
+  const wrong = sizes.filter((s) => s.px < target * 0.5 || s.px > WIDTH)
+  if (wrong.length > 0) {
+    console.error(
+      `\n✗ these countries did not fit their own frame: ` +
+        `${wrong.map((w) => `${w.code} ${Math.round(w.px)}px`).join(', ')}\n\n` +
+        `  Every country is fitted to the same fraction of the frame, so they should all\n` +
+        `  land near ${Math.round(target)}px. One that does not means its main mass is not\n` +
+        '  the shape we think it is — check for an ISO code shared by two geometries.',
+    )
+    process.exit(1)
+  }
+
+  const ordered = [...sizes].sort((a, b) => a.px - b.px)
+  console.log(
+    `  subject size  target ${Math.round(target)}px` +
+      `  ·  smallest ${ordered[0].code} ${Math.round(ordered[0].px)}px` +
+      `  ·  largest ${ordered[ordered.length - 1].code} ` +
+      `${Math.round(ordered[ordered.length - 1].px)}px`,
+  )
 
   await browser.close()
 
   codes.sort()
-  writeIndex(regions, codes)
+  writeIndex(codes)
 
   console.log(
-    `\n✓ ${regions.length} regions + ${codes.length} countries` +
+    `\n✓ ${codes.length} countries × 2 layers` +
       `  ${(bytes / 1024).toFixed(0)} KB total\n` +
       `  wrote ${INDEX.replace(process.cwd() + '/', '')}\n\n` +
       '  These are ASSET files: Metro ships them beside the bytecode rather than\n' +

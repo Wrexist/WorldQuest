@@ -81,6 +81,8 @@ export type CountryScreenProps = {
   readonly assetPath?: string | undefined
   /** The country's outline, from the pack's `assets.map.path`. */
   readonly mapPath?: string | undefined
+  /** The land around it, from `assets.mapContext.path` — same frame, drawn behind. */
+  readonly mapContextPath?: string | undefined
   readonly facts: readonly CountryFact[]
   readonly progress: EntityProgress | null
   readonly onPractise: () => void
@@ -111,6 +113,7 @@ export function CountryScreen({
   region,
   assetPath,
   mapPath,
+  mapContextPath,
   facts,
   progress,
   onPractise,
@@ -189,7 +192,7 @@ export function CountryScreen({
             the app, and it clears 3:1 against the muted base at every continent. */}
         <CountryMap
           path={mapPath}
-          region={region ?? undefined}
+          contextPath={mapContextPath}
           width={MAP_WIDTH}
         />
       </View>

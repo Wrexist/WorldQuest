@@ -411,13 +411,15 @@ export function buildQuestion(
    * worst shape a giveaway can take. Decided here rather than in a screen, because
    * every screen would have to remember it and one of them would not.
    *
-   * Requires both halves: the outline and the region it sits in. A country drawn with
-   * no continent behind it is a shape in a void, which locates nothing.
+   * Requires both halves: the country and the land around it. A country drawn with
+   * nothing behind it is a shape in a void, which locates nothing — so a pack that
+   * declares one layer and not the other gets no locator rather than half a picture.
    */
   const mapAsset = entity.assets?.['map']?.path
+  const contextAsset = entity.assets?.['mapContext']?.path
   const locator =
-    template.answer.from !== 'entity.names' && mapAsset !== undefined && entity.region !== undefined
-      ? { path: mapAsset, region: entity.region }
+    template.answer.from !== 'entity.names' && mapAsset !== undefined && contextAsset !== undefined
+      ? { path: mapAsset, contextPath: contextAsset }
       : undefined
 
   return {

@@ -70,6 +70,11 @@ day's work once the components existed:
 
   ![A question with its locator map](assets/screens/lesson-question.png)
 
+  It is framed on the country, not on the continent. The first version shared one
+  projection per continent, and Japan came out a 30px sliver of a 600px Asia — every
+  file correct, the picture useless. Each country now gets its own frame, filling ~46 %
+  of it, with the margin carrying the neighbours that make it locatable.
+
   The rule that makes it safe is one line in the composer, not a habit each screen has
   to remember: **the map is absent whenever the answer IS the country.** On "Tokyo is
   the capital of which country?" a map of Japan is not context, it is the answer — and
@@ -84,7 +89,7 @@ The mockup's imagery is generated art. Matching it needs real assets:
 | Asset | Mockup shows | Status |
 |---|---|---|
 | ~~Flags~~ | 65 national flags | ✅ **Done.** All 65 from `flag-icons` (MIT), 600×450 PNG, `pnpm build:flags`. Collection, country page and the lesson picture question. |
-| ~~Map thumbnails~~ | Rendered Europe with a pin | ✅ **Done.** Region + country outlines projected from Natural Earth (public domain) via `world-atlas`, `pnpm build:maps`. Two tintable alpha layers sharing one projection, so the map themes from tokens. On the country page. |
+| ~~Map thumbnails~~ | Rendered Europe with a pin | ✅ **Done.** Country + surrounding-land outlines projected from Natural Earth (public domain) via `world-atlas`, `pnpm build:maps`. Two tintable alpha layers per country sharing that country's own frame, so the map themes from tokens. On the country page and every lesson question that names a country. |
 | Trophy | 3D gold trophy | `ArtSlot` placeholder |
 | Avatar | Illustrated character | Initials in a ringed circle |
 | Atlas the mascot | Robot explorer | Not built |

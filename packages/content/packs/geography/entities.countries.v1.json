@@ -28,6 +28,11 @@
           "path": "geo/countries/US.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/US.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -47,6 +52,11 @@
           "path": "geo/countries/CA.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/CA.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -66,6 +76,11 @@
           "path": "geo/countries/MX.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/MX.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -85,6 +100,11 @@
           "path": "geo/countries/CU.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/CU.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -104,6 +124,11 @@
           "path": "geo/countries/GT.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/GT.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -123,6 +148,11 @@
           "path": "geo/countries/CR.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/CR.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -142,6 +172,11 @@
           "path": "geo/countries/PA.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/PA.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -161,6 +196,11 @@
           "path": "geo/countries/ID.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/ID.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -180,6 +220,11 @@
           "path": "geo/countries/TH.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/TH.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -199,6 +244,11 @@
           "path": "geo/countries/VN.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/VN.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -220,6 +270,11 @@
           "path": "geo/countries/PH.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/PH.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -239,6 +294,11 @@
           "path": "geo/countries/MY.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/MY.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -258,6 +318,11 @@
           "path": "geo/countries/AU.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/AU.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -277,6 +342,11 @@
           "path": "geo/countries/NZ.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/NZ.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -296,6 +366,11 @@
           "path": "geo/countries/FJ.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/FJ.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -315,6 +390,11 @@
           "path": "geo/countries/PG.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/PG.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -334,6 +414,11 @@
           "path": "geo/countries/PL.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/PL.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -353,6 +438,11 @@
           "path": "geo/countries/UA.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/UA.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -372,6 +462,11 @@
           "path": "geo/countries/CZ.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/CZ.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -391,6 +486,11 @@
           "path": "geo/countries/HU.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/HU.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -410,6 +510,11 @@
           "path": "geo/countries/RO.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/RO.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -429,6 +534,11 @@
           "path": "geo/countries/IN.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/IN.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -448,6 +558,11 @@
           "path": "geo/countries/PK.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/PK.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -467,6 +582,11 @@
           "path": "geo/countries/BD.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/BD.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -486,6 +606,11 @@
           "path": "geo/countries/NP.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/NP.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -505,6 +630,11 @@
           "path": "geo/countries/EG.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/EG.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -524,6 +654,11 @@
           "path": "geo/countries/MA.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/MA.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -543,6 +678,11 @@
           "path": "geo/countries/DZ.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/DZ.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -562,6 +702,11 @@
           "path": "geo/countries/TN.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/TN.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -581,6 +726,11 @@
           "path": "geo/countries/NG.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/NG.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -600,6 +750,11 @@
           "path": "geo/countries/GH.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/GH.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -619,6 +774,11 @@
           "path": "geo/countries/SN.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/SN.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -638,6 +798,11 @@
           "path": "geo/countries/ML.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/ML.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -657,6 +822,11 @@
           "path": "geo/countries/KE.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/KE.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -676,6 +846,11 @@
           "path": "geo/countries/ET.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/ET.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -696,6 +871,11 @@
           "path": "geo/countries/ZA.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/ZA.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -715,6 +895,11 @@
           "path": "geo/countries/UG.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/UG.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -734,6 +919,11 @@
           "path": "geo/countries/TZ.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/TZ.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -753,6 +943,11 @@
           "path": "geo/countries/NA.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/NA.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -772,6 +967,11 @@
           "path": "geo/countries/BW.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/BW.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -791,6 +991,11 @@
           "path": "geo/countries/ZW.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/ZW.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -810,6 +1015,11 @@
           "path": "geo/countries/JP.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/JP.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -829,6 +1039,11 @@
           "path": "geo/countries/CN.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/CN.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -848,6 +1063,11 @@
           "path": "geo/countries/KR.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/KR.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -867,6 +1087,11 @@
           "path": "geo/countries/KP.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/KP.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -886,6 +1111,11 @@
           "path": "geo/countries/MN.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/MN.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -905,6 +1135,11 @@
           "path": "geo/countries/BR.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/BR.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -924,6 +1159,11 @@
           "path": "geo/countries/AR.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/AR.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -943,6 +1183,11 @@
           "path": "geo/countries/CL.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/CL.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -962,6 +1207,11 @@
           "path": "geo/countries/PE.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/PE.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -981,6 +1231,11 @@
           "path": "geo/countries/CO.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/CO.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -1000,6 +1255,11 @@
           "path": "geo/countries/IT.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/IT.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -1019,6 +1279,11 @@
           "path": "geo/countries/ES.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/ES.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -1038,6 +1303,11 @@
           "path": "geo/countries/PT.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/PT.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -1057,6 +1327,11 @@
           "path": "geo/countries/GR.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/GR.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -1076,6 +1351,11 @@
           "path": "geo/countries/FR.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/FR.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -1095,6 +1375,11 @@
           "path": "geo/countries/DE.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/DE.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -1114,6 +1399,11 @@
           "path": "geo/countries/BE.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/BE.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -1135,6 +1425,11 @@
           "path": "geo/countries/NL.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/NL.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -1154,6 +1449,11 @@
           "path": "geo/countries/AT.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/AT.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -1173,6 +1473,11 @@
           "path": "geo/countries/CH.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/CH.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -1192,6 +1497,11 @@
           "path": "geo/countries/SE.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/SE.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -1211,6 +1521,11 @@
           "path": "geo/countries/NO.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/NO.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -1230,6 +1545,11 @@
           "path": "geo/countries/DK.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/DK.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     },
@@ -1249,6 +1569,11 @@
           "path": "geo/countries/FI.png",
           "license": "Public domain (Natural Earth)",
           "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+        },
+        "mapContext": {
+          "path": "geo/context/FI.png",
+          "license": "Public domain (Natural Earth)",
+          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
         }
       }
     }
