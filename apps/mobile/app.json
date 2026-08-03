@@ -10,7 +10,7 @@
     "backgroundColor": "#0B1730",
     "ios": {
       "bundleIdentifier": "com.worldquest.app",
-      "supportsTablet": false
+      "supportsTablet": true
     },
     "android": {
       "package": "com.worldquest.app",

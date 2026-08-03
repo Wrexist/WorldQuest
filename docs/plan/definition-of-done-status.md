@@ -97,7 +97,18 @@ green while two thirds of the authored content was unreachable.
    an enemy in ten seconds.
 3. **Sentry.** Blocked on a **DSN and an authorised account**, neither of which exists
    in this environment. The `ErrorBoundary` logs to console and says so.
-4. **A device.** Not something code can fix — but two things that were being deferred
+4. **A device.** Not something code can fix. Everything that can be prepared for it
+   now is: `apps/mobile/eas.json` has a `preview` profile that produces an installable
+   build, and [`device-pass.md`](device-pass.md) is the checklist for the sitting —
+   written so the four remaining boxes close in one pass rather than being rediscovered.
+
+   One real defect turned up while writing it: **`supportsTablet` was `false`** in
+   `app.json`, while `PROJECT.md` requires phone *and* tablet and the design system
+   defines an `lg ≥ 600` breakpoint with a two-column Explore. The app would have
+   shipped iPhone-only against its own spec. It is `true` now and has never been seen on
+   a tablet, so expect that row of the checklist to find things.
+
+   Two things that were being deferred
    to it turned out not to need it:
 
    - **Native bundling.** `pnpm e2e` exported `--platform web` and nothing else, so the
