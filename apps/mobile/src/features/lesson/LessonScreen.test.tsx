@@ -77,6 +77,32 @@ describe('Lesson', () => {
   })
 })
 
+describe('Lesson — the locator map', () => {
+  it('never shows a map on a question whose answer is the country', () => {
+    // The composer decides this (packages/engines), but the screen is where a
+    // regression would actually reach a user, so it is asserted here too. A map beside
+    // "Which country's flag is this?" answers it — for sighted users only, which is
+    // the worst way to leak an answer.
+    render(<LessonScreen onExit={() => {}} />)
+    const prompt = screen.getByRole('heading').textContent ?? ''
+    const answersWithCountry = /which country|flag is this/i.test(prompt)
+    if (answersWithCountry) expect(screen.queryByTestId('prompt-locator')).toBeNull()
+  })
+
+  it('draws real artwork when it does show one', () => {
+    // Composed from the shipped packs, so whichever question comes up, a locator that
+    // renders must resolve to a file we actually bundle rather than a placeholder.
+    const { container } = render(<LessonScreen onExit={() => {}} />)
+    const locator = screen.queryByTestId('prompt-locator')
+    if (locator === null) return
+    const layers = Array.from(locator.querySelectorAll('img'))
+    // Two layers: the continent, and the country inside it.
+    expect(layers).toHaveLength(2)
+    for (const layer of layers) expect(layer.getAttribute('src')).toBeTruthy()
+    void container
+  })
+})
+
 describe('Lesson — pausing', () => {
   it('offers a way out of the lesson at all', () => {
     // The catalogue lists a close control first (§5) and it had never been built. The

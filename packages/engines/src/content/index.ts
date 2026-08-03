@@ -402,11 +402,30 @@ export function buildQuestion(
   const promptAsset =
     template.modality === 'image' ? entity.assets?.[template.attribute]?.path : undefined
 
+  /**
+   * The locator map, and the one rule that makes it safe.
+   *
+   * Only when the answer is NOT the entity. A template answered by `entity.names` is
+   * asking "which country is this?" in some form, and a map of that country beside the
+   * question hands the answer over — silently, and only to sighted users, which is the
+   * worst shape a giveaway can take. Decided here rather than in a screen, because
+   * every screen would have to remember it and one of them would not.
+   *
+   * Requires both halves: the outline and the region it sits in. A country drawn with
+   * no continent behind it is a shape in a void, which locates nothing.
+   */
+  const mapAsset = entity.assets?.['map']?.path
+  const locator =
+    template.answer.from !== 'entity.names' && mapAsset !== undefined && entity.region !== undefined
+      ? { path: mapAsset, region: entity.region }
+      : undefined
+
   return {
     item,
     promptKey: template.prompt.key,
     promptParams,
     ...(promptAsset !== undefined ? { promptAsset } : {}),
+    ...(locator !== undefined ? { locator } : {}),
     // Shuffled with the injected rng — position must never become the answer.
     options: shuffle(options, rng),
     modality: template.modality,

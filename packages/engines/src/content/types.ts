@@ -135,6 +135,22 @@ export type Question = {
    * wrong quietly rather than loudly.
    */
   readonly promptAsset?: string
+  /**
+   * A picture of WHERE the entity is, as context beside the question rather than as
+   * the question. "What is the capital of Japan?" is a better question with a map of
+   * Japan next to it — you learn the capital and you place the country, which is two
+   * things for one look and the reason this app is not a flashcard deck.
+   *
+   * **Absent whenever the answer IS the entity**, and that is the whole subtlety. On
+   * "Tokyo is the capital of which country?" a map of Japan is not context, it is the
+   * answer printed beside the question. The rule is enforced where this is built, not
+   * left to each screen to remember.
+   *
+   * `region` travels with `path` because the picture is two layers — the continent and
+   * the country inside it — and a host that had one without the other could only draw
+   * a shape floating in a void, which locates nothing.
+   */
+  readonly locator?: { readonly path: string; readonly region: string }
   readonly timeLimitMs: number | null
   /** For the wrong-answer explanation: "Japan is a red circle on white." */
   readonly hint?: string

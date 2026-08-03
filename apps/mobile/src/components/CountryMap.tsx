@@ -25,7 +25,7 @@
  */
 
 import { Image, StyleSheet, View } from 'react-native'
-import { ArtSlot, colors } from '@worldquest/design'
+import { ArtSlot, colors, radius } from '@worldquest/design'
 import { mapHeight, mapSource, regionMapPath } from '../lib/maps.js'
 
 export type CountryMapProps = {
@@ -92,7 +92,21 @@ export function CountryMap({ path, region, width, baseTint, tint, label }: Count
 }
 
 const styles = StyleSheet.create({
-  frame: { position: 'relative' },
+  /**
+   * A window, not a cropped image.
+   *
+   * The continent runs off the edge of the 4:3 raster — Asia fills it completely — and
+   * with no container that hard edge reads as a clipping bug rather than as a map
+   * being looked at through something. A rounded surface with the same radius as every
+   * other panel in the app turns the crop into a deliberate viewport, which is also
+   * what makes it sit on a lesson screen without looking pasted on.
+   */
+  frame: {
+    position: 'relative',
+    backgroundColor: colors.bg.surface,
+    borderRadius: radius.lg,
+    overflow: 'hidden',
+  },
   // Absolute so the two masks share an origin. `contain` on both, at identical box
   // sizes, is what keeps the highlight registered with the continent.
   layer: { position: 'absolute', top: 0, start: 0 },

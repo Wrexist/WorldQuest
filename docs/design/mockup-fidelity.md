@@ -63,6 +63,20 @@ day's work once the components existed:
 
   ![Leaving a lesson early](assets/screens/lesson-summary-early.png)
 
+- **A locator map on the question itself** (mockup screen 5). "What is the capital of
+  Japan?" now shows Japan lit up inside Asia while it asks. Two things learned for one
+  look — the capital, and where the country is — which is the difference between a
+  geography app and a flashcard deck with country names on it.
+
+  ![A question with its locator map](assets/screens/lesson-question.png)
+
+  The rule that makes it safe is one line in the composer, not a habit each screen has
+  to remember: **the map is absent whenever the answer IS the country.** On "Tokyo is
+  the capital of which country?" a map of Japan is not context, it is the answer — and
+  it would be handed only to sighted users, which is the worst shape a giveaway can
+  take. `thesis.test.ts` asserts it across every template rather than the two somebody
+  thought of.
+
 ### 2. Needs assets — blocked on a decision, not on code
 
 The mockup's imagery is generated art. Matching it needs real assets:
@@ -76,7 +90,7 @@ The mockup's imagery is generated art. Matching it needs real assets:
 | Atlas the mascot | Robot explorer | Not built |
 | ~~Card gradients~~ | Blue→dark, purple→dark | ✅ **Done.** Semantic `gradient.*` tokens drawn by `Card`, 135° top-left to bottom-right. |
 | ~~Typeface~~ | The real faces | ✅ **Bundled — now Nunito**, not the Inter + Baloo 2 pairing this row used to name. One rounded family across the whole app, per weight from `@expo-google-fonts`, splash held until they land. |
-| Lesson illustration | A map of the region, filling the middle third | Artwork now exists (see the row above) at the same 4:3 box as a flag, so the prompt slot takes either. Not yet wired into the lesson composer — that needs a `map` modality in `PRESENTABLE`, which is the next step rather than a missing asset. |
+| ~~Lesson illustration~~ | A map of the region, filling the middle third | ✅ **Done.** Every question that already names its country now carries a locator map — see below. |
 
 Prompts for every one of these are in [`asset-prompts.md`](asset-prompts.md).
 

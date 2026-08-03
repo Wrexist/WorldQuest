@@ -581,6 +581,87 @@ describe('presentation', () => {
   })
 })
 
+describe('the locator map', () => {
+  const templates = [...index.templates.values()]
+
+  const questionFor = (templateId: string) => {
+    const template = index.templates.get(templateId)!
+    const item = index.items.find((i) => i.templateId === templateId && i.entityId === 'SE')!
+    return { template, q: buildQuestion(index, item, 'en', seededRng(5))! }
+  }
+
+  it('never appears on a question the entity is the answer to', () => {
+    // The whole safety property, checked across EVERY template rather than the two
+    // somebody thought of. A map of Sweden beside "Stockholm is the capital of which
+    // country?" hands the answer over — silently, and only to sighted users, which is
+    // the worst shape a giveaway can take.
+    for (const template of templates) {
+      if (template.answer.from !== 'entity.names') continue
+      const item = index.items.find((i) => i.templateId === template.id)
+      if (item === undefined) continue
+      const q = buildQuestion(index, item, 'en', seededRng(5))!
+      expect(q.locator, template.id).toBeUndefined()
+    }
+  })
+
+  it('does appear when the question already names the country', () => {
+    // "What is the capital of Sweden?" — the prompt says Sweden, so a map of Sweden
+    // adds where rather than what. Two things learned for one look.
+    const { q } = questionFor('tpl.capital.mc4')
+    expect(q.locator?.path).toBe(index.entities.get('SE')!.assets!['map']!.path)
+    expect(q.locator?.region).toBe(index.entities.get('SE')!.region)
+  })
+
+  it('carries the region, because a country with no continent locates nothing', () => {
+    // The picture is two layers. Given only the outline, a host can draw a shape
+    // floating in a void — which is decoration, not an answer to "where is this?".
+    const { q } = questionFor('tpl.capital.mc4')
+    expect(q.locator).toBeDefined()
+    expect(Object.keys(q.locator!).sort()).toEqual(['path', 'region'])
+  })
+
+  it('is absent for an entity with no map, rather than half-built', () => {
+    const zoo = buildIndex({
+      entities: [
+        { id: 'AAA', type: 'animal', names: { en: 'Aardvark' }, region: 'AF' },
+        { id: 'BBB', type: 'animal', names: { en: 'Baboon' }, region: 'AF' },
+      ] as unknown as Entity[],
+      facts: [
+        {
+          id: 'wild.AAA.diet',
+          entity: 'AAA',
+          attribute: 'diet',
+          value: { names: { en: 'ants' } },
+          difficulty: 1,
+          volatility: 'stable',
+          source: { name: 'x', verifiedAt: '2026-01-01' },
+        },
+        {
+          id: 'wild.BBB.diet',
+          entity: 'BBB',
+          attribute: 'diet',
+          value: { names: { en: 'fruit' } },
+          difficulty: 1,
+          volatility: 'stable',
+          source: { name: 'x', verifiedAt: '2026-01-01' },
+        },
+      ] as unknown as Fact[],
+      templates: [
+        {
+          id: 'tpl.diet.mc4',
+          attribute: 'diet',
+          modality: 'text',
+          prompt: { key: 'x:diet', params: ['entityName'] },
+          answer: { from: 'fact.value.names' },
+          a11y: { screenReaderSafe: true },
+        },
+      ] as unknown as Template[],
+    })
+    const item = zoo.items.find((i) => i.entityId === 'AAA')!
+    expect(buildQuestion(zoo, item, 'en', seededRng(1))!.locator).toBeUndefined()
+  })
+})
+
 describe('content safety', () => {
   it('never generates an item from a sensitive or volatile fact', () => {
     const guarded = buildIndex({

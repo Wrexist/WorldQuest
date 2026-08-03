@@ -24,6 +24,7 @@ import {
 import { deriveRating, lessonLength } from '@worldquest/engines'
 import type { ContentIndex, GradeResult, LessonState, Question } from '@worldquest/engines'
 import { Flag } from '../../components/Flag.js'
+import { CountryMap } from '../../components/CountryMap.js'
 import { useLesson } from './hooks/useLesson.js'
 import { LessonSummary, type PractisedCountry } from './LessonSummary.js'
 import { SPEED_SECONDS } from './modes.js'
@@ -52,6 +53,16 @@ type ScreenState = 'loading' | 'error' | 'empty' | 'ready'
  * and small enough that the four answers below it stay on screen at 320pt.
  */
 const FLAG_PROMPT_WIDTH = 200
+
+/**
+ * The locator map beside a question.
+ *
+ * Smaller than the flag prompt on purpose. The flag IS the question when it appears;
+ * this is context, and context that competes with the prompt for attention has stopped
+ * being context. 160pt leaves the four answers on screen at 320pt with the map above
+ * them, which is the layout the mockup shows.
+ */
+const LOCATOR_WIDTH = 160
 
 export function LessonScreen({
   onExit,
@@ -315,6 +326,26 @@ export function LessonScreen({
               path={question.promptAsset}
               width={FLAG_PROMPT_WIDTH}
               label={tContent(question.promptKey, question.promptParams)}
+            />
+          </View>
+        )}
+
+        {/* Where in the world you are, beside the question.
+            Context, never the subject: `locator` is absent whenever the answer IS the
+            country, so this can never hand over "which country is this?". That rule
+            lives in the composer (packages/engines/src/content/index.ts) rather than
+            here, because every screen would otherwise have to remember it.
+
+            Decorative to a screen reader. The prompt already names the country in
+            words — "What is the capital of Japan?" — so a reader announcing the map
+            would repeat it, and a reader user is not being shown anything a sighted
+            user is not also told. */}
+        {question.locator !== undefined && (
+          <View style={styles.promptArt} testID="prompt-locator">
+            <CountryMap
+              path={question.locator.path}
+              region={question.locator.region}
+              width={LOCATOR_WIDTH}
             />
           </View>
         )}

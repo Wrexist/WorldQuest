@@ -42,6 +42,7 @@ import {
   type Template,
 } from '@worldquest/engines'
 import { Flag } from '../../apps/mobile/src/components/Flag.js'
+import { CountryMap } from '../../apps/mobile/src/components/CountryMap.js'
 import { HomeScreen } from '../../apps/mobile/src/features/home/HomeScreen.js'
 import { AchievementsScreen } from '../../apps/mobile/src/features/achievements/AchievementsScreen.js'
 import { CATALOGUE } from '../../apps/mobile/src/features/achievements/useAchievements.js'
@@ -254,6 +255,16 @@ function LessonView({
       {question.promptAsset !== undefined && (
         <View style={s.promptArt}>
           <Flag path={question.promptAsset} width={200} label={prompt} />
+        </View>
+      )}
+
+      {question.locator !== undefined && (
+        <View style={s.promptArt}>
+          <CountryMap
+            path={question.locator.path}
+            region={question.locator.region}
+            width={160}
+          />
         </View>
       )}
 
