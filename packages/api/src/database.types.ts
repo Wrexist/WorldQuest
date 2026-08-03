@@ -393,6 +393,7 @@ export type Database = {
           environment: string
           expires_at: string | null
           has_used_trial: boolean
+          notified_at: string | null
           platform: string | null
           product_id: string | null
           status: Database['public']['Enums']['subscription_status']
@@ -407,6 +408,7 @@ export type Database = {
           environment?: string
           expires_at?: string | null
           has_used_trial?: boolean
+          notified_at?: string | null
           platform?: string | null
           product_id?: string | null
           status?: Database['public']['Enums']['subscription_status']
@@ -421,6 +423,7 @@ export type Database = {
           environment?: string
           expires_at?: string | null
           has_used_trial?: boolean
+          notified_at?: string | null
           platform?: string | null
           product_id?: string | null
           status?: Database['public']['Enums']['subscription_status']
@@ -571,7 +574,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      record_subscription_event: {
+        Args: {
+          p_kind: string
+          p_notification_id: string
+          p_payload: Json
+          p_platform: string
+          p_store_ref?: string
+          p_subscription?: Json
+          p_user_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       mastery_level:
