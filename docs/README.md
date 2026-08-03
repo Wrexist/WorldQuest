@@ -18,6 +18,7 @@ which, and fix it the same day.
 | [`product/information-architecture.md`](product/information-architecture.md) | The whole product map, not just screens |
 | [`product/screen-catalog.md`](product/screen-catalog.md) | All 15 mockup screens + the 20 "hidden" screens teams forget |
 | [`product/roadmap.md`](product/roadmap.md) | Phase 0 → v4.0, with exit criteria and cut-lines |
+| [`product/feature-backlog.md`](product/feature-backlog.md) | Ten candidates for "more to do", ranked, with pros and cons — a proposal; the roadmap still owns the order |
 | [`product/metrics.md`](product/metrics.md) | North Star, metric tree, guardrails, what we refuse to optimise |
 | [`product/mvp-brief-original.md`](product/mvp-brief-original.md) | The original founder brief that started all of this |
 
