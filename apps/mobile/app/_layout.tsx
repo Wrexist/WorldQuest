@@ -18,6 +18,7 @@ import { ErrorBoundary } from '../src/components/ErrorBoundary.js'
 import { readOnboarding } from '../src/features/onboarding/useOnboarding.js'
 import { SplashScreen, useSplashPhase } from '../src/features/splash/SplashScreen.js'
 import { useReturnVisit } from '../src/features/welcome/useReturnVisit.js'
+import { useSubscriptionSync } from '../src/features/paywall/useSubscriptionSync.js'
 import { useAppFonts } from '../src/lib/fonts.js'
 import { setChildAccount, track } from '../src/lib/analytics.js'
 import { t } from '../src/lib/i18n.js'
@@ -136,6 +137,19 @@ function useAppOpened(): void {
   }, [])
 }
 
+/**
+ * Pulls the server's subscription into the local entitlement cache, once per launch.
+ *
+ * A component rather than a call in `RootLayout`, because it must run INSIDE
+ * `QueryProvider` and `RootLayout` renders the provider rather than living under it.
+ * Renders nothing: it exists for its effect, and mounting it here rather than in the
+ * paywall means a returning subscriber never sees a frame of the free tier on Home.
+ */
+function SubscriptionSync(): null {
+  useSubscriptionSync()
+  return null
+}
+
 export default function RootLayout() {
   const fontsReady = useAppFonts()
   useAnalyticsAudience()
@@ -176,6 +190,7 @@ export default function RootLayout() {
       <StatusBar barStyle="light-content" backgroundColor={colors.bg.canvas} />
       <ErrorBoundary>
         <QueryProvider>
+          <SubscriptionSync />
           <Stack
             screenOptions={{
               headerShown: false,

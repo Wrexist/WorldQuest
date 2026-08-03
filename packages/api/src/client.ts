@@ -183,3 +183,58 @@ export async function fetchProgress(client: WorldQuestClient): Promise<Progress>
     factsMastered: mastered.count ?? 0,
   }
 }
+
+/**
+ * Read this user's subscription, as the server understands it.
+ *
+ * The shape is `Subscription` from `packages/engines/src/entitlements` — not converted
+ * to it, but the same field names and the same enum values, so this is a rename of
+ * `expires_at` and nothing more. A mapping layer here is somewhere for `in_grace` to
+ * quietly become `active`, which is the one mistake in this file nobody would notice
+ * until a support ticket.
+ *
+ * The types are declared structurally rather than imported, because `packages/api` must
+ * not depend on `packages/engines` — the dependency rule in PROJECT.md §3 runs the other
+ * way. `entitlementOf` accepts this object as-is.
+ *
+ * **No row means no subscription**, which is why it is `maybeSingle` and why the
+ * fallback is the free tier rather than an error. Most users will never have a row, and
+ * a first launch must not fail on the absence of one.
+ */
+export type SubscriptionRow = {
+  readonly status: Database['public']['Enums']['subscription_status']
+  readonly tier: Database['public']['Enums']['plan_tier']
+  readonly expiresAt: number | null
+  readonly willRenew: boolean
+  readonly hasUsedTrial: boolean
+}
+
+const NO_SUBSCRIPTION: SubscriptionRow = {
+  status: 'none',
+  tier: 'free',
+  expiresAt: null,
+  willRenew: false,
+  hasUsedTrial: false,
+}
+
+export async function fetchSubscription(
+  client: WorldQuestClient,
+): Promise<SubscriptionRow> {
+  const { data, error } = await client
+    .from('subscriptions')
+    .select('status, tier, expires_at, will_renew, has_used_trial')
+    .maybeSingle()
+
+  if (error) throw error
+  if (data === null) return NO_SUBSCRIPTION
+
+  return {
+    status: data.status,
+    tier: data.tier,
+    // Epoch millis, because every date in the engines is a number — `entitlementOf`
+    // compares this against an injected `now` and cannot be given a string.
+    expiresAt: data.expires_at === null ? null : Date.parse(data.expires_at),
+    willRenew: data.will_renew,
+    hasUsedTrial: data.has_used_trial,
+  }
+}

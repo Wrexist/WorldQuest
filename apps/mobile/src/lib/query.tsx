@@ -107,4 +107,5 @@ export function QueryProvider({ children }: { children: ReactNode }) {
 /** Query keys in one place, so a typo cannot silently create a second cache entry. */
 export const queryKeys = {
   progress: ['progress'] as const,
+  subscription: ['subscription'] as const,
 } as const

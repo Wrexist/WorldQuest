@@ -1,13 +1,14 @@
 /**
  * GENERATED FILE — do not hand-edit.
  *
- * Source: the live schema of the `worldquest-dev` project (tjdjogidudjobxipibqb).
- * Regenerate: `pnpm db:types` (requires the Supabase CLI), or the Supabase MCP
- * server's `generate_typescript_types` where the CLI is unavailable.
+ * Source: the local stack built from `supabase/migrations`, which is the source of
+ * truth. NOT the hosted project — see the note in this script.
+ * Regenerate: `pnpm db:types` (needs the Supabase CLI and `pnpm db:start`).
  *
  * Editing this by hand makes the types describe a database that does not exist, which
  * is strictly worse than having no types at all — every call site then compiles
- * against a fiction.
+ * against a fiction. The `database` CI job regenerates it and fails on any difference,
+ * which is the only thing making that sentence true rather than a request.
  */
 
 export type Json =
@@ -319,6 +320,106 @@ export type Database = {
           },
         ]
       }
+      subscription_events: {
+        Row: {
+          id: number
+          kind: string
+          notification_id: string
+          payload: Json
+          platform: string
+          received_at: string
+          status_after:
+            | Database['public']['Enums']['subscription_status']
+            | null
+          user_id: string | null
+        }
+        Insert: {
+          id?: number
+          kind: string
+          notification_id: string
+          payload: Json
+          platform: string
+          received_at?: string
+          status_after?:
+            | Database['public']['Enums']['subscription_status']
+            | null
+          user_id?: string | null
+        }
+        Update: {
+          id?: number
+          kind?: string
+          notification_id?: string
+          payload?: Json
+          platform?: string
+          received_at?: string
+          status_after?:
+            | Database['public']['Enums']['subscription_status']
+            | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'subscription_events_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          created_at: string
+          environment: string
+          expires_at: string | null
+          has_used_trial: boolean
+          platform: string | null
+          product_id: string | null
+          status: Database['public']['Enums']['subscription_status']
+          store_ref: string | null
+          tier: Database['public']['Enums']['plan_tier']
+          updated_at: string
+          user_id: string
+          will_renew: boolean
+        }
+        Insert: {
+          created_at?: string
+          environment?: string
+          expires_at?: string | null
+          has_used_trial?: boolean
+          platform?: string | null
+          product_id?: string | null
+          status?: Database['public']['Enums']['subscription_status']
+          store_ref?: string | null
+          tier?: Database['public']['Enums']['plan_tier']
+          updated_at?: string
+          user_id: string
+          will_renew?: boolean
+        }
+        Update: {
+          created_at?: string
+          environment?: string
+          expires_at?: string | null
+          has_used_trial?: boolean
+          platform?: string | null
+          product_id?: string | null
+          status?: Database['public']['Enums']['subscription_status']
+          store_ref?: string | null
+          tier?: Database['public']['Enums']['plan_tier']
+          updated_at?: string
+          user_id?: string
+          will_renew?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'subscriptions_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: true
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       user_facts: {
         Row: {
           avg_ms: number | null
@@ -460,6 +561,14 @@ export type Database = {
         | 'proficient'
         | 'mastered'
         | 'burnished'
+      plan_tier: 'free' | 'premium' | 'family'
+      subscription_status:
+        | 'none'
+        | 'trialing'
+        | 'active'
+        | 'in_grace'
+        | 'on_hold'
+        | 'expired'
       user_role:
         | 'guest'
         | 'user'
@@ -603,6 +712,15 @@ export const Constants = {
         'proficient',
         'mastered',
         'burnished',
+      ],
+      plan_tier: ['free', 'premium', 'family'],
+      subscription_status: [
+        'none',
+        'trialing',
+        'active',
+        'in_grace',
+        'on_hold',
+        'expired',
       ],
       user_role: [
         'guest',

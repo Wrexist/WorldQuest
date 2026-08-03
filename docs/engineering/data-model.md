@@ -51,11 +51,57 @@ create table entitlements (
   rc_id       text,
   primary key (user_id, product)
 );
+
+-- What the store says, one row per user. The column names and both enums are exactly
+-- the `Subscription` type in packages/engines/src/entitlements, so reading a row into
+-- the engine is a rename of `expires_at` and nothing else. A translation layer is
+-- somewhere for `in_grace` to quietly become `active`.
+create type subscription_status as enum
+  ('none','trialing','active','in_grace','on_hold','expired');
+create type plan_tier as enum ('free','premium','family');
+
+create table subscriptions (
+  user_id        uuid primary key references profiles(id) on delete cascade,
+  status         subscription_status not null default 'none',
+  tier           plan_tier not null default 'free',
+  expires_at     timestamptz,          -- from the STORE; access survives a cancellation
+  will_renew     boolean not null default false,
+  has_used_trial boolean not null default false,
+  platform       text check (platform in ('ios','android')),
+  store_ref      text,                 -- originalTransactionId / purchaseToken
+  product_id     text,
+  environment    text not null default 'production'
+                   check (environment in ('sandbox','production')),
+  created_at     timestamptz not null default now(),
+  updated_at     timestamptz not null default now()
+);
+
+-- Ledgers, not balances — the same rule the economy follows. The row above is a
+-- projection of every notification below it, and a projection you can rebuild is a
+-- projection you can audit when somebody disputes a charge. `notification_id` is unique
+-- because both stores retry until acknowledged and will deliver the same notification
+-- more than once; that constraint is what stops a redelivered RENEWAL granting a second
+-- month.
+create table subscription_events (
+  id              bigserial primary key,
+  user_id         uuid references profiles(id) on delete cascade,
+  notification_id text not null unique,  -- Apple notificationUUID / Google message id
+  platform        text not null check (platform in ('ios','android')),
+  kind            text not null,         -- the store's own type string, unmapped
+  status_after    subscription_status,
+  payload         jsonb not null,
+  received_at     timestamptz not null default now()
+);
 ```
 
 `birth_year` (not a full date of birth) is deliberate: enough to gate, minimal PII.
 `is_child` is computed once at signup and never recomputed from a client-supplied
 value — a user cannot age out of protection by editing a field.
+
+`subscriptions` has a client SELECT policy and no write policy of any kind.
+`subscription_events` has **no policy at all** — not even SELECT for its owner — because
+it stores the raw store payload, including order ids and prices the app has no reason to
+read and every reason not to ship to a device.
 
 ---
 
@@ -414,8 +460,20 @@ create policy parent_reads_child_progress on region_mastery
 ```
 
 **No `insert`/`update`/`delete` policy exists for `xp_ledger`, `coin_ledger`,
-`user_facts`, `review_log`, `league_members`, or `entitlements`.** The absence *is*
-the security control — there is no client code path to abuse.
+`user_facts`, `review_log`, `league_members`, `entitlements`, `subscriptions`, or
+`subscription_events`.** The absence *is* the security control — there is no client code
+path to abuse. `subscriptions` is on that list for a stronger reason than the rest: a
+client that can write its own row is a client that can set `status` to `'active'`, which
+is not lost progress but a free subscription.
+
+**A trigger function needs its EXECUTE revoked.** PostgREST publishes every function in
+`public` as an RPC endpoint, so `/rest/v1/rpc/<name>` reaches a trigger function unless
+the grant is taken away; the trigger machinery invokes them as the owner and needs no
+grant. `harden_security_advisories` established this, `provision_new_user` followed it,
+and `wallet_totals_from_ledgers` did not — it added two SECURITY DEFINER functions that
+write `wallets` and left them callable. `rls.test.sql` now asserts that no
+trigger-returning function in `public` is executable by `anon` or `authenticated`, so
+the next one cannot be forgotten quietly.
 
 **Test the policies.** `supabase/tests/rls.test.sql` asserts, per table, that user A
 cannot read or write user B's rows. RLS bugs are silent and catastrophic; they need

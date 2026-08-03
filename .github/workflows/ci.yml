@@ -155,9 +155,21 @@ jobs:
       - name: RLS policy tests
         run: supabase test db
 
+      # `pnpm db:types`, not the raw CLI command. This step used to inline
+      #
+      #   supabase gen types typescript --local > packages/api/src/database.types.ts
+      #
+      # which is not what `pnpm db:types` did once the committed file grew a
+      # "GENERATED — do not hand-edit" header and single-quoted literals. The check
+      # therefore compared a decorated file against an undecorated one and reported the
+      # types stale on every run, whatever their actual state. It went unnoticed for as
+      # long as this job had never reached the step.
+      #
+      # Running the same command the developer runs is the only version of this check
+      # that means anything.
       - name: Generated database types are up to date
         run: |
-          supabase gen types typescript --local > packages/api/src/database.types.ts
+          pnpm db:types
           git diff --exit-code packages/api/src/database.types.ts \
             || (echo "::error::database.types.ts is stale — run pnpm db:types and commit"; exit 1)
 

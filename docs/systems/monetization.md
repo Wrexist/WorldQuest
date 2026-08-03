@@ -177,17 +177,29 @@ subscription for anyone willing to change a device clock.
 | The paywall, three pages + parental gate | `…/paywall/PaywallScreen.tsx` | Built, 26 tests |
 | Store prices and their four failure modes | `…/paywall/usePurchases.ts` | Built, 7 tests |
 | Subscription status, billing fix, restore | `…/settings/SettingsScreen.tsx` | Built |
+| The subscription row, its enums and its RLS | `supabase/migrations/…_create_subscriptions.sql` | Built, 6 RLS assertions |
+| The append-only store-notification log | `subscription_events` | Built |
+| Reading the row into the entitlement cache | `…/paywall/useSubscriptionSync.ts` | Built, 4 tests |
 | The billing SDK itself | `…/paywall/purchases.ts` → `UNAVAILABLE` | **Stub** |
-| The subscription row and its notification handlers | `supabase/` | **Not built** |
+| The store notification handlers that WRITE the row | `supabase/functions/` | **Not built** |
 
 `UNAVAILABLE` is deliberately a stub that **fails** rather than a fake that succeeds.
 Every caller therefore handles "the store would not answer" from the first day, which
 is the same path a real device takes in a tunnel — and is what `pnpm e2e` exercises
 today, because there is genuinely no SDK behind it.
 
-Nothing above the port grants anything. `setSubscription` is the seam the sync layer
-will call when the server's row arrives; until the row exists, every user is free, and
-that is the correct answer rather than a placeholder.
+Nothing above the port grants anything. `setSubscription` is the seam, and until
+`useSubscriptionSync` landed **nothing called it** — the cache was seeded once with
+`NO_SUBSCRIPTION` and stayed there, so every entitlement check in the app was answering
+"free" from a value the server had never been asked about. Not a security hole: the
+client deciding it was Premium is the hole, and the absence of any writer made that
+impossible. But a paying user would have been shown the paywall, which is the other half
+of ADR 0006 — the server decides, and the client has to go and read the decision.
+
+The remaining gap is the writer. Apple and Google notifications have a table to land in,
+a unique `notification_id` to make redelivery a no-op, and a status enum to write; what
+they do not yet have is the edge function that receives them. Until it exists every user
+is free, which is the correct answer rather than a placeholder.
 
 ### Where the paywall opens
 
