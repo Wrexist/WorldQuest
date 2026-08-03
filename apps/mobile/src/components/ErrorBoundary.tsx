@@ -13,6 +13,7 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 import { FailureState } from './FailureState.js'
 import { track } from '../lib/analytics.js'
+import { reportCrash } from '../lib/reporting.js'
 
 type Props = { readonly children: ReactNode }
 type State = { readonly error: Error | null }
@@ -30,8 +31,16 @@ export class ErrorBoundary extends Component<Props, State> {
     // construction rather than by remembering to redact.
     track('error_occurred', { domain: 'render', code: error.name, is_fatal: true })
 
-    // Reported to Sentry once it is connected. Logged unconditionally in the
-    // meantime, because a crash nobody can see is a crash nobody fixes.
+    // Same three fields to the crash reporter. `CrashReport` has no field that can
+    // hold free text, so this call site cannot leak a message even by accident — see
+    // lib/reporting.ts. With no DSN configured this is a console line; with one, it
+    // is a Sentry event carrying the domain and the error class and nothing else.
+    reportCrash({ domain: 'render', name: error.name, isFatal: true })
+
+    // Logged unconditionally as well, and this one DOES include the message and the
+    // component stack. That is deliberate and it is not a contradiction: this goes to
+    // the local device log, which is how a developer debugs. Nothing here leaves the
+    // phone. The rule is about what gets transmitted.
     console.error('[crash]', error, info.componentStack)
   }
 

@@ -79,6 +79,11 @@ const ALLOWED: Record<string, string> = {
     'Six static `require`s for the sound files. Metro resolves assets at build time, ' +
     'so a computed path bundles nothing and fails at runtime on device only. There is ' +
     'no ESLint in this repo yet; the directive marks the intent for when there is.',
+  'apps/mobile/src/lib/reporting.ts:eslint-disable':
+    'A lazy `require` of @sentry/react-native, so a build with no DSN never pulls the ' +
+    'SDK onto the startup path and the module stays importable in unit tests without ' +
+    'the native module present. A static import would load it in every build, ' +
+    'including the ones that have deliberately not configured it.',
   'packages/design/src/primitives/Card.tsx:eslint-disable':
     'A lazy `require` of expo-linear-gradient inside a try/catch, so a missing native ' +
     'module resolves to `null` instead of failing at import — which would take down ' +

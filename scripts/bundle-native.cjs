@@ -58,15 +58,32 @@ const MOBILE = join(process.cwd(), 'apps', 'mobile')
 /**
  * The ceiling for the Hermes bytecode bundle, per platform, in MB.
  *
- * Measured at 3.80 MB on both platforms when this was written. 4.5 leaves room for
- * the screens v1.0 still owes — the map question type, the globe — without leaving
- * room for a chart library somebody imported for one sparkline.
+ * ## History, because this number should never move without one
+ *
+ * - **3.80 MB** when this check was written, budget 4.5.
+ * - **5.72 MB** after `@sentry/react-native` landed. The SDK costs **1.92 MB** — a
+ *   50 % increase in a single dependency. Budget raised to 6.0.
+ *
+ * That raise was a real decision, not a rubber stamp, and it went the way it did for
+ * one reason: this app has never run on a physical device. Crash reporting is most
+ * valuable exactly when device coverage is thinnest, and shipping blind to production
+ * crashes on hardware nobody has tested is a worse failure than 1.92 MB of bytecode.
+ *
+ * It is also a debt. If cold start misses the 3 s target on the mid-tier Android in
+ * `docs/plan/device-pass.md`, this is the first thing to weigh — Sentry has a
+ * lighter-weight JS-only path, and the trade can be revisited with real numbers
+ * instead of the guess this comment is standing in for.
+ *
+ * Note that the `require` in lib/reporting.ts being lazy does NOT keep the SDK out of
+ * the bundle: Metro resolves every statically-analysable `require` at build time
+ * regardless of where it sits. Lazy avoids *executing* it at startup, which is worth
+ * having, but the bytes are in every build whether a DSN is configured or not.
  *
  * If a legitimate change needs more: raise this number in the same commit, and say in
  * the message what bought the weight. The number is not sacred. Crossing it silently
  * is the thing being prevented.
  */
-const BUDGET_MB = 4.5
+const BUDGET_MB = 6.0
 
 /** Warn from 90 % of the budget, so the wall is visible before it is hit. */
 const WARN_AT = BUDGET_MB * 0.9

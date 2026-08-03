@@ -12,7 +12,7 @@ the single fact that most of the rest follows from.
 
 ## Automated: green
 
-`pnpm verify` runs typecheck, 627 tests across seven packages, content validation,
+`pnpm verify` runs typecheck, 644 tests across seven packages, content validation,
 i18n completeness, 23 contrast pairs, `lint:a11y`, `escape-hatches`, `reachability`
 and `five-states`.
 `pnpm e2e` runs 51 steps against the real Metro bundle in Chromium — including six
@@ -39,10 +39,10 @@ green while two thirds of the authored content was unreachable.
 
 | Box | State |
 |---|---|
-| Unit + component tests | ✅ 627 passing, plus 14 against the edge bundle. |
+| Unit + component tests | ✅ 644 passing, plus 14 against the edge bundle. |
 | No `any`, no `@ts-expect-error` | ✅ Zero of both outside tests — **and now checked**, by `pnpm escape-hatches` in `pnpm verify`. This box was true but unenforced: verified by hand, once, resting on nobody having broken it. Two `eslint-disable`s are allowlisted with written reasons (both lazy/static `require`s that cannot be expressed otherwise), and a stale allowance fails the build like a violation. |
-| Performance on a **mid-tier Android** | ⬜ Not measured — there is no device. **One property of it now is:** `pnpm bundle:native` enforces a 4.5 MB per-platform ceiling on the Hermes bundle (3.80 MB today), because Hermes reads every byte before the first frame and that is the part of cold start visible without hardware. Frame times, memory and actual startup remain unmeasured. |
-| Errors to Sentry with PII-free context | ⬜ `ErrorBoundary` logs to console and says "reported once it is connected". Sentry is not connected. |
+| Performance on a **mid-tier Android** | ⬜ Not measured — there is no device. **One property of it now is:** `pnpm bundle:native` enforces a per-platform ceiling on the Hermes bundle, because Hermes reads every byte before the first frame and that is the part of cold start visible without hardware. It has already earned its keep: adding Sentry pushed the bundle 3.80 → **5.72 MB** and the budget failed the build, which turned a silent 50 % growth into a recorded decision (budget now 6.0). Frame times, memory and actual startup remain unmeasured. |
+| Errors to Sentry with PII-free context | 🟡 **Transport built, round trip unverified.** `@sentry/react-native` installed, `lib/reporting.ts` wires it, `ErrorBoundary` reports through it, init at module scope so a first-render crash is caught. No-op until `EXPO_PUBLIC_SENTRY_DSN` is set — no half-configured state. PII-free is enforced by the **type** (`CrashReport` has no free-text field) plus a `beforeSend` scrubber, both tested. What is missing is a DSN and proof an event arrives. Cost: **1.92 MB** of bundle. |
 
 ## 🟡 Craft
 
@@ -97,8 +97,17 @@ green while two thirds of the authored content was unreachable.
    the stored default read `true`, which cost nothing while nothing played and would
    have been wrong the moment it did — a game that starts making noise on a bus has made
    an enemy in ten seconds.
-3. **Sentry.** Blocked on a **DSN and an authorised account**, neither of which exists
-   in this environment. The `ErrorBoundary` logs to console and says so.
+3. **Sentry.** The *transport* turned out not to be blocked at all — only the round
+   trip was. "Blocked on a DSN" had been standing in for "blocked on a DSN and also
+   nobody has written any of it", and those are very different. The SDK is installed,
+   wired, tested and bundling on both platforms; it needs a DSN to do anything, and
+   proof that an event arrives still needs an account this environment does not have.
+
+   Building it surfaced the cost the budget was added to surface: **1.92 MB**, a 50 %
+   bundle increase from one dependency. Kept anyway, because an app that has never run
+   on a physical device is the app that can least afford invisible crashes — but
+   recorded in `scripts/bundle-native.cjs` as debt to revisit with real cold-start
+   numbers rather than absorbed quietly.
 4. **A device.** Not something code can fix. Everything that can be prepared for it
    now is: `apps/mobile/eas.json` has a `preview` profile that produces an installable
    build, and [`device-pass.md`](device-pass.md) is the checklist for the sitting —

@@ -118,12 +118,24 @@ can rule out on the way in.
 
 The only remaining box that is not about the device.
 
-- [ ] Put a real DSN in the environment and add the transport.
+**The transport is built.** `@sentry/react-native` is installed, `src/lib/reporting.ts`
+wires it, `ErrorBoundary` reports through it, and it initialises at module scope in the
+root layout so a crash in the first render is caught. It is a no-op until
+`EXPO_PUBLIC_SENTRY_DSN` is set — there is no half-configured state. Both native
+platforms bundle with it.
+
+What is left is the round trip, which needs an account:
+
+- [ ] Put a real DSN in `EXPO_PUBLIC_SENTRY_DSN` and rebuild.
 - [ ] Force a render crash and confirm it arrives.
-- [ ] Confirm the payload carries **no message text** — `ErrorBoundary` deliberately
-      reports `domain` and `error.name` only, because a React error string can carry a
-      prop value and a prop value can carry a name a child typed. That property already
-      holds; do not let the Sentry integration undo it.
+- [ ] Confirm the payload carries **no message text**. This is now enforced by the
+      *type*: `CrashReport` has no field that can hold free text, so a call site cannot
+      leak a message even by accident, and `beforeSend` strips `message`, breadcrumbs,
+      `user`, `request`, `contexts` and `extra` from anything the SDK captures on its
+      own. Verify it on the wire anyway — the whole point is that this is the one place
+      where being wrong is a child's typed text leaving the device.
+- [ ] Check what it cost. The SDK added **1.92 MB** to the bundle (3.80 → 5.72). If
+      cold start misses 3 s above, this is the first thing to weigh.
 
 ---
 

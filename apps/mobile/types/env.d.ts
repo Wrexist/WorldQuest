@@ -21,6 +21,16 @@ declare const process: {
      * schema decorative.
      */
     readonly EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY?: string
+    /**
+     * Crash reporting. Absent means no reporting at all rather than a half-configured
+     * client — see `src/lib/reporting.ts`.
+     *
+     * A DSN is public by design: it identifies a project to receive events and grants
+     * no read access, which is why it belongs on the `EXPO_PUBLIC_` list. That is not
+     * true of a Sentry *auth token* (used for uploading source maps at build time),
+     * which must stay in CI and never carry this prefix.
+     */
+    readonly EXPO_PUBLIC_SENTRY_DSN?: string
     readonly NODE_ENV?: 'development' | 'production' | 'test'
   }
 }

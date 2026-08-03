@@ -23,6 +23,20 @@ import { setChildAccount, track } from '../src/lib/analytics.js'
 import { t } from '../src/lib/i18n.js'
 import { useDeviceLocale } from '../src/lib/locale.js'
 import { QueryProvider } from '../src/lib/query.js'
+import { initCrashReporting } from '../src/lib/reporting.js'
+
+/**
+ * At module scope, deliberately — not in an effect.
+ *
+ * This module is evaluated before React renders anything, so a crash in the very
+ * first render is captured. An effect runs after that first render, which is exactly
+ * the window where a bad font load or a corrupt storage read takes the app down, and
+ * exactly the crash nobody would ever see reported.
+ *
+ * A no-op when `EXPO_PUBLIC_SENTRY_DSN` is unset, which is every build in this repo
+ * so far. See lib/reporting.ts for why nothing is half-configured.
+ */
+initCrashReporting()
 
 /**
  * Sends a first-time user to onboarding, once.
