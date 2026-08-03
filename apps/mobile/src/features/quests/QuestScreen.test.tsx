@@ -32,6 +32,30 @@ describe('Quests — the five states', () => {
     }
   })
 
+  it('numbers the steps, and ticks the ones that are done', () => {
+    // Mockup screen 4 reads as a numbered checklist. Without the numbers the five
+    // rows look like five unrelated meters; without the tick, a bar at 100% and a
+    // bar at 95% are the same picture at a glance.
+    //
+    // The fixture has task 2 complete and the rest not, so this asserts BOTH
+    // branches from one render — a test that only ever saw the unfinished state is
+    // how the done state would rot.
+    const { container } = render(<QuestScreen quest={quest()} loading={false} onStart={() => {}} />)
+    // `Array.from`, not spread: a NodeList is not iterable under this tsconfig.
+    const steps = Array.from(container.querySelectorAll('[aria-hidden="true"]'))
+      .map((el) => el.textContent?.trim())
+      .filter((s) => s !== undefined && s !== '')
+    expect(steps).toEqual(['1', '✓', '3', '4', '5'])
+  })
+
+  it('keeps the step number out of the screen reader', () => {
+    // The row already announces its title and progress. A reader saying "3" before
+    // every task is noise, and the number carries no information the label lacks.
+    render(<QuestScreen quest={quest()} loading={false} onStart={() => {}} />)
+    const row = screen.getByLabelText(/Know the flag/)
+    expect(row.textContent).not.toMatch(/^2/)
+  })
+
   it('shows a skeleton while loading', () => {
     const { container } = render(<QuestScreen quest={null} loading onStart={() => {}} />)
     expect(container.querySelector('[aria-label="Loading"]')).toBeTruthy()

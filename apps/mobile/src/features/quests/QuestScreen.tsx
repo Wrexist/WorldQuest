@@ -110,8 +110,8 @@ export function QuestScreen({ quest, loading, onStart, onStartSpeedRound }: Ques
       </Card>
 
       <View style={styles.list}>
-        {quest.tasks.map((task) => (
-          <TaskRow key={task.slot} task={task} />
+        {quest.tasks.map((task, i) => (
+          <TaskRow key={task.slot} task={task} step={i + 1} />
         ))}
       </View>
 
@@ -138,7 +138,7 @@ export function QuestScreen({ quest, loading, onStart, onStartSpeedRound }: Ques
   )
 }
 
-function TaskRow({ task }: { task: QuestTask }) {
+function TaskRow({ task, step }: { task: QuestTask; step: number }) {
   const t = useT()
   const title = t(SLOT_TITLE[task.slot])
 
@@ -155,6 +155,22 @@ function TaskRow({ task }: { task: QuestTask }) {
       aria-checked={task.complete}
       style={[styles.task, task.complete && styles.taskDone]}
     >
+      {/* The step number, per mockup screen 4.
+          Without it the five rows read as five unrelated meters; with it they read
+          as one quest with five steps, which is what they are. The done state
+          becomes a filled tick rather than only a full bar — a bar at 100 % and a
+          bar at 95 % look alike at a glance, and a tick does not.
+          `aria-hidden` because the row already announces its title and its state;
+          a reader saying "3" before every task is noise. */}
+      <View
+        style={[styles.step, task.complete && styles.stepDone]}
+        aria-hidden
+      >
+        <Text style={[styles.stepText, task.complete && styles.stepTextDone]}>
+          {task.complete ? '✓' : String(step)}
+        </Text>
+      </View>
+
       <View style={styles.taskText}>
         <Text style={[styles.taskTitle, task.complete && styles.taskTitleDone]}>{title}</Text>
         {task.goal !== undefined && (
@@ -218,6 +234,26 @@ const styles = StyleSheet.create({
   // Done tasks recede rather than disappear — the list keeps its shape all day, so
   // the user's sense of "how much is left" does not jump around.
   taskDone: { opacity: 0.6 },
+  // 28pt, not 44: this is decoration inside an already-accessible row, not a
+  // control. Growing it to a tap target would promise a tap that does nothing.
+  step: {
+    width: 28,
+    height: 28,
+    borderRadius: radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.bg.surfaceRaised,
+    borderWidth: 2,
+    borderColor: colors.border.strong,
+  },
+  stepDone: {
+    backgroundColor: colors.feedback.correct,
+    borderColor: colors.feedback.correct,
+  },
+  stepText: { ...text('caption', { weight: '800', numeric: true }), color: colors.text.secondary },
+  // On the filled green circle, not on the surface — this pair is the one the
+  // contrast checker cares about.
+  stepTextDone: { color: colors.text.onAccent },
   taskText: { flex: 1, gap: space[2] },
   taskTitle: { ...text('bodyStrong'), color: colors.text.primary },
   taskTitleDone: { color: colors.text.secondary },

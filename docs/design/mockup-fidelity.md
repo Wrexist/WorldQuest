@@ -28,6 +28,12 @@ day's work once the components existed:
 - Daily Challenge card with countdown in tabular numerals
 - Friends / League tile pair
 - Five-tab bar with the active tab's filled chip
+- **Numbered steps on the daily quest** (mockup screen 4). The five rows had titles,
+  bars and XP but no numbering and no completion mark, so they read as five unrelated
+  meters rather than one quest with five steps. A done step is now a filled tick, not
+  only a full bar — at a glance 100 % and 95 % are the same picture, and a tick is not.
+  The circle is `aria-hidden`: the row already announces its title and progress, and a
+  reader saying "3" before every task is noise.
 
 ### 2. Needs assets — blocked on a decision, not on code
 
