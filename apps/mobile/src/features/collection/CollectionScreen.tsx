@@ -271,8 +271,18 @@ const styles = StyleSheet.create({
   // Wraps: four chips do not fit on one line at 390pt, and they fit on none of them at
   // 200 % text. Two rows of two is the honest layout rather than a hidden scroller.
   filters: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
-  filter: { paddingVertical: space[2], paddingHorizontal: space[3] },
-  filterOn: { borderColor: colors.action.primary, borderWidth: 1 },
+  // 44pt floor, met by the chip itself rather than by hit slop. Padding alone put
+  // these at 40pt — close enough to look right in a screenshot and wrong under a
+  // thumb, which is precisely the class of defect `pnpm design:shots` exists to
+  // measure. The search field two rules up already had the same note; the chips were
+  // missed because nothing was looking.
+  filter: {
+    paddingVertical: space[2],
+    paddingHorizontal: space[4],
+    minHeight: 44,
+    justifyContent: 'center',
+  },
+  filterOn: { borderColor: colors.action.primary, borderWidth: 2 },
   filterText: { ...text('caption'), color: colors.text.secondary },
   filterTextOn: { ...text('caption', { weight: '700' }), color: colors.text.primary },
   grid: {

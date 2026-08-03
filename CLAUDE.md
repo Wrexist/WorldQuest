@@ -80,18 +80,36 @@ the code.
 | Researching a competitor | `worldquest-competitor-teardown` |
 | Finishing anything | `worldquest-definition-of-done` |
 
+### Design skills
+
+| When you are… | Use |
+|---|---|
+| Told to make something feel like a real product ("like Duolingo") | `dna-transplant` |
+| Measuring a reference before copying anything from it | `worldquest-design-forensics` |
+| Polishing a component, or it "looks generic" | `worldquest-visual-craft` |
+| Checking whether a screen is actually good | `design-review` (or `/design-review`) |
+| Needing an original direction with no donor to copy | `frontend-design` |
+| Wanting mobile conventions by industry, thumb zones, 60/30/10 | `mobile-app-ui-design` |
+
+The last three are third-party — see [`.claude/skills/VENDORED.md`](.claude/skills/VENDORED.md)
+for provenance, licences, and what was changed. **Design review looks at rendered
+screens, never at the diff**: `pnpm design:shots` first, then open the PNGs.
+
 ## Commands
 
 `/wq-new-screen` · `/wq-new-content-pack` · `/wq-add-achievement` · `/wq-add-event` ·
 `/wq-balance-check` · `/wq-persona-check` · `/wq-dod` · `/wq-ship-check` ·
-`/wq-status` · `/wq-competitor-teardown`
+`/wq-status` · `/wq-competitor-teardown` · `/design-review`
 
 ## Subagents
 
 `.claude/agents/` holds specialists: `wq-product-strategist`, `wq-learning-scientist`,
-`wq-content-author`, `wq-ui-engineer`, `wq-design-system-guardian`,
+`wq-content-author`, `wq-ui-engineer`, `wq-design-system-guardian`, `wq-design-reviewer`,
 `wq-backend-engineer`, `wq-a11y-i18n-auditor`, `wq-qa-engineer`, `wq-liveops-designer`,
-`wq-security-privacy-reviewer`. Delegate to them for deep, parallel, or
+`wq-security-privacy-reviewer`.
+
+`wq-design-system-guardian` reads the diff; `wq-design-reviewer` looks at the pixels.
+Both, on a visual change. Delegate to them for deep, parallel, or
 second-opinion work — **only when the user has asked for agent/parallel work.**
 
 ---
@@ -123,6 +141,9 @@ unless asked. Full rules: [`PROJECT.md §11`](PROJECT.md#11-git-workflow).
 - pnpm workspaces — install from the repo root, never inside a package.
 - `pnpm dev` (Expo) · `pnpm test` · `pnpm typecheck` · `pnpm lint` ·
   `pnpm content:validate` · `pnpm i18n:check`
+- `pnpm design:shots` — renders 10 routes × 320/390/768 and measures what a picture
+  cannot show (targets under 44 pt, sideways scroll, unlabelled controls). Not a gate.
+- `pnpm design:measure <url>` — measures a reference in this repo's token shape.
 - Supabase local: `pnpm db:start`, `pnpm db:reset`, `pnpm db:types`.
 - The Supabase MCP server is available in this workspace — prefer it for schema
   inspection over guessing, and **never run destructive SQL against a remote project.**

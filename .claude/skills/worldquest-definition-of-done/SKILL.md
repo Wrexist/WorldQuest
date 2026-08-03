@@ -19,10 +19,15 @@ completion.
 ## Run this
 
 ```bash
-pnpm verify        # typecheck · lint · test · content · i18n · a11y
+pnpm verify        # typecheck · lint · test · content · i18n · contrast · a11y · reachability
+pnpm e2e           # the real bundle in Chromium, incl. 200 % text
+pnpm design:shots  # 10 routes × 320/390/768 — touch targets, overflow, labels
 ```
 
-Then walk the list by hand — most of it can't be automated.
+Then **open the screenshots** and walk the list by hand — most of it can't be automated,
+and the part that can is now measured rather than assumed. If the change is visual, run
+`/design-review` too: a Definition of Done signed off without looking at the screen is
+a checklist, not a review.
 
 ## Function
 - [ ] iOS **and** Android, phone and tablet, down to 320 pt

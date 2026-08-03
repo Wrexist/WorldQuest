@@ -3,6 +3,12 @@ name: worldquest-screen
 description: Build or change a WorldQuest screen or UI component correctly — five states, design tokens, i18n, accessibility, analytics, haptics. Use whenever creating a new screen, editing an existing one, or adding a component to apps/mobile or packages/design. Triggers on "add a screen", "build the X screen", "new component", "update the UI", or any work under apps/mobile/app or src/features.
 ---
 
+> **Before you start**, if the brief names a product to feel like ("make it like
+> Duolingo", "Wallet-style cards"), run `dna-transplant` first — it names the mechanics
+> and measures them instead of copying the surface. **After you finish**, run
+> `/design-review`, which looks at the rendered screen rather than the diff. Craft-level
+> polish is `worldquest-visual-craft`.
+
 # Building a WorldQuest screen
 
 Read [`docs/design/design-system.md`](../../docs/design/design-system.md) and the
