@@ -63,6 +63,31 @@ describe('entitlements', () => {
     expect(entitlementOf(trial, NOW).tier).toBe('free')
   })
 
+  it('refuses to grant access it cannot see the end of', () => {
+    // The defect this replaced: `expiresAt <= now` sat behind `expiresAt !== null`, so a
+    // row with NO paid-through date skipped the expiry check rather than failing it, and
+    // `entitlementOf` reported `isPaying: true` for ever. A nullable column reads the
+    // same for "the store has not told us" and "this never ends"; they are opposites.
+    for (const status of ['active', 'trialing'] as const) {
+      const dateless = sub({ status, expiresAt: null })
+      expect(entitlementOf(dateless, NOW).tier, status).toBe('free')
+      // The part that made it a giveaway rather than a glitch: nothing ever revisits it.
+      expect(entitlementOf(dateless, NOW + 36_500 * DAY).isPaying, status).toBe(false)
+    }
+
+    // And the branches that legitimately have no date still work. Grace and hold are
+    // reached BY the paid-through date passing, so consulting it there would revoke
+    // access from exactly the users this file exists to keep.
+    expect(entitlementOf(sub({ status: 'in_grace', expiresAt: null }), NOW).isPaying).toBe(true)
+    expect(entitlementOf(sub({ status: 'on_hold', expiresAt: null }), NOW).isPaused).toBe(true)
+  })
+
+  it('does not chase a win-back for a subscription with no end date', () => {
+    // Same nullable, same trap: "expires soon" and "we do not know when it expires" are
+    // not the same prompt to interrupt somebody with.
+    expect(shouldOfferWinback(sub({ willRenew: false, expiresAt: null }), NOW)).toBe(false)
+  })
+
   it('counts a trial as access but not as revenue', () => {
     const trial = entitlementOf(sub({ status: 'trialing', expiresAt: NOW + 5 * DAY }), NOW)
     expect(trial.tier).toBe('premium')

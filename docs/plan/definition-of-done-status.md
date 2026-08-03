@@ -209,12 +209,67 @@ green while two thirds of the authored content was unreachable.
    security hole (the client deciding it was Premium is the hole, and having no writer
    made that impossible) but a paying user would have seen the paywall.
 
-   What is left needs credentials, not effort: an edge function that verifies Apple JWS
-   signatures and Google Pub/Sub messages. One that skipped verification would be a
-   worse hole than the one it closes, so it waits for the keys rather than shipping
-   unverified.
+   > **Built, and "needs credentials, not effort" was half right — the fifth time that
+   > exact sentence has been wrong on this list.** What needed a credential was the
+   > *pin value*, `APPLE_ROOT_FINGERPRINT`. The endpoint, the chain verification, the
+   > nested-JWS transaction check, the payload parsing, the RPC and the composition were
+   > all buildable and all testable, against a certificate chain generated in the test
+   > fixtures. `store-notifications/` now exists, deploys with `--no-verify-jwt`, and
+   > refuses to serve at all without the pin rather than skipping the check it configures.
+   >
+   > Building the wiring found two defects that testing it never would have. The
+   > out-of-order guard compared against a **column that did not exist**, so it was
+   > written, tested, and unable to fire. And `record` was specified as one transaction
+   > and implemented as two `supabase-js` calls — the failure between them returns 200,
+   > after which the unique index makes every redelivery a no-op and a paying customer
+   > stays free, silently. One `record_subscription_event` RPC now, event inserted first.
+   >
+   > A whole directory was also never typechecked: `supabase/` had no tsconfig, and
+   > Vitest's esbuild transform strips types without checking them. `pnpm typecheck:edge`
+   > found four real errors on its first run, in the files that verify signatures and
+   > decide who has paid.
+   >
+   > **Google is still 401, and that is now a decision with a second reason.** Asking
+   > whether the Play branch was buildable without a credential surfaced a live defect on
+   > the *Apple* side: `entitlementOf` guarded `expiresAt <= now` behind
+   > `expiresAt !== null`, so a subscription with no paid-through date skipped the expiry
+   > check instead of failing it and granted Premium for ever. Unreachable through Apple,
+   > which always sends `expiresDate`; **guaranteed** through Google, whose notifications
+   > carry a purchase token rather than a date and require the Play Developer API — the
+   > very credential that is missing — to turn one into the other. So the missing
+   > credential is not only the proof Google sent it; it is the only way to know when the
+   > period ends. Fixed, fails closed, tested in both directions.
 
-8. **Sign-out, and why `hasUnsyncedProgress` stays a tracked gap.** It is the last name
+8. **Content depth, and why this one really is blocked.** The roadmap's v1.0 bar is all
+   195 UN member states; the packs hold **65 countries and 259 facts**. Every previous
+   entry on this list earned a second look and three turned out to be filing errors, so
+   this one got the same treatment and came back the other way — with evidence.
+
+   `docs/systems/content-pipeline.md` names the shortcut explicitly: `countries-list` is
+   already a dependency and holds a capital and a currency for every country on earth, so
+   a script could emit 400 facts in a minute. Checking what it would actually emit is
+   what settles it. It answers **Pretoria** for South Africa, which has three capitals;
+   **Sucre** for Bolivia with no mention of La Paz; and **Bern** for Switzerland — flatly,
+   as a quiz answer. This repo already hand-authored that last one as
+   `quizzable: false, sensitivity: review-required`, citing swissinfo, because the Swiss
+   constitution names no capital. Bulk generation would have overwritten a carefully
+   sourced fact with a cruder one, and shipped the cruder version for 130 countries
+   nobody had looked at.
+
+   Doing it properly means one named, linkable source per fact — which is what every
+   fact in the packs already carries, mostly a specific Wikipedia article. **That is what
+   is blocked here:** the environment's network policy denies the sources. Wikidata over
+   `curl` and over `WebFetch` both return 403 at the proxy, confirmed by
+   `recentRelayFailures`. So the values cannot be read, and writing them from memory
+   while citing a page nobody fetched is the false citation the pipeline doc forbids by
+   name.
+
+   Not blocked, and worth doing on a machine with network: `pnpm build:flags` and
+   `pnpm build:maps` already cover all 195 from `flag-icons` (MIT) and Natural Earth
+   (public domain), so artwork is not on the critical path. Only capitals and currencies
+   need an author.
+
+9. **Sign-out, and why `hasUnsyncedProgress` stays a tracked gap.** It is the last name
    on the reachability list (down from three this wave) and it is *correctly* there.
    Settings already records why: export and delete "arrive with accounts", every user
    today is anonymous, and there is no sign-in route. A sign-out you cannot reverse is

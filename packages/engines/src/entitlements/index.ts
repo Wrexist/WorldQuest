@@ -72,6 +72,10 @@ export type Subscription = {
    * Access survives to here even after a cancellation: someone who cancels on day 2 of
    * a month they paid for keeps the month. Ending access at the moment of cancelling
    * is taking money for nothing, and it is what generates refund requests.
+   *
+   * **`null` means "the store has not told us", never "no end date".** Those two read
+   * the same in a nullable column and they are opposites: one is a gap in what we know,
+   * the other is a subscription that never ends. `entitlementOf` treats it as the first.
    */
   readonly expiresAt: number | null
   /**
@@ -131,6 +135,32 @@ const FREE: Entitlement = {
 }
 
 /**
+ * Is there a paid-through date, and is it still ahead of us?
+ *
+ * Both halves, and the first one is the one that was missing. `expiresAt <= now` was
+ * guarded by `expiresAt !== null`, so a row with no date skipped the expiry check
+ * entirely and granted access for ever — reproducible in four lines: a first
+ * `SUBSCRIBED` whose transaction carries no `expiresDate` yields
+ * `{ status: 'active', expiresAt: null }`, and `entitlementOf` answered `isPaying: true`
+ * a century later.
+ *
+ * Apple sends `expiresDate` on every auto-renewable transaction, which is why this
+ * survived review: the state is unreachable *today*, through *Apple*. It stops being
+ * unreachable the moment Google Play is wired up, because a Real-Time Developer
+ * Notification does not carry a paid-through date at all — it carries a purchase token
+ * you exchange for one at the Play Developer API. A handler written without that
+ * exchange would mint permanent free subscriptions, and this is the line that would
+ * have let it.
+ *
+ * So: unknown fails closed. The cost of the other direction is not symmetrical. Failing
+ * closed shows a paying customer a paywall until the next notification carries a date;
+ * failing open gives away the product for ever to anyone who can produce one dateless
+ * notification, and nothing in the system ever revisits it.
+ */
+const paidThrough = (expiresAt: number | null, now: number): boolean =>
+  expiresAt !== null && expiresAt > now
+
+/**
  * The state machine. Same inputs, same answer, on a phone or on a server.
  *
  * `now` is a parameter rather than a call because a function that reads the clock
@@ -148,11 +178,11 @@ export function entitlementOf(subscription: Subscription, now: number): Entitlem
     case 'trialing':
       // A trial that has run out is free, whatever the row still says. The store's
       // notification may not have arrived yet; the date is the source of truth.
-      if (expiresAt !== null && expiresAt <= now) return FREE
+      if (!paidThrough(expiresAt, now)) return FREE
       return { tier, isPaying: false, isTrialing: true, needsBillingFix: false, isPaused: false }
 
     case 'active':
-      if (expiresAt !== null && expiresAt <= now) return FREE
+      if (!paidThrough(expiresAt, now)) return FREE
       return { tier, isPaying: true, isTrialing: false, needsBillingFix: false, isPaused: false }
 
     case 'in_grace':
@@ -197,8 +227,7 @@ export const canOfferTrial = (subscription: Subscription): boolean =>
  */
 export const shouldOfferWinback = (subscription: Subscription, now: number): boolean =>
   !subscription.willRenew &&
-  subscription.expiresAt !== null &&
-  subscription.expiresAt > now &&
+  paidThrough(subscription.expiresAt, now) &&
   (subscription.status === 'active' || subscription.status === 'trialing')
 
 /**

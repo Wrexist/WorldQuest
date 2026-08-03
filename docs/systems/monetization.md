@@ -348,6 +348,40 @@ and until it exists the Google branch returns 401 and applies nothing.
 Until the pin is set, every user is free — which is the correct answer rather than a
 placeholder.
 
+### A subscription with no end date is not a subscription that never ends
+
+Found while asking whether the Google branch could be built without a Play credential.
+It could not — and the reason turned out to be a live defect on the Apple side too.
+
+`entitlementOf` guarded its expiry check with `expiresAt !== null`:
+
+```ts
+if (expiresAt !== null && expiresAt <= now) return FREE   // grants for ever when null
+```
+
+So a row with **no paid-through date skipped the check rather than failing it**. Four
+lines reproduce it: a first `SUBSCRIBED` whose transaction carries no `expiresDate`
+yields `{ status: 'active', expiresAt: null }`, and the entitlement answered
+`isPaying: true` a century later. Nothing in the system ever revisits it, because the
+only thing that ends a subscription is the date that is missing.
+
+The trap is the nullable column. `null` reads identically for *"the store has not told
+us yet"* and *"this has no end"*, and those are opposites. It now fails closed, in one
+helper (`paidThrough`) that `shouldOfferWinback` shares, so the invariant has one home.
+
+**Why it survived review:** Apple sends `expiresDate` on every auto-renewable
+transaction, so the state is unreachable today, through Apple. It stops being
+unreachable the moment Google Play is wired up — an RTDN carries a `purchaseToken`, not
+a paid-through date, and you exchange the token for one at the Play Developer API. A
+Google handler written without that exchange would have minted permanent free
+subscriptions, and this line is what would have let it. Which is the argument for the
+401 below being a real decision rather than a gap: the missing credential is not only
+the proof Google sent it, it is also the only way to learn when the period ends.
+
+Grace and hold deliberately do **not** consult the date — they are reached *by* it
+passing, and checking it there would revoke access from exactly the users the grace
+window exists to keep. Tested in both directions.
+
 ### Where the paywall opens
 
 `/paywall` is a route, not a modal inside onboarding — Settings, the hearts fork and a
