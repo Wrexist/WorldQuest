@@ -19,7 +19,19 @@ export type AvatarProps = {
   /** Initials until the illustrated avatar set is commissioned. */
   initials?: string
   size?: number
-  /** The gold ring in the mockup signals a level or a premium state. */
+  /**
+   * The gold ring from the mockup.
+   *
+   * **It signals nothing today**, and the comment here used to say it signalled "a
+   * level or a premium state". It defaults to `true` and no caller has ever passed
+   * `false`, so every avatar in the app wears it — which makes it decoration, not a
+   * signal. That is fine and matches the mockup; the claim was the problem.
+   *
+   * The seam is left in place because it is where a real distinction would go, but
+   * whoever wires that up owns making it legible without colour: a gold ring versus
+   * no ring is a hue difference on a small circle, which is exactly the kind of
+   * signal `accessibility.md` §4 says must be paired with a shape or a label.
+   */
   ringed?: boolean
   accessibilityLabel: string
 }
