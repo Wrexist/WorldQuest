@@ -42,6 +42,21 @@ draw one. `apps/mobile` asserts at test time that every declared path resolves t
 we actually ship, so a pack that promises artwork nobody bundled fails rather than
 rendering a placeholder that looks deliberate.
 
+**So is a map.** Country outlines carry `assets.map`, rasterised from Natural Earth
+(public domain) by `pnpm build:maps` — never traced, never approximated. An invented
+coastline is the same P1 as an invented capital, and an invented *border* is a
+political claim on top of it. The script fails rather than guessing, and it checks two
+things a reviewer cannot see: that every outline has real area, and that every country
+lands inside its region's frame. Both guards exist because both failed — Natural Earth
+files "Ashmore and Cartier Is." under Australia's ISO code, and a keyed lookup silently
+drew two uninhabited sandbanks captioned "Australia".
+
+There was also a bare `geometry: "geo/countries/SE.svg"` field on all 65 entities for
+the life of the project: a path with no licence beside it, that nothing ever read, for
+files nobody had made. It is gone. **Artwork belongs in `assets`, where the schema
+requires a licence** — a field that names a file without saying who owns it is how an
+unlicensed asset ships.
+
 ## Sensitive content
 
 Disputed territories, contested capitals, unrecognised states and region-dependent

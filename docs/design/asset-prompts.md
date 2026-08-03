@@ -16,7 +16,7 @@ factual error or a legal problem.
 | Asset | Why not | Get it from |
 |---|---|---|
 | **Flags** ✅ **done** | A generated flag has the wrong number of stars, the wrong proportions, the wrong shade. In a learning app that is a **wrong fact** — our worst class of bug. | **`flag-icons` 7.5.0, MIT.** `pnpm build:flags` rasterises all 65 to `apps/mobile/assets/flags/`; the licence is recorded per entity in the countries pack. |
-| **Country / continent geometry** | Generated maps have invented coastlines and wrong borders. That is both a wrong fact and a political problem. | **Natural Earth** (public domain), simplified per zoom. |
+| **Country / continent geometry** ✅ **done** | Generated maps have invented coastlines and wrong borders. That is both a wrong fact and a political problem. | **Natural Earth** (public domain), via `world-atlas` 2.0.2 (ISC). `pnpm build:maps` projects and rasterises 6 region + 65 country layers; licence recorded per entity in `assets.map`. |
 | **UI icons** (tab bar, chevrons, close) | Generated icons drift in weight and optical size, and none of them mirror correctly for RTL. | **Lucide** (ISC) or **Phosphor** (MIT). |
 | **Fonts** | — | **Inter** and **Baloo 2**, both OFL, from Google Fonts. |
 | **Real landmark photography** | Licensing. Wikimedia is mixed-licence and much of it is non-commercial. | Commission illustration (recommended), or licence a stock set. Never generate a "photo" of a real place — it will be subtly wrong and read as fake. |

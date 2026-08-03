@@ -33,6 +33,7 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { Flag } from '../../components/Flag.js'
+import { CountryMap } from '../../components/CountryMap.js'
 import {
   Button,
   Card,
@@ -78,6 +79,8 @@ export type CountryScreenProps = {
   readonly region: RegionCode | null
   /** The pack's `assets.flag.path`. Absent draws the placeholder, never another flag. */
   readonly assetPath?: string | undefined
+  /** The country's outline, from the pack's `assets.map.path`. */
+  readonly mapPath?: string | undefined
   readonly facts: readonly CountryFact[]
   readonly progress: EntityProgress | null
   readonly onPractise: () => void
@@ -99,11 +102,15 @@ export type CountryScreenProps = {
 
 }
 
+/** The page's one picture. Wide enough to find Belgium in Europe at 320pt. */
+const MAP_WIDTH = 240
+
 export function CountryScreen({
   onBack,
   name,
   region,
   assetPath,
+  mapPath,
   facts,
   progress,
   onPractise,
@@ -165,6 +172,26 @@ export function CountryScreen({
             </Text>
           </Pressable>
         )}
+      </View>
+
+      {/* Where it is, before what is true about it.
+          The country page opened on a flag, a name and a list of facts, and never
+          once said where in the world any of it was — in a geography app. The outline
+          is content, not decoration: it comes from Natural Earth via the pack's
+          `assets.map`, tinted from tokens rather than baked. Decorative to a screen
+          reader on purpose, because the heading above already names the country and
+          the region is a fact in the list below. */}
+      <View style={styles.map}>
+        {/* Green highlight, continent-tinted context — not the other way round.
+            Tinting the highlight with the continent identity colour put Sweden in
+            blue on a blue-grey Europe, and the one thing this picture has to do is
+            separate figure from ground. Green already means "you" everywhere else in
+            the app, and it clears 3:1 against the muted base at every continent. */}
+        <CountryMap
+          path={mapPath}
+          region={region ?? undefined}
+          width={MAP_WIDTH}
+        />
       </View>
 
       {progress !== null && progress.factsTotal > 0 && (
@@ -248,6 +275,9 @@ const styles = StyleSheet.create({
   content: { padding: space[4], gap: space[4] },
   centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },
 
+  // Centred and generous: this is the page's one picture, and a locator map squeezed
+  // into a corner is a decoration rather than an answer to "where is this?".
+  map: { alignItems: 'center' },
   header: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   title: { ...text('h1'), color: colors.text.primary, flex: 1, flexShrink: 1 },
   body: { ...text('caption'), color: colors.text.secondary },

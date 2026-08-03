@@ -70,13 +70,13 @@ The mockup's imagery is generated art. Matching it needs real assets:
 | Asset | Mockup shows | Status |
 |---|---|---|
 | ~~Flags~~ | 65 national flags | ✅ **Done.** All 65 from `flag-icons` (MIT), 600×450 PNG, `pnpm build:flags`. Collection, country page and the lesson picture question. |
-| Map thumbnails | Rendered Europe with a pin | `ArtSlot` placeholder at the right size |
+| ~~Map thumbnails~~ | Rendered Europe with a pin | ✅ **Done.** Region + country outlines projected from Natural Earth (public domain) via `world-atlas`, `pnpm build:maps`. Two tintable alpha layers sharing one projection, so the map themes from tokens. On the country page. |
 | Trophy | 3D gold trophy | `ArtSlot` placeholder |
 | Avatar | Illustrated character | Initials in a ringed circle |
 | Atlas the mascot | Robot explorer | Not built |
 | ~~Card gradients~~ | Blue→dark, purple→dark | ✅ **Done.** Semantic `gradient.*` tokens drawn by `Card`, 135° top-left to bottom-right. |
 | ~~Typeface~~ | The real faces | ✅ **Bundled — now Nunito**, not the Inter + Baloo 2 pairing this row used to name. One rounded family across the whole app, per weight from `@expo-google-fonts`, splash held until they land. |
-| Lesson illustration | A map of the region, filling the middle third | The lower half of the lesson screen is empty by design until this lands — that space is the map slot, not a layout bug. See the note below. |
+| Lesson illustration | A map of the region, filling the middle third | Artwork now exists (see the row above) at the same 4:3 box as a flag, so the prompt slot takes either. Not yet wired into the lesson composer — that needs a `map` modality in `PRESENTABLE`, which is the next step rather than a missing asset. |
 
 Prompts for every one of these are in [`asset-prompts.md`](asset-prompts.md).
 
@@ -84,19 +84,30 @@ Prompts for every one of these are in [`asset-prompts.md`](asset-prompts.md).
 exactly how the flags landed: `Flag` falls back to the slot when a file is missing, so
 nothing had to be relaid out.
 
-**One row on this table was never actually blocked, and it was the biggest one.**
+**Two rows on this table were never actually blocked, and they were the biggest two.**
 Flags sat here for the whole project filed as "needs an illustrator", next to the
 mascot. But [`asset-prompts.md`](asset-prompts.md) has always listed flags under **do
 not generate** — *because* a hand-drawn flag with the wrong number of stars is a wrong
 fact — and named `flag-icons` as the source in the same row. "Never draw this" was read
 as "we cannot have this yet". They are opposite statements.
 
-This is the second time that exact confusion has cost this project months. The first
-was sound, which sat under "assets" until someone noticed that a correct-answer chime
-is a sine wave rather than somebody's copyrighted work (`src/lib/sound.ts`). The
-remaining rows are genuinely illustration: a robot explorer is nobody's public-domain
-SVG. But that is now a claim worth re-checking rather than assuming, and the geometry
-and icon rows in `asset-prompts.md` name sources too.
+That was the second time the confusion cost this project months. The first was sound,
+which sat under "assets" until someone noticed a correct-answer chime is a sine wave
+rather than somebody's copyrighted work (`src/lib/sound.ts`).
+
+**And then it happened a third time, to the map row, in the sentence that warned about
+it.** The paragraph above used to end "the geometry and icon rows in `asset-prompts.md`
+name sources too" — correctly identifying map geometry as the next false blocker — while
+the table two sections up still filed map thumbnails as needing an illustrator. Both
+were written by someone who had read the same document. Geometry now ships
+(`pnpm build:maps`), from the Natural Earth source that `asset-prompts.md` and ADR 0008
+had both named all along, and the content pack had been carrying an unread
+`geometry: "geo/countries/SE.svg"` field on all 65 entities the whole time.
+
+**Icons are the row this now points at.** `asset-prompts.md` names Lucide (ISC) and
+Phosphor (MIT); the tab bar still draws `⌂ ◎ ◈ ☺ ⋯` as text. Check it before believing
+it. The genuinely illustration-bound rows are the mascot, the avatars and the trophy: a
+robot explorer is nobody's public-domain SVG.
 
 ### 3. Deliberate deviations — we are not copying these
 

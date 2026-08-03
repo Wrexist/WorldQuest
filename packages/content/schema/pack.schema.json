@@ -142,10 +142,8 @@
         "subregion": {
           "type": "string"
         },
-        "geometry": {
-          "type": "string"
-        },
         "assets": {
+          "description": "Licensed artwork for this entity, keyed by kind: `flag` and `map` today. There used to be a bare `geometry: \"geo/countries/XX.svg\"` property alongside this one; it was removed rather than corrected, because a path with no licence beside it is exactly what this object exists to prevent — and that one sat unread on all 65 entities for the life of the project while the outlines it promised were filed as blocked on an illustrator.",
           "type": "object",
           "additionalProperties": {
             "type": "object",

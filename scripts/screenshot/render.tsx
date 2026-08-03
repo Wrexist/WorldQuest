@@ -418,6 +418,7 @@ function Gallery() {
             // placeholder that stood in for it. See the warning below about the one
             // frame here that is NOT the real component.
             assetPath="flags/SE.png"
+            mapPath="geo/countries/SE.png"
             facts={[
               {
                 id: 'geo.SE.capital',

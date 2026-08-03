@@ -153,6 +153,10 @@ unless asked. Full rules: [`PROJECT.md §11`](PROJECT.md#11-git-workflow).
   list changes. **Never hand-draw a replacement for a flag it cannot find** — that is
   the wrong-fact bug `docs/design/asset-prompts.md` forbids, and the script says so and
   exits rather than guessing.
+- `pnpm build:maps` — projects and rasterises the region + country outlines from
+  Natural Earth (public domain, via `world-atlas`) and writes `src/lib/maps.generated.ts`.
+  Same rules as the flags, and the same reason: an invented coastline is a wrong fact
+  and an invented border is a political claim. Run it when the country list changes.
 - Supabase local: `pnpm db:start`, `pnpm db:reset`, `pnpm db:types`.
 - The Supabase MCP server is available in this workspace — prefer it for schema
   inspection over guessing, and **never run destructive SQL against a remote project.**
