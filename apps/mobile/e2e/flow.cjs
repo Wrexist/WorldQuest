@@ -494,6 +494,57 @@ const step = (name, ok, detail = '') => {
   step('and is not still on the splash', !/Getting your world ready/i.test(booted))
   await cold.close()
 
+  // ── keyboard-only: the primary task, without a pointer ─────────────────────
+  //
+  // The accessibility spec's hardest rule is that a user must be able to complete a
+  // screen's primary task without sight, and its instruction is to turn on VoiceOver
+  // and set the brightness to zero. Neither VoiceOver nor TalkBack exists in this
+  // container, so that check has sat unticked since the first week.
+  //
+  // What CAN be checked here is keyboard operability, and it is not a consolation
+  // prize: a control that a screen reader cannot activate is almost always a control
+  // the keyboard cannot activate either — both go through the same accessibility
+  // action rather than through a touch sequence. That is exactly how the tab bar
+  // shipped inert on web with `onTouchEnd`, unreachable by keyboard AND by screen
+  // reader on every platform.
+  //
+  // So: answer a question using nothing but Tab and Enter. If that works, the option
+  // is a real button with a real role, focusable and activatable through the
+  // accessibility layer. If it does not, no screen reader could have used it either.
+  //
+  // What this still does NOT prove: announcement quality, focus order sanity to a
+  // person, whether the labels make sense read aloud, or that the reader's own
+  // gestures work. Those need a device.
+  await page.goto(`http://localhost:${PORT}/lesson`, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(1500)
+
+  const before = await lessonPrompt()
+  step('keyboard: a lesson opens', before !== undefined, before)
+
+  if (before !== undefined) {
+    // Tab until focus lands on an answer option, then activate it with the keyboard.
+    // Bounded so a focus trap fails the step instead of hanging the run.
+    let landed = false
+    for (let i = 0; i < 40 && !landed; i++) {
+      await page.keyboard.press('Tab')
+      landed = await page.evaluate(
+        () => document.activeElement?.getAttribute('data-testid') === 'answer-option',
+      )
+    }
+    step('keyboard: an answer option can be reached with Tab alone', landed)
+
+    if (landed) {
+      const label = await page.evaluate(() => document.activeElement?.textContent?.trim() ?? '')
+      await page.keyboard.press('Enter')
+      await page.waitForTimeout(1200)
+      const text = await body()
+      // The feedback panel is the proof the answer was actually scored — focus moving
+      // is not the same as the control doing its job.
+      const scored = /Perfect!|That's [^\n]*|The answer is [^\n]*/.test(text)
+      step('keyboard: Enter scores it, with no pointer involved', scored, label)
+    }
+  }
+
   // ── 200 % text ─────────────────────────────────────────────────────────────
   //
   // The Definition of Done has asked for this since the first week and nothing has

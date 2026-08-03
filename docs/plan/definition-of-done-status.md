@@ -28,7 +28,7 @@ green while two thirds of the authored content was unreachable.
 
 | Box | State |
 |---|---|
-| iOS **and** Android, phone and tablet, to 320 pt | ⬜ **Never run on either.** No iOS Simulator without macOS, no Android emulator without `/dev/kvm`. Every layout claim in this repo is a claim about Chromium at 390×844. |
+| iOS **and** Android, phone and tablet, to 320 pt | ⬜ **Never run on either.** No iOS Simulator without macOS, no Android emulator without `/dev/kvm`. Every layout claim in this repo is a claim about Chromium, now checked at 320/390/768. **Both platforms do now bundle** — `pnpm bundle:native`, 3.74 MB iOS and 3.75 MB Android of Hermes bytecode. Until that script existed the app had only ever been bundled for web. |
 | Five states everywhere | ✅ **Audited, and the audit is a script.** `pnpm five-states` checks all 14 screens; 15 states are waived with a recorded reason and the script fails on a waiver the code has outgrown. See below for what it found. |
 | Offline behaviour | ✅ Queue, replay on reconnect, backoff, parked work surfaced. Real connectivity as of Wave 7. |
 | Server-authoritative rewards | ✅ Nothing on the client writes a balance. Achievements, quests and XP all render predictions and say so. |
@@ -56,7 +56,7 @@ green while two thirds of the authored content was unreachable.
 | Box | State |
 |---|---|
 | Every string an i18n key, `en` + `sv` | ✅ 350 keys, both locales complete, ICU plurals, translator notes. |
-| Screen reader verified with VoiceOver **and** TalkBack | ⬜ Neither exists here. Labels and roles are asserted in tests; *focus order and task completion are not verified*, and the skill is explicit that this is the part that matters. |
+| Screen reader verified with VoiceOver **and** TalkBack | ⬜ Neither exists here. Labels and roles are asserted in tests, and **the primary task is now completable with the keyboard alone** — Tab to an answer, Enter to score it, no pointer (`pnpm e2e`). That is the same accessibility action a reader dispatches, so it rules out the failure mode that shipped the tab bar inert. It does not verify announcement quality, focus order as a person experiences it, or the reader's own gestures. |
 | Contrast ≥ 4.5:1, targets ≥ 44 pt | ✅ 23 pairs checked; targets sized in code. |
 | Survives 200 % text and RTL | ✅ RTL is linted (`lint:a11y`) after two real bugs. 200 % text is now measured on six screens in `pnpm e2e` — see below. |
 
@@ -84,7 +84,21 @@ green while two thirds of the authored content was unreachable.
    chime. The Settings toggle still writes a preference nothing reads.
 3. **Sentry.** Blocked on a **DSN and an authorised account**, neither of which exists
    in this environment. The `ErrorBoundary` logs to console and says so.
-4. **A device.** Not something code can fix.
+4. **A device.** Not something code can fix — but two things that were being deferred
+   to it turned out not to need it:
+
+   - **Native bundling.** `pnpm e2e` exported `--platform web` and nothing else, so the
+     app had **never been bundled for iOS or Android at all**. Metro resolves per
+     platform — `foo.ios.ts` and `foo.web.ts` are different files, `react-native-web`
+     substitutes on one platform only, and a native module that throws at import is
+     invisible to a web build that never loads it. This repo has already lost a week to
+     exactly that class of bug. Both platforms now bundle, checked by
+     `pnpm bundle:native`. It proves the graph compiles; nothing executes the bundle.
+   - **Keyboard operability.** A control a screen reader cannot activate is nearly
+     always one the keyboard cannot activate either — both go through an accessibility
+     action rather than a touch sequence, which is precisely how the tab bar once
+     shipped inert on web *and* unreachable by screen reader on every platform. A
+     lesson can now be answered with Tab and Enter alone.
 
 ---
 

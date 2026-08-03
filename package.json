@@ -17,6 +17,8 @@
     "e2e": "pnpm --filter @worldquest/mobile exec expo export --platform web --output-dir ../../node_modules/.cache/wq-web && node apps/mobile/e2e/flow.cjs node_modules/.cache/wq-web node_modules/.cache/wq-e2e-shots",
     "$comment:design:shots": "Screenshots any set of routes from the exported bundle at 320/390/768 and reports the things a picture cannot show — touch targets under 44pt, sideways scroll, unlabelled controls. Feeds /design-review. Never a gate: verify and e2e are the gates.",
     "design:shots": "pnpm --filter @worldquest/mobile exec expo export --platform web --output-dir ../../node_modules/.cache/wq-web && node scripts/design-shots.cjs",
+    "$comment:bundle:native": "Bundles for iOS and Android. Until this existed the app had only ever been bundled for web, and Metro resolves per platform — a native-only resolution failure was invisible. Proves the graph compiles, NOT that the app runs.",
+    "bundle:native": "node scripts/bundle-native.cjs",
     "design:measure": "node scripts/measure-design.cjs",
     "content:validate": "pnpm --filter @worldquest/content validate",
     "content:preview": "pnpm --filter @worldquest/content preview",
