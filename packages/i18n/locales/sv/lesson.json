@@ -54,5 +54,7 @@
   "lesson:speed.body": "Tio frågor, {seconds} sekunder var. Att missa en kostar ingenting.",
   "lesson:speed.start": "Starta snabbrunda",
   "lesson:speed.remaining": "{seconds} sekunder kvar",
-  "lesson:speed.timeUp": "Tiden tog slut på den."
+  "lesson:speed.timeUp": "Tiden tog slut på den.",
+  "lesson:prompt.which_country_map": "Vilket land är markerat?",
+  "lesson:prompt.location_of": "Var i världen ligger {entityName}?"
 }

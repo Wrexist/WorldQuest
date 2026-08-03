@@ -66,6 +66,15 @@ const FLAG_PROMPT_WIDTH = 200
 const LOCATOR_WIDTH = 200
 
 /**
+ * A map question's map — the prompt itself rather than context beside one.
+ *
+ * 240 rather than the locator's 200: this is the only thing on screen carrying the
+ * question, and the country is drawn at 46 % of the frame, so the shape a user has to
+ * recognise is smaller than the picture. Four answers still fit below it at 320pt.
+ */
+const MAP_PROMPT_WIDTH = 240
+
+/**
  * What the lesson tells whoever mounted it on the way out.
  *
  * The route decides where the user goes next, and after the taster that decision
@@ -356,11 +365,25 @@ export function LessonScreen({
             would repeat it, and a reader user is not being shown anything a sighted
             user is not also told. */}
         {question.locator !== undefined && (
-          <View style={styles.promptArt} testID="prompt-locator">
+          <View
+            style={styles.promptArt}
+            testID={question.modality === 'map' ? 'prompt-map' : 'prompt-locator'}
+          >
             <CountryMap
               path={question.locator.path}
               contextPath={question.locator.contextPath}
-              width={LOCATOR_WIDTH}
+              // A map question's map is the prompt, so it gets the same width as the
+              // flag prompt does — big enough that telling Norway from Sweden is a
+              // question about the coastline rather than about eyesight.
+              width={question.modality === 'map' ? MAP_PROMPT_WIDTH : LOCATOR_WIDTH}
+              // Labelled ONLY when it is the question. Beside a capital-city question
+              // the prompt already names the country in words, so a reader announcing
+              // the map would repeat it. Here nothing else says what is on screen —
+              // though a reader user should never reach this branch at all, because
+              // `screenReaderOnly` swaps in tpl.location-of.mc4 before composing.
+              {...(question.modality === 'map'
+                ? { label: tContent(question.promptKey, question.promptParams) }
+                : {})}
             />
           </View>
         )}

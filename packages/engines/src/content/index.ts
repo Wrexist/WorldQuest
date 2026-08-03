@@ -317,6 +317,28 @@ export function isAmbiguous(index: ContentIndex, item: Item, locale: string): bo
   const { fact, template } = resolved
   if (template.answer.from !== 'entity.names') return false
 
+  /**
+   * A `map` prompt shows the entity's OWN geometry, not the fact value.
+   *
+   * The rule above is about reverse questions where the prompt carries the value:
+   * "Which country uses the Euro?" is unanswerable because twenty countries share it.
+   * "Which country is this outline?" shares nothing — the picture is that country's
+   * border and no other country's, so the fact hanging off it can be as common as it
+   * likes.
+   *
+   * Without this branch every map question in the pack is dropped, silently and all
+   * at once: `location` values are subregions, so all four Nordic countries "share"
+   * Northern Europe and each one looks ambiguous by the value test. Checked by asking
+   * what the PROMPT presents rather than by naming the attribute, so a future pack
+   * asking about a river's course gets the same answer with no engine change.
+   *
+   * `image` deliberately still goes through the value check. A flag prompt shows
+   * artwork whose description IS the fact value, so two identical descriptions really
+   * do mean two identical flags — Monaco and Indonesia — and that question really is
+   * unanswerable.
+   */
+  if (template.modality === 'map') return false
+
   const nameOf = (names: Readonly<Record<string, string>> | undefined): string | undefined =>
     names?.[locale] ?? names?.['en']
   const value = nameOf(fact.value.names)
@@ -417,8 +439,25 @@ export function buildQuestion(
    */
   const mapAsset = entity.assets?.['map']?.path
   const contextAsset = entity.assets?.['mapContext']?.path
+  const hasMap = mapAsset !== undefined && contextAsset !== undefined
+
+  /**
+   * A `map` template inverts the rule above: the map IS the question.
+   *
+   * "Which country is this?" over a locator is answered by `entity.names`, which is
+   * exactly the shape the giveaway rule refuses — so the two have to be told apart by
+   * the MODALITY rather than by the answer. Same picture, opposite meaning: decoration
+   * beside a capital-city question, the entire prompt here.
+   *
+   * A pack that declares a map template for an entity with no geometry gets no
+   * question at all rather than an unanswerable one. That is the `null` below, and it
+   * is the same reason the flag composer drops an image question with no artwork.
+   */
+  const isMapPrompt = template.modality === 'map'
+  if (isMapPrompt && !hasMap) return null
+
   const locator =
-    template.answer.from !== 'entity.names' && mapAsset !== undefined && contextAsset !== undefined
+    hasMap && (isMapPrompt || template.answer.from !== 'entity.names')
       ? { path: mapAsset, contextPath: contextAsset }
       : undefined
 

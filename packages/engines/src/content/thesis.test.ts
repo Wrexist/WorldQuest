@@ -30,7 +30,23 @@ const read = <T>(file: string): T[] =>
   (JSON.parse(readFileSync(join(packsDir, file), 'utf8')) as { items: T[] }).items
 
 const entities = read<Entity>('entities.countries.v1.json')
-const facts = [...read<Fact>('facts.capitals.v1.json'), ...read<Fact>('facts.flags.v1.json')]
+/**
+ * EVERY fact pack, not a chosen two.
+ *
+ * This loaded capitals and flags only, and several tests below iterate `templates` and
+ * `continue` past any template with no items — so a template whose attribute was not in
+ * this list was skipped in silence. `tpl.country-to-map.mc4` landed and every locator
+ * and presentation assertion stepped over it, which is the "guard that could never
+ * fail" shape this repo has now been bitten by four times.
+ *
+ * A pack added here is a pack the whole file starts checking. That is the point.
+ */
+const facts = [
+  ...read<Fact>('facts.capitals.v1.json'),
+  ...read<Fact>('facts.flags.v1.json'),
+  ...read<Fact>('facts.currencies.v1.json'),
+  ...read<Fact>('facts.locations.v1.json'),
+]
 const templates = read<Template>('templates.v1.json')
 
 const index = buildIndex({ entities, facts, templates })
@@ -597,10 +613,49 @@ describe('the locator map', () => {
     // the worst shape a giveaway can take.
     for (const template of templates) {
       if (template.answer.from !== 'entity.names') continue
+      // A `map` template is the one legitimate exception and it inverts the rule: the
+      // map IS the question there, so its presence is the point rather than a leak.
+      // Told apart by MODALITY, never by naming the template — a second map template
+      // must get the same answer without editing this test.
+      if (template.modality === 'map') continue
       const item = index.items.find((i) => i.templateId === template.id)
-      if (item === undefined) continue
-      const q = buildQuestion(index, item, 'en', seededRng(5))!
+      // Loudly, not `continue`. This loop stepped silently over any template with no
+      // items for its attribute, so `tpl.country-to-map.mc4` shipped completely
+      // unchecked by it — the "guard that could never fail" shape again.
+      expect(item, `${template.id} has no items — this test is not checking it`).toBeDefined()
+      const q = buildQuestion(index, item!, 'en', seededRng(5))!
       expect(q.locator, template.id).toBeUndefined()
+    }
+  })
+
+  it('IS the question on a map template, labelled and present', () => {
+    // The inversion, asserted rather than left as a comment. Without the modality
+    // branch in `isAmbiguous` every one of these is dropped — 65 questions vanishing
+    // in silence, which is exactly how this arrived.
+    const item = index.items.find((i) => i.templateId === 'tpl.country-to-map.mc4')
+    expect(item).toBeDefined()
+    const q = buildQuestion(index, item!, 'en', seededRng(5))!
+    expect(q).not.toBeNull()
+    expect(q.modality).toBe('map')
+    expect(q.locator).toBeDefined()
+    // Four real options, and the answer among them.
+    expect(q.options).toHaveLength(4)
+    expect(q.options.filter((o) => o.isCorrect)).toHaveLength(1)
+  })
+
+  it('never asks a map question a screen reader cannot answer', () => {
+    // A map prompt is unanswerable by ear. The pack must name a sibling that tests the
+    // SAME fact in words, and that sibling must itself be screen-reader safe — a chain
+    // that points at another picture would move the bug rather than fix it.
+    for (const template of templates) {
+      if (template.modality !== 'map') continue
+      const sibling = template.a11y?.equivalentTemplate
+      expect(sibling, `${template.id} has no screen-reader sibling`).toBeDefined()
+      const equivalent = index.templates.get(sibling!)
+      expect(equivalent, `${sibling} is named but not in the pack`).toBeDefined()
+      expect(equivalent!.a11y?.screenReaderSafe, sibling).toBe(true)
+      // Same attribute, so it tests the same fact and writes the same `user_facts` row.
+      expect(equivalent!.attribute).toBe(template.attribute)
     }
   })
 

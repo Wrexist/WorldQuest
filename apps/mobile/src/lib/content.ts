@@ -44,15 +44,17 @@ export type LoadedContent = {
  * `tpl.flag-to-country.mc4` — "Which country's flag is this?", the mockup's lesson
  * screen — is back in the rotation.
  *
- * `map` and `audio` stay out. The geography pack ships no template using either, so
- * listing them would claim a capability nothing exercises; the globe and the
- * pronunciation packs each add their own entry when they add their renderer.
+ * `'map'` joined it the same way and under the same rule: `pnpm build:maps` produces
+ * the geometry, `CountryMap` draws it, and `tpl.country-to-map.mc4` asks about it, so
+ * the claim is now true rather than aspirational. Its screen-reader sibling
+ * `tpl.location-of.mc4` shipped in the SAME change — "Where in the world is Sweden?",
+ * testing the same fact by ear — because a map question is unanswerable without sight
+ * and enabling one without the sibling would move this bug rather than fix it.
  *
- * The guard that had to land with it is `screenReaderOnly` below. An image question is
- * unanswerable by ear, and enabling one without swapping in the described sibling
- * would move this bug rather than fix it.
+ * `audio` stays out. Nothing renders it; the pronunciation pack adds its own entry
+ * when it adds its renderer.
  */
-const PRESENTABLE = ['text', 'image'] as const
+const PRESENTABLE = ['text', 'image', 'map'] as const
 
 export function useContent() {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('ready')

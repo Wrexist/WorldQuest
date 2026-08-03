@@ -108,5 +108,9 @@
   "lesson:speed.remaining": "{seconds} seconds left",
   "lesson:speed.remaining__note": "Accessibility label for the countdown. Read on demand, never announced every second.",
   "lesson:speed.timeUp": "Time's up on that one.",
-  "lesson:speed.timeUp__note": "Shown when a question times out. Neutral and brief — it is the clock's doing, not a failure. NEVER 'Too slow!'."
+  "lesson:speed.timeUp__note": "Shown when a question times out. Neutral and brief — it is the clock's doing, not a failure. NEVER 'Too slow!'.",
+  "lesson:prompt.which_country_map": "Which country is highlighted?",
+  "lesson:prompt.which_country_map__note": "Map question — the locator map IS the prompt, with the country picked out against the land around it. \"Highlighted\" rather than \"shown\", because the map shows several countries and only one is coloured. Never shown to a screen-reader user; tpl.location-of.mc4 tests the same fact by ear.",
+  "lesson:prompt.location_of": "Where in the world is {entityName}?",
+  "lesson:prompt.location_of__note": "The screen-reader-safe sibling of the map question, and a good question in its own right. Answers are subregions — \"Northern Europe\", \"West Africa\". {entityName} takes the sentence form, so English gets \"the United States\"."
 }

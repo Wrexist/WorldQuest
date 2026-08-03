@@ -1,0 +1,1576 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "$comment": "Where each country is, as a fact rather than a field. Derived MECHANICALLY from `subregion` in entities.countries.v1.json — this file invents no geography, it restates what the entity pack already declares so the composer can quiz it. Regenerate with `pnpm build:locations` whenever a country is added; hand-editing one row would let a country's location fact disagree with its own entity, which is a wrong fact of the worst kind: quietly wrong, and only on one screen. The GROUPING is this app's own, not UN M49 — M49 places Cuba and Mexico in 'Latin America and the Caribbean' while this pack groups them under North America, which is true continentally and is what a ten-year-old is taught. The source field points at the entities pack rather than at M49 for exactly that reason: citing a standard we have deliberately diverged from would be a false citation.",
+  "packId": "geography.locations",
+  "version": "1.0.0",
+  "subject": "geography",
+  "kind": "facts",
+  "locales": [
+    "en",
+    "sv"
+  ],
+  "license": "CC-BY-4.0",
+  "generatedAt": "2026-08-03",
+  "items": [
+    {
+      "id": "geo.AR.location",
+      "entity": "AR",
+      "attribute": "location",
+      "value": {
+        "id": "south-america",
+        "names": {
+          "en": "South America",
+          "sv": "Sydamerika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AT.location",
+      "entity": "AT",
+      "attribute": "location",
+      "value": {
+        "id": "western-europe",
+        "names": {
+          "en": "Western Europe",
+          "sv": "Västeuropa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AU.location",
+      "entity": "AU",
+      "attribute": "location",
+      "value": {
+        "id": "oceania",
+        "names": {
+          "en": "Oceania",
+          "sv": "Oceanien"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BD.location",
+      "entity": "BD",
+      "attribute": "location",
+      "value": {
+        "id": "south-asia",
+        "names": {
+          "en": "South Asia",
+          "sv": "Sydasien"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "south-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BE.location",
+      "entity": "BE",
+      "attribute": "location",
+      "value": {
+        "id": "western-europe",
+        "names": {
+          "en": "Western Europe",
+          "sv": "Västeuropa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BR.location",
+      "entity": "BR",
+      "attribute": "location",
+      "value": {
+        "id": "south-america",
+        "names": {
+          "en": "South America",
+          "sv": "Sydamerika"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BW.location",
+      "entity": "BW",
+      "attribute": "location",
+      "value": {
+        "id": "southern-africa",
+        "names": {
+          "en": "Southern Africa",
+          "sv": "Södra Afrika"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "southern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CA.location",
+      "entity": "CA",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CH.location",
+      "entity": "CH",
+      "attribute": "location",
+      "value": {
+        "id": "western-europe",
+        "names": {
+          "en": "Western Europe",
+          "sv": "Västeuropa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CL.location",
+      "entity": "CL",
+      "attribute": "location",
+      "value": {
+        "id": "south-america",
+        "names": {
+          "en": "South America",
+          "sv": "Sydamerika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CN.location",
+      "entity": "CN",
+      "attribute": "location",
+      "value": {
+        "id": "east-asia",
+        "names": {
+          "en": "East Asia",
+          "sv": "Östasien"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CO.location",
+      "entity": "CO",
+      "attribute": "location",
+      "value": {
+        "id": "south-america",
+        "names": {
+          "en": "South America",
+          "sv": "Sydamerika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CR.location",
+      "entity": "CR",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CU.location",
+      "entity": "CU",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CZ.location",
+      "entity": "CZ",
+      "attribute": "location",
+      "value": {
+        "id": "eastern-europe",
+        "names": {
+          "en": "Eastern Europe",
+          "sv": "Östeuropa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DE.location",
+      "entity": "DE",
+      "attribute": "location",
+      "value": {
+        "id": "western-europe",
+        "names": {
+          "en": "Western Europe",
+          "sv": "Västeuropa"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "location",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DK.location",
+      "entity": "DK",
+      "attribute": "location",
+      "value": {
+        "id": "northern-europe",
+        "names": {
+          "en": "Northern Europe",
+          "sv": "Nordeuropa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DZ.location",
+      "entity": "DZ",
+      "attribute": "location",
+      "value": {
+        "id": "northern-africa",
+        "names": {
+          "en": "North Africa",
+          "sv": "Nordafrika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "northern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.EG.location",
+      "entity": "EG",
+      "attribute": "location",
+      "value": {
+        "id": "northern-africa",
+        "names": {
+          "en": "North Africa",
+          "sv": "Nordafrika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "northern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ES.location",
+      "entity": "ES",
+      "attribute": "location",
+      "value": {
+        "id": "southern-europe",
+        "names": {
+          "en": "Southern Europe",
+          "sv": "Sydeuropa"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "location",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ET.location",
+      "entity": "ET",
+      "attribute": "location",
+      "value": {
+        "id": "eastern-africa",
+        "names": {
+          "en": "East Africa",
+          "sv": "Östafrika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FI.location",
+      "entity": "FI",
+      "attribute": "location",
+      "value": {
+        "id": "northern-europe",
+        "names": {
+          "en": "Northern Europe",
+          "sv": "Nordeuropa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FJ.location",
+      "entity": "FJ",
+      "attribute": "location",
+      "value": {
+        "id": "oceania",
+        "names": {
+          "en": "Oceania",
+          "sv": "Oceanien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FR.location",
+      "entity": "FR",
+      "attribute": "location",
+      "value": {
+        "id": "western-europe",
+        "names": {
+          "en": "Western Europe",
+          "sv": "Västeuropa"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "location",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GH.location",
+      "entity": "GH",
+      "attribute": "location",
+      "value": {
+        "id": "western-africa",
+        "names": {
+          "en": "West Africa",
+          "sv": "Västafrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GR.location",
+      "entity": "GR",
+      "attribute": "location",
+      "value": {
+        "id": "southern-europe",
+        "names": {
+          "en": "Southern Europe",
+          "sv": "Sydeuropa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GT.location",
+      "entity": "GT",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HU.location",
+      "entity": "HU",
+      "attribute": "location",
+      "value": {
+        "id": "eastern-europe",
+        "names": {
+          "en": "Eastern Europe",
+          "sv": "Östeuropa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ID.location",
+      "entity": "ID",
+      "attribute": "location",
+      "value": {
+        "id": "south-east-asia",
+        "names": {
+          "en": "South-East Asia",
+          "sv": "Sydostasien"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IN.location",
+      "entity": "IN",
+      "attribute": "location",
+      "value": {
+        "id": "south-asia",
+        "names": {
+          "en": "South Asia",
+          "sv": "Sydasien"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "south-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IT.location",
+      "entity": "IT",
+      "attribute": "location",
+      "value": {
+        "id": "southern-europe",
+        "names": {
+          "en": "Southern Europe",
+          "sv": "Sydeuropa"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "location",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JP.location",
+      "entity": "JP",
+      "attribute": "location",
+      "value": {
+        "id": "east-asia",
+        "names": {
+          "en": "East Asia",
+          "sv": "Östasien"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "location",
+        "east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KE.location",
+      "entity": "KE",
+      "attribute": "location",
+      "value": {
+        "id": "eastern-africa",
+        "names": {
+          "en": "East Africa",
+          "sv": "Östafrika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KP.location",
+      "entity": "KP",
+      "attribute": "location",
+      "value": {
+        "id": "east-asia",
+        "names": {
+          "en": "East Asia",
+          "sv": "Östasien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KR.location",
+      "entity": "KR",
+      "attribute": "location",
+      "value": {
+        "id": "east-asia",
+        "names": {
+          "en": "East Asia",
+          "sv": "Östasien"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MA.location",
+      "entity": "MA",
+      "attribute": "location",
+      "value": {
+        "id": "northern-africa",
+        "names": {
+          "en": "North Africa",
+          "sv": "Nordafrika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "northern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ML.location",
+      "entity": "ML",
+      "attribute": "location",
+      "value": {
+        "id": "western-africa",
+        "names": {
+          "en": "West Africa",
+          "sv": "Västafrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MN.location",
+      "entity": "MN",
+      "attribute": "location",
+      "value": {
+        "id": "east-asia",
+        "names": {
+          "en": "East Asia",
+          "sv": "Östasien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MX.location",
+      "entity": "MX",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MY.location",
+      "entity": "MY",
+      "attribute": "location",
+      "value": {
+        "id": "south-east-asia",
+        "names": {
+          "en": "South-East Asia",
+          "sv": "Sydostasien"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NA.location",
+      "entity": "NA",
+      "attribute": "location",
+      "value": {
+        "id": "southern-africa",
+        "names": {
+          "en": "Southern Africa",
+          "sv": "Södra Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "southern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NG.location",
+      "entity": "NG",
+      "attribute": "location",
+      "value": {
+        "id": "western-africa",
+        "names": {
+          "en": "West Africa",
+          "sv": "Västafrika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NL.location",
+      "entity": "NL",
+      "attribute": "location",
+      "value": {
+        "id": "western-europe",
+        "names": {
+          "en": "Western Europe",
+          "sv": "Västeuropa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NO.location",
+      "entity": "NO",
+      "attribute": "location",
+      "value": {
+        "id": "northern-europe",
+        "names": {
+          "en": "Northern Europe",
+          "sv": "Nordeuropa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NP.location",
+      "entity": "NP",
+      "attribute": "location",
+      "value": {
+        "id": "south-asia",
+        "names": {
+          "en": "South Asia",
+          "sv": "Sydasien"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "south-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NZ.location",
+      "entity": "NZ",
+      "attribute": "location",
+      "value": {
+        "id": "oceania",
+        "names": {
+          "en": "Oceania",
+          "sv": "Oceanien"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PA.location",
+      "entity": "PA",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PE.location",
+      "entity": "PE",
+      "attribute": "location",
+      "value": {
+        "id": "south-america",
+        "names": {
+          "en": "South America",
+          "sv": "Sydamerika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PG.location",
+      "entity": "PG",
+      "attribute": "location",
+      "value": {
+        "id": "oceania",
+        "names": {
+          "en": "Oceania",
+          "sv": "Oceanien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PH.location",
+      "entity": "PH",
+      "attribute": "location",
+      "value": {
+        "id": "south-east-asia",
+        "names": {
+          "en": "South-East Asia",
+          "sv": "Sydostasien"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PK.location",
+      "entity": "PK",
+      "attribute": "location",
+      "value": {
+        "id": "south-asia",
+        "names": {
+          "en": "South Asia",
+          "sv": "Sydasien"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "south-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PL.location",
+      "entity": "PL",
+      "attribute": "location",
+      "value": {
+        "id": "eastern-europe",
+        "names": {
+          "en": "Eastern Europe",
+          "sv": "Östeuropa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PT.location",
+      "entity": "PT",
+      "attribute": "location",
+      "value": {
+        "id": "southern-europe",
+        "names": {
+          "en": "Southern Europe",
+          "sv": "Sydeuropa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RO.location",
+      "entity": "RO",
+      "attribute": "location",
+      "value": {
+        "id": "eastern-europe",
+        "names": {
+          "en": "Eastern Europe",
+          "sv": "Östeuropa"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SE.location",
+      "entity": "SE",
+      "attribute": "location",
+      "value": {
+        "id": "northern-europe",
+        "names": {
+          "en": "Northern Europe",
+          "sv": "Nordeuropa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SN.location",
+      "entity": "SN",
+      "attribute": "location",
+      "value": {
+        "id": "western-africa",
+        "names": {
+          "en": "West Africa",
+          "sv": "Västafrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TH.location",
+      "entity": "TH",
+      "attribute": "location",
+      "value": {
+        "id": "south-east-asia",
+        "names": {
+          "en": "South-East Asia",
+          "sv": "Sydostasien"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TN.location",
+      "entity": "TN",
+      "attribute": "location",
+      "value": {
+        "id": "northern-africa",
+        "names": {
+          "en": "North Africa",
+          "sv": "Nordafrika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "northern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TZ.location",
+      "entity": "TZ",
+      "attribute": "location",
+      "value": {
+        "id": "eastern-africa",
+        "names": {
+          "en": "East Africa",
+          "sv": "Östafrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UA.location",
+      "entity": "UA",
+      "attribute": "location",
+      "value": {
+        "id": "eastern-europe",
+        "names": {
+          "en": "Eastern Europe",
+          "sv": "Östeuropa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UG.location",
+      "entity": "UG",
+      "attribute": "location",
+      "value": {
+        "id": "eastern-africa",
+        "names": {
+          "en": "East Africa",
+          "sv": "Östafrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.US.location",
+      "entity": "US",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "location",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VN.location",
+      "entity": "VN",
+      "attribute": "location",
+      "value": {
+        "id": "south-east-asia",
+        "names": {
+          "en": "South-East Asia",
+          "sv": "Sydostasien"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZA.location",
+      "entity": "ZA",
+      "attribute": "location",
+      "value": {
+        "id": "southern-africa",
+        "names": {
+          "en": "Southern Africa",
+          "sv": "Södra Afrika"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "southern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZW.location",
+      "entity": "ZW",
+      "attribute": "location",
+      "value": {
+        "id": "southern-africa",
+        "names": {
+          "en": "Southern Africa",
+          "sv": "Södra Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "southern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest geography pack — entities.countries.v1.json",
+        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
+        "verifiedAt": "2026-08-03"
+      },
+      "volatility": "stable"
+    }
+  ]
+}

@@ -26,6 +26,8 @@
     "build:maps": "node scripts/build-maps.cjs",
     "$comment:build:icons": "Rasterises the UI icon set from Lucide (ISC) into apps/mobile/assets/icons as white-on-transparent alpha masks, recoloured at runtime with tintColor. The fourth false blocker after sound, flags and geometry: asset-prompts.md has named Lucide and Phosphor since it was written, while the tab bar shipped '⌂ ◎ ◈ ☺ ⋯' as literal text — a different typeface on every device, four of them colour emoji, none of them mirroring for RTL. Run it when the icon set changes; the PNGs are committed, so it is not part of verify.",
     "build:icons": "node scripts/build-icons.cjs",
+    "$comment:build:locations": "Derives facts.locations.v1.json from the `subregion` already declared on every entity, so a country's location fact can never disagree with its own entity. Invents no geography — it is a projection of data the pack holds. Run it when the country list changes; the JSON is committed, so it is not part of verify.",
+    "build:locations": "node scripts/build-locations.cjs",
     "content:validate": "pnpm --filter @worldquest/content validate",
     "content:preview": "pnpm --filter @worldquest/content preview",
     "content:stats": "pnpm --filter @worldquest/content stats",

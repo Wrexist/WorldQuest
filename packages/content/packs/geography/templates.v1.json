@@ -1,6 +1,6 @@
 {
   "$schema": "../../schema/pack.schema.json",
-  "$comment": "Templates are ATTRIBUTE-shaped, never geography-shaped. Nothing here says 'country' — they ask about an entity's attribute. That is what lets a wildlife or astronomy pack reuse them unchanged in v3.0, and it is the single most important property in this file.",
+  "$comment": "Templates are ATTRIBUTE-shaped, never geography-shaped. Nothing here says 'country' — they ask about an entity's attribute. That is what lets a wildlife or astronomy pack reuse them unchanged in v3.0, and it is the single most important property in this file.\n\nKNOWN GAP — tpl.location-of.mc4 builds for 35 of 65 countries. Its distractors are `same-region`, so the wrong answers are other SUBREGIONS of the same region — and a region with fewer than four subregions cannot fill four options. Europe and Africa have four each and work; Asia has three, North and South America and Oceania have one apiece, so their 30 countries produce no question. The fix is CONTENT, not code: author subregions, not more countries. Adding a seventh North American entity changes nothing, because all seven share one value — which is why `pnpm content:stats` saying 'add entities here first' is misleading for this template and right for every other one. Consequence to know about: tpl.country-to-map.mc4 builds for all 65, and it is the template a SIGHTED user gets. Its screen-reader sibling is this one. So for those 30 countries a screen-reader user gets no location question at all while a sighted user does. They lose nothing they had — capital, flag and currency questions are unaffected — but the location attribute is not yet equally askable by ear, and docs/design/accessibility.md is explicit that an equivalent must never be a lesser one. That is a gap to close, not a trade-off that has been accepted.",
   "packId": "geography.templates",
   "version": "1.0.0",
   "subject": "geography",
@@ -185,6 +185,55 @@
       },
       "timeLimitMs": null,
       "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.country-to-map.mc4",
+      "attribute": "location",
+      "modality": "map",
+      "prompt": {
+        "key": "lesson:prompt.which_country_map",
+        "params": []
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": false,
+        "equivalentTemplate": "tpl.location-of.mc4"
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.location-of.mc4",
+      "attribute": "location",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.location_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
     }
   ]
 }

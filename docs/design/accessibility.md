@@ -196,7 +196,7 @@ Written down so they get solved rather than forgotten.
 
 | Problem | Approach |
 |---|---|
-| **Map tap questions with a screen reader** | Equivalent accessible list of candidates; same item, same FSRS state |
+| **Map tap questions with a screen reader** | Equivalent accessible list of candidates; same item, same FSRS state. **Partly done, and honestly incomplete.** `tpl.country-to-map.mc4` ships with the sibling `tpl.location-of.mc4` — "Where in the world is Sweden?", same attribute, same `user_facts` row — and `composeLesson` swaps it in whenever a screen reader is on. But the sibling builds for only 35 of 65 countries: its distractors are other subregions of the same region, and Asia, the Americas and Oceania have too few subregions to fill four options. So for 30 countries a sighted user gets a location question and a screen-reader user gets none. Nothing was taken away — capital, flag and currency questions are unaffected — but this row is not closed, and the fix is authoring subregions rather than any change to the engine. |
 | **Flag recognition for blind users** | ✅ **Live.** Flags become descriptive questions ("Which country's flag is a red circle on white?") — a template variant, generated from the same fact, so the `user_facts` row comes out identical. `useScreenReader` → `composeLesson({ screenReaderOnly })` picks it. |
 | **The 3D globe** | Full accessible fallback = the continent grid (screen 9); the globe is never the only path |
 | **Speed rounds** | Opt-in; excluded from all required progression; off in Relaxed Mode |

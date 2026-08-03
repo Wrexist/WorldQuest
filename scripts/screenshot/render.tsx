@@ -28,6 +28,7 @@ import {
   text,
 } from '@worldquest/design'
 import nav from '../../packages/i18n/locales/en/nav.json'
+import lessonStrings from '../../packages/i18n/locales/en/lesson.json'
 import {
   buildIndex,
   composeLesson,
@@ -67,7 +68,11 @@ const read = <T,>(f: string): T[] =>
 
 const index = buildIndex({
   entities: read<Entity>('entities.countries.v1.json'),
-  facts: [...read<Fact>('facts.capitals.v1.json'), ...read<Fact>('facts.flags.v1.json')],
+  facts: [
+    ...read<Fact>('facts.capitals.v1.json'),
+    ...read<Fact>('facts.flags.v1.json'),
+    ...read<Fact>('facts.locations.v1.json'),
+  ],
   templates: read<Template>('templates.v1.json'),
 })
 
@@ -77,7 +82,7 @@ const questions = composeLesson({
   now: Date.parse('2026-07-31T19:00:00Z'),
   rng: seededRng(7),
   locale: 'en',
-  count: 6,
+  count: 24,
 })
 
 const capitalQuestion =
@@ -93,6 +98,15 @@ const flagQuestion =
  * sighted and a screen-reader user each get for the same fact.
  */
 const flagImageQuestion = questions.find((q) => q.item.templateId === 'tpl.flag-to-country.mc4')
+
+/**
+ * The map question — the locator as the PROMPT rather than as context beside one.
+ *
+ * Composed from the real packs like everything else here, so if `isAmbiguous` ever
+ * starts dropping these again the frame goes blank and somebody notices. It arrived
+ * dropping all sixty-five silently, which a screenshot would have caught in a second.
+ */
+const mapQuestion = questions.find((q) => q.item.templateId === 'tpl.country-to-map.mc4')
 
 /**
  * Two graded lessons for the summary frames — GRADED, not hand-written.
@@ -149,6 +163,26 @@ const practisedFrom = (count: number) => {
  * shows, because in the app they are the same lesson thirty seconds apart.
  */
 const PAYWALL_COUNTRIES = practisedFrom(6)
+
+/**
+ * The question's prompt, from the REAL string table.
+ *
+ * This was a hand-written if/else over three known prompt keys with a fallback that
+ * assumed the flag-described one. The map template landed and the frame rendered
+ * "Which country's flag is undefined?" over a picture of Italy — a sentence no user
+ * could ever see, in the one artefact whose entire job is showing what users see.
+ *
+ * A lookup cannot drift that way: a key with no entry is loud, and a new template
+ * needs no edit here at all. Params are substituted positionally because prompts have
+ * no plurals — the app's own formatter handles ICU, and if a prompt ever needs it this
+ * falls back to showing the raw placeholder rather than inventing a word.
+ */
+function renderPrompt(question: { promptKey: string; promptParams: Record<string, string> }): string {
+  const table = lessonStrings as Record<string, string>
+  const template = table[question.promptKey]
+  if (template === undefined) return `[missing string: ${question.promptKey}]`
+  return template.replace(/\{(\w+)\}/g, (whole, name: string) => question.promptParams[name] ?? whole)
+}
 
 /**
  * The correct/wrong mark on an answer, exactly as LessonScreen draws it.
@@ -272,11 +306,7 @@ function LessonView({
   chosenId?: string
 }) {
   const correct = question.options.find((o) => o.isCorrect)!
-  const prompt = question.promptKey.includes('capital_of')
-    ? `What is the capital of ${question.promptParams['entityName']}?`
-    : question.promptKey.includes('which_flag')
-      ? `Which country's flag is this?`
-      : `Which country's flag is ${question.promptParams['description']}?`
+  const prompt = renderPrompt(question)
 
   return (
     <View style={s.screen}>
@@ -422,6 +452,12 @@ function Gallery() {
         {flagImageQuestion !== undefined && (
           <Phone label="Lesson · flag question" id="lesson-flag-image">
             <LessonView question={flagImageQuestion} answered={false} />
+          </Phone>
+        )}
+
+        {mapQuestion !== undefined && (
+          <Phone label="Lesson · map question" id="lesson-map">
+            <LessonView question={mapQuestion} answered={false} />
           </Phone>
         )}
 
