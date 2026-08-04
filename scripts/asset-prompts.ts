@@ -45,7 +45,20 @@ type Prompt = {
   readonly at: number
 }
 
-const src = readFileSync(DOC, 'utf8')
+/**
+ * Read with line endings normalised to LF.
+ *
+ * Git checks this file out as CRLF on Windows under the default `core.autocrlf=true`,
+ * and every pattern below matches on `\n`. Without this the fence scanner finds zero
+ * code blocks, so STYLE and NEGATIVE come back undefined and the guard below fires —
+ * which is what happened, and is the guard working: it refused rather than writing 24
+ * prompts with no house style attached.
+ *
+ * Normalising at the single point of reading is the fix. Teaching each regex about
+ * `\r?\n` is the same fix written eight times, and the ninth pattern added later would
+ * not know about it.
+ */
+const src = readFileSync(DOC, 'utf8').replace(/\r\n/g, '\n')
 
 /** Fenced code blocks, in document order, with the offset they start at. */
 function fences(text: string): { at: number; content: string }[] {
