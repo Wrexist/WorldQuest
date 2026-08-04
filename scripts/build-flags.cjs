@@ -1,0 +1,209 @@
+/**
+ * Rasterise the 65 country flags this pack needs, from flag-icons.
+ *
+ * ## Why this exists, and why it is not "blocked on assets"
+ *
+ * Flags sat in the same bucket as the mascot and the landmark photography for the
+ * whole project — "needs an illustrator". That was wrong in the same way sound was
+ * wrong: a chime is a sine wave, and a national flag is a public-domain SVG that
+ * somebody has already drawn correctly.
+ *
+ * `docs/design/asset-prompts.md` has said so since it was written:
+ *
+ * > **Flags** — A generated flag has the wrong number of stars, the wrong
+ * > proportions, the wrong shade. In a learning app that is a **wrong fact** — our
+ * > worst class of bug. → `flag-icons` or `circle-flags` (public-domain SVG).
+ * > Record the licence in the pack.
+ *
+ * So this does not draw anything. Drawing a flag from memory is precisely the
+ * wrong-fact bug that document forbids, and it is the one class of bug this repo
+ * treats as unshippable. Every pixel here comes from flag-icons.
+ *
+ * ## Why PNG rather than shipping the SVG
+ *
+ * Rendering SVG in React Native needs `react-native-svg` — another native module,
+ * on top of a Sentry integration that is already unverified on device, in an app
+ * that has never been opened on a phone. Rasterising here costs nothing at runtime,
+ * needs no new dependency, and draws faster on the mid-tier Android the performance
+ * budget is written for.
+ *
+ * Chromium is already in this image for `pnpm e2e`, so the rasteriser was free.
+ *
+ * ## Sizes
+ *
+ * 4:3, because that is the ratio flag-icons normalises every flag to. Real flags are
+ * not one ratio — 2:3 for Japan, 10:19 for the USA, and Nepal is not a rectangle — so
+ * any single box is a convention. Taking the source set's convention costs nothing;
+ * squeezing its 4:3 artwork into a 3:2 slot would stretch Japan's disc into an ellipse,
+ * which is a wrong fact drawn rather than written.
+ *
+ * 600×450 is exactly 3x of the largest place a flag appears — the 200pt lesson prompt
+ * in "Which country's flag is this?" — so it is never upscaled, and every smaller use
+ * (72pt tile, 72pt country header) downsamples from it. One size, not a density set:
+ * 65 flags at three densities is 195 files for a difference nobody can see on a tile.
+ *
+ * Measured across candidate widths before choosing (total for all 65):
+ *
+ *   216×162   204 KB      360×270   373 KB
+ *   480×360   531 KB      600×450   701 KB   ← chosen
+ *
+ * These are ASSET files, not JS. Metro puts a registry number in the bundle and ships
+ * the PNGs beside it, so they cost app-download size rather than the Hermes parse that
+ * `pnpm bundle:native` budgets. That claim is checked there, not assumed here.
+ *
+ * Run: pnpm build:flags
+ */
+
+const { chromium } = require('playwright')
+const { launchOptions } = require('./chromium.cjs')
+const { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } = require('node:fs')
+const { join, dirname } = require('node:path')
+const { createRequire } = require('node:module')
+
+const OUT = join(process.cwd(), 'apps', 'mobile', 'assets', 'flags')
+const INDEX = join(process.cwd(), 'apps', 'mobile', 'src', 'lib', 'flags.generated.ts')
+const PACK = join(
+  process.cwd(),
+  'packages',
+  'content',
+  'packs',
+  'geography',
+  'entities.countries.v1.json',
+)
+
+/** The 200pt lesson prompt at 3x. Every other use of a flag in this app is smaller. */
+const WIDTH = 600
+const HEIGHT = 450
+
+const require_ = createRequire(join(process.cwd(), 'index.js'))
+
+function flagIconsDir() {
+  try {
+    return join(dirname(require_.resolve('flag-icons/package.json')), 'flags', '4x3')
+  } catch {
+    console.error(
+      '✗ flag-icons is not installed.\n' +
+        '  pnpm add -D -w flag-icons\n\n' +
+        '  It is a DEV dependency on purpose: the SVGs are rasterised here at build\n' +
+        '  time and the PNGs are committed. Nothing ships the package itself.',
+    )
+    process.exit(1)
+  }
+}
+
+/**
+ * The registry the app imports.
+ *
+ * Metro resolves assets at BUILD time, so the import specifiers have to be literals —
+ * a computed `require(\`../../assets/flags/${code}.png\`)` bundles nothing and fails at
+ * runtime, on device, where nobody is looking. That is the same trap `src/lib/sound.ts`
+ * documents. Sixty-five literals is not something to maintain by hand, so the script
+ * that writes the PNGs writes their index too and the two cannot drift.
+ *
+ * Keyed by the CONTENT PACK's path rather than by ISO code: the pack is what says where
+ * a flag lives, so a pack naming a file we do not ship should miss this lookup and fall
+ * back to the placeholder, not silently resolve to something else.
+ */
+function writeIndex(codes) {
+  const imports = codes.map((c) => `import ${c} from '../../assets/flags/${c}.png'`).join('\n')
+  const entries = codes.map((c) => `  'flags/${c}.png': ${c},`).join('\n')
+
+  writeFileSync(
+    INDEX,
+    `/**
+ * GENERATED by \`pnpm build:flags\` — do not edit.
+ *
+ * Flag artwork rasterised from flag-icons (MIT). See scripts/build-flags.cjs for why
+ * these are PNG rather than SVG, and why they are 600×450.
+ */
+
+${imports}
+
+/**
+ * Metro hands back an opaque numeric handle; Vite — vitest and the screenshot
+ * harness — hands back a URL string. Both are real, so the type admits both and
+ * \`flagSource\` in ./flags.ts narrows them to something \`Image\` accepts.
+ */
+export type AssetModule = number | string
+
+/** Content-pack asset path → the bundled image. */
+export const FLAG_BY_PATH: Readonly<Record<string, AssetModule>> = {
+${entries}
+}
+`,
+  )
+}
+
+;(async () => {
+  const src = flagIconsDir()
+  const pack = JSON.parse(readFileSync(PACK, 'utf8'))
+  const codes = pack.items.map((i) => i.id)
+
+  // The pack is the contract. If it names a file this script does not produce, the app
+  // renders a placeholder where a flag should be — so check it here, loudly, rather
+  // than discovering it as a blank tile.
+  const mismatched = pack.items
+    .filter((i) => i.assets?.flag !== undefined)
+    .filter((i) => i.assets.flag.path !== `flags/${i.id}.png`)
+    .map((i) => `${i.id} → ${i.assets.flag.path}`)
+  if (mismatched.length > 0) {
+    console.error(
+      `✗ the pack names flag files this script does not write:\n    ${mismatched.join('\n    ')}\n\n` +
+        '  Expected "flags/<ID>.png" for each. Fix the pack, not this script.',
+    )
+    process.exit(1)
+  }
+
+  mkdirSync(OUT, { recursive: true })
+
+  const browser = await chromium.launch(launchOptions())
+  const page = await browser.newPage({
+    viewport: { width: WIDTH, height: HEIGHT },
+    deviceScaleFactor: 1,
+  })
+
+  console.log(`Flags → ${WIDTH}×${HEIGHT} PNG\n`)
+
+  const missing = []
+  let bytes = 0
+
+  for (const code of codes) {
+    const svgPath = join(src, `${code.toLowerCase()}.svg`)
+    if (!existsSync(svgPath)) {
+      missing.push(code)
+      continue
+    }
+    const svg = readFileSync(svgPath, 'utf8')
+
+    // Rendered as a data URI inside a bare page so nothing but the flag is drawn.
+    // No background: a flag with white in it (Japan, Poland) must not blend into
+    // the card behind it, and the tile supplies its own border for that.
+    await page.setContent(
+      `<style>html,body{margin:0;padding:0}svg{display:block;width:${WIDTH}px;height:${HEIGHT}px}</style>${svg}`,
+      { waitUntil: 'load' },
+    )
+    const png = await page.screenshot({ omitBackground: true })
+    writeFileSync(join(OUT, `${code}.png`), png)
+    bytes += png.length
+  }
+
+  await browser.close()
+
+  if (missing.length > 0) {
+    console.error(
+      `✗ flag-icons has no SVG for: ${missing.join(', ')}\n\n` +
+        '  Do NOT hand-draw a replacement. A flag with the wrong number of stars is a\n' +
+        '  wrong fact, which is the one bug class this repo treats as unshippable —\n' +
+        '  see docs/design/asset-prompts.md. Find a public-domain source, or drop the\n' +
+        '  country from the pack.',
+    )
+    process.exit(1)
+  }
+
+  writeIndex(codes)
+
+  console.log(`  ${codes.length} flags · ${(bytes / 1024).toFixed(0)} KB total`)
+  console.log(`  → ${OUT}`)
+  console.log(`  → ${INDEX}\n`)
+  console.log('✓ every country in the pack has a flag, rasterised from flag-icons (MIT).')
+})()

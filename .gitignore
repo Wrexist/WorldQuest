@@ -1,0 +1,69 @@
+node_modules/
+.pnpm-store/
+dist/
+build/
+.turbo/
+coverage/
+
+# Expo
+.expo/
+.expo-shared/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.keystore
+
+# Supabase
+supabase/.branches/
+supabase/.temp/
+
+# Secrets — never commit
+.env
+.env.*
+!.env.example
+
+# Generated from source that IS in this repo, by `pnpm generate` — which runs on
+# install, so a fresh clone typechecks. Untracked deliberately: a checked-in artefact
+# derivable in one command is merge conflicts for no gain, and "is it stale?" is not a
+# question you can ask about a file that is rebuilt before every use.
+
+# from packages/design/tokens.json
+packages/design/src/tokens.ts
+packages/design/src/tokens.css
+# from packages/i18n/locales/
+packages/i18n/src/keys.ts
+# from supabase/functions/_src/, packages/engines/src/ and the fact packs, by
+# `pnpm edge:build`. This directory IS the deploy bundle, written out — the entrypoint
+# with its imports rewritten, the vendored engine modules, and the answer key the server
+# grades against. Every file in it is a projection of something else in this repo, and a
+# committed projection is a copy that can disagree with its source. The source of truth
+# is `_src/`, which is tracked.
+supabase/functions/submit-lesson/
+supabase/functions/store-notifications/
+
+# NOT ignored: packages/api/src/database.types.ts. It is generated too, but only by a
+# running Postgres, which the `verify` CI job does not have — so it is committed, and
+# the `database` job regenerates it against a local stack and diffs. That check is
+# real only because the file is tracked.
+
+.DS_Store
+*.log
+packages/*/coverage/
+packages/design/preview/
+
+# Generated pseudo-locale — rebuild with `pnpm i18n:pseudo`
+packages/i18n/locales/en-XA/
+
+# tsx's compilation cache. It lands in the working directory, which for a workspace
+# script run from the root is the REPO root — so three of these were committed before
+# anyone noticed them in a file listing.
+tsx-0/
+.tsx-*/
+
+# Scratch keys from `node scripts/make-jws-fixtures.cjs`. Throwaway ES256 private keys
+# for a test chain — worthless, but a `*.key` in a diff is a fire drill, and the rule
+# "no private key is ever committed" is worth more than the exception it would earn.
+# The fixtures the tests read are committed; only the keys that made them are not.
+supabase/functions/_src/_shared/__fixtures__/.work/

@@ -1,0 +1,11 @@
+{
+  "welcome:title": "Världen har saknat dig",
+  "welcome:body": "{days, plural, one {Det har gått en dag} other {Det har gått # dagar}}. Allt du lärt dig finns kvar.",
+  "welcome:kept.title": "Fortfarande ditt",
+  "welcome:kept.facts": "{count, plural, one {# fakta inlärd} other {# fakta inlärda}}",
+  "welcome:kept.countries": "{count, plural, one {# land} other {# länder}}",
+  "welcome:due.some": "{count, plural, one {# fakta är redo att repeteras} other {# fakta är redo att repeteras}}",
+  "welcome:due.none": "Inget väntar. Börja var du vill.",
+  "welcome:start": "Fortsätt där du slutade",
+  "welcome:later": "Tittar bara"
+}

@@ -1,0 +1,1644 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "$comment": "Flag facts. Each value is a DESCRIPTION, not just a name, so tpl.flag-describe.mc4 can test the same fact without sight — a screen-reader user ends up with an identical user_facts row.",
+  "packId": "geography.facts.flags",
+  "version": "1.0.0",
+  "subject": "geography",
+  "kind": "facts",
+  "locales": [
+    "en",
+    "sv"
+  ],
+  "license": "CC-BY-4.0",
+  "generatedAt": "2026-07-31",
+  "items": [
+    {
+      "id": "geo.SE.flag",
+      "entity": "SE",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-SE",
+        "names": {
+          "en": "a yellow Nordic cross on a blue field",
+          "sv": "ett gult nordiskt kors på blå botten"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "europe",
+        "like:nordic-cross",
+        "core"
+      ],
+      "source": {
+        "name": "Swedish Act on the National Flag (SFS 1982:269)",
+        "url": "https://www.riksdagen.se/sv/dokument-och-lagar/dokument/svensk-forfattningssamling/lag-1982269-om-sveriges-flagga_sfs-1982-269/",
+        "verifiedAt": "2026-07-31"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NO.flag",
+      "entity": "NO",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-NO",
+        "names": {
+          "en": "a blue Nordic cross outlined in white on a red field",
+          "sv": "ett blått nordiskt kors med vit kant på röd botten"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "europe",
+        "core",
+        "commonly-confused",
+        "like:nordic-cross"
+      ],
+      "source": {
+        "name": "Norwegian Flag Act (LOV-1898-12-10-1)",
+        "url": "https://lovdata.no/dokument/NL/lov/1898-12-10-1",
+        "verifiedAt": "2026-07-31"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DK.flag",
+      "entity": "DK",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-DK",
+        "names": {
+          "en": "a white Nordic cross on a red field",
+          "sv": "ett vitt nordiskt kors på röd botten"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "europe",
+        "core",
+        "commonly-confused",
+        "like:nordic-cross"
+      ],
+      "source": {
+        "name": "Danish Ministry of Justice, Order on the Danish flag",
+        "url": "https://www.retsinformation.dk/eli/lta/1915/72",
+        "verifiedAt": "2026-07-31"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FI.flag",
+      "entity": "FI",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-FI",
+        "names": {
+          "en": "a blue Nordic cross on a white field",
+          "sv": "ett blått nordiskt kors på vit botten"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "europe",
+        "core",
+        "commonly-confused",
+        "like:nordic-cross"
+      ],
+      "source": {
+        "name": "Finnish Flag Act (380/1978)",
+        "url": "https://www.finlex.fi/fi/laki/ajantasa/1978/19780380",
+        "verifiedAt": "2026-07-31"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JP.flag",
+      "entity": "JP",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-JP",
+        "names": {
+          "en": "a red circle centred on a white field",
+          "sv": "en röd cirkel i mitten på vit botten"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "flag",
+        "asia",
+        "like:central-circle",
+        "core"
+      ],
+      "source": {
+        "name": "Act on National Flag and Anthem of Japan (Act No. 127 of 1999)",
+        "url": "https://www.japaneselawtranslation.go.jp/en/laws/view/174",
+        "verifiedAt": "2026-07-31"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CN.flag",
+      "entity": "CN",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-CN",
+        "names": {
+          "en": "a large gold star with four smaller ones in the top corner of a red field",
+          "sv": "en stor guldstjärna med fyra mindre i övre hörnet på röd botten"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "asia",
+        "like:red-with-stars",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of China”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_China",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KR.flag",
+      "entity": "KR",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-KR",
+        "names": {
+          "en": "a red and blue circle on a white field, with a black trigram in each corner",
+          "sv": "en röd och blå cirkel på vit botten, med ett svart trigram i varje hörn"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "asia",
+        "like:central-circle",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of South Korea”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_South_Korea",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KP.flag",
+      "entity": "KP",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-KP",
+        "names": {
+          "en": "a red star on a white circle, on a wide red band between two blue ones",
+          "sv": "en röd stjärna på en vit cirkel, på ett brett rött band mellan två blå"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "asia",
+        "like:red-with-stars",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of North Korea”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_North_Korea",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MN.flag",
+      "entity": "MN",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-MN",
+        "names": {
+          "en": "a gold Soyombo emblem on the first of three bands — red, blue, red",
+          "sv": "ett gyllene soyombo-emblem på det första av tre band — rött, blått, rött"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "asia",
+        "like:vertical-bands",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Mongolia”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Mongolia",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FR.flag",
+      "entity": "FR",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-FR",
+        "names": {
+          "en": "three vertical bands — blue, white, red",
+          "sv": "tre lodräta band — blått, vitt, rött"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "flag",
+        "europe",
+        "like:vertical-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of France”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_France",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BE.flag",
+      "entity": "BE",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-BE",
+        "names": {
+          "en": "three vertical bands — black, yellow, red",
+          "sv": "tre lodräta band — svart, gult, rött"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "europe",
+        "like:vertical-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Belgium”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Belgium",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DE.flag",
+      "entity": "DE",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-DE",
+        "names": {
+          "en": "three horizontal bands — black, red, gold",
+          "sv": "tre vågräta band — svart, rött, guld"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "europe",
+        "like:horizontal-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Germany”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Germany",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NL.flag",
+      "entity": "NL",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-NL",
+        "names": {
+          "en": "three horizontal bands — red, white, blue",
+          "sv": "tre vågräta band — rött, vitt, blått"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "europe",
+        "like:horizontal-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of the Netherlands”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_the_Netherlands",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AT.flag",
+      "entity": "AT",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-AT",
+        "names": {
+          "en": "three horizontal bands — red, white, red",
+          "sv": "tre vågräta band — rött, vitt, rött"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "europe",
+        "like:horizontal-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Austria”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Austria",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CH.flag",
+      "entity": "CH",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-CH",
+        "names": {
+          "en": "a white cross centred on a square red field",
+          "sv": "ett vitt kors i mitten på en kvadratisk röd duk"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "europe",
+        "like:centred-cross",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Switzerland”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Switzerland",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IT.flag",
+      "entity": "IT",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-IT",
+        "names": {
+          "en": "three vertical bands — green, white, red",
+          "sv": "tre lodräta band — grönt, vitt, rött"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "europe",
+        "like:vertical-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Italy”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Italy",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ES.flag",
+      "entity": "ES",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-ES",
+        "names": {
+          "en": "three horizontal bands — red, yellow, red — with a coat of arms toward the left",
+          "sv": "tre vågräta band — rött, gult, rött — med ett riksvapen mot vänster"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "europe",
+        "like:horizontal-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Spain”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Spain",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PT.flag",
+      "entity": "PT",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-PT",
+        "names": {
+          "en": "a narrow green panel and a wider red one, with a coat of arms where they meet",
+          "sv": "ett smalt grönt fält och ett bredare rött, med ett riksvapen där de möts"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "europe",
+        "like:vertical-bicolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Portugal”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Portugal",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GR.flag",
+      "entity": "GR",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-GR",
+        "names": {
+          "en": "nine blue and white stripes, with a white cross in the top corner",
+          "sv": "nio blå och vita ränder, med ett vitt kors i övre hörnet"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "europe",
+        "like:stripes-and-canton",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Greece”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Greece",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BR.flag",
+      "entity": "BR",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-BR",
+        "names": {
+          "en": "a blue globe on a yellow diamond, on a green field",
+          "sv": "en blå glob på en gul romb, på grön botten"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "south-america",
+        "like:emblem-on-plain-field",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Brazil”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Brazil",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AR.flag",
+      "entity": "AR",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-AR",
+        "names": {
+          "en": "three horizontal bands — light blue, white, light blue — with a golden sun in the middle",
+          "sv": "tre vågräta band — ljusblått, vitt, ljusblått — med en gyllene sol i mitten"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "south-america",
+        "like:horizontal-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Argentina”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Argentina",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CO.flag",
+      "entity": "CO",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-CO",
+        "names": {
+          "en": "three horizontal bands — yellow, blue, red — the yellow one twice as tall",
+          "sv": "tre vågräta band — gult, blått, rött — det gula dubbelt så högt"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "south-america",
+        "like:horizontal-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Colombia”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Colombia",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CL.flag",
+      "entity": "CL",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-CL",
+        "names": {
+          "en": "a white band above a red one, with a white star on a blue square in the top corner",
+          "sv": "ett vitt band ovanför ett rött, med en vit stjärna på en blå kvadrat i övre hörnet"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "south-america",
+        "like:star-in-canton",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Chile”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Chile",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PE.flag",
+      "entity": "PE",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-PE",
+        "names": {
+          "en": "three vertical bands — red, white, red",
+          "sv": "tre lodräta band — rött, vitt, rött"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "south-america",
+        "like:vertical-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Peru”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Peru",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.US.flag",
+      "entity": "US",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-US",
+        "names": {
+          "en": "thirteen red and white stripes, with fifty white stars on a blue square in the top corner",
+          "sv": "tretton röda och vita ränder, med femtio vita stjärnor på en blå kvadrat i övre hörnet"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "flag",
+        "north-america",
+        "like:star-in-canton",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of the United States”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_the_United_States",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CA.flag",
+      "entity": "CA",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-CA",
+        "names": {
+          "en": "a red maple leaf on a white square, between two red bands",
+          "sv": "ett rött lönnlöv på en vit kvadrat, mellan två röda band"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "flag",
+        "north-america",
+        "like:emblem-on-plain-field",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Canada”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Canada",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MX.flag",
+      "entity": "MX",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-MX",
+        "names": {
+          "en": "three vertical bands — green, white, red — with an eagle on a cactus in the middle",
+          "sv": "tre lodräta band — grönt, vitt, rött — med en örn på en kaktus i mitten"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "north-america",
+        "like:vertical-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Mexico”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Mexico",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CU.flag",
+      "entity": "CU",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-CU",
+        "names": {
+          "en": "five blue and white stripes, with a white star on a red triangle at the left",
+          "sv": "fem blå och vita ränder, med en vit stjärna på en röd triangel till vänster"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "north-america",
+        "like:triangle-at-hoist",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Cuba”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Cuba",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GT.flag",
+      "entity": "GT",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-GT",
+        "names": {
+          "en": "three vertical bands — light blue, white, light blue — with a coat of arms in the middle",
+          "sv": "tre lodräta band — ljusblått, vitt, ljusblått — med ett riksvapen i mitten"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "north-america",
+        "like:vertical-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Guatemala”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Guatemala",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CR.flag",
+      "entity": "CR",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-CR",
+        "names": {
+          "en": "five horizontal bands — blue, white, red, white, blue — the red one widest",
+          "sv": "fem vågräta band — blått, vitt, rött, vitt, blått — det röda bredast"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "north-america",
+        "like:five-stripes",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Costa Rica”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Costa_Rica",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PA.flag",
+      "entity": "PA",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-PA",
+        "names": {
+          "en": "four quarters — a blue star, plain red, plain blue, and a red star",
+          "sv": "fyra fält — en blå stjärna, enfärgat rött, enfärgat blått, och en röd stjärna"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "north-america",
+        "like:quartered",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Panama”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Panama",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ID.flag",
+      "entity": "ID",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-ID",
+        "names": {
+          "en": "two horizontal bands — red above white",
+          "sv": "två vågräta band — rött ovanför vitt"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "south-east-asia",
+        "like:horizontal-bicolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Indonesia”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Indonesia",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TH.flag",
+      "entity": "TH",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-TH",
+        "names": {
+          "en": "five horizontal bands — red, white, blue, white, red — the blue one twice as wide",
+          "sv": "fem vågräta band — rött, vitt, blått, vitt, rött — det blå dubbelt så brett"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "south-east-asia",
+        "like:five-stripes",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Thailand”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Thailand",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VN.flag",
+      "entity": "VN",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-VN",
+        "names": {
+          "en": "a large yellow star in the middle of a red field",
+          "sv": "en stor gul stjärna mitt på en röd duk"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "south-east-asia",
+        "like:red-with-stars",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Vietnam”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Vietnam",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PH.flag",
+      "entity": "PH",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-PH",
+        "names": {
+          "en": "blue above red, with a white triangle at the left holding a golden sun and three stars",
+          "sv": "blått ovanför rött, med en vit triangel till vänster som rymmer en gyllene sol och tre stjärnor"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "south-east-asia",
+        "like:triangle-at-hoist",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of the Philippines”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_the_Philippines",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MY.flag",
+      "entity": "MY",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-MY",
+        "names": {
+          "en": "fourteen red and white stripes, with a yellow crescent and star on a blue square in the top corner",
+          "sv": "fjorton röda och vita ränder, med en gul halvmåne och stjärna på en blå kvadrat i övre hörnet"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "south-east-asia",
+        "like:star-in-canton",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Malaysia”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Malaysia",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AU.flag",
+      "entity": "AU",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-AU",
+        "names": {
+          "en": "a blue field with the Union Jack in the top corner, a large star below it and the Southern Cross at the right",
+          "sv": "en blå duk med Union Jack i övre hörnet, en stor stjärna under den och Södra korset till höger"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "oceania",
+        "like:union-jack-canton",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Australia”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Australia",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NZ.flag",
+      "entity": "NZ",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-NZ",
+        "names": {
+          "en": "a blue field with the Union Jack in the top corner and four red stars at the right",
+          "sv": "en blå duk med Union Jack i övre hörnet och fyra röda stjärnor till höger"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "oceania",
+        "like:union-jack-canton",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of New Zealand”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_New_Zealand",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FJ.flag",
+      "entity": "FJ",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-FJ",
+        "names": {
+          "en": "a light blue field with the Union Jack in the top corner and a shield at the right",
+          "sv": "en ljusblå duk med Union Jack i övre hörnet och en sköld till höger"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "oceania",
+        "like:union-jack-canton",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Fiji”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Fiji",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PG.flag",
+      "entity": "PG",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-PG",
+        "names": {
+          "en": "split corner to corner — a golden bird of paradise on red above, the Southern Cross on black below",
+          "sv": "delad från hörn till hörn — en gyllene paradisfågel på rött ovanför, Södra korset på svart nedanför"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "oceania",
+        "like:diagonal-split",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Papua New Guinea”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Papua_New_Guinea",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PL.flag",
+      "entity": "PL",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-PL",
+        "names": {
+          "en": "two horizontal bands — white above red",
+          "sv": "två vågräta band — vitt ovanför rött"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "eastern-europe",
+        "like:horizontal-bicolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Poland”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Poland",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UA.flag",
+      "entity": "UA",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-UA",
+        "names": {
+          "en": "two horizontal bands — blue above yellow",
+          "sv": "två vågräta band — blått ovanför gult"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "eastern-europe",
+        "like:horizontal-bicolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Ukraine”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Ukraine",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CZ.flag",
+      "entity": "CZ",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-CZ",
+        "names": {
+          "en": "white above red, with a blue triangle at the left",
+          "sv": "vitt ovanför rött, med en blå triangel till vänster"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "eastern-europe",
+        "like:triangle-at-hoist",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of the Czech Republic”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_the_Czech_Republic",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HU.flag",
+      "entity": "HU",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-HU",
+        "names": {
+          "en": "three horizontal bands — red, white, green",
+          "sv": "tre vågräta band — rött, vitt, grönt"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "eastern-europe",
+        "like:horizontal-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Hungary”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Hungary",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RO.flag",
+      "entity": "RO",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-RO",
+        "names": {
+          "en": "three vertical bands — blue, yellow, red",
+          "sv": "tre lodräta band — blått, gult, rött"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "eastern-europe",
+        "like:vertical-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Romania”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Romania",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IN.flag",
+      "entity": "IN",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-IN",
+        "names": {
+          "en": "three horizontal bands — saffron, white, green — with a navy blue wheel in the middle",
+          "sv": "tre vågräta band — saffransgult, vitt, grönt — med ett mörkblått hjul i mitten"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "south-asia",
+        "like:horizontal-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of India”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_India",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PK.flag",
+      "entity": "PK",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-PK",
+        "names": {
+          "en": "a white crescent and star on dark green, with a white band down the left",
+          "sv": "en vit halvmåne och stjärna på mörkgrönt, med ett vitt band längs vänsterkanten"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "south-asia",
+        "like:crescent-and-star",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Pakistan”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Pakistan",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BD.flag",
+      "entity": "BD",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-BD",
+        "names": {
+          "en": "a red circle just left of centre on a dark green field",
+          "sv": "en röd cirkel strax till vänster om mitten på mörkgrön botten"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "south-asia",
+        "like:central-circle",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Bangladesh”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Bangladesh",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NP.flag",
+      "entity": "NP",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-NP",
+        "names": {
+          "en": "two stacked pennants rather than a rectangle, carrying a white moon and a white sun",
+          "sv": "två staplade vimplar i stället för en rektangel, med en vit måne och en vit sol"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "south-asia",
+        "like:non-rectangular",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Nepal”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Nepal",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.EG.flag",
+      "entity": "EG",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-EG",
+        "names": {
+          "en": "three horizontal bands — red, white, black — with a golden eagle in the middle",
+          "sv": "tre vågräta band — rött, vitt, svart — med en gyllene örn i mitten"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "northern-africa",
+        "like:horizontal-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Egypt”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Egypt",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MA.flag",
+      "entity": "MA",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-MA",
+        "names": {
+          "en": "a green five-pointed star outlined on a red field",
+          "sv": "en grön femuddig stjärna i konturlinje på röd botten"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "northern-africa",
+        "like:emblem-on-plain-field",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Morocco”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Morocco",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DZ.flag",
+      "entity": "DZ",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-DZ",
+        "names": {
+          "en": "green and white side by side, with a red crescent and star where they meet",
+          "sv": "grönt och vitt sida vid sida, med en röd halvmåne och stjärna där de möts"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "northern-africa",
+        "like:crescent-and-star",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Algeria”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Algeria",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TN.flag",
+      "entity": "TN",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-TN",
+        "names": {
+          "en": "a red crescent and star inside a white circle, on a red field",
+          "sv": "en röd halvmåne och stjärna inuti en vit cirkel, på röd botten"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "northern-africa",
+        "like:crescent-and-star",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Tunisia”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Tunisia",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NG.flag",
+      "entity": "NG",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-NG",
+        "names": {
+          "en": "three vertical bands — green, white, green",
+          "sv": "tre lodräta band — grönt, vitt, grönt"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "western-africa",
+        "like:vertical-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Nigeria”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Nigeria",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GH.flag",
+      "entity": "GH",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-GH",
+        "names": {
+          "en": "three horizontal bands — red, yellow, green — with a black star in the middle",
+          "sv": "tre vågräta band — rött, gult, grönt — med en svart stjärna i mitten"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "western-africa",
+        "like:horizontal-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Ghana”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Ghana",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SN.flag",
+      "entity": "SN",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-SN",
+        "names": {
+          "en": "three vertical bands — green, yellow, red — with a green star in the middle",
+          "sv": "tre lodräta band — grönt, gult, rött — med en grön stjärna i mitten"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "western-africa",
+        "like:vertical-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Senegal”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Senegal",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ML.flag",
+      "entity": "ML",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-ML",
+        "names": {
+          "en": "three vertical bands — green, yellow, red",
+          "sv": "tre lodräta band — grönt, gult, rött"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "flag",
+        "western-africa",
+        "like:vertical-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Mali”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Mali",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KE.flag",
+      "entity": "KE",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-KE",
+        "names": {
+          "en": "three horizontal bands — black, red, green — with a Maasai shield and spears in the middle",
+          "sv": "tre vågräta band — svart, rött, grönt — med en masajsköld och spjut i mitten"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "eastern-africa",
+        "like:horizontal-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Kenya”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Kenya",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ET.flag",
+      "entity": "ET",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-ET",
+        "names": {
+          "en": "three horizontal bands — green, yellow, red — with a yellow star on a blue circle in the middle",
+          "sv": "tre vågräta band — grönt, gult, rött — med en gul stjärna på en blå cirkel i mitten"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "eastern-africa",
+        "like:horizontal-tricolour",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Ethiopia”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Ethiopia",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZA.flag",
+      "entity": "ZA",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-ZA",
+        "names": {
+          "en": "a green Y on its side, separating red above from blue below, with black, gold and white edges",
+          "sv": "ett liggande grönt Y som skiljer rött ovanför från blått nedanför, med kanter i svart, guld och vitt"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "flag",
+        "southern-africa",
+        "like:diagonal-split",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of South Africa”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_South_Africa",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UG.flag",
+      "entity": "UG",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-UG",
+        "names": {
+          "en": "six stripes — black, yellow, red, twice over — with a grey crowned crane on a white circle in the middle",
+          "sv": "sex ränder — svart, gult, rött, två gånger om — med en grå krontrana på en vit cirkel i mitten"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "eastern-africa",
+        "like:six-stripes",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Uganda”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Uganda",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TZ.flag",
+      "entity": "TZ",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-TZ",
+        "names": {
+          "en": "green above blue, split by a black diagonal band edged in yellow",
+          "sv": "grönt ovanför blått, delat av ett svart diagonalband kantat i gult"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "eastern-africa",
+        "like:diagonal-split",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Tanzania”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Tanzania",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NA.flag",
+      "entity": "NA",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-NA",
+        "names": {
+          "en": "a white-edged red diagonal band, with a gold sun on blue above and green below",
+          "sv": "ett rött diagonalband med vita kanter, med en gyllene sol på blått ovanför och grönt nedanför"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "southern-africa",
+        "like:diagonal-split",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Namibia”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Namibia",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BW.flag",
+      "entity": "BW",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-BW",
+        "names": {
+          "en": "a light blue field crossed by a black stripe with thin white edges",
+          "sv": "en ljusblå duk korsad av ett svart band med tunna vita kanter"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "flag",
+        "southern-africa",
+        "like:horizontal-band",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Botswana”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Botswana",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZW.flag",
+      "entity": "ZW",
+      "attribute": "flag",
+      "value": {
+        "id": "flag-ZW",
+        "names": {
+          "en": "seven stripes in green, gold, red and black, with a white triangle holding a bird and a red star",
+          "sv": "sju ränder i grönt, guld, rött och svart, med en vit triangel som rymmer en fågel och en röd stjärna"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "flag",
+        "southern-africa",
+        "like:triangle-at-hoist",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Flag of Zimbabwe”",
+        "url": "https://en.wikipedia.org/wiki/Flag_of_Zimbabwe",
+        "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    }
+  ]
+}

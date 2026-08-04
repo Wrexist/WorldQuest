@@ -1,0 +1,22 @@
+{
+  "nav:home": "Home",
+  "nav:home__note": "Bottom tab label, under a small icon. Max 8 characters.",
+  "nav:explore": "Explore",
+  "nav:explore__note": "Bottom tab label — browsing countries and continents. Max 8 characters.",
+  "nav:quests": "Quests",
+  "nav:quests__note": "Bottom tab label — daily and weekly challenges. Max 8 characters.",
+  "nav:profile": "Profile",
+  "nav:profile__note": "Bottom tab label — the user's own stats. Max 8 characters.",
+  "nav:more": "More",
+  "nav:more__note": "Bottom tab label — settings and everything else. Max 8 characters.",
+  "nav:lesson.title": "Lesson",
+  "nav:lesson.title__note": "Accessibility title of the full-screen lesson. Not shown on screen.",
+  "nav:explore.soon.title": "Explore is on the way",
+  "nav:explore.soon.body": "Countries, continents and the flags you have collected will live here.",
+  "nav:quests.soon.title": "Quests are on the way",
+  "nav:quests.soon.body": "Your daily quest and the weekly challenges will live here.",
+  "nav:profile.soon.title": "Your profile is on the way",
+  "nav:profile.soon.body": "Level, streak history and everything you have mastered will live here.",
+  "nav:more.soon.title": "More is on the way",
+  "nav:more.soon.body": "Settings, sound, reminders and your account will live here."
+}

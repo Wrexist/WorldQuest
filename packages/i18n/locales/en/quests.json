@@ -1,0 +1,40 @@
+{
+  "quests:title": "Today's Quest",
+  "quests:title__note": "Screen title. Max 18 characters.",
+  "quests:subtitle": "Five things. About ten minutes.",
+
+  "quests:progress": "{done} of {total} done",
+  "quests:progress__note": "Overall quest progress. Both are whole numbers, always 0–5.",
+  "quests:reward.task": "+{xp} XP",
+  "quests:reward.task__note": "XP for one completed slot. {xp} is a whole number.",
+  "quests:reward.bonus": "+{xp} XP for all five",
+  "quests:reward.bonus__note": "The completion bonus, shown before it is earned.",
+
+  "quests:slot.locate": "Find it on the map",
+  "quests:slot.locate__note": "Task title. The user taps a country. Max 24 characters.",
+  "quests:slot.recognise": "Know the flag",
+  "quests:slot.recognise__note": "Task title. Max 24 characters.",
+  "quests:slot.recall": "Name the capital",
+  "quests:slot.recall__note": "Task title. Max 24 characters.",
+  "quests:slot.discover": "Learn something new",
+  "quests:slot.discover__note": "Task title — content the user has never seen. Max 24 characters.",
+  "quests:slot.perform": "Finish strong",
+  "quests:slot.perform__note": "Task title for the performance goal. Max 24 characters.",
+
+  "quests:goal.perfect_lesson": "A lesson with no mistakes",
+  "quests:goal.speed_round": "A lesson in under 90 seconds",
+  "quests:goal.streak_keeper": "Any lesson at all — that is the whole task",
+
+  "quests:task.count": "{progress} / {target}",
+  "quests:task.count__note": "Progress within one task, like 3 / 4. Tabular numerals.",
+  "quests:task.done": "Done",
+  "quests:task.done__note": "Shown on a completed task. Max 8 characters.",
+  "quests:task.label": "{title}, {progress} of {target}",
+  "quests:task.label__note": "Accessibility label grouping one task row.",
+
+  "quests:complete.title": "All five. Nice work.",
+  "quests:complete.body": "Your next quest arrives at midnight.",
+
+  "quests:empty.title": "Your quest is being built",
+  "quests:empty.body": "Finish a lesson and today's five will be ready."
+}

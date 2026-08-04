@@ -1,0 +1,195 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # No `version:` here. `package.json` declares `packageManager: pnpm@9.15.0`, and
+      # action-setup v4 REFUSES to run when both are set:
+      #
+      #   Error: Multiple versions of pnpm specified:
+      #     - version 9 in the GitHub Action config with the key "version"
+      #     - version pnpm@9.15.0 in the package.json with the key "packageManager"
+      #
+      # It reads `packageManager` on its own, so one source of truth is also the fix.
+      # Corepack and this action both use that field; a `version:` beside it is the
+      # thing that can drift, and it drifted into a hard failure.
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+
+      - run: pnpm install --frozen-lockfile
+
+      # ── generated artefacts ──────────────────────────────────────────────
+      #
+      # `tokens.ts`, `tokens.css` and `keys.ts` are untracked and rebuilt here from
+      # `tokens.json` and `locales/`. They cannot be stale, so there is nothing to
+      # check — the earlier `git diff --exit-code` on them passed unconditionally,
+      # because git does not diff files it is not tracking.
+      #
+      # `database.types.ts` IS tracked, because generating it needs a running
+      # Postgres that this job does not have. Its freshness is checked in the
+      # `database` job below, where the diff has something to compare against.
+      - name: Generate tokens and translation keys
+        run: pnpm generate
+
+      - name: Typecheck (packages + app)
+        run: pnpm typecheck
+
+      - name: Unit and component tests
+        run: pnpm test
+
+      - name: Content validation
+        run: pnpm content:validate
+
+      # Schema-valid content can still read as nonsense: a hint that repeats its own
+      # answer, a prompt that gives the answer away, a template pointing at a
+      # translation key nobody wrote. All three shipped at least once. This renders
+      # every question through the real catalogue and fails on those.
+      #
+      # `--quiet` because the full listing is for a human deciding whether the
+      # questions are GOOD. CI can only decide whether they are broken.
+      - name: Content reads correctly
+        run: pnpm content:preview --quiet
+
+      - name: Localisation
+        run: pnpm i18n:check
+
+      - name: Contrast (WCAG 2.2 AA)
+        run: pnpm design:contrast
+
+      # The economy simulation exits non-zero on its own health gates — a heart
+      # block rate over 15%, a hoarding cohort, a curve that tops out early. A
+      # reward number can be changed without any test noticing; this notices.
+      - name: Economy health
+        run: pnpm engines:simulate
+
+      # The development container ships a Chromium at /opt/pw-browsers and sets
+      # PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD, so nothing here ever downloaded one. A runner
+      # has neither. `scripts/chromium.cjs` falls back to Playwright's own resolution
+      # when the image's browser is absent — this is the step that gives it something to
+      # resolve to.
+      - name: Install Chromium for Playwright
+        run: pnpm exec playwright install --with-deps chromium
+
+      # The only step here that runs METRO. typecheck runs tsc and test runs
+      # vitest; both resolve TypeScript's `.js`-means-`.ts` imports, and the
+      # bundler does not. That gap hid a repo where the app had never bundled on
+      # any platform, through a green pipeline. This exports the real bundle and
+      # plays a lesson in it — see apps/mobile/e2e/flow.cjs for what that does and
+      # does not prove. It is not a device.
+      - name: App bundles and a lesson can be played
+        run: pnpm e2e
+
+      - name: Upload E2E screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-screens
+          path: node_modules/.cache/wq-e2e-shots
+          if-no-files-found: ignore
+
+  # ── the two checks that need more than Node ────────────────────────────────
+
+  database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # No `version:` here. `package.json` declares `packageManager: pnpm@9.15.0`, and
+      # action-setup v4 REFUSES to run when both are set:
+      #
+      #   Error: Multiple versions of pnpm specified:
+      #     - version 9 in the GitHub Action config with the key "version"
+      #     - version pnpm@9.15.0 in the package.json with the key "packageManager"
+      #
+      # It reads `packageManager` on its own, so one source of truth is also the fix.
+      # Corepack and this action both use that field; a `version:` beside it is the
+      # thing that can drift, and it drifted into a hard failure.
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - uses: supabase/setup-cli@v1
+        with: { version: latest }
+
+      - run: pnpm install --frozen-lockfile
+
+      # `supabase/functions/submit-lesson/` IS the deploy bundle, written out, and it is
+      # gitignored — the tracked source is `supabase/functions/_src/`. `supabase start`
+      # reads the functions directory off disk, so it has to exist before the next step.
+      #
+      # The edge runtime is deliberately NOT excluded from `supabase start` below. It is
+      # the only thing in this pipeline that reads the deploy artefact as a deployment
+      # would, and the first two runs that reached it found two bugs that had been true
+      # since the code landed: a generated answer key that was never written anywhere,
+      # and an engine module `grading` imports that the bundle did not contain. Both are
+      # now caught earlier — `pnpm edge:build` refuses to write an unresolvable bundle,
+      # and `pnpm test` asserts every relative import resolves to a file being shipped —
+      # but the boot is what proved they were real.
+      - name: Build the edge function bundle
+        run: pnpm edge:build
+
+      # Against a LOCAL stack, never a hosted project. A migration that drops a
+      # column is a migration that drops a column, and CI must be free to find
+      # that out.
+      - name: Start Supabase
+        run: supabase start
+
+      # Every migration applied from scratch. Catches the class of bug where a
+      # migration only works against the schema that happens to be in staging.
+      - name: Migrations apply from empty
+        run: supabase db reset
+
+      # RLS is the entire authorisation model. A policy that is missing, or that
+      # is written to `USING (true)`, lets one user read another's progress — and
+      # nothing else in this pipeline would notice.
+      - name: RLS policy tests
+        run: supabase test db
+
+      # `pnpm db:types`, not the raw CLI command. This step used to inline
+      #
+      #   supabase gen types typescript --local > packages/api/src/database.types.ts
+      #
+      # which is not what `pnpm db:types` did once the committed file grew a
+      # "GENERATED — do not hand-edit" header and single-quoted literals. The check
+      # therefore compared a decorated file against an undecorated one and reported the
+      # types stale on every run, whatever their actual state. It went unnoticed for as
+      # long as this job had never reached the step.
+      #
+      # Running the same command the developer runs is the only version of this check
+      # that means anything.
+      #
+      # The failure PRINTS THE DIFF. Regenerating this file needs a running Postgres, and
+      # not every contributor — or agent — has Docker. "It is stale" without saying how
+      # is a failure you cannot act on from anywhere but the machine that can already
+      # reproduce it; the diff in the log is the fix, copyable.
+      - name: Generated database types are up to date
+        run: |
+          pnpm db:types
+          if ! git diff --quiet packages/api/src/database.types.ts; then
+            echo "::error::database.types.ts is stale — run pnpm db:types and commit."
+            echo "The generated file differs as follows (committed → generated):"
+            git --no-pager diff packages/api/src/database.types.ts
+            exit 1
+          fi
+
+# The edge function VENDORS the grading, FSRS and balance modules, because Deno
+# cannot import from a pnpm workspace. Vendored code drifts silently, and the
+# result is a client and a server that disagree about what a user knows — the
+# worst bug this product can have.
+#
+# There is deliberately NO job for it here. The bundle is assembled in memory at
+# deploy time and never written to the repo, so a `git diff` check would pass
+# unconditionally and prove nothing. The real guard is
+# `supabase/functions/build.test.ts`, which asserts the vendored grading, FSRS
+# and balance modules are byte-identical to their source — and that runs in
+# `pnpm test` above.

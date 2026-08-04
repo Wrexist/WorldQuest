@@ -1,0 +1,14 @@
+{
+  "common:continue": "Fortsätt",
+  "common:start": "Starta",
+  "common:retry": "Försök igen",
+  "common:back": "Tillbaka",
+  "common:close": "Stäng",
+  "common:cancel": "Avbryt",
+  "common:offline.action": "Det här kräver internet. Allt annat fungerar ändå.",
+  "common:offline.banner": "Du är offline – lektioner fungerar ändå. Vi synkar senare.",
+  "common:error.generic.title": "Det gick inte att ladda",
+  "common:error.generic.body": "Vi försöker igen.",
+  "common:progress.count": "{current} / {total}",
+  "common:loading": "Laddar"
+}

@@ -1,0 +1,565 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://worldquest.app/schema/pack.schema.json",
+  "title": "WorldQuest content pack",
+  "description": "Content is data, never code. This schema is what CI enforces so that adding a country — or a whole subject — is an authoring task. See docs/systems/content-pipeline.md.",
+  "type": "object",
+  "required": [
+    "packId",
+    "version",
+    "subject",
+    "locales",
+    "license",
+    "generatedAt",
+    "items"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "packId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(\\.[a-z0-9-]+)+$",
+      "description": "e.g. geography.capitals"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "subject": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "kind": {
+      "enum": [
+        "entities",
+        "facts",
+        "templates",
+        "collections",
+        "achievements",
+        "cosmetics"
+      ]
+    },
+    "locales": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z]{2}(-[A-Z]{2})?$"
+      }
+    },
+    "license": {
+      "type": "string",
+      "description": "SPDX identifier or a named licence. Required — CI rejects an asset with no recorded licence."
+    },
+    "attribution": {
+      "type": "string"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date"
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/item"
+      }
+    }
+  },
+  "$defs": {
+    "localizedText": {
+      "type": "object",
+      "description": "Whole values per locale. Never assembled from fragments — word order differs by language.",
+      "patternProperties": {
+        "^[a-z]{2}(-[A-Z]{2})?$": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "description": "Every fact is sourced and dated. A wrong fact in a learning app is a P1 bug.",
+      "required": [
+        "name",
+        "verifiedAt"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 2
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "verifiedAt": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "entity": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "names"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z0-9-]{2,12}$",
+          "description": "ISO 3166-1 alpha-2 where one exists. Permanent — it ships in save data."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "country",
+            "capital",
+            "landmark",
+            "region",
+            "sea",
+            "river",
+            "mountain",
+            "species",
+            "other"
+          ]
+        },
+        "names": {
+          "$ref": "#/$defs/localizedText"
+        },
+        "namesInSentence": {
+          "$ref": "#/$defs/localizedText",
+          "description": "The form used inside a sentence, when it differs from `names` — \"the Netherlands\" in a prompt, \"Netherlands\" in a list. Localised rather than a boolean article flag, because languages with grammatical case need an oblique form here."
+        },
+        "region": {
+          "type": "string"
+        },
+        "subregion": {
+          "type": "string"
+        },
+        "assets": {
+          "description": "Licensed artwork for this entity, keyed by kind: `flag` and `map` today. There used to be a bare `geometry: \"geo/countries/XX.svg\"` property alongside this one; it was removed rather than corrected, because a path with no licence beside it is exactly what this object exists to prevent — and that one sat unread on all 65 entities for the life of the project while the outlines it promised were filed as blocked on an illustrator.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "path",
+              "license"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "license": {
+                "type": "string"
+              },
+              "attribution": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "sensitivity": {
+          "enum": [
+            "none",
+            "review-required"
+          ]
+        }
+      }
+    },
+    "fact": {
+      "type": "object",
+      "required": [
+        "id",
+        "entity",
+        "attribute",
+        "value",
+        "difficulty",
+        "source",
+        "volatility"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+\\.[A-Z0-9-]+\\.[a-z0-9-]+$",
+          "description": "<subject>.<entity>.<attribute>"
+        },
+        "entity": {
+          "type": "string"
+        },
+        "attribute": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$"
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "names": {
+              "$ref": "#/$defs/localizedText"
+            },
+            "number": {
+              "type": "number"
+            },
+            "asOf": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        },
+        "difficulty": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "Authored prior. The engine learns the real per-user difficulty and overrides it."
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "volatility": {
+          "enum": [
+            "stable",
+            "slow",
+            "fast"
+          ],
+          "description": "fast facts (leaders, GDP, rankings) may never be quiz answers — CI enforces this."
+        },
+        "sensitivity": {
+          "enum": [
+            "none",
+            "review-required"
+          ]
+        },
+        "quizzable": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "template": {
+      "type": "object",
+      "required": [
+        "id",
+        "attribute",
+        "modality",
+        "prompt",
+        "answer"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^tpl\\.[a-z0-9-]+\\.[a-z0-9]+$"
+        },
+        "attribute": {
+          "type": "string"
+        },
+        "modality": {
+          "enum": [
+            "text",
+            "image",
+            "map",
+            "audio"
+          ]
+        },
+        "prompt": {
+          "type": "object",
+          "required": [
+            "key"
+          ],
+          "properties": {
+            "key": {
+              "type": "string",
+              "description": "i18n key — never a literal string"
+            },
+            "params": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "answer": {
+          "type": "object",
+          "required": [
+            "from"
+          ],
+          "properties": {
+            "from": {
+              "$comment": "An enum, not a free string. `tpl.location-of.mc4` shipped \"fact.value\" while every other template said \"fact.value.names\", and nothing objected because the engine only tests for `entity.names` and treats everything else as the value branch. A misspelling would have been read as \"answer with the fact value\" rather than rejected.",
+              "enum": [
+                "fact.value.names",
+                "entity.names"
+              ]
+            }
+          }
+        },
+        "distractors": {
+          "type": "object",
+          "required": [
+            "count",
+            "strategy"
+          ],
+          "properties": {
+            "count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "strategy": {
+              "enum": [
+                "same-subregion",
+                "same-region",
+                "visually-similar",
+                "commonly-confused",
+                "other-values",
+                "random-global"
+              ],
+              "description": "other-values draws from every entity with a value for this attribute — for templates whose ANSWER is the fact value, where the option space is the values, not the entities. random-global is for test fixtures only — CI rejects it in a shipped pack."
+            },
+            "fallback": {
+              "enum": [
+                "same-subregion",
+                "same-region",
+                "visually-similar",
+                "commonly-confused",
+                "other-values"
+              ]
+            },
+            "excludeSimilarStrings": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        },
+        "a11y": {
+          "type": "object",
+          "required": [
+            "screenReaderSafe"
+          ],
+          "properties": {
+            "screenReaderSafe": {
+              "type": "boolean"
+            },
+            "equivalentTemplate": {
+              "type": "string",
+              "description": "Required when screenReaderSafe is false. Tests the SAME fact, so a blind user's learning state is identical to anyone else's."
+            }
+          }
+        },
+        "timeLimitMs": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "difficultyModifier": {
+          "type": "integer",
+          "minimum": -2,
+          "maximum": 2
+        }
+      }
+    },
+    "item": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/entity"
+        },
+        {
+          "$ref": "#/$defs/fact"
+        },
+        {
+          "$ref": "#/$defs/template"
+        },
+        {
+          "$ref": "#/$defs/achievement"
+        },
+        {
+          "$ref": "#/$defs/cosmetic"
+        }
+      ]
+    },
+    "tier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tier",
+        "threshold"
+      ],
+      "properties": {
+        "tier": {
+          "enum": [
+            "bronze",
+            "silver",
+            "gold",
+            "platinum",
+            "legendary"
+          ]
+        },
+        "threshold": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "rule": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "counter",
+            "streak",
+            "threshold",
+            "set-completion",
+            "session",
+            "composite"
+          ]
+        },
+        "event": {
+          "type": "string"
+        },
+        "where": {
+          "type": "object"
+        },
+        "distinctBy": {
+          "type": "string"
+        },
+        "metric": {
+          "enum": [
+            "daily_lesson",
+            "perfect_lesson"
+          ]
+        },
+        "stat": {
+          "type": "string"
+        },
+        "members": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "conditions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object"
+          }
+        },
+        "op": {
+          "enum": [
+            "and",
+            "or"
+          ]
+        },
+        "rules": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "$ref": "#/$defs/rule"
+          }
+        }
+      }
+    },
+    "achievement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "category",
+        "rule",
+        "tiers"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^ach\\.[a-z0-9-]+\\.[a-z0-9-]+$"
+        },
+        "category": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "hidden": {
+          "type": "boolean"
+        },
+        "rule": {
+          "$ref": "#/$defs/rule"
+        },
+        "tiers": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "items": {
+            "$ref": "#/$defs/tier"
+          }
+        },
+        "showProgress": {
+          "type": "boolean"
+        },
+        "backfill": {
+          "type": "boolean"
+        },
+        "$comment": {
+          "type": "string"
+        }
+      }
+    },
+    "cosmetic": {
+      "type": "object",
+      "description": "A purchasable cosmetic. Coins buy delight, never advantage (docs/systems/xp-economy.md) — so this shape deliberately has NO field that could grant XP, hearts, difficulty or league position, and CI would have to be changed to add one.",
+      "required": [
+        "id",
+        "kind",
+        "nameKey",
+        "price"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z]+\\.[a-z0-9-]+$",
+          "description": "Stable forever. Ships in user save data; renaming one is somebody's purchase disappearing."
+        },
+        "kind": {
+          "enum": [
+            "title",
+            "avatarItem",
+            "pet",
+            "mapSkin",
+            "theme",
+            "celebration"
+          ],
+          "description": "Only kinds in SELLABLE_KINDS may actually be listed; the engine refuses the rest so a priced item with no artwork cannot take real coins."
+        },
+        "nameKey": {
+          "type": "string",
+          "pattern": "^shop:[a-zA-Z0-9.]+$",
+          "description": "i18n key. Never a literal display string — see packages/i18n/CLAUDE.md."
+        },
+        "price": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Coins. Must match the balance table for its kind; the engine is the source of truth and this is checked against it."
+        }
+      }
+    }
+  }
+}

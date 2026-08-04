@@ -1,0 +1,49 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "$comment": "The shop's opening stock, and content rather than code for the usual reason: adding a title is a pack release, not a deploy. IDs ship in user save data — a renamed id is somebody's purchase disappearing, which is a refund request rather than a rename. These are FLAVOUR titles, deliberately not rank titles: the level ladder in packages/i18n/locales/*/titles.json is earned and must stay earned, and selling 'Circumnavigator' to a level-3 player would devalue every hour somebody spent climbing to it. Prices come from BALANCE.prices.titleUnlock via priceFor(); the field here exists so a future sale or a regional adjustment is a pack change, and packages/engines/src/shop validates it against the balance table rather than trusting it.",
+  "packId": "shop.titles",
+  "version": "1.0.0",
+  "subject": "shop",
+  "kind": "cosmetics",
+  "locales": ["en", "sv"],
+  "license": "CC-BY-4.0",
+  "generatedAt": "2026-08-03",
+  "items": [
+    {
+      "id": "title.flag-fanatic",
+      "kind": "title",
+      "nameKey": "shop:title.flagFanatic",
+      "price": 1000
+    },
+    {
+      "id": "title.capital-collector",
+      "kind": "title",
+      "nameKey": "shop:title.capitalCollector",
+      "price": 1000
+    },
+    {
+      "id": "title.night-owl",
+      "kind": "title",
+      "nameKey": "shop:title.nightOwl",
+      "price": 1000
+    },
+    {
+      "id": "title.early-bird",
+      "kind": "title",
+      "nameKey": "shop:title.earlyBird",
+      "price": 1000
+    },
+    {
+      "id": "title.island-hopper",
+      "kind": "title",
+      "nameKey": "shop:title.islandHopper",
+      "price": 1000
+    },
+    {
+      "id": "title.map-nerd",
+      "kind": "title",
+      "nameKey": "shop:title.mapNerd",
+      "price": 1000
+    }
+  ]
+}

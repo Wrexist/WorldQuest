@@ -1,0 +1,45 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "$comment": "The worked example the sensitive-content policy refers to. South Africa has three capitals, so it is NOT a single-answer question: quizzable is false until a human decides how to present it, and Cape Town and Bloemfontein must never become distractors here because they are also correct.",
+  "packId": "geography.facts.sensitive",
+  "version": "1.0.0",
+  "subject": "geography",
+  "kind": "facts",
+  "locales": [
+    "en",
+    "sv"
+  ],
+  "license": "CC-BY-4.0",
+  "generatedAt": "2026-07-31",
+  "items": [
+    {
+      "id": "geo.ZA.capital",
+      "entity": "ZA",
+      "attribute": "capital",
+      "value": {
+        "id": "ZA-GP",
+        "names": {
+          "en": "Pretoria",
+          "sv": "Pretoria"
+        },
+        "asOf": "2026-07-31"
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "africa",
+        "southern-africa",
+        "multi-value"
+      ],
+      "$comment": "South Africa has three capitals: Pretoria (executive), Cape Town (legislative), Bloemfontein (judicial). This is NOT a single-answer question — it is flagged for review so a human decides how to present it. Cape Town and Bloemfontein must never be usable as distractors here, because they are also correct. See the sensitive-content policy.",
+      "sensitivity": "review-required",
+      "quizzable": false,
+      "source": {
+        "name": "Government of South Africa",
+        "url": "https://www.gov.za/about-sa/south-africas-provinces",
+        "verifiedAt": "2026-07-31"
+      },
+      "volatility": "stable"
+    }
+  ]
+}

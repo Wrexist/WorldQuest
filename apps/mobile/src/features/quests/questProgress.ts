@@ -1,0 +1,135 @@
+/**
+ * Today's quest progress, on the device.
+ *
+ * ## The gap this closes
+ *
+ * The quest was generated and rendered correctly, and then nothing ever advanced it.
+ * `applyQuestEvent` had no caller, so five tasks sat at 0/5 for ever no matter how
+ * many lessons a user finished. A daily quest that cannot be completed is worse than
+ * no daily quest: it is a promise on the home screen that the app quietly breaks
+ * every single day.
+ *
+ * ## Progress is stored, the quest is not
+ *
+ * `generateDailyQuest` is deterministic per (user, day), so the five tasks can always
+ * be recomposed and never need saving. What cannot be recomposed is what the user has
+ * done, so that is the only thing here — keyed by date, so yesterday's progress can
+ * never be mistaken for today's.
+ *
+ * One day at a time is kept. A missed quest is never mentioned again
+ * (quests-and-liveops.md): keeping a history would make "you completed 3 of 7 this
+ * week" possible, and the moment that number exists someone will render it.
+ *
+ * ## The XP is still the server's
+ *
+ * `applyQuestEvent` returns `xpAwarded` and this deliberately drops it. The client
+ * renders which tasks are done; the server re-derives the same quest when it grades
+ * the lesson and awards the XP there (ADR 0006). Nothing here writes a balance.
+ */
+
+import { useSyncExternalStore } from 'react'
+import {
+  applyQuestEvent,
+  type DailyQuest,
+  type QuestEvent,
+  type QuestTask,
+  type Slot,
+} from '@worldquest/engines'
+import { readJson, writeJson } from '../../lib/storage.js'
+
+const KEY = 'quest.progress.v1'
+
+/** Only what the user did. The tasks themselves are regenerated from the seed. */
+type Stored = {
+  readonly date: string
+  /** Slot → units done, so a task whose target changes still restores sensibly. */
+  readonly done: Record<string, number>
+  readonly bonusClaimed: boolean
+}
+
+let snapshot: Stored | null = null
+const listeners = new Set<() => void>()
+
+const empty = (date: string): Stored => ({ date, done: {}, bonusClaimed: false })
+
+const read = (): Stored => {
+  if (snapshot !== null) return snapshot
+  const stored = readJson<Stored>(KEY)
+  snapshot =
+    stored !== null && typeof stored === 'object' && typeof stored.date === 'string'
+      ? stored
+      : empty('')
+  return snapshot
+}
+
+const subscribe = (listener: () => void): (() => void) => {
+  listeners.add(listener)
+  return () => listeners.delete(listener)
+}
+
+function write(next: Stored): void {
+  snapshot = next
+  writeJson(KEY, next)
+  for (const listener of listeners) listener()
+}
+
+/**
+ * The stored quest with today's progress applied.
+ *
+ * Returns the quest unchanged when the stored progress is from another day — which is
+ * how a new day starts clean without anything having to remember to clear it.
+ */
+export function withStoredProgress(quest: DailyQuest, stored: Stored): DailyQuest {
+  if (stored.date !== quest.date) return quest
+
+  const tasks = quest.tasks.map((task): QuestTask => {
+    const done = stored.done[task.slot] ?? 0
+    if (done <= 0) return task
+    // Clamped to the target: a task's target can change between app versions, and a
+    // restored `done` above it would render as "6 of 4".
+    const progress = Math.min(done, task.target)
+    return { ...task, progress, complete: progress >= task.target }
+  })
+
+  return {
+    ...quest,
+    tasks,
+    complete: tasks.every((t) => t.complete),
+    bonusClaimed: stored.bonusClaimed,
+  }
+}
+
+/** Today's quest, with what the user has actually done applied to it. */
+export function useQuestWithProgress(quest: DailyQuest | null): DailyQuest | null {
+  const stored = useSyncExternalStore(subscribe, read, read)
+  return quest === null ? null : withStoredProgress(quest, stored)
+}
+
+/**
+ * Advances the quest and persists the result.
+ *
+ * Takes the freshly generated quest rather than holding one, so the caller is always
+ * applying an event to today's real five tasks.
+ */
+export function recordQuestEvent(
+  quest: DailyQuest,
+  event: QuestEvent,
+): readonly Slot[] {
+  const stored = read()
+  const base = withStoredProgress(quest, stored)
+  const result = applyQuestEvent(base, event)
+
+  write({
+    date: quest.date,
+    done: Object.fromEntries(result.quest.tasks.map((t) => [t.slot, t.progress])),
+    bonusClaimed: result.quest.bonusClaimed,
+  })
+
+  // `result.xpAwarded` is deliberately dropped — see the header. The server awards it.
+  return result.completed
+}
+
+/** Test seam. Drops the cached snapshot so the next read hits storage again. */
+export function resetQuestProgressCache(): void {
+  snapshot = null
+}

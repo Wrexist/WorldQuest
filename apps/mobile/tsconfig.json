@@ -1,0 +1,41 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "types": [
+      "react"
+    ],
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
+    "moduleResolution": "bundler",
+    "module": "ESNext",
+    "allowImportingTsExtensions": true,
+    "paths": {
+      "@worldquest/engines": [
+        "../../packages/engines/src/index.ts"
+      ],
+      "@worldquest/design": [
+        "../../packages/design/src/index.ts"
+      ],
+      "@worldquest/analytics": [
+        "../../packages/analytics/src/events.ts"
+      ],
+      "@worldquest/i18n": [
+        "../../packages/i18n/src/index.ts"
+      ],
+      "@worldquest/api": [
+        "../../packages/api/src/index.ts"
+      ]
+    },
+    "baseUrl": ".",
+    "resolveJsonModule": true
+  },
+  "include": [
+    "app/**/*",
+    "src/**/*",
+    "types/**/*"
+  ]
+}

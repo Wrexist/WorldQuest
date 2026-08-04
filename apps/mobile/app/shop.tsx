@@ -1,0 +1,44 @@
+/**
+ * The shop route — data in, screen out.
+ *
+ * Its own route rather than a sixth tab: `PROJECT.md §7` says five tabs, forever, and
+ * a shop is not a destination people visit daily. It is reached from Profile, where
+ * the title it sells is displayed.
+ */
+
+import { ShopScreen } from '../src/features/shop/ShopScreen.js'
+import { CATALOGUE } from '../src/features/shop/catalogue.js'
+import { useShop } from '../src/features/shop/useShop.js'
+import { useProgress } from '../src/features/home/useProgress.js'
+import { useOnline } from '../src/lib/connectivity.js'
+import { levelProgress } from '@worldquest/engines'
+
+export default function ShopRoute() {
+  // Server state, behind TanStack Query. The wallet is authoritative there — the
+  // number shown here is what the server last said, not a local tally.
+  const { data, status, refetch } = useProgress()
+  const shop = useShop()
+  const online = useOnline()
+
+  const coins = data?.coins ?? 0
+  const level = levelProgress(data?.xpTotal ?? 0)
+
+  return (
+    <ShopScreen
+      catalogue={CATALOGUE}
+      coins={coins}
+      owned={shop.owned}
+      equippedId={shop.equippedId}
+      levelTitleKey={level.titleKey}
+      loading={status === 'loading'}
+      isOffline={!online}
+      error={status === 'error'}
+      onRetry={() => void refetch()}
+      // `coins - price` is for the analytics event only. The server computes the real
+      // balance; sending our guess lets the funnel be read before the sync lands, and
+      // it is corrected on the next reconcile like every other optimistic number.
+      onBuy={(item) => shop.buy(item, coins - item.price)}
+      onEquip={(id) => shop.equip(id)}
+    />
+  )
+}

@@ -1,0 +1,342 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "$comment": "Definitions are CONTENT, not code. Adding an achievement is a pack release \u2014 the engine in packages/engines/src/achievements evaluates these and knows nothing about geography. IDs ship in user save data and in dashboards. Renaming one is a migration, not a rename. Thresholds may be tuned; ids may not. `backfill: false` marks a rule that CANNOT be replayed from history. Nothing in review_log records that a lesson was finished in under sixty seconds two years ago, so inventing that unlock later would be worse than granting it late. This is a starter set of 12, deliberately small. The ~300 in docs/systems/achievements.md arrive in batches once the content packs are deep enough for them to be reachable \u2014 an achievement for 100 flags is a locked row for everyone until there are 100 flags.",
+  "packId": "core.achievements",
+  "version": "1.0.0",
+  "subject": "core",
+  "kind": "achievements",
+  "locales": [
+    "en",
+    "sv"
+  ],
+  "license": "CC-BY-4.0",
+  "generatedAt": "2026-08-01",
+  "items": [
+    {
+      "id": "ach.flags.collector",
+      "category": "flags",
+      "rule": {
+        "type": "counter",
+        "event": "fact_mastered",
+        "where": {
+          "attribute": "flag"
+        },
+        "distinctBy": "entityId"
+      },
+      "tiers": [
+        {
+          "tier": "bronze",
+          "threshold": 5
+        },
+        {
+          "tier": "silver",
+          "threshold": 25
+        },
+        {
+          "tier": "gold",
+          "threshold": 100
+        },
+        {
+          "tier": "platinum",
+          "threshold": 195
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.capitals.collector",
+      "category": "capitals",
+      "rule": {
+        "type": "counter",
+        "event": "fact_mastered",
+        "where": {
+          "attribute": "capital"
+        },
+        "distinctBy": "entityId"
+      },
+      "tiers": [
+        {
+          "tier": "bronze",
+          "threshold": 5
+        },
+        {
+          "tier": "silver",
+          "threshold": 25
+        },
+        {
+          "tier": "gold",
+          "threshold": 100
+        },
+        {
+          "tier": "platinum",
+          "threshold": 195
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.countries.complete",
+      "category": "regions",
+      "rule": {
+        "type": "counter",
+        "event": "entity_mastered",
+        "distinctBy": "entityId"
+      },
+      "tiers": [
+        {
+          "tier": "bronze",
+          "threshold": 3
+        },
+        {
+          "tier": "silver",
+          "threshold": 20
+        },
+        {
+          "tier": "gold",
+          "threshold": 75
+        },
+        {
+          "tier": "platinum",
+          "threshold": 195
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.streak.keeper",
+      "category": "streak",
+      "rule": {
+        "type": "streak",
+        "metric": "daily_lesson"
+      },
+      "tiers": [
+        {
+          "tier": "bronze",
+          "threshold": 7
+        },
+        {
+          "tier": "silver",
+          "threshold": 30
+        },
+        {
+          "tier": "gold",
+          "threshold": 100
+        },
+        {
+          "tier": "legendary",
+          "threshold": 365
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.level.climber",
+      "category": "progression",
+      "rule": {
+        "type": "threshold",
+        "stat": "level"
+      },
+      "tiers": [
+        {
+          "tier": "bronze",
+          "threshold": 5
+        },
+        {
+          "tier": "silver",
+          "threshold": 20
+        },
+        {
+          "tier": "gold",
+          "threshold": 50
+        },
+        {
+          "tier": "platinum",
+          "threshold": 100
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.lessons.done",
+      "category": "practice",
+      "rule": {
+        "type": "counter",
+        "event": "lesson_completed"
+      },
+      "tiers": [
+        {
+          "tier": "bronze",
+          "threshold": 10
+        },
+        {
+          "tier": "silver",
+          "threshold": 100
+        },
+        {
+          "tier": "gold",
+          "threshold": 500
+        },
+        {
+          "tier": "platinum",
+          "threshold": 2000
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.session.perfect",
+      "category": "skill",
+      "rule": {
+        "type": "session",
+        "event": "lesson_completed",
+        "conditions": [
+          {
+            "stat": "accuracy",
+            "gte": 1
+          }
+        ]
+      },
+      "tiers": [
+        {
+          "tier": "bronze",
+          "threshold": 1
+        },
+        {
+          "tier": "silver",
+          "threshold": 25
+        },
+        {
+          "tier": "gold",
+          "threshold": 150
+        }
+      ],
+      "showProgress": true,
+      "backfill": false
+    },
+    {
+      "id": "ach.session.speedrun",
+      "category": "skill",
+      "rule": {
+        "type": "session",
+        "event": "lesson_completed",
+        "conditions": [
+          {
+            "stat": "accuracy",
+            "gte": 1
+          },
+          {
+            "stat": "durationMs",
+            "lte": 60000
+          }
+        ]
+      },
+      "tiers": [
+        {
+          "tier": "silver",
+          "threshold": 1
+        },
+        {
+          "tier": "gold",
+          "threshold": 25
+        }
+      ],
+      "backfill": false
+    },
+    {
+      "id": "ach.set.nordics",
+      "category": "regions",
+      "rule": {
+        "type": "set-completion",
+        "event": "entity_mastered",
+        "distinctBy": "entityId",
+        "members": [
+          "SE",
+          "NO",
+          "DK",
+          "FI",
+          "IS"
+        ]
+      },
+      "tiers": [
+        {
+          "tier": "gold",
+          "threshold": 5
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.review.faithful",
+      "category": "practice",
+      "$comment": "Rewards coming BACK to a due review rather than grinding new items. The one habit that makes the scheduler work.",
+      "rule": {
+        "type": "counter",
+        "event": "overdue_review_cleared"
+      },
+      "tiers": [
+        {
+          "tier": "bronze",
+          "threshold": 25
+        },
+        {
+          "tier": "silver",
+          "threshold": 250
+        },
+        {
+          "tier": "gold",
+          "threshold": 1000
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.quest.regular",
+      "category": "quests",
+      "rule": {
+        "type": "counter",
+        "event": "daily_quest_completed"
+      },
+      "tiers": [
+        {
+          "tier": "bronze",
+          "threshold": 5
+        },
+        {
+          "tier": "silver",
+          "threshold": 50
+        },
+        {
+          "tier": "gold",
+          "threshold": 250
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.explorer.continents",
+      "category": "regions",
+      "$comment": "Deliberately breadth, not depth \u2014 a user who only ever studies Europe is a user the product has failed.",
+      "rule": {
+        "type": "set-completion",
+        "event": "region_started",
+        "distinctBy": "region",
+        "members": [
+          "EU",
+          "AS",
+          "AF",
+          "NA",
+          "SA",
+          "OC",
+          "AN"
+        ]
+      },
+      "tiers": [
+        {
+          "tier": "gold",
+          "threshold": 7
+        }
+      ],
+      "showProgress": true
+    }
+  ]
+}

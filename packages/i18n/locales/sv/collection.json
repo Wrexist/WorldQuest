@@ -1,0 +1,21 @@
+{
+  "collection:flags.title": "Flaggor",
+  "collection:countries.title": "Länder",
+  "collection:progress": "{collected} av {total}",
+  "collection:progress.label": "Framsteg",
+  "collection:locked": "Inte samlad än",
+  "collection:collected": "Samlad",
+  "collection:filter.all": "Alla",
+  "collection:filter.collected": "Samlade",
+  "collection:filter.missing": "Kvar att hitta",
+  "collection:filter.favourites": "Stjärnmärkta",
+  "collection:favourite": "Stjärnmärkt",
+  "collection:favourites.none.title": "Inget stjärnmärkt än",
+  "collection:favourites.none.body": "Öppna ett land och tryck på stjärnan så hamnar det här.",
+  "collection:empty.title": "Inget här än",
+  "collection:empty.body": "Gör klart en lektion så dyker den första upp här.",
+  "collection:empty.action": "Starta en lektion",
+  "collection:search": "Sök länder…",
+  "collection:search.none.title": "Ingen träff för ”{query}”",
+  "collection:search.none.body": "Kolla stavningen, eller bläddra per kontinent."
+}

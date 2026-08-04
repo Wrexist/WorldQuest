@@ -1,0 +1,6 @@
+{
+  "notifications:daily.reminder": "{region} väntar. 5 minuter?",
+  "notifications:streak.atRisk": "{count, plural, one {Din svit är på # dag. En lektion räcker.} other {Din svit är på # dagar. En lektion räcker.}}",
+  "notifications:mastery.almost": "{country} är nästan bemästrat – en lektion kvar.",
+  "notifications:comeback": "Världen har saknat dig."
+}

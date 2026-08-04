@@ -1,0 +1,38 @@
+{
+  "country:favourite.label": "Star this country",
+  "country:favourite.label__note": "Accessibility label on the star toggle in the country header. Announced with its on/off state, so it names the thing rather than the action. Max 24 characters.",
+
+  "country:facts.title": "What to know",
+  "country:facts.title__note": "Section heading above the list of facts. Max 18 characters.",
+  "country:attribute.capital": "Capital",
+  "country:attribute.capital__note": "Fact label. Max 14 characters.",
+  "country:attribute.flag": "Flag",
+  "country:attribute.flag__note": "Fact label. Max 14 characters.",
+  "country:attribute.population": "Population",
+  "country:attribute.population__note": "Fact label. Max 14 characters.",
+  "country:attribute.currency": "Currency",
+  "country:attribute.currency__note": "Fact label. Max 14 characters.",
+  "country:attribute.language": "Language",
+  "country:attribute.language__note": "Fact label. Max 14 characters.",
+
+  "country:fact.hidden": "Learn it first",
+  "country:fact.hidden__note": "Replaces the answer on a fact the user has not met, so the page does not spoil it. Max 18 characters.",
+  "country:fact.due": "Due for review",
+  "country:fact.due__note": "Badge on a fact that is due today. Max 18 characters.",
+  "country:fact.label": "{attribute}: {value}, {mastery}",
+  "country:fact.label__note": "Accessibility label grouping one fact row.",
+
+  "country:progress": "{learned} of {total} learned",
+  "country:progress__note": "Facts learned for this country. Both are whole numbers.",
+
+  "country:source.title": "Where this comes from",
+  "country:source.title__note": "Heading above the source list. Max 24 characters.",
+  "country:source.verified": "Checked {date}",
+  "country:source.verified__note": "When a fact was last verified. {date} is already formatted for the locale.",
+
+  "country:practice": "Practise this country",
+  "country:practice__note": "Button label. Max 24 characters.",
+
+  "country:missing.title": "We do not have this one yet",
+  "country:missing.body": "More of the world arrives with every content update."
+}

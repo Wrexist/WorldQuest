@@ -1,0 +1,189 @@
+/**
+ * The content engine's vocabulary.
+ *
+ * Read the type names carefully: Entity, Fact, Template, Item. Not Country, Flag,
+ * Capital. Nothing in this package knows what geography is — it knows that entities
+ * have attributes, and that templates ask about attributes. That is precisely what
+ * makes a wildlife or astronomy pack a content release rather than a rewrite.
+ *
+ * Spec: docs/systems/content-pipeline.md
+ */
+
+import type { FactId, TemplateId } from '../learning/types.js'
+
+export type EntityId = string
+export type LocalizedText = Readonly<Record<string, string>>
+
+export type Entity = {
+  readonly id: EntityId
+  readonly type: string
+  /** The citation form — what goes in a list, on a card, or in an answer option. */
+  readonly names: LocalizedText
+  /**
+   * The form used inside a sentence, when it differs from `names`.
+   *
+   * English needs this for the handful of countries that take a definite article:
+   * "What is the capital of Netherlands?" is wrong, and the fix cannot live in the
+   * translation catalogue because the template is one string shared by 200 countries.
+   * It cannot live in `names` either — a country list sorted alphabetically must file
+   * the Netherlands under N.
+   *
+   * It is localised rather than an `article` flag because the problem is not articles.
+   * Languages with grammatical case need the country in an oblique form here, and a
+   * boolean cannot express that.
+   */
+  readonly namesInSentence?: LocalizedText
+  readonly region?: string
+  readonly subregion?: string
+  readonly assets?: Readonly<Record<string, { path: string; license: string }>>
+}
+
+export type Fact = {
+  readonly id: FactId
+  readonly entity: EntityId
+  readonly attribute: string
+  readonly value: { readonly id?: string; readonly names?: LocalizedText }
+  /** Authored prior, 1–5. The engine learns the real per-user difficulty. */
+  readonly difficulty: number
+  readonly tags?: readonly string[]
+  /**
+   * Where this fact came from, and when it was last checked.
+   *
+   * Every pack already carries this and `pnpm content:validate` requires it — the
+   * type simply did not say so, which meant the one screen that shows provenance
+   * could not read it without a cast. A wrong fact in a learning app is the worst
+   * bug available, and "we cannot say where this came from" is how one survives.
+   */
+  readonly source?: {
+    readonly name: string
+    readonly url?: string
+    /** ISO date. Population and currency go stale; capitals occasionally move. */
+    readonly verifiedAt: string
+  }
+  readonly volatility: 'stable' | 'slow' | 'fast'
+  readonly sensitivity?: 'none' | 'review-required'
+  /** Defaults to true. Sensitive and fast-volatility facts set it false. */
+  readonly quizzable?: boolean
+}
+
+export type DistractorStrategy =
+  | 'same-subregion'
+  | 'same-region'
+  | 'visually-similar'
+  | 'commonly-confused'
+  /**
+   * Any entity that has a value for this attribute — for questions whose ANSWER is the
+   * fact value rather than the entity, where the option space is the set of values and
+   * not the set of entities.
+   *
+   * "Where in the world is Brazil?" has four options drawn from fourteen subregions, so
+   * a globally-drawn pool is not a lottery; it is the question. Restricting it by region
+   * is what breaks it: South America contains exactly one subregion, so every distractor
+   * reads "South America", they collapse to one option, and the question is dropped.
+   *
+   * Distinct from `random-global`, which is a test fixture. This one is only meaningful
+   * when `answer.from` is `fact.value.names`, and content validation says so.
+   */
+  | 'other-values'
+  | 'random-global'
+
+export type Template = {
+  readonly id: TemplateId
+  /** Which attribute this template asks about. NOT which subject. */
+  readonly attribute: string
+  readonly modality: 'text' | 'image' | 'map' | 'audio'
+  readonly prompt: { readonly key: string; readonly params?: readonly string[] }
+  /** Where the correct answer is read from. */
+  readonly answer: { readonly from: 'fact.value.names' | 'entity.names' }
+  readonly distractors?: {
+    readonly count: number
+    readonly strategy: DistractorStrategy
+    readonly fallback?: DistractorStrategy
+    readonly excludeSimilarStrings?: boolean
+  }
+  readonly a11y: {
+    readonly screenReaderSafe: boolean
+    /** Required when not screen-reader safe. Tests the SAME fact. */
+    readonly equivalentTemplate?: TemplateId
+  }
+  readonly timeLimitMs?: number | null
+  readonly difficultyModifier?: number
+}
+
+/**
+ * fact × template. This is what a lesson is made of — but note that memory is
+ * tracked per FACT, not per item: knowing "Stockholm is the capital of Sweden" is
+ * one piece of knowledge however we choose to ask about it.
+ */
+export type Item = {
+  readonly id: string
+  readonly factId: FactId
+  readonly templateId: TemplateId
+  readonly entityId: EntityId
+  readonly difficulty: number
+  readonly screenReaderSafe: boolean
+}
+
+export type AnswerOption = {
+  readonly id: string
+  readonly label: string
+  readonly isCorrect: boolean
+}
+
+/** A question, ready to render. Contains no logic and no React. */
+export type Question = {
+  readonly item: Item
+  /** i18n key plus its params — never a pre-built sentence. */
+  readonly promptKey: string
+  readonly promptParams: Readonly<Record<string, string>>
+  readonly options: readonly AnswerOption[]
+  readonly modality: Template['modality']
+  /**
+   * The image the PROMPT is asking about — the flag in "Which country's flag is
+   * this?". Present only for image-modality templates whose entity carries the
+   * matching asset.
+   *
+   * On the question, never on the options. It used to be per-option: every option
+   * carried its own entity's flag, which for a template answered by country NAME
+   * would have printed the answer beside each name. Nothing rendered it, so it was
+   * wrong quietly rather than loudly.
+   */
+  readonly promptAsset?: string
+  /**
+   * A picture of WHERE the entity is, as context beside the question rather than as
+   * the question. "What is the capital of Japan?" is a better question with a map of
+   * Japan next to it — you learn the capital and you place the country, which is two
+   * things for one look and the reason this app is not a flashcard deck.
+   *
+   * **Absent whenever the answer IS the entity**, and that is the whole subtlety. On
+   * "Tokyo is the capital of which country?" a map of Japan is not context, it is the
+   * answer printed beside the question. The rule is enforced where this is built, not
+   * left to each screen to remember.
+   *
+   * Two paths because the picture is two layers — the country, and the land around it
+   * drawn in the same frame — and a host with one but not the other could only draw a
+   * shape floating in a void, which locates nothing. Both come from the pack rather
+   * than one being derived from the other: each is a separately licensed asset.
+   */
+  readonly locator?: { readonly path: string; readonly contextPath: string }
+  readonly timeLimitMs: number | null
+  /** For the wrong-answer explanation: "Japan is a red circle on white." */
+  readonly hint?: string
+  /**
+   * True when the user has never reviewed this fact. Set by the lesson composer,
+   * which is the only layer that knows the user's memory state.
+   *
+   * It drives heart accounting: new items never cost a heart. Inferring it from
+   * difficulty would be guessing, and guessing wrong here penalises a beginner.
+   */
+  readonly isNew: boolean
+}
+
+export type ContentIndex = {
+  readonly entities: ReadonlyMap<EntityId, Entity>
+  readonly facts: ReadonlyMap<FactId, Fact>
+  readonly templates: ReadonlyMap<TemplateId, Template>
+  readonly items: readonly Item[]
+  /** factId → items generated from it. */
+  readonly itemsByFact: ReadonlyMap<FactId, readonly Item[]>
+}

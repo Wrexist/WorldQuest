@@ -1,0 +1,28 @@
+{
+  "quests:title": "Dagens uppdrag",
+  "quests:subtitle": "Fem saker. Ungefär tio minuter.",
+
+  "quests:progress": "{done} av {total} klara",
+  "quests:reward.task": "+{xp} XP",
+  "quests:reward.bonus": "+{xp} XP för alla fem",
+
+  "quests:slot.locate": "Hitta på kartan",
+  "quests:slot.recognise": "Känn igen flaggan",
+  "quests:slot.recall": "Namnge huvudstaden",
+  "quests:slot.discover": "Lär dig något nytt",
+  "quests:slot.perform": "Avsluta starkt",
+
+  "quests:goal.perfect_lesson": "En lektion utan fel",
+  "quests:goal.speed_round": "En lektion på under 90 sekunder",
+  "quests:goal.streak_keeper": "Vilken lektion som helst – det är hela uppgiften",
+
+  "quests:task.count": "{progress} / {target}",
+  "quests:task.done": "Klart",
+  "quests:task.label": "{title}, {progress} av {target}",
+
+  "quests:complete.title": "Alla fem. Snyggt jobbat.",
+  "quests:complete.body": "Ditt nästa uppdrag kommer vid midnatt.",
+
+  "quests:empty.title": "Ditt uppdrag byggs",
+  "quests:empty.body": "Gör en lektion så är dagens fem redo."
+}

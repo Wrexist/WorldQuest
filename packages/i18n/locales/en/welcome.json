@@ -1,0 +1,20 @@
+{
+  "welcome:title": "The world missed you",
+  "welcome:title__note": "Headline for a user returning after a week or more. Warm, and about US missing THEM — never about what they failed to do.",
+  "welcome:body": "{days, plural, one {It's been a day} other {It's been # days}}. Everything you learned is still here.",
+  "welcome:body__note": "Reassurance on return. The second sentence is the important one: returning users fear their progress is gone.",
+  "welcome:kept.title": "Still yours",
+  "welcome:kept.title__note": "Heading above the counts a returning user keeps.",
+  "welcome:kept.facts": "{count, plural, one {# fact learned} other {# facts learned}}",
+  "welcome:kept.facts__note": "How much knowledge the user still has. Framed as kept, never as decayed.",
+  "welcome:kept.countries": "{count, plural, one {# country} other {# countries}}",
+  "welcome:kept.countries__note": "How many countries the user has met.",
+  "welcome:due.some": "{count, plural, one {# fact is ready for review} other {# facts are ready for review}}",
+  "welcome:due.some__note": "What is waiting. 'Ready for review', never 'overdue' — the scheduler slipping is not the user's fault.",
+  "welcome:due.none": "Nothing is waiting. Start wherever you like.",
+  "welcome:due.none__note": "Shown when nothing is due. Never a dead end.",
+  "welcome:start": "Pick up where you left off",
+  "welcome:start__note": "Primary button. Continues rather than restarting — a returning user has not lost their place.",
+  "welcome:later": "Just looking around",
+  "welcome:later__note": "Secondary action that dismisses without starting a lesson. A returning user who is not ready to study must not be trapped."
+}

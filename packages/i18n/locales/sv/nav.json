@@ -1,0 +1,16 @@
+{
+  "nav:home": "Hem",
+  "nav:explore": "Utforska",
+  "nav:quests": "Uppdrag",
+  "nav:profile": "Profil",
+  "nav:more": "Mer",
+  "nav:lesson.title": "Lektion",
+  "nav:explore.soon.title": "Utforska kommer snart",
+  "nav:explore.soon.body": "Länder, kontinenter och flaggorna du har samlat kommer att finnas här.",
+  "nav:quests.soon.title": "Uppdrag kommer snart",
+  "nav:quests.soon.body": "Ditt dagliga uppdrag och veckans utmaningar kommer att finnas här.",
+  "nav:profile.soon.title": "Din profil kommer snart",
+  "nav:profile.soon.body": "Nivå, streakhistorik och allt du har bemästrat kommer att finnas här.",
+  "nav:more.soon.title": "Mer kommer snart",
+  "nav:more.soon.body": "Inställningar, ljud, påminnelser och ditt konto kommer att finnas här."
+}

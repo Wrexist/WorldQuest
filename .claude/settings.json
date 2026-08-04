@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Read(//home/user/WorldQuest/**)",
+      "Bash(pnpm install)",
+      "Bash(pnpm verify)",
+      "Bash(pnpm typecheck)",
+      "Bash(pnpm lint)",
+      "Bash(pnpm lint:a11y)",
+      "Bash(pnpm test)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm content:*)",
+      "Bash(pnpm i18n:*)",
+      "Bash(pnpm design:*)",
+      "Bash(pnpm engines:*)",
+      "Bash(pnpm db:start)",
+      "Bash(pnpm db:reset)",
+      "Bash(pnpm db:types)",
+      "Bash(pnpm db:test)",
+      "Bash(pnpm --filter * test)",
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(node --version)",
+      "Bash(pnpm --version)",
+      "Bash(npx tsc --noEmit)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(eas build:*)",
+      "Bash(eas submit:*)",
+      "Bash(supabase db push:*)",
+      "Bash(supabase link:*)"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(supabase db reset --linked:*)",
+      "Read(//home/user/WorldQuest/.env)",
+      "Read(//home/user/WorldQuest/.env.*)",
+      "Read(//home/user/WorldQuest/**/*.pem)",
+      "Read(//home/user/WorldQuest/**/*.p8)",
+      "Read(//home/user/WorldQuest/**/*.keystore)"
+    ]
+  },
+  "env": {
+    "NODE_OPTIONS": "--max-old-space-size=4096",
+    "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": "1"
+  }
+}

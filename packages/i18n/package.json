@@ -1,0 +1,18 @@
+{
+  "name": "@worldquest/i18n",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "check": "tsx scripts/check.ts",
+    "types": "tsx scripts/build-keys.ts",
+    "test": "vitest run",
+    "pseudo": "tsx scripts/pseudo.ts"
+  },
+  "dependencies": {
+    "i18next": "^23.16.8",
+    "intl-messageformat": "^10.7.0"
+  },
+  "main": "./src/index.ts"
+}

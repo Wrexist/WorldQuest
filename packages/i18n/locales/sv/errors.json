@@ -1,0 +1,10 @@
+{
+  "errors:notFound.title": "Den sidan finns inte längre",
+  "errors:notFound.body": "Länken du följde leder ingenstans i appen. Den kan ha hört till en lektion som har ändrats sedan dess.",
+  "errors:notFound.cta": "Ta mig hem",
+
+  "errors:crash.title": "Något gick fel hos oss",
+  "errors:crash.body": "Det är inte ditt fel, och inget du lärt dig är borta – det ligger sparat på din enhet.",
+  "errors:crash.cta": "Försök igen",
+  "errors:crash.detail": "Teknisk detalj"
+}

@@ -1,0 +1,50 @@
+{
+  "settings:title": "Inställningar",
+
+  "settings:section.learning": "Lärande",
+  "settings:section.sound": "Ljud & känsla",
+  "settings:section.language": "Språk",
+  "settings:section.sync": "Väntar på synk",
+  "settings:sync.waiting": "{count, plural, one {# lektion har inte nått servern än} other {# lektioner har inte nått servern än}}. Inget är borta — appen försöker igen.",
+  "settings:sync.retry": "Försök skicka igen",
+  "settings:section.privacy": "Integritet & data",
+  "settings:section.about": "Om",
+  "settings:section.premium": "Premium",
+
+  "settings:premium.active": "Premium är på. Tack — det betalar för kartorna.",
+  "settings:premium.trial": "{count, plural, =0 {Din gratisperiod slutar i dag} one {# dag kvar av din gratisperiod} other {# dagar kvar av din gratisperiod}}. Vi påminner dig innan den förnyas.",
+  "settings:premium.ending": "Premium gäller perioden ut som du redan betalat för. Att slå på förnyelsen igen är ett tryck i butiken, när du vill.",
+  "settings:premium.see": "Se Premium",
+  "settings:premium.manage": "Hantera prenumeration",
+
+  "settings:goal.label": "Dagligt mål",
+  "settings:goal.value": "{minutes, plural, one {# minut om dagen} other {# minuter om dagen}}",
+  "settings:goal.help": "Du kan ändra det när som helst. En missad dag är inget misslyckande.",
+
+  "settings:reminder.label": "Daglig påminnelse",
+  "settings:reminder.help": "En om dagen, vid en tid du väljer. Aldrig fler.",
+
+  "settings:sound.label": "Ljudeffekter",
+  "settings:haptics.label": "Vibration",
+  "settings:motion.label": "Minska rörelse",
+  "settings:motion.help": "Följer din enhets inställning om du inte ändrar den här.",
+
+  "settings:language.label": "Appens språk",
+  "settings:language.system": "Följ min enhet",
+  "settings:language.en": "English",
+  "settings:language.sv": "Svenska",
+
+  "settings:privacy.policy": "Integritetspolicy",
+  "settings:privacy.terms": "Användarvillkor",
+  "settings:privacy.analytics.label": "Hjälp oss förbättra WorldQuest",
+  "settings:privacy.analytics.help": "Anonym användningsdata. Aldrig på för ett barnkonto, aldrig såld, aldrig delad.",
+  "settings:privacy.account.title": "Dina uppgifter",
+  "settings:privacy.account.body": "Du lär dig utan konto, så inget här identifierar dig. När konton kommer hittar du export och radering av dina uppgifter här.",
+
+  "settings:about.version": "Version",
+  "settings:about.licences": "Öppen källkod-licenser",
+  "settings:about.credits": "Kart- och flaggdata kommer från öppna källor och anges vid varje fakta.",
+
+  "settings:on": "På",
+  "settings:off": "Av"
+}
