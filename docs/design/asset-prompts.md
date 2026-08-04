@@ -728,6 +728,39 @@ sky blue.
 
 ---
 
+## Getting the prompts out of this file
+
+```bash
+pnpm assets:prompts                          # every asset, one line each
+pnpm assets:prompts --wave P0                # the 24 prompts that block launch
+pnpm assets:prompts --id atlas/welcome.png   # one, assembled, ready to paste
+pnpm assets:prompts --wave P0 --out .assets-prompts   # one .txt per asset
+```
+
+It reads **this file** — nothing is duplicated into the script — and prints the Style
+Block, the body and the negative block already joined. That is the whole point: the
+rule at the top of this page is that the Style Block must be *byte-identical* every
+time, and 24 prompts pasted by hand is 24 chances to drop a line from it. The failure
+is invisible, which is the worst kind: each image looks fine alone and the set does not
+hang together.
+
+24 prompts, 31 delivered files. The wordmark and the two lockups (§1b, §1c) are **set,
+not generated**, and three of the four icon exports (§2b–§2d) are re-exports of one
+drawing rather than separate prompts.
+
+### Which tool
+
+| | |
+|---|---|
+| **ChatGPT (Plus/Pro)** | Works, and it is the cheapest path if you already pay for it. **Manual only** — a ChatGPT subscription grants no API key, so nothing can drive it from a script. Paste, download, rename to the path in the prompt header. |
+| **OpenAI API** (`gpt-image-1`) | Scriptable, but billed separately from ChatGPT at platform.openai.com. A subscription does not include it. |
+| **Midjourney / Firefly / Ideogram** | Fine. The Style Block is written to be tool-agnostic. |
+
+Whichever it is, the character sheet or tier frame goes **first** and is then used as a
+reference image for its family — that is what produces one character instead of six.
+
+---
+
 ## Workflow
 
 1. Generate the **character sheet** or **tier frame** first. Use it as a reference

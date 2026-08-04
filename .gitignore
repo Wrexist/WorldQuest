@@ -67,3 +67,8 @@ tsx-0/
 # "no private key is ever committed" is worth more than the exception it would earn.
 # The fixtures the tests read are committed; only the keys that made them are not.
 supabase/functions/_src/_shared/__fixtures__/.work/
+
+# Output of `pnpm assets:prompts --out`. Every file in it is a projection of
+# docs/design/asset-prompts.md, and a committed projection is a copy that can
+# disagree with its source.
+.assets-prompts/
