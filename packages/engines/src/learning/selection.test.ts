@@ -182,6 +182,29 @@ describe('selectItems', () => {
     expect(picked.filter((id) => restingIds.has(id)).length).toBeLessThanOrEqual(3)
   })
 
+  it('still offers a rested leech when it is the only thing left', () => {
+    // The cold-start branch used to undo the release. `hasHistory` counted only ACTIVE
+    // candidates, so a user whose every fact had become a leech read as brand new: the
+    // mix went to 90 % fresh with `struggling` at zero, and the backfill never looked at
+    // the rested ones either. Both doors shut in exactly the case where every remaining
+    // fact needs one — the life sentence, restored by the branch meant for newcomers.
+    const resting = Array.from({ length: 4 }, (_, i) => ({
+      ...dueCandidates()[0]!,
+      factId: `fact.leech${i}`,
+      suspended: true,
+      lapses: 9,
+      dueAt: NOW - 86_400_000,
+    }))
+    const picked = selectItems({
+      candidates: resting,
+      newFactIds: [], // nothing new in this topic either
+      count: 10,
+      now: NOW,
+      rng: seededRng(13),
+    })
+    expect(picked.length).toBeGreaterThan(0)
+  })
+
   it('prefers the most overdue reviews', () => {
     const candidates = [
       dueFact('geo.A1.capital', 1),

@@ -381,7 +381,14 @@ for (const file of packFiles) {
           })
         }
       }
-      const top = tiers[tiers.length - 1]
+      // The HIGHEST threshold, not the last one written. Tiers are conventionally
+      // authored in ascending order and nothing enforces that, so reading the last
+      // element makes this check depend on the author's habit — reorder the array and
+      // the "collect them all" guard silently starts measuring bronze.
+      const top = tiers.reduce<(typeof tiers)[number] | undefined>(
+        (best, tier) => (best === undefined || tier.threshold > best.threshold ? tier : best),
+        undefined,
+      )
       if (top && top.threshold < max) {
         errors.push({
           file: rel,

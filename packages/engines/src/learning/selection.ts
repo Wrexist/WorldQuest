@@ -151,7 +151,14 @@ export function selectItems(input: SelectionInput): FactId[] {
   const fresh = newFactIds.filter(inTopic)
 
   // Cold start: no history at all. Lead with new content.
-  const hasHistory = active.length > 0
+  //
+  // `resting` counts as history. Without it, a user whose facts have ALL become leeches
+  // reads as a brand-new user: the mix goes to 90 % fresh with `struggling` at zero, and
+  // the backfill below never looked at `resting` either — so the one slot that gives a
+  // rested leech a chance to be answered correctly, and released, was closed in exactly
+  // the case where every remaining fact needs it. The life sentence this block exists to
+  // end, restored by the cold-start branch.
+  const hasHistory = active.length > 0 || resting.length > 0
   const mix = !hasHistory
     ? { due: 0, fresh: 0.9, struggling: 0 }
     : due.length > BACKLOG_THRESHOLD && !catchUpMode
@@ -184,6 +191,10 @@ export function selectItems(input: SelectionInput): FactId[] {
     ...due.map((c) => c.factId),
     ...fresh,
     ...active.map((c) => c.factId),
+    // Last, because the 10 % cap above is the real allowance for them and this is only
+    // the alternative to returning a short lesson. Still present, because "nothing else
+    // to show" is precisely when a rested leech should get its chance.
+    ...resting.map((c) => c.factId),
   ]
   for (const id of backfill) {
     if (picked.length >= count) break
