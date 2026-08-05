@@ -155,7 +155,7 @@ export type Database = {
           hearts_lost: number
           id: string
           items: number
-          kind: string
+          kind: Database['public']['Enums']['lesson_kind']
           started_at: string
           topic_id: string | null
           user_id: string
@@ -169,7 +169,7 @@ export type Database = {
           hearts_lost?: number
           id: string
           items: number
-          kind: string
+          kind: Database['public']['Enums']['lesson_kind']
           started_at: string
           topic_id?: string | null
           user_id: string
@@ -183,7 +183,7 @@ export type Database = {
           hearts_lost?: number
           id?: string
           items?: number
-          kind?: string
+          kind?: Database['public']['Enums']['lesson_kind']
           started_at?: string
           topic_id?: string | null
           user_id?: string
@@ -631,6 +631,7 @@ export type Database = {
       }
     }
     Enums: {
+      lesson_kind: 'lesson' | 'quest' | 'review' | 'challenge' | 'event'
       mastery_level:
         | 'unseen'
         | 'learning'
@@ -785,6 +786,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      lesson_kind: ['lesson', 'quest', 'review', 'challenge', 'event'],
       mastery_level: [
         'unseen',
         'learning',
