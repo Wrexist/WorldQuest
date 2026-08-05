@@ -64,14 +64,33 @@ export function todaysQuest(
   })
 }
 
-/** Today's quest with the user's progress applied. Null until content is loaded. */
-export function useDailyQuest(): { quest: DailyQuest | null; loading: boolean } {
-  const { index, memory, status } = useContent()
+/**
+ * Today's quest with the user's progress applied. Null until content is loaded.
+ *
+ * `status` is passed through rather than collapsed into `loading`. It used to be, and
+ * the consequence was that a content load which FAILED produced `quest: null` with
+ * `loading: false` — which the screen renders as "no quest yet, start a lesson". That
+ * is a wrong answer rather than a missing one: it tells a user nothing is wrong and
+ * offers them an action that cannot fix it. Surfaced by tightening `pnpm five-states`
+ * to stop counting the word "error" inside a comment as error handling.
+ */
+export function useDailyQuest(): {
+  quest: DailyQuest | null
+  loading: boolean
+  status: 'loading' | 'ready' | 'error'
+  reload: () => void
+} {
+  const { index, memory, status, reload } = useContent()
 
   const generated = useMemo<DailyQuest | null>(
     () => (index === null ? null : todaysQuest(index.index, memory)),
     [index, memory],
   )
 
-  return { quest: useQuestWithProgress(generated), loading: status === 'loading' }
+  return {
+    quest: useQuestWithProgress(generated),
+    loading: status === 'loading',
+    status,
+    reload,
+  }
 }

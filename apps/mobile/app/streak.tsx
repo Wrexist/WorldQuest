@@ -23,13 +23,14 @@ import { router } from 'expo-router'
 import { currentStreak, repairAvailability, type RecoveryState } from '@worldquest/engines'
 import { buyStreakFreeze } from '@worldquest/api'
 import { StreakScreen } from '../src/features/streak/StreakScreen.js'
+import { ContentGate } from '../src/components/ContentGate.js'
 import { useProgress } from '../src/features/home/useProgress.js'
 import { useOnline } from '../src/lib/connectivity.js'
 import { invalidateProgress } from '../src/lib/query.js'
 import { isConfigured, supabase } from '../src/lib/supabase.js'
 
 export default function StreakRoute() {
-  const { data } = useProgress()
+  const { data, status, refetch } = useProgress()
   const online = useOnline()
   const now = Date.now()
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -102,29 +103,37 @@ export default function StreakRoute() {
       .finally(() => setBuyingFreeze(false))
   }, [buyingFreeze])
 
+  // Every number on this screen comes from the server, so a failed fetch with nothing
+  // cached must not render — `data?.x ?? 0` would show a streak of zero, a longest of
+  // zero and no freezes to a user who has all three. That is the wrong-fact failure
+  // mode, on the one screen whose entire subject is a number the user cares about.
+  // `useProgress` has reported `status: 'error'` (only when there is no cache to fall
+  // back on) since it was written; this route read `data` and ignored it.
   return (
-    <StreakScreen
-      onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))}
-      // What the streak IS today, not what the database last wrote. `streaks.current` is
-      // only updated when a lesson lands, so a user who missed two days was being shown
-      // the number they had before they missed them, right up until the next lesson reset
-      // it under them.
-      current={currentStreak(state, now, timeZone)}
-      longest={state.longest}
-      freezesHeld={state.freezesHeld}
-      coins={data?.coins ?? 0}
-      repair={repairAvailability(state, now, timeZone)}
-      // The pre-break length, which is what a repair restores. `current` has already
-      // been reset to 1 by the time this screen can be reached.
-      restoreTo={state.longest}
-      now={now}
-      onBuyFreeze={isConfigured() ? onBuyFreeze : undefined}
-      buyingFreeze={buyingFreeze}
-      freezeNotice={freezeNotice}
-      onRepair={undefined}
-      // H7, scoped. Only these two controls need a server; the rest of this screen —
-      // and the rest of the app — works exactly as well without one.
-      offline={!online}
-    />
+    <ContentGate status={status} onRetry={refetch}>
+      <StreakScreen
+        onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))}
+        // What the streak IS today, not what the database last wrote. `streaks.current` is
+        // only updated when a lesson lands, so a user who missed two days was being shown
+        // the number they had before they missed them, right up until the next lesson reset
+        // it under them.
+        current={currentStreak(state, now, timeZone)}
+        longest={state.longest}
+        freezesHeld={state.freezesHeld}
+        coins={data?.coins ?? 0}
+        repair={repairAvailability(state, now, timeZone)}
+        // The pre-break length, which is what a repair restores. `current` has already
+        // been reset to 1 by the time this screen can be reached.
+        restoreTo={state.longest}
+        now={now}
+        onBuyFreeze={isConfigured() ? onBuyFreeze : undefined}
+        buyingFreeze={buyingFreeze}
+        freezeNotice={freezeNotice}
+        onRepair={undefined}
+        // H7, scoped. Only these two controls need a server; the rest of this screen —
+        // and the rest of the app — works exactly as well without one.
+        offline={!online}
+      />
+    </ContentGate>
   )
 }
