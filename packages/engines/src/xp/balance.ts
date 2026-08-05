@@ -224,8 +224,24 @@ export function levelForXp(totalXp: number): number {
   let level = Math.floor(Math.pow(totalXp / base, 1 / exponent))
 
   // Rounding in `xpForLevel` can put the estimate on the wrong side by one.
-  while (level > 1 && xpForLevel(level) > totalXp) level--
-  while (xpForLevel(level + 1) <= totalXp) level++
+  //
+  // Both loops step by one and both are guarded against the same thing: past roughly
+  // 2^53, adding one to a double is a no-op, so `level + 1 === level` and the condition
+  // can never change. The corrections then spin forever rather than converging. It takes
+  // an absurd input to get there — `Number.MAX_VALUE` lands the estimate near 1.6e161 —
+  // and "absurd input" is not the same as "cannot happen" when the consequence is a hung
+  // render on every screen that shows a level. The estimate is already correct at that
+  // magnitude; there is simply nothing left to correct by.
+  while (level > 1 && xpForLevel(level) > totalXp) {
+    const previous = level - 1
+    if (previous === level) break
+    level = previous
+  }
+  while (xpForLevel(level + 1) <= totalXp) {
+    const next = level + 1
+    if (next === level) break
+    level = next
+  }
 
   return Math.max(1, level)
 }

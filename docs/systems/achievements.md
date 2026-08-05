@@ -38,8 +38,16 @@ Most achievements are tiered, which multiplies content without multiplying desig
 | Platinum | `#E5E4E2` | 250 | 100 |
 | Legendary | `#A855F7` | 500 | 200 |
 
-`ach.flags.collector` at Bronze/Silver/Gold/Platinum = 10 / 50 / 100 / 195 flags.
+`ach.flags.collector` at Bronze/Silver/Gold/Platinum = 5 / 20 / 40 / 65 flags.
 One definition, four unlocks, four celebrations.
+
+Those are the numbers in the pack. They used to read 10 / 50 / 100 / 195 here and in the
+pack alike, against a content set holding 65 flags — so two of the four tiers could never
+be reached by anybody, with a progress bar creeping towards them for ever. §9 of the
+content validator now counts the ceiling from the packs and fails in both directions, so
+a threshold above what exists is caught, and so is a top tier left behind by a pack that
+grew. The example above is a real definition, not an illustration; if it disagrees with
+`packs/achievements/core.v1.json`, the pack is right and this line is stale.
 
 ## 3. Definition format
 

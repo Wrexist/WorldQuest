@@ -47,7 +47,12 @@ XP; getting it right across three weeks earns the mastery bonus.
 **Anti-farming**
 - Daily XP soft cap: **3,000** (≈ 60 min), after which XP earns at 25 %. Users are told plainly
   ("You've done plenty today — come back tomorrow for full XP"), which is on-brand.
-- Repeating an already-`mastered` fact in the same day earns 2 XP, not 10.
+- Repeating an already-`mastered` fact that is **not due** earns 2 XP, not 10 — the
+  constant is `repeatKnownNotDue`, and the rule is about the scheduler rather than
+  the clock. "In the same day" was both narrower and wrong: it read as a
+  cooldown, when what is being priced is answering something you already know that
+  nothing asked you to review. A mastered fact that IS due earns the full 10 plus
+  the overdue bonus, which is the ordering this table exists to produce.
 - A lesson with < 5 items earns no completion bonus.
 - **All XP is computed server-side.** The client's number is a prediction.
 
@@ -224,9 +229,14 @@ export const BALANCE = {
   coins: { /* … */ },
   hearts: {
     max: 5, resetPerLesson: true, newItemsCostHearts: false,
-    restoreEveryCorrectStreak: 5, regenMinutes: 45, childRegenMinutes: 22,
+    restoreEveryCorrectStreak: 5, restoreOnRedemption: 1,
+    // No regeneration clock. `regenMinutes` and `childRegenMinutes` were here beside
+    // `resetPerLesson: true`, which are two designs for one mechanic — if hearts reset
+    // at the start of every lesson there is no state to regenerate — and the per-lesson
+    // design is the one with the argument behind it. Gone from the table rather than
+    // left as a second answer for the next reader to find and believe.
   },
-  levels: { base: 50, exponent: 1.55 },
+  levels: { base: 50, exponent: 1.9 },
 } as const
 ```
 

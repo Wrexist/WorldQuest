@@ -126,8 +126,27 @@ describe('levelForXp inverts xpForLevel exactly', () => {
     const level = levelForXp(1e15)
     const elapsedNs = Number(process.hrtime.bigint() - started)
 
-    expect(elapsedNs).toBeLessThan(5_000_000)
+    // 50 ms, not 5. A wall-clock budget on a shared CI runner is a flake waiting to
+    // happen, and the margin here is what decides whether it is one: the analytic form
+    // answers this in ~0.1 ms and the loop it replaced takes seconds, so anything
+    // between the two catches the regression. 5 ms is 50× the real cost and one noisy
+    // neighbour away from red; 50 ms is 500× and still two orders of magnitude below a
+    // reintroduced loop.
+    expect(elapsedNs).toBeLessThan(50_000_000)
     expect(level).toBe(bruteForce(1e15))
+  })
+
+  it('terminates on the largest number there is', () => {
+    // Not reachable by playing — but the failure is a HANG, on every screen that shows
+    // a level, and the cause is arithmetic rather than scale: past ~2^53 adding one to
+    // a double is a no-op, so `level + 1 === level` and the correction loops can never
+    // move off their estimate. `bruteForce` is not the oracle here, because it is the
+    // thing that would spin.
+    for (const absurd of [Number.MAX_VALUE, 1e308, Number.MAX_SAFE_INTEGER * 4]) {
+      const level = levelForXp(absurd)
+      expect(Number.isFinite(level), `at ${absurd}`).toBe(true)
+      expect(level).toBeGreaterThan(1)
+    }
   })
 
   it('is level 1 for nothing, and for nonsense', () => {

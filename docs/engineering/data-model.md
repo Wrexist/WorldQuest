@@ -148,7 +148,10 @@ create table review_log (
 create table lessons (
   id             uuid primary key,                 -- client UUID = idempotency key
   user_id        uuid not null references profiles(id) on delete cascade,
-  kind           text not null,                    -- lesson|quest|review|challenge|event
+  -- An ENUM, not text. It reaches `xp_ledger.reason` as 'lesson:' || kind, and the
+  -- ledger's reason is what answers "where did my XP come from" — a column a client
+  -- could write arbitrary strings into cannot answer it. See 20260805140000.
+  kind           lesson_kind not null,             -- lesson|quest|review|challenge|event
   topic_id       text,
   items          smallint not null,
   correct        smallint not null,
