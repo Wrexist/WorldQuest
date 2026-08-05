@@ -159,10 +159,37 @@ export function useLesson({
     })
   }, [state, memory])
 
-  if (isFinished(state) && optimistic && !completed.current) {
+  /**
+   * Completion, after the render commits — not during it.
+   *
+   * This was a bare `if` in the render body that set `completed.current = true` and then
+   * called `onComplete`, which enqueues the submission and navigates. The comment on the
+   * ref says completion "must fire exactly once even if React re-renders or
+   * double-invokes", and the implementation was the one pattern React explicitly forbids
+   * for exactly that guarantee.
+   *
+   * A render can be thrown away. Under StrictMode or concurrent rendering the flag was
+   * already set by the discarded pass, so the effect the flag was guarding never ran
+   * again — and the lesson the user just finished was enqueued nowhere and navigated
+   * from never. Silent lost progress, on the last screen of the session, which is the
+   * most expensive place in the product to lose anything.
+   *
+   * In an effect the ref is only set after a commit, so a discarded render leaves it
+   * untouched and the committed one still fires.
+   *
+   * `onComplete` is held in a ref rather than listed as a dependency. It is recreated on
+   * every render at the call site, so depending on it would re-run this whenever anything
+   * above re-rendered; omitting it from the array would be a lint suppression, and this
+   * repo bans those. A ref is the version that is correct rather than silenced.
+   */
+  const onCompleteRef = useRef(onComplete)
+  onCompleteRef.current = onComplete
+
+  useEffect(() => {
+    if (!isFinished(state) || !optimistic || completed.current) return
     completed.current = true
-    onComplete(state, optimistic)
-  }
+    onCompleteRef.current(state, optimistic)
+  }, [state, optimistic])
 
   /**
    * What a given answer earned, using the same rule the server will apply.
