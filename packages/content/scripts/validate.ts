@@ -467,6 +467,64 @@ for (const [rel, perRegion] of difficultyByRegion) {
   }
 }
 
+// ── 12. A region tag must agree with the region fact ────────────────────────
+//
+// Facts carry subregion tags — `southern-africa`, `east-asia` — and templates select on
+// them, so a wrong one puts a country in the wrong lesson and, worse, makes it a
+// plausible distractor for the region it is not in. That is the wrong-fact bug this
+// repo treats as the most serious kind it can ship.
+//
+// The truth already exists: `geo.<CC>.location` is the region fact, generated from the
+// entity pack. A tag on any OTHER fact for the same entity that names a different
+// subregion is a second, hand-maintained copy of that answer, and hand-maintained
+// copies disagree. `geo.ZW.currency` was tagged `eastern-africa` against a location
+// fact of `southern-africa` — one row out of hundreds, which is exactly the kind of
+// thing review finds by luck and a script finds every time.
+{
+  type Tagged = { id?: string; entity?: string; attribute?: string; tags?: string[]; value?: unknown }
+  type TaggedPack = { items?: Tagged[] }
+
+  const loaded = packFiles.map((file) => ({
+    rel: relative(repoRoot, file),
+    pack: stripComments(JSON.parse(readFileSync(file, 'utf8'))) as TaggedPack,
+  }))
+
+  // The region fact's own value, by entity.
+  //
+  // Keyed on `value.id`, which is the tag vocabulary. The display name is NOT: the
+  // region whose id is `eastern-africa` is called "East Africa" in English, so slugging
+  // the name yields `east-africa` and matches no tag anywhere. Writing this check the
+  // wrong way round first is how that was found — it went green against a file with the
+  // bug still in it, which is the failure mode every validator has to be tested against.
+  const regionOf = new Map<string, string>()
+  for (const { pack } of loaded) {
+    for (const item of pack.items ?? []) {
+      if (item.attribute !== 'location' || !item.entity) continue
+      const value = item.value as { id?: string } | undefined
+      if (value?.id) regionOf.set(item.entity, value.id)
+    }
+  }
+  const subregions = new Set(regionOf.values())
+
+  for (const { rel, pack } of loaded) {
+    for (const item of pack.items ?? []) {
+      if (!item.entity || item.attribute === 'location') continue
+      const expected = regionOf.get(item.entity)
+      if (!expected) continue
+      const named = (item.tags ?? []).filter((tag) => subregions.has(tag))
+      const wrong = named.filter((tag) => tag !== expected)
+      if (wrong.length > 0) {
+        errors.push({
+          file: rel,
+          message:
+            `${item.id}: tagged ${wrong.join(', ')} but geo.${item.entity}.location says ` +
+            `${expected} — a region tag is a copy of the region fact, and this copy disagrees`,
+        })
+      }
+    }
+  }
+}
+
 console.log(`Content validation\n`)
 console.log(`  packs      ${packFiles.length}`)
 console.log(`  facts      ${factCount}`)

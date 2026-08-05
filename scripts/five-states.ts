@@ -113,9 +113,12 @@ const WAIVED: Record<string, Partial<Record<State, string>>> = {
   'streak/StreakScreen': {
     empty: 'zero days is a real content state with its own copy, not an empty state',
     loading: 'streak comes from the progress cache, which renders a zero state rather than a wait',
-    error:
-      'the two controls that need a server (freeze, repair) disable themselves and say ' +
-      'why; the rest of the screen is local and has nothing to fail',
+    // The `error` waiver is gone, and the reason it was ever defensible is the reason it
+    // stopped being: it said the server-backed controls "disable themselves and say why".
+    // Disabling covers a purchase that cannot be ATTEMPTED. It said nothing about one
+    // that was attempted and refused — every `FreezePurchase` status other than
+    // `purchased` was dropped, so "you already hold two" and "bought" looked identical.
+    // The screen now says which, and that is an error state, so it is no longer waived.
   },
   'quests/QuestScreen': {
     offline:

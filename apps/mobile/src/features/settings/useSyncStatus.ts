@@ -34,25 +34,39 @@ export type SyncStatus = {
  * number is stable between real changes, which is exactly the contract.
  */
 /**
- * The snapshot, as one number.
+ * The snapshot, as one string.
  *
  * `useSyncExternalStore` compares by reference and `peekQueue` returns a fresh object on
- * every commit, so a COUNT is the snapshot. Two counts are packed into one integer rather
- * than returned as an object for the same reason — an object would be a new reference
- * every render and would loop.
+ * every commit, so a PRIMITIVE is the snapshot. Not an object — that would be a new
+ * reference every render and would loop.
+ *
+ * A string rather than the packed integer this used to be. `parked * 1_000 + pending`
+ * silently corrupts the moment `pending` reaches 1000: the pending count carries into
+ * the parked digits, `parked` becomes non-zero, and Settings switches to "waiting to
+ * reach the server" with a retry link — for work that is still trying. The multiplier
+ * bought nothing, because `useSyncExternalStore` compares with `Object.is` and any
+ * primitive works, and a string has no ceiling.
+ *
+ * `hasUnsynced` is encoded here too, rather than read beside the snapshot. Read outside
+ * it, the store only re-rendered when the packed number changed — so if the queue's
+ * COMPOSITION changed while both lengths stayed equal, the flag kept a stale value.
+ * Putting it in the snapshot removes that class of bug rather than the instance.
  */
-const queueSnapshot = (): number => {
+const queueSnapshot = (): string => {
   const q = peekQueue()
-  return q.parked.length * 1_000 + q.pending.length
+  return `${q.parked.length}:${q.pending.length}:${hasUnsyncedProgress(q) ? 1 : 0}`
 }
 
 export function useSyncStatus(): SyncStatus {
-  const packed = useSyncExternalStore(onQueueChange, queueSnapshot, queueSnapshot)
-  const parked = Math.floor(packed / 1_000)
+  const [parked = '0', pending = '0', unsynced = '0'] = useSyncExternalStore(
+    onQueueChange,
+    queueSnapshot,
+    queueSnapshot,
+  ).split(':')
   return {
-    parked,
-    pending: packed % 1_000,
-    hasUnsynced: hasUnsyncedProgress(peekQueue()),
+    parked: Number(parked),
+    pending: Number(pending),
+    hasUnsynced: unsynced === '1',
     onRetry: () => {
       for (const mutation of peekQueue().parked) retryParkedMutation(mutation.id)
     },

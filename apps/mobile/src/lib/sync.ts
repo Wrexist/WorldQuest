@@ -19,6 +19,7 @@ import {
 } from '@worldquest/engines'
 import type { AnsweredItem } from '@worldquest/engines'
 import { submitLesson } from '@worldquest/api'
+import type { SubmitLessonResponse } from '@worldquest/api'
 import { currentUser, isConfigured, supabase } from './supabase.js'
 import { isOnline, onConnectivityChange } from './connectivity.js'
 import { invalidateProgress } from './query.js'
@@ -122,11 +123,32 @@ export function enqueueLesson(submission: LessonSubmission): void {
  * stands between a flaky connection and parked work the user actually did.
  */
 let inFlight: Promise<void> | null = null
+/**
+ * A caller arrived mid-flush, so one more pass is owed after this one drains.
+ *
+ * The guard above stopped two concurrent passes, and stopped a bit more than that:
+ * `run` snapshots its batch at the top, so work enqueued after that line is not in it,
+ * and a caller who merely JOINED the running promise got nothing sent. `enqueueLesson`
+ * calls `flush`, so a user finishing two lessons back to back left the second one
+ * queued until the next connectivity change. Serialising rather than sharing keeps the
+ * duplicate-send race closed and still sends the work.
+ */
+let rerun = false
 
 export function flush(): Promise<void> {
-  // Callers that arrive mid-flush join the one already running rather than starting a
-  // second pass over the same queue.
-  return (inFlight ??= run().finally(() => {
+  if (inFlight !== null) {
+    rerun = true
+    return inFlight
+  }
+
+  const drain = async (): Promise<void> => {
+    do {
+      rerun = false
+      await run()
+    } while (rerun)
+  }
+
+  return (inFlight = drain().finally(() => {
     inFlight = null
   }))
 }
@@ -231,48 +253,72 @@ async function send(mutation: QueuedMutation): Promise<void> {
     heartsLost: submission.heartsLost,
   })
 
-  /**
-   * The reconcile every comment in this codebase promised and nothing performed.
-   *
-   * `submitLesson`'s result was discarded here. The client showed an optimistic
-   * prediction, the server computed the truth, and the truth went in the bin — while
-   * `useShop`, `useLesson` and `useProgress` all carry comments saying "the server's
-   * answer overwrites this on the next reconcile". Home kept the numbers it had until
-   * TanStack Query happened to refetch for some other reason, so a user finishing a
-   * lesson watched their XP not move.
-   *
-   * Invalidating rather than writing the response into the cache, deliberately. This
-   * flush may be one of several queued lessons, and the last response is not the current
-   * total; the query knows how to ask for the total. And the streak, the wallet and the
-   * mastery count all move together — a single refetch is both cheaper and less likely
-   * to leave two of the three stale than three hand-written cache writes.
-   */
-  invalidateProgress()
+  reconcile(result)
+}
 
-  /**
-   * Achievements, from the server's answer rather than from a local guess.
-   *
-   * `fact_mastered` and `streak_extended` were both listed in
-   * `features/achievements/progress.ts` as unwirable — the first because it "needs real
-   * memory state, which arrives with the server", the second because "a client that can
-   * write a streak is a client that can be edited". Both were right, and both stopped
-   * being obstacles the moment this response started carrying `masteryChanges` and the
-   * authoritative streak.
-   *
-   * Here rather than at lesson-end for the same reason: this is when the truth arrives. A
-   * lesson finished in a tunnel unlocks its achievements when the queue flushes, which is
-   * later than the XP appears and is the honest ordering — the alternative is unlocking
-   * on a prediction and taking it back, and a badge that is revoked is worse than one
-   * that is late.
-   */
-  for (const unlock of recordServerOutcome({
-    masteryChanges: result.masteryChanges ?? [],
-    streak: result.streak?.current ?? null,
-    overdueCleared: result.overdueCleared ?? 0,
-    entityMastered: result.entityMastered ?? [],
-    at: Date.now(),
-  })) {
-    track('achievement_unlocked', { achievement_id: unlock.achievementId, tier: unlock.tier })
+/**
+ * Everything the server told us, applied — outside the try that decides delivery.
+ *
+ * `send` is awaited inside `run`'s try, and its catch calls `fail(...)`. Everything in
+ * here runs AFTER the server accepted the lesson, so a throw from a cache invalidation,
+ * an achievement rule or an analytics sink used to mark recorded work as failed. The
+ * idempotency key means the retry never double-awarded, so no currency was ever at risk;
+ * an attempt was burned against `MAX_ATTEMPTS`, and the retry re-processed the same
+ * outcome, which can emit an `achievement_unlocked` twice.
+ *
+ * Analytics and cache freshness do not get a vote on whether a lesson counts as
+ * delivered. A failed reconcile is corrected by the next refetch and a missed unlock by
+ * the next server outcome; a parked lesson is corrected by nothing.
+ */
+function reconcile(result: SubmitLessonResponse): void {
+  try {
+    /**
+     * The reconcile every comment in this codebase promised and nothing performed.
+     *
+     * `submitLesson`'s result was discarded here. The client showed an optimistic
+     * prediction, the server computed the truth, and the truth went in the bin — while
+     * `useShop`, `useLesson` and `useProgress` all carry comments saying "the server's
+     * answer overwrites this on the next reconcile". Home kept the numbers it had until
+     * TanStack Query happened to refetch for some other reason, so a user finishing a
+     * lesson watched their XP not move.
+     *
+     * Invalidating rather than writing the response into the cache, deliberately. This
+     * flush may be one of several queued lessons, and the last response is not the current
+     * total; the query knows how to ask for the total. And the streak, the wallet and the
+     * mastery count all move together — a single refetch is both cheaper and less likely
+     * to leave two of the three stale than three hand-written cache writes.
+     */
+    invalidateProgress()
+
+
+    /**
+     * Achievements, from the server's answer rather than from a local guess.
+     *
+     * `fact_mastered` and `streak_extended` were both listed in
+     * `features/achievements/progress.ts` as unwirable — the first because it "needs real
+     * memory state, which arrives with the server", the second because "a client that can
+     * write a streak is a client that can be edited". Both were right, and both stopped
+     * being obstacles the moment this response started carrying `masteryChanges` and the
+     * authoritative streak.
+     *
+     * Here rather than at lesson-end for the same reason: this is when the truth arrives. A
+     * lesson finished in a tunnel unlocks its achievements when the queue flushes, which is
+     * later than the XP appears and is the honest ordering — the alternative is unlocking
+     * on a prediction and taking it back, and a badge that is revoked is worse than one
+     * that is late.
+     */
+    for (const unlock of recordServerOutcome({
+      masteryChanges: result.masteryChanges ?? [],
+      streak: result.streak?.current ?? null,
+      overdueCleared: result.overdueCleared ?? 0,
+      entityMastered: result.entityMastered ?? [],
+      at: Date.now(),
+    })) {
+      track('achievement_unlocked', { achievement_id: unlock.achievementId, tier: unlock.tier })
+    }
+  } catch {
+    // Deliberately swallowed. See above: the lesson is recorded either way, and a
+    // parked lesson is a worse outcome than a stale cache or a missing event.
   }
 }
 

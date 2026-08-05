@@ -376,6 +376,13 @@ describe('Settings — work that is merely waiting', () => {
         sync={sync({})}
       />,
     )
+    // `waiting to sync` is the SECTION HEADING (`settings:section.sync`), not either
+    // body message — which is what makes this assertion bite: the heading renders
+    // whenever the section does, for both the parked and the pending branch. Reviewed
+    // once as vacuous on the grounds that neither message contains the phrase; neither
+    // does, and the heading does. The second assertion is here so that reading stays
+    // wrong if somebody rewords the heading.
     expect(container.textContent).not.toMatch(/waiting to sync/i)
+    expect(container.textContent).not.toMatch(/waiting to reach the server/i)
   })
 })

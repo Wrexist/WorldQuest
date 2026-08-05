@@ -18,7 +18,7 @@
  * engine export names, so writing the symbol in a comment would make it look wired.)
  */
 
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { router } from 'expo-router'
 import { currentStreak, repairAvailability, type RecoveryState } from '@worldquest/engines'
 import { buyStreakFreeze } from '@worldquest/api'
@@ -56,16 +56,42 @@ export default function StreakRoute() {
     [data],
   )
 
+  const [buyingFreeze, setBuyingFreeze] = useState(false)
+  const [freezeNotice, setFreezeNotice] =
+    useState<'at_cap' | 'insufficient_funds' | 'failed' | null>(null)
+
   const onBuyFreeze = useCallback(() => {
     if (!isConfigured()) return
+    // `purchase_freeze` has no idempotency key — a lesson's id is its key, and a freeze
+    // has no natural one — so a second tap before the first answer arrives is a second
+    // purchase. At 400 coins each that is 800 for one intended freeze, and the button
+    // was disabled only by `offline`, affordability and the handler existing.
+    if (buyingFreeze) return
+    setBuyingFreeze(true)
+    setFreezeNotice(null)
+
     // Not optimistic. A freeze is 400 coins and the server refuses at the cap and at an
     // overdraft, so showing it granted before the answer arrives is showing a purchase
     // that may not have happened — and unlike a cosmetic, a freeze that is not there is
     // discovered on the day it was supposed to save the run.
     void buyStreakFreeze(supabase())
-      .then(() => invalidateProgress())
-      .catch(() => {})
-  }, [])
+      .then((result) => {
+        // Every refusal comes back as a STATUS rather than an error, and all of them
+        // were being dropped — so "you already hold two" and "bought" were the same
+        // silence, and the user was left looking at a button that did nothing.
+        if (result.status === 'purchased') {
+          invalidateProgress()
+          return
+        }
+        setFreezeNotice(
+          result.status === 'at_cap' || result.status === 'insufficient_funds'
+            ? result.status
+            : 'failed',
+        )
+      })
+      .catch(() => setFreezeNotice('failed'))
+      .finally(() => setBuyingFreeze(false))
+  }, [buyingFreeze])
 
   return (
     <StreakScreen
@@ -84,6 +110,8 @@ export default function StreakRoute() {
       restoreTo={state.longest}
       now={now}
       onBuyFreeze={isConfigured() ? onBuyFreeze : undefined}
+      buyingFreeze={buyingFreeze}
+      freezeNotice={freezeNotice}
       onRepair={undefined}
       // H7, scoped. Only these two controls need a server; the rest of this screen —
       // and the rest of the app — works exactly as well without one.
