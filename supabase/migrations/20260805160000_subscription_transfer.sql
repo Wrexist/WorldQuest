@@ -29,7 +29,7 @@
 -- Expired rather than deleted: the old account keeps its history, and a row that
 -- disappears is a support conversation nobody can reconstruct.
 
-create or replace function record_subscription_event(
+create or replace function public.record_subscription_event(
   p_user_id         uuid,
   p_notification_id text,
   p_platform        text,

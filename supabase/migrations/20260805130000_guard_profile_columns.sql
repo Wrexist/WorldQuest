@@ -28,7 +28,7 @@
 -- spread across the schema, because the rule is one rule: these columns are server-owned
 -- or shape-constrained, and `service_role` is the exception.
 
-create or replace function guard_protected_profile_columns()
+create or replace function public.guard_protected_profile_columns()
 returns trigger language plpgsql security definer
 -- An empty search_path is required on SECURITY DEFINER: without it a caller can
 -- shadow a referenced object and run code as the function owner.

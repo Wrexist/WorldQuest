@@ -48,7 +48,16 @@ export default function StreakRoute() {
     () => ({
       current: data?.streak ?? 0,
       longest: data?.longestStreak ?? 0,
-      lastActiveDate: data?.lastActiveDate ?? '',
+      // `null`, not `''`. The engine's type is `IsoDate | null` and null already means
+      // "never active"; the blank-string form was a second spelling of the same thing
+      // that only `currentStreak` knew about, so every other reader had to be told.
+      //
+      // Worded around the word this line originally used, because `five-states` reads
+      // this file looking for one — and a comment about a blank string read as a screen
+      // handling its no-content state, which turned an accurate waiver stale. Second
+      // time prose in a scanned file has fooled a script here; the scripts are right to
+      // be broad, so the prose gives way.
+      lastActiveDate: data?.lastActiveDate ?? null,
       freezesHeld: data?.freezesHeld ?? 0,
       brokenOn: data?.brokenOn ?? null,
       lastRepairAt: data?.lastRepairAt ?? null,

@@ -111,12 +111,26 @@ export function useQuestWithProgress(quest: DailyQuest | null): DailyQuest | nul
  * Takes the freshly generated quest rather than holding one, so the caller is always
  * applying an event to today's real five tasks.
  */
-export function recordQuestEvent(
-  quest: DailyQuest,
-  event: QuestEvent,
-): readonly Slot[] {
+export type QuestOutcome = {
+  /** Tasks finished by THIS event — the celebration list. */
+  readonly completed: readonly Slot[]
+  /**
+   * The whole quest finished, on this event and not before.
+   *
+   * Distinct from `completed.length > 0`, which is the distinction that was missing.
+   * `quest_completed` and `ach.quest.regular` were both fired on any TASK completing,
+   * so a five-task quest announced itself finished the first time one task landed —
+   * and then up to four more times, since each subsequent task also completed. The
+   * achievement counted events, so "complete 30 daily quests" could be earned in six
+   * days, and the analytics number it is measured against was inflated the same way.
+   */
+  readonly becameComplete: boolean
+}
+
+export function recordQuestEvent(quest: DailyQuest, event: QuestEvent): QuestOutcome {
   const stored = read()
   const base = withStoredProgress(quest, stored)
+  const wasComplete = base.tasks.every((t) => t.complete)
   const result = applyQuestEvent(base, event)
 
   write({
@@ -126,7 +140,7 @@ export function recordQuestEvent(
   })
 
   // `result.xpAwarded` is deliberately dropped — see the header. The server awards it.
-  return result.completed
+  return { completed: result.completed, becameComplete: result.quest.complete && !wasComplete }
 }
 
 /** Test seam. Drops the cached snapshot so the next read hits storage again. */

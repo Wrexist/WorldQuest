@@ -41,47 +41,57 @@ function balanceExcerpt(markdown: string): string {
 }
 
 /**
- * `section.key: number` pairs, with comment lines dropped first.
+ * Every `path: number` in the excerpt, keyed by its full nesting path.
  *
- * Sectioned, not flat. `correctAnswer` is 10 under `xp` and 5 under `coins`, and so are
- * `perfectLesson`, `dailyQuest`, `dailyChallenge` and `collectionComplete` — five keys
- * that exist twice with different values. A flat map silently let one overwrite the
- * other and reported five failures against a doc that was right, which is a fair
- * reminder that a parity check is only as true as its key.
+ * FULL paths, not `section.key`. Two earlier versions of this got the key wrong in
+ * opposite directions, which is worth recording because the failure mode is the same
+ * both times — a parity check with the wrong key is a parity check that passes:
  *
- * Comments in the excerpt explain why a value is ABSENT, and name the values they are
+ *   · flat (`correctAnswer`) conflated `xp` with `coins`, which define five of the same
+ *     names at different values, and reported five failures against a correct doc;
+ *   · two-level (`xp.correctAnswer`) fixed that and silently dropped `streakMilestones`
+ *     entirely, because its keys are NUMERIC — `7`, `30`, `100`, `365` — and the
+ *     identifier pattern skipped them. The four milestone rewards, which are among the
+ *     largest single payouts in the economy, were documented and unchecked.
+ *
+ * Comments in the excerpt explain why a value is ABSENT and name the values they are
  * explaining — `regenMinutes: 45` appears in exactly such a comment. Reading those as
  * claims would fail the test for saying the right thing.
  */
 function numbersIn(block: string): Map<string, number> {
   const out = new Map<string, number>()
-  let section = ''
+  const path: string[] = []
   for (const line of block.split('\n')) {
     const code = line.replace(/\/\/.*$/, '')
     if (code.trim().startsWith('*') || code.trim().startsWith('//')) continue
 
-    // A top-level key opening an object — two spaces of indent inside `BALANCE`.
-    const opens = /^ {2}([A-Za-z][A-Za-z0-9_]*)\s*:\s*\{/.exec(code)
-    if (opens) section = opens[1]!
+    // `key: {` opens a level; a closing brace on its own line ends one. Inline objects
+    // like `streakMilestones: { 7: 50 }` open and close on one line, so the key is
+    // pushed, the pairs are read under it, and the brace count puts it back.
+    const opens = /([A-Za-z][A-Za-z0-9_]*)\s*:\s*\{/.exec(code)
+    if (opens) path.push(opens[1]!)
 
-    for (const [, key, value] of code.matchAll(/([A-Za-z][A-Za-z0-9_]*)\s*:\s*(-?[\d._]+)\b/g)) {
-      out.set(`${section}.${key!}`, Number(value!.replace(/_/g, '')))
+    for (const [, key, value] of code.matchAll(/([A-Za-z0-9_]+)\s*:\s*(-?[\d._]+)\b/g)) {
+      out.set([...path, key!].join('.'), Number(value!.replace(/_/g, '')))
     }
+
+    const closes = (code.match(/\}/g) ?? []).length
+    for (let i = 0; i < closes && path.length > 0; i++) path.pop()
   }
   return out
 }
 
-/** Every numeric leaf of BALANCE, keyed by its top-level section. */
+/** Every numeric leaf of BALANCE, keyed by its full path. */
 function flatten(
   value: unknown,
-  section = '',
+  path = '',
   into = new Map<string, number>(),
 ): Map<string, number> {
   if (typeof value !== 'object' || value === null) return into
   for (const [key, child] of Object.entries(value)) {
-    const path = section === '' ? key : section
-    if (typeof child === 'number') into.set(`${path}.${key}`, child)
-    else flatten(child, path, into)
+    const here = path === '' ? key : `${path}.${key}`
+    if (typeof child === 'number') into.set(here, child)
+    else flatten(child, here, into)
   }
   return into
 }
@@ -94,6 +104,9 @@ describe('the documented balance table matches the real one', () => {
     // A parser that silently matches nothing would make every assertion below vacuous —
     // the same failure the region-tag validator had, caught the same way.
     expect(documented.size).toBeGreaterThan(15)
+    // The milestones specifically: numeric keys are the ones a naive identifier
+    // pattern drops, and they are four of the biggest payouts in the table.
+    expect(documented.get('xp.streakMilestones.365')).toBe(BALANCE.xp.streakMilestones[365])
     expect(documented.get('xp.correctAnswer')).toBe(BALANCE.xp.correctAnswer)
   })
 

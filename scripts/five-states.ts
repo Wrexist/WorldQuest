@@ -112,7 +112,14 @@ const WAIVED: Record<string, Partial<Record<State, string>>> = {
   },
   'streak/StreakScreen': {
     empty: 'zero days is a real content state with its own copy, not an empty state',
-    loading: 'streak comes from the progress cache, which renders a zero state rather than a wait',
+    // The `loading` waiver is gone too, and for a reason worth separating from the one
+    // below. It said "streak comes from the progress cache, which renders a zero state
+    // rather than a wait", which was true and was about this screen's DATA. The freeze
+    // button is not data: the purchase is deliberately not optimistic, so pressing it
+    // starts a real round trip, and `loading` on the Button is what tells a screen
+    // reader that. A screen can owe a wait for an action while owing none for its
+    // content.
+    //
     // The `error` waiver is gone, and the reason it was ever defensible is the reason it
     // stopped being: it said the server-backed controls "disable themselves and say why".
     // Disabling covers a purchase that cannot be ATTEMPTED. It said nothing about one

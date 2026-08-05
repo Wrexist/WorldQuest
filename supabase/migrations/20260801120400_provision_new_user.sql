@@ -7,7 +7,7 @@
 -- This also creates the wallet and streak rows, so no other code path has to
 -- handle "the user exists but has no wallet".
 
-create or replace function handle_new_user()
+create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
 security definer

@@ -55,43 +55,37 @@ jobs:
       #
       # Running the same command a developer runs is the only version of this that means
       # anything — the same argument the db:types step below already makes.
-      - name: Verify
-        run: pnpm verify
 
-      # The development container ships a Chromium at /opt/pw-browsers and sets
-      # PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD, so nothing here ever downloaded one. A runner
-      # has neither. `scripts/chromium.cjs` falls back to Playwright's own resolution
-      # when the image's browser is absent — this is the step that gives it something to
-      # resolve to.
+      # Chromium first, because `verify:full` runs `e2e` and `a11y:tree`, and both need
+      # one. The development container ships a Chromium at /opt/pw-browsers and sets
+      # PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD, so nothing there ever downloaded a browser. A
+      # runner has neither. `scripts/chromium.cjs` falls back to Playwright's own
+      # resolution when the image's browser is absent — this is what it resolves to.
       - name: Install Chromium for Playwright
         run: pnpm exec playwright install --with-deps chromium
 
-      # The only step here that runs METRO. typecheck runs tsc and test runs
-      # vitest; both resolve TypeScript's `.js`-means-`.ts` imports, and the
-      # bundler does not. That gap hid a repo where the app had never bundled on
-      # any platform, through a green pipeline. This exports the real bundle and
-      # plays a lesson in it — see apps/mobile/e2e/flow.cjs for what that does and
-      # does not prove. It is not a device.
-      - name: App bundles and a lesson can be played
-        run: pnpm e2e
-
-      # Walks Chromium's computed accessibility tree over ten routes — the thing a
-      # screen reader actually consumes. `lint:a11y` reads source and `design:shots`
-      # accepts textContent as a label, so a button whose only content is an emoji
-      # passed both. It found two real defects on its first run, including settings
-      # toggles that would have been announced and impossible to operate with
-      # VoiceOver, and then it was wired into nothing: not CI, not verify. A check
-      # nothing runs is a check that does not exist.
-      - name: Accessibility tree
-        run: pnpm a11y:tree
-
-      # Metro resolves per platform, so a native-only resolution failure is invisible
-      # to a web export. This script exists because the app had only ever been bundled
-      # for web, and it enforces a per-platform Hermes budget because Hermes reads the
-      # whole bundle before the first frame. It caught a silent 50% growth when Sentry
-      # landed — and, like a11y:tree, ran nowhere afterwards.
-      - name: Native bundles build, within budget
-        run: pnpm bundle:native
+      # ONE command, not four. This step used to be `pnpm verify` followed by `e2e`,
+      # `a11y:tree` and `bundle:native` listed individually — which is the same command
+      # `verify:full` runs, spelled out a second time. That is exactly the drift the
+      # comment above describes and this pipeline has already been bitten by once: when
+      # CI enumerates its own list, a check added to the shared script runs nowhere, and
+      # nothing compares the two lists because nothing can.
+      #
+      # What it costs is per-step granularity in the Actions UI. What it buys is that
+      # CLAUDE.md's "CI runs verify:full" is a fact rather than a coincidence that holds
+      # until someone edits one of the two places. Each script prints its own name, so a
+      # failure still says which check failed.
+      #
+      # `verify:full` = `verify` + `bundle:native` + `e2e` + `a11y:tree`:
+      #   · bundle:native — Metro resolves per platform, and this repo shipped a year of
+      #     green pipelines having only ever bundled for web. Enforces a Hermes budget,
+      #     which caught a silent 50 % growth when Sentry landed.
+      #   · e2e — the only step that runs Metro and plays a real lesson in a real bundle.
+      #   · a11y:tree — walks Chromium's computed accessibility tree, which is what a
+      #     screen reader consumes. `lint:a11y` reads source and `design:shots` accepts
+      #     textContent as a label, so an emoji-only button passed both.
+      - name: Verify
+        run: pnpm verify:full
 
       - name: Upload E2E screenshots
         if: always()

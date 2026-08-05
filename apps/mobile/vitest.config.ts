@@ -21,7 +21,7 @@
  * of a preset we do not need, because the aliasing below is the whole preset.
  */
 
-import { defineConfig } from 'vitest/config'
+import { coverageConfigDefaults, defineConfig } from 'vitest/config'
 
 export default defineConfig({
   resolve: {
@@ -57,7 +57,16 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],
-      exclude: ['src/**/*.test.{ts,tsx}', 'src/test/**', 'src/lib/*.generated.ts'],
+      // EXTENDS the defaults rather than replacing them. A bare `exclude` array drops
+      // Vitest's own list — config files, dist, node_modules, type-only declarations —
+      // so those get counted as uncovered source and the thresholds below end up
+      // measuring something nobody wrote.
+      exclude: [
+        ...coverageConfigDefaults.exclude,
+        'src/**/*.test.{ts,tsx}',
+        'src/test/**',
+        'src/lib/*.generated.ts',
+      ],
       thresholds: { lines: 60, functions: 60, branches: 80, statements: 60 },
     },
     environment: 'jsdom',

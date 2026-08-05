@@ -218,15 +218,21 @@ export function StreakScreen({
             <Button
               label={t('streak:freeze.buy', { price: FREEZE_PRICE })}
               variant="secondary"
-              disabled={
-                offline || !canAffordFreeze || buyingFreeze || onBuyFreeze === undefined
-              }
+              disabled={offline || !canAffordFreeze || onBuyFreeze === undefined}
+              // `loading`, not another clause in `disabled`. The primitive already makes
+              // the button inert AND sets `aria-busy`, and it keeps the label mounted so
+              // the button does not change width — a purchase is deliberately not
+              // optimistic here, so the user waits a real round trip, and a greyed
+              // rectangle is the whole of what a screen reader was told about it.
+              loading={buyingFreeze}
               onPress={() => onBuyFreeze?.()}
             />
             {freezeNotice !== null && (
               // Stated once, plainly, with no second ask. A refusal the user cannot see
-              // is a button that looks broken.
-              <Text style={styles.note}>
+              // is a button that looks broken — and one announced to nobody is the same
+              // thing for a screen-reader user, hence `role="alert"`: this Text is
+              // inserted after the fact, so without it the refusal is silent.
+              <Text style={styles.note} role="alert">
                 {freezeNotice === 'at_cap'
                   ? t('streak:freeze.refused.atCap')
                   : freezeNotice === 'insufficient_funds'

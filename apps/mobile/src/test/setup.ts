@@ -139,10 +139,22 @@ if (typeof window !== 'undefined' && window.matchMedia === undefined) {
  */
 export function withFullMotion<T>(body: () => T): T {
   prefersReducedMotion = false
+  // An ASYNC body needs the restore to wait for it. A plain `finally` runs the moment
+  // the promise is returned, not when it settles, so an awaited body would have run its
+  // interesting part with reduced motion back on — the exact condition the caller turned
+  // off, silently reinstated mid-test. Synchronous bodies keep restoring immediately.
   try {
-    return body()
-  } finally {
+    const result = body()
+    if (result instanceof Promise) {
+      return result.finally(() => {
+        prefersReducedMotion = true
+      }) as T
+    }
     prefersReducedMotion = true
+    return result
+  } catch (error) {
+    prefersReducedMotion = true
+    throw error
   }
 }
 

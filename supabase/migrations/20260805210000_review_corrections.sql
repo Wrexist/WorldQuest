@@ -181,8 +181,9 @@ security definer
 set search_path = ''
 as $$
 declare
-  v_user  uuid := auth.uid();
-  v_price int;
+  v_user       uuid := auth.uid();
+  v_price      int;
+  v_constraint text;
 begin
   if v_user is null then
     return jsonb_build_object('status', 'unauthorized');
@@ -216,17 +217,30 @@ begin
     'coins', (select coins from public.wallets where user_id = v_user)
   );
 exception
-  -- 23514 is the `coins >= 0` check. It is the overdraft answer, not an error — the
-  -- caller gets a state, and the transaction is already rolled back by the time we are
-  -- here, so nothing was charged and nothing was granted.
+  -- Both handlers name the constraint they are FOR and re-raise anything else.
+  --
+  -- `when check_violation` catches every CHECK on every table this function touches —
+  -- `wallets` alone has four — and `when unique_violation` catches every unique index.
+  -- A future constraint failing would have been reported to the user as "you cannot
+  -- afford this" or "you already own this", with the real defect swallowed. A handler
+  -- that answers for a constraint it was not written for is worse than no handler,
+  -- because the 500 it replaces at least says something is wrong.
+  --
+  -- `get stacked diagnostics` rather than matching on the message text: the constraint
+  -- name is structured data, and `sqlerrm` is a sentence that is localised and free to
+  -- be reworded between server versions.
   when check_violation then
+    get stacked diagnostics v_constraint = constraint_name;
+    -- The overdraft answer, not an error — the caller gets a state, and the transaction
+    -- is already rolled back, so nothing was charged and nothing was granted.
+    if v_constraint <> 'wallets_coins_check' then raise; end if;
     return jsonb_build_object('status', 'insufficient_funds');
-  -- 23505 is the inventory primary key. The ownership check above answers the common
-  -- case and the constraint is what is actually TRUE, so two taps that both pass the
-  -- check must not end in an unhandled 500 for a user who owns the thing either way.
-  -- Same reasoning as the check above: the transaction is already rolled back, so the
-  -- coin row from this attempt is gone and only the first purchase was ever charged.
   when unique_violation then
+    get stacked diagnostics v_constraint = constraint_name;
+    -- The ownership check above answers the common case; this index is what is actually
+    -- TRUE. Two taps that both pass the check must not end in an unhandled 500 for a
+    -- user who owns the thing either way.
+    if v_constraint <> 'inventory_pkey' then raise; end if;
     return jsonb_build_object('status', 'already_owned');
 end;
 $$;

@@ -254,7 +254,11 @@ export function currentStreak(
   now: number,
   timeZone: string,
 ): number {
-  if (state.lastActiveDate === null || state.lastActiveDate === '') return 0
+  // One spelling of "never active". The `=== ''` arm existed because the streak route
+  // defaulted a missing date to an empty string, which made this function the only place
+  // that knew there were two — a contract of `IsoDate | null` with a third value nobody
+  // else handled. The route sends null now.
+  if (state.lastActiveDate === null) return 0
   const gap = daysBetween(state.lastActiveDate, localDate(now, timeZone))
   if (gap <= 1) return state.current
   if (gap === 2 && state.freezesHeld > 0) return state.current

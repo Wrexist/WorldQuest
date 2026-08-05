@@ -38,9 +38,6 @@
  * collectors, countries completed, the streak keeper, quests, and continents. Before
  * this, seven of the twelve could never move at all.
  *
- * Still unwirable, and still deliberately — nothing here will make an achievement unlock
- * on an event we cannot honestly observe. Two remain:
- *
  * Nothing is left. All six event kinds the catalogue counts now have a producer, and
  * every achievement in the pack can move. The two that could only ever be answered
  * server-side — `fact_mastered` and `entity_mastered` — are, and the client forwards
@@ -59,6 +56,15 @@ import { readJson, writeJson } from '../../lib/storage.js'
 import { CATALOGUE } from './useAchievements.js'
 
 const KEY = 'achievements.progress.v1'
+
+/**
+ * The most cleared reviews one lesson can plausibly report.
+ *
+ * A ceiling rather than a rule: no lesson composes anywhere near this many items, so it
+ * never truncates anything real, and it turns a corrupted count off the wire from a hang
+ * into a slightly wrong badge.
+ */
+const MAX_CLEARED_PER_LESSON = 100
 
 type Stored = Record<string, AchievementProgress>
 
@@ -174,7 +180,15 @@ export function recordServerOutcome(input: {
   // One event per cleared review, because `counter` counts events. Sending one event
   // carrying the number would make a ten-review lesson worth one, which is the shape of
   // bug that makes a 1000-tier take a decade.
-  for (let i = 0; i < input.overdueCleared; i++) {
+  // Bounded before it is trusted. The count arrives over the network from
+  // `record_lesson`'s response, and a loop whose trip count is a number off the wire is
+  // a hang if that number is ever wrong — `NaN` is falsy here and would be fine, but a
+  // corrupted large integer would not. The ceiling is a whole lesson's worth of items,
+  // which is more than any real lesson can clear.
+  const cleared = Number.isInteger(input.overdueCleared)
+    ? Math.min(Math.max(input.overdueCleared, 0), MAX_CLEARED_PER_LESSON)
+    : 0
+  for (let i = 0; i < cleared; i++) {
     unlocked.push(
       ...recordAchievementEvent({ name: 'overdue_review_cleared', at: input.at, payload: {} }),
     )

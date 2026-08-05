@@ -21,7 +21,7 @@ import {
   text,
 } from '@worldquest/design'
 import { deriveRating, lessonLength } from '@worldquest/engines'
-import type { ContentIndex, GradeResult, LessonState, Question, Slot } from '@worldquest/engines'
+import type { ContentIndex, GradeResult, LessonState, Question } from '@worldquest/engines'
 import { Flag } from '../../components/Flag.js'
 import { CountryMap } from '../../components/CountryMap.js'
 import { useLesson } from './hooks/useLesson.js'
@@ -170,30 +170,28 @@ export function LessonScreen({
       const quest = todaysQuest(index.index, memory)
 
       // The answers first, because that is the order they happened in, and then the
-      // lesson. Both paths can complete a task, so both returns are collected: a quest
-      // whose last outstanding requirement is a fact answer used to finish in silence,
-      // because the loop below threw its completions away and only the lesson event was
-      // ever checked.
-      const done: Slot[] = []
+      // lesson. Either path can be the one that finishes the quest — the last
+      // outstanding requirement is often a fact answer, and that loop's result used to
+      // be thrown away, so the quest finished in silence.
+      let finished = false
       for (const answer of state.answers) {
         if (answer.chosenOptionId === null) continue
-        done.push(
-          ...recordQuestEvent(quest, {
-            type: 'fact_answered',
-            factId: answer.factId,
-            correct: answer.wasCorrect,
-          }),
-        )
+        finished ||= recordQuestEvent(quest, {
+          type: 'fact_answered',
+          factId: answer.factId,
+          correct: answer.wasCorrect,
+        }).becameComplete
       }
-      done.push(
-        ...recordQuestEvent(quest, {
-          type: 'lesson_completed',
-          accuracy: optimistic.accuracy,
-          durationMs,
-        }),
-      )
+      finished ||= recordQuestEvent(quest, {
+        type: 'lesson_completed',
+        accuracy: optimistic.accuracy,
+        durationMs,
+      }).becameComplete
 
-      if (done.length > 0) {
+      // The QUEST finishing, not a task. `completed` is the list of tasks this event
+      // finished, so testing it non-empty announced a five-task quest complete the first
+      // time any one task landed — and again for each of the others.
+      if (finished) {
         track('quest_completed', { quest_id: quest.date })
         // `ach.quest.regular` counts `daily_quest_completed` and had no producer at all,
         // so all three of its tiers were permanently zero. The quest engine has known

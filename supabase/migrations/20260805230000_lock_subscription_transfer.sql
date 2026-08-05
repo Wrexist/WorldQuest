@@ -14,7 +14,7 @@
 -- already moved and does the right thing with it. Replaced whole, because a function is
 -- replaced whole; the SELECT is the only line that changes.
 
-create or replace function record_subscription_event(
+create or replace function public.record_subscription_event(
   p_user_id         uuid,
   p_notification_id text,
   p_platform        text,
@@ -61,6 +61,14 @@ begin
   -- after, or as an exception handler, would mean the statement that discovers the
   -- conflict is the statement that has to undo it.
   if p_store_ref is not null then
+    -- Serialise on the store reference BEFORE the read, because `for update` locks a
+    -- row and the dangerous case is the one where there is no row yet. Two first-time
+    -- claims of the same `store_ref` both find nothing, both skip the transfer, and both
+    -- reach the upsert — whose conflict target is `(user_id)`, so it does not absorb a
+    -- collision on the `(platform, store_ref)` unique index. The second one raises 23505,
+    -- which is the exact failure the transfer path exists to prevent.
+    perform pg_advisory_xact_lock(hashtextextended(p_platform || ':' || p_store_ref, 0));
+
     -- `for update` on the read, not just the write. Two notifications for the same
     -- store_ref arriving together — a re-subscribe racing a transfer, which is when the
     -- store retries — both saw the old owner, both expired them, and both then reached
@@ -118,6 +126,10 @@ begin
     has_used_trial = s.has_used_trial or excluded.has_used_trial,
     platform       = excluded.platform,
     store_ref      = coalesce(excluded.store_ref, s.store_ref),
-    notified_at    = excluded.notified_at;
+    -- `coalesce`, like the two nullable columns above it. `notified_at` is derived from
+    -- `p_subscription ->> 'notifiedAt'`, which is null whenever a notification omits the
+    -- field — so an unconditional assignment erased the stored timestamp, and the column
+    -- exists to answer "which notification did we last apply".
+    notified_at    = coalesce(excluded.notified_at, s.notified_at);
 end;
 $$;

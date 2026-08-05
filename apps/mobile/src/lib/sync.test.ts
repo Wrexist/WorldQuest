@@ -57,6 +57,21 @@ describe('which failures park a lesson', () => {
   it('retries the server asking for patience', () => {
     expect(parks(429)).toBe(false)
     expect(parks(408)).toBe(false)
+    // 425 Too Early. In `RETRYABLE` since it was written and asserted nowhere, which is
+    // the same "in the list, never checked" shape as the entries this suite exists for.
+    expect(parks(425)).toBe(false)
+  })
+
+  it('reads the status off the shape supabase-js actually throws', () => {
+    // `FunctionsHttpError` carries the status on `context`, not on the error. The flat
+    // `status` every case above uses is the shape this suite invented; the nested one is
+    // the shape production produces, and the fallback that reads it had no test at all —
+    // so a refactor that dropped it would have left every real 4xx retrying for ever.
+    const httpError = (status: number): unknown => ({ name: 'FunctionsHttpError', context: { status } })
+    expect(__isPermanent(httpError(401))).toBe(false)
+    expect(__isPermanent(httpError(425))).toBe(false)
+    expect(__isPermanent(httpError(500))).toBe(false)
+    expect(__isPermanent(httpError(422))).toBe(true)
   })
 
   it('retries anything server-side', () => {
