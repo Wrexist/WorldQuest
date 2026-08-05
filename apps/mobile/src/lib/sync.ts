@@ -23,6 +23,8 @@ import { currentUser, isConfigured, supabase } from './supabase.js'
 import { isOnline, onConnectivityChange } from './connectivity.js'
 import { invalidateProgress } from './query.js'
 import { readJson, writeJson } from './storage.js'
+import { recordServerOutcome } from '../features/achievements/progress.js'
+import { track } from './analytics.js'
 
 const QUEUE_KEY = 'sync.queue.v1'
 
@@ -221,7 +223,7 @@ async function send(mutation: QueuedMutation): Promise<void> {
   await currentUser()
 
   const submission = mutation.payload as LessonSubmission
-  await submitLesson(supabase(), {
+  const result = await submitLesson(supabase(), {
     lessonId: submission.lessonId,
     kind: submission.kind,
     startedAt: submission.startedAt,
@@ -246,6 +248,30 @@ async function send(mutation: QueuedMutation): Promise<void> {
    * to leave two of the three stale than three hand-written cache writes.
    */
   invalidateProgress()
+
+  /**
+   * Achievements, from the server's answer rather than from a local guess.
+   *
+   * `fact_mastered` and `streak_extended` were both listed in
+   * `features/achievements/progress.ts` as unwirable — the first because it "needs real
+   * memory state, which arrives with the server", the second because "a client that can
+   * write a streak is a client that can be edited". Both were right, and both stopped
+   * being obstacles the moment this response started carrying `masteryChanges` and the
+   * authoritative streak.
+   *
+   * Here rather than at lesson-end for the same reason: this is when the truth arrives. A
+   * lesson finished in a tunnel unlocks its achievements when the queue flushes, which is
+   * later than the XP appears and is the honest ordering — the alternative is unlocking
+   * on a prediction and taking it back, and a badge that is revoked is worse than one
+   * that is late.
+   */
+  for (const unlock of recordServerOutcome({
+    masteryChanges: result.masteryChanges ?? [],
+    streak: result.streak?.current ?? null,
+    at: Date.now(),
+  })) {
+    track('achievement_unlocked', { achievement_id: unlock.achievementId, tier: unlock.tier })
+  }
 }
 
 export const peekQueue = (): SyncQueue => queue

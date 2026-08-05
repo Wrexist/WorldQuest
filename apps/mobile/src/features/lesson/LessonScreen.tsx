@@ -32,7 +32,7 @@ import { Paused } from './Paused.js'
 import { recordPace, useItemPace } from './usePace.js'
 import { hapticCelebrate, hapticCorrect, hapticWrong } from '../../lib/haptics.js'
 import { soundCorrect, soundLevelUp, soundWrong } from '../../lib/sound.js'
-import { recordLessonForAchievements } from '../achievements/progress.js'
+import { recordLessonForAchievements, recordQuestCompleted } from '../achievements/progress.js'
 import { todaysQuest } from '../quests/useDailyQuest.js'
 import { recordQuestEvent } from '../quests/questProgress.js'
 import { useContent } from '../../lib/content.js'
@@ -173,7 +173,15 @@ export function LessonScreen({
         accuracy: optimistic.accuracy,
         durationMs,
       })
-      if (done.length > 0) track('quest_completed', { quest_id: quest.date })
+      if (done.length > 0) {
+        track('quest_completed', { quest_id: quest.date })
+        // `ach.quest.regular` counts `daily_quest_completed` and had no producer at all,
+        // so all three of its tiers were permanently zero. The quest engine has known
+        // when a quest finishes since it was built; nothing forwarded it.
+        for (const unlock of recordQuestCompleted(Date.now())) {
+          track('achievement_unlocked', { achievement_id: unlock.achievementId, tier: unlock.tier })
+        }
+      }
       for (const answer of state.answers) {
         if (answer.chosenOptionId === null) continue
         recordQuestEvent(quest, {

@@ -112,7 +112,6 @@ describe('fetchProgress', () => {
     await expect(fetchProgress(fakeClient({}))).resolves.toEqual({
       xpTotal: 0,
       coins: 0,
-      gems: 0,
       hearts: 0,
       streak: 0,
       longestStreak: 0,
@@ -125,7 +124,7 @@ describe('fetchProgress', () => {
   it('maps the wallet, streak and mastery count', async () => {
     const progress = await fetchProgress(
       fakeClient({
-        wallets: { data: { xp_total: 4820, coins: 430, gems: 12, hearts: 4 }, error: null },
+        wallets: { data: { xp_total: 4820, coins: 430, hearts: 4 }, error: null },
         streaks: {
           data: { current: 12, longest: 31, last_active_date: '2026-08-05', freezes_held: 1 },
           error: null,
@@ -137,7 +136,6 @@ describe('fetchProgress', () => {
     expect(progress).toEqual({
       xpTotal: 4820,
       coins: 430,
-      gems: 12,
       hearts: 4,
       streak: 12,
       longestStreak: 31,

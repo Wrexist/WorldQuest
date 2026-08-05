@@ -112,6 +112,14 @@ export type SubmitLessonResponse = {
   perfect: boolean
   rejected: number
   /**
+   * Which facts changed mastery level, as the SERVER computed it.
+   *
+   * The field that makes `fact_mastered` achievements possible. It was already returned
+   * and nothing on the client read it, so the flag and capital collectors — 40 and 63
+   * countries of content — could never move off zero.
+   */
+  masteryChanges?: readonly { readonly factId: string; readonly from: string; readonly to: string }[]
+  /**
    * The session was too short to contain the answers it claimed, so its timing was
    * discarded and every answer graded as average. Not shown to the user — a real client
    * cannot produce it, and telling someone their clock looked forged is a conversation
@@ -157,11 +165,19 @@ export async function submitLesson(
 
 // ── progress ────────────────────────────────────────────────────────────────
 
-/** What Home needs to render, in one round trip. */
+/**
+ * What Home needs to render, in one round trip.
+ *
+ * `gems` used to be here. Nothing grants one, nothing spends one, no screen renders one,
+ * and the column has been 0 on every row this product ever created — a third currency
+ * that existed only as a field being fetched and thrown away. Fetching it made the app
+ * look like it had a gem economy to anyone reading this type. The COLUMN stays: dropping
+ * it is a migration for no benefit, and a premium currency is a plausible v2 decision.
+ * Pretending to have one today is not.
+ */
 export type Progress = {
   readonly xpTotal: number
   readonly coins: number
-  readonly gems: number
   readonly hearts: number
   readonly streak: number
   readonly longestStreak: number
@@ -193,7 +209,7 @@ const MASTERED: readonly Database['public']['Enums']['mastery_level'][] = [
  */
 export async function fetchProgress(client: WorldQuestClient): Promise<Progress> {
   const [wallet, streak, mastered] = await Promise.all([
-    client.from('wallets').select('xp_total, coins, gems, hearts').maybeSingle(),
+    client.from('wallets').select('xp_total, coins, hearts').maybeSingle(),
     client.from('streaks').select('current, longest, last_active_date, freezes_held').maybeSingle(),
     client
       .from('user_facts')
@@ -210,7 +226,6 @@ export async function fetchProgress(client: WorldQuestClient): Promise<Progress>
   return {
     xpTotal: wallet.data?.xp_total ?? 0,
     coins: wallet.data?.coins ?? 0,
-    gems: wallet.data?.gems ?? 0,
     hearts: wallet.data?.hearts ?? 0,
     streak: streak.data?.current ?? 0,
     longestStreak: streak.data?.longest ?? 0,

@@ -264,17 +264,17 @@
           "SE",
           "NO",
           "DK",
-          "FI",
-          "IS"
+          "FI"
         ]
       },
       "tiers": [
         {
           "tier": "gold",
-          "threshold": 5
+          "threshold": 4
         }
       ],
-      "showProgress": true
+      "showProgress": true,
+      "$comment": "The Nordics this pack actually contains. It listed IS and asked for 5, so the single gold tier was unreachable by one country — invisibly, because a set has no ceiling to declare and nothing checked that its members exist. Iceland is a content decision: adding it means a flag, an outline, a capital, a currency and a location, all sourced. Until somebody does that, the set is the four that are here."
     },
     {
       "id": "ach.review.faithful",
@@ -326,7 +326,7 @@
     {
       "id": "ach.explorer.continents",
       "category": "regions",
-      "$comment": "Deliberately breadth, not depth — a user who only ever studies Europe is a user the product has failed.",
+      "$comment": "Antarctica was in this list and in no pack. It is a plausible seventh continent and an impossible seventh member — no entity carries region AN, so the set could never complete. Six is what the content has.",
       "rule": {
         "type": "set-completion",
         "event": "region_started",
@@ -337,8 +337,7 @@
           "AF",
           "NA",
           "SA",
-          "OC",
-          "AN"
+          "OC"
         ]
       },
       "tiers": [

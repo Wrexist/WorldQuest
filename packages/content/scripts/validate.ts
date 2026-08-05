@@ -303,6 +303,7 @@ for (const file of packFiles) {
     volatility?: string
     sensitivity?: string
     ceiling?: { of?: string; attribute?: string }
+    rule?: { type?: string; members?: string[]; distinctBy?: string }
     tiers?: { tier: string; threshold: number }[]
   }
   type LoadedPack = { kind?: string; items?: PackItem[] }
@@ -332,9 +333,37 @@ for (const file of packFiles) {
     }
   }
 
+  // ── a set nobody can complete ─────────────────────────────────────────────
+  //
+  // `set-completion` rules name their members explicitly, and nothing checked that the
+  // members exist. `ach.set.nordics` asks for SE, NO, DK, FI and **IS** — and Iceland is
+  // not in the pack, so its single gold tier was unreachable by one country, invisibly,
+  // in a way the ceiling check above cannot see because a set has no ceiling to declare.
+  // `ach.explorer.continents` listed 'AN' for the same reason: a plausible member of a
+  // set the content does not contain.
+  //
+  // A phantom member is worse than a threshold that is too high. A high threshold at
+  // least looks ambitious; a member list reads as a decision about which countries count.
+  const entityIds = new Set(entities.map((e) => e.id).filter(Boolean))
+  const regionIds = new Set(entities.map((e) => e.region).filter(Boolean))
+
   for (const { rel, pack } of allItems) {
     if (pack.kind !== 'achievements') continue
     for (const item of pack.items ?? []) {
+      const members = item.rule?.type === 'set-completion' ? (item.rule.members ?? []) : []
+      for (const member of members) {
+        const known =
+          item.rule?.distinctBy === 'region' ? regionIds.has(member) : entityIds.has(member)
+        if (!known) {
+          errors.push({
+            file: rel,
+            message:
+              `${item.id}: set member "${member}" is in no pack — the set cannot be ` +
+              `completed, and a phantom member reads as a decision rather than an omission`,
+          })
+        }
+      }
+
       if (!item.ceiling) continue
       const max = ceilingOf(item.ceiling)
       if (max === null) {

@@ -21,17 +21,30 @@
  * the duration are all measured here, so three achievements become genuinely
  * reachable — lessons finished, perfect lessons, and perfect lessons under a minute.
  *
- * The rest are NOT wired, and deliberately:
+ * ## The rest, and where they come from now
  *
- * - `fact_mastered` / `entity_mastered` need real memory state, which arrives with the
- *   server. Emitting them from an empty local map would unlock nothing, or worse,
- *   unlock everything the moment memory is populated with the wrong shape.
- * - `streak_extended` is server-owned — a client that can write a streak is a client
- *   that can be edited.
- * - `region_started` and `daily_quest_completed` have no producer yet at all.
+ * That paragraph used to end here, with `fact_mastered`, `entity_mastered` and
+ * `streak_extended` listed as unwirable because they "need real memory state, which
+ * arrives with the server" and because "a client that can write a streak is a client
+ * that can be edited". Both were right, and both stopped being obstacles the moment
+ * `submit-lesson` started returning `masteryChanges` and the authoritative streak.
  *
- * Feeding an event we cannot honestly observe would make an achievement that unlocks
- * on nothing, which is worse than one that stays locked.
+ * So they are fed from the SERVER'S answer rather than from a local guess —
+ * `recordServerOutcome` below — which is the distinction that was actually load-bearing.
+ * The client is not deciding that a fact was mastered; it is being told, and passing
+ * that on to a rule engine that only counts.
+ *
+ * That takes six achievements from permanently-zero to reachable: the flag and capital
+ * collectors, countries completed, the streak keeper, quests, and continents. Before
+ * this, seven of the twelve could never move at all.
+ *
+ * Still unwirable, and still deliberately — nothing here will make an achievement unlock
+ * on an event we cannot honestly observe. Two remain:
+ *
+ * - `entity_mastered` needs "every quizzable fact of this country is mastered", which is
+ *   a question about the whole memory map rather than about the lesson that just ended.
+ *   `ach.countries.complete` and `ach.set.nordics` wait on it.
+ * - `overdue_review_cleared` is known to the grader and not carried in the response.
  */
 
 import { useCallback, useSyncExternalStore } from 'react'
@@ -107,6 +120,74 @@ export function recordLessonForAchievements(input: {
     at: input.at,
     payload: { accuracy: input.accuracy, durationMs: input.durationMs },
   })
+}
+
+/**
+ * Everything the SERVER just told us, as achievement events.
+ *
+ * The three event kinds that could not previously be emitted honestly, emitted from the
+ * only source that can emit them honestly. `masteryChanges` and `streak` are computed by
+ * `submit-lesson` from the authoritative memory state and the authoritative streak; this
+ * function does not decide anything, it forwards.
+ *
+ * Called after a sync rather than after a lesson, because that is when the truth arrives.
+ * A lesson finished offline unlocks its achievements when the queue flushes, which is
+ * later than the XP appears and is the honest ordering — the alternative is unlocking on
+ * a prediction and un-unlocking it, and an achievement that is taken back is worse than
+ * one that is late.
+ */
+export function recordServerOutcome(input: {
+  readonly masteryChanges: readonly { readonly factId: string; readonly to: string }[]
+  readonly streak: number | null
+  readonly at: number
+}): readonly Unlock[] {
+  const unlocked: Unlock[] = []
+
+  for (const change of input.masteryChanges) {
+    if (change.to !== 'mastered' && change.to !== 'burnished') continue
+    // `geo.SE.capital` → subject `geo`, entity `SE`, attribute `capital`. The id format
+    // is fixed by the content pipeline, so splitting it reads the shape rather than
+    // guessing at it — and the BARE code is what `distinctBy: 'entityId'` and the
+    // `members` lists both use, so `geo.SE` here would count as a different country from
+    // `SE` in `ach.set.nordics`.
+    const parts = change.factId.split('.')
+    const attribute = parts[parts.length - 1] ?? ''
+    const entityId = parts[1] ?? ''
+    if (attribute === '' || entityId === '') continue
+    unlocked.push(
+      ...recordAchievementEvent({
+        name: 'fact_mastered',
+        at: input.at,
+        payload: { attribute, entityId, factId: change.factId },
+      }),
+    )
+  }
+
+  if (input.streak !== null) {
+    // `streak_extended`, not `daily_lesson`: the engine notes that this name predates it
+    // and ships in analytics dashboards, so it is not renameable. `length` is the field
+    // the rule reads — the CURRENT length, which is why a broken streak moves the
+    // achievement's value down while the badge it already earned stays earned.
+    unlocked.push(
+      ...recordAchievementEvent({
+        name: 'streak_extended',
+        at: input.at,
+        payload: { length: input.streak },
+      }),
+    )
+  }
+
+  return unlocked
+}
+
+/** A region opened for the first time. Feeds `ach.explorer.continents`. */
+export function recordRegionStarted(region: string, at: number): readonly Unlock[] {
+  return recordAchievementEvent({ name: 'region_started', at, payload: { region } })
+}
+
+/** A daily quest finished. Feeds `ach.quest.regular`. */
+export function recordQuestCompleted(at: number): readonly Unlock[] {
+  return recordAchievementEvent({ name: 'daily_quest_completed', at, payload: {} })
 }
 
 /** Test seam. Drops the cached snapshot so the next read hits storage again. */
