@@ -40,6 +40,26 @@ export default defineConfig({
     __DEV__: 'true',
   },
   test: {
+    /**
+     * A floor, not a target.
+     *
+     * `packages/engines` has carried a 90% gate since it was written; the app had none,
+     * so the one package where a screen can quietly stop being rendered by anything was
+     * the one nobody measured. 60/80/60 is just under today's 61.5/87.7/63.0 — close
+     * enough to catch a screen landing untested, loose enough not to fail on a
+     * refactor that moves ten lines.
+     *
+     * Deliberately lower than the engines'. These tests mount react-native-web in jsdom
+     * and genuinely cannot reach the native paths — gestures, real font metrics,
+     * `Animated` on the UI thread — so a number chasing 90 here would be bought with
+     * tests that assert a mock was called.
+     */
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/**/*.test.{ts,tsx}', 'src/test/**', 'src/lib/*.generated.ts'],
+      thresholds: { lines: 60, functions: 60, branches: 80, statements: 60 },
+    },
     environment: 'jsdom',
     globals: false,
     include: ['src/**/*.test.tsx', 'src/**/*.test.ts'],
