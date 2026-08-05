@@ -153,7 +153,12 @@ export function review(input: ReviewInput, weights: Weights = DEFAULT_WEIGHTS): 
   let lapses: number
   const factId: FactId = input.factId
 
-  if (state === null || state.lastReviewAt === null) {
+  // `state === null` only. It used to also treat `lastReviewAt === null` as a first
+  // exposure, which silently discarded `reps` and `lapses` on any row that had them —
+  // and a row with reps but no review date is a data incident, not a new card. Reading
+  // it as "never seen" wipes the history that would let anyone diagnose it, and hands
+  // the user a fresh initial stability for a fact they have failed six times.
+  if (state === null) {
     stability = initialStability(rating, w)
     difficulty = initialDifficulty(rating, w)
     reps = 1
