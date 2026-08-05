@@ -8,6 +8,12 @@
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "backgroundColor": "#0B1730",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#0B1730"
+    },
     "ios": {
       "bundleIdentifier": "com.worldquest.app",
       "supportsTablet": true,
@@ -35,6 +41,7 @@
     "android": {
       "package": "com.worldquest.app",
       "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0B1730"
       },
       "versionCode": 1,
@@ -42,6 +49,9 @@
       "blockedPermissions": [
         "android.permission.RECORD_AUDIO"
       ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-router"
@@ -55,10 +65,18 @@
       "any JavaScript runs, so they cannot read a token. If the canvas colour changes,",
       "change it here too — packages/design/src/tokens.test.ts asserts they match.",
       "",
-      "STILL MISSING, and both are genuinely blocked on artwork rather than on time:",
-      "`icon` and `splash`. docs/design/asset-prompts.md files a brand mark under the",
-      "same rule as a flag — never generate one — and pointing at files that do not",
-      "exist fails the build. No store build is possible without them.",
+      "`icon`, `splash`, `adaptiveIcon.foregroundImage` and `web.favicon` are here now.",
+      "They were the last thing blocking a store build, and they were blocked on artwork",
+      "rather than on time — asset-prompts.md files a brand mark under the same rule as a",
+      "flag, never generate one, so the gap could only be closed by delivered art. It was.",
+      "",
+      "All four are DERIVED by `pnpm build:art` from the masters in docs/design/assets,",
+      "never edited by hand. The store rules are why: an icon must be square and must",
+      "carry no alpha, and the delivered master is 1536x1024 with an alpha channel — both",
+      "of which App Store Connect rejects at upload rather than at review. The adaptive",
+      "icon is inset to the middle 66% because Android launchers mask it to a circle, a",
+      "squircle or a rounded square and crop the rest, and its backdrop is the same",
+      "backgroundColor above so the seam cannot show whichever shape a launcher picks.",
       "",
       "Everything else a store asks for is text, and none of it was here. The iOS",
       "privacy manifest has been required since 2024 and its absence fails App Store",

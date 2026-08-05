@@ -126,9 +126,44 @@ These are the ones that get skipped, and each of them has a screen behind it.
 
 **The gap that mattered most, and it was hiding in plain sight** — the splash prompt
 below has always said "that space is reserved for the logo, which is composited by the
-app", and no section ever specified the logo. The app currently has no wordmark, no
-mark, and no icon lockup anywhere in it. Every other item on this page is a screen;
-this one is the reason the product does not yet *look like itself*.
+app", and no section ever specified the logo. The app had no wordmark, no mark, and no
+icon lockup anywhere in it. Every other item on this page is a screen; this one is the
+reason the product did not yet *look like itself*.
+
+> ## 📦 Delivered — and what came with it
+>
+> **The mark, the app icon, the splash, seven Atlas frames, three onboarding slides,
+> seven state illustrations and three celebration layers are in.** They live at the
+> paths named in each section below, and `pnpm build:art` derives what the app ships
+> from them. `icon`, `splash`, `adaptiveIcon` and `favicon` are wired in `app.json`,
+> which is what unblocked a store build.
+>
+> Four things about the delivery are worth writing down rather than quietly fixing,
+> because each one is a rule on this page that the art does not meet:
+>
+> 1. **Sizes.** Every illustration arrived 1536×1024 — a 3:2 landscape frame, against
+>    the 1024×1024 this page specifies and the square slots that render them. The build
+>    centre-crops, which is safe *because* the style block asked for a centred subject
+>    with generous padding and the art does that. It would not be safe for art composed
+>    to the edges.
+> 2. **Transparency.** The delivery spec says transparent background. Most of these
+>    carry a baked one — a warm brown vignette on the Atlas frames, a grey-green on the
+>    icon. `<Art>` therefore clips to a rounded frame, so a baked background reads as a
+>    deliberate illustration panel rather than a rectangle that missed its cutout. It
+>    is a containment, not a fix.
+> 3. **The icon could not be used as delivered.** `app/icon.png` is 1536×1024 **with an
+>    alpha channel**. App Store Connect rejects both, at upload rather than at review.
+>    The build squares it and flattens it onto the canvas colour.
+> 4. **Palette.** `brand/mark.png` is on-palette — deep navy, sky blue, warm gold. The
+>    app icon master is a grey-green vignette that is not on this page's palette, and
+>    leans photoreal where the style block asks for rounded chunky forms. It is used as
+>    delivered because the art direction is not this document's call to overrule; the
+>    mark is what the adaptive icon and favicon are cut from, so the two do not match
+>    each other as closely as they eventually should.
+>
+> **Still missing:** the wordmark and lockup (1b, 1c), the mono silhouette below, the
+> Android notification icon — which needs that silhouette and cannot be derived from a
+> colour illustration — and everything under P1 and below.
 
 ### 1a. The mark
 
