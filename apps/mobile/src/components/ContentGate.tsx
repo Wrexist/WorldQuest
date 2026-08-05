@@ -30,6 +30,7 @@ import type { ReactNode } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import { Button, Skeleton, colors, space, text } from '@worldquest/design'
 import { useT } from '../lib/i18n.js'
+import { Art } from './Art.js'
 
 export type ContentGateProps = {
   /** `status` from `useContent`. Only `'error'` changes what is rendered. */
@@ -77,6 +78,11 @@ export function ContentGate({
   if (status === 'error') {
     return (
       <View style={styles.screen}>
+        {/* The compass on the ground with its needle spinning — briefed for exactly
+            this screen, and briefed as "calm and recoverable, not alarming". It carries
+            the same message as the copy below, which is why it is decorative: a screen
+            reader announcing a compass adds length, not meaning. */}
+        <Art name="states/error-generic" size={140} />
         <Text style={styles.title} role="heading">
           {t('common:error.generic.title')}
         </Text>

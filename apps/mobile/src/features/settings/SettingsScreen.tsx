@@ -17,6 +17,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { colors, space, text } from '@worldquest/design'
 import { ChoiceRow, LinkRow, Note, Section, SwitchRow } from '../../components/SettingsRow.js'
 import { useT } from '../../lib/i18n.js'
+import { Art } from '../../components/Art.js'
 import {
   DAILY_GOALS,
   LANGUAGE_CHOICES,
@@ -199,6 +200,13 @@ export function SettingsScreen({
 
       {sync !== undefined && sync.hasUnsynced && (
         <Section title={t('settings:section.sync')}>
+          {/* The paper aeroplane, still flying, with its dotted trail behind it —
+              briefed as "self-sufficient, still going". This is the one screen in the
+              app that talks about work not yet delivered, and the section's whole job
+              is to say the work is safe rather than lost. */}
+          <View style={styles.syncArt}>
+            <Art name="states/offline" size={96} />
+          </View>
           {/* States what is true and what happens next. Never "sync failed" — the
               work is safe, it just has not arrived, and a child reading "failed"
               hears "your lessons are gone". */}
@@ -293,6 +301,7 @@ function PremiumSection({ premium }: { premium: PremiumStatus }) {
 }
 
 const styles = StyleSheet.create({
+  syncArt: { alignSelf: 'center' },
   screen: { flex: 1, backgroundColor: colors.bg.canvas },
   content: { padding: space[4], gap: space[5] },
   title: { ...text('h1'), color: colors.text.primary },

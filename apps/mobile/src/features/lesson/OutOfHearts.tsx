@@ -33,10 +33,11 @@
  * never get here at all.
  */
 
-import { StyleSheet, Text } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { Button, Card, colors, space, text } from '@worldquest/design'
 import { BALANCE } from '@worldquest/engines'
 import { useT } from '../../lib/i18n.js'
+import { Art } from '../../components/Art.js'
 
 export type OutOfHeartsProps = {
   /** The user's coin balance. Server-authoritative; passed down from the route. */
@@ -54,6 +55,16 @@ export function OutOfHearts({ coins, onRevive, onFinish }: OutOfHeartsProps) {
 
   return (
     <Card level={2} style={styles.card}>
+      {/* An hourglass with the sand part-way through, and the reason it is an hourglass
+          is the strongest constraint in the whole asset brief: "Out of hearts is the
+          single easiest place in this app to accidentally punish a child, and the visual
+          language decides it before the copy gets a chance. An hourglass says *this
+          comes back*. A padlock says *you are shut out*, and a padlock is on the
+          permanent no-list." The picture has to agree with `hearts.out.body`, and this
+          is the one that does. */}
+      <View style={styles.art}>
+        <Art name="states/hearts-empty" size={120} />
+      </View>
       <Text style={styles.title} role="heading">
         {t('lesson:hearts.out.title')}
       </Text>
@@ -84,6 +95,9 @@ export function OutOfHearts({ coins, onRevive, onFinish }: OutOfHeartsProps) {
 
 const styles = StyleSheet.create({
   card: { gap: space[3], width: '100%' },
+  // Centred here rather than with `alignItems` on the card, which would shrink the
+  // buttons to their content width.
+  art: { alignSelf: 'center' },
   title: { ...text('h3'), color: colors.text.primary, textAlign: 'center' },
   body: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
   note: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },

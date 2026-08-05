@@ -30,6 +30,7 @@ import {
 import { levelProgress, type WorldProgress } from '@worldquest/engines'
 import { formatCompact, useT, currentLocale, type TranslationKey } from '../../lib/i18n.js'
 import { REGIONS, type RegionCode } from '../explore/ExploreScreen.js'
+import { Art } from '../../components/Art.js'
 import { Icon } from '../../components/Icon.js'
 
 const REGION_NAME: Record<RegionCode, TranslationKey> = {
@@ -106,6 +107,10 @@ export function ProfileScreen({
     return (
       <View style={[styles.screen, styles.centered]}>
         <Avatar initials="EX" size={72} accessibilityLabel={t('profile:anonymous')} />
+        {/* The blank explorer's journal, briefed for this screen as "ready to be
+            filled, not sad" — which is the same distinction `profile:empty.body`
+            draws in words. */}
+        <Art name="states/empty-profile" size={140} />
         <Text style={styles.title} role="heading">
           {t('profile:empty.title')}
         </Text>

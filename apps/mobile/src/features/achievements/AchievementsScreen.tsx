@@ -25,6 +25,7 @@ import {
   type Tier,
 } from '@worldquest/engines'
 import { tContent, useT, type TranslationKey } from '../../lib/i18n.js'
+import { Art } from '../../components/Art.js'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 
 const TIER_LABEL: Record<Tier, TranslationKey> = {
@@ -87,6 +88,10 @@ export function AchievementsScreen({ rows, onStartLesson, onBack }: Achievements
   if (rows.length === 0) {
     return (
       <View style={[styles.screen, styles.centered]}>
+        {/* Atlas offering an open hand — "reassuring, patient, not pitying", which is
+            the line this screen has to walk: nothing unlocked yet is the state every
+            user starts in, and it must not read as a scoreboard of zero. */}
+        <Art name="atlas/encouraging" size={140} />
         <Text style={styles.title} role="heading">
           {t('achievements:empty.title')}
         </Text>

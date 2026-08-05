@@ -22,6 +22,7 @@ import {
 } from '@worldquest/design'
 import { deriveRating, lessonLength } from '@worldquest/engines'
 import type { ContentIndex, GradeResult, LessonState, Question } from '@worldquest/engines'
+import { Art } from '../../components/Art.js'
 import { Flag } from '../../components/Flag.js'
 import { CountryMap } from '../../components/CountryMap.js'
 import { useLesson } from './hooks/useLesson.js'
@@ -711,6 +712,11 @@ function EmptyState() {
 
   return (
     <View style={[styles.screen, styles.centered]}>
+      {/* The telescope pointed at a calm starfield — "peaceful, accomplished, restful".
+          `lesson:empty.title` is "You're all caught up", which is the phrase this asset
+          was briefed against, and the one empty state in the app that is a reward
+          rather than a gap. */}
+      <Art name="states/empty-caught-up" size={160} />
       <Text style={styles.prompt}>{t('lesson:empty.title')}</Text>
       <Text style={styles.feedbackBody}>{t('lesson:empty.body')}</Text>
     </View>

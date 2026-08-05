@@ -37,6 +37,7 @@ import {
 } from '@worldquest/design'
 import { factsStrengthened } from '@worldquest/engines'
 import type { GradeResult } from '@worldquest/engines'
+import { Art } from '../../components/Art.js'
 import { Flag } from '../../components/Flag.js'
 import { useT } from '../../lib/i18n.js'
 
@@ -77,6 +78,16 @@ export type PractisedCountry = {
   /** Localised country name, from the pack — a country name is a fact, not copy. */
   readonly name: string
 }
+
+/**
+ * The celebration layers, drawn larger than the card they sit behind.
+ *
+ * Both assets radiate from an empty centre, so at the card's own size the confetti
+ * would land inside the card's bounds and read as a busy background rather than a
+ * burst coming off the number. 280 spills past the card on a 320pt phone, which is
+ * the intent — it is clipped by nothing above it.
+ */
+const CELEBRATION_SIZE = 280
 
 /** Wide enough to tell Chad from Romania, small enough that eight fit on a 320pt row. */
 const PRACTISED_FLAG_WIDTH = 44
@@ -121,6 +132,15 @@ export function LessonSummary({
       {isOffline && <OfflineNote />}
 
       <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+        {/* Atlas mid-jump, both arms up — "pure delight, weightless". Only on a
+            perfect lesson, for the same reason only a perfect lesson pops: an image
+            that celebrates every outcome is wallpaper, and one that celebrates a
+            lesson somebody walked out of is the app failing to read the room. */}
+        {outcome === 'perfect' && (
+          <View style={styles.headlineArt}>
+            <Art name="atlas/celebrate" size={140} />
+          </View>
+        )}
         {/* `heading` and not a bare Text: this is the first thing a screen reader
             should land on, and the outcome is the headline of the whole screen. */}
         <Text style={styles.title} role="heading" aria-level={1}>
@@ -135,6 +155,31 @@ export function LessonSummary({
         {result !== null && (
           <>
             <Animated.View style={[styles.hero, { transform: [{ scale }] }]}>
+              {/* The celebration frame. `rays` is the atmospheric backing and `burst`
+                  the confetti; both are briefed with an EMPTY CENTRE because the
+                  content is composited into it, which is why they sit behind the card
+                  rather than beside it.
+
+                  Static, and deliberately so. "Reduced motion is a Definition of Done
+                  box and the implementation shows the last frame — so burst.png at its
+                  settled state *is* a deliverable, not a by-product. An animation with
+                  no still is a blank space for every user who turned motion off, which
+                  is disproportionately the users who most need the feedback." So the
+                  still is what ships here, under both motion settings, and only the
+                  card's scale responds to `useCelebration`.
+
+                  `pointerEvents="none"` because celebration never blocks input — the
+                  rule in apps/mobile/CLAUDE.md — and decorative by default, which is
+                  the asset brief's own code note: a screen reader announcing confetti
+                  is noise. */}
+              {outcome === 'perfect' && (
+                <View style={styles.celebration} pointerEvents="none">
+                  <Art name="celebration/rays" size={CELEBRATION_SIZE} />
+                  <View style={styles.celebrationOverlay}>
+                    <Art name="celebration/burst" size={CELEBRATION_SIZE} />
+                  </View>
+                </View>
+              )}
               <Card
                 level={2}
                 accessibilityLabel={t('lesson:reward.xp', { amount: xp })}
@@ -280,7 +325,17 @@ const styles = StyleSheet.create({
 
   // Full width, because this is the object on the screen and a small square floating
   // in the middle of a phone reads as a widget rather than as the point.
+  headlineArt: { alignSelf: 'center' },
   hero: { alignSelf: 'stretch' },
+  // Behind the XP card, centred on it, and larger than it so the burst reads as
+  // radiating from the number rather than framing it. `overflow: visible` is the
+  // default; the parent does not clip, which is what lets it spill past the card edge.
+  celebration: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  celebrationOverlay: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
   xpCard: { alignItems: 'center', paddingVertical: space[5] },
   xpValue: { ...text('hero'), color: colors.reward.xp },
   xpUnit: { ...text('overline'), color: colors.text.secondary },

@@ -30,6 +30,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { Button, Card, colors, space, text } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
+import { Art } from '../../components/Art.js'
 
 export type PausedProps = {
   /** How many questions have been answered so far — what "kept" concretely means. */
@@ -45,6 +46,13 @@ export function Paused({ answered, onResume, onFinish }: PausedProps) {
   return (
     <View style={styles.backdrop}>
       <Card level={3} style={styles.card}>
+        {/* Atlas sitting on a rock with his hat on one knee. The brief for this one
+            warns it "is the one most likely to go wrong: the brief is a break, not a
+            [punishment]" — which is this screen exactly. A pause must not look like a
+            penalty, and the picture says so before the copy is read. */}
+        <View style={styles.art}>
+          <Art name="atlas/resting" size={120} />
+        </View>
         <Text style={styles.title} role="heading">
           {t('lesson:paused.title')}
         </Text>
@@ -64,6 +72,8 @@ export function Paused({ answered, onResume, onFinish }: PausedProps) {
 }
 
 const styles = StyleSheet.create({
+  // Centred without `alignItems` on the card, which would shrink both buttons.
+  art: { alignSelf: 'center' },
   // A full screen, not an overlay. The first version absolutely-filled over the
   // question, which hid it from sight and left it in the accessibility tree — so a
   // screen-reader user could still swipe to the item the scheduler was about to
