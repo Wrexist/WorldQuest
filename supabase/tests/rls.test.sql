@@ -25,7 +25,10 @@ begin;
 -- hardening pass brought the last three: append-only on `review_log` and a pinned
 -- search_path on every SECURITY DEFINER function were rules this schema stated in prose
 -- and did not enforce, and `lessons.kind` was free text that reached the XP ledger.
-select plan(32);
+--
+-- 32 → 34: `purchase_freeze`, the second function a signed-in client may call. It spends
+-- coins, so it gets the same pair as `purchase_item`.
+select plan(34);
 
 -- Every table that holds user data must have RLS on. This catches the classic
 -- failure: a new table added months from now with RLS quietly left off.
@@ -244,6 +247,31 @@ select throws_ok(
   '22P02',
   null,
   'lessons.kind refuses a value outside the enum'
+);
+
+-- ── the streak freeze ───────────────────────────────────────────────────────
+--
+-- The second and last function here a signed-in client may call. Like `purchase_item` it
+-- is safe because of its signature rather than its grant: it takes no price and no user
+-- id, reads `auth.uid()`, and refuses at the cap BEFORE the ledger row — which is
+-- `grantFreeze`'s own rule, "taking the coins and silently discarding the freeze is the
+-- worst possible outcome", enforced in SQL.
+select ok(
+  (select has_function_privilege('authenticated', p.oid, 'EXECUTE')
+     from pg_proc p
+     join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public' and p.proname = 'purchase_freeze'),
+  'purchase_freeze is callable by a signed-in user'
+);
+
+select is_empty(
+  $$ select p.proname
+       from pg_proc p
+       join pg_namespace n on n.oid = p.pronamespace
+      where n.nspname = 'public'
+        and p.proname = 'purchase_freeze'
+        and has_function_privilege('anon', p.oid, 'EXECUTE') $$,
+  'purchase_freeze is not callable by anon'
 );
 
 select * from finish();

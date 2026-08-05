@@ -95,6 +95,12 @@ const ALLOWED: Record<string, string> = {
 
   // ── roadmapped, and deliberately not built during v1.0
 
+  grantFreeze:
+    'superseded, not unbuilt. The freeze IS purchasable — `purchase_freeze` — and the cap ' +
+    'is enforced in SQL for the same reason the price is: a client that chooses its own ' +
+    'cap holds nine freezes. streak-recovery.test.ts reads the migration and asserts the ' +
+    'two copies of MAX_FREEZES agree.',
+
   // ── consumed by another engine rather than by a screen
   evaluate: 'the single-definition form; the client calls evaluateAll',
   backfill: 'for a pack that adds an achievement to users who already earned it — needs server-side history',
@@ -136,12 +142,11 @@ const KNOWN_GAPS: Record<string, string> = {
   // maths" — and were descriptions of code nobody had written. That is exactly the
   // "we forgot" wearing "we decided not to" that this file's footer warns about, and
   // it survived because the only tree that could disprove it was not being read.
-  grantFreeze:
-    'a streak freeze is a coin spend and there is no endpoint for one — purchase_item ' +
-    'sells cosmetics only',
   markBroken:
     'nothing expires a streak on a day with no lesson; record_lesson only reacts to ' +
-    'activity, and the missing half needs a scheduled job',
+    'activity, and recording a break means noticing an ABSENCE, which needs a scheduled ' +
+    'job. `currentStreak` makes the DISPLAY honest in the meantime; this is the other ' +
+    'half, which starts the repair window.',
 }
 
 // ── collect engine exports ───────────────────────────────────────────────────

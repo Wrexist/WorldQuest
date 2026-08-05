@@ -592,6 +592,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      purchase_freeze: {
+        Args: {
+          p_price?: number
+        }
+        Returns: Json
+      }
       purchase_item: {
         Args: {
           p_item_id: string

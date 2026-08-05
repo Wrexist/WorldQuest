@@ -1,4 +1,6 @@
+import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
+import { SELLABLE_KINDS } from '../shop/index.js'
 import { BALANCE } from '../xp/balance.js'
 import {
   FREEZE_PRICE,
@@ -177,5 +179,63 @@ describe('markBroken', () => {
     const result = markBroken(broken({ brokenOn: null }), '2026-08-01', 214)
     expect(result.brokenOn).toBe('2026-08-01')
     expect(result.restorableLength).toBe(214)
+  })
+})
+
+/**
+ * The purchase path, and the constants it has to agree with.
+ *
+ * `grantFreeze` has been here since streaks were built, tested, with a doc comment
+ * describing "the common caller is a purchase flow" — and no caller. `freezes_held` has
+ * been 0 on every row this product ever created, so the freeze branch inside
+ * `applyActivity` — the rule that quietly forgives one missed day — has never executed for
+ * a real user. `purchase_freeze` is that caller.
+ *
+ * A Postgres function cannot import `MAX_FREEZES` or `FREEZE_PRICE`, so both exist twice.
+ * This reads the migration and holds the copies together, the same way the mastery
+ * trigger and the shop catalogue are held to theirs.
+ */
+describe('purchase_freeze agrees with the engine', () => {
+  const migration = readFileSync(
+    new URL('../../../../supabase/migrations/20260805180000_purchase_freeze.sql', import.meta.url),
+    'utf8',
+  )
+  /** Comments explain why there is no `p_price`, so matching the raw file finds the prose. */
+  const sql = migration.replace(/^\s*--.*$/gm, '')
+
+  it('caps freezes at the same number the engine does', () => {
+    const found = sql.match(/c_max\s+constant smallint := (\d+)/)
+    expect(found, 'no cap declared in the migration').not.toBeNull()
+    expect(Number(found![1])).toBe(MAX_FREEZES)
+  })
+
+  it('prices it at the same number the balance table does', () => {
+    const found = migration.match(/'consumable\.streak-freeze',\s*'consumable',\s*(\d+)/)
+    expect(found, 'the freeze is not in shop_items').not.toBeNull()
+    expect(Number(found![1])).toBe(FREEZE_PRICE)
+  })
+
+  it('never takes a price or a user from the caller', () => {
+    expect(sql).toMatch(/select price into v_price from public\.shop_items/)
+    expect(sql).toMatch(/v_user\s+uuid := auth\.uid\(\)/)
+    expect(sql).not.toMatch(/p_user_id/)
+  })
+
+  it('refuses at the cap BEFORE taking any coins', () => {
+    // `grantFreeze`'s own comment: "taking the coins and silently discarding the freeze is
+    // the worst possible outcome". The order of these two statements is that rule.
+    const capIndex = sql.indexOf("'at_cap'")
+    const spendIndex = sql.indexOf('insert into public.coin_ledger')
+    expect(capIndex).toBeGreaterThan(-1)
+    expect(spendIndex).toBeGreaterThan(-1)
+    expect(capIndex).toBeLessThan(spendIndex)
+  })
+
+  it('sells a consumable kind, so the cosmetics grid cannot render it', () => {
+    // `SELLABLE_KINDS` filters the client catalogue and does not contain `consumable`,
+    // which is what stops a freeze being bought through the cosmetic endpoint that would
+    // write an inventory row and refuse the second purchase.
+    expect(SELLABLE_KINDS).not.toContain('consumable')
+    expect(migration).toContain("'consumable.streak-freeze', 'consumable'")
   })
 })

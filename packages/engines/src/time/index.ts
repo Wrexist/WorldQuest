@@ -228,3 +228,35 @@ export function streakMilestoneReward(streak: number): StreakReward {
   const coinTable = BALANCE.coins.streakMilestones as Readonly<Record<number, number>>
   return { xp: xpTable[streak] ?? 0, coins: coinTable[streak] ?? 0 }
 }
+
+/**
+ * The streak as it stands RIGHT NOW, which is not always the number in the database.
+ *
+ * `streaks.current` is written when a lesson lands, so between lessons it is a claim
+ * about the past. Somebody who reached day 30 and then missed two days still has 30 in
+ * that column, and Home was showing it — a screen telling a user they have a
+ * thirty-day streak they no longer have, until the next lesson resets it under them.
+ *
+ * `markBroken` exists for the other half of this — recording the break so the repair
+ * window can start — and had no caller either. It still needs a server-side job to fire
+ * on a day with no activity. This does not replace it; it makes the DISPLAY honest in
+ * the meantime, from data the client already has, with no job and no clock skew.
+ *
+ * Pure, and deliberately the same arithmetic `applyActivity` uses, so the number shown
+ * before a lesson and the number written after it cannot disagree:
+ *
+ *   · same local day, or yesterday → still alive
+ *   · the day before that, with a freeze in hand → still alive, the freeze will be spent
+ *   · anything older → zero
+ */
+export function currentStreak(
+  state: Pick<StreakState, 'current' | 'lastActiveDate' | 'freezesHeld'>,
+  now: number,
+  timeZone: string,
+): number {
+  if (state.lastActiveDate === null || state.lastActiveDate === '') return 0
+  const gap = daysBetween(state.lastActiveDate, localDate(now, timeZone))
+  if (gap <= 1) return state.current
+  if (gap === 2 && state.freezesHeld > 0) return state.current
+  return 0
+}

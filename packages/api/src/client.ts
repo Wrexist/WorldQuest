@@ -166,6 +166,16 @@ export type Progress = {
   readonly streak: number
   readonly longestStreak: number
   readonly factsMastered: number
+  /**
+   * The recovery fields, which the streak screen stubbed to their defaults because they
+   * "do NOT exist in the progress payload yet". They existed in the table the whole time.
+   *
+   * `lastActiveDate` is what makes the displayed streak honest between lessons —
+   * `streaks.current` is only written when a lesson lands, so a user who missed two days
+   * was still being shown the number they had before they missed them.
+   */
+  readonly lastActiveDate: string | null
+  readonly freezesHeld: number
 }
 
 /** Mastery levels that count as learned for the progress ring. */
@@ -184,7 +194,7 @@ const MASTERED: readonly Database['public']['Enums']['mastery_level'][] = [
 export async function fetchProgress(client: WorldQuestClient): Promise<Progress> {
   const [wallet, streak, mastered] = await Promise.all([
     client.from('wallets').select('xp_total, coins, gems, hearts').maybeSingle(),
-    client.from('streaks').select('current, longest').maybeSingle(),
+    client.from('streaks').select('current, longest, last_active_date, freezes_held').maybeSingle(),
     client
       .from('user_facts')
       .select('fact_id', { count: 'exact', head: true })
@@ -204,6 +214,8 @@ export async function fetchProgress(client: WorldQuestClient): Promise<Progress>
     hearts: wallet.data?.hearts ?? 0,
     streak: streak.data?.current ?? 0,
     longestStreak: streak.data?.longest ?? 0,
+    lastActiveDate: streak.data?.last_active_date ?? null,
+    freezesHeld: streak.data?.freezes_held ?? 0,
     factsMastered: mastered.count ?? 0,
   }
 }
@@ -261,4 +273,28 @@ export async function fetchSubscription(
     willRenew: data.will_renew,
     hasUsedTrial: data.has_used_trial,
   }
+}
+
+// ── consumables ─────────────────────────────────────────────────────────────
+
+export type FreezePurchase =
+  | { readonly status: 'purchased'; readonly freezesHeld: number; readonly coins: number }
+  | { readonly status: 'at_cap'; readonly freezesHeld: number }
+  | { readonly status: 'insufficient_funds' | 'not_for_sale' | 'no_streak' | 'unauthorized' }
+
+/**
+ * Buy a streak freeze.
+ *
+ * The caller supplies nothing but the intent: the price comes from `shop_items` and the
+ * user from `auth.uid()`, so the worst a modified client can do is buy one it can afford.
+ * The cap and the overdraft are both refused server-side, and both come back as a status
+ * rather than an error — "you already hold two" is an answer, not a failure.
+ *
+ * `grantFreeze` in the engine has described "the common caller is a purchase flow" since
+ * streaks were built and had no caller. This is it.
+ */
+export async function buyStreakFreeze(client: WorldQuestClient): Promise<FreezePurchase> {
+  const { data, error } = await client.rpc('purchase_freeze', {})
+  if (error) throw error
+  return (data ?? { status: 'unauthorized' }) as FreezePurchase
 }

@@ -116,6 +116,8 @@ describe('fetchProgress', () => {
       hearts: 0,
       streak: 0,
       longestStreak: 0,
+      lastActiveDate: null,
+      freezesHeld: 0,
       factsMastered: 0,
     })
   })
@@ -124,7 +126,10 @@ describe('fetchProgress', () => {
     const progress = await fetchProgress(
       fakeClient({
         wallets: { data: { xp_total: 4820, coins: 430, gems: 12, hearts: 4 }, error: null },
-        streaks: { data: { current: 12, longest: 31 }, error: null },
+        streaks: {
+          data: { current: 12, longest: 31, last_active_date: '2026-08-05', freezes_held: 1 },
+          error: null,
+        },
         userFacts: { data: null, error: null, count: 7 },
       }),
     )
@@ -136,6 +141,11 @@ describe('fetchProgress', () => {
       hearts: 4,
       streak: 12,
       longestStreak: 31,
+      // Stubbed to '' and 0 by the streak route with a note saying they "do NOT exist in
+      // the progress payload yet". They existed in `streaks` the whole time; nothing
+      // selected them, so the freeze mechanic could not be shown OR bought.
+      lastActiveDate: '2026-08-05',
+      freezesHeld: 1,
       factsMastered: 7,
     })
   })
