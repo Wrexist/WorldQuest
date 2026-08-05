@@ -6,9 +6,10 @@
  * the title it sells is displayed.
  */
 
+import { useEffect } from 'react'
 import { ShopScreen } from '../src/features/shop/ShopScreen.js'
 import { CATALOGUE } from '../src/features/shop/catalogue.js'
-import { useShop } from '../src/features/shop/useShop.js'
+import { reconcileOwned, useShop } from '../src/features/shop/useShop.js'
 import { useProgress } from '../src/features/home/useProgress.js'
 import { useOnline } from '../src/lib/connectivity.js'
 import { levelProgress } from '@worldquest/engines'
@@ -22,6 +23,14 @@ export default function ShopRoute() {
 
   const coins = data?.coins ?? 0
   const level = levelProgress(data?.xpTotal ?? 0)
+
+  // On entry, not on every purchase. Opening the shop is when a stale "Owned" would
+  // actually mislead somebody — a device restored from backup, or a purchase that failed
+  // to reach the server — and it is the one moment the round trip costs nothing, because
+  // the wallet query is already in flight beside it.
+  useEffect(() => {
+    void reconcileOwned()
+  }, [])
 
   return (
     <ShopScreen

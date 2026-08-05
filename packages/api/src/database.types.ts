@@ -299,6 +299,24 @@ export type Database = {
           },
         ]
       }
+      shop_items: {
+        Row: {
+          item_id: string
+          kind: string
+          price: number
+        }
+        Insert: {
+          item_id: string
+          kind: string
+          price: number
+        }
+        Update: {
+          item_id?: string
+          kind?: string
+          price?: number
+        }
+        Relationships: []
+      }
       streaks: {
         Row: {
           current: number
@@ -574,6 +592,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      purchase_item: {
+        Args: {
+          p_item_id: string
+        }
+        Returns: Json
+      }
       record_lesson: {
         Args: {
           p_client_version: string

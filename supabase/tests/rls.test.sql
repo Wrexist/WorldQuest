@@ -16,11 +16,11 @@ begin;
 -- table quietly dropping out of the list. Adding a table means adding it to the query
 -- AND incrementing this number.
 --
--- 21 → 24: `record_lesson` brought three assertions, two of them the pair every
+-- 21 → 24 → 27: `record_lesson` brought three assertions, two of them the pair every
 -- SECURITY DEFINER function in this schema now gets (unreachable by a client, reachable
 -- by service_role) and one confirming `streaks` still has no client write path now that
 -- it finally has a server-side writer.
-select plan(24);
+select plan(29);
 
 -- Every table that holds user data must have RLS on. This catches the classic
 -- failure: a new table added months from now with RLS quietly left off.
@@ -29,7 +29,7 @@ from pg_class
 where relname in (
   'profiles','entitlements','user_facts','review_log','lessons',
   'xp_ledger','coin_ledger','wallets','inventory','streaks',
-  'subscriptions','subscription_events'
+  'subscriptions','subscription_events','shop_items'
 );
 
 -- No client-facing write path may exist on a reward table. The absence of a
@@ -167,5 +167,40 @@ select is_empty(
 select has_column('subscriptions', 'notified_at',
   'subscriptions records when the last applied notification was sent');
 
+-- ── the shop's spend ────────────────────────────────────────────────────────
+--
+-- `purchase_item` is the single exception to "no function in this schema is callable by a
+-- client", and the exception is deliberate: buying a cosmetic is the one server action a
+-- user initiates directly. What makes it safe is not the grant but the SIGNATURE — it
+-- takes an item id and nothing else, so the price comes from `shop_items` and the spender
+-- from `auth.uid()`. A version taking a price or a user id would be a free shop or an
+-- emptied wallet, and would look almost identical in review.
+select ok(
+  (select has_function_privilege('authenticated', p.oid, 'EXECUTE')
+     from pg_proc p
+     join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public' and p.proname = 'purchase_item'),
+  'purchase_item is callable by a signed-in user'
+);
+
+select is_empty(
+  $$ select p.proname
+       from pg_proc p
+       join pg_namespace n on n.oid = p.pronamespace
+      where n.nspname = 'public'
+        and p.proname = 'purchase_item'
+        and has_function_privilege('anon', p.oid, 'EXECUTE') $$,
+  'purchase_item is not callable by anon'
+);
+
+-- The catalogue is readable and unwritable. A client that could edit `shop_items` could
+-- set a price to 1, which is the whole reason the price does not come from the caller.
+select is_empty(
+  $$ select policyname from pg_policies
+      where tablename = 'shop_items' and cmd in ('INSERT','UPDATE','DELETE') $$,
+  'no client write policy on shop_items'
+);
+
 select * from finish();
 rollback;
+
