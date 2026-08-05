@@ -43,36 +43,20 @@ jobs:
       - name: Generate tokens and translation keys
         run: pnpm generate
 
-      - name: Typecheck (packages + app)
-        run: pnpm typecheck
-
-      - name: Unit and component tests
-        run: pnpm test
-
-      - name: Content validation
-        run: pnpm content:validate
-
-      # Schema-valid content can still read as nonsense: a hint that repeats its own
-      # answer, a prompt that gives the answer away, a template pointing at a
-      # translation key nobody wrote. All three shipped at least once. This renders
-      # every question through the real catalogue and fails on those.
+      # ONE step, not nine.
       #
-      # `--quiet` because the full listing is for a human deciding whether the
-      # questions are GOOD. CI can only decide whether they are broken.
-      - name: Content reads correctly
-        run: pnpm content:preview --quiet
-
-      - name: Localisation
-        run: pnpm i18n:check
-
-      - name: Contrast (WCAG 2.2 AA)
-        run: pnpm design:contrast
-
-      # The economy simulation exits non-zero on its own health gates — a heart
-      # block rate over 15%, a hoarding cohort, a curve that tops out early. A
-      # reward number can be changed without any test noticing; this notices.
-      - name: Economy health
-        run: pnpm engines:simulate
+      # This job listed typecheck, test, content:validate, content:preview, i18n:check,
+      # design:contrast and engines:simulate as separate steps — which is a nicer failure
+      # summary and a worse guarantee, because `pnpm verify` listed a DIFFERENT subset and
+      # nothing compared the two. `engines:simulate` and `content:preview` ran here and not
+      # there, so a reward number or a nonsense question could be pushed having met every
+      # local gate. CLAUDE.md called verify "all of it, and the gate that matters" while it
+      # was neither.
+      #
+      # Running the same command a developer runs is the only version of this that means
+      # anything — the same argument the db:types step below already makes.
+      - name: Verify
+        run: pnpm verify
 
       # The development container ships a Chromium at /opt/pw-browsers and sets
       # PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD, so nothing here ever downloaded one. A runner
@@ -90,6 +74,24 @@ jobs:
       # does not prove. It is not a device.
       - name: App bundles and a lesson can be played
         run: pnpm e2e
+
+      # Walks Chromium's computed accessibility tree over ten routes — the thing a
+      # screen reader actually consumes. `lint:a11y` reads source and `design:shots`
+      # accepts textContent as a label, so a button whose only content is an emoji
+      # passed both. It found two real defects on its first run, including settings
+      # toggles that would have been announced and impossible to operate with
+      # VoiceOver, and then it was wired into nothing: not CI, not verify. A check
+      # nothing runs is a check that does not exist.
+      - name: Accessibility tree
+        run: pnpm a11y:tree
+
+      # Metro resolves per platform, so a native-only resolution failure is invisible
+      # to a web export. This script exists because the app had only ever been bundled
+      # for web, and it enforces a per-platform Hermes budget because Hermes reads the
+      # whole bundle before the first frame. It caught a silent 50% growth when Sentry
+      # landed — and, like a11y:tree, ran nowhere afterwards.
+      - name: Native bundles build, within budget
+        run: pnpm bundle:native
 
       - name: Upload E2E screenshots
         if: always()
