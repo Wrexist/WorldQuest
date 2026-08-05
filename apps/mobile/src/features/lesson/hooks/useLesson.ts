@@ -184,7 +184,14 @@ export function useLesson({
    * repo bans those. A ref is the version that is correct rather than silenced.
    */
   const onCompleteRef = useRef(onComplete)
-  onCompleteRef.current = onComplete
+  // Assigned in an effect, not in the render body. Writing a ref during render is a
+  // side effect during render: React may render a component and then throw the result
+  // away, and under StrictMode it renders twice on purpose — so a discarded render
+  // could leave the ref pointing at a callback the committed tree never used. Only
+  // committed renders run effects, which is exactly the set that should update it.
+  useEffect(() => {
+    onCompleteRef.current = onComplete
+  })
 
   useEffect(() => {
     if (!isFinished(state) || !optimistic || completed.current) return

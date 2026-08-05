@@ -201,6 +201,13 @@ function buildAnswerKey(): string {
       if (typeof fact.id !== 'string' || typeof fact.entity !== 'string') continue
       key[fact.id] = fact.entity
 
+      // A copy of `isQuizzable` from packages/engines, named as one.
+      //
+      // This script is what VENDORS the engine into the deployable function, so it
+      // cannot import the package it is flattening — a build step that resolves through
+      // the thing it is producing is a resolution order nobody wants to debug at deploy
+      // time. `packages/content/scripts/validate.ts` had a third copy and now calls the
+      // real function; this is the last one, and it stays because of what this file is.
       const quizzable =
         fact.quizzable !== false &&
         fact.volatility !== 'fast' &&

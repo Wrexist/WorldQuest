@@ -22,8 +22,24 @@ import type {
 
 export * from './types.js'
 
-/** A fact is quizzable unless it says otherwise. Sensitive and volatile facts opt out. */
-export function isQuizzable(fact: Fact): boolean {
+/**
+ * A fact is quizzable unless it says otherwise. Sensitive and volatile facts opt out.
+ *
+ * Takes the three fields it reads rather than a whole `Fact`, so that everything which
+ * has to answer this question can ask the same function. It was three answers: here, in
+ * `content/scripts/validate.ts` where the achievement ceilings are counted, and in
+ * `supabase/functions/build.ts` where the server's answer key is written. Three copies
+ * of "a fast fact is never a quiz answer" is three chances for the ceiling a badge is
+ * measured against to disagree with the questions a user is actually asked.
+ *
+ * The validator now calls this. The bundler still cannot — it is the script that
+ * VENDORS the engine into the deployable function, and a build step that imports the
+ * package it is flattening is a resolution order nobody wants to debug at deploy time.
+ * Its copy stays, named as a copy.
+ */
+export function isQuizzable(
+  fact: Pick<Fact, 'quizzable' | 'volatility' | 'sensitivity'>,
+): boolean {
   if (fact.quizzable === false) return false
   if (fact.volatility === 'fast') return false
   if (fact.sensitivity === 'review-required') return false

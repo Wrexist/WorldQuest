@@ -78,9 +78,15 @@ function parseBody(raw: unknown): SubmitBody | null {
   if (!isFiniteMs(b.startedAt)) return null
   if (!Array.isArray(b.answers) || b.answers.length === 0) return null
   // A statistic, not a reward input — nothing is paid or withheld on it, which is what
-  // makes an unverifiable client number acceptable here. Bounded anyway: a smallint
-  // column and an absurd value are a bad combination, and `hearts.max` is the ceiling
-  // even after a revive, because a revive restores to full rather than beyond it.
+  // makes an unverifiable client number acceptable here. Bounded anyway, because a
+  // smallint column and an absurd value are a bad combination.
+  //
+  // The ceiling is `hearts.max * 10`, not `hearts.max`. This comment used to say the
+  // latter, on the reasoning that "a revive restores to full rather than beyond it" —
+  // true of the BALANCE and irrelevant to this number, which is cumulative. A lesson
+  // that spends five hearts, revives, and spends five more legitimately reports ten.
+  // Ten revives is already far past anything a real session does, so the bound is
+  // generous by design: it exists to reject a forged integer, not to police play.
   if (b.heartsLost !== undefined && !isFiniteMs(b.heartsLost)) return null
   // A lesson longer than the documented maximum is a forged payload, not a session.
   if (b.answers.length > 50) return null

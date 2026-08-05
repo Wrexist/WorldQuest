@@ -181,6 +181,11 @@ function AchievementCard({ row }: { row: AchievementRow }) {
   return (
     <Card
       style={styles.card}
+      // A stable handle for tests, alongside the label a person hears. The card was
+      // only findable by its user-facing NAME, so renaming "Flag Collector" — copy, in
+      // a file translators own — broke a test about progress arithmetic. Ids are
+      // permanent here by rule; the name is not.
+      testID={`achievement-${def.id}`}
       accessibilityLabel={`${tContent(nameKey(def.id))}, ${
         progress.tier === null ? t('achievements:locked') : t(TIER_LABEL[progress.tier])
       }`}

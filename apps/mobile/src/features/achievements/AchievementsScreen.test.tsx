@@ -124,10 +124,10 @@ describe('Achievements screen', () => {
     }
     const { container } = render(rowsRender(half))
     // Scoped to the card: the same "N to go" is legitimately true of another achievement
-    // too, and a global text query would pass on the wrong one.
-    const card = Array.from(container.querySelectorAll('[aria-label]')).find((el) =>
-      el.getAttribute('aria-label')?.startsWith('Flag Collector'),
-    )
+    // too, and a global text query would pass on the wrong one. Found by ID rather than
+    // by the name a user reads — achievement ids are permanent by rule and ship in save
+    // data, while the name is copy a translator may rewrite tomorrow.
+    const card = container.querySelector('[data-testid="achievement-ach.flags.collector"]')
     expect(card?.textContent).toContain(`${silver - value} to go`)
     expect(card?.textContent).toContain('Bronze')
   })

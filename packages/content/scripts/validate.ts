@@ -8,6 +8,7 @@
  * Run: pnpm content:validate
  */
 
+import { isQuizzable } from '@worldquest/engines'
 import ajvModule from 'ajv/dist/2020.js'
 import ajvFormatsModule from 'ajv-formats'
 import { readFileSync, readdirSync, statSync } from 'node:fs'
@@ -308,8 +309,20 @@ for (const file of packFiles) {
   }
   type LoadedPack = { kind?: string; items?: PackItem[] }
 
+  // The ENGINE's rule, not a third copy of it. The ceiling an achievement is measured
+  // against has to be counted with the same predicate that decides which questions a
+  // user is actually asked, or "collect them all" means a different number here than it
+  // does in a lesson.
   const quizzable = (item: PackItem): boolean =>
-    item.quizzable !== false && item.volatility !== 'fast' && item.sensitivity !== 'review-required'
+    isQuizzable({
+      ...(item.quizzable !== undefined ? { quizzable: item.quizzable } : {}),
+      ...(item.volatility !== undefined
+        ? { volatility: item.volatility as 'stable' | 'slow' | 'fast' }
+        : { volatility: 'stable' as const }),
+      ...(item.sensitivity !== undefined
+        ? { sensitivity: item.sensitivity as 'none' | 'review-required' }
+        : {}),
+    })
 
   const allItems = packFiles.map((file) => ({
     rel: relative(repoRoot, file),
