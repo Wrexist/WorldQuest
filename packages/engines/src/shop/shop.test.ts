@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { BALANCE } from '../xp/balance.js'
 import {
@@ -99,5 +100,78 @@ describe('which title the profile shows', () => {
     expect(equippedTitleKey('titles:scout', 'title.gone', catalogue, new Set(['title.gone']))).toBe(
       'titles:scout',
     )
+  })
+})
+
+/**
+ * The server's copy of the catalogue, and the only thing holding it to the real one.
+ *
+ * `purchase_item` cannot read a JSON pack and a Postgres function cannot import
+ * `BALANCE`, so `shop_items` is a projection — the same relationship `_content/answers.ts`
+ * has to the geography packs. A projection nobody checks is a copy that can disagree with
+ * its source, and here the disagreement is a mispriced or unsellable item, which is a
+ * refund request rather than a rendering bug.
+ *
+ * So this reads all three: the migration, the pack, and the balance table.
+ */
+describe('shop_items agrees with the pack and the balance table', () => {
+  const migration = readFileSync(
+    new URL('../../../../supabase/migrations/20260805120000_purchase_item.sql', import.meta.url),
+    'utf8',
+  )
+  const pack = JSON.parse(
+    readFileSync(
+      new URL('../../../content/packs/shop/titles.v1.json', import.meta.url),
+      'utf8',
+    ),
+  ) as { items: { id: string; kind: string; price: number }[] }
+
+  /**
+   * The SQL with its prose removed.
+   *
+   * The assertions below look for the ABSENCE of things — `p_price`, `p_user_id` — and
+   * the migration explains at length why neither is a parameter. Matching the raw file
+   * flags the paragraph that most carefully justifies the rule, which is the
+   * check-matches-its-own-documentation bug this repo has now shipped four times.
+   */
+  const sql = migration.replace(/^\s*--.*$/gm, '')
+
+  /** `('title.map-nerd', 'title', 1000)` → the three fields. */
+  const seeded = [...migration.matchAll(/\('([\w.-]+)',\s*'(\w+)',\s*(\d+)\)/g)].map((m) => ({
+    id: m[1]!,
+    kind: m[2]!,
+    price: Number(m[3]!),
+  }))
+
+  const sellable = pack.items.filter((i) =>
+    SELLABLE_KINDS.includes(i.kind as (typeof SELLABLE_KINDS)[number]),
+  )
+
+  it('seeds every sellable item in the pack, and nothing else', () => {
+    expect(seeded.map((s) => s.id).sort()).toEqual(sellable.map((i) => i.id).sort())
+  })
+
+  it('prices every seeded item from the balance table', () => {
+    // Not from the pack's own `price` field: the loader already rejects a row that
+    // disagrees with `priceFor`, and the server must not learn a price from content that
+    // a pack release could quietly change.
+    for (const row of seeded) {
+      expect(row.price, `${row.id} is seeded at ${row.price}`).toBe(
+        priceFor(row.kind as (typeof SELLABLE_KINDS)[number]),
+      )
+    }
+  })
+
+  it('never takes a price from the caller', () => {
+    // The single property that makes this endpoint safe to expose to `authenticated`.
+    expect(sql).not.toMatch(/p_price/)
+    expect(sql).toMatch(/select price into v_price from public\.shop_items/)
+  })
+
+  it('spends the caller’s own coins and nobody else’s', () => {
+    // `auth.uid()` rather than a user-id parameter. A function that took one and was
+    // granted to `authenticated` would let anyone empty any wallet.
+    expect(sql).toMatch(/v_user\s+uuid := auth\.uid\(\)/)
+    expect(sql).not.toMatch(/p_user_id/)
   })
 })

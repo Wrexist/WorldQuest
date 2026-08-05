@@ -24,9 +24,19 @@
  *
  * UN M49 places Cuba and Mexico in "Latin America and the Caribbean"; this pack groups
  * them under North America, which is true continentally and is what a ten-year-old is
- * taught. So `source` points at the entities pack rather than at M49 — citing a
- * standard we have deliberately diverged from would be a false citation, and this repo
+ * taught. Citing M49 as the source would therefore be a false citation, and this repo
  * treats a wrong fact as unshippable.
+ *
+ * The first answer to that was to point `source.url` at this repo's own entities pack on
+ * GitHub — which is worse, in two ways. A fact whose source is another file in the same
+ * repository has no external provenance at all; the citation is circular and answers
+ * nothing a reader could check. And the URL was a `blob/main` link into a private
+ * repository, so it 404s for everyone outside the org, including the org.
+ *
+ * So the source now says what it actually is: OUR classification, on a continental model
+ * somebody else defines. The name carries the editorial claim and the URL carries the
+ * external basis for the continent boundaries we group by. `content:validate` refuses a
+ * source URL pointing back into this repository, so the circular version cannot return.
  *
  * Run: pnpm build:locations
  */
@@ -128,9 +138,11 @@ const items = [...entities]
     difficulty: difficultyFor(e.id),
     tags: ['location', e.subregion, 'core'],
     source: {
-      name: 'WorldQuest geography pack — entities.countries.v1.json',
-      url: 'https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json',
-      verifiedAt: '2026-08-03',
+      name:
+        'WorldQuest editorial classification, on the seven-continent model ' +
+        '(deliberately NOT UN M49 — see the note at the top of build-locations.cjs)',
+      url: 'https://www.britannica.com/science/continent',
+      verifiedAt: '2026-08-05',
     },
     volatility: 'stable',
   }))
@@ -149,9 +161,29 @@ writeFileSync(
         'wrong fact of the worst kind: quietly wrong, and only on one screen. ' +
         "The GROUPING is this app's own, not UN M49 — M49 places Cuba and Mexico in 'Latin " +
         "America and the Caribbean' while this pack groups them under North America, which is " +
-        'true continentally and is what a ten-year-old is taught. The source field points at ' +
-        'the entities pack rather than at M49 for exactly that reason: citing a standard we ' +
-        'have deliberately diverged from would be a false citation.',
+        'true continentally and is what a ten-year-old is taught. Citing M49 would therefore ' +
+        'be a false citation, and so would citing the entities pack: a fact whose source is ' +
+        'another file in this repository has no external provenance at all, and the validator ' +
+        'now refuses one. So each row names the classification as WHAT IT IS — an editorial ' +
+        'choice, made here — and cites the seven-continent model it rests on. The derivation ' +
+        'is mechanical; the classification being derived is a judgement, and the citation ' +
+        'describes the judgement rather than the copy step. ' +
+        'Every fact here is `stable` by construction — the value is which subregion a ' +
+        'country sits in, and a continent does not move. Grading them per row would be ' +
+        'grading the projection rather than its source, which is why `volatilityReviewed` ' +
+        'is set below.',
+      /**
+       * The uniformity opt-out, EMITTED rather than added by hand.
+       *
+       * `content:validate` warns when every row in a pack shares one volatility tag,
+       * because that is usually a tag nobody graded — and it is right to, but here the
+       * uniformity is a property of the data: a projection of `subregion` cannot have
+       * rows that go stale at different rates. It was added to the pack by hand once,
+       * and the next `pnpm build:locations` deleted it, because a generated file only
+       * contains what its generator emits. A hand edit to a generated file is a change
+       * with a scheduled expiry date.
+       */
+      volatilityReviewed: true,
       packId: 'geography.locations',
       version: '1.0.0',
       subject: 'geography',

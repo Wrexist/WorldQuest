@@ -257,10 +257,20 @@ false citation: plausible, uncheckable by CI, and wrong about where the value ca
 Emitting them citing the package is honest, but it lowers the bar for hundreds of facts
 at once, and nobody has read any of them.
 
-`build-locations.cjs` is the worked example of getting this right. It derives 65 facts
-mechanically and cites **the entities pack it derived them from**, explicitly refusing to
-cite UN M49 — a standard the grouping deliberately diverges from — because a citation you
+`build-locations.cjs` is the worked example of getting this right, and it took two goes.
+It derives 65 facts mechanically from `subregion` in the entities pack, and it refuses to
+cite UN M49 — a standard the grouping deliberately diverges from, since M49 puts Mexico in
+"Latin America and the Caribbean" while this pack teaches North America. A citation you
 have diverged from is worse than no citation at all.
+
+It used to cite **the entities pack** instead, which is the failure this section warns
+about wearing the opposite mask: a fact whose source is another file in this repository
+has no external provenance, the link answers nothing a reader could check, and the one
+that shipped pointed into a private repo that 404s for everybody. `content:validate`
+rejects a self-citation now. So each row names its provenance as what it actually is —
+**a WorldQuest editorial classification on the seven-continent model** — and cites that
+model. The derivation is mechanical; the classification being derived is a judgement, and
+a citation has to describe the judgement rather than the copy step.
 
 So: generate the *shape* of a fact freely, and generate its *value* only from something
 this repo already owns. Everything else is authoring, one source at a time. That is slow
@@ -320,6 +330,39 @@ policy, and ask.
 user's stated goal, and Kenji will find it.
 
 ---
+
+### Difficulty is a prior, and priors carry their author's horizon
+
+`difficulty` (1–5) is authored by hand, once, and applies to every user on earth. The
+schema already calls it "an authored prior the engine overrides", which is the right
+design — FSRS learns a real per-user difficulty from the first review onwards.
+
+What it does before that first review is order new content, and there the prior is doing
+real work with a real bias in it. Measured across the capitals pack: mean authored
+difficulty **1.8 in Europe, 3.7 in Africa**. Every Western European capital is 1 or 2;
+every African one is 3 to 5. Dodoma and Gaborone are 5; Stockholm, Paris, Berlin, Rome
+and Madrid are 1.
+
+That is a true statement about the learner it was written for and a false one about the
+world. A Swedish twelve-year-old really does find Stockholm easier than Gaborone. A child
+in Accra is told Accra is hard and Stockholm is easy, and `selectItems` orders their first
+weeks accordingly — in a product whose personas claim a global audience.
+
+**Do not fix this by re-authoring the numbers.** That replaces one person's horizon with
+another's and buys nothing. Two real paths, in order of cost:
+
+1. **Move the prior out of the fact.** `difficulty` belongs beside `names` as a
+   per-locale value, not beside `source` as a property of the world. A `difficulty.sv`
+   that differs from `difficulty.en` is not a contradiction; it is the honest shape.
+2. **Replace it with measurement.** `review_log` records every answer with its rating.
+   After roughly the same volume `fsrs.ts` names for re-fitting its weights (~50k
+   reviews), observed p(correct) per cohort is strictly better than any authored guess,
+   and the prior becomes what it is for: the cold start before the data exists.
+
+`pnpm content:validate` warns when a pack's regional spread exceeds 1.5, with the numbers
+in the message. It is measured per pack rather than pooled — pooling a skewed pack against
+an even one reports a smaller number than either, which is the wrong direction for a bias
+check and hid this one at 1.4 instead of 1.9.
 
 ## 7. Adding a new subject (the thesis test)
 

@@ -11,18 +11,24 @@
  */
 
 import { router } from 'expo-router'
+import { ContentGate } from '../../src/components/ContentGate.js'
 import { QuestScreen } from '../../src/features/quests/QuestScreen.js'
 import { useDailyQuest } from '../../src/features/quests/useDailyQuest.js'
 
 export default function QuestsRoute() {
-  const { quest, loading } = useDailyQuest()
+  const { quest, loading, status, reload } = useDailyQuest()
 
+  // Routes are the layer that fetches, so the error state belongs here rather than in
+  // the screen (apps/mobile/CLAUDE.md). Without it a failed content load rendered the
+  // screen's EMPTY state — "no quest yet" — which is a confident wrong answer.
   return (
-    <QuestScreen
-      quest={quest}
-      loading={loading}
-      onStartSpeedRound={() => router.push('/lesson?mode=speed')}
-      onStart={() => router.push('/lesson')}
-    />
+    <ContentGate status={status} onRetry={reload}>
+      <QuestScreen
+        quest={quest}
+        loading={loading}
+        onStartSpeedRound={() => router.push('/lesson?mode=speed')}
+        onStart={() => router.push('/lesson')}
+      />
+    </ContentGate>
   )
 }

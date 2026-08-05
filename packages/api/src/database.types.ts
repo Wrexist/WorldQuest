@@ -155,7 +155,7 @@ export type Database = {
           hearts_lost: number
           id: string
           items: number
-          kind: string
+          kind: Database['public']['Enums']['lesson_kind']
           started_at: string
           topic_id: string | null
           user_id: string
@@ -169,7 +169,7 @@ export type Database = {
           hearts_lost?: number
           id: string
           items: number
-          kind: string
+          kind: Database['public']['Enums']['lesson_kind']
           started_at: string
           topic_id?: string | null
           user_id: string
@@ -183,7 +183,7 @@ export type Database = {
           hearts_lost?: number
           id?: string
           items?: number
-          kind?: string
+          kind?: Database['public']['Enums']['lesson_kind']
           started_at?: string
           topic_id?: string | null
           user_id?: string
@@ -299,8 +299,27 @@ export type Database = {
           },
         ]
       }
+      shop_items: {
+        Row: {
+          item_id: string
+          kind: string
+          price: number
+        }
+        Insert: {
+          item_id: string
+          kind: string
+          price: number
+        }
+        Update: {
+          item_id?: string
+          kind?: string
+          price?: number
+        }
+        Relationships: []
+      }
       streaks: {
         Row: {
+          broken_on: string | null
           current: number
           freeze_used_on: string | null
           freezes_held: number
@@ -311,6 +330,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          broken_on?: string | null
           current?: number
           freeze_used_on?: string | null
           freezes_held?: number
@@ -321,6 +341,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          broken_on?: string | null
           current?: number
           freeze_used_on?: string | null
           freezes_held?: number
@@ -574,6 +595,31 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      expire_streaks: { Args: never; Returns: number }
+      purchase_freeze: { Args: { p_price?: number }; Returns: Json }
+      purchase_item: { Args: { p_item_id: string }; Returns: Json }
+      record_lesson: {
+        Args: {
+          p_client_version: string
+          p_coins: number
+          p_correct: number
+          p_facts: Json
+          p_hearts_lost?: number
+          p_items: number
+          p_kind: Database['public']['Enums']['lesson_kind']
+          p_lesson_id: string
+          p_max_per_hour: number
+          p_reviews: Json
+          p_started_at: string
+          p_streak: Json
+          p_streak_coins?: number
+          p_streak_xp?: number
+          p_topic_id: string
+          p_user_id: string
+          p_xp: number
+        }
+        Returns: Json
+      }
       record_subscription_event: {
         Args: {
           p_kind: string
@@ -588,6 +634,7 @@ export type Database = {
       }
     }
     Enums: {
+      lesson_kind: 'lesson' | 'quest' | 'review' | 'challenge' | 'event'
       mastery_level:
         | 'unseen'
         | 'learning'
@@ -742,6 +789,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      lesson_kind: ['lesson', 'quest', 'review', 'challenge', 'event'],
       mastery_level: [
         'unseen',
         'learning',

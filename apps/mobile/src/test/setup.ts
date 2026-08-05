@@ -98,7 +98,77 @@ vi.mock('expo-haptics', () => ({
  * and by eye on a device. Deliberately NOT patched to report false: flipping the
  * default would change the branch every existing test exercises, in exchange for an
  * animation jsdom still cannot render.
+ *
+ * What WAS missing is that the animated branch was never entered by anything at all —
+ * not asserted on, not even mounted. A component whose animated path threw on the first
+ * render would have passed all 435 tests here, because no test has ever taken it.
+ *
+ * So the accident becomes a decision. `matchMedia` is stubbed rather than absent, and it
+ * still answers "reduced motion, please" by default, so every existing test exercises
+ * exactly the branch it always did. `withFullMotion` flips it for a block, which is
+ * enough to prove the other branch mounts and renders. Not enough to prove it looks
+ * right — nothing in jsdom can be — and that is still the device pass's job.
  */
+
+type MediaQueryListener = (event: { matches: boolean }) => void
+
+let prefersReducedMotion = true
+
+if (typeof window !== 'undefined' && window.matchMedia === undefined) {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: (query: string) => ({
+      matches: query.includes('prefers-reduced-motion') ? prefersReducedMotion : false,
+      media: query,
+      onchange: null,
+      addListener: (_: MediaQueryListener) => {},
+      removeListener: (_: MediaQueryListener) => {},
+      addEventListener: (_: string, __: MediaQueryListener) => {},
+      removeEventListener: (_: string, __: MediaQueryListener) => {},
+      dispatchEvent: () => false,
+    }),
+  })
+}
+
+/**
+ * Run a block with motion ON.
+ *
+ * Restored in a `finally`, because a test that leaves this flipped silently moves every
+ * test after it onto the other branch — and the whole point of the note above is that
+ * which branch runs should be a decision rather than a side effect.
+ */
+let fullMotionScopes = 0
+let preferenceBeforeFullMotion = true
+
+export function withFullMotion<T>(body: () => T): T {
+  // Counted, because the restore is not "set it back to true" — it is "set it back to
+  // whatever it was". A nested or overlapping call finishing first would otherwise turn
+  // reduced motion back on underneath the outer one, which is the same silent-reinstate
+  // bug as the async case below, arriving from the other direction.
+  if (fullMotionScopes === 0) preferenceBeforeFullMotion = prefersReducedMotion
+  fullMotionScopes += 1
+  prefersReducedMotion = false
+
+  const restore = (): void => {
+    fullMotionScopes -= 1
+    if (fullMotionScopes === 0) prefersReducedMotion = preferenceBeforeFullMotion
+  }
+  // An ASYNC body needs the restore to wait for it. A plain `finally` runs the moment
+  // the promise is returned, not when it settles, so an awaited body would have run its
+  // interesting part with reduced motion back on — the exact condition the caller turned
+  // off, silently reinstated mid-test. Synchronous bodies keep restoring immediately.
+  try {
+    const result = body()
+    if (result instanceof Promise) {
+      return result.finally(restore) as T
+    }
+    restore()
+    return result
+  } catch (error) {
+    restore()
+    throw error
+  }
+}
 
 /**
  * react-native-web warns about `shadow*` and `props.pointerEvents` being deprecated.

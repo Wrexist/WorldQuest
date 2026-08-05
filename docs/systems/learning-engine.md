@@ -61,7 +61,7 @@ ADR: [`../adr/0004-spaced-repetition.md`](../adr/0004-spaced-repetition.md).
 | `reps` | Successful reviews |
 | `lapses` | Times forgotten after being known |
 | `lastReviewAt`, `dueAt` | Timestamps |
-| `mastery` | Derived label for the UI (see §4) |
+| `mastery` | Derived label for the UI (see §4). Stored by a trigger, never by a writer — the three levels at `proficient` and above are pure functions of the row; `familiar` depends on retrievability and so exists only live on the client. |
 | `avgMs` | Rolling mean answer time — feeds confidence, not scheduling |
 
 ### 2.2 Forgetting curve
@@ -150,10 +150,25 @@ The 60/30/10 rule, per lesson:
   > is a complete experience" true at every goal — and a lesson always ends.
 
 ### Leeches
-A fact with `lapses >= 8` is **suspended** from normal rotation and queued for a
-*different* treatment: a new template, a mnemonic, or an Atlas explanation (v3.0). We
-do not keep showing someone the same thing they keep failing — that's the fastest way
-to make them quit.
+Failing a fact that already has `lapses >= 8` **suspends** it and rests it for at least
+`LEECH_COOLDOWN_DAYS` (14). We do not keep showing someone the same thing they keep
+failing — that's the fastest way to make them quit.
+
+**Suspension is a rest, not a removal**, and the distinction is the whole rule. Once the
+cooldown has passed the fact rejoins through the *struggling* slot — capped at 10 % of a
+session, so a backlog of leeches can never crowd out the reviews and new content a
+session is for — with a presentation `itemsForFact` shuffles independently. The first
+correct answer releases it, in one answer, and `lapses` is left untouched because FSRS
+and the struggling filter both read it.
+
+> This was a life sentence until 2026-08. `suspended` was derived from lifetime `lapses`,
+> a number that only rises, and `selectItems` dropped every suspended candidate — so a
+> fact that crossed the threshold once could not be shown, therefore could not be answered
+> correctly, therefore could never come back. The app stopped teaching it and went on
+> reporting the user had not learned it. The selection test asserted the behaviour, which
+> is why it read as correct for so long.
+
+The richer treatments — a mnemonic, an Atlas explanation — remain v3.0.
 
 ---
 

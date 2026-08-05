@@ -6,6 +6,9 @@ import {
   nextMilestone,
   localDate,
   startOfLocalDay,
+  streakMilestoneReward,
+  currentStreak,
+  STREAK_MILESTONES,
   type StreakState,
 } from './index.js'
 
@@ -238,5 +241,94 @@ describe('milestones', () => {
     // The balance table pays for 7/30/100/365 and nothing else. A fifth number here
     // would promise a reward no ledger entry honours.
     expect(nextMilestone(400)).toBeNull()
+  })
+})
+
+describe('streak milestone rewards', () => {
+  it('pays every milestone the balance table funds', () => {
+    // `isMilestone` has existed since streaks were built and had no caller that paid
+    // anything. These four numbers were in the balance table the whole time.
+    for (const day of STREAK_MILESTONES) {
+      const reward = streakMilestoneReward(day)
+      expect(reward.xp, `day ${day}`).toBeGreaterThan(0)
+    }
+  })
+
+  it('pays nothing on an ordinary day', () => {
+    for (const day of [1, 6, 8, 29, 99, 364, 400]) {
+      expect(streakMilestoneReward(day)).toEqual({ xp: 0, coins: 0 })
+    }
+  })
+
+  it('reads XP and coins from separate tables, because they differ', () => {
+    // A year-long streak pays XP and no coins on purpose: it is a status reward, not a
+    // shopping trip. Reading one table for both would silently invent 1000 coins.
+    expect(streakMilestoneReward(365).xp).toBeGreaterThan(0)
+    expect(streakMilestoneReward(365).coins).toBe(0)
+    expect(streakMilestoneReward(7).coins).toBeGreaterThan(0)
+  })
+
+  it('grows with the run — a longer streak is never worth less', () => {
+    const rewards = STREAK_MILESTONES.map((d) => streakMilestoneReward(d).xp)
+    for (let i = 1; i < rewards.length; i++) {
+      expect(rewards[i]!).toBeGreaterThan(rewards[i - 1]!)
+    }
+  })
+})
+
+describe('the streak as it stands right now', () => {
+  const state = (over: Partial<StreakState> = {}): StreakState => ({
+    current: 30,
+    longest: 30,
+    lastActiveDate: '2026-08-05',
+    freezesHeld: 0,
+    ...over,
+  })
+  const at = (date: string) => Date.parse(`${date}T12:00:00Z`)
+
+  it('shows the streak on the day it was earned', () => {
+    expect(currentStreak(state(), at('2026-08-05'), 'UTC')).toBe(30)
+  })
+
+  it('shows it the next day, before that day’s lesson', () => {
+    // Still alive: the user has the whole of today to keep it.
+    expect(currentStreak(state(), at('2026-08-06'), 'UTC')).toBe(30)
+  })
+
+  it('drops it once a day has been missed', () => {
+    // `streaks.current` still reads 30 — it is only written when a lesson lands — so
+    // Home was telling a user they had a streak they had already lost, right up until
+    // the next lesson reset it under them.
+    expect(currentStreak(state(), at('2026-08-07'), 'UTC')).toBe(0)
+  })
+
+  it('holds it across one missed day when a freeze is in hand', () => {
+    expect(currentStreak(state({ freezesHeld: 1 }), at('2026-08-07'), 'UTC')).toBe(30)
+  })
+
+  it('a freeze buys one day, not a week', () => {
+    expect(currentStreak(state({ freezesHeld: 2 }), at('2026-08-12'), 'UTC')).toBe(0)
+  })
+
+  it('is zero for somebody who has never played', () => {
+    expect(currentStreak(state({ lastActiveDate: null, current: 0 }), at('2026-08-05'), 'UTC')).toBe(0)
+    expect(currentStreak(state({ lastActiveDate: '' }), at('2026-08-05'), 'UTC')).toBe(0)
+  })
+
+  it('agrees with applyActivity about what survives', () => {
+    // The two must not disagree: this decides what is SHOWN before a lesson and
+    // applyActivity decides what is WRITTEN after one. A user watching the number drop
+    // the moment they answer a question is the bug this prevents.
+    for (const gapDays of [0, 1, 2, 3, 9]) {
+      for (const freezes of [0, 1]) {
+        const s = state({ freezesHeld: freezes })
+        const nowMs = at('2026-08-05') + gapDays * 86_400_000
+        const shown = currentStreak(s, nowMs, 'UTC')
+        const written = applyActivity(s, nowMs, 'UTC')
+        // Answering a lesson now either extends what was shown, or resets from zero.
+        const expected = shown === 0 ? 1 : shown + (gapDays === 0 ? 0 : 1)
+        expect(written.current, `gap ${gapDays}, freezes ${freezes}`).toBe(expected)
+      }
+    }
   })
 })

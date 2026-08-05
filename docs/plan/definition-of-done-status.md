@@ -12,15 +12,20 @@ the single fact that most of the rest follows from.
 
 ## Automated: green
 
-`pnpm verify` runs typecheck, **841 tests** across seven packages plus **90** against the
+`pnpm verify` runs typecheck, **893 tests** across seven packages plus **109** against the
 edge functions, content validation, i18n completeness, **26 contrast pairs**, `lint:a11y`,
 `escape-hatches`, `reachability` and `five-states`.
-`pnpm e2e` runs **67 steps** against the real Metro bundle in Chromium — including six
-screens re-measured at 200 % text — `pnpm a11y:tree` walks Chromium's computed
-accessibility tree over 10 routes, `pnpm design:shots` renders those routes at
-320/390/768, and `pnpm bundle:native` builds both native platforms against a 6.0 MB
-size budget. The **24** edge-bundle guards run inside `pnpm test` rather than under a
-separate `pnpm edge:test`, which no longer exists.
+`pnpm verify:full` is `verify` plus the three that need Chromium or Metro, and it is the
+single command CI runs — one step, not four, so a check added to the script cannot end up
+running nowhere. `pnpm e2e` runs **67 steps** against the real Metro bundle in Chromium —
+including six screens re-measured at 200 % text — `pnpm a11y:tree` walks Chromium's
+computed accessibility tree over 10 routes, and `pnpm bundle:native` builds both native
+platforms against a 6.0 MB size budget.
+
+`pnpm design:shots` renders those routes at 320/390/768 and is deliberately in NEITHER
+list: it is a measuring instrument for a human to look at, not a pass/fail gate. The
+**25** edge-bundle guards run inside `pnpm test` rather than under a separate
+`pnpm edge:test`, which no longer exists.
 
 **CI is green on both jobs**, which it had never been. Every failure between runners
 returning and that point was a real pre-existing bug rather than an infrastructure
@@ -40,16 +45,16 @@ green while two thirds of the authored content was unreachable.
 
 | Box | State |
 |---|---|
-| iOS **and** Android, phone and tablet, to 320 pt | ⬜ **Never run on either.** No iOS Simulator without macOS, no Android emulator without `/dev/kvm`. Every layout claim in this repo is a claim about Chromium, now checked at 320/390/768. **Both platforms do now bundle** — `pnpm bundle:native`, **5.75 MB** of Hermes bytecode each against a 6.0 MB budget, plus **2.90 MB** of assets shipped beside it (2.09 MB fonts, 0.71 MB flags, 0.17 MB sounds). Until that script existed the app had only ever been bundled for web. |
+| iOS **and** Android, phone and tablet, to 320 pt | ⬜ **Never run on either, and tablet means tablet-in-PORTRAIT.** No iOS Simulator without macOS, no Android emulator without `/dev/kvm`. Every layout claim in this repo is a claim about Chromium, now checked at 320/390/768. **Both platforms do now bundle** — `pnpm bundle:native`, **5.93 MB** of Hermes bytecode each against a 6.0 MB budget, plus **6.29 MB** of assets shipped beside it (2.32 MB png, 2.09 MB fonts, 1.87 MB illustrations, 0.17 MB sounds). Both numbers moved when the artwork landed — it was 5.75 MB and 2.90 MB the run before — and the bytecode figure is the one to watch: **0.07 MB of headroom is 1%**, and the script's own line about the next dependency being the one that breaks it is now literally true. The assets are not the cause of that; they ship beside the bundle rather than inside it. Until that script existed the app had only ever been bundled for web. `orientation` stays `portrait` on purpose: every layout here has been measured at 320/390/768 in portrait, and turning landscape on would ship an orientation nothing has rendered. **A store build is possible now.** `icon`, `splash`, `adaptiveIcon.foregroundImage` and `web.favicon` are wired, derived by `pnpm build:art` from delivered masters — this was the last thing blocking one, and it was blocked on artwork rather than on time. The derivation is not a convenience: the icon master is 1536×1024 with an alpha channel, and App Store Connect rejects a non-square icon and a transparent one at upload rather than at review. The metadata around them is now complete: iOS privacy manifest (required since 2024, fails at upload without it), `NSPrivacyTracking: false`, an empty collected-data list, `permissions: []` and a blocked microphone on Android. |
 | Five states everywhere | ✅ **Audited, and the audit is a script.** `pnpm five-states` checks all 16 screens; 15 states are waived with a recorded reason and the script fails on a waiver the code has outgrown. See below for what it found. |
 | Offline behaviour | ✅ Queue, replay on reconnect, backoff, parked work surfaced. Real connectivity as of Wave 7. |
-| Server-authoritative rewards | ✅ Nothing on the client writes a balance. Achievements, quests and XP all render predictions and say so. |
+| Server-authoritative rewards | 🟡 **Real for XP, coins, mastery and streaks as of 2026-08-05; not yet for everything.** The box says "client cannot forge it", which is a stronger claim than "nothing on the client writes a balance" and was not true. `user_facts.mastery` was never written by anything, so the count on Home was always zero; `streaks` was written only by the signup trigger, so the streak was always zero; the shop performed no spend, so every cosmetic was free; and `answeredAt` was taken from the client unvalidated, which minted mastery and `factMastered` XP. All four are closed — see `record_lesson`, the mastery trigger, `purchase_item` and `_shared/submission-time.ts`. Since then: streak milestones are paid, `lessons.hearts_lost` is written, the freeze is buyable, `expire_streaks()` records a break hourly per user timezone, and every achievement event has a producer — seven of twelve could not move at all. What remains: achievement and quest AWARDS are still optimistic (the unlock is evaluated on device from server-derived events; the XP and coins behind a tier are not yet paid by a server path), and there is no sign-in, so there is deliberately no sign-out. |
 
 ## ⬜ Quality
 
 | Box | State |
 |---|---|
-| Unit + component tests | ✅ **931 passing** — 841 across the workspace and 90 against the edge functions, 24 of those guarding the deploy bundle. Two screens gained their first tests this wave — `RegionScreen` had none at all, which is why a reachability check rather than a failing assertion found it re-deriving totals the engine already owned. |
+| Unit + component tests | ✅ **1 002 passing** — 893 across the workspace and 109 against the edge functions, 26 of those guarding the deploy bundle. The app now has a coverage floor where it had none — lines 60 %, functions 60 %, branches 80 %, statements 60 %, written out because "60/80/60" is three numbers for four thresholds and leaves the reader to guess which is which, and `passWithNoTests` is gone from four packages where it meant a deleted suite goes green. Two screens gained their first tests this wave — `RegionScreen` had none at all, which is why a reachability check rather than a failing assertion found it re-deriving totals the engine already owned. |
 | No `any`, no `@ts-expect-error` | ✅ Zero of both outside tests — **and now checked**, by `pnpm escape-hatches` in `pnpm verify`. This box was true but unenforced: verified by hand, once, resting on nobody having broken it. Three `eslint-disable`s are allowlisted with written reasons (all lazy or static `require`s that cannot be expressed otherwise), and a stale allowance fails the build like a violation. |
 | Performance on a **mid-tier Android** | ⬜ Not measured — there is no device. **One property of it now is:** `pnpm bundle:native` enforces a per-platform ceiling on the Hermes bundle, because Hermes reads every byte before the first frame and that is the part of cold start visible without hardware. It has already earned its keep twice. Adding Sentry pushed the bundle 3.80 → **5.72 MB** and the budget failed the build, turning a silent 50 % growth into a recorded decision (budget now 6.0). And when 701 KB of flag artwork landed against 250 KB of headroom, the script now reports assets separately and showed the real cost to the bundle was **0.03 MB** — Metro ships images beside the bytecode rather than inside it, so the obvious reaction (shrink the flags) would have degraded the artwork for nothing. Frame times, memory and actual startup remain unmeasured. |
 | Errors to Sentry with PII-free context | 🟡 **Transport built, round trip unverified.** `@sentry/react-native` installed, `lib/reporting.ts` wires it, `ErrorBoundary` reports through it, init at module scope so a first-render crash is caught. No-op until `EXPO_PUBLIC_SENTRY_DSN` is set — no half-configured state. PII-free is enforced by the **type** (`CrashReport` has no free-text field) plus a `beforeSend` scrubber, both tested. What is missing is a DSN and proof an event arrives. Cost: **1.92 MB** of bundle. |

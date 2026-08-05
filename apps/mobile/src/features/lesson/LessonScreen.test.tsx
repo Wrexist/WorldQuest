@@ -11,7 +11,8 @@
  */
 
 import { describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { BALANCE } from '@worldquest/engines'
 import { LessonScreen } from './LessonScreen.js'
 
 // The sync queue writes to MMKV and would try to reach Supabase. The queue's own
@@ -21,6 +22,27 @@ vi.mock('../../lib/analytics.js', () => ({ track: vi.fn() }))
 
 /** Every button except the footer's Continue. */
 const answerButtons = (): HTMLElement[] => screen.getAllByTestId('answer-option')
+
+/**
+ * Click the right answer and return what the screen then said.
+ *
+ * The screen composes from the real shipped packs, so the test cannot know the answer
+ * key — and must not be given one, or it would be testing a fixture. It finds it the
+ * way a user would: try one, look at the feedback, and try the next if it was wrong.
+ * Deterministic composition is what makes that safe rather than flaky.
+ */
+function answerCorrectly(): string {
+  for (let index = 0; index < 4; index++) {
+    const { container } = render(<LessonScreen onExit={() => {}} />)
+    const options = answerButtons()
+    if (index >= options.length) break
+    fireEvent.click(options[index]!)
+    const shown = container.textContent ?? ''
+    if (shown.includes('Perfect!')) return shown
+    cleanup()
+  }
+  throw new Error('no option produced the correct-answer card')
+}
 
 describe('Lesson', () => {
   it('asks a real question composed from the shipped packs', () => {
@@ -53,6 +75,48 @@ describe('Lesson', () => {
     fireEvent.click(options[0]!)
 
     expect(screen.getByRole('button', { name: 'Continue' })).toBeTruthy()
+  })
+
+  it('shows the reward it is actually going to award', () => {
+    // The card rendered the string literals "+10" and "+5". That broke the rule that
+    // reward numbers live only in the balance table, and it was also false: the real
+    // figure is 2 for a known fact the scheduler did not ask for, 12 for one it did, 14
+    // with the speed bonus, a quarter of any of those past the daily cap.
+    //
+    // Asserted against BALANCE rather than against "10", so changing a reward number in
+    // the one place it is allowed to change does not fail this test — and hardcoding one
+    // back into the screen does.
+    // The reward figures render only on the CORRECT branch, and this test used to pick
+    // its option with `options.find(o => o.getAttribute('aria-label') !== null)` — a
+    // heuristic for "the right one" that had nothing to do with which one is right. It
+    // reliably clicked a wrong answer, rendered the wrong-answer card, matched zero `+N`
+    // figures, and then looped over an empty array. Every assertion below was vacuously
+    // true; the test had never once checked a reward.
+    //
+    // The composed lesson is deterministic — same seed, same pack, same first question
+    // on every mount, verified — so trying each option in a fresh render finds the
+    // correct one without the test needing to know the answer key.
+    const shown = answerCorrectly()
+    const rewards = [...shown.matchAll(/\+(\d+)/g)].map((m) => Number(m[1]))
+    // Every figure on the card is a value the balance table can produce for one answer.
+    const possibleXp = [
+      0,
+      BALANCE.xp.repeatKnownNotDue,
+      BALANCE.xp.correctAnswer,
+      BALANCE.xp.correctAnswer + BALANCE.xp.speedBonus,
+      BALANCE.xp.correctAnswer + BALANCE.xp.overdueReviewBonus,
+      BALANCE.xp.correctAnswer + BALANCE.xp.overdueReviewBonus + BALANCE.xp.speedBonus,
+    ]
+    // The loop below is vacuously true over an empty array, so a card that rendered no
+    // reward at all — or a selector that stopped matching — would pass this test while
+    // proving nothing. Assert there is something to check before checking it.
+    expect(rewards.length, 'the summary card showed no reward figure at all').toBeGreaterThan(0)
+    for (const value of rewards) {
+      expect(
+        possibleXp.includes(value) || value === BALANCE.coins.correctAnswer,
+        `"+${value}" is not a reward this economy can pay for one answer`,
+      ).toBe(true)
+    }
   })
 
   it('never punishes a wrong answer', () => {

@@ -48,7 +48,10 @@ describe('quest progress', () => {
       accuracy: 1,
       durationMs: 30_000,
     })
-    expect(completed).toContain('perform')
+    expect(completed.completed).toContain('perform')
+    // A TASK finished, not the quest. The two used to be the same value, which is how
+    // `quest_completed` came to fire on the first task of five.
+    expect(completed.becameComplete).toBe(false)
 
     const { result } = renderHook(() => useQuestWithProgress(today))
     expect(result.current?.tasks.find((t) => t.slot === 'perform')?.complete).toBe(true)

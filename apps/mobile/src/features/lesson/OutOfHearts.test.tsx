@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { BALANCE } from '@worldquest/engines'
 import { OutOfHearts } from './OutOfHearts.js'
 
-const PRICE = BALANCE.prices.heartRefill
+const PRICE = BALANCE.prices.continueLesson
 
 const renderOut = (coins: number, over: { onRevive?: () => void; onFinish?: () => void } = {}) => {
   const onRevive = over.onRevive ?? vi.fn()

@@ -44,6 +44,17 @@ export type LessonState = {
   readonly index: number
   readonly answers: readonly AnsweredItem[]
   readonly hearts: number
+  /**
+   * How many hearts this lesson has COST, cumulatively.
+   *
+   * Not `max - hearts`. A run of correct answers restores one, so the difference tells
+   * you the balance and not the history — a lesson that took three and gave two back
+   * reads as one. `lessons.hearts_lost` wants the history: it is the column that answers
+   * "how often do hearts actually interrupt a lesson", which is the question the whole
+   * per-lesson-reset design was argued from and which no production row could answer,
+   * because nothing ever wrote it.
+   */
+  readonly heartsLost: number
   /** Consecutive correct answers — a run restores a heart. */
   readonly correctRun: number
   readonly startedAt: number | null
@@ -86,6 +97,7 @@ export function initialState(
     index: 0,
     answers: [],
     hearts: BALANCE.hearts.max,
+    heartsLost: 0,
     correctRun: 0,
     startedAt: null,
     shownAt: null,
@@ -147,6 +159,7 @@ export function transition(state: LessonState, event: LessonEvent): LessonState 
       }
 
       let hearts = state.hearts
+      let heartsLost = state.heartsLost
       let correctRun = state.correctRun
 
       if (chosen.isCorrect) {
@@ -165,6 +178,7 @@ export function transition(state: LessonState, event: LessonEvent): LessonState 
         // something you have never been taught.
         const isReview = !question.isNew
         if (state.heartsEnabled && (isReview || BALANCE.hearts.newItemsCostHearts)) {
+          if (hearts > 0) heartsLost += 1
           hearts = Math.max(0, hearts - 1)
         }
       }
@@ -174,6 +188,7 @@ export function transition(state: LessonState, event: LessonEvent): LessonState 
         phase: 'answered',
         answers: [...state.answers, answer],
         hearts,
+        heartsLost,
         correctRun,
         outOfHearts: state.heartsEnabled && hearts === 0,
       }
@@ -236,6 +251,10 @@ export function transition(state: LessonState, event: LessonEvent): LessonState 
       return {
         ...state,
         hearts: BALANCE.hearts.max,
+        // `heartsLost` is deliberately NOT reset. It is the history of what this lesson
+        // cost, and a revive is the most interesting entry in it — a lesson that ran out
+        // and was paid for is exactly the event `lessons.hearts_lost` should be able to
+        // find later.
         outOfHearts: false,
         phase: 'presenting',
         index: state.index + 1,

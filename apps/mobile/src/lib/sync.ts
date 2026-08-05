@@ -19,9 +19,13 @@ import {
 } from '@worldquest/engines'
 import type { AnsweredItem } from '@worldquest/engines'
 import { submitLesson } from '@worldquest/api'
+import type { SubmitLessonResponse } from '@worldquest/api'
 import { currentUser, isConfigured, supabase } from './supabase.js'
 import { isOnline, onConnectivityChange } from './connectivity.js'
+import { invalidateProgress } from './query.js'
 import { readJson, writeJson } from './storage.js'
+import { recordServerOutcome } from '../features/achievements/progress.js'
+import { track } from './analytics.js'
 
 const QUEUE_KEY = 'sync.queue.v1'
 
@@ -76,6 +80,17 @@ export type LessonSubmission = {
   kind: 'lesson' | 'quest' | 'review' | 'challenge' | 'event'
   startedAt: number
   answers: readonly AnsweredItem[]
+  /**
+   * Hearts this lesson cost, cumulatively.
+   *
+   * The one field here the server cannot re-derive. Correctness it decides from the
+   * answer key and timing it clamps, but whether a heart was charged depends on whether
+   * the ITEM was new to this user at the moment it was shown, which is a property of the
+   * lesson the client composed. So it is reported, and treated as a statistic rather than
+   * as a reward input: nothing is paid or withheld on the strength of it, which is what
+   * makes trusting it acceptable.
+   */
+  heartsLost: number
 }
 
 /**
@@ -94,7 +109,51 @@ export function enqueueLesson(submission: LessonSubmission): void {
   void flush()
 }
 
-export async function flush(): Promise<void> {
+/**
+ * The flush in progress, if any.
+ *
+ * `flush()` is called from three places — `enqueueLesson`, the connectivity listener, and
+ * `retryParkedMutation` — and two of them fire together constantly: finishing a lesson
+ * the moment a tunnel ends starts both. Each call took its own `nextBatch(queue)`
+ * snapshot and then committed against the module variable, so one could `fail()` a
+ * mutation the other had just `acknowledge`d, and both would send the same submission.
+ *
+ * The server's idempotency key meant that never double-awarded anything, which is why it
+ * was invisible — but it burned an attempt per collision, and `MAX_ATTEMPTS` is what
+ * stands between a flaky connection and parked work the user actually did.
+ */
+let inFlight: Promise<void> | null = null
+/**
+ * A caller arrived mid-flush, so one more pass is owed after this one drains.
+ *
+ * The guard above stopped two concurrent passes, and stopped a bit more than that:
+ * `run` snapshots its batch at the top, so work enqueued after that line is not in it,
+ * and a caller who merely JOINED the running promise got nothing sent. `enqueueLesson`
+ * calls `flush`, so a user finishing two lessons back to back left the second one
+ * queued until the next connectivity change. Serialising rather than sharing keeps the
+ * duplicate-send race closed and still sends the work.
+ */
+let rerun = false
+
+export function flush(): Promise<void> {
+  if (inFlight !== null) {
+    rerun = true
+    return inFlight
+  }
+
+  const drain = async (): Promise<void> => {
+    do {
+      rerun = false
+      await run()
+    } while (rerun)
+  }
+
+  return (inFlight = drain().finally(() => {
+    inFlight = null
+  }))
+}
+
+async function run(): Promise<void> {
   // Nothing to talk to. Leave the queue intact rather than failing every item and
   // burning their retry budget against a backend that was never configured.
   if (!isConfigured()) return
@@ -116,7 +175,7 @@ export async function flush(): Promise<void> {
       nextAttemptAt.delete(mutation.id)
       commit(acknowledge(queue, mutation.id))
     } catch (error) {
-      const permanent = isPermanent(error)
+      const permanent = __isPermanent(error)
       commit(fail(queue, mutation.id, String(error), permanent))
       if (permanent) nextAttemptAt.delete(mutation.id)
       else nextAttemptAt.set(mutation.id, Date.now() + backoffMs(mutation.attempts, Math.random()))
@@ -151,15 +210,29 @@ onConnectivityChange(() => {
 })
 
 /**
- * A 4xx will fail identically forever, so retrying it wastes battery and delays every
- * item behind it. 429 is the exception — it is the server asking for patience, not
- * rejecting the request. Everything else (5xx, DNS failure, timeout) is worth a retry.
+ * Statuses that mean "try again later", not "this will never work".
+ *
+ * 429 is the server asking for patience. 401 and 403 are an expired or not-yet-created
+ * session — and treating those as permanent is how a lesson somebody genuinely did gets
+ * parked for ever. The anonymous session backing the taster lesson refreshes on a timer,
+ * so a flush landing in the gap between expiry and refresh is ordinary, not exceptional,
+ * and it was the single most likely 4xx this queue would ever see.
+ *
+ * "Parked work the user did" is described in this file as the most trust-destroying bug
+ * a learning app has. Classifying a token refresh as unrecoverable was a direct route to
+ * it.
  */
-function isPermanent(error: unknown): boolean {
+const RETRYABLE = new Set([401, 403, 408, 425, 429])
+
+/**
+ * A 4xx will otherwise fail identically forever, so retrying it wastes battery and delays
+ * every item behind it. Everything else (5xx, DNS failure, timeout) is worth a retry.
+ */
+export function __isPermanent(error: unknown): boolean {
   const status = (error as { status?: number; context?: { status?: number } })?.status
     ?? (error as { context?: { status?: number } })?.context?.status
   if (typeof status !== 'number') return false
-  return status >= 400 && status < 500 && status !== 429
+  return status >= 400 && status < 500 && !RETRYABLE.has(status)
 }
 
 async function send(mutation: QueuedMutation): Promise<void> {
@@ -172,12 +245,81 @@ async function send(mutation: QueuedMutation): Promise<void> {
   await currentUser()
 
   const submission = mutation.payload as LessonSubmission
-  await submitLesson(supabase(), {
+  const result = await submitLesson(supabase(), {
     lessonId: submission.lessonId,
     kind: submission.kind,
     startedAt: submission.startedAt,
     answers: submission.answers,
+    heartsLost: submission.heartsLost,
   })
+
+  reconcile(result)
+}
+
+/**
+ * Everything the server told us, applied — outside the try that decides delivery.
+ *
+ * `send` is awaited inside `run`'s try, and its catch calls `fail(...)`. Everything in
+ * here runs AFTER the server accepted the lesson, so a throw from a cache invalidation,
+ * an achievement rule or an analytics sink used to mark recorded work as failed. The
+ * idempotency key means the retry never double-awarded, so no currency was ever at risk;
+ * an attempt was burned against `MAX_ATTEMPTS`, and the retry re-processed the same
+ * outcome, which can emit an `achievement_unlocked` twice.
+ *
+ * Analytics and cache freshness do not get a vote on whether a lesson counts as
+ * delivered. A failed reconcile is corrected by the next refetch and a missed unlock by
+ * the next server outcome; a parked lesson is corrected by nothing.
+ */
+function reconcile(result: SubmitLessonResponse): void {
+  try {
+    /**
+     * The reconcile every comment in this codebase promised and nothing performed.
+     *
+     * `submitLesson`'s result was discarded here. The client showed an optimistic
+     * prediction, the server computed the truth, and the truth went in the bin — while
+     * `useShop`, `useLesson` and `useProgress` all carry comments saying "the server's
+     * answer overwrites this on the next reconcile". Home kept the numbers it had until
+     * TanStack Query happened to refetch for some other reason, so a user finishing a
+     * lesson watched their XP not move.
+     *
+     * Invalidating rather than writing the response into the cache, deliberately. This
+     * flush may be one of several queued lessons, and the last response is not the current
+     * total; the query knows how to ask for the total. And the streak, the wallet and the
+     * mastery count all move together — a single refetch is both cheaper and less likely
+     * to leave two of the three stale than three hand-written cache writes.
+     */
+    invalidateProgress()
+
+
+    /**
+     * Achievements, from the server's answer rather than from a local guess.
+     *
+     * `fact_mastered` and `streak_extended` were both listed in
+     * `features/achievements/progress.ts` as unwirable — the first because it "needs real
+     * memory state, which arrives with the server", the second because "a client that can
+     * write a streak is a client that can be edited". Both were right, and both stopped
+     * being obstacles the moment this response started carrying `masteryChanges` and the
+     * authoritative streak.
+     *
+     * Here rather than at lesson-end for the same reason: this is when the truth arrives. A
+     * lesson finished in a tunnel unlocks its achievements when the queue flushes, which is
+     * later than the XP appears and is the honest ordering — the alternative is unlocking
+     * on a prediction and taking it back, and a badge that is revoked is worse than one
+     * that is late.
+     */
+    for (const unlock of recordServerOutcome({
+      masteryChanges: result.masteryChanges ?? [],
+      streak: result.streak?.current ?? null,
+      overdueCleared: result.overdueCleared ?? 0,
+      entityMastered: result.entityMastered ?? [],
+      at: Date.now(),
+    })) {
+      track('achievement_unlocked', { achievement_id: unlock.achievementId, tier: unlock.tier })
+    }
+  } catch {
+    // Deliberately swallowed. See above: the lesson is recorded either way, and a
+    // parked lesson is a worse outcome than a stale cache or a missing event.
+  }
 }
 
 export const peekQueue = (): SyncQueue => queue

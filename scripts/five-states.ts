@@ -66,10 +66,37 @@ type State = 'loading' | 'empty' | 'error' | 'offline'
  */
 const SIGNALS: Record<State, RegExp> = {
   loading: /loading|skeleton|isPending/i,
-  empty: /empty|length\s*===\s*0|none\.title/i,
+  // `missing.title` alongside `none.title`: `CountryScreen` handles a deep link to a
+  // country the shipped packs do not have, which is that screen's empty state under a
+  // different name. Found by stripping comments below — it had been passing on the word
+  // "empty" inside the comment that explains the branch.
+  empty: /empty|length\s*===\s*0|none\.title|missing\.title/i,
   error: /error|onRetry|FailureState|reload/i,
   offline: /offline|useOnline/i,
 }
+
+/**
+ * What the signals are allowed to look at: code, not prose and not asset names.
+ *
+ * Both exclusions are for false PASSES, which are the expensive direction here — a
+ * screen reported as handling a state it does not handle is worse than no script.
+ *
+ * · **Comments.** The signals are single words, and the comments in this codebase
+ *   explain exactly the states being searched for — often to record why a state is
+ *   deliberately absent. A comment saying "there is no offline state here" would
+ *   otherwise register as an offline state. This has now bitten three scripts in this
+ *   repo (`reachability` on identifier names, this one on the words "empty string"),
+ *   so it is worth doing once, properly.
+ *
+ * · **Art names.** `<Art name="states/offline" />` is an illustration's identifier. It
+ *   is a picture of a paper aeroplane; it is not connectivity handling. It appears in
+ *   `SettingsScreen`'s sync section, whose offline waiver is still perfectly true.
+ */
+const stripProse = (code: string): string =>
+  code
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')
+    .replace(/^\s*\/\/.*$/gm, ' ')
+    .replace(/\bname=(["'])[a-z-]+\/[a-z-]+\1/gi, ' ')
 
 /**
  * Screens that legitimately lack a state, each with the reason.
@@ -101,6 +128,10 @@ const WAIVED: Record<string, Partial<Record<State, string>>> = {
   },
   'onboarding/OnboardingScreen': {
     loading: 'nothing is fetched — every step is local until the taster lesson starts',
+    error:
+      'the same reason as loading: the slides are static and the copy ships in the ' +
+      'binary, so there is no request here that can fail. The taster lesson it hands ' +
+      'off to has its own error state',
     offline: 'works fully offline by design; the taster needs no server',
   },
   'settings/SettingsScreen': {
@@ -112,10 +143,20 @@ const WAIVED: Record<string, Partial<Record<State, string>>> = {
   },
   'streak/StreakScreen': {
     empty: 'zero days is a real content state with its own copy, not an empty state',
-    loading: 'streak comes from the progress cache, which renders a zero state rather than a wait',
-    error:
-      'the two controls that need a server (freeze, repair) disable themselves and say ' +
-      'why; the rest of the screen is local and has nothing to fail',
+    // The `loading` waiver is gone too, and for a reason worth separating from the one
+    // below. It said "streak comes from the progress cache, which renders a zero state
+    // rather than a wait", which was true and was about this screen's DATA. The freeze
+    // button is not data: the purchase is deliberately not optimistic, so pressing it
+    // starts a real round trip, and `loading` on the Button is what tells a screen
+    // reader that. A screen can owe a wait for an action while owing none for its
+    // content.
+    //
+    // The `error` waiver is gone, and the reason it was ever defensible is the reason it
+    // stopped being: it said the server-backed controls "disable themselves and say why".
+    // Disabling covers a purchase that cannot be ATTEMPTED. It said nothing about one
+    // that was attempted and refused — every `FreezePurchase` status other than
+    // `purchased` was dropped, so "you already hold two" and "bought" looked identical.
+    // The screen now says which, and that is an error state, so it is no longer waived.
   },
   'quests/QuestScreen': {
     offline:
@@ -135,7 +176,7 @@ for (const dir of readdirSync(FEATURES, { withFileTypes: true })) {
     const mounts = ROUTE_FILES.filter((r) => new RegExp(`\\b${component}\\b`).test(r.code))
     screens.push({
       name: `${dir.name}/${component}`,
-      code: [own, ...mounts.map((m) => m.code)].join('\n'),
+      code: stripProse([own, ...mounts.map((m) => m.code)].join('\n')),
       mountedBy: mounts.length,
     })
   }

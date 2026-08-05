@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { BALANCE, TITLES, heartsNow, levelForXp, xpForLevel } from './balance.js'
+import { BALANCE, TITLES, levelForXp, xpForLevel } from './balance.js'
 
-const NOW = 1_800_000_000_000
-const MIN = 60_000
 
 describe('level curve', () => {
   it('starts at zero and rises monotonically', () => {
@@ -53,27 +51,21 @@ describe('titles', () => {
 })
 
 describe('hearts', () => {
-  it('regenerates one per interval and never exceeds the maximum', () => {
-    expect(heartsNow(0, NOW - 45 * MIN, NOW, false)).toBe(1)
-    expect(heartsNow(0, NOW - 90 * MIN, NOW, false)).toBe(2)
-    expect(heartsNow(0, NOW - 999 * MIN, NOW, false)).toBe(BALANCE.hearts.max)
-    expect(heartsNow(BALANCE.hearts.max, NOW - 999 * MIN, NOW, false)).toBe(BALANCE.hearts.max)
+  it('has exactly one design, not two', () => {
+    // `regenMinutes` and `childRegenMinutes` lived beside `resetPerLesson: true`, which
+    // are two answers to the same question. If hearts reset at the start of every lesson
+    // there is no pool to regenerate, and a regeneration rate is a second mechanic the
+    // next reader will find and believe. This asserts the contradiction cannot come back.
+    const hearts = BALANCE.hearts as Record<string, unknown>
+    expect(hearts.resetPerLesson).toBe(true)
+    expect(hearts.regenMinutes).toBeUndefined()
+    expect(hearts.childRegenMinutes).toBeUndefined()
   })
 
-  it('regenerates faster for child accounts', () => {
-    const adult = heartsNow(0, NOW - 90 * MIN, NOW, false)
-    const child = heartsNow(0, NOW - 90 * MIN, NOW, true)
-    expect(child).toBeGreaterThan(adult)
-  })
-
-  it('does not regenerate before a full interval has passed', () => {
-    expect(heartsNow(0, NOW - 44 * MIN, NOW, false)).toBe(0)
-  })
-
-  it('never goes backwards if the clock moves oddly', () => {
-    // Server timestamps are authoritative, but the function must not produce a
-    // negative or decreasing value if it ever sees a future lastUpdatedAt.
-    expect(heartsNow(2, NOW + 60 * MIN, NOW, false)).toBe(2)
+  it('prices continuing a lesson, not refilling a pool that does not exist', () => {
+    const prices = BALANCE.prices as Record<string, unknown>
+    expect(prices.continueLesson).toBeGreaterThan(0)
+    expect(prices.heartRefill).toBeUndefined()
   })
 })
 
@@ -109,7 +101,7 @@ describe('balance invariants', () => {
   })
 
   it('makes repeating a mastered fact nearly worthless the same day', () => {
-    expect(BALANCE.xp.repeatMasteredSameDay).toBeLessThan(BALANCE.xp.correctAnswer / 3)
+    expect(BALANCE.xp.repeatKnownNotDue).toBeLessThan(BALANCE.xp.correctAnswer / 3)
   })
 
   it('sets a daily soft cap that a healthy session cannot reach', () => {

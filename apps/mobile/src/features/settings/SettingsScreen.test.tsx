@@ -135,13 +135,19 @@ describe('Settings', () => {
 })
 
 describe('Settings — work waiting to sync', () => {
+  const syncProp = (over: { parked?: number; pending?: number } = {}) => {
+    const parked = over.parked ?? 0
+    const pending = over.pending ?? 0
+    return { parked, pending, hasUnsynced: parked + pending > 0, onRetry: vi.fn() }
+  }
+
   const withSync = (parked: number, onRetry = vi.fn()) => {
     render(
       <SettingsScreen
         version="1.0.0"
         preferences={DEFAULTS}
         onChange={vi.fn()}
-        sync={{ parked, onRetry }}
+        sync={{ ...syncProp({ parked }), onRetry }}
       />,
     )
     return onRetry
@@ -150,7 +156,7 @@ describe('Settings — work waiting to sync', () => {
   it('says nothing at all when nothing is waiting', () => {
     // A permanent "0 items waiting" row is anxiety with no cause.
     const { container } = render(
-      <SettingsScreen version="1.0.0" preferences={DEFAULTS} onChange={vi.fn()} sync={{ parked: 0, onRetry: vi.fn() }} />,
+      <SettingsScreen version="1.0.0" preferences={DEFAULTS} onChange={vi.fn()} sync={syncProp()} />,
     )
     expect(container.textContent).not.toMatch(/waiting to sync/i)
   })
@@ -170,7 +176,7 @@ describe('Settings — work waiting to sync', () => {
     // The work IS safe — it just has not arrived. A child reading "failed" hears
     // "your lessons are gone".
     const { container } = render(
-      <SettingsScreen version="1.0.0" preferences={DEFAULTS} onChange={vi.fn()} sync={{ parked: 3, onRetry: vi.fn() }} />,
+      <SettingsScreen version="1.0.0" preferences={DEFAULTS} onChange={vi.fn()} sync={syncProp({ parked: 3 })} />,
     )
     expect(container.textContent).not.toMatch(/failed|error|couldn'?t sync|problem/i)
   })
@@ -306,5 +312,77 @@ describe('Settings — the subscription', () => {
       )
       unmount()
     }
+  })
+})
+
+describe('Settings — work that is merely waiting', () => {
+  /**
+   * The section only rendered when something had exhausted its retries, so the case a
+   * user is most likely to be anxious about — a lesson finished on a train thirty
+   * seconds ago — showed nothing at all. `hasUnsyncedProgress` has been in the engine
+   * since the queue was built, documented as the warning before sign-out, with no caller;
+   * it was the last entry on the reachability gap list.
+   */
+  const sync = (over: { parked?: number; pending?: number }) => {
+    const parked = over.parked ?? 0
+    const pending = over.pending ?? 0
+    return { parked, pending, hasUnsynced: parked + pending > 0, onRetry: vi.fn() }
+  }
+
+  it('says a queued lesson is on its way', () => {
+    render(
+      <SettingsScreen
+        version="1.0.0"
+        preferences={DEFAULTS}
+        onChange={vi.fn()}
+        sync={sync({ pending: 1 })}
+      />,
+    )
+    expect(screen.getByText(/1 lesson is waiting to reach the server/i)).toBeTruthy()
+  })
+
+  it('does not offer a retry for work that has not given up', () => {
+    // "Try sending again" against something already trying is a button that does
+    // nothing, and a user who presses it twice learns not to trust the screen.
+    render(
+      <SettingsScreen
+        version="1.0.0"
+        preferences={DEFAULTS}
+        onChange={vi.fn()}
+        sync={sync({ pending: 2 })}
+      />,
+    )
+    expect(screen.queryByText('Try sending again')).toBeNull()
+  })
+
+  it('still never says failed, on either message', () => {
+    const { container } = render(
+      <SettingsScreen
+        version="1.0.0"
+        preferences={DEFAULTS}
+        onChange={vi.fn()}
+        sync={sync({ pending: 3 })}
+      />,
+    )
+    expect(container.textContent).not.toMatch(/failed|error|couldn'?t sync|problem/i)
+  })
+
+  it('stays silent when the queue is empty', () => {
+    const { container } = render(
+      <SettingsScreen
+        version="1.0.0"
+        preferences={DEFAULTS}
+        onChange={vi.fn()}
+        sync={sync({})}
+      />,
+    )
+    // `waiting to sync` is the SECTION HEADING (`settings:section.sync`), not either
+    // body message — which is what makes this assertion bite: the heading renders
+    // whenever the section does, for both the parked and the pending branch. Reviewed
+    // once as vacuous on the grounds that neither message contains the phrase; neither
+    // does, and the heading does. The second assertion is here so that reading stays
+    // wrong if somebody rewords the heading.
+    expect(container.textContent).not.toMatch(/waiting to sync/i)
+    expect(container.textContent).not.toMatch(/waiting to reach the server/i)
   })
 })

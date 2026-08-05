@@ -32,6 +32,7 @@ import {
 } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { SPEED_SECONDS } from '../lesson/modes.js'
+import { Art } from '../../components/Art.js'
 import { Icon } from '../../components/Icon.js'
 
 const SLOT_TITLE: Record<Slot, TranslationKey> = {
@@ -70,6 +71,10 @@ export function QuestScreen({ quest, loading, onStart, onStartSpeedRound }: Ques
   if (quest === null) {
     return (
       <View style={[styles.screen, styles.centered]}>
+        {/* Atlas thinking — "curious, not confused", per the brief. This is a first
+            launch with no state to build a quest from, which is a beginning rather
+            than a failure, and the art is the difference between the two. */}
+        <Art name="atlas/thinking" size={140} />
         <Text style={styles.title} role="heading">
           {t('quests:empty.title')}
         </Text>

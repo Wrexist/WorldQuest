@@ -10,6 +10,8 @@
  * Pure — the clock is injected.
  */
 
+import { BALANCE } from '../xp/balance.js'
+
 export type IsoDate = string // YYYY-MM-DD
 
 /** The user's local calendar date for an instant. */
@@ -200,3 +202,65 @@ export const isMilestone = (streak: number): boolean =>
  */
 export const nextMilestone = (streak: number): number | null =>
   STREAK_MILESTONES.find((m) => m > streak) ?? null
+
+/** What reaching a streak length is worth, from the balance table. */
+export type StreakReward = { readonly xp: number; readonly coins: number }
+
+/**
+ * The bonus for arriving at a milestone day.
+ *
+ * `BALANCE.xp.streakMilestones` and `BALANCE.coins.streakMilestones` have been in the
+ * balance table since it was written and nothing has ever read them — money the economy
+ * promises and never spends. `isMilestone` existed to answer the question and had no
+ * caller that paid anything.
+ *
+ * Paid on the day the streak REACHES the number, which is why the caller must pass the
+ * outcome of `applyActivity` rather than the stored streak: a second lesson on day 7
+ * returns `extended: false`, and paying on every lesson of a milestone day would make the
+ * bonus a function of how many lessons somebody did rather than of the run they kept.
+ *
+ * XP and coins are looked up separately because the tables genuinely differ — there is an
+ * XP milestone at 365 and no coin one, on the grounds that a year-long streak is a status
+ * reward rather than a shopping trip.
+ */
+export function streakMilestoneReward(streak: number): StreakReward {
+  const xpTable = BALANCE.xp.streakMilestones as Readonly<Record<number, number>>
+  const coinTable = BALANCE.coins.streakMilestones as Readonly<Record<number, number>>
+  return { xp: xpTable[streak] ?? 0, coins: coinTable[streak] ?? 0 }
+}
+
+/**
+ * The streak as it stands RIGHT NOW, which is not always the number in the database.
+ *
+ * `streaks.current` is written when a lesson lands, so between lessons it is a claim
+ * about the past. Somebody who reached day 30 and then missed two days still has 30 in
+ * that column, and Home was showing it — a screen telling a user they have a
+ * thirty-day streak they no longer have, until the next lesson resets it under them.
+ *
+ * `markBroken` exists for the other half of this — recording the break so the repair
+ * window can start — and had no caller either. It still needs a server-side job to fire
+ * on a day with no activity. This does not replace it; it makes the DISPLAY honest in
+ * the meantime, from data the client already has, with no job and no clock skew.
+ *
+ * Pure, and deliberately the same arithmetic `applyActivity` uses, so the number shown
+ * before a lesson and the number written after it cannot disagree:
+ *
+ *   · same local day, or yesterday → still alive
+ *   · the day before that, with a freeze in hand → still alive, the freeze will be spent
+ *   · anything older → zero
+ */
+export function currentStreak(
+  state: Pick<StreakState, 'current' | 'lastActiveDate' | 'freezesHeld'>,
+  now: number,
+  timeZone: string,
+): number {
+  // One spelling of "never active". The `=== ''` arm existed because the streak route
+  // defaulted a missing date to an empty string, which made this function the only place
+  // that knew there were two — a contract of `IsoDate | null` with a third value nobody
+  // else handled. The route sends null now.
+  if (state.lastActiveDate === null) return 0
+  const gap = daysBetween(state.lastActiveDate, localDate(now, timeZone))
+  if (gap <= 1) return state.current
+  if (gap === 2 && state.freezesHeld > 0) return state.current
+  return 0
+}

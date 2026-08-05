@@ -140,7 +140,15 @@ unless asked. Full rules: [`PROJECT.md §11`](PROJECT.md#11-git-workflow).
 
 - pnpm workspaces — install from the repo root, never inside a package.
 - `pnpm dev` (Expo) · `pnpm test` · `pnpm typecheck` · `pnpm content:validate` ·
-  `pnpm i18n:check` · `pnpm verify` (all of it, and the gate that matters)
+  `pnpm i18n:check`
+- **`pnpm verify` is the gate.** Typecheck, every test, content validation and preview,
+  i18n, contrast, a11y lint, escape hatches, reachability, five states, and the economy
+  simulation. It said "all of it" for months while `engines:simulate` and
+  `content:preview` ran only in CI — so a reward number could be pushed having met every
+  local check. One list now, and CI runs the same command rather than its own subset.
+- **`pnpm verify:full`** adds the three that need Chromium or Metro: `bundle:native`,
+  `e2e`, `a11y:tree`. CI runs this one. Two of those three were written for bugs nothing
+  else could see and were then wired into neither CI nor verify.
 - There is **no ESLint in this repo yet**, so there is no `pnpm lint`. The rules a
   linter would carry are enforced by scripts instead: `pnpm escape-hatches` (`any`,
   `@ts-expect-error`, `eslint-disable`), `pnpm lint:a11y`, `pnpm design:contrast`,

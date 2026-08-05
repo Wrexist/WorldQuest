@@ -85,6 +85,8 @@ describe('token integrity', () => {
     const appJson = JSON.parse(readFileSync(appJsonPath, 'utf8')) as {
       expo: {
         backgroundColor: string
+        primaryColor: string
+        splash: { backgroundColor: string }
         android: { adaptiveIcon: { backgroundColor: string } }
       }
     }
@@ -93,6 +95,19 @@ describe('token integrity', () => {
     expect(appJson.expo.android.adaptiveIcon.backgroundColor.toLowerCase()).toBe(
       colors.bg.canvas.toLowerCase(),
     )
+    // The splash's own backdrop is the third copy, and it is the one a user sees for
+    // longest: it is what fills the screen either side of the splash image on any
+    // aspect ratio the image does not cover.
+    expect(appJson.expo.splash.backgroundColor.toLowerCase()).toBe(colors.bg.canvas.toLowerCase())
+
+    // `primaryColor` is Android's accent — the tint on a notification, among other
+    // native chrome. It read `#F5A61E`, which is in no token file: it is the "warm gold"
+    // from the Style Block in asset-prompts.md, a colour for PROMPTING an image model,
+    // and it had drifted into shipped configuration where it matched nothing a user sees.
+    // The gold the app actually renders XP and coins in is `colors.reward.xp` — asserted
+    // against the semantic token, not the palette entry behind it, for the same reason
+    // every component does: the palette is an implementation detail of the semantics.
+    expect(appJson.expo.primaryColor.toLowerCase()).toBe(colors.reward.xp.toLowerCase())
   })
 })
 

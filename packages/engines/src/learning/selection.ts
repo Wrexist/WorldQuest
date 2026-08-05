@@ -113,25 +113,52 @@ export function selectItems(input: SelectionInput): FactId[] {
   const { candidates, newFactIds, count, now, rng, topicFilter, catchUpMode } = input
   const inTopic = (id: FactId) => (topicFilter ? topicFilter(id) : true)
 
-  const active = candidates.filter((c) => !c.suspended && inTopic(c.factId))
+  const inScope = candidates.filter((c) => inTopic(c.factId))
+  const active = inScope.filter((c) => !c.suspended)
 
   const due = active
     .filter((c) => c.dueAt <= now)
     .sort((a, b) => a.dueAt - b.dueAt) // most overdue first
 
-  const struggling = active.filter(
-    (c) =>
-      c.lapses >= 4 &&
-      c.lapses < LEECH_LAPSE_THRESHOLD &&
-      masteryOf(c, now) !== 'proficient' &&
-      masteryOf(c, now) !== 'mastered' &&
-      masteryOf(c, now) !== 'burnished',
-  )
+  /**
+   * Leeches that have finished resting.
+   *
+   * Suspended candidates used to be filtered out here and never came back, which turned
+   * a rest into a life sentence — the fact could not be shown, so it could not be got
+   * right, so it could not be released. `review()` now clears `suspended` on the first
+   * correct answer, and this is the slot that gives it the chance to be one.
+   *
+   * They rejoin through `struggling` rather than `due` on purpose. The mix caps that
+   * bucket at 10 %, so a backlog of leeches can never crowd out the reviews and new
+   * content a session is actually for — which is the failure mode that made dropping
+   * them look reasonable in the first place.
+   */
+  const resting = inScope.filter((c) => c.suspended && c.dueAt <= now)
+
+  const struggling = [
+    ...active.filter(
+      (c) =>
+        c.lapses >= 4 &&
+        c.lapses < LEECH_LAPSE_THRESHOLD &&
+        masteryOf(c, now) !== 'proficient' &&
+        masteryOf(c, now) !== 'mastered' &&
+        masteryOf(c, now) !== 'burnished',
+    ),
+    // No mastery filter: a rested leech is struggling by definition.
+    ...resting,
+  ]
 
   const fresh = newFactIds.filter(inTopic)
 
   // Cold start: no history at all. Lead with new content.
-  const hasHistory = active.length > 0
+  //
+  // `resting` counts as history. Without it, a user whose facts have ALL become leeches
+  // reads as a brand-new user: the mix goes to 90 % fresh with `struggling` at zero, and
+  // the backfill below never looked at `resting` either — so the one slot that gives a
+  // rested leech a chance to be answered correctly, and released, was closed in exactly
+  // the case where every remaining fact needs it. The life sentence this block exists to
+  // end, restored by the cold-start branch.
+  const hasHistory = active.length > 0 || resting.length > 0
   const mix = !hasHistory
     ? { due: 0, fresh: 0.9, struggling: 0 }
     : due.length > BACKLOG_THRESHOLD && !catchUpMode
@@ -164,6 +191,10 @@ export function selectItems(input: SelectionInput): FactId[] {
     ...due.map((c) => c.factId),
     ...fresh,
     ...active.map((c) => c.factId),
+    // Last, because the 10 % cap above is the real allowance for them and this is only
+    // the alternative to returning a short lesson. Still present, because "nothing else
+    // to show" is precisely when a rested leech should get its chance.
+    ...resting.map((c) => c.factId),
   ]
   for (const id of backfill) {
     if (picked.length >= count) break

@@ -1,6 +1,6 @@
 {
   "$schema": "../../schema/pack.schema.json",
-  "$comment": "Flag facts. Each value is a DESCRIPTION, not just a name, so tpl.flag-describe.mc4 can test the same fact without sight — a screen-reader user ends up with an identical user_facts row.",
+  "$comment": "Flag facts. Each value is a DESCRIPTION, not just a name, so tpl.flag-describe.mc4 can test the same fact without sight — a screen-reader user ends up with an identical user_facts row. Every fact here is `stable`, and that is graded rather than unfilled: a national flag changes on a scale of decades, and none of these 65 has changed since the pack was authored. The two-year re-verification window is the right one. Reviewed 2026-08-05.",
   "packId": "geography.facts.flags",
   "version": "1.0.0",
   "subject": "geography",
@@ -1640,5 +1640,6 @@
       },
       "volatility": "stable"
     }
-  ]
+  ],
+  "volatilityReviewed": true
 }

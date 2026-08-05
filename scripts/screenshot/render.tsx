@@ -30,6 +30,7 @@ import {
 import nav from '../../packages/i18n/locales/en/nav.json'
 import lessonStrings from '../../packages/i18n/locales/en/lesson.json'
 import {
+  BALANCE,
   buildIndex,
   composeLesson,
   emptyProgress,
@@ -59,6 +60,9 @@ import { DEFAULTS as SETTINGS_DEFAULTS } from '../../apps/mobile/src/features/se
 import { PaywallScreen } from '../../apps/mobile/src/features/paywall/PaywallScreen.js'
 import { SAMPLE_PLANS } from '../../apps/mobile/src/features/paywall/purchases.js'
 import { ShopScreen } from '../../apps/mobile/src/features/shop/ShopScreen.js'
+import { OutOfHearts } from '../../apps/mobile/src/features/lesson/OutOfHearts.js'
+import { Paused } from '../../apps/mobile/src/features/lesson/Paused.js'
+import { ContentGate } from '../../apps/mobile/src/components/ContentGate.js'
 import { CATALOGUE as SHOP_CATALOGUE } from '../../apps/mobile/src/features/shop/catalogue.js'
 
 // ── real content, loaded from the real packs ────────────────────────────────
@@ -693,6 +697,55 @@ function Gallery() {
             onStartLesson={() => {}}
           />
         </Phone>
+
+        {/* The illustrated states.
+            Every one of these carries a delivered illustration and NONE of them is
+            reachable from a route with fresh storage — out of hearts needs five wrong
+            reviews, "all caught up" needs an empty queue, the error state needs a
+            failed content load. So they were the states most likely to ship with the
+            art misplaced and nobody looking. They are here to be looked at. */}
+        <Phone label="Lesson · out of hearts" id="lesson-out-of-hearts">
+          <View style={s.centreBox}>
+            {/* The balance comes from the table, not from a number picked to look
+                plausible. `canAfford` is `coins >= continueLesson`, so the price
+                itself is the boundary this frame is meant to sit on — and had the
+                price ever risen past a hardcoded 520, the frame would have quietly
+                started rendering the CANNOT-afford branch under a caption saying
+                otherwise. */}
+            <OutOfHearts
+              coins={BALANCE.prices.continueLesson}
+              onRevive={() => {}}
+              onFinish={() => {}}
+            />
+          </View>
+        </Phone>
+
+        <Phone label="Lesson · paused" id="lesson-paused">
+          <Paused answered={4} onResume={() => {}} onFinish={() => {}} />
+        </Phone>
+
+        <Phone label="Error · content failed to load" id="state-error">
+          <ContentGate status="error" onRetry={() => {}}>
+            <View />
+          </ContentGate>
+        </Phone>
+
+        <Phone label="Profile · nothing yet" id="profile-empty" tab="profile">
+          <ProfileScreen
+            stats={null}
+            world={null}
+            loading={false}
+            onStartLesson={() => {}}
+          />
+        </Phone>
+
+        <Phone label="Quests · none yet" id="quests-empty" tab="quests">
+          <QuestScreen quest={null} loading={false} onStart={() => {}} />
+        </Phone>
+
+        <Phone label="Achievements · none yet" id="achievements-empty">
+          <AchievementsScreen rows={[]} onBack={() => {}} onStartLesson={() => {}} />
+        </Phone>
       </View>
 
       <Text style={s.h2}>Primitives</Text>
@@ -753,6 +806,14 @@ const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[4] },
   lessonHeader: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   flex: { flex: 1 },
+  // OutOfHearts is a Card the runner centres in the remaining space, so the frame has
+  // to do the same or it renders flush to the top and reads as a different component.
+  centreBox: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: space[4],
+    backgroundColor: colors.bg.canvas,
+  },
   counter: { ...text('caption', { weight: '700', numeric: true }), color: colors.status.progress },
   prompt: { ...text('h2'), color: colors.text.primary, textAlign: 'center', marginTop: space[3] },
   promptArt: { alignItems: 'center' },

@@ -32,20 +32,19 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
-  ArtSlot,
   Button,
   Card,
   ProgressBar,
   colors,
-  palette,
   radius,
   space,
   text,
 } from '@worldquest/design'
-import { useT } from '../../lib/i18n.js'
+import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
 import { DAILY_GOALS, type DailyGoal } from '../settings/usePreferences.js'
-import { Icon } from '../../components/Icon.js'
+import { Art } from '../../components/Art.js'
+import type { ArtName } from '../../lib/art.generated.js'
 
 /** The age at which the child branch applies. COPPA; GDPR-K varies by country and is stricter in places. */
 export const CHILD_AGE = 13
@@ -74,19 +73,30 @@ const STEPS: readonly Step[] = ['slides', 'age', 'goal', 'taster']
  * a renamed or deleted string is a compile error here instead of a raw key on the
  * first screen a new user ever sees.
  */
+/**
+ * The three value slides, each with the illustration briefed for it.
+ *
+ * The art is a property of the slide rather than a lookup beside it, so a fourth slide
+ * cannot be added without deciding what it shows — the failure mode of the parallel
+ * array next door, where `SLIDE_TINT` has to be indexed defensively because nothing
+ * guarantees the two are the same length.
+ */
 const SLIDES = [
-  { title: 'onboarding:slide.1.title', body: 'onboarding:slide.1.body' },
-  { title: 'onboarding:slide.2.title', body: 'onboarding:slide.2.body' },
-  { title: 'onboarding:slide.3.title', body: 'onboarding:slide.3.body' },
-] as const
+  { title: 'onboarding:slide.1.title', body: 'onboarding:slide.1.body', art: 'onboarding/explore' },
+  { title: 'onboarding:slide.2.title', body: 'onboarding:slide.2.body', art: 'onboarding/learn' },
+  { title: 'onboarding:slide.3.title', body: 'onboarding:slide.3.body', art: 'onboarding/conquer' },
+] as const satisfies readonly { title: TranslationKey; body: TranslationKey; art: ArtName }[]
 const GOAL_LABEL = {
   5: 'onboarding:goal.casual',
   10: 'onboarding:goal.regular',
   20: 'onboarding:goal.serious',
 } as const
 
-/** The tint per slide, so the three feel like a sequence rather than one screen repeated. */
-const SLIDE_TINT: readonly string[] = [palette.blue[500], palette.green[500], palette.gold[500]]
+// `SLIDE_TINT` lived here — one colour per slide, "so the three feel like a sequence
+// rather than one screen repeated". The art does that job now, and better: three
+// different illustrations are a sequence in a way three tints of the same placeholder
+// never were. It was also a parallel array, indexed defensively because nothing tied
+// its length to `SLIDES`; the art is a field on the slide instead.
 
 export function OnboardingScreen({ currentYear, onFinish, onSignIn }: OnboardingScreenProps) {
   const t = useT()
@@ -174,12 +184,7 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {step === 'slides' && (
           <>
-            <ArtSlot
-              tint={SLIDE_TINT[slide] ?? SLIDE_TINT[0]!}
-              art={<Icon name="globe" size={88} color={SLIDE_TINT[slide] ?? SLIDE_TINT[0]!} />}
-              width={200}
-              height={200}
-            />
+            <Art name={SLIDES[slide]!.art} size={200} />
             <Text style={styles.title}>{t(SLIDES[slide]!.title)}</Text>
             <Text style={styles.body}>{t(SLIDES[slide]!.body)}</Text>
 
@@ -301,12 +306,9 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
 
         {step === 'taster' && (
           <>
-            <ArtSlot
-              tint={palette.green[500]}
-              art={<Icon name="map" size={88} color={palette.green[500]} />}
-              width={200}
-              height={200}
-            />
+            {/* Atlas waving from a globe. The taster is the handover into the first
+                lesson, and this is the one frame briefed as "confident and inviting". */}
+            <Art name="atlas/welcome" size={200} />
             <Text style={styles.title}>{t('onboarding:taster.title')}</Text>
             <Text style={styles.body}>{t('onboarding:taster.body')}</Text>
           </>

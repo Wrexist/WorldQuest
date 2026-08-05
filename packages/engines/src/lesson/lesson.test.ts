@@ -6,7 +6,7 @@ import { buildIndex, type Entity, type Fact, type Question, type Template } from
 import { BALANCE } from '../xp/balance.js'
 import { gradeLesson } from '../grading/index.js'
 import { review } from '../learning/fsrs.js'
-import type { MemoryState } from '../learning/types.js'
+import { MIN_CREDIBLE_ANSWER_MS, type MemoryState } from '../learning/types.js'
 import { composeLesson } from './compose.js'
 import {
   accuracy,
@@ -217,12 +217,12 @@ describe('composeLesson', () => {
   })
 
   it('marks known facts as not new', () => {
-    const known = review({ factId: 'geo.SE.capital', state: null, rating: 3, now: T0 - 86_400_000 })
+    const known = review({ factId: 'fact.due', state: null, rating: 3, now: T0 - 86_400_000 })
     const questions = composeLesson({
       index, memory: [known], now: T0, rng: seededRng(2), locale: 'en', count: 8,
     })
-    const swedish = questions.find((q) => q.item.factId === 'geo.SE.capital')
-    if (swedish) expect(swedish.isNew).toBe(false)
+    const seen = questions.find((q) => q.item.factId === 'fact.due')
+    if (seen) expect(seen.isNew).toBe(false)
   })
 
   it('returns only screen-reader-safe questions when asked', () => {
@@ -310,7 +310,10 @@ describe('gradeLesson', () => {
       answeredAt: T0 + (i + 1) * 5_000,
     }))
 
-  const FACTS = ['geo.SE.capital', 'geo.NO.capital', 'geo.DK.capital', 'geo.FI.capital', 'geo.JP.flag']
+  // Synthetic ids. This package does not know what a country is — `engines/CLAUDE.md`
+  // rule: if a geography concept appears here the abstraction has leaked, and a test
+  // that only needs five DISTINCT facts is the easiest place for one to sneak in.
+  const FACTS = ['fact.due', 'fact.fresh', 'fact.c', 'fact.d', 'fact.e']
 
   it('awards XP and coins for correct answers', () => {
     const r = gradeLesson({
@@ -342,13 +345,133 @@ describe('gradeLesson', () => {
     // Phase 1 exit criterion 1, in miniature.
     const r = gradeLesson({
       lessonId: 'l3',
-      answers: answersFrom(['geo.SE.capital'], [true]),
+      answers: answersFrom(['fact.due'], [true]),
       memory: new Map(),
       now: T0,
     })
-    const state = r.updatedMemory.get('geo.SE.capital')!
+    const state = r.updatedMemory.get('fact.due')!
     expect(state.dueAt).toBeGreaterThan(T0)
     expect(state.reps).toBe(1)
+  })
+
+  it('counts overdue reviews answered correctly', () => {
+    // `overdueCleared` was declared, returned, and never incremented — so it was the 0
+    // it was initialised to on every lesson ever graded. `ach.review.faithful` counts
+    // these, `recordServerOutcome` loops that many times, and the one achievement that
+    // measures the behaviour this product exists to produce sat at zero for all three
+    // tiers. The field existed; nothing wrote it, and nothing asked.
+    const overdue = (factId: string) => ({
+      factId, stability: 30, difficulty: 5, reps: 4, lapses: 0,
+      lastReviewAt: T0 - 40 * 86_400_000,
+      dueAt: T0 - 86_400_000, // the scheduler asked for this yesterday
+      suspended: false,
+    })
+
+    const r = gradeLesson({
+      lessonId: 'l-overdue',
+      answers: answersFrom(['fact.a', 'fact.b', 'fact.c'], [true, false, true]),
+      memory: new Map([
+        ['fact.a', overdue('fact.a')],
+        ['fact.b', overdue('fact.b')],
+      ]),
+      now: T0,
+    })
+
+    // Two were due; one of those was answered correctly. `fact.c` was correct and was
+    // never asked for, so it is not a cleared review — that distinction is the whole
+    // point of the number.
+    expect(r.overdueCleared).toBe(1)
+  })
+
+  it('counts no overdue reviews when nothing was due', () => {
+    const r = gradeLesson({
+      lessonId: 'l-not-due',
+      answers: answersFrom(['fact.due'], [true]),
+      memory: new Map(),
+      now: T0,
+    })
+    expect(r.overdueCleared).toBe(0)
+  })
+
+  describe('derives hearts lost, rather than being told', () => {
+    // The number used to arrive in the submit payload, be range-checked, and be written
+    // to `lessons.hearts_lost` — so the party being measured chose the measurement, and
+    // xp-economy.md §7 reads heart-block rate per accuracy band to decide whether the
+    // mechanic is aimed the right way. These assert the derivation matches the machine
+    // the client renders from, because two implementations of one rule is exactly the
+    // drift the shared grader exists to prevent.
+    const seen = (factId: string) => ({
+      factId, stability: 10, difficulty: 5, reps: 2, lapses: 0,
+      lastReviewAt: T0 - 5 * 86_400_000,
+      dueAt: T0 + 86_400_000,
+      suspended: false,
+    })
+
+    it('charges a heart for a wrong REVIEW answer', () => {
+      const r = gradeLesson({
+        lessonId: 'l-hearts-review',
+        answers: answersFrom(['fact.a', 'fact.b'], [false, false]),
+        memory: new Map([['fact.a', seen('fact.a')], ['fact.b', seen('fact.b')]]),
+        now: T0,
+      })
+      expect(r.heartsLost).toBe(2)
+    })
+
+    it('charges nothing for a wrong answer on a NEW item', () => {
+      // §3 rule 2, and the one the simulation showed matters most: heart loss scales
+      // with error rate, so charging new items aims the mechanic at the learner who is
+      // struggling hardest.
+      const r = gradeLesson({
+        lessonId: 'l-hearts-new',
+        answers: answersFrom(['fact.a', 'fact.b', 'fact.c'], [false, false, false]),
+        memory: new Map(),
+        now: T0,
+      })
+      expect(r.heartsLost).toBe(0)
+    })
+
+    it('gives one back after a run of correct answers', () => {
+      // Wrong once (−1), then five correct (+1). The run restores, so one net loss —
+      // and `heartsLost` counts what was SPENT, so it stays at 1 rather than dropping
+      // back to 0: the lesson did cost a heart, and it was earned back.
+      const facts = ['fact.a', 'fact.b', 'fact.c', 'fact.d', 'fact.e', 'fact.f']
+      const memory = new Map(facts.map((f) => [f, seen(f)] as const))
+      const r = gradeLesson({
+        lessonId: 'l-hearts-restore',
+        answers: answersFrom(facts, [false, true, true, true, true, true]),
+        memory,
+        now: T0,
+      })
+      expect(r.heartsLost).toBe(1)
+    })
+
+    it('stops counting once the hearts are gone', () => {
+      // Six wrong reviews against five hearts is five losses, not six. Counting the
+      // sixth would inflate the very metric §7 reads.
+      const facts = ['fact.a', 'fact.b', 'fact.c', 'fact.d', 'fact.e', 'fact.f']
+      const memory = new Map(facts.map((f) => [f, seen(f)] as const))
+      const r = gradeLesson({
+        lessonId: 'l-hearts-floor',
+        answers: answersFrom(facts, [false, false, false, false, false, false]),
+        memory,
+        now: T0,
+      })
+      expect(r.heartsLost).toBe(BALANCE.hearts.max)
+    })
+
+    it('ignores answers too fast to be credible', () => {
+      // Consistent with everything else about a sub-400ms answer: it earns nothing and
+      // never reaches the scheduler, so it does not cost a heart either. The one place
+      // this deliberately diverges from the client's live heart display.
+      const r = gradeLesson({
+        lessonId: 'l-hearts-fast',
+        answers: answersFrom(['fact.a'], [false], MIN_CREDIBLE_ANSWER_MS - 1),
+        memory: new Map([['fact.a', seen('fact.a')]]),
+        now: T0,
+      })
+      expect(r.rejected).toBe(1)
+      expect(r.heartsLost).toBe(0)
+    })
   })
 
   it('rejects sub-400ms answers from XP and from the scheduler', () => {
@@ -366,21 +489,61 @@ describe('gradeLesson', () => {
     expect(r.updatedMemory.size).toBe(0)
   })
 
-  it('nearly zeroes XP for repeating an already-mastered fact', () => {
+  it('nearly zeroes XP for repeating an already-mastered fact that was not due', () => {
     const r = gradeLesson({
       lessonId: 'l5',
-      answers: answersFrom(['geo.SE.capital'], [true]),
+      answers: answersFrom(['fact.due'], [true]),
       memory: new Map(),
       now: T0,
-      masteredBefore: new Set(['geo.SE.capital']),
+      masteredBefore: new Set(['fact.due']),
     })
     expect(r.xpAwarded).toBeLessThan(BALANCE.xp.correctAnswer)
+  })
+
+  it('pays FULL value for a mastered fact that came back due', () => {
+    // The penalty is named `repeatKnownNotDue` and was applied to any fact ever
+    // mastered, due or not. That priced a three-month-old fact returning on schedule at
+    // 4 XP against 10 for grinding a brand-new one — the economy paying more for
+    // avoiding the core loop than for running it.
+    const factId = 'fact.due'
+    const overdue = new Map([
+      [factId, {
+        factId,
+        stability: 40,
+        difficulty: 5,
+        reps: 6,
+        lapses: 0,
+        lastReviewAt: T0 - 60 * 86_400_000,
+        dueAt: T0 - 86_400_000, // due yesterday
+        suspended: false,
+      }],
+    ])
+
+    const due = gradeLesson({
+      lessonId: 'l5-due',
+      answers: answersFrom([factId], [true]),
+      memory: overdue,
+      now: T0,
+      masteredBefore: new Set([factId]),
+    })
+    const fresh = gradeLesson({
+      lessonId: 'l5-fresh',
+      answers: answersFrom(['fact.fresh'], [true]),
+      memory: new Map(),
+      now: T0,
+    })
+
+    expect(due.xpAwarded).toBeGreaterThanOrEqual(
+      BALANCE.xp.correctAnswer + BALANCE.xp.overdueReviewBonus,
+    )
+    // The ordering that makes this a spaced-repetition economy rather than a quiz one.
+    expect(due.xpAwarded).toBeGreaterThan(fresh.xpAwarded)
   })
 
   it('caps the speed bonus so speed is not a strategy', () => {
     const many = Array.from({ length: 12 }, (_, i) => ({
       itemId: `i${i}`,
-      factId: `geo.F${i}.capital`,
+      factId: `fact.f${i}`,
       templateId: 'tpl.capital.mc4',
       chosenOptionId: 'x',
       wasCorrect: true,
@@ -427,16 +590,16 @@ describe('gradeLesson', () => {
       const r = gradeLesson({
         lessonId: `m${i}`,
         answers: [{
-          itemId: 'x', factId: 'geo.SE.capital', templateId: 'tpl.capital.mc4',
+          itemId: 'x', factId: 'fact.due', templateId: 'tpl.capital.mc4',
           chosenOptionId: 'x', wasCorrect: true, elapsedMs: 3_000, answeredAt: now,
         }],
         memory,
         now,
       })
       memory = new Map(r.updatedMemory)
-      now = memory.get('geo.SE.capital')!.dueAt
+      now = memory.get('fact.due')!.dueAt
     }
-    expect(memory.get('geo.SE.capital')!.reps).toBe(4)
+    expect(memory.get('fact.due')!.reps).toBe(4)
   })
 
   it('produces identical results on client and server', () => {

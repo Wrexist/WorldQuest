@@ -25,6 +25,7 @@ import {
   type Tier,
 } from '@worldquest/engines'
 import { tContent, useT, type TranslationKey } from '../../lib/i18n.js'
+import { Art } from '../../components/Art.js'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 
 const TIER_LABEL: Record<Tier, TranslationKey> = {
@@ -87,6 +88,10 @@ export function AchievementsScreen({ rows, onStartLesson, onBack }: Achievements
   if (rows.length === 0) {
     return (
       <View style={[styles.screen, styles.centered]}>
+        {/* Atlas offering an open hand — "reassuring, patient, not pitying", which is
+            the line this screen has to walk: nothing unlocked yet is the state every
+            user starts in, and it must not read as a scoreboard of zero. */}
+        <Art name="atlas/encouraging" size={140} />
         <Text style={styles.title} role="heading">
           {t('achievements:empty.title')}
         </Text>
@@ -181,6 +186,11 @@ function AchievementCard({ row }: { row: AchievementRow }) {
   return (
     <Card
       style={styles.card}
+      // A stable handle for tests, alongside the label a person hears. The card was
+      // only findable by its user-facing NAME, so renaming "Flag Collector" — copy, in
+      // a file translators own — broke a test about progress arithmetic. Ids are
+      // permanent here by rule; the name is not.
+      testID={`achievement-${def.id}`}
       accessibilityLabel={`${tContent(nameKey(def.id))}, ${
         progress.tier === null ? t('achievements:locked') : t(TIER_LABEL[progress.tier])
       }`}

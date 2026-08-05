@@ -89,19 +89,45 @@ AppState.addEventListener('change', (status: AppStateStatus) => {
   focusManager.setFocused(status === 'active')
 })
 
+/**
+ * One client per process, not one per mount.
+ *
+ * It was `useState(makeClient)`, which is the documented React-land answer and solves
+ * the right problem — a fresh client on every re-render discards every cached query,
+ * which reads to the user as the app forgetting everything. A module singleton solves
+ * that too, and solves one more: the sync queue is not a component. It needs to say "the
+ * server has new totals" from a promise continuation with no hooks in sight, and a
+ * client that only exists inside a subtree cannot be told anything from out there.
+ *
+ * Lazy, so importing this module in a test does not build a client the test never uses.
+ */
+let client: QueryClient | null = null
+export const queryClient = (): QueryClient => (client ??= makeClient())
+
 export function QueryProvider({ children }: { children: ReactNode }) {
-  // Created once per mount, never on re-render: a fresh QueryClient discards every
-  // cached query, which reads to the user as the app forgetting everything.
-  const [client] = useState(makeClient)
+  const [instance] = useState(queryClient)
 
   return (
     <PersistQueryClientProvider
-      client={client}
+      client={instance}
       persistOptions={{ persister, maxAge: MAX_CACHE_AGE_MS }}
     >
       {children}
     </PersistQueryClientProvider>
   )
+}
+
+/**
+ * Tell Home its numbers are out of date.
+ *
+ * Called by the sync queue after the server accepts a lesson. Invalidation rather than
+ * writing the response into the cache: one flush may carry several queued lessons, so
+ * the last response is not the current total — and XP, coins, the streak and the mastery
+ * count all move together, which one refetch gets right and three hand-written cache
+ * writes get right until somebody adds a fourth number.
+ */
+export function invalidateProgress(): void {
+  void queryClient().invalidateQueries({ queryKey: queryKeys.progress })
 }
 
 /** Query keys in one place, so a typo cannot silently create a second cache entry. */

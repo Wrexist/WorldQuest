@@ -24,6 +24,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Art } from '../../components/Art.js'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { Flag } from '../../components/Flag.js'
 import {
@@ -223,6 +224,14 @@ export function CollectionScreen({
         // collection is a lesson. Offering "Start a lesson" to someone who has starred
         // nothing sends them to the one place that will not fix it.
         <View style={styles.empty}>
+          {/* The display case with one slot lit — "anticipation, not absence" — and it
+              belongs to exactly one of the three nothings above. A search that found
+              nothing is a spelling problem, and an empty case illustrating it would
+              say the collection is empty when it is not. Same argument as the button
+              below, which is why they share a condition. */}
+          {query.length === 0 && filter !== 'favourites' && (
+            <Art name="states/empty-collection" size={140} />
+          )}
           <Text style={styles.emptyTitle}>
             {query.length > 0
               ? t('collection:search.none.title', { query })

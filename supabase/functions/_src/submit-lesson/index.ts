@@ -23,8 +23,13 @@ import { gradeLesson } from '../../../packages/engines/src/grading/index.ts'
 import { BALANCE } from '../../../packages/engines/src/xp/balance.ts'
 import type { AnsweredItem } from '../../../packages/engines/src/lesson/machine.ts'
 import type { MemoryState } from '../../../packages/engines/src/learning/types.ts'
-import { startOfLocalDay } from '../../../packages/engines/src/time/index.ts'
-import { ANSWER_BY_FACT } from './_content/answers.ts'
+import {
+  applyActivity,
+  startOfLocalDay,
+  streakMilestoneReward,
+} from '../../../packages/engines/src/time/index.ts'
+import { isFiniteMs, retimeLesson } from '../_shared/submission-time.ts'
+import { ANSWER_BY_FACT, QUIZZABLE_FACTS_BY_ENTITY } from './_content/answers.ts'
 
 type SubmitBody = {
   lessonId: string
@@ -32,6 +37,7 @@ type SubmitBody = {
   topicId?: string
   startedAt: number
   answers: AnsweredItem[]
+  heartsLost?: number
   clientVersion?: string
 }
 
@@ -41,14 +47,50 @@ const json = (body: unknown, status = 200) =>
     headers: { 'content-type': 'application/json' },
   })
 
+/**
+ * Whether `Intl` will accept this zone.
+ *
+ * `profiles.timezone` is writable by its own owner — the update policy has no column
+ * restriction — and `startOfLocalDay` hands it straight to `Intl.DateTimeFormat`, which
+ * throws a RangeError on anything it does not recognise. So one PATCH setting the zone
+ * to a string of nonsense made every subsequent lesson submission 500, permanently, with
+ * no way to recover from the client. Cheap check, and the failure it prevents is total.
+ */
+function isKnownTimeZone(zone: string | null | undefined): zone is string {
+  if (!zone) return false
+  try {
+    new Intl.DateTimeFormat('en-CA', { timeZone: zone })
+    return true
+  } catch {
+    return false
+  }
+}
+
 /** Deliberately minimal. Anything not asserted here is not trusted. */
 function parseBody(raw: unknown): SubmitBody | null {
   if (typeof raw !== 'object' || raw === null) return null
   const b = raw as Record<string, unknown>
 
   if (typeof b.lessonId !== 'string' || !/^[0-9a-f-]{36}$/i.test(b.lessonId)) return null
-  if (typeof b.startedAt !== 'number') return null
+  // `isFiniteMs`, not `typeof === 'number'`. The latter admits NaN, Infinity and 1e300,
+  // all three of which reach `new Date(x).toISOString()` further down and throw a
+  // RangeError there — an uncaught 500 any client could ask for.
+  if (!isFiniteMs(b.startedAt)) return null
   if (!Array.isArray(b.answers) || b.answers.length === 0) return null
+  // `heartsLost` is NOT validated here, because like `wasCorrect` below it is no longer
+  // read. It used to be: range-checked, clamped, and written to `lessons.hearts_lost`.
+  //
+  // The defence for that was "a statistic, not a reward input — nothing is paid or
+  // withheld on it". Both halves were true and the conclusion did not follow.
+  // `docs/systems/xp-economy.md §7` reads heart-block rate per accuracy band to decide
+  // whether the mechanic is aimed the right way, and §3 stakes the entire design of
+  // hearts on that reading — so a caller who could choose the number could choose the
+  // evidence for the next balance change. Shape validation constrains a forged value to
+  // a plausible one, which is the harder kind to notice.
+  //
+  // `gradeLesson` derives it now, from the correctness the server itself decided and the
+  // memory record the server itself holds.
+  //
   // A lesson longer than the documented maximum is a forged payload, not a session.
   if (b.answers.length > 50) return null
 
@@ -59,14 +101,19 @@ function parseBody(raw: unknown): SubmitBody | null {
     if (typeof item.templateId !== 'string') return null
     // `wasCorrect` is deliberately NOT validated, because it is deliberately not
     // read. The server decides correctness itself further down.
-    if (typeof item.elapsedMs !== 'number') return null
-    if (typeof item.answeredAt !== 'number') return null
+    //
+    // `elapsedMs` and `answeredAt` are checked for shape here and CLAMPED below. Shape
+    // alone was never enough: `answeredAt` is the clock the scheduler runs on, and a
+    // client that could date an answer in the future could mint mastery. See
+    // _shared/submission-time.ts.
+    if (!isFiniteMs(item.elapsedMs)) return null
+    if (!isFiniteMs(item.answeredAt)) return null
   }
 
   return b as unknown as SubmitBody
 }
 
-Deno.serve(async (req: Request): Promise<Response> => {
+async function handle(req: Request): Promise<Response> {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405)
 
   const authHeader = req.headers.get('Authorization')
@@ -87,13 +134,20 @@ Deno.serve(async (req: Request): Promise<Response> => {
   const body = parseBody(await req.json().catch(() => null))
   if (!body) return json({ error: 'invalid_body' }, 400)
 
-  // ── idempotency ───────────────────────────────────────────────────────────
-  // The offline queue may replay any mutation. Returning the original result is
-  // the whole contract; awarding twice would be a currency exploit.
+  // ── idempotency, cheaply ──────────────────────────────────────────────────
+  //
+  // A pre-check, not the guarantee. `record_lesson` decides idempotency under a lock and
+  // is the only thing that can; this exists so a replayed submission does not pay for
+  // four reads and a grading pass to reach the same answer.
+  //
+  // Scoped to the user, which it was not: it looked the lesson up by id alone, so a
+  // request carrying somebody else's lesson id got their items, their score and their
+  // rewards back.
   const { data: existing } = await admin
     .from('lessons')
     .select('id, items, correct, xp_awarded, coins_awarded')
     .eq('id', body.lessonId)
+    .eq('user_id', user.id)
     .maybeSingle()
 
   if (existing) {
@@ -107,20 +161,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
     })
   }
 
-  // ── rate limit ────────────────────────────────────────────────────────────
-  const hourAgo = new Date(Date.now() - 3_600_000).toISOString()
-  const { count } = await admin
-    .from('lessons')
-    .select('id', { count: 'exact', head: true })
-    .eq('user_id', user.id)
-    .gte('completed_at', hourAgo)
-
-  if ((count ?? 0) >= BALANCE.integrity.maxLessonSubmitsPerHour) {
-    return new Response(JSON.stringify({ error: 'rate_limited' }), {
-      status: 429,
-      headers: { 'content-type': 'application/json', 'retry-after': '600' },
-    })
-  }
+  // The rate limit used to be counted here, one round trip before the insert it was
+  // meant to gate — so N concurrent submissions all read the same count and all passed.
+  // It moved inside `record_lesson`, behind the same advisory lock as the insert.
 
   // ── load the memory state these answers touch ─────────────────────────────
   const factIds = [...new Set(body.answers.map((a) => a.factId))]
@@ -154,16 +197,25 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
   // XP already earned today, in the USER'S timezone — the soft cap is a daily
   // rule, and "today" is 23 or 25 hours long twice a year.
-  const { data: profile } = await admin
-    .from('profiles')
-    .select('timezone')
-    .eq('id', user.id)
-    .single()
+  const [{ data: profile }, { data: streakRow }] = await Promise.all([
+    admin.from('profiles').select('timezone').eq('id', user.id).single(),
+    admin
+      .from('streaks')
+      .select('current, longest, last_active_date, freezes_held')
+      .eq('user_id', user.id)
+      .maybeSingle(),
+  ])
+
+  // A stored zone the app cannot read is a lesson nobody can submit: `Intl` throws a
+  // RangeError on an unknown one, and `profiles.timezone` is a column its own owner can
+  // write. Falling back to UTC costs a user at most one day-boundary; the alternative is
+  // a 500 on every submission until somebody fixes the row by hand.
+  const timeZone = isKnownTimeZone(profile?.timezone) ? profile!.timezone : 'UTC'
 
   // Imported from the engines package rather than reimplemented here: a local
   // 'day' is 23 or 25 hours twice a year, and the naive version of this silently
   // reports the wrong day across a DST transition.
-  const localMidnight = new Date(startOfLocalDay(Date.now(), profile?.timezone ?? 'UTC'))
+  const localMidnight = new Date(startOfLocalDay(Date.now(), timeZone))
   const { data: todayXp } = await admin
     .from('xp_ledger')
     .select('amount')
@@ -198,9 +250,16 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
   if (answers.length === 0) return json({ error: 'no_gradable_answers' }, 422)
 
+  // ── decide WHEN, too ──────────────────────────────────────────────────────
+  //
+  // Correctness was decided here and time was not, so the server-authoritative claim
+  // rested on a field the client picked. See _shared/submission-time.ts for what that
+  // bought an attacker and why this clamps rather than rejects.
+  const retimed = retimeLesson(answers, body.startedAt, Date.now())
+
   const result = gradeLesson({
     lessonId: body.lessonId,
-    answers,
+    answers: retimed.answers,
     memory,
     // Server time is authoritative for the submission; per-answer timestamps
     // still drive scheduling so an offline lesson schedules from when it was
@@ -211,80 +270,169 @@ Deno.serve(async (req: Request): Promise<Response> => {
     masteredBefore,
   })
 
-  // ── persist ───────────────────────────────────────────────────────────────
-  // The lesson row goes first: its primary key is the idempotency guard, so a
-  // concurrent duplicate loses here rather than double-writing the ledgers.
-  const { error: lessonError } = await admin.from('lessons').insert({
-    id: body.lessonId,
-    user_id: user.id,
-    kind: body.kind,
-    topic_id: body.topicId ?? null,
-    items: result.items,
-    correct: result.correct,
-    xp_awarded: result.xpAwarded,
-    coins_awarded: result.coinsAwarded,
-    started_at: new Date(body.startedAt).toISOString(),
-    completed_at: new Date().toISOString(),
-    client_version: body.clientVersion ?? null,
+  // ── which countries are FINISHED ──────────────────────────────────────────
+  //
+  // `entity_mastered` was the last achievement event with no producer, and it could not
+  // have one on the client: it means "every quizzable fact of this country is mastered",
+  // a question about facts the lesson did not touch. `ach.countries.complete` and
+  // `ach.set.nordics` both count it and both sat at zero.
+  //
+  // Answerable here, and only here. One extra query, bounded by the entities this lesson
+  // actually moved — a lesson that mastered nothing runs none of this.
+  const promotedEntities = [
+    ...new Set(
+      result.masteryChanges
+        .filter((c) => c.to === 'mastered' || c.to === 'burnished')
+        .map((c) => ANSWER_BY_FACT[c.factId])
+        .filter((entity): entity is string => entity !== undefined),
+    ),
+  ]
+
+  const entityMastered: string[] = []
+  if (promotedEntities.length > 0) {
+    const needed = promotedEntities.flatMap((e) => QUIZZABLE_FACTS_BY_ENTITY[e] ?? [])
+    const { data: entityFacts } = await admin
+      .from('user_facts')
+      .select('fact_id, mastery')
+      .eq('user_id', user.id)
+      .in('fact_id', needed)
+
+    // The rows this lesson is about to write are not in the table yet, so the freshly
+    // graded state has to win over what was read. Reading after the write instead would
+    // mean a second round trip inside the transaction's shadow.
+    const level = new Map<string, string>(
+      (entityFacts ?? []).map((r) => [r.fact_id, r.mastery as string]),
+    )
+    for (const change of result.masteryChanges) level.set(change.factId, change.to)
+
+    for (const entity of promotedEntities) {
+      const facts = QUIZZABLE_FACTS_BY_ENTITY[entity] ?? []
+      if (facts.length === 0) continue
+      const complete = facts.every((id) => {
+        const m = level.get(id)
+        return m === 'mastered' || m === 'burnished'
+      })
+      if (complete) entityMastered.push(entity)
+    }
+  }
+
+  // ── the streak ────────────────────────────────────────────────────────────
+  //
+  // `applyActivity` has been tested and callerless since streaks were built, and
+  // `streaks` written by one statement — the row the signup trigger creates. Home reads
+  // `streaks.current`, so it has been zero for every user this product has ever had.
+  //
+  // The engine decides; this carries the decision. Null when nothing moved, which is the
+  // second lesson of a day — five lessons must not be a five-day streak.
+  const outcome = applyActivity(
+    {
+      current: streakRow?.current ?? 0,
+      longest: streakRow?.longest ?? 0,
+      lastActiveDate: streakRow?.last_active_date ?? null,
+      freezesHeld: streakRow?.freezes_held ?? 0,
+    },
+    Date.now(),
+    timeZone,
+  )
+  const streakChanged = outcome.extended || outcome.reset || outcome.freezeUsed
+
+  // The milestone bonus the balance table has funded since it was written and nothing
+  // has ever paid. Only when the streak actually moved, which is also what stops a
+  // second lesson on day 7 collecting it again.
+  const milestone = streakChanged
+    ? streakMilestoneReward(outcome.current)
+    : { xp: 0, coins: 0 }
+
+  // ── persist, in ONE transaction ───────────────────────────────────────────
+  //
+  // This was five supabase-js calls — five transactions — and only the first one's error
+  // was read. A failed XP insert left a lesson row claiming 140 XP against an empty
+  // ledger, permanently, because the replay path returns that row and awards nothing.
+  //
+  // `record_lesson` does the lot behind one advisory lock: idempotency, rate limit,
+  // lesson, log, memory cache, both ledgers, streak. See the migration for the ordering.
+  const { data: recorded, error: recordError } = await admin.rpc('record_lesson', {
+    p_user_id: user.id,
+    p_lesson_id: body.lessonId,
+    p_kind: body.kind,
+    p_topic_id: body.topicId ?? null,
+    p_items: result.items,
+    p_correct: result.correct,
+    p_xp: result.xpAwarded,
+    p_coins: result.coinsAwarded,
+    p_started_at: new Date(retimed.startedAt).toISOString(),
+    p_client_version: body.clientVersion ?? null,
+    p_reviews: result.reviews.map((r) => ({
+      fact_id: r.factId,
+      template_id: r.templateId,
+      rating: r.rating,
+      was_correct: r.wasCorrect,
+      elapsed_ms: r.elapsedMs,
+      created_at: new Date(r.at).toISOString(),
+    })),
+    p_facts: [...result.updatedMemory.values()].map((s) => ({
+      fact_id: s.factId,
+      stability: s.stability,
+      difficulty: s.difficulty,
+      reps: s.reps,
+      lapses: s.lapses,
+      last_review_at: s.lastReviewAt ? new Date(s.lastReviewAt).toISOString() : null,
+      due_at: new Date(s.dueAt).toISOString(),
+      suspended: s.suspended,
+    })),
+    p_streak: streakChanged
+      ? {
+          current: outcome.current,
+          longest: outcome.longest,
+          lastActiveDate: outcome.lastActiveDate,
+          freezesHeld: outcome.freezesHeld,
+          // The bit `record_lesson` actually applies. `freezesHeld` above is derived
+          // from a row read before `purchase_freeze` may have run, so writing it back
+          // absolutely erases a freeze bought in between. What this lesson DECIDED is
+          // one bit, and a delta commutes with a concurrent purchase.
+          freezeUsed: outcome.freezeUsed,
+        }
+      : null,
+    p_max_per_hour: BALANCE.integrity.maxLessonSubmitsPerHour,
+    // Derived by the grader from server-decided correctness, not taken from the payload.
+    // No clamp: the replay cannot produce a value outside 0..answers.length by
+    // construction, and a clamp here would be a second rule quietly disagreeing with it.
+    p_hearts_lost: result.heartsLost,
+    p_streak_xp: milestone.xp,
+    p_streak_coins: milestone.coins,
   })
 
-  if (lessonError) {
-    // 23505 = unique violation: another request won the race. Idempotent, so this
-    // is a success from the caller's point of view.
-    if (lessonError.code === '23505') {
-      return json({ lessonId: body.lessonId, replayed: true }, 200)
-    }
-    return json({ error: 'persist_failed' }, 500)
-  }
+  // An error here means NOTHING was written — that is the point of the function — so the
+  // queue may retry the whole submission safely.
+  if (recordError) return json({ error: 'persist_failed' }, 500)
 
-  if (result.reviews.length > 0) {
-    await admin.from('review_log').insert(
-      result.reviews.map((r) => ({
-        user_id: user.id,
-        fact_id: r.factId,
-        template_id: r.templateId,
-        rating: r.rating,
-        was_correct: r.wasCorrect,
-        elapsed_ms: r.elapsedMs,
-        lesson_id: body.lessonId,
-        created_at: new Date(r.at).toISOString(),
-      })),
-    )
+  const outcomeStatus = (recorded as { status?: string } | null)?.status
 
-    await admin.from('user_facts').upsert(
-      [...result.updatedMemory.values()].map((s) => ({
-        user_id: user.id,
-        fact_id: s.factId,
-        stability: s.stability,
-        difficulty: s.difficulty,
-        reps: s.reps,
-        lapses: s.lapses,
-        last_review_at: s.lastReviewAt ? new Date(s.lastReviewAt).toISOString() : null,
-        due_at: new Date(s.dueAt).toISOString(),
-        suspended: s.suspended,
-        updated_at: new Date().toISOString(),
-      })),
-      { onConflict: 'user_id,fact_id' },
-    )
-  }
-
-  if (result.xpAwarded > 0) {
-    await admin.from('xp_ledger').insert({
-      user_id: user.id,
-      amount: result.xpAwarded,
-      reason: `lesson:${body.kind}`,
-      ref_id: body.lessonId,
+  if (outcomeStatus === 'rate_limited') {
+    return new Response(JSON.stringify({ error: 'rate_limited' }), {
+      status: 429,
+      headers: { 'content-type': 'application/json', 'retry-after': '600' },
     })
   }
 
-  if (result.coinsAwarded > 0) {
-    await admin.from('coin_ledger').insert({
-      user_id: user.id,
-      amount: result.coinsAwarded,
-      reason: `lesson:${body.kind}`,
-      ref_id: body.lessonId,
+  // Another request won the race between the pre-check and the lock. Idempotent, so
+  // this is a success from the caller's point of view.
+  if (outcomeStatus === 'replayed') {
+    const row = recorded as { items: number; correct: number; xpAwarded: number; coinsAwarded: number }
+    return json({
+      lessonId: body.lessonId,
+      items: row.items,
+      correct: row.correct,
+      xpAwarded: row.xpAwarded,
+      coinsAwarded: row.coinsAwarded,
+      replayed: true,
     })
   }
+
+  // The id is taken by a lesson belonging to somebody else. A client-generated UUID
+  // should never collide, so this is either a bug or an attempt to read another
+  // account's result. Neither gets that account's numbers back.
+  if (outcomeStatus === 'conflict') return json({ error: 'lesson_id_conflict' }, 409)
 
   return json({
     lessonId: result.lessonId,
@@ -296,7 +444,54 @@ Deno.serve(async (req: Request): Promise<Response> => {
     masteryChanges: result.masteryChanges,
     perfect: result.perfect,
     rejected: result.rejected,
+    // Reviews the scheduler asked for and got right. `ach.review.faithful` counts these
+    // and had no producer — the grader computed the number and dropped it.
+    overdueCleared: result.overdueCleared,
+    /** Countries whose every quizzable fact is now mastered. See above. */
+    entityMastered,
+    // The authoritative streak, so the summary can celebrate the real number rather than
+    // a client guess — and so `welcome-back` and the streak screen have something true
+    // to read the moment the queue flushes.
+    streak: {
+      current: outcome.current,
+      longest: outcome.longest,
+      extended: outcome.extended,
+      freezeUsed: outcome.freezeUsed,
+      reset: outcome.reset,
+      /** Paid as its own ledger row, so the summary can celebrate it separately. */
+      milestoneXp: milestone.xp,
+      milestoneCoins: milestone.coins,
+    },
+    // Reported rather than swallowed, for the same reason `rejected` is: a spike in
+    // either is the signal that a build is sending nonsense, and a number nobody
+    // returns is a number nobody can graph.
+    timingDiscarded: retimed.timingDiscarded,
     replayed: false,
   })
+}
+
+/**
+ * The outer boundary. Nothing above may reach the runtime as a rejected promise.
+ *
+ * There was no catch here, and the two `new Date(...).toISOString()` calls below the
+ * parser could both throw a RangeError on input that passed `typeof x === 'number'`.
+ * That is fixed at the source now — `isFiniteMs` in the parser and the clamp after it —
+ * but a handler whose correctness depends on nothing further down ever throwing is a
+ * handler one refactor away from returning an unhandled rejection to a user who has just
+ * finished a lesson.
+ *
+ * The message is not returned. It is the only place in this function where an internal
+ * string could reach a device, and an error message is the classic accidental
+ * exfiltration channel — a Postgres error quotes the row it failed on. The client is
+ * told which request to quote; the log holds the rest.
+ */
+Deno.serve(async (req: Request): Promise<Response> => {
+  const requestId = crypto.randomUUID()
+  try {
+    return await handle(req)
+  } catch (error) {
+    console.error(`submit-lesson ${requestId}`, error)
+    return json({ error: 'internal_error', requestId }, 500)
+  }
 })
 

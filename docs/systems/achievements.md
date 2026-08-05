@@ -38,8 +38,16 @@ Most achievements are tiered, which multiplies content without multiplying desig
 | Platinum | `#E5E4E2` | 250 | 100 |
 | Legendary | `#A855F7` | 500 | 200 |
 
-`ach.flags.collector` at Bronze/Silver/Gold/Platinum = 10 / 50 / 100 / 195 flags.
+`ach.flags.collector` at Bronze/Silver/Gold/Platinum = 5 / 20 / 40 / 65 flags.
 One definition, four unlocks, four celebrations.
+
+Those are the numbers in the pack. They used to read 10 / 50 / 100 / 195 here and in the
+pack alike, against a content set holding 65 flags — so two of the four tiers could never
+be reached by anybody, with a progress bar creeping towards them for ever. §9 of the
+content validator now counts the ceiling from the packs and fails in both directions, so
+a threshold above what exists is caught, and so is a top tier left behind by a pack that
+grew. The example above is a real definition, not an illustration; if it disagrees with
+`packs/achievements/core.v1.json`, the pack is right and this line is stale.
 
 ## 3. Definition format
 
@@ -57,16 +65,44 @@ One definition, four unlocks, four celebrations.
     "where": { "attribute": "flag" },
     "distinctBy": "entityId"
   },
+  "ceiling": { "of": "facts", "attribute": "flag" },
   "tiers": [
-    { "tier": "bronze",    "threshold": 10  },
-    { "tier": "silver",    "threshold": 50  },
-    { "tier": "gold",      "threshold": 100 },
-    { "tier": "platinum",  "threshold": 195 }
+    { "tier": "bronze",    "threshold": 5  },
+    { "tier": "silver",    "threshold": 20 },
+    { "tier": "gold",      "threshold": 40 },
+    { "tier": "platinum",  "threshold": 65 }
   ],
   "showProgress": true,
   "minVersion": "1.5.0"
 }
 ```
+
+### `ceiling` — an achievement must be achievable
+
+**Declare the ceiling on anything bounded by content, and `pnpm content:validate` will
+do the arithmetic.** `of` is `facts` (optionally narrowed by `attribute`), `entities` or
+`regions`, counted across the shipped packs and excluding anything not quizzable.
+
+This exists because seven of the first twelve achievements had tiers nobody could reach.
+`ach.flags.collector` asked for 100 and then 195 flags against a pack of 65;
+`ach.countries.complete` wanted 195 of 65 countries; `ach.explorer.continents` wanted a
+seventh region. With `showProgress: true` the screen drew a bar creeping towards a number
+that did not exist, for ever — which in a product whose rules forbid dark patterns and
+shame copy is precisely the mechanic being forbidden.
+
+The check runs in **both directions**, and the second is the half that keeps working:
+
+- a threshold **above** the ceiling is unreachable — the original bug;
+- a **top tier below** the ceiling means the pack grew and the achievement did not, so
+  "collect them all" quietly became "collect two thirds of them".
+
+Omit `ceiling` when the achievement is genuinely unbounded — lessons completed, days of
+streak, level reached. It is skipped rather than guessed at.
+
+> The first run of this check found one more thing than it was written for: Switzerland's
+> capital is `quizzable: false` (Bern is not the constitutional capital), so the real
+> number of askable capitals is 63, not the 64 the pack file suggests. That is the
+> argument for counting rather than writing the number down.
 
 ## 4. The rule engine
 

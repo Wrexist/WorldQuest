@@ -816,3 +816,62 @@ describe('content safety', () => {
     expect(orphaned.itemsByFact.has('geo.ZZ.capital')).toBe(false)
   })
 })
+
+/**
+ * The accessible path must reach every fact the sighted path does.
+ *
+ * `docs/design/accessibility.md` is explicit that an equivalent must never be a lesser
+ * one, and `templates.v1.json` declares the pairing: a template that is not
+ * `screenReaderSafe` names the sibling that tests the SAME fact without sight. Nothing
+ * checked whether the sibling could actually be BUILT.
+ *
+ * It could not. `tpl.location-of.mc4` — the accessible half of the map question — built
+ * for 35 of 65 countries, because its distractors were other subregions of the same
+ * region and North America, South America and Oceania hold exactly one apiece. A blind
+ * user got no location question at all for thirty countries while a sighted user got one
+ * for all sixty-five, silently, and the pack's own comment recorded it as a known gap for
+ * as long as it stayed open.
+ *
+ * The `other-values` fallback closed it. This is what keeps it closed — and what would
+ * have found it the day it opened, which is the part that matters. Written against the
+ * DECLARED pairing rather than against a list of template ids, so a future visual
+ * template inherits the assertion by declaring its sibling.
+ */
+describe('accessibility parity', () => {
+  const rng = seededRng(20260805)
+
+  const buildableFor = (templateId: string): Set<string> => {
+    const built = new Set<string>()
+    for (const item of index.items) {
+      if (item.templateId !== templateId) continue
+      if (buildQuestion(index, item, 'en', rng) !== null) built.add(item.factId)
+    }
+    return built
+  }
+
+  const pairs = templates
+    .filter((t) => t.a11y.screenReaderSafe === false)
+    .map((t) => ({ visual: t.id, accessible: t.a11y.equivalentTemplate }))
+
+  it('has at least one visual template with a declared sibling', () => {
+    // Otherwise everything below passes by iterating nothing — the shape of guard this
+    // repo has been bitten by more than once.
+    expect(pairs.length).toBeGreaterThan(0)
+    for (const pair of pairs) expect(pair.accessible).toBeTruthy()
+  })
+
+  it.each(pairs.map((p) => [p.visual, p.accessible] as const))(
+    '%s is answerable by ear through %s, for every fact',
+    (visual, accessible) => {
+      const sighted = buildableFor(visual)
+      const byEar = buildableFor(accessible!)
+      const missing = [...sighted].filter((factId) => !byEar.has(factId))
+
+      expect(
+        missing,
+        `${missing.length} fact(s) a sighted user can be asked and a screen-reader user ` +
+          `cannot: ${missing.slice(0, 8).join(', ')}`,
+      ).toEqual([])
+    },
+  )
+})

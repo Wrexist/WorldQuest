@@ -27,9 +27,9 @@
  */
 
 import { StyleSheet, Text, View } from 'react-native'
-import { ArtSlot, Button, Card, colors, palette, space, text } from '@worldquest/design'
+import { Button, Card, colors, space, text } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
-import { Icon } from '../../components/Icon.js'
+import { Art } from '../../components/Art.js'
 
 export type WelcomeBackScreenProps = {
   /** Days since the last completed lesson. */
@@ -54,12 +54,11 @@ export function WelcomeBackScreen({
   return (
     <View style={styles.root}>
       <View style={styles.hero}>
-        <ArtSlot
-        tint={palette.blue[500]}
-        art={<Icon name="globe" size={70} color={palette.blue[500]} />}
-        width={160}
-        height={160}
-      />
+        {/* Atlas waving with both arms, from a low angle. The brief for this frame is
+            specifically "greeting someone returning after a long time — warm, glad, NO
+            SADNESS", which is the whole argument of this screen: a user who has been
+            away is being welcomed, not reproached for the gap. */}
+        <Art name="atlas/waving-back" size={160} />
         <Text style={styles.title} role="heading" aria-level={1}>
           {t('welcome:title')}
         </Text>

@@ -26,6 +26,8 @@ const grade = (over: Partial<GradeResult> = {}): GradeResult => ({
   masteryChanges: [],
   perfect: false,
   rejected: 0,
+  overdueCleared: 0,
+  heartsLost: 0,
   ...over,
 })
 

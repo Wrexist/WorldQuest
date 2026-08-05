@@ -12,6 +12,7 @@
 import { clamp, MS_PER_DAY } from '../shared/index.js'
 import {
   DEFAULT_TARGET_RETENTION,
+  LEECH_COOLDOWN_DAYS,
   LEECH_LAPSE_THRESHOLD,
   MAX_CREDITED_ANSWER_MS,
   type FactId,
@@ -152,7 +153,12 @@ export function review(input: ReviewInput, weights: Weights = DEFAULT_WEIGHTS): 
   let lapses: number
   const factId: FactId = input.factId
 
-  if (state === null || state.lastReviewAt === null) {
+  // `state === null` only. It used to also treat `lastReviewAt === null` as a first
+  // exposure, which silently discarded `reps` and `lapses` on any row that had them —
+  // and a row with reps but no review date is a data incident, not a new card. Reading
+  // it as "never seen" wipes the history that would let anyone diagnose it, and hands
+  // the user a fresh initial stability for a fact they have failed six times.
+  if (state === null) {
     stability = initialStability(rating, w)
     difficulty = initialDifficulty(rating, w)
     reps = 1
@@ -168,12 +174,32 @@ export function review(input: ReviewInput, weights: Weights = DEFAULT_WEIGHTS): 
     lapses = state.lapses + (rating === 1 ? 1 : 0)
   }
 
+  /**
+   * A leech rests; it is not buried.
+   *
+   * This was `lapses >= LEECH_LAPSE_THRESHOLD` — and `lapses` never decreases, while
+   * `selectItems` dropped every suspended candidate. So crossing the threshold once
+   * removed a fact from rotation for the life of the account: it could not be shown, so
+   * it could not be answered correctly, so it could not be released. The user was told
+   * they had not learned it, for ever, by the same system that had stopped teaching it.
+   *
+   * Suspension is now a property of THIS answer rather than of the whole history. Failing
+   * again while over the threshold rests the fact; getting it right releases it, in one
+   * answer. `lapses` is untouched — the FSRS formulas and the struggling bucket both read
+   * it, and rewriting history to fix a policy would be the wrong lever.
+   */
+  const isLeech = lapses >= LEECH_LAPSE_THRESHOLD
+  const suspended = isLeech && rating === 1
+
   const days = clamp(
     intervalDays(stability, targetRetention),
     MIN_INTERVAL_DAYS,
     MAX_INTERVAL_DAYS,
   )
-  const dueAt = now + days * MS_PER_DAY
+  // Resting means distance. The scheduler would hand a fresh lapse an interval measured
+  // in hours, which is precisely the drilling the leech policy exists to stop.
+  const restDays = suspended ? Math.max(days, LEECH_COOLDOWN_DAYS) : days
+  const dueAt = now + restDays * MS_PER_DAY
 
   return {
     factId,
@@ -183,11 +209,34 @@ export function review(input: ReviewInput, weights: Weights = DEFAULT_WEIGHTS): 
     lapses,
     lastReviewAt: now,
     dueAt,
-    // We stop drilling what someone keeps failing — it needs a different template
-    // or an explanation, not another repetition. See the leech policy in the spec.
-    suspended: lapses >= LEECH_LAPSE_THRESHOLD,
+    suspended,
   }
 }
+
+/**
+ * The mastery boundaries, named because they exist in two languages.
+ *
+ * `user_facts.mastery` is derived by a Postgres trigger from the same three rules —
+ * see supabase/migrations/20260805090000_mastery_is_derived.sql. Two copies of a rule
+ * are one copy and one bug waiting for the input that separates them, and this repo has
+ * shipped that exact shape before. It cannot be one copy here: a trigger cannot import
+ * TypeScript. So the numbers get names, and `fsrs.test.ts` reads the migration and
+ * asserts the CASE uses these ones.
+ *
+ * `familiar` is deliberately absent. It is the only level that depends on
+ * retrievability — an answer that changes while the row sits still — so it has no
+ * stored form, and the migration says so at length.
+ */
+export const MASTERY_THRESHOLDS = {
+  burnishedStability: 180,
+  masteredStability: 21,
+  masteredReps: 5,
+  proficientStability: 7,
+  proficientReps: 3,
+  proficientLapses: 1,
+  familiarStability: 1,
+  familiarRetrievability: 0.9,
+} as const
 
 /**
  * The UI label. Boundaries are exact and tested — `mastered` is the claim behind
@@ -196,13 +245,20 @@ export function review(input: ReviewInput, weights: Weights = DEFAULT_WEIGHTS): 
 export function masteryOf(state: MemoryState | null, now: number): Mastery {
   if (state === null || state.lastReviewAt === null) return 'unseen'
 
+  const t = MASTERY_THRESHOLDS
   const stabilityDays = state.stability
   const r = retrievability(state, now)
 
-  if (stabilityDays >= 180 && state.lapses === 0) return 'burnished'
-  if (stabilityDays >= 21 && state.reps >= 5) return 'mastered'
-  if (stabilityDays >= 7 && state.reps >= 3 && state.lapses <= 1) return 'proficient'
-  if (stabilityDays >= 1 && r >= 0.9) return 'familiar'
+  if (stabilityDays >= t.burnishedStability && state.lapses === 0) return 'burnished'
+  if (stabilityDays >= t.masteredStability && state.reps >= t.masteredReps) return 'mastered'
+  if (
+    stabilityDays >= t.proficientStability &&
+    state.reps >= t.proficientReps &&
+    state.lapses <= t.proficientLapses
+  ) {
+    return 'proficient'
+  }
+  if (stabilityDays >= t.familiarStability && r >= t.familiarRetrievability) return 'familiar'
   return 'learning'
 }
 

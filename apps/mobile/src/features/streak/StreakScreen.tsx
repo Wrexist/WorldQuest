@@ -95,6 +95,25 @@ export type StreakScreenProps = {
   /** Epoch ms, injected so the screen never reads a clock. */
   readonly now: number
   readonly onBuyFreeze?: (() => void) | undefined
+  /**
+   * A freeze purchase is in flight.
+   *
+   * `purchase_freeze` carries no idempotency key — unlike a lesson, whose id IS the key —
+   * so two taps before the first answer arrives are two independent purchases. At 400
+   * coins each, a user with 800 was charged twice for one intended freeze. The request
+   * cannot be made idempotent without inventing a client-supplied id for a thing that has
+   * no natural one, so the button refuses the second tap instead.
+   */
+  readonly buyingFreeze?: boolean | undefined
+  /**
+   * Why the last purchase did not happen, if it did not.
+   *
+   * The server answers a refusal with a STATUS rather than an error — "you already hold
+   * two" is an answer, not a failure — and the route was dropping all of them on the
+   * floor, so a refused purchase looked exactly like a successful one that had not
+   * refreshed yet. A key rather than a resolved string, because copy is a key.
+   */
+  readonly freezeNotice?: 'at_cap' | 'insufficient_funds' | 'failed' | null | undefined
   readonly onRepair?: (() => void) | undefined
   /**
    * H7, scoped to the two actions that genuinely need a server.
@@ -131,6 +150,8 @@ export function StreakScreen({
   restoreTo,
   now,
   onBuyFreeze,
+  buyingFreeze = false,
+  freezeNotice = null,
   onRepair,
   offline = false,
 }: StreakScreenProps) {
@@ -198,8 +219,27 @@ export function StreakScreen({
               label={t('streak:freeze.buy', { price: FREEZE_PRICE })}
               variant="secondary"
               disabled={offline || !canAffordFreeze || onBuyFreeze === undefined}
+              // `loading`, not another clause in `disabled`. The primitive already makes
+              // the button inert AND sets `aria-busy`, and it keeps the label mounted so
+              // the button does not change width — a purchase is deliberately not
+              // optimistic here, so the user waits a real round trip, and a greyed
+              // rectangle is the whole of what a screen reader was told about it.
+              loading={buyingFreeze}
               onPress={() => onBuyFreeze?.()}
             />
+            {freezeNotice !== null && (
+              // Stated once, plainly, with no second ask. A refusal the user cannot see
+              // is a button that looks broken — and one announced to nobody is the same
+              // thing for a screen-reader user, hence `role="alert"`: this Text is
+              // inserted after the fact, so without it the refusal is silent.
+              <Text style={styles.note} role="alert">
+                {freezeNotice === 'at_cap'
+                  ? t('streak:freeze.refused.atCap')
+                  : freezeNotice === 'insufficient_funds'
+                    ? t('streak:freeze.refused.funds')
+                    : t('streak:freeze.refused.failed')}
+              </Text>
+            )}
             {offline ? (
               // Named before the coin gap: a user who is offline AND short of coins
               // needs to know the connection is why the button is grey, or they will

@@ -1,6 +1,7 @@
 {
   "$schema": "../../schema/pack.schema.json",
-  "$comment": "Where each country is, as a fact rather than a field. Derived MECHANICALLY from `subregion` in entities.countries.v1.json — this file invents no geography, it restates what the entity pack already declares so the composer can quiz it. Regenerate with `pnpm build:locations` whenever a country is added; hand-editing one row would let a country's location fact disagree with its own entity, which is a wrong fact of the worst kind: quietly wrong, and only on one screen. The GROUPING is this app's own, not UN M49 — M49 places Cuba and Mexico in 'Latin America and the Caribbean' while this pack groups them under North America, which is true continentally and is what a ten-year-old is taught. The source field points at the entities pack rather than at M49 for exactly that reason: citing a standard we have deliberately diverged from would be a false citation.",
+  "$comment": "Where each country is, as a fact rather than a field. Derived MECHANICALLY from `subregion` in entities.countries.v1.json — this file invents no geography, it restates what the entity pack already declares so the composer can quiz it. Regenerate with `pnpm build:locations` whenever a country is added; hand-editing one row would let a country's location fact disagree with its own entity, which is a wrong fact of the worst kind: quietly wrong, and only on one screen. The GROUPING is this app's own, not UN M49 — M49 places Cuba and Mexico in 'Latin America and the Caribbean' while this pack groups them under North America, which is true continentally and is what a ten-year-old is taught. Citing M49 would therefore be a false citation, and so would citing the entities pack: a fact whose source is another file in this repository has no external provenance at all, and the validator now refuses one. So each row names the classification as WHAT IT IS — an editorial choice, made here — and cites the seven-continent model it rests on. The derivation is mechanical; the classification being derived is a judgement, and the citation describes the judgement rather than the copy step. Every fact here is `stable` by construction — the value is which subregion a country sits in, and a continent does not move. Grading them per row would be grading the projection rather than its source, which is why `volatilityReviewed` is set below.",
+  "volatilityReviewed": true,
   "packId": "geography.locations",
   "version": "1.0.0",
   "subject": "geography",
@@ -30,9 +31,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -54,9 +55,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -78,9 +79,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -102,9 +103,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -126,9 +127,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -150,9 +151,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -174,9 +175,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -198,9 +199,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -222,9 +223,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -246,9 +247,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -270,9 +271,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -294,9 +295,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -318,9 +319,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -342,9 +343,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -366,9 +367,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -390,9 +391,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -414,9 +415,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -438,9 +439,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -462,9 +463,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -486,9 +487,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -510,9 +511,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -534,9 +535,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -558,9 +559,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -582,9 +583,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -606,9 +607,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -630,9 +631,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -654,9 +655,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -678,9 +679,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -702,9 +703,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -726,9 +727,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -750,9 +751,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -774,9 +775,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -798,9 +799,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -822,9 +823,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -846,9 +847,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -870,9 +871,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -894,9 +895,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -918,9 +919,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -942,9 +943,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -966,9 +967,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -990,9 +991,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1014,9 +1015,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1038,9 +1039,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1062,9 +1063,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1086,9 +1087,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1110,9 +1111,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1134,9 +1135,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1158,9 +1159,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1182,9 +1183,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1206,9 +1207,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1230,9 +1231,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1254,9 +1255,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1278,9 +1279,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1302,9 +1303,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1326,9 +1327,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1350,9 +1351,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1374,9 +1375,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1398,9 +1399,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1422,9 +1423,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1446,9 +1447,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1470,9 +1471,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1494,9 +1495,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1518,9 +1519,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1542,9 +1543,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     },
@@ -1566,9 +1567,9 @@
         "core"
       ],
       "source": {
-        "name": "WorldQuest geography pack — entities.countries.v1.json",
-        "url": "https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json",
-        "verifiedAt": "2026-08-03"
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
       },
       "volatility": "stable"
     }

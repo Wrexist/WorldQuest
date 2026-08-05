@@ -44,8 +44,16 @@ Everything below this line is safe to generate.
 > re-read this table rather than to commission anything.
 >
 > Every row above with a named package is a build script waiting to be written. The
-> ones that genuinely need an illustrator are the **mascot**, the **avatars** and the
-> **trophy** — and photography, which needs a licence rather than a drawing.
+> ones that genuinely need an illustrator are the **avatars** and the **trophy** — and
+> photography, which needs a licence rather than a drawing.
+>
+> **The mascot came off that list, and how it came off is the fifth instance of the
+> same mistake.** Atlas was delivered and placed on thirteen screens, and
+> `mockup-fidelity.md` went on saying "Not built" for the whole of that work, because
+> the commits that placed the art never came back to read the row. `CLAUDE.md` requires
+> a change that invalidates a doc to update it in the same PR; this is what that rule is
+> for. A "not built" that is false is worse than the blocked-on-an-illustrator entries
+> above it, because those at least described the world on the day they were written.
 
 ---
 
@@ -126,9 +134,48 @@ These are the ones that get skipped, and each of them has a screen behind it.
 
 **The gap that mattered most, and it was hiding in plain sight** — the splash prompt
 below has always said "that space is reserved for the logo, which is composited by the
-app", and no section ever specified the logo. The app currently has no wordmark, no
-mark, and no icon lockup anywhere in it. Every other item on this page is a screen;
-this one is the reason the product does not yet *look like itself*.
+app", and no section ever specified the logo. The app had no wordmark, no mark, and no
+icon lockup anywhere in it. Every other item on this page is a screen; this one is the
+reason the product did not yet *look like itself*.
+
+> ## 📦 Delivered — and what came with it
+>
+> **The mark, the app icon, the splash, seven Atlas frames, three onboarding slides,
+> seven state illustrations and three celebration layers are in.** They live at the
+> paths named in each section below, and `pnpm build:art` derives what the app ships
+> from them. `icon`, `splash`, `adaptiveIcon` and `favicon` are wired in `app.json`,
+> which is what unblocked a store build.
+>
+> Four things about the delivery are worth writing down rather than quietly fixing,
+> because each one is a rule on this page that the art does not meet:
+>
+> 1. **Sizes.** Every illustration arrived 1536×1024 — a 3:2 landscape frame, against
+>    the 1024×1024 this page specifies and the square slots that render them. The build
+>    centre-crops, which is safe *because* the style block asked for a centred subject
+>    with generous padding and the art does that. It would not be safe for art composed
+>    to the edges.
+> 2. **Transparency.** The delivery spec says transparent background. Most of these
+>    carry a baked one — a warm brown vignette on the Atlas frames, a grey-green on the
+>    icon. `<Art>` therefore clips to a rounded frame, so a baked background reads as a
+>    deliberate illustration panel rather than a rectangle that missed its cutout. It
+>    is a containment, not a fix.
+> 3. **The icon could not be used as delivered.** `app/icon.png` is 1536×1024 **with an
+>    alpha channel**. App Store Connect rejects both, at upload rather than at review.
+>    The build squares it and flattens it onto the canvas colour.
+> 4. **Palette — and one thing that fixed itself.** `brand/mark.png` is on-palette:
+>    deep navy, sky blue, warm gold. The icon MASTER is a grey-green vignette that is
+>    not, and leans photoreal where the style block asks for rounded chunky forms.
+>
+>    The shipped icon is on-palette anyway, and not by intention: that vignette is in
+>    the alpha channel, so flattening it onto `colors.bg.canvas` — which the store rules
+>    forced, since an icon may not carry transparency — replaced the grey-green with
+>    #0B1730. Worth knowing before anyone "fixes" the master, because the two look
+>    different and the derived one is the better of them. The rendering style still does
+>    not match the mark, which is what the adaptive icon and favicon are cut from.
+>
+> **Still missing:** the wordmark and lockup (1b, 1c), the mono silhouette below, the
+> Android notification icon — which needs that silhouette and cannot be derived from a
+> colour illustration — and everything under P1 and below.
 
 ### 1a. The mark
 
@@ -359,6 +406,46 @@ who most need the feedback.
 
 Confetti must be `accessibilityElementsHidden` in code; it is decoration and a screen
 reader announcing it is noise. That is a code note, but it belongs beside the asset.
+
+### 7b. `celebration/burst-wide.png` — 1536×512
+
+**This one was found by trying to ship without it.** The correct-answer feedback card is
+the most-seen "good thing happened" frame in the product — it fires ten to twenty times
+per lesson, against the perfect-lesson summary's once-in-a-while — and it has no art.
+The obvious fix was to reuse `celebration/burst.png` behind it, and that was attempted
+three times and reverted three times:
+
+- behind the XP card on the summary, where the burst is square and the card is
+  full-width, so a burst wide enough to clear the card had to be twice its height. What
+  rendered was a strip of confetti above it and a beige smear below;
+- clipped **inside** the feedback card, where the only part of a radial burst that lands
+  in a short wide panel is the deliberately empty centre — it rendered as nothing;
+- drawn **behind** the feedback card and allowed to overflow, which put confetti on top
+  of the answer options and a warm smudge under the card.
+
+The lesson is in the geometry, not in the placement. `burst` and `rays` both radiate
+from an empty centre and fade at the edges: they are built for a **square** region with
+a subject composited into the middle, and they work beautifully there — the perfect
+summary uses both behind a 140pt Atlas. A short wide panel is the one shape they cannot
+serve, and no amount of sizing fixes it.
+
+```
+[STYLE BLOCK]
+
+A wide horizontal spray of small rounded confetti pieces and soft gold motes, densest
+along the upper edge and thinning downward, spread evenly across the full width with no
+single centre of origin and no radial structure. Signal green, warm gold, sky blue and
+ember orange. The lower third fades to nothing. Joyful, weightless, celebratory.
+
+[NEGATIVE BLOCK], radial burst, explosion from a centre, empty middle, vignette,
+subject, character, single focal point
+```
+
+**3:1, and no empty centre — both are the point.** It sits behind a full-width panel
+roughly 110 pt tall, so it must read at that aspect and must have something to show in
+its middle. Transparent background, like every other asset in this section: the delivered
+`empty-profile`, `empty-no-friends` and `atlas/resting` came back with an opaque ground
+baked in and `pnpm build:art` now has to feather their edges to hide the seam.
 
 ---
 

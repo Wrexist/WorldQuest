@@ -57,8 +57,17 @@ export const BALANCE = {
      */
     dailySoftCap: 3000,
     softCapMultiplier: 0.25,
-    /** Re-answering an already-mastered fact the same day. */
-    repeatMasteredSameDay: 2,
+    /**
+     * Re-answering an already-known fact that was NOT due.
+     *
+     * Renamed from `repeatMasteredSameDay`, because the name said "same day" and the
+     * code meant "ever" — and a fact returning on schedule after three months was
+     * therefore paid 2 XP instead of 10. That is the economy charging a premium for the
+     * one behaviour a spaced-repetition product exists to produce. The penalty now
+     * applies only when the scheduler did not ask for the review, which is the case it
+     * was always described as covering.
+     */
+    repeatKnownNotDue: 2,
     /** Below this many items, no completion bonus. */
     minItemsForCompletionBonus: 5,
   },
@@ -80,7 +89,15 @@ export const BALANCE = {
 
   /** Prices. Target: a meaningful cosmetic is 4–7 days of saving. */
   prices: {
-    heartRefill: 250,
+    /**
+     * Finishing the lesson you are already in, after running out of hearts.
+     *
+     * Named `heartRefill` until now, which described the mechanic this product does not
+     * have: hearts reset per lesson, so there is no pool to refill and nothing a refill
+     * would persist. `OutOfHearts` has always spent it on exactly one thing — carrying
+     * on from the next question — and the name now says so.
+     */
+    continueLesson: 250,
     streakFreeze: 400,
     streakRepair: 600,
     avatarItem: { min: 300, max: 2000 },
@@ -100,9 +117,20 @@ export const BALANCE = {
    */
   hearts: {
     max: 5,
-    regenMinutes: 45,
-    /** Child accounts regenerate twice as fast. */
-    childRegenMinutes: 22,
+    /*
+     * There is no regeneration clock, and there must not be one.
+     *
+     * `regenMinutes: 45` and `childRegenMinutes: 22` lived here beside
+     * `resetPerLesson: true`, which are two designs for the same mechanic and only one
+     * of them can be true. If hearts reset at the start of every lesson then a
+     * regeneration rate describes nothing — there is no state to regenerate — and
+     * `heartsNow()`, `wallets.hearts` and `wallets.hearts_updated_at` were all machinery
+     * for a system this product had already decided against.
+     *
+     * The per-lesson design is the one with the argument behind it (see `resetPerLesson`
+     * below), so the other one is gone rather than left as a second answer for the next
+     * reader to find and believe.
+     */
     /** A correct answer on a previously-failed review gives one back. */
     restoreOnRedemption: 1,
     /**
@@ -177,11 +205,45 @@ export function xpForLevel(level: number): number {
   return Math.round(BALANCE.levels.base * Math.pow(level, BALANCE.levels.exponent))
 }
 
-/** Inverse of xpForLevel. */
+/**
+ * Inverse of xpForLevel.
+ *
+ * Analytic rather than a loop. `while (xpForLevel(level + 1) <= totalXp) level++` is
+ * O(level) with a `Math.pow` per step, and it is called on every render that shows a
+ * level — Home, Profile, the shop, the summary. It is fine at level 43 and it is a
+ * spin at the top of the curve, which is uncapped by design.
+ *
+ * `xpForLevel` rounds, so the closed form can land one either side of the boundary.
+ * The correction below fixes that in at most two steps, and `level.test.ts` asserts the
+ * two agree across the whole range rather than trusting the algebra.
+ */
 export function levelForXp(totalXp: number): number {
-  let level = 1
-  while (xpForLevel(level + 1) <= totalXp) level++
-  return level
+  if (!Number.isFinite(totalXp) || totalXp < xpForLevel(2)) return 1
+
+  const { base, exponent } = BALANCE.levels
+  let level = Math.floor(Math.pow(totalXp / base, 1 / exponent))
+
+  // Rounding in `xpForLevel` can put the estimate on the wrong side by one.
+  //
+  // Both loops step by one and both are guarded against the same thing: past roughly
+  // 2^53, adding one to a double is a no-op, so `level + 1 === level` and the condition
+  // can never change. The corrections then spin forever rather than converging. It takes
+  // an absurd input to get there — `Number.MAX_VALUE` lands the estimate near 1.6e161 —
+  // and "absurd input" is not the same as "cannot happen" when the consequence is a hung
+  // render on every screen that shows a level. The estimate is already correct at that
+  // magnitude; there is simply nothing left to correct by.
+  while (level > 1 && xpForLevel(level) > totalXp) {
+    const previous = level - 1
+    if (previous === level) break
+    level = previous
+  }
+  while (xpForLevel(level + 1) <= totalXp) {
+    const next = level + 1
+    if (next === level) break
+    level = next
+  }
+
+  return Math.max(1, level)
 }
 
 /** Titles are the cheapest status reward that exists, and they're chased for months. */
@@ -199,17 +261,3 @@ export const TITLES: ReadonlyArray<{ level: number; key: string }> = [
   { level: 100, key: 'titles:atlas' },
 ]
 
-/** Current hearts, computed from the last update rather than stored ticking. */
-export function heartsNow(
-  stored: number,
-  lastUpdatedAt: number,
-  now: number,
-  isChild: boolean,
-): number {
-  if (stored >= BALANCE.hearts.max) return BALANCE.hearts.max
-  const minutes = isChild
-    ? BALANCE.hearts.childRegenMinutes
-    : BALANCE.hearts.regenMinutes
-  const regenerated = Math.floor((now - lastUpdatedAt) / (minutes * 60_000))
-  return Math.min(BALANCE.hearts.max, stored + Math.max(0, regenerated))
-}

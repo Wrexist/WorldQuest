@@ -47,7 +47,12 @@ XP; getting it right across three weeks earns the mastery bonus.
 **Anti-farming**
 - Daily XP soft cap: **3,000** (≈ 60 min), after which XP earns at 25 %. Users are told plainly
   ("You've done plenty today — come back tomorrow for full XP"), which is on-brand.
-- Repeating an already-`mastered` fact in the same day earns 2 XP, not 10.
+- Repeating an already-`mastered` fact that is **not due** earns 2 XP, not 10 — the
+  constant is `repeatKnownNotDue`, and the rule is about the scheduler rather than
+  the clock. "In the same day" was both narrower and wrong: it read as a
+  cooldown, when what is being priced is answering something you already know that
+  nothing asked you to review. A mastered fact that IS due earns the full 10 plus
+  the overdue bonus, which is the ordering this table exists to produce.
 - A lesson with < 5 items earns no completion bonus.
 - **All XP is computed server-side.** The client's number is a prediction.
 
@@ -185,7 +190,11 @@ Note the direction — the struggling learner is protected *most*. Before the fi
 exactly inverted.
 
 **Other heart rules**
-- Regeneration between sessions: 1 per **45 min**, full in ~4 h (child accounts: 22 min).
+- **No regeneration clock, between sessions or otherwise.** This line used to read "1
+  per 45 min, full in ~4 h (child accounts: 22 min)", which cannot be true alongside
+  rule 1 on the same page: hearts that reset at the start of every lesson have no state
+  left to regenerate. Both numbers were deleted from `BALANCE` for that reason and
+  survived here, one section above the table that no longer contains them.
 - A correct answer on a previously-failed review restores 1.
 - **Premium = never interrupted.** The correct paywall: it sells *convenience*, never
   *access*.
@@ -214,19 +223,41 @@ Every number above lives in **one** place:
 export const BALANCE = {
   xp: {
     correctAnswer: 10, overdueReviewBonus: 2, perfectLesson: 15,
-    lessonComplete: 5, dailyQuest: 50, dailyChallenge: 30,
+    lessonComplete: 5, dailyQuestTask: 10, dailyQuest: 50, dailyChallenge: 30,
     speedBonus: 2, speedBonusMaxPerLesson: 5, firstLessonOfDay: 10,
     factMastered: 20, friendActivated: 100, collectionComplete: 100,
     streakMilestones: { 7: 50, 30: 200, 100: 500, 365: 1000 },
+    achievementByTier: { bronze: 25, silver: 50, gold: 100, platinum: 250, legendary: 500 },
     dailySoftCap: 3000, softCapMultiplier: 0.25,
-    repeatMasteredSameDay: 2,
+    repeatKnownNotDue: 2, minItemsForCompletionBonus: 5,
   },
-  coins: { /* … */ },
+  coins: {
+    correctAnswer: 5, perfectLesson: 10, dailyQuest: 25,
+    dailyChallenge: 15, collectionComplete: 150,
+    streakMilestones: { 7: 50, 30: 200, 100: 500 },
+    achievementByTier: { bronze: 10, silver: 25, gold: 50, platinum: 100, legendary: 200 },
+    leaguePodium: { 1: 300, 2: 200, 3: 100 },
+  },
+  prices: {
+    continueLesson: 250, streakFreeze: 400, streakRepair: 600,
+    avatarItem: { min: 300, max: 2000 }, pet: { min: 1500, max: 5000 },
+    mapSkin: 2000, theme: 1500, titleUnlock: 1000, celebration: 800,
+    giftSurchargePct: 10,
+  },
+  integrity: {
+    minCredibleAnswerMs: 400, maxLessonSubmitsPerHour: 60,
+    referralLessonsRequired: 5, referralDaysRequired: 3,
+  },
   hearts: {
     max: 5, resetPerLesson: true, newItemsCostHearts: false,
-    restoreEveryCorrectStreak: 5, regenMinutes: 45, childRegenMinutes: 22,
+    restoreEveryCorrectStreak: 5, restoreOnRedemption: 1,
+    // No regeneration clock. `regenMinutes` and `childRegenMinutes` were here beside
+    // `resetPerLesson: true`, which are two designs for one mechanic — if hearts reset
+    // at the start of every lesson there is no state to regenerate — and the per-lesson
+    // design is the one with the argument behind it. Gone from the table rather than
+    // left as a second answer for the next reader to find and believe.
   },
-  levels: { base: 50, exponent: 1.55 },
+  levels: { base: 50, exponent: 1.9 },
 } as const
 ```
 

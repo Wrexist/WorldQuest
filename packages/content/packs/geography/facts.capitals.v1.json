@@ -17,7 +17,6 @@
       "entity": "SE",
       "attribute": "capital",
       "value": {
-        "id": "SE-AB",
         "names": {
           "en": "Stockholm",
           "sv": "Stockholm"
@@ -31,8 +30,8 @@
         "core"
       ],
       "source": {
-        "name": "UN Statistics Division, M49 standard",
-        "url": "https://unstats.un.org/unsd/methodology/m49/",
+        "name": "English Wikipedia, “Stockholm”",
+        "url": "https://en.wikipedia.org/wiki/Stockholm",
         "verifiedAt": "2026-07-31"
       },
       "volatility": "stable"
@@ -42,7 +41,6 @@
       "entity": "NO",
       "attribute": "capital",
       "value": {
-        "id": "NO-03",
         "names": {
           "en": "Oslo",
           "sv": "Oslo"
@@ -56,8 +54,8 @@
         "core"
       ],
       "source": {
-        "name": "UN Statistics Division, M49 standard",
-        "url": "https://unstats.un.org/unsd/methodology/m49/",
+        "name": "English Wikipedia, “Oslo”",
+        "url": "https://en.wikipedia.org/wiki/Oslo",
         "verifiedAt": "2026-07-31"
       },
       "volatility": "stable"
@@ -67,7 +65,6 @@
       "entity": "DK",
       "attribute": "capital",
       "value": {
-        "id": "DK-84",
         "names": {
           "en": "Copenhagen",
           "sv": "Köpenhamn"
@@ -81,8 +78,8 @@
         "core"
       ],
       "source": {
-        "name": "UN Statistics Division, M49 standard",
-        "url": "https://unstats.un.org/unsd/methodology/m49/",
+        "name": "English Wikipedia, “Copenhagen”",
+        "url": "https://en.wikipedia.org/wiki/Copenhagen",
         "verifiedAt": "2026-07-31"
       },
       "volatility": "stable"
@@ -92,7 +89,6 @@
       "entity": "FI",
       "attribute": "capital",
       "value": {
-        "id": "FI-18",
         "names": {
           "en": "Helsinki",
           "sv": "Helsingfors"
@@ -106,8 +102,8 @@
         "core"
       ],
       "source": {
-        "name": "UN Statistics Division, M49 standard",
-        "url": "https://unstats.un.org/unsd/methodology/m49/",
+        "name": "English Wikipedia, “Helsinki”",
+        "url": "https://en.wikipedia.org/wiki/Helsinki",
         "verifiedAt": "2026-07-31"
       },
       "volatility": "stable"
@@ -117,7 +113,6 @@
       "entity": "JP",
       "attribute": "capital",
       "value": {
-        "id": "JP-13",
         "names": {
           "en": "Tokyo",
           "sv": "Tokyo"
@@ -131,8 +126,8 @@
         "core"
       ],
       "source": {
-        "name": "UN Statistics Division, M49 standard",
-        "url": "https://unstats.un.org/unsd/methodology/m49/",
+        "name": "English Wikipedia, “Tokyo”",
+        "url": "https://en.wikipedia.org/wiki/Tokyo",
         "verifiedAt": "2026-07-31"
       },
       "volatility": "stable"
@@ -142,7 +137,6 @@
       "entity": "CN",
       "attribute": "capital",
       "value": {
-        "id": "CN-BJ",
         "names": {
           "en": "Beijing",
           "sv": "Peking"
@@ -167,7 +161,6 @@
       "entity": "KR",
       "attribute": "capital",
       "value": {
-        "id": "KR-11",
         "names": {
           "en": "Seoul",
           "sv": "Seoul"
@@ -192,7 +185,6 @@
       "entity": "KP",
       "attribute": "capital",
       "value": {
-        "id": "KP-01",
         "names": {
           "en": "Pyongyang",
           "sv": "Pyongyang"
@@ -217,7 +209,6 @@
       "entity": "MN",
       "attribute": "capital",
       "value": {
-        "id": "MN-1",
         "names": {
           "en": "Ulaanbaatar",
           "sv": "Ulan Bator"
@@ -242,7 +233,6 @@
       "entity": "FR",
       "attribute": "capital",
       "value": {
-        "id": "FR-75",
         "names": {
           "en": "Paris",
           "sv": "Paris"
@@ -267,7 +257,6 @@
       "entity": "DE",
       "attribute": "capital",
       "value": {
-        "id": "DE-BE",
         "names": {
           "en": "Berlin",
           "sv": "Berlin"
@@ -292,7 +281,6 @@
       "entity": "BE",
       "attribute": "capital",
       "value": {
-        "id": "BE-BRU",
         "names": {
           "en": "Brussels",
           "sv": "Bryssel"
@@ -317,7 +305,6 @@
       "entity": "AT",
       "attribute": "capital",
       "value": {
-        "id": "AT-9",
         "names": {
           "en": "Vienna",
           "sv": "Wien"
@@ -343,7 +330,6 @@
       "entity": "NL",
       "attribute": "capital",
       "value": {
-        "id": "NL-NH",
         "names": {
           "en": "Amsterdam",
           "sv": "Amsterdam"
@@ -369,7 +355,6 @@
       "entity": "CH",
       "attribute": "capital",
       "value": {
-        "id": "CH-BE",
         "names": {
           "en": "Bern",
           "sv": "Bern"
@@ -444,7 +429,6 @@
       "entity": "PT",
       "attribute": "capital",
       "value": {
-        "id": "PT-11",
         "names": {
           "en": "Lisbon",
           "sv": "Lissabon"
@@ -785,7 +769,7 @@
         "url": "https://en.wikipedia.org/wiki/Jakarta",
         "verifiedAt": "2026-08-01"
       },
-      "volatility": "stable"
+      "volatility": "slow"
     },
     {
       "id": "geo.TH.capital",
@@ -1002,7 +986,7 @@
       "value": {
         "names": {
           "en": "Kyiv",
-          "sv": "Kiev"
+          "sv": "Kyiv"
         }
       },
       "difficulty": 2,
@@ -1200,7 +1184,7 @@
         "url": "https://en.wikipedia.org/wiki/Cairo",
         "verifiedAt": "2026-08-01"
       },
-      "volatility": "stable"
+      "volatility": "slow"
     },
     {
       "id": "geo.MA.capital",

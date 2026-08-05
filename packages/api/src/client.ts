@@ -97,6 +97,8 @@ export type SubmitLessonRequest = {
   topicId?: string
   startedAt: number
   answers: readonly unknown[]
+  /** Statistic, not a reward input — see the note in `apps/mobile/src/lib/sync.ts`. */
+  heartsLost?: number
   clientVersion?: string
 }
 
@@ -109,6 +111,52 @@ export type SubmitLessonResponse = {
   coinsAwarded: number
   perfect: boolean
   rejected: number
+  /**
+   * Which facts changed mastery level, as the SERVER computed it.
+   *
+   * The field that makes `fact_mastered` achievements possible. It was already returned
+   * and nothing on the client read it, so the flag and capital collectors — 40 and 63
+   * countries of content — could never move off zero.
+   */
+  masteryChanges?: readonly { readonly factId: string; readonly from: string; readonly to: string }[]
+  /**
+   * Overdue reviews cleared in this lesson.
+   *
+   * `ach.review.faithful` counts these — 25 / 250 / 1000 — and it is the only achievement
+   * in the catalogue that measures the behaviour the product exists to produce rather
+   * than volume. The grader computed the number and threw it away.
+   */
+  overdueCleared?: number
+  /**
+   * Countries whose every quizzable fact is now mastered.
+   *
+   * The last achievement event with no producer, and one only the server can answer: it
+   * is a question about facts the lesson did not touch. `ach.countries.complete` and
+   * `ach.set.nordics` both count it.
+   */
+  entityMastered?: readonly string[]
+  /**
+   * The session was too short to contain the answers it claimed, so its timing was
+   * discarded and every answer graded as average. Not shown to the user — a real client
+   * cannot produce it, and telling someone their clock looked forged is a conversation
+   * for a support ticket, not a summary screen. It exists so a spike is graphable.
+   */
+  timingDiscarded: boolean
+  /**
+   * The streak as the server now has it — the first time this endpoint has had one to
+   * report, because until `record_lesson` nothing wrote `streaks` at all.
+   *
+   * Optional because a replayed submission returns the original row and does not
+   * recompute it: awarding a streak day twice for one lesson is the same class of bug as
+   * awarding XP twice.
+   */
+  streak?: {
+    current: number
+    longest: number
+    extended: boolean
+    freezeUsed: boolean
+    reset: boolean
+  }
   replayed: boolean
 }
 
@@ -133,15 +181,43 @@ export async function submitLesson(
 
 // ── progress ────────────────────────────────────────────────────────────────
 
-/** What Home needs to render, in one round trip. */
+/**
+ * What Home needs to render, in one round trip.
+ *
+ * `gems` used to be here. Nothing grants one, nothing spends one, no screen renders one,
+ * and the column has been 0 on every row this product ever created — a third currency
+ * that existed only as a field being fetched and thrown away. Fetching it made the app
+ * look like it had a gem economy to anyone reading this type. The COLUMN stays: dropping
+ * it is a migration for no benefit, and a premium currency is a plausible v2 decision.
+ * Pretending to have one today is not.
+ */
 export type Progress = {
   readonly xpTotal: number
   readonly coins: number
-  readonly gems: number
   readonly hearts: number
   readonly streak: number
   readonly longestStreak: number
   readonly factsMastered: number
+  /**
+   * The recovery fields, which the streak screen stubbed to their defaults because they
+   * "do NOT exist in the progress payload yet". They existed in the table the whole time.
+   *
+   * `lastActiveDate` is what makes the displayed streak honest between lessons —
+   * `streaks.current` is only written when a lesson lands, so a user who missed two days
+   * was still being shown the number they had before they missed them.
+   */
+  readonly lastActiveDate: string | null
+  readonly freezesHeld: number
+  /**
+   * The local date the streak broke, or null while it is intact.
+   *
+   * `repairAvailability` opens on this and returns `not-broken` when it is null, so the
+   * whole repair feature — a 600-coin sink with a 48-hour window and a 30-day cooldown,
+   * written and tested — could never be offered to anyone. Nothing wrote the column,
+   * because a break is the ABSENCE of activity and only a scheduled job notices one.
+   */
+  readonly brokenOn: string | null
+  readonly lastRepairAt: number | null
 }
 
 /** Mastery levels that count as learned for the progress ring. */
@@ -159,8 +235,11 @@ const MASTERED: readonly Database['public']['Enums']['mastery_level'][] = [
  */
 export async function fetchProgress(client: WorldQuestClient): Promise<Progress> {
   const [wallet, streak, mastered] = await Promise.all([
-    client.from('wallets').select('xp_total, coins, gems, hearts').maybeSingle(),
-    client.from('streaks').select('current, longest').maybeSingle(),
+    client.from('wallets').select('xp_total, coins, hearts').maybeSingle(),
+    client
+      .from('streaks')
+      .select('current, longest, last_active_date, freezes_held, broken_on, last_repair_at')
+      .maybeSingle(),
     client
       .from('user_facts')
       .select('fact_id', { count: 'exact', head: true })
@@ -176,10 +255,13 @@ export async function fetchProgress(client: WorldQuestClient): Promise<Progress>
   return {
     xpTotal: wallet.data?.xp_total ?? 0,
     coins: wallet.data?.coins ?? 0,
-    gems: wallet.data?.gems ?? 0,
     hearts: wallet.data?.hearts ?? 0,
     streak: streak.data?.current ?? 0,
     longestStreak: streak.data?.longest ?? 0,
+    lastActiveDate: streak.data?.last_active_date ?? null,
+    freezesHeld: streak.data?.freezes_held ?? 0,
+    brokenOn: streak.data?.broken_on ?? null,
+    lastRepairAt: streak.data?.last_repair_at ? Date.parse(streak.data.last_repair_at) : null,
     factsMastered: mastered.count ?? 0,
   }
 }
@@ -237,4 +319,28 @@ export async function fetchSubscription(
     willRenew: data.will_renew,
     hasUsedTrial: data.has_used_trial,
   }
+}
+
+// ── consumables ─────────────────────────────────────────────────────────────
+
+export type FreezePurchase =
+  | { readonly status: 'purchased'; readonly freezesHeld: number; readonly coins: number }
+  | { readonly status: 'at_cap'; readonly freezesHeld: number }
+  | { readonly status: 'insufficient_funds' | 'not_for_sale' | 'no_streak' | 'unauthorized' }
+
+/**
+ * Buy a streak freeze.
+ *
+ * The caller supplies nothing but the intent: the price comes from `shop_items` and the
+ * user from `auth.uid()`, so the worst a modified client can do is buy one it can afford.
+ * The cap and the overdraft are both refused server-side, and both come back as a status
+ * rather than an error — "you already hold two" is an answer, not a failure.
+ *
+ * `grantFreeze` in the engine has described "the common caller is a purchase flow" since
+ * streaks were built and had no caller. This is it.
+ */
+export async function buyStreakFreeze(client: WorldQuestClient): Promise<FreezePurchase> {
+  const { data, error } = await client.rpc('purchase_freeze', {})
+  if (error) throw error
+  return (data ?? { status: 'unauthorized' }) as FreezePurchase
 }

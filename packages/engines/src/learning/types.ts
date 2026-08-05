@@ -94,3 +94,21 @@ export const MAX_SCHEDULABLE_ANSWER_MS = 60_000
 
 /** A fact that lapses this many times gets a different treatment, not more repeats. */
 export const LEECH_LAPSE_THRESHOLD = 8
+
+/**
+ * How long a leech rests before it is offered again.
+ *
+ * Suspension used to be permanent, and not by design: `suspended` was computed from
+ * lifetime `lapses`, a number that only ever goes up, and `selectItems` dropped every
+ * suspended candidate. So a fact that crossed the threshold could never be shown again,
+ * and therefore could never be answered correctly, and therefore could never come back —
+ * for the life of the account. A ten-year-old who struggled with Ulaanbaatar in November
+ * would simply never see it again, and the app would go on reporting that they had not
+ * learned it.
+ *
+ * The spec has always said a leech needs "a different template or an explanation, not
+ * another repetition". Resting is the honest version of that with the pieces that exist
+ * today: two weeks of distance, then the item returns through the struggling slot with a
+ * presentation `itemsForFact` shuffles independently. One correct answer releases it.
+ */
+export const LEECH_COOLDOWN_DAYS = 14

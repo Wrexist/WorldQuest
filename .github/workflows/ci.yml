@@ -43,53 +43,49 @@ jobs:
       - name: Generate tokens and translation keys
         run: pnpm generate
 
-      - name: Typecheck (packages + app)
-        run: pnpm typecheck
-
-      - name: Unit and component tests
-        run: pnpm test
-
-      - name: Content validation
-        run: pnpm content:validate
-
-      # Schema-valid content can still read as nonsense: a hint that repeats its own
-      # answer, a prompt that gives the answer away, a template pointing at a
-      # translation key nobody wrote. All three shipped at least once. This renders
-      # every question through the real catalogue and fails on those.
+      # ONE step, not nine.
       #
-      # `--quiet` because the full listing is for a human deciding whether the
-      # questions are GOOD. CI can only decide whether they are broken.
-      - name: Content reads correctly
-        run: pnpm content:preview --quiet
+      # This job listed typecheck, test, content:validate, content:preview, i18n:check,
+      # design:contrast and engines:simulate as separate steps — which is a nicer failure
+      # summary and a worse guarantee, because `pnpm verify` listed a DIFFERENT subset and
+      # nothing compared the two. `engines:simulate` and `content:preview` ran here and not
+      # there, so a reward number or a nonsense question could be pushed having met every
+      # local gate. CLAUDE.md called verify "all of it, and the gate that matters" while it
+      # was neither.
+      #
+      # Running the same command a developer runs is the only version of this that means
+      # anything — the same argument the db:types step below already makes.
 
-      - name: Localisation
-        run: pnpm i18n:check
-
-      - name: Contrast (WCAG 2.2 AA)
-        run: pnpm design:contrast
-
-      # The economy simulation exits non-zero on its own health gates — a heart
-      # block rate over 15%, a hoarding cohort, a curve that tops out early. A
-      # reward number can be changed without any test noticing; this notices.
-      - name: Economy health
-        run: pnpm engines:simulate
-
-      # The development container ships a Chromium at /opt/pw-browsers and sets
-      # PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD, so nothing here ever downloaded one. A runner
-      # has neither. `scripts/chromium.cjs` falls back to Playwright's own resolution
-      # when the image's browser is absent — this is the step that gives it something to
-      # resolve to.
+      # Chromium first, because `verify:full` runs `e2e` and `a11y:tree`, and both need
+      # one. The development container ships a Chromium at /opt/pw-browsers and sets
+      # PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD, so nothing there ever downloaded a browser. A
+      # runner has neither. `scripts/chromium.cjs` falls back to Playwright's own
+      # resolution when the image's browser is absent — this is what it resolves to.
       - name: Install Chromium for Playwright
         run: pnpm exec playwright install --with-deps chromium
 
-      # The only step here that runs METRO. typecheck runs tsc and test runs
-      # vitest; both resolve TypeScript's `.js`-means-`.ts` imports, and the
-      # bundler does not. That gap hid a repo where the app had never bundled on
-      # any platform, through a green pipeline. This exports the real bundle and
-      # plays a lesson in it — see apps/mobile/e2e/flow.cjs for what that does and
-      # does not prove. It is not a device.
-      - name: App bundles and a lesson can be played
-        run: pnpm e2e
+      # ONE command, not four. This step used to be `pnpm verify` followed by `e2e`,
+      # `a11y:tree` and `bundle:native` listed individually — which is the same command
+      # `verify:full` runs, spelled out a second time. That is exactly the drift the
+      # comment above describes and this pipeline has already been bitten by once: when
+      # CI enumerates its own list, a check added to the shared script runs nowhere, and
+      # nothing compares the two lists because nothing can.
+      #
+      # What it costs is per-step granularity in the Actions UI. What it buys is that
+      # CLAUDE.md's "CI runs verify:full" is a fact rather than a coincidence that holds
+      # until someone edits one of the two places. Each script prints its own name, so a
+      # failure still says which check failed.
+      #
+      # `verify:full` = `verify` + `bundle:native` + `e2e` + `a11y:tree`:
+      #   · bundle:native — Metro resolves per platform, and this repo shipped a year of
+      #     green pipelines having only ever bundled for web. Enforces a Hermes budget,
+      #     which caught a silent 50 % growth when Sentry landed.
+      #   · e2e — the only step that runs Metro and plays a real lesson in a real bundle.
+      #   · a11y:tree — walks Chromium's computed accessibility tree, which is what a
+      #     screen reader consumes. `lint:a11y` reads source and `design:shots` accepts
+      #     textContent as a label, so an emoji-only button passed both.
+      - name: Verify
+        run: pnpm verify:full
 
       - name: Upload E2E screenshots
         if: always()

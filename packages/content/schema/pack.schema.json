@@ -66,6 +66,10 @@
       "items": {
         "$ref": "#/$defs/item"
       }
+    },
+    "volatilityReviewed": {
+      "type": "boolean",
+      "description": "Set when every fact in this pack shares one volatility tag AND that is a graded decision rather than an unfilled field. content:validate warns otherwise, because a tag identical on every row switches the freshness check off."
     }
   },
   "$defs": {
@@ -519,6 +523,9 @@
         },
         "$comment": {
           "type": "string"
+        },
+        "ceiling": {
+          "$ref": "#/$defs/ceiling"
         }
       }
     },
@@ -558,6 +565,25 @@
           "type": "integer",
           "minimum": 1,
           "description": "Coins. Must match the balance table for its kind; the engine is the source of truth and this is checked against it."
+        }
+      }
+    },
+    "ceiling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "of"
+      ],
+      "properties": {
+        "of": {
+          "enum": [
+            "facts",
+            "entities",
+            "regions"
+          ]
+        },
+        "attribute": {
+          "type": "string"
         }
       }
     }

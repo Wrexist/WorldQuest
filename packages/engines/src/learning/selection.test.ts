@@ -126,9 +126,10 @@ describe('selectItems', () => {
     expect(picked.every(inTopic)).toBe(true)
   })
 
-  it('excludes suspended leeches', () => {
+  it('excludes a leech that is still resting', () => {
     const candidates = dueCandidates().map((c, i) =>
-      i % 2 === 0 ? { ...c, suspended: true } : c,
+      // Suspended AND not yet due: mid-cooldown, so it stays out.
+      i % 2 === 0 ? { ...c, suspended: true, dueAt: NOW + 5 * 86_400_000 } : c,
     )
     const picked = selectItems({
       candidates,
@@ -137,8 +138,71 @@ describe('selectItems', () => {
       now: NOW,
       rng: seededRng(9),
     })
-    const suspendedIds = new Set(candidates.filter((c) => c.suspended).map((c) => c.factId))
-    expect(picked.some((id) => suspendedIds.has(id))).toBe(false)
+    const restingIds = new Set(candidates.filter((c) => c.suspended).map((c) => c.factId))
+    expect(picked.some((id) => restingIds.has(id))).toBe(false)
+  })
+
+  it('offers a leech again once its cooldown has passed', () => {
+    // This assertion is the fix. The old test asserted that suspended candidates were
+    // never picked, full stop — which, with `suspended` derived from a lapse count that
+    // only rises, meant the engine was correctly implementing a life sentence. A fact the
+    // user could not be shown was a fact they could never get right, and the app went on
+    // reporting they had not learned it.
+    const candidates = dueCandidates().map((c, i) =>
+      i === 0 ? { ...c, suspended: true, lapses: 9, dueAt: NOW - 86_400_000 } : c,
+    )
+    const picked = selectItems({
+      candidates,
+      newFactIds: [],
+      count: 40,
+      now: NOW,
+      rng: seededRng(9),
+    })
+    expect(picked).toContain(candidates[0]!.factId)
+  })
+
+  it('never lets a backlog of rested leeches crowd out the session', () => {
+    // They rejoin through `struggling`, which the mix caps at 10 % — the reason dropping
+    // them entirely once looked like the reasonable option.
+    const resting = Array.from({ length: 30 }, (_, i) => ({
+      ...dueCandidates()[0]!,
+      factId: `geo.L${i}.capital`,
+      suspended: true,
+      lapses: 9,
+      dueAt: NOW - 86_400_000,
+    }))
+    const picked = selectItems({
+      candidates: [...dueCandidates(), ...resting],
+      newFactIds: newFacts(),
+      count: 10,
+      now: NOW,
+      rng: seededRng(11),
+    })
+    const restingIds = new Set(resting.map((c) => c.factId))
+    expect(picked.filter((id) => restingIds.has(id)).length).toBeLessThanOrEqual(3)
+  })
+
+  it('still offers a rested leech when it is the only thing left', () => {
+    // The cold-start branch used to undo the release. `hasHistory` counted only ACTIVE
+    // candidates, so a user whose every fact had become a leech read as brand new: the
+    // mix went to 90 % fresh with `struggling` at zero, and the backfill never looked at
+    // the rested ones either. Both doors shut in exactly the case where every remaining
+    // fact needs one — the life sentence, restored by the branch meant for newcomers.
+    const resting = Array.from({ length: 4 }, (_, i) => ({
+      ...dueCandidates()[0]!,
+      factId: `fact.leech${i}`,
+      suspended: true,
+      lapses: 9,
+      dueAt: NOW - 86_400_000,
+    }))
+    const picked = selectItems({
+      candidates: resting,
+      newFactIds: [], // nothing new in this topic either
+      count: 10,
+      now: NOW,
+      rng: seededRng(13),
+    })
+    expect(picked.length).toBeGreaterThan(0)
   })
 
   it('prefers the most overdue reviews', () => {

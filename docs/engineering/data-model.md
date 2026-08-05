@@ -121,6 +121,10 @@ create table user_facts (
   lapses         int  not null default 0,
   last_review_at timestamptz,
   due_at         timestamptz not null,
+  -- DERIVED, never written. A before-insert-or-update trigger recomputes it from
+  -- stability/reps/lapses, so a writer can neither forget it nor disagree with it —
+  -- see 20260805090000_mastery_is_derived.sql for why that is a trigger and not a
+  -- generated column, and why 'familiar' has no stored form.
   mastery        mastery_level not null default 'learning',
   avg_ms         int,
   suspended      boolean not null default false,   -- leeches
@@ -144,10 +148,14 @@ create table review_log (
 create table lessons (
   id             uuid primary key,                 -- client UUID = idempotency key
   user_id        uuid not null references profiles(id) on delete cascade,
-  kind           text not null,                    -- lesson|quest|review|challenge|event
+  -- An ENUM, not text. It reaches `xp_ledger.reason` as 'lesson:' || kind, and the
+  -- ledger's reason is what answers "where did my XP come from" — a column a client
+  -- could write arbitrary strings into cannot answer it. See 20260805140000.
+  kind           lesson_kind not null,             -- lesson|quest|review|challenge|event
   topic_id       text,
   items          smallint not null,
   correct        smallint not null,
+  -- Derived by `gradeLesson`, never taken from the submit payload. See below.
   hearts_lost    smallint not null default 0,
   xp_awarded     int not null default 0,
   coins_awarded  int not null default 0,
@@ -160,6 +168,22 @@ create table lessons (
 `lessons.id` being a **client-generated UUID** is what makes offline replay safe: a
 duplicate submit is a primary-key conflict, which the edge function treats as a no-op
 and returns the original result.
+
+`hearts_lost` is **derived, not reported.** It used to arrive in the submit payload,
+where the server range-checked its shape and wrote it down. The defence was that it is
+a statistic rather than a reward input — nothing is paid or withheld on it — and that
+is true and insufficient. [`../systems/xp-economy.md §7`](../systems/xp-economy.md)
+reads heart-block rate *per accuracy band* to decide whether the mechanic is aimed the
+right way, and §3 stakes the whole design of hearts on that reading; a caller who could
+choose the number could choose the evidence for the next balance change. Shape
+validation only turns a forged value into a plausible one.
+
+`gradeLesson` replays the heart rules over the answers instead, using the correctness
+the server re-decided from the answer key and the memory state the server already holds
+— `before === null` is what makes an item new, which is the rule that decides whether a
+wrong answer costs anything. Same constants and same order as `lesson/machine.ts`, so
+the number written down is the number the player watched, by construction rather than
+by trust.
 
 ---
 

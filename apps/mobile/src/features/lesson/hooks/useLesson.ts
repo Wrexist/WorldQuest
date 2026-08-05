@@ -13,10 +13,13 @@ import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
 import { AppState, type AppStateStatus } from 'react-native'
 import {
   accuracy,
+  awardForAnswer,
+  SPEED_BONUS_MS,
   currentQuestion,
   gradeLesson,
   initialState,
   isFinished,
+  masteryOf,
   transition,
   type GradeResult,
   type LessonEvent,
@@ -157,13 +160,75 @@ export function useLesson({
     })
   }, [state, memory])
 
-  if (isFinished(state) && optimistic && !completed.current) {
+  /**
+   * Completion, after the render commits — not during it.
+   *
+   * This was a bare `if` in the render body that set `completed.current = true` and then
+   * called `onComplete`, which enqueues the submission and navigates. The comment on the
+   * ref says completion "must fire exactly once even if React re-renders or
+   * double-invokes", and the implementation was the one pattern React explicitly forbids
+   * for exactly that guarantee.
+   *
+   * A render can be thrown away. Under StrictMode or concurrent rendering the flag was
+   * already set by the discarded pass, so the effect the flag was guarding never ran
+   * again — and the lesson the user just finished was enqueued nowhere and navigated
+   * from never. Silent lost progress, on the last screen of the session, which is the
+   * most expensive place in the product to lose anything.
+   *
+   * In an effect the ref is only set after a commit, so a discarded render leaves it
+   * untouched and the committed one still fires.
+   *
+   * `onComplete` is held in a ref rather than listed as a dependency. It is recreated on
+   * every render at the call site, so depending on it would re-run this whenever anything
+   * above re-rendered; omitting it from the array would be a lint suppression, and this
+   * repo bans those. A ref is the version that is correct rather than silenced.
+   */
+  const onCompleteRef = useRef(onComplete)
+  // Assigned in an effect, not in the render body. Writing a ref during render is a
+  // side effect during render: React may render a component and then throw the result
+  // away, and under StrictMode it renders twice on purpose — so a discarded render
+  // could leave the ref pointing at a callback the committed tree never used. Only
+  // committed renders run effects, which is exactly the set that should update it.
+  useEffect(() => {
+    onCompleteRef.current = onComplete
+  })
+
+  useEffect(() => {
+    if (!isFinished(state) || !optimistic || completed.current) return
     completed.current = true
-    onComplete(state, optimistic)
-  }
+    onCompleteRef.current(state, optimistic)
+  }, [state, optimistic])
+
+  /**
+   * What a given answer earned, using the same rule the server will apply.
+   *
+   * Lives here rather than in the screen because it needs `memory` — whether the fact
+   * was due, and whether it was already known — which is exactly the information the
+   * hardcoded `"+10"` was standing in for.
+   */
+  const awardFor = useCallback(
+    (answer: LessonState['answers'][number]) => {
+      const before = memory.get(answer.factId) ?? null
+      const speedBonusesUsed = state.answers
+        .slice(0, state.answers.indexOf(answer))
+        // The engine's threshold, not a copy of it. A local literal here is a preview
+        // that can promise a bonus the grader will not pay.
+        .filter((a) => a.wasCorrect && a.elapsedMs < SPEED_BONUS_MS).length
+      return awardForAnswer({
+        wasCorrect: answer.wasCorrect,
+        elapsedMs: answer.elapsedMs,
+        wasOverdue: before !== null && before.dueAt <= answer.answeredAt,
+        alreadyKnown:
+          before !== null && ['mastered', 'burnished'].includes(masteryOf(before, answer.answeredAt)),
+        speedBonusesUsed,
+      })
+    },
+    [memory, state.answers],
+  )
 
   return {
     state,
+    awardFor,
     question: currentQuestion(state),
     progress: {
       current: Math.min(state.index + 1, state.questions.length),

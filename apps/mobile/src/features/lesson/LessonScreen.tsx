@@ -22,6 +22,7 @@ import {
 } from '@worldquest/design'
 import { deriveRating, lessonLength } from '@worldquest/engines'
 import type { ContentIndex, GradeResult, LessonState, Question } from '@worldquest/engines'
+import { Art } from '../../components/Art.js'
 import { Flag } from '../../components/Flag.js'
 import { CountryMap } from '../../components/CountryMap.js'
 import { useLesson } from './hooks/useLesson.js'
@@ -32,7 +33,7 @@ import { Paused } from './Paused.js'
 import { recordPace, useItemPace } from './usePace.js'
 import { hapticCelebrate, hapticCorrect, hapticWrong } from '../../lib/haptics.js'
 import { soundCorrect, soundLevelUp, soundWrong } from '../../lib/sound.js'
-import { recordLessonForAchievements } from '../achievements/progress.js'
+import { recordLessonForAchievements, recordQuestCompleted } from '../achievements/progress.js'
 import { todaysQuest } from '../quests/useDailyQuest.js'
 import { recordQuestEvent } from '../quests/questProgress.js'
 import { useContent } from '../../lib/content.js'
@@ -136,6 +137,7 @@ export function LessonScreen({
       kind: 'lesson',
       startedAt: state.startedAt ?? Date.now(),
       answers: state.answers,
+      heartsLost: state.heartsLost,
     })
     // Local, immediate, and independent of the queue. The weekly chart on Profile
     // must be right the moment the lesson ends — waiting for the server round trip
@@ -167,19 +169,37 @@ export function LessonScreen({
     // one quest while the lesson ticked another.
     if (index !== null) {
       const quest = todaysQuest(index.index, memory)
-      const done = recordQuestEvent(quest, {
-        type: 'lesson_completed',
-        accuracy: optimistic.accuracy,
-        durationMs,
-      })
-      if (done.length > 0) track('quest_completed', { quest_id: quest.date })
+
+      // The answers first, because that is the order they happened in, and then the
+      // lesson. Either path can be the one that finishes the quest — the last
+      // outstanding requirement is often a fact answer, and that loop's result used to
+      // be thrown away, so the quest finished in silence.
+      let finished = false
       for (const answer of state.answers) {
         if (answer.chosenOptionId === null) continue
-        recordQuestEvent(quest, {
+        finished ||= recordQuestEvent(quest, {
           type: 'fact_answered',
           factId: answer.factId,
           correct: answer.wasCorrect,
-        })
+        }).becameComplete
+      }
+      finished ||= recordQuestEvent(quest, {
+        type: 'lesson_completed',
+        accuracy: optimistic.accuracy,
+        durationMs,
+      }).becameComplete
+
+      // The QUEST finishing, not a task. `completed` is the list of tasks this event
+      // finished, so testing it non-empty announced a five-task quest complete the first
+      // time any one task landed — and again for each of the others.
+      if (finished) {
+        track('quest_completed', { quest_id: quest.date })
+        // `ach.quest.regular` counts `daily_quest_completed` and had no producer at all,
+        // so all three of its tiers were permanently zero. The quest engine has known
+        // when a quest finishes since it was built; nothing forwarded it.
+        for (const unlock of recordQuestCompleted(Date.now())) {
+          track('achievement_unlocked', { achievement_id: unlock.achievementId, tier: unlock.tier })
+        }
       }
     }
 
@@ -190,7 +210,11 @@ export function LessonScreen({
       correct: optimistic.correct,
       accuracy: optimistic.accuracy,
       duration_ms: Date.now() - (state.startedAt ?? Date.now()),
-      hearts_lost: 5 - state.hearts,
+      // The cumulative count, the same figure `enqueueLesson` sends. `5 - state.hearts`
+      // is the BALANCE, not the history: a lesson that spent three hearts and had two
+      // restored reported one. Two numbers for one lesson, and the dashboard's was the
+      // wrong one. (It also spelled the heart maximum as a literal.)
+      hearts_lost: state.heartsLost,
       xp_awarded: optimistic.xpAwarded,
       was_offline: isOffline,
     })
@@ -285,6 +309,18 @@ export function LessonScreen({
 
   const answered = lesson.state.phase === 'answered'
   const lastAnswer = lesson.state.answers[lesson.state.answers.length - 1]
+  /**
+   * What that answer was actually worth.
+   *
+   * The card rendered `"+10"` and `"+5"` as string literals, which broke the rule that
+   * reward numbers live only in the balance table — and, more to the point, was false.
+   * The real figure is 2 for a known fact the scheduler did not ask for, 12 for one it
+   * did, 14 with the speed bonus, and a quarter of any of those past the daily cap.
+   *
+   * `awardForAnswer` is the same function the grader and the server run, so the number
+   * under a user's thumb is the number that lands in the ledger.
+   */
+  const lastAward = lastAnswer ? lesson.awardFor(lastAnswer) : null
 
   return (
     <View style={styles.screen}>
@@ -473,8 +509,16 @@ export function LessonScreen({
               <>
                 <Text style={styles.feedbackTitleOk}>{t('lesson:feedback.correct.title')}</Text>
                 <View style={styles.rewards}>
-                  <Stat kind="xp" value="+10" accessibilityLabel={t('lesson:reward.xp', { amount: 10 })} />
-                  <Stat kind="coin" value="+5" accessibilityLabel={t('lesson:reward.coins', { amount: 5 })} />
+                  <Stat
+                    kind="xp"
+                    value={`+${lastAward?.xp ?? 0}`}
+                    accessibilityLabel={t('lesson:reward.xp', { amount: lastAward?.xp ?? 0 })}
+                  />
+                  <Stat
+                    kind="coin"
+                    value={`+${lastAward?.coins ?? 0}`}
+                    accessibilityLabel={t('lesson:reward.coins', { amount: lastAward?.coins ?? 0 })}
+                  />
                 </View>
               </>
             ) : (
@@ -668,6 +712,11 @@ function EmptyState() {
 
   return (
     <View style={[styles.screen, styles.centered]}>
+      {/* The telescope pointed at a calm starfield — "peaceful, accomplished, restful".
+          `lesson:empty.title` is "You're all caught up", which is the phrase this asset
+          was briefed against, and the one empty state in the app that is a reward
+          rather than a gap. */}
+      <Art name="states/empty-caught-up" size={160} />
       <Text style={styles.prompt}>{t('lesson:empty.title')}</Text>
       <Text style={styles.feedbackBody}>{t('lesson:empty.body')}</Text>
     </View>

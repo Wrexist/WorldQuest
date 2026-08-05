@@ -106,20 +106,29 @@ describe('Achievements screen', () => {
 
   it('measures progress towards the next tier, not from zero', () => {
     // A bar that restarts after every tier makes a long climb look like no progress.
+    //
+    // Derived from the catalogue rather than written down. The thresholds used to be
+    // hardcoded here, and when the pack's unreachable tiers were corrected — flags asked
+    // for 195 of the 65 that exist — this test failed for a reason that had nothing to do
+    // with the behaviour it names. A test that breaks when content changes is testing the
+    // content.
+    const flags = CATALOGUE.find((d) => d.id === 'ach.flags.collector')!
+    const bronze = flags.tiers[0]!.threshold
+    const silver = flags.tiers[1]!.threshold
+    const value = bronze + Math.floor((silver - bronze) / 2)
+
     const half: AchievementProgress = {
       achievementId: 'ach.flags.collector',
-      value: 15,
+      value,
       tier: 'bronze',
     }
     const { container } = render(rowsRender(half))
-    // Scoped to the card: "10 to go" is legitimately true of another achievement
-    // too (ten lessons for its bronze), and a global text query would pass on the
-    // wrong one.
-    const card = Array.from(container.querySelectorAll('[aria-label]')).find((el) =>
-      el.getAttribute('aria-label')?.startsWith('Flag Collector'),
-    )
-    // bronze 5 → silver 25, at 15 means ten to go.
-    expect(card?.textContent).toContain('10 to go')
+    // Scoped to the card: the same "N to go" is legitimately true of another achievement
+    // too, and a global text query would pass on the wrong one. Found by ID rather than
+    // by the name a user reads — achievement ids are permanent by rule and ship in save
+    // data, while the name is copy a translator may rewrite tomorrow.
+    const card = container.querySelector('[data-testid="achievement-ach.flags.collector"]')
+    expect(card?.textContent).toContain(`${silver - value} to go`)
     expect(card?.textContent).toContain('Bronze')
   })
 
