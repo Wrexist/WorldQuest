@@ -177,4 +177,150 @@ if (failed > 0) {
   console.error(`✗ ${failed} contrast pair(s) below the floor`)
   process.exit(1)
 }
-console.log(`✓ all ${PAIRS.length} pairs pass`)
+
+// ── the generated matrix ────────────────────────────────────────────────────
+//
+// The 26 pairs above are hand-written, and the Definition of Done ticks
+// "Contrast ≥ 4.5:1" against them. A curated list checks the combinations somebody
+// thought of, which is exactly the set that is already fine — the interesting pair is
+// the one nobody pictured, and a new text or surface token joins the system checked by
+// nothing at all.
+//
+// So every text colour is crossed with every surface a component can put text on, and a
+// combination is either above its floor or WAIVED with a reason. Same trade as the
+// escape-hatch allowlist and the reachability allowlist: "we decided" and "we did not
+// look" stop being the same green run.
+//
+// The curated pairs stay. They cover what a cross product cannot — an edge against a
+// canvas, a progress fill against its track — where neither colour is text.
+
+type Resolved = { readonly path: string; readonly hex: string }
+
+/** `{palette.green.500}` → the hex it points at. Arrays (gradients) are skipped. */
+function resolve(value: unknown): string | null {
+  if (typeof value !== 'string') return null
+  if (value.startsWith('#')) return value
+  const ref = value.match(/^\{palette\.([\w.]+)\}$/)
+  if (!ref) return null
+  const hex = ref[1]!.split('.').reduce<unknown>((node, key) => (node as Record<string, unknown>)?.[key], p)
+  return typeof hex === 'string' && hex.startsWith('#') ? hex : null
+}
+
+function leaves(node: unknown, prefix: string): Resolved[] {
+  if (node === null || typeof node !== 'object') {
+    const hex = resolve(node)
+    return hex ? [{ path: prefix, hex }] : []
+  }
+  if (Array.isArray(node)) return []
+  return Object.entries(node as Record<string, unknown>)
+    .filter(([key]) => !key.startsWith('$'))
+    .flatMap(([key, value]) => leaves(value, prefix ? `${prefix}.${key}` : key))
+}
+
+const c = tokens.color
+
+/**
+ * Which text goes on which surface — declared, not crossed blindly.
+ *
+ * A full cross product is easy and wrong. It pairs `text.secondary` with
+ * `action.destructive`, a combination nothing renders and nothing ever will, and then
+ * either fails on it or needs a waiver — and a waiver for a pair the app cannot produce
+ * teaches the next reader that waivers are routine. The note under WAIVED says it: a
+ * pairing the app never renders is not a waiver, it is a pair that should not be in the
+ * matrix.
+ *
+ * These two groups are still GENERATED. Adding a text token or a surface token joins the
+ * matrix without anybody remembering to add a pair, which is the whole point — the
+ * curated list could not do that.
+ */
+const GROUPS: ReadonlyArray<{
+  readonly what: string
+  readonly texts: readonly Resolved[]
+  readonly surfaces: readonly Resolved[]
+  readonly min: number
+}> = [
+  {
+    what: 'body text on a surface',
+    texts: leaves(c.text, 'text').filter((t) => t.path !== 'text.onAccent' && t.path !== 'text.tertiary'),
+    surfaces: [
+      ...leaves(c.bg, 'bg'),
+      ...leaves(c.option, 'option').filter((s) => !s.path.endsWith('Edge')),
+      ...leaves(c.feedback, 'feedback').filter((s) => s.path.endsWith('Surface') || s.path === 'feedback.wrong' || s.path === 'feedback.neutral'),
+    ],
+    min: tokens.contrastFloors.bodyText,
+  },
+  {
+    what: 'a label on an accent',
+    // `text.onAccent` only ever appears on a filled control, and every one of them is
+    // ≥18px bold — which is the large-text floor, and which the curated list already
+    // states pair by pair. `text.tertiary` is the same story on ordinary surfaces.
+    texts: leaves(c.text, 'text').filter((t) => t.path === 'text.onAccent'),
+    surfaces: leaves(c.action, 'action').filter(
+      (s) =>
+        !s.path.endsWith('Edge') &&
+        !s.path.endsWith('Glow') &&
+        s.path !== 'action.tertiary' &&
+        s.path !== 'action.disabled',
+    ),
+    min: tokens.contrastFloors.largeText,
+  },
+  {
+    what: 'de-emphasised text, ≥18px',
+    texts: leaves(c.text, 'text').filter((t) => t.path === 'text.tertiary'),
+    surfaces: [...leaves(c.bg, 'bg'), ...leaves(c.option, 'option').filter((s) => !s.path.endsWith('Edge'))],
+    min: tokens.contrastFloors.largeText,
+  },
+]
+
+/**
+ * Combinations below the floor that are not bugs, each with the reason.
+ *
+ * Empty, and that is the honest state: once the matrix only contains pairings the app
+ * actually renders, every one of them passes. The mechanism stays because the next token
+ * is the one that will need it.
+ */
+const WAIVED: Record<string, string> = {}
+
+const allPairs = GROUPS.flatMap((g) =>
+  g.texts.flatMap((fg) => g.surfaces.map((bg) => ({ name: `${fg.path} on ${bg.path}`, fg, bg, min: g.min }))),
+)
+
+let matrixFailed = 0
+let waived = 0
+let checked = 0
+
+for (const pair of allPairs) {
+  if (pair.name in WAIVED) {
+    waived++
+    continue
+  }
+  const ratio = contrast(pair.fg.hex, pair.bg.hex)
+  checked++
+  if (ratio < pair.min) {
+    matrixFailed++
+    console.log(`  ✗ ${pair.name.padEnd(42)} ${ratio.toFixed(2)}:1 (min ${pair.min})`)
+  }
+}
+
+/** A waiver for a pair the matrix no longer produces is a note nobody can check. */
+const staleWaivers = Object.keys(WAIVED).filter(
+  (name) => !allPairs.some((pair) => pair.name === name),
+)
+for (const name of staleWaivers) {
+  console.log(`  ! waived pair no longer exists: ${name}`)
+}
+
+console.log(
+  `\n  matrix: ${checked} generated pair(s) checked, ${waived} waived with a reason`,
+)
+
+if (matrixFailed > 0 || staleWaivers.length > 0) {
+  console.error(
+    `\n✗ ${matrixFailed} generated pair(s) below the floor, ` +
+      `${staleWaivers.length} stale waiver(s)`,
+  )
+  process.exit(1)
+}
+
+
+console.log(`✓ all ${PAIRS.length} curated + ${checked} generated pairs pass`)
