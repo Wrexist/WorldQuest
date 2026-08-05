@@ -10,15 +10,42 @@
     "backgroundColor": "#0B1730",
     "ios": {
       "bundleIdentifier": "com.worldquest.app",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "buildNumber": "1",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "privacyManifests": {
+        "NSPrivacyTracking": false,
+        "NSPrivacyTrackingDomains": [],
+        "NSPrivacyCollectedDataTypes": [],
+        "NSPrivacyAccessedAPITypes": [
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": [
+              "CA92.1"
+            ]
+          }
+        ]
+      }
     },
     "android": {
       "package": "com.worldquest.app",
       "adaptiveIcon": {
         "backgroundColor": "#0B1730"
-      }
+      },
+      "versionCode": 1,
+      "permissions": [],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router"
+    ],
     "experiments": {
       "typedRoutes": false
     },
@@ -27,8 +54,35 @@
       "duplicated here because the native splash and window background are set before",
       "any JavaScript runs, so they cannot read a token. If the canvas colour changes,",
       "change it here too — packages/design/src/tokens.test.ts asserts they match.",
-      "icon/splash are omitted deliberately: pointing at files that do not exist fails",
-      "the build. They land with the assets in docs/design/asset-prompts.md."
-    ]
+      "",
+      "STILL MISSING, and both are genuinely blocked on artwork rather than on time:",
+      "`icon` and `splash`. docs/design/asset-prompts.md files a brand mark under the",
+      "same rule as a flag — never generate one — and pointing at files that do not",
+      "exist fails the build. No store build is possible without them.",
+      "",
+      "Everything else a store asks for is text, and none of it was here. The iOS",
+      "privacy manifest has been required since 2024 and its absence fails App Store",
+      "Connect at upload, which is the worst moment to discover a declaration nobody",
+      "wrote. Ours is unusually easy to fill in truthfully: NSPrivacyTracking is false",
+      "because this app has no third-party analytics at all, the collected-data list is",
+      "empty, and the one required-reason API is UserDefaults for storing the user's own",
+      "preferences (CA92.1). A kids' app that declares nothing and a kids' app that",
+      "declares nothing collected look identical to a reviewer and are not.",
+      "",
+      "`permissions: []` and blocking RECORD_AUDIO are the same argument on Android:",
+      "Expo's defaults are a superset of what this app uses, and an unexplained",
+      "microphone permission on a product for ten-year-olds is a Play review",
+      "conversation nobody wants to have.",
+      "",
+      "orientation stays `portrait`, deliberately, and `supportsTablet` stays true. Every",
+      "layout in this app has been built and measured at 320/390/768 in portrait; turning",
+      "landscape on would ship an orientation nothing has ever rendered. The honest",
+      "position is tablet-in-portrait, and definition-of-done-status.md now says that",
+      "rather than claiming tablet support in general."
+    ],
+    "primaryColor": "#F5A61E",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
   }
 }
