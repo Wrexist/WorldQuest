@@ -65,18 +65,29 @@ function numbersIn(block: string): Map<string, number> {
     const code = line.replace(/\/\/.*$/, '')
     if (code.trim().startsWith('*') || code.trim().startsWith('//')) continue
 
-    // `key: {` opens a level; a closing brace on its own line ends one. Inline objects
-    // like `streakMilestones: { 7: 50 }` open and close on one line, so the key is
-    // pushed, the pairs are read under it, and the brace count puts it back.
-    const opens = /([A-Za-z][A-Za-z0-9_]*)\s*:\s*\{/.exec(code)
-    if (opens) path.push(opens[1]!)
-
-    for (const [, key, value] of code.matchAll(/([A-Za-z0-9_]+)\s*:\s*(-?[\d._]+)\b/g)) {
-      out.set([...path, key!].join('.'), Number(value!.replace(/_/g, '')))
+    // Scanned IN ORDER, one token at a time: `key: {` opens a level, `key: 123` records
+    // a value at the current path, `}` closes one.
+    //
+    // The order is the whole point, and the version before this got it wrong in a way
+    // worth keeping a note about. It handled a line as three separate passes — find the
+    // one opening key, then all the pairs, then count the closing braces — which is
+    // correct for at most one object per line. Given
+    //
+    //   avatarItem: { min: 300, max: 2000 }, pet: { min: 1500, max: 5000 },
+    //
+    // it pushed `avatarItem`, filed all four numbers under it so `pet`'s values
+    // overwrote `avatarItem`'s, then popped twice and lost the enclosing `prices`
+    // entirely — so the six keys after it were recorded at the top level, unprefixed,
+    // and reported as documented-but-absent. A formatting choice in a markdown file
+    // silently changed what the parity check was comparing.
+    for (const match of code.matchAll(
+      /([A-Za-z0-9_]+)\s*:\s*(?:(\{)|(-?[\d._]+)\b)|(\})/g,
+    )) {
+      const [, key, opens, value, closes] = match
+      if (opens !== undefined) path.push(key!)
+      else if (value !== undefined) out.set([...path, key!].join('.'), Number(value.replace(/_/g, '')))
+      else if (closes !== undefined && path.length > 0) path.pop()
     }
-
-    const closes = (code.match(/\}/g) ?? []).length
-    for (let i = 0; i < closes && path.length > 0; i++) path.pop()
   }
   return out
 }
@@ -108,6 +119,23 @@ describe('the documented balance table matches the real one', () => {
     // pattern drops, and they are four of the biggest payouts in the table.
     expect(documented.get('xp.streakMilestones.365')).toBe(BALANCE.xp.streakMilestones[365])
     expect(documented.get('xp.correctAnswer')).toBe(BALANCE.xp.correctAnswer)
+  })
+
+  it('documents every number in the table, not just the ones already written down', () => {
+    // The other direction, and the one that decays. Checking documented → BALANCE catches
+    // a doc that went stale; it says nothing about a reward number ADDED to the code with
+    // no entry here, which is the more likely way the two drift — nobody forgets to edit
+    // the code.
+    //
+    // It found 23 of them the first time it ran, in a document headed "single source of
+    // truth": every price, every anti-cheat threshold, both achievement tier tables, and
+    // `dailyQuestTask` — the per-slot quest reward whose own comment in balance.ts says
+    // it was "previously absent from this table, so the quest engine had nothing to
+    // read". `coins` was elided as `{ /* … */ }` and had been excluded here to match,
+    // which is the same hole with a comment in front of it: an author sent to this doc by
+    // rule 4 would have found no coin value at all and no sign that any were missing.
+    const undocumented = [...actual.keys()].filter((key) => !documented.has(key))
+    expect(undocumented, 'in BALANCE, missing from the §5 excerpt').toEqual([])
   })
 
   it.each([...documented])('%s is %d in the doc and in the code', (key, value) => {
