@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { MAX_ATTEMPTS, backoffMs } from '@worldquest/engines'
+import { __isPermanent } from './sync.js'
 
 /**
  * The adapter itself needs a configured backend and a network to exercise, so these
@@ -32,5 +33,43 @@ describe('sync backoff policy', () => {
   it('never waits absurdly long', () => {
     // A user who reopens the app should not be stuck behind an hour-long delay.
     expect(backoffMs(50, 1)).toBeLessThanOrEqual(60_000)
+  })
+})
+
+/**
+ * Which failures are worth retrying.
+ *
+ * Exported for this test only — the classification is a policy decision with a real cost
+ * on either side, and it was wrong in the expensive direction: every 4xx except 429 was
+ * treated as permanent, which includes the 401 an expired anonymous session produces.
+ * The taster lesson runs on exactly such a session, refreshed on a timer, so a flush
+ * landing in the refresh gap parked work the user genuinely did — the failure this file
+ * calls the most trust-destroying bug a learning app has.
+ */
+describe('which failures park a lesson', () => {
+  const parks = (status: number): boolean => __isPermanent({ status })
+
+  it('retries an expired or missing session', () => {
+    expect(parks(401)).toBe(false)
+    expect(parks(403)).toBe(false)
+  })
+
+  it('retries the server asking for patience', () => {
+    expect(parks(429)).toBe(false)
+    expect(parks(408)).toBe(false)
+  })
+
+  it('retries anything server-side', () => {
+    for (const status of [500, 502, 503, 504]) expect(parks(status)).toBe(false)
+  })
+
+  it('retries a failure with no status at all — DNS, timeout, aeroplane mode', () => {
+    expect(__isPermanent(new Error('network'))).toBe(false)
+  })
+
+  it('parks a request the server will refuse identically for ever', () => {
+    // 400 invalid_body, 409 lesson_id_conflict, 422 no_gradable_answers. Retrying these
+    // wastes battery and delays every item behind them.
+    for (const status of [400, 409, 422]) expect(parks(status)).toBe(true)
   })
 })

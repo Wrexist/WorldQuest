@@ -95,7 +95,30 @@ export function enqueueLesson(submission: LessonSubmission): void {
   void flush()
 }
 
-export async function flush(): Promise<void> {
+/**
+ * The flush in progress, if any.
+ *
+ * `flush()` is called from three places — `enqueueLesson`, the connectivity listener, and
+ * `retryParkedMutation` — and two of them fire together constantly: finishing a lesson
+ * the moment a tunnel ends starts both. Each call took its own `nextBatch(queue)`
+ * snapshot and then committed against the module variable, so one could `fail()` a
+ * mutation the other had just `acknowledge`d, and both would send the same submission.
+ *
+ * The server's idempotency key meant that never double-awarded anything, which is why it
+ * was invisible — but it burned an attempt per collision, and `MAX_ATTEMPTS` is what
+ * stands between a flaky connection and parked work the user actually did.
+ */
+let inFlight: Promise<void> | null = null
+
+export function flush(): Promise<void> {
+  // Callers that arrive mid-flush join the one already running rather than starting a
+  // second pass over the same queue.
+  return (inFlight ??= run().finally(() => {
+    inFlight = null
+  }))
+}
+
+async function run(): Promise<void> {
   // Nothing to talk to. Leave the queue intact rather than failing every item and
   // burning their retry budget against a backend that was never configured.
   if (!isConfigured()) return
@@ -117,7 +140,7 @@ export async function flush(): Promise<void> {
       nextAttemptAt.delete(mutation.id)
       commit(acknowledge(queue, mutation.id))
     } catch (error) {
-      const permanent = isPermanent(error)
+      const permanent = __isPermanent(error)
       commit(fail(queue, mutation.id, String(error), permanent))
       if (permanent) nextAttemptAt.delete(mutation.id)
       else nextAttemptAt.set(mutation.id, Date.now() + backoffMs(mutation.attempts, Math.random()))
@@ -152,15 +175,29 @@ onConnectivityChange(() => {
 })
 
 /**
- * A 4xx will fail identically forever, so retrying it wastes battery and delays every
- * item behind it. 429 is the exception — it is the server asking for patience, not
- * rejecting the request. Everything else (5xx, DNS failure, timeout) is worth a retry.
+ * Statuses that mean "try again later", not "this will never work".
+ *
+ * 429 is the server asking for patience. 401 and 403 are an expired or not-yet-created
+ * session — and treating those as permanent is how a lesson somebody genuinely did gets
+ * parked for ever. The anonymous session backing the taster lesson refreshes on a timer,
+ * so a flush landing in the gap between expiry and refresh is ordinary, not exceptional,
+ * and it was the single most likely 4xx this queue would ever see.
+ *
+ * "Parked work the user did" is described in this file as the most trust-destroying bug
+ * a learning app has. Classifying a token refresh as unrecoverable was a direct route to
+ * it.
  */
-function isPermanent(error: unknown): boolean {
+const RETRYABLE = new Set([401, 403, 408, 425, 429])
+
+/**
+ * A 4xx will otherwise fail identically forever, so retrying it wastes battery and delays
+ * every item behind it. Everything else (5xx, DNS failure, timeout) is worth a retry.
+ */
+export function __isPermanent(error: unknown): boolean {
   const status = (error as { status?: number; context?: { status?: number } })?.status
     ?? (error as { context?: { status?: number } })?.context?.status
   if (typeof status !== 'number') return false
-  return status >= 400 && status < 500 && status !== 429
+  return status >= 400 && status < 500 && !RETRYABLE.has(status)
 }
 
 async function send(mutation: QueuedMutation): Promise<void> {
