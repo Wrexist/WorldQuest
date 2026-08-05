@@ -90,9 +90,10 @@ The mockup's imagery is generated art. Matching it needs real assets:
 |---|---|---|
 | ~~Flags~~ | 65 national flags | ✅ **Done.** All 65 from `flag-icons` (MIT), 600×450 PNG, `pnpm build:flags`. Collection, country page and the lesson picture question. |
 | ~~Map thumbnails~~ | Rendered Europe with a pin | ✅ **Done.** Country + surrounding-land outlines projected from Natural Earth (public domain) via `world-atlas`, `pnpm build:maps`. Two tintable alpha layers per country sharing that country's own frame, so the map themes from tokens. On the country page and every lesson question that names a country. |
-| Trophy | 3D gold trophy | `ArtSlot` placeholder |
-| Avatar | Illustrated character | Initials in a ringed circle |
-| Atlas the mascot | Robot explorer | Not built |
+| Trophy | 3D gold trophy | `ArtSlot` placeholder. Prompt written (`asset-prompts.md` §10) |
+| Avatar | Illustrated character | Initials in a ringed circle. Prompt written (§9) |
+| ~~Atlas the mascot~~ | Robot explorer | ✅ **Delivered.** Nineteen illustrations — seven Atlas poses, three onboarding scenes, seven state pictures, two celebration layers — plus the brand mark the four app icons derive from. `pnpm build:art` resizes, letterboxes onto the canvas token, compresses to the ≤120 KB budget and writes `art.generated.ts`. On thirteen screens. |
+| Continent card art | Illustrated continents behind real geometry | Flat tinted cards. Prompt written (§8) — and the per-region map layer it composites onto was deliberately removed from `build-maps.cjs`, so this needs both halves back |
 | ~~Card gradients~~ | Blue→dark, purple→dark | ✅ **Done.** Semantic `gradient.*` tokens drawn by `Card`, 135° top-left to bottom-right. |
 | ~~Typeface~~ | The real faces | ✅ **Bundled — now Nunito**, not the Inter + Baloo 2 pairing this row used to name. One rounded family across the whole app, per weight from `@expo-google-fonts`, splash held until they land. |
 | ~~Lesson illustration~~ | A map of the region, filling the middle third | ✅ **Done.** Every question that already names its country now carries a locator map — see below. |

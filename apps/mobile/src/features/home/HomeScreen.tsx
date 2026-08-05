@@ -29,6 +29,7 @@ import {
 } from '@worldquest/design'
 import { levelForXp, xpForLevel } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
+import { Art } from '../../components/Art.js'
 import { Icon } from '../../components/Icon.js'
 import { Stat } from '../../components/Stat.js'
 
@@ -175,9 +176,20 @@ export function HomeScreen({
                 {progress?.questTitle ?? t('home:quest.empty')}
               </Text>
             </View>
+            {/* Atlas, on the one card a returning user opens the app to see.
+                This slot held a 40pt flat map glyph — an icon standing in for artwork
+                inside a component built to hold artwork. The mascot was on onboarding,
+                welcome-back, and (after the illustration pass) five empty states, an
+                error, a pause and an out-of-hearts card: every one of them a moment
+                where something is missing or has gone wrong. He appeared nowhere in
+                the daily loop, which taught the user that seeing him is bad news.
+
+                The mockup puts a map of Europe here and that is still the better
+                answer — it is `asset-prompts.md` §8, which is not drawn yet. This is
+                the stand-in until it is, and it is a character rather than a glyph. */}
             <ArtSlot
               tint={palette.continent.EU}
-              art={<Icon name="map" size={40} color={palette.continent.EU} />}
+              art={<Art name="atlas/thinking" size={84} />}
               width={92}
               height={92}
             />
