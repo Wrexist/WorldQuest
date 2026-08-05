@@ -1,6 +1,6 @@
 {
   "$schema": "../../schema/pack.schema.json",
-  "$comment": "Definitions are CONTENT, not code. Adding an achievement is a pack release \u2014 the engine in packages/engines/src/achievements evaluates these and knows nothing about geography. IDs ship in user save data and in dashboards. Renaming one is a migration, not a rename. Thresholds may be tuned; ids may not. `backfill: false` marks a rule that CANNOT be replayed from history. Nothing in review_log records that a lesson was finished in under sixty seconds two years ago, so inventing that unlock later would be worse than granting it late. This is a starter set of 12, deliberately small. The ~300 in docs/systems/achievements.md arrive in batches once the content packs are deep enough for them to be reachable \u2014 an achievement for 100 flags is a locked row for everyone until there are 100 flags.",
+  "$comment": "Definitions are CONTENT, not code. Adding an achievement is a pack release — the engine in packages/engines/src/achievements evaluates these and knows nothing about geography. IDs ship in user save data and in dashboards. Renaming one is a migration, not a rename. Thresholds may be tuned; ids may not. `backfill: false` marks a rule that CANNOT be replayed from history. Nothing in review_log records that a lesson was finished in under sixty seconds two years ago, so inventing that unlock later would be worse than granting it late. This is a starter set of 12, deliberately small. The ~300 in docs/systems/achievements.md arrive in batches once the content packs are deep enough for them to be reachable — an achievement for 100 flags is a locked row for everyone until there are 100 flags.",
   "packId": "core.achievements",
   "version": "1.0.0",
   "subject": "core",
@@ -30,18 +30,22 @@
         },
         {
           "tier": "silver",
-          "threshold": 25
+          "threshold": 20
         },
         {
           "tier": "gold",
-          "threshold": 100
+          "threshold": 40
         },
         {
           "tier": "platinum",
-          "threshold": 195
+          "threshold": 65
         }
       ],
-      "showProgress": true
+      "showProgress": true,
+      "ceiling": {
+        "of": "facts",
+        "attribute": "flag"
+      }
     },
     {
       "id": "ach.capitals.collector",
@@ -61,18 +65,22 @@
         },
         {
           "tier": "silver",
-          "threshold": 25
+          "threshold": 20
         },
         {
           "tier": "gold",
-          "threshold": 100
+          "threshold": 40
         },
         {
           "tier": "platinum",
-          "threshold": 195
+          "threshold": 63
         }
       ],
-      "showProgress": true
+      "showProgress": true,
+      "ceiling": {
+        "of": "facts",
+        "attribute": "capital"
+      }
     },
     {
       "id": "ach.countries.complete",
@@ -89,18 +97,21 @@
         },
         {
           "tier": "silver",
-          "threshold": 20
+          "threshold": 15
         },
         {
           "tier": "gold",
-          "threshold": 75
+          "threshold": 35
         },
         {
           "tier": "platinum",
-          "threshold": 195
+          "threshold": 65
         }
       ],
-      "showProgress": true
+      "showProgress": true,
+      "ceiling": {
+        "of": "entities"
+      }
     },
     {
       "id": "ach.streak.keeper",
@@ -315,7 +326,7 @@
     {
       "id": "ach.explorer.continents",
       "category": "regions",
-      "$comment": "Deliberately breadth, not depth \u2014 a user who only ever studies Europe is a user the product has failed.",
+      "$comment": "Deliberately breadth, not depth — a user who only ever studies Europe is a user the product has failed.",
       "rule": {
         "type": "set-completion",
         "event": "region_started",
@@ -333,10 +344,13 @@
       "tiers": [
         {
           "tier": "gold",
-          "threshold": 7
+          "threshold": 6
         }
       ],
-      "showProgress": true
+      "showProgress": true,
+      "ceiling": {
+        "of": "regions"
+      }
     }
   ]
 }

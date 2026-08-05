@@ -193,6 +193,102 @@ for (const file of packFiles) {
   }
 }
 
+// ── 9. An achievement must be achievable ────────────────────────────────────
+//
+// Seven of the twelve shipped achievements had tiers nobody could ever reach.
+// `ach.flags.collector` asked for 100 and then 195 flags against a pack holding 65.
+// `ach.capitals.collector`, the same, against 64 quizzable capitals.
+// `ach.countries.complete` wanted 75 and 195 of 65 countries.
+// `ach.explorer.continents` wanted 7 regions from a pack that defines 6.
+//
+// `showProgress: true` made it worse than dead weight: the screen drew a bar creeping
+// towards a number that does not exist, for ever. In a product whose rules forbid dark
+// patterns and shame copy, a permanently unreachable goal with a visible progress bar is
+// exactly the mechanic being forbidden.
+//
+// So the ceiling is declared in the pack — `"ceiling": { "of": "facts", "attribute":
+// "flag" }` — and counted here from the packs themselves. Both directions are checked,
+// and the second one is the half that keeps working:
+//
+//   · a threshold ABOVE the ceiling is unreachable, which is the bug above;
+//   · a TOP tier BELOW the ceiling means the pack grew and the achievement did not, so
+//     "collect them all" quietly became "collect two thirds of them".
+//
+// An achievement with no `ceiling` is unbounded by construction — lessons completed,
+// days of streak — and is skipped rather than guessed at.
+{
+  type PackItem = {
+    id?: string
+    type?: string
+    attribute?: string
+    entity?: string
+    region?: string
+    quizzable?: boolean
+    volatility?: string
+    sensitivity?: string
+    ceiling?: { of?: string; attribute?: string }
+    tiers?: { tier: string; threshold: number }[]
+  }
+  type LoadedPack = { kind?: string; items?: PackItem[] }
+
+  const quizzable = (item: PackItem): boolean =>
+    item.quizzable !== false && item.volatility !== 'fast' && item.sensitivity !== 'review-required'
+
+  const allItems = packFiles.map((file) => ({
+    rel: relative(repoRoot, file),
+    pack: stripComments(JSON.parse(readFileSync(file, 'utf8'))) as LoadedPack,
+  }))
+  const facts = allItems.flatMap((p) => (p.pack.items ?? []).filter((i) => i.attribute && i.entity))
+  const entities = allItems.flatMap((p) => (p.pack.items ?? []).filter((i) => i.type === 'country'))
+
+  const ceilingOf = (spec: NonNullable<PackItem['ceiling']>): number | null => {
+    switch (spec.of) {
+      case 'facts':
+        return facts.filter(
+          (f) => quizzable(f) && (!spec.attribute || f.attribute === spec.attribute),
+        ).length
+      case 'entities':
+        return entities.length
+      case 'regions':
+        return new Set(entities.map((e) => e.region)).size
+      default:
+        return null
+    }
+  }
+
+  for (const { rel, pack } of allItems) {
+    if (pack.kind !== 'achievements') continue
+    for (const item of pack.items ?? []) {
+      if (!item.ceiling) continue
+      const max = ceilingOf(item.ceiling)
+      if (max === null) {
+        errors.push({ file: rel, message: `${item.id}: unknown ceiling "of": ${item.ceiling.of}` })
+        continue
+      }
+      const tiers = item.tiers ?? []
+      for (const tier of tiers) {
+        if (tier.threshold > max) {
+          errors.push({
+            file: rel,
+            message:
+              `${item.id}: ${tier.tier} needs ${tier.threshold} but only ${max} exist — ` +
+              `an unreachable tier with a progress bar is the dark pattern the rules forbid`,
+          })
+        }
+      }
+      const top = tiers[tiers.length - 1]
+      if (top && top.threshold < max) {
+        errors.push({
+          file: rel,
+          message:
+            `${item.id}: top tier ${top.tier} is ${top.threshold} but ${max} exist — ` +
+            `the pack grew and "collect them all" quietly stopped meaning all of them`,
+        })
+      }
+    }
+  }
+}
+
 console.log(`Content validation\n`)
 console.log(`  packs      ${packFiles.length}`)
 console.log(`  facts      ${factCount}`)

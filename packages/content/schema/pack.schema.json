@@ -519,6 +519,9 @@
         },
         "$comment": {
           "type": "string"
+        },
+        "ceiling": {
+          "$ref": "#/$defs/ceiling"
         }
       }
     },
@@ -558,6 +561,25 @@
           "type": "integer",
           "minimum": 1,
           "description": "Coins. Must match the balance table for its kind; the engine is the source of truth and this is checked against it."
+        }
+      }
+    },
+    "ceiling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "of"
+      ],
+      "properties": {
+        "of": {
+          "enum": [
+            "facts",
+            "entities",
+            "regions"
+          ]
+        },
+        "attribute": {
+          "type": "string"
         }
       }
     }
