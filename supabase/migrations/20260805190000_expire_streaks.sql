@@ -47,49 +47,52 @@ as $$
 declare
   v_expired int := 0;
 begin
-  with due as (
-    select
-      s.user_id,
-      s.current,
-      s.freezes_held,
-      s.last_active_date,
-      -- The user's own today. `profiles.timezone` is validated on write, so this cannot
-      -- raise on a zone Postgres does not know.
-      (now() at time zone coalesce(p.timezone, 'UTC'))::date as local_today
-    from public.streaks s
-    join public.profiles p on p.id = s.user_id
-    where s.last_active_date is not null
-      and s.current > 0
-      -- Already recorded. Idempotent, which is what makes an hourly schedule cheap.
-      and s.broken_on is null
-  ),
-  -- A freeze covers exactly one missed day, and it is spent the moment that day passes
-  -- rather than at the next lesson — a user who misses Tuesday should learn on Wednesday
-  -- morning that their run is safe.
-  frozen as (
-    update public.streaks s
-    set freezes_held = s.freezes_held - 1,
-        freeze_used_on = d.local_today - 1,
-        -- Moved forward, so the gap `applyActivity` sees at the next lesson is one day
-        -- and it simply extends. Without this the freeze would be spent twice.
-        last_active_date = d.local_today - 1
-    from due d
-    where s.user_id = d.user_id
-      and d.local_today - d.last_active_date = 2
-      and d.freezes_held > 0
-    returning s.user_id
-  ),
-  broken as (
+  -- ── the freeze, first ─────────────────────────────────────────────────────
+  --
+  -- Two sequential UPDATEs rather than two data-modifying CTEs in one statement, and the
+  -- ordering is the reason. CTEs in a single statement all see the SAME snapshot and
+  -- execute without a defined order between them, so "break everyone who was not just
+  -- frozen" would have been reading a set the planner is free to compute concurrently —
+  -- and both branches target `streaks`, where a row reached twice in one statement is
+  -- undefined behaviour rather than an error. The overlap is real: a two-day gap with a
+  -- freeze in hand matches both WHERE clauses.
+  --
+  -- Sequential statements make the dependency an ordering rather than a hope, and the
+  -- whole function is one transaction, so nothing observes the state in between.
+  update public.streaks s
+  set freezes_held = s.freezes_held - 1,
+      freeze_used_on = ((now() at time zone coalesce(p.timezone, 'UTC'))::date - 1),
+      -- Moved forward, so the gap `applyActivity` sees at the next lesson is one day and
+      -- it simply extends. Without this the freeze would be spent again tomorrow.
+      last_active_date = ((now() at time zone coalesce(p.timezone, 'UTC'))::date - 1)
+  from public.profiles p
+  where p.id = s.user_id
+    and s.last_active_date is not null
+    and s.current > 0
+    and s.broken_on is null
+    and s.freezes_held > 0
+    and ((now() at time zone coalesce(p.timezone, 'UTC'))::date - s.last_active_date) = 2;
+
+  -- ── then the breaks ───────────────────────────────────────────────────────
+  --
+  -- Anything still more than a day behind after the freezes were spent. A user who was
+  -- just frozen no longer matches, because their `last_active_date` moved.
+  with broken as (
     update public.streaks s
     set current = 0,
-        broken_on = d.local_today,
+        broken_on = (now() at time zone coalesce(p.timezone, 'UTC'))::date,
+        -- `now()`, not a cast of the local date: casting a date to timestamptz resolves
+        -- against the SESSION timezone, which is the server's and not the user's, and
+        -- would put the 48-hour window hours off for most of the world.
+        repair_available_until = now() + interval '48 hours'
         -- `longest` is untouched, deliberately. A lost run still leaves an achievement
         -- behind, which is `applyActivity`'s rule and has to be this one's too.
-        repair_available_until = (d.local_today::timestamptz + interval '48 hours')
-    from due d
-    where s.user_id = d.user_id
-      and d.local_today - d.last_active_date > 1
-      and s.user_id not in (select user_id from frozen)
+    from public.profiles p
+    where p.id = s.user_id
+      and s.last_active_date is not null
+      and s.current > 0
+      and s.broken_on is null
+      and ((now() at time zone coalesce(p.timezone, 'UTC'))::date - s.last_active_date) > 1
     returning s.user_id
   )
   select count(*) into v_expired from broken;
@@ -113,22 +116,29 @@ grant execute on function public.expire_streaks() to service_role;
 -- thing that proves this schema builds.
 do $$
 begin
-  if exists (select 1 from pg_available_extensions where name = 'pg_cron') then
-    create extension if not exists pg_cron with schema extensions;
-    -- Unschedule first so re-running the migration against a database that already has
-    -- the job does not raise. Forward-only means this file may be applied to a fresh
-    -- database only, but a shadow/branch database can see it twice.
-    perform extensions.cron.unschedule('expire-streaks')
-    where exists (select 1 from extensions.cron.job where jobname = 'expire-streaks');
-
-    perform extensions.cron.schedule(
-      'expire-streaks',
-      '7 * * * *',
-      $job$ select public.expire_streaks() $job$
-    );
-  else
-    raise notice 'pg_cron unavailable — expire_streaks() exists but is unscheduled. See the migration.';
+  if not exists (select 1 from pg_available_extensions where name = 'pg_cron') then
+    raise notice 'pg_cron unavailable — expire_streaks() exists, unscheduled. Schedule it by hand.';
+    return;
   end if;
+
+  create extension if not exists pg_cron;
+
+  -- Unschedule first, so applying this against a database that already has the job is a
+  -- no-op rather than a duplicate-name error. Forward-only means a fresh database sees
+  -- this once; a branch or shadow database can see it twice.
+  perform cron.unschedule('expire-streaks')
+  where exists (select 1 from cron.job where jobname = 'expire-streaks');
+
+  perform cron.schedule('expire-streaks', '7 * * * *', $job$ select public.expire_streaks() $job$);
+exception
+  -- The SCHEDULE is an optimisation of when the function runs; the function is the
+  -- feature. pg_cron's schema placement differs between hosted Supabase and a local
+  -- stack, and `create extension` can refuse relocation outright — a migration that
+  -- cannot apply because a scheduler is laid out differently on one host is a far worse
+  -- outcome than a job somebody has to add by hand. `supabase db reset` from empty is
+  -- what proves this schema builds, and it has to keep working.
+  when others then
+    raise notice 'could not schedule expire-streaks (%). The function exists; schedule it by hand.', sqlerrm;
 end $$;
 
 -- Seven minutes past, not on the hour. Every scheduled job in every system defaults to
