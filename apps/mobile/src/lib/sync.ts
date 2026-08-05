@@ -77,6 +77,17 @@ export type LessonSubmission = {
   kind: 'lesson' | 'quest' | 'review' | 'challenge' | 'event'
   startedAt: number
   answers: readonly AnsweredItem[]
+  /**
+   * Hearts this lesson cost, cumulatively.
+   *
+   * The one field here the server cannot re-derive. Correctness it decides from the
+   * answer key and timing it clamps, but whether a heart was charged depends on whether
+   * the ITEM was new to this user at the moment it was shown, which is a property of the
+   * lesson the client composed. So it is reported, and treated as a statistic rather than
+   * as a reward input: nothing is paid or withheld on the strength of it, which is what
+   * makes trusting it acceptable.
+   */
+  heartsLost: number
 }
 
 /**
@@ -215,6 +226,7 @@ async function send(mutation: QueuedMutation): Promise<void> {
     kind: submission.kind,
     startedAt: submission.startedAt,
     answers: submission.answers,
+    heartsLost: submission.heartsLost,
   })
 
   /**

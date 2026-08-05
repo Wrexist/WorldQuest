@@ -6,6 +6,8 @@ import {
   nextMilestone,
   localDate,
   startOfLocalDay,
+  streakMilestoneReward,
+  STREAK_MILESTONES,
   type StreakState,
 } from './index.js'
 
@@ -238,5 +240,37 @@ describe('milestones', () => {
     // The balance table pays for 7/30/100/365 and nothing else. A fifth number here
     // would promise a reward no ledger entry honours.
     expect(nextMilestone(400)).toBeNull()
+  })
+})
+
+describe('streak milestone rewards', () => {
+  it('pays every milestone the balance table funds', () => {
+    // `isMilestone` has existed since streaks were built and had no caller that paid
+    // anything. These four numbers were in the balance table the whole time.
+    for (const day of STREAK_MILESTONES) {
+      const reward = streakMilestoneReward(day)
+      expect(reward.xp, `day ${day}`).toBeGreaterThan(0)
+    }
+  })
+
+  it('pays nothing on an ordinary day', () => {
+    for (const day of [1, 6, 8, 29, 99, 364, 400]) {
+      expect(streakMilestoneReward(day)).toEqual({ xp: 0, coins: 0 })
+    }
+  })
+
+  it('reads XP and coins from separate tables, because they differ', () => {
+    // A year-long streak pays XP and no coins on purpose: it is a status reward, not a
+    // shopping trip. Reading one table for both would silently invent 1000 coins.
+    expect(streakMilestoneReward(365).xp).toBeGreaterThan(0)
+    expect(streakMilestoneReward(365).coins).toBe(0)
+    expect(streakMilestoneReward(7).coins).toBeGreaterThan(0)
+  })
+
+  it('grows with the run — a longer streak is never worth less', () => {
+    const rewards = STREAK_MILESTONES.map((d) => streakMilestoneReward(d).xp)
+    for (let i = 1; i < rewards.length; i++) {
+      expect(rewards[i]!).toBeGreaterThan(rewards[i - 1]!)
+    }
   })
 })

@@ -10,6 +10,8 @@
  * Pure — the clock is injected.
  */
 
+import { BALANCE } from '../xp/balance.js'
+
 export type IsoDate = string // YYYY-MM-DD
 
 /** The user's local calendar date for an instant. */
@@ -200,3 +202,29 @@ export const isMilestone = (streak: number): boolean =>
  */
 export const nextMilestone = (streak: number): number | null =>
   STREAK_MILESTONES.find((m) => m > streak) ?? null
+
+/** What reaching a streak length is worth, from the balance table. */
+export type StreakReward = { readonly xp: number; readonly coins: number }
+
+/**
+ * The bonus for arriving at a milestone day.
+ *
+ * `BALANCE.xp.streakMilestones` and `BALANCE.coins.streakMilestones` have been in the
+ * balance table since it was written and nothing has ever read them — money the economy
+ * promises and never spends. `isMilestone` existed to answer the question and had no
+ * caller that paid anything.
+ *
+ * Paid on the day the streak REACHES the number, which is why the caller must pass the
+ * outcome of `applyActivity` rather than the stored streak: a second lesson on day 7
+ * returns `extended: false`, and paying on every lesson of a milestone day would make the
+ * bonus a function of how many lessons somebody did rather than of the run they kept.
+ *
+ * XP and coins are looked up separately because the tables genuinely differ — there is an
+ * XP milestone at 365 and no coin one, on the grounds that a year-long streak is a status
+ * reward rather than a shopping trip.
+ */
+export function streakMilestoneReward(streak: number): StreakReward {
+  const xpTable = BALANCE.xp.streakMilestones as Readonly<Record<number, number>>
+  const coinTable = BALANCE.coins.streakMilestones as Readonly<Record<number, number>>
+  return { xp: xpTable[streak] ?? 0, coins: coinTable[streak] ?? 0 }
+}

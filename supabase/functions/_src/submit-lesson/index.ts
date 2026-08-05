@@ -23,7 +23,11 @@ import { gradeLesson } from '../../../packages/engines/src/grading/index.ts'
 import { BALANCE } from '../../../packages/engines/src/xp/balance.ts'
 import type { AnsweredItem } from '../../../packages/engines/src/lesson/machine.ts'
 import type { MemoryState } from '../../../packages/engines/src/learning/types.ts'
-import { applyActivity, startOfLocalDay } from '../../../packages/engines/src/time/index.ts'
+import {
+  applyActivity,
+  startOfLocalDay,
+  streakMilestoneReward,
+} from '../../../packages/engines/src/time/index.ts'
 import { isFiniteMs, retimeLesson } from '../_shared/submission-time.ts'
 import { ANSWER_BY_FACT } from './_content/answers.ts'
 
@@ -33,6 +37,7 @@ type SubmitBody = {
   topicId?: string
   startedAt: number
   answers: AnsweredItem[]
+  heartsLost?: number
   clientVersion?: string
 }
 
@@ -72,6 +77,11 @@ function parseBody(raw: unknown): SubmitBody | null {
   // RangeError there — an uncaught 500 any client could ask for.
   if (!isFiniteMs(b.startedAt)) return null
   if (!Array.isArray(b.answers) || b.answers.length === 0) return null
+  // A statistic, not a reward input — nothing is paid or withheld on it, which is what
+  // makes an unverifiable client number acceptable here. Bounded anyway: a smallint
+  // column and an absurd value are a bad combination, and `hearts.max` is the ceiling
+  // even after a revive, because a revive restores to full rather than beyond it.
+  if (b.heartsLost !== undefined && !isFiniteMs(b.heartsLost)) return null
   // A lesson longer than the documented maximum is a forged payload, not a session.
   if (b.answers.length > 50) return null
 
@@ -271,6 +281,13 @@ async function handle(req: Request): Promise<Response> {
   )
   const streakChanged = outcome.extended || outcome.reset || outcome.freezeUsed
 
+  // The milestone bonus the balance table has funded since it was written and nothing
+  // has ever paid. Only when the streak actually moved, which is also what stops a
+  // second lesson on day 7 collecting it again.
+  const milestone = streakChanged
+    ? streakMilestoneReward(outcome.current)
+    : { xp: 0, coins: 0 }
+
   // ── persist, in ONE transaction ───────────────────────────────────────────
   //
   // This was five supabase-js calls — five transactions — and only the first one's error
@@ -317,6 +334,12 @@ async function handle(req: Request): Promise<Response> {
         }
       : null,
     p_max_per_hour: BALANCE.integrity.maxLessonSubmitsPerHour,
+    p_hearts_lost: Math.min(
+      Math.max(Math.trunc(body.heartsLost ?? 0), 0),
+      BALANCE.hearts.max * 10,
+    ),
+    p_streak_xp: milestone.xp,
+    p_streak_coins: milestone.coins,
   })
 
   // An error here means NOTHING was written — that is the point of the function — so the
@@ -370,6 +393,9 @@ async function handle(req: Request): Promise<Response> {
       extended: outcome.extended,
       freezeUsed: outcome.freezeUsed,
       reset: outcome.reset,
+      /** Paid as its own ledger row, so the summary can celebrate it separately. */
+      milestoneXp: milestone.xp,
+      milestoneCoins: milestone.coins,
     },
     // Reported rather than swallowed, for the same reason `rejected` is: a spike in
     // either is the signal that a build is sending nonsense, and a number nobody

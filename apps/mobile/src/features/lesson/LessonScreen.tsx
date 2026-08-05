@@ -136,6 +136,7 @@ export function LessonScreen({
       kind: 'lesson',
       startedAt: state.startedAt ?? Date.now(),
       answers: state.answers,
+      heartsLost: state.heartsLost,
     })
     // Local, immediate, and independent of the queue. The weekly chart on Profile
     // must be right the moment the lesson ends — waiting for the server round trip

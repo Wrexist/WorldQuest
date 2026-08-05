@@ -97,6 +97,8 @@ export type SubmitLessonRequest = {
   topicId?: string
   startedAt: number
   answers: readonly unknown[]
+  /** Statistic, not a reward input — see the note in `apps/mobile/src/lib/sync.ts`. */
+  heartsLost?: number
   clientVersion?: string
 }
 
