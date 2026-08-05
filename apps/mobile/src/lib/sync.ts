@@ -268,6 +268,8 @@ async function send(mutation: QueuedMutation): Promise<void> {
   for (const unlock of recordServerOutcome({
     masteryChanges: result.masteryChanges ?? [],
     streak: result.streak?.current ?? null,
+    overdueCleared: result.overdueCleared ?? 0,
+    entityMastered: result.entityMastered ?? [],
     at: Date.now(),
   })) {
     track('achievement_unlocked', { achievement_id: unlock.achievementId, tier: unlock.tier })

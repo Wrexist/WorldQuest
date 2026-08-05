@@ -145,8 +145,33 @@ describe('submit-lesson bundle', () => {
     // than that. `selection` is 4.0 KB of code, `progression` 4.9, `lesson/machine` 5.7,
     // `content/index` 9.6. So vendoring any one of them fails this, which is precisely
     // the event worth stopping — while renaming a symbol or writing a paragraph does not.
-    const code = files.reduce((sum, f) => sum + stripComments(f.content).length, 0)
+    //
+    // `_content/` is excluded, and the exclusion is the point rather than an escape. Those
+    // files are generated DATA — the fact→entity answer key and the entity→facts index —
+    // and the question this budget asks is "is the dependency graph growing quietly?" A
+    // data table is not a dependency; it grows with the country count, which is the thing
+    // the product is supposed to do. Counting it here made adding `entity_mastered`
+    // support look like the function had acquired an engine.
+    //
+    // It is not unbounded: a cold start parses every byte, so the raw budget below is what
+    // bounds it, and 195 countries would put `answers.ts` near 40 KB — visible there,
+    // where the cost actually lands.
+    const code = files
+      .filter((f) => !f.name.startsWith('_content/'))
+      .reduce((sum, f) => sum + stripComments(f.content).length, 0)
     expect(code).toBeLessThan(40_000)
+  })
+
+  it('keeps its generated data proportionate to the content', () => {
+    // Roughly 210 facts and 65 entities today. Per-entry rather than absolute, so the
+    // budget scales with the pack instead of being re-argued every time a country lands —
+    // and still fails on a generator that starts emitting whole fact objects.
+    const data = files
+      .filter((f) => f.name.startsWith('_content/'))
+      .reduce((sum, f) => sum + f.content.length, 0)
+    const entries = (byName.get('_content/answers.ts')!.match(/":/g) ?? []).length
+    expect(entries).toBeGreaterThan(200)
+    expect(data / entries).toBeLessThan(60)
   })
 
   it('stays small enough to cold-start quickly', () => {

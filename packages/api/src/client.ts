@@ -120,6 +120,22 @@ export type SubmitLessonResponse = {
    */
   masteryChanges?: readonly { readonly factId: string; readonly from: string; readonly to: string }[]
   /**
+   * Overdue reviews cleared in this lesson.
+   *
+   * `ach.review.faithful` counts these — 25 / 250 / 1000 — and it is the only achievement
+   * in the catalogue that measures the behaviour the product exists to produce rather
+   * than volume. The grader computed the number and threw it away.
+   */
+  overdueCleared?: number
+  /**
+   * Countries whose every quizzable fact is now mastered.
+   *
+   * The last achievement event with no producer, and one only the server can answer: it
+   * is a question about facts the lesson did not touch. `ach.countries.complete` and
+   * `ach.set.nordics` both count it.
+   */
+  entityMastered?: readonly string[]
+  /**
    * The session was too short to contain the answers it claimed, so its timing was
    * discarded and every answer graded as average. Not shown to the user — a real client
    * cannot produce it, and telling someone their clock looked forged is a conversation

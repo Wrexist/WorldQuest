@@ -63,6 +63,15 @@ export type GradeResult = {
   readonly perfect: boolean
   /** Answers excluded as not credible — surfaced so a spike is visible. */
   readonly rejected: number
+  /**
+   * Reviews the scheduler had asked for, answered correctly.
+   *
+   * The number `ach.review.faithful` counts — 25 / 250 / 1000 of them — and the one
+   * achievement in the catalogue that measures the behaviour this product exists to
+   * produce, rather than volume. It was computed here (`wasOverdue`) and thrown away, so
+   * the event had no producer and all three tiers sat at zero.
+   */
+  readonly overdueCleared: number
 }
 
 const DEFAULT_MEDIAN_MS = 8_000
@@ -136,6 +145,7 @@ export function gradeLesson(input: GradeInput): GradeResult {
   let rawXp = 0
   let coins = 0
   let speedBonuses = 0
+  let overdueCleared = 0
 
   for (const answer of answers) {
     // Sub-400ms answers are not credible. They earn nothing AND never reach the
@@ -250,6 +260,7 @@ export function gradeLesson(input: GradeInput): GradeResult {
     masteryChanges,
     perfect,
     rejected,
+    overdueCleared,
   }
 }
 

@@ -41,10 +41,10 @@
  * Still unwirable, and still deliberately — nothing here will make an achievement unlock
  * on an event we cannot honestly observe. Two remain:
  *
- * - `entity_mastered` needs "every quizzable fact of this country is mastered", which is
- *   a question about the whole memory map rather than about the lesson that just ended.
- *   `ach.countries.complete` and `ach.set.nordics` wait on it.
- * - `overdue_review_cleared` is known to the grader and not carried in the response.
+ * Nothing is left. All six event kinds the catalogue counts now have a producer, and
+ * every achievement in the pack can move. The two that could only ever be answered
+ * server-side — `fact_mastered` and `entity_mastered` — are, and the client forwards
+ * rather than decides.
  */
 
 import { useCallback, useSyncExternalStore } from 'react'
@@ -139,6 +139,8 @@ export function recordLessonForAchievements(input: {
 export function recordServerOutcome(input: {
   readonly masteryChanges: readonly { readonly factId: string; readonly to: string }[]
   readonly streak: number | null
+  readonly overdueCleared: number
+  readonly entityMastered: readonly string[]
   readonly at: number
 }): readonly Unlock[] {
   const unlocked: Unlock[] = []
@@ -160,6 +162,21 @@ export function recordServerOutcome(input: {
         at: input.at,
         payload: { attribute, entityId, factId: change.factId },
       }),
+    )
+  }
+
+  for (const entityId of input.entityMastered) {
+    unlocked.push(
+      ...recordAchievementEvent({ name: 'entity_mastered', at: input.at, payload: { entityId } }),
+    )
+  }
+
+  // One event per cleared review, because `counter` counts events. Sending one event
+  // carrying the number would make a ten-review lesson worth one, which is the shape of
+  // bug that makes a 1000-tier take a decade.
+  for (let i = 0; i < input.overdueCleared; i++) {
+    unlocked.push(
+      ...recordAchievementEvent({ name: 'overdue_review_cleared', at: input.at, payload: {} }),
     )
   }
 

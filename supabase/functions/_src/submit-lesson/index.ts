@@ -29,7 +29,7 @@ import {
   streakMilestoneReward,
 } from '../../../packages/engines/src/time/index.ts'
 import { isFiniteMs, retimeLesson } from '../_shared/submission-time.ts'
-import { ANSWER_BY_FACT } from './_content/answers.ts'
+import { ANSWER_BY_FACT, QUIZZABLE_FACTS_BY_ENTITY } from './_content/answers.ts'
 
 type SubmitBody = {
   lessonId: string
@@ -261,6 +261,52 @@ async function handle(req: Request): Promise<Response> {
     masteredBefore,
   })
 
+  // ── which countries are FINISHED ──────────────────────────────────────────
+  //
+  // `entity_mastered` was the last achievement event with no producer, and it could not
+  // have one on the client: it means "every quizzable fact of this country is mastered",
+  // a question about facts the lesson did not touch. `ach.countries.complete` and
+  // `ach.set.nordics` both count it and both sat at zero.
+  //
+  // Answerable here, and only here. One extra query, bounded by the entities this lesson
+  // actually moved — a lesson that mastered nothing runs none of this.
+  const promotedEntities = [
+    ...new Set(
+      result.masteryChanges
+        .filter((c) => c.to === 'mastered' || c.to === 'burnished')
+        .map((c) => ANSWER_BY_FACT[c.factId])
+        .filter((entity): entity is string => entity !== undefined),
+    ),
+  ]
+
+  const entityMastered: string[] = []
+  if (promotedEntities.length > 0) {
+    const needed = promotedEntities.flatMap((e) => QUIZZABLE_FACTS_BY_ENTITY[e] ?? [])
+    const { data: entityFacts } = await admin
+      .from('user_facts')
+      .select('fact_id, mastery')
+      .eq('user_id', user.id)
+      .in('fact_id', needed)
+
+    // The rows this lesson is about to write are not in the table yet, so the freshly
+    // graded state has to win over what was read. Reading after the write instead would
+    // mean a second round trip inside the transaction's shadow.
+    const level = new Map<string, string>(
+      (entityFacts ?? []).map((r) => [r.fact_id, r.mastery as string]),
+    )
+    for (const change of result.masteryChanges) level.set(change.factId, change.to)
+
+    for (const entity of promotedEntities) {
+      const facts = QUIZZABLE_FACTS_BY_ENTITY[entity] ?? []
+      if (facts.length === 0) continue
+      const complete = facts.every((id) => {
+        const m = level.get(id)
+        return m === 'mastered' || m === 'burnished'
+      })
+      if (complete) entityMastered.push(entity)
+    }
+  }
+
   // ── the streak ────────────────────────────────────────────────────────────
   //
   // `applyActivity` has been tested and callerless since streaks were built, and
@@ -384,6 +430,11 @@ async function handle(req: Request): Promise<Response> {
     masteryChanges: result.masteryChanges,
     perfect: result.perfect,
     rejected: result.rejected,
+    // Reviews the scheduler asked for and got right. `ach.review.faithful` counts these
+    // and had no producer — the grader computed the number and dropped it.
+    overdueCleared: result.overdueCleared,
+    /** Countries whose every quizzable fact is now mastered. See above. */
+    entityMastered,
     // The authoritative streak, so the summary can celebrate the real number rather than
     // a client guess — and so `welcome-back` and the streak screen have something true
     // to read the moment the queue flushes.

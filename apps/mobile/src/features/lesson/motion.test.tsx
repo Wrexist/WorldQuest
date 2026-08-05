@@ -63,6 +63,7 @@ describe('the animated branch mounts', () => {
             masteryChanges: [],
             perfect: false,
             rejected: 0,
+            overdueCleared: 0,
           }}
           wasAbandoned={false}
           isOffline={false}
