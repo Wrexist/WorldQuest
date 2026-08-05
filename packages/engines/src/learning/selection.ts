@@ -113,20 +113,40 @@ export function selectItems(input: SelectionInput): FactId[] {
   const { candidates, newFactIds, count, now, rng, topicFilter, catchUpMode } = input
   const inTopic = (id: FactId) => (topicFilter ? topicFilter(id) : true)
 
-  const active = candidates.filter((c) => !c.suspended && inTopic(c.factId))
+  const inScope = candidates.filter((c) => inTopic(c.factId))
+  const active = inScope.filter((c) => !c.suspended)
 
   const due = active
     .filter((c) => c.dueAt <= now)
     .sort((a, b) => a.dueAt - b.dueAt) // most overdue first
 
-  const struggling = active.filter(
-    (c) =>
-      c.lapses >= 4 &&
-      c.lapses < LEECH_LAPSE_THRESHOLD &&
-      masteryOf(c, now) !== 'proficient' &&
-      masteryOf(c, now) !== 'mastered' &&
-      masteryOf(c, now) !== 'burnished',
-  )
+  /**
+   * Leeches that have finished resting.
+   *
+   * Suspended candidates used to be filtered out here and never came back, which turned
+   * a rest into a life sentence — the fact could not be shown, so it could not be got
+   * right, so it could not be released. `review()` now clears `suspended` on the first
+   * correct answer, and this is the slot that gives it the chance to be one.
+   *
+   * They rejoin through `struggling` rather than `due` on purpose. The mix caps that
+   * bucket at 10 %, so a backlog of leeches can never crowd out the reviews and new
+   * content a session is actually for — which is the failure mode that made dropping
+   * them look reasonable in the first place.
+   */
+  const resting = inScope.filter((c) => c.suspended && c.dueAt <= now)
+
+  const struggling = [
+    ...active.filter(
+      (c) =>
+        c.lapses >= 4 &&
+        c.lapses < LEECH_LAPSE_THRESHOLD &&
+        masteryOf(c, now) !== 'proficient' &&
+        masteryOf(c, now) !== 'mastered' &&
+        masteryOf(c, now) !== 'burnished',
+    ),
+    // No mastery filter: a rested leech is struggling by definition.
+    ...resting,
+  ]
 
   const fresh = newFactIds.filter(inTopic)
 

@@ -12,6 +12,7 @@
 import { clamp, MS_PER_DAY } from '../shared/index.js'
 import {
   DEFAULT_TARGET_RETENTION,
+  LEECH_COOLDOWN_DAYS,
   LEECH_LAPSE_THRESHOLD,
   MAX_CREDITED_ANSWER_MS,
   type FactId,
@@ -168,12 +169,32 @@ export function review(input: ReviewInput, weights: Weights = DEFAULT_WEIGHTS): 
     lapses = state.lapses + (rating === 1 ? 1 : 0)
   }
 
+  /**
+   * A leech rests; it is not buried.
+   *
+   * This was `lapses >= LEECH_LAPSE_THRESHOLD` — and `lapses` never decreases, while
+   * `selectItems` dropped every suspended candidate. So crossing the threshold once
+   * removed a fact from rotation for the life of the account: it could not be shown, so
+   * it could not be answered correctly, so it could not be released. The user was told
+   * they had not learned it, for ever, by the same system that had stopped teaching it.
+   *
+   * Suspension is now a property of THIS answer rather than of the whole history. Failing
+   * again while over the threshold rests the fact; getting it right releases it, in one
+   * answer. `lapses` is untouched — the FSRS formulas and the struggling bucket both read
+   * it, and rewriting history to fix a policy would be the wrong lever.
+   */
+  const isLeech = lapses >= LEECH_LAPSE_THRESHOLD
+  const suspended = isLeech && rating === 1
+
   const days = clamp(
     intervalDays(stability, targetRetention),
     MIN_INTERVAL_DAYS,
     MAX_INTERVAL_DAYS,
   )
-  const dueAt = now + days * MS_PER_DAY
+  // Resting means distance. The scheduler would hand a fresh lapse an interval measured
+  // in hours, which is precisely the drilling the leech policy exists to stop.
+  const restDays = suspended ? Math.max(days, LEECH_COOLDOWN_DAYS) : days
+  const dueAt = now + restDays * MS_PER_DAY
 
   return {
     factId,
@@ -183,9 +204,7 @@ export function review(input: ReviewInput, weights: Weights = DEFAULT_WEIGHTS): 
     lapses,
     lastReviewAt: now,
     dueAt,
-    // We stop drilling what someone keeps failing — it needs a different template
-    // or an explanation, not another repetition. See the leech policy in the spec.
-    suspended: lapses >= LEECH_LAPSE_THRESHOLD,
+    suspended,
   }
 }
 

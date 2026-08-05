@@ -11,7 +11,13 @@ import {
   retrievability,
   review,
 } from './fsrs.js'
-import { DEFAULT_TARGET_RETENTION, type MemoryState, type Rating, type ReviewEvent } from './types.js'
+import {
+  DEFAULT_TARGET_RETENTION,
+  LEECH_COOLDOWN_DAYS,
+  type MemoryState,
+  type Rating,
+  type ReviewEvent,
+} from './types.js'
 
 const T0 = 1_800_000_000_000
 const FACT = 'geo.JP.capital'
@@ -112,6 +118,50 @@ describe('review — repeated exposure', () => {
     }
     expect(state!.lapses).toBe(8)
     expect(state!.suspended).toBe(true)
+  })
+
+  it('rests a leech for at least the cooldown rather than drilling it again', () => {
+    let state: MemoryState | null = null
+    let now = T0
+    for (let i = 0; i < 8; i++) {
+      state = review({ factId: FACT, state, rating: 1, now })
+      now = state.dueAt
+    }
+    // Eight failures earns an interval measured in hours from the scheduler, which is
+    // exactly the drilling the leech policy exists to stop.
+    const restDays = (state!.dueAt - state!.lastReviewAt!) / MS_PER_DAY
+    expect(restDays).toBeGreaterThanOrEqual(LEECH_COOLDOWN_DAYS)
+  })
+
+  it('releases a leech on the first correct answer', () => {
+    // Suspension used to be `lapses >= threshold`, and lapses never decrease — so a fact
+    // that crossed the line could not be shown, could not be answered, and could not come
+    // back, for the life of the account.
+    let state: MemoryState | null = null
+    let now = T0
+    for (let i = 0; i < 8; i++) {
+      state = review({ factId: FACT, state, rating: 1, now })
+      now = state.dueAt
+    }
+    expect(state!.suspended).toBe(true)
+
+    state = review({ factId: FACT, state, rating: 3, now })
+    expect(state.suspended).toBe(false)
+    // The history is not rewritten: FSRS and the struggling bucket both read `lapses`.
+    expect(state.lapses).toBe(8)
+  })
+
+  it('re-rests a released leech that fails again', () => {
+    let state: MemoryState | null = null
+    let now = T0
+    for (let i = 0; i < 8; i++) {
+      state = review({ factId: FACT, state, rating: 1, now })
+      now = state.dueAt
+    }
+    state = review({ factId: FACT, state, rating: 3, now })
+    expect(state.suspended).toBe(false)
+    state = review({ factId: FACT, state, rating: 1, now: state.dueAt })
+    expect(state.suspended).toBe(true)
   })
 
   it('keeps difficulty within 1..10 under any rating sequence', () => {
