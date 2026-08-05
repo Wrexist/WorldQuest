@@ -80,14 +80,14 @@ export type PractisedCountry = {
 }
 
 /**
- * The celebration layers, drawn larger than the card they sit behind.
+ * The celebration layers, drawn around the 140pt Atlas they sit behind.
  *
- * Both assets radiate from an empty centre, so at the card's own size the confetti
- * would land inside the card's bounds and read as a busy background rather than a
- * burst coming off the number. 280 spills past the card on a 320pt phone, which is
- * the intent — it is clipped by nothing above it.
+ * Both assets radiate from an empty centre and fade to nothing at the edges, so the
+ * ratio is what matters rather than the absolute size: at 1.7× the subject there is
+ * room for confetti on every side of him without the outer ring reaching the screen
+ * edge at 320pt, where the content column is 288 wide.
  */
-const CELEBRATION_SIZE = 280
+const CELEBRATION_SIZE = 240
 
 /** Wide enough to tell Chad from Romania, small enough that eight fit on a 320pt row. */
 const PRACTISED_FLAG_WIDTH = 44
@@ -132,12 +132,39 @@ export function LessonSummary({
       {isOffline && <OfflineNote />}
 
       <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
-        {/* Atlas mid-jump, both arms up — "pure delight, weightless". Only on a
-            perfect lesson, for the same reason only a perfect lesson pops: an image
-            that celebrates every outcome is wallpaper, and one that celebrates a
-            lesson somebody walked out of is the app failing to read the room. */}
+        {/* The celebration frame: Atlas mid-jump — "pure delight, weightless" — with
+            `rays` and `burst` radiating behind him. Both of those are briefed with an
+            EMPTY CENTRE because content composites into it, and Atlas is the content.
+
+            They were behind the XP card first, which is what the empty centre sounded
+            like it was for, and looking at the render settled it: the card is
+            full-width and the burst is square, so a burst wide enough to clear the
+            card would have to be twice its height. What actually shipped was a strip
+            of confetti above the card and a beige smudge below it. Against a 140pt
+            Atlas the same asset has room to radiate in every direction, which is the
+            composition it was drawn as.
+
+            Only on a perfect lesson, for the same reason only a perfect lesson pops:
+            a celebration that fires every time is wallpaper, and one that fires for a
+            lesson somebody walked out of is the app failing to read the room.
+
+            Static, deliberately. "Reduced motion is a Definition of Done box and the
+            implementation shows the last frame — so burst.png at its settled state
+            *is* a deliverable, not a by-product. An animation with no still is a blank
+            space for every user who turned motion off, which is disproportionately the
+            users who most need the feedback."
+
+            `pointerEvents="none"` because celebration never blocks input, and
+            decorative by default — the brief's own code note: a screen reader
+            announcing confetti is noise. */}
         {outcome === 'perfect' && (
           <View style={styles.headlineArt}>
+            <View style={styles.celebration} pointerEvents="none">
+              <Art name="celebration/rays" size={CELEBRATION_SIZE} />
+              <View style={styles.celebrationOverlay}>
+                <Art name="celebration/burst" size={CELEBRATION_SIZE} />
+              </View>
+            </View>
             <Art name="atlas/celebrate" size={140} />
           </View>
         )}
@@ -155,31 +182,6 @@ export function LessonSummary({
         {result !== null && (
           <>
             <Animated.View style={[styles.hero, { transform: [{ scale }] }]}>
-              {/* The celebration frame. `rays` is the atmospheric backing and `burst`
-                  the confetti; both are briefed with an EMPTY CENTRE because the
-                  content is composited into it, which is why they sit behind the card
-                  rather than beside it.
-
-                  Static, and deliberately so. "Reduced motion is a Definition of Done
-                  box and the implementation shows the last frame — so burst.png at its
-                  settled state *is* a deliverable, not a by-product. An animation with
-                  no still is a blank space for every user who turned motion off, which
-                  is disproportionately the users who most need the feedback." So the
-                  still is what ships here, under both motion settings, and only the
-                  card's scale responds to `useCelebration`.
-
-                  `pointerEvents="none"` because celebration never blocks input — the
-                  rule in apps/mobile/CLAUDE.md — and decorative by default, which is
-                  the asset brief's own code note: a screen reader announcing confetti
-                  is noise. */}
-              {outcome === 'perfect' && (
-                <View style={styles.celebration} pointerEvents="none">
-                  <Art name="celebration/rays" size={CELEBRATION_SIZE} />
-                  <View style={styles.celebrationOverlay}>
-                    <Art name="celebration/burst" size={CELEBRATION_SIZE} />
-                  </View>
-                </View>
-              )}
               <Card
                 level={2}
                 accessibilityLabel={t('lesson:reward.xp', { amount: xp })}
@@ -325,7 +327,9 @@ const styles = StyleSheet.create({
 
   // Full width, because this is the object on the screen and a small square floating
   // in the middle of a phone reads as a widget rather than as the point.
-  headlineArt: { alignSelf: 'center' },
+  // A positioning context for the layers behind Atlas, sized to him rather than to
+  // the burst — the burst overflows it on purpose and nothing here clips.
+  headlineArt: { alignSelf: 'center', alignItems: 'center', justifyContent: 'center' },
   hero: { alignSelf: 'stretch' },
   // Behind the XP card, centred on it, and larger than it so the burst reads as
   // radiating from the number rather than framing it. `overflow: visible` is the

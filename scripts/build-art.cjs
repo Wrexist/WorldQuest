@@ -254,6 +254,49 @@ async function render(page, sourceBytes, spec) {
       ctx.imageSmoothingQuality = 'high'
       ctx.drawImage(img, (width - w) / 2, (height - h) / 2, w, h)
 
+      // Feather a baked-in background, if there is one.
+      //
+      // The delivery is mixed and the difference is visible on screen: most of these
+      // are clean cutouts on transparency and sit on the canvas as if drawn there,
+      // but `states/empty-profile`, `states/empty-no-friends` and `atlas/resting` came
+      // back with an opaque ground baked in — so the profile empty state rendered a
+      // hard-edged dark-brown rectangle pasted onto a navy screen. Next to the
+      // hourglass on the out-of-hearts card, which is a cutout, it reads as a
+      // screenshot of a different app.
+      //
+      // MEASURED, not listed. The corner alpha decides it, so a redelivered asset with
+      // a proper cutout stops being feathered without anyone editing this file — the
+      // same reason the budget allowances are checked rather than trusted.
+      //
+      // Only the outer eighth is touched, as an alpha ramp rather than a vignette: a
+      // radial fade would dim the middle of a 3:2 composition, and the subject of
+      // every one of these is in the middle.
+      if (!opaque) {
+        const probe = ctx.getImageData(0, 0, Math.max(1, Math.round(width * 0.06)), 1).data
+        let solid = 0
+        for (let i = 3; i < probe.length; i += 4) if (probe[i] > 200) solid++
+        const cornerIsSolid = solid / (probe.length / 4) > 0.5
+
+        if (cornerIsSolid) {
+          const band = Math.round(Math.min(width, height) * 0.12)
+          ctx.globalCompositeOperation = 'destination-out'
+          const ramps = [
+            [0, 0, band, 0],
+            [width, 0, width - band, 0],
+            [0, 0, 0, band],
+            [0, height, 0, height - band],
+          ]
+          for (const [x0, y0, x1, y1] of ramps) {
+            const g = ctx.createLinearGradient(x0, y0, x1, y1)
+            g.addColorStop(0, 'rgba(0,0,0,1)')
+            g.addColorStop(1, 'rgba(0,0,0,0)')
+            ctx.fillStyle = g
+            ctx.fillRect(0, 0, width, height)
+          }
+          ctx.globalCompositeOperation = 'source-over'
+        }
+      }
+
       return canvas.toDataURL(format, quality)
     },
     {

@@ -12,13 +12,20 @@ const { chromium } = require('playwright')
 const { launchOptions } = require('../chromium.cjs')
 const path = require('path')
 
-const SHOTS = [
-  'home-first', 'home-returning', 'home-loading', 'home-offline',
-  'lesson-question', 'lesson-correct', 'lesson-wrong', 'lesson-flag-image', 'lesson-flag', 'lesson-map',
-  'lesson-summary', 'lesson-summary-early',
-  'explore', 'country', 'quests', 'profile', 'achievements', 'settings',
-  'settings-billing', 'paywall-value', 'paywall', 'paywall-child', 'shop',
-]
+/**
+ * Which frames to shoot is READ FROM THE PAGE, not listed here.
+ *
+ * It was a hardcoded array, which made it a second copy of a list that already exists
+ * in render.tsx — and the two silently disagreed the first time anyone added a frame:
+ * six new panels rendered into the HTML and none of them were captured, with no error,
+ * because a list that does not mention a frame looks exactly like a list that has
+ * nothing to say about it. Same argument as every other parity check in this repo,
+ * and here the fix is to delete one of the two lists rather than to compare them.
+ */
+const shotIds = (page) =>
+  page.$$eval('[data-testid^="phone-"]', (els) =>
+    els.map((el) => (el.getAttribute('data-testid') ?? '').replace(/^phone-/, '')),
+  )
 
 ;(async () => {
   const [, , htmlPath, outDir] = process.argv
@@ -40,7 +47,10 @@ const SHOTS = [
   await page.screenshot({ path: path.join(outDir, 'app-overview.png'), fullPage: true })
   console.log('  app-overview.png')
 
-  for (const id of SHOTS) {
+  const ids = await shotIds(page)
+  if (ids.length === 0) throw new Error('no phone frames found — did render.tsx output change?')
+
+  for (const id of ids) {
     const el = await page.$(`[data-testid="phone-${id}"]`)
     if (!el) {
       console.log(`  MISSING ${id}`)
