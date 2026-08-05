@@ -27,6 +27,8 @@ import {
 } from '@worldquest/design'
 import type { WorldProgress } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
+import { Art } from '../../components/Art.js'
+import type { ArtName } from '../../lib/art.generated.js'
 import { Icon } from '../../components/Icon.js'
 
 /**
@@ -36,6 +38,31 @@ import { Icon } from '../../components/Icon.js'
  */
 export const REGIONS = ['EU', 'AS', 'AF', 'NA', 'SA', 'OC', 'AN'] as const
 export type RegionCode = (typeof REGIONS)[number]
+
+/**
+ * The atmospheric background behind each continent card.
+ *
+ * Keyed by region code so the map cannot drift from `REGIONS` — a continent added to
+ * that list without art here is a type error rather than a blank tile.
+ */
+const CONTINENT_ART: Record<RegionCode, ArtName> = {
+  EU: 'continents/EU',
+  AS: 'continents/AS',
+  AF: 'continents/AF',
+  NA: 'continents/NA',
+  SA: 'continents/SA',
+  OC: 'continents/OC',
+  AN: 'continents/AN',
+}
+
+/**
+ * Drawn larger than the tile it fills.
+ *
+ * These are 3:2 and the tile is roughly square, so sizing the art to the tile's width
+ * would leave bands above and below. Over-sizing lets the middle of the sky fill the
+ * card and the card's own `overflow: hidden` crops the rest.
+ */
+const TILE_ART = 260
 
 const REGION_NAME: Record<RegionCode, TranslationKey> = {
   EU: 'explore:region.EU',
@@ -138,6 +165,28 @@ export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection
               // it would read as a smaller world; dimming says "not yet".
               style={[styles.tile, { borderColor: tint }, empty && styles.tileEmpty]}
             >
+              {/* The continent's own sky, behind its card.
+                  This screen is the second tab of a geography app and had no picture on
+                  it at all — seven navy rectangles told apart by a 4pt coloured bar. The
+                  art is briefed per continent in asset-prompts.md §8 as atmosphere only:
+                  no landmass, no coastline, no borders, because a generated coastline is
+                  a wrong fact and a generated border is a political claim. Real Natural
+                  Earth geometry composites on top of this later.
+
+                  Decorative — the tile already announces the continent and its progress
+                  through `aria-label`, and a screen reader naming the weather over Asia
+                  is noise. */}
+              <View style={styles.tileArt} pointerEvents="none">
+                <Art name={CONTINENT_ART[region]} size={TILE_ART} />
+                {/* A scrim, and it is not decoration. Four of these skies are bright —
+                    Africa's gold, South America's yellow-green, Oceania's turquoise —
+                    and `text.secondary` over them was unreadable, which is a WCAG AA
+                    failure the contrast gate cannot catch because it checks token
+                    PAIRS and this is text over a picture. The canvas colour at 0.55
+                    puts the tile back on its own background without flattening the
+                    atmosphere to nothing. */}
+                <View style={styles.tileScrim} />
+              </View>
               <View style={[styles.swatch, { backgroundColor: tint }]} />
               <Text style={styles.regionName}>{t(REGION_NAME[region])}</Text>
 
@@ -210,6 +259,10 @@ const styles = StyleSheet.create({
   worldCount: { ...text('caption'), color: colors.text.secondary },
 
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: space[3] },
+  // Clipped, so the oversized background stops at the card edge, and positioned so
+  // the swatch, name and progress stack on top of it.
+  tileArt: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
+  tileScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: colors.bg.canvas, opacity: 0.55 },
   tile: {
     // Two per row at phone width, with the grid's gap between them. `48%` rather
     // than a computed pixel width so it survives 200 % text and a tablet.
@@ -219,6 +272,8 @@ const styles = StyleSheet.create({
     padding: space[3],
     borderRadius: radius.lg,
     borderWidth: 1,
+    // Clips the oversized continent background to the card.
+    overflow: 'hidden',
     backgroundColor: colors.bg.surface,
   },
   tileEmpty: { opacity: 0.45 },

@@ -5,50 +5,166 @@
  * for why they are WebP, why they are 768px, and why this file exists at all.
  */
 
-import atlasWelcome from '../../assets/art/atlas/welcome.webp'
-import atlasCelebrate from '../../assets/art/atlas/celebrate.webp'
-import atlasThinking from '../../assets/art/atlas/thinking.webp'
-import atlasEncouraging from '../../assets/art/atlas/encouraging.webp'
-import atlasWavingBack from '../../assets/art/atlas/waving-back.webp'
 import atlasBrokenCompass from '../../assets/art/atlas/broken-compass.webp'
+import atlasCelebrate from '../../assets/art/atlas/celebrate.webp'
+import atlasEncouraging from '../../assets/art/atlas/encouraging.webp'
 import atlasResting from '../../assets/art/atlas/resting.webp'
+import atlasThinking from '../../assets/art/atlas/thinking.webp'
+import atlasWavingBack from '../../assets/art/atlas/waving-back.webp'
+import atlasWelcome from '../../assets/art/atlas/welcome.webp'
+import onboardingConquer from '../../assets/art/onboarding/conquer.webp'
 import onboardingExplore from '../../assets/art/onboarding/explore.webp'
 import onboardingLearn from '../../assets/art/onboarding/learn.webp'
-import onboardingConquer from '../../assets/art/onboarding/conquer.webp'
 import statesEmptyCaughtUp from '../../assets/art/states/empty-caught-up.webp'
+import statesEmptyCollection from '../../assets/art/states/empty-collection.webp'
 import statesEmptyNoFriends from '../../assets/art/states/empty-no-friends.webp'
 import statesEmptyProfile from '../../assets/art/states/empty-profile.webp'
-import statesEmptyCollection from '../../assets/art/states/empty-collection.webp'
 import statesErrorGeneric from '../../assets/art/states/error-generic.webp'
-import statesOffline from '../../assets/art/states/offline.webp'
 import statesHeartsEmpty from '../../assets/art/states/hearts-empty.webp'
+import statesOffline from '../../assets/art/states/offline.webp'
 import celebrationBurst from '../../assets/art/celebration/burst.webp'
 import celebrationRays from '../../assets/art/celebration/rays.webp'
+import achievementsGlyphCapitals from '../../assets/art/achievements/glyph-capitals.webp'
+import achievementsGlyphCollections from '../../assets/art/achievements/glyph-collections.webp'
+import achievementsGlyphConsistency from '../../assets/art/achievements/glyph-consistency.webp'
+import achievementsGlyphCountries from '../../assets/art/achievements/glyph-countries.webp'
+import achievementsGlyphEvents from '../../assets/art/achievements/glyph-events.webp'
+import achievementsGlyphExploration from '../../assets/art/achievements/glyph-exploration.webp'
+import achievementsGlyphFlags from '../../assets/art/achievements/glyph-flags.webp'
+import achievementsGlyphHidden from '../../assets/art/achievements/glyph-hidden.webp'
+import achievementsGlyphLandmarks from '../../assets/art/achievements/glyph-landmarks.webp'
+import achievementsGlyphLegendary from '../../assets/art/achievements/glyph-legendary.webp'
+import achievementsGlyphPerfect from '../../assets/art/achievements/glyph-perfect.webp'
+import achievementsGlyphPremium from '../../assets/art/achievements/glyph-premium.webp'
+import achievementsGlyphSocial from '../../assets/art/achievements/glyph-social.webp'
+import achievementsTierBronze from '../../assets/art/achievements/tier-bronze.webp'
+import achievementsTierGold from '../../assets/art/achievements/tier-gold.webp'
+import achievementsTierLegendary from '../../assets/art/achievements/tier-legendary.webp'
+import achievementsTierPlatinum from '../../assets/art/achievements/tier-platinum.webp'
+import achievementsTierSilver from '../../assets/art/achievements/tier-silver.webp'
+import avatarsAvatar01 from '../../assets/art/avatars/avatar-01.webp'
+import avatarsAvatar02 from '../../assets/art/avatars/avatar-02.webp'
+import avatarsAvatar03 from '../../assets/art/avatars/avatar-03.webp'
+import avatarsAvatar04 from '../../assets/art/avatars/avatar-04.webp'
+import avatarsAvatar05 from '../../assets/art/avatars/avatar-05.webp'
+import avatarsAvatar06 from '../../assets/art/avatars/avatar-06.webp'
+import avatarsAvatar07 from '../../assets/art/avatars/avatar-07.webp'
+import avatarsAvatar08 from '../../assets/art/avatars/avatar-08.webp'
+import avatarsAvatar09 from '../../assets/art/avatars/avatar-09.webp'
+import avatarsAvatar10 from '../../assets/art/avatars/avatar-10.webp'
+import avatarsAvatar11 from '../../assets/art/avatars/avatar-11.webp'
+import avatarsAvatar12 from '../../assets/art/avatars/avatar-12.webp'
+import continentsAF from '../../assets/art/continents/AF.webp'
+import continentsAN from '../../assets/art/continents/AN.webp'
+import continentsAS from '../../assets/art/continents/AS.webp'
+import continentsEU from '../../assets/art/continents/EU.webp'
+import continentsNA from '../../assets/art/continents/NA.webp'
+import continentsOC from '../../assets/art/continents/OC.webp'
+import continentsSA from '../../assets/art/continents/SA.webp'
+import leaguesBronze from '../../assets/art/leagues/bronze.webp'
+import leaguesDiamond from '../../assets/art/leagues/diamond.webp'
+import leaguesGold from '../../assets/art/leagues/gold.webp'
+import leaguesLegend from '../../assets/art/leagues/legend.webp'
+import leaguesRuby from '../../assets/art/leagues/ruby.webp'
+import leaguesSapphire from '../../assets/art/leagues/sapphire.webp'
+import leaguesSilver from '../../assets/art/leagues/silver.webp'
+import levelsCartographer from '../../assets/art/levels/cartographer.webp'
+import levelsNavigator from '../../assets/art/levels/navigator.webp'
+import levelsPathfinder from '../../assets/art/levels/pathfinder.webp'
+import levelsPioneer from '../../assets/art/levels/pioneer.webp'
+import levelsVoyager from '../../assets/art/levels/voyager.webp'
+import levelsWanderer from '../../assets/art/levels/wanderer.webp'
+import levelsWorldkeeper from '../../assets/art/levels/worldkeeper.webp'
+import rewardsCoin from '../../assets/art/rewards/coin.webp'
+import rewardsGem from '../../assets/art/rewards/gem.webp'
+import rewardsHeart from '../../assets/art/rewards/heart.webp'
+import rewardsStreakFlame from '../../assets/art/rewards/streak-flame.webp'
+import rewardsStreakFreeze from '../../assets/art/rewards/streak-freeze.webp'
+import rewardsTrophy from '../../assets/art/rewards/trophy.webp'
+import rewardsXpOrb from '../../assets/art/rewards/xp-orb.webp'
 
 /** Metro hands back a numeric handle; Vite hands back a URL. Both are real. */
 export type ArtModule = number | string
 
 /** Art name → the bundled illustration. */
 export const ART_BY_NAME = {
-  'atlas/welcome': atlasWelcome,
-  'atlas/celebrate': atlasCelebrate,
-  'atlas/thinking': atlasThinking,
-  'atlas/encouraging': atlasEncouraging,
-  'atlas/waving-back': atlasWavingBack,
   'atlas/broken-compass': atlasBrokenCompass,
+  'atlas/celebrate': atlasCelebrate,
+  'atlas/encouraging': atlasEncouraging,
   'atlas/resting': atlasResting,
+  'atlas/thinking': atlasThinking,
+  'atlas/waving-back': atlasWavingBack,
+  'atlas/welcome': atlasWelcome,
+  'onboarding/conquer': onboardingConquer,
   'onboarding/explore': onboardingExplore,
   'onboarding/learn': onboardingLearn,
-  'onboarding/conquer': onboardingConquer,
   'states/empty-caught-up': statesEmptyCaughtUp,
+  'states/empty-collection': statesEmptyCollection,
   'states/empty-no-friends': statesEmptyNoFriends,
   'states/empty-profile': statesEmptyProfile,
-  'states/empty-collection': statesEmptyCollection,
   'states/error-generic': statesErrorGeneric,
-  'states/offline': statesOffline,
   'states/hearts-empty': statesHeartsEmpty,
+  'states/offline': statesOffline,
   'celebration/burst': celebrationBurst,
   'celebration/rays': celebrationRays,
+  'achievements/glyph-capitals': achievementsGlyphCapitals,
+  'achievements/glyph-collections': achievementsGlyphCollections,
+  'achievements/glyph-consistency': achievementsGlyphConsistency,
+  'achievements/glyph-countries': achievementsGlyphCountries,
+  'achievements/glyph-events': achievementsGlyphEvents,
+  'achievements/glyph-exploration': achievementsGlyphExploration,
+  'achievements/glyph-flags': achievementsGlyphFlags,
+  'achievements/glyph-hidden': achievementsGlyphHidden,
+  'achievements/glyph-landmarks': achievementsGlyphLandmarks,
+  'achievements/glyph-legendary': achievementsGlyphLegendary,
+  'achievements/glyph-perfect': achievementsGlyphPerfect,
+  'achievements/glyph-premium': achievementsGlyphPremium,
+  'achievements/glyph-social': achievementsGlyphSocial,
+  'achievements/tier-bronze': achievementsTierBronze,
+  'achievements/tier-gold': achievementsTierGold,
+  'achievements/tier-legendary': achievementsTierLegendary,
+  'achievements/tier-platinum': achievementsTierPlatinum,
+  'achievements/tier-silver': achievementsTierSilver,
+  'avatars/avatar-01': avatarsAvatar01,
+  'avatars/avatar-02': avatarsAvatar02,
+  'avatars/avatar-03': avatarsAvatar03,
+  'avatars/avatar-04': avatarsAvatar04,
+  'avatars/avatar-05': avatarsAvatar05,
+  'avatars/avatar-06': avatarsAvatar06,
+  'avatars/avatar-07': avatarsAvatar07,
+  'avatars/avatar-08': avatarsAvatar08,
+  'avatars/avatar-09': avatarsAvatar09,
+  'avatars/avatar-10': avatarsAvatar10,
+  'avatars/avatar-11': avatarsAvatar11,
+  'avatars/avatar-12': avatarsAvatar12,
+  'continents/AF': continentsAF,
+  'continents/AN': continentsAN,
+  'continents/AS': continentsAS,
+  'continents/EU': continentsEU,
+  'continents/NA': continentsNA,
+  'continents/OC': continentsOC,
+  'continents/SA': continentsSA,
+  'leagues/bronze': leaguesBronze,
+  'leagues/diamond': leaguesDiamond,
+  'leagues/gold': leaguesGold,
+  'leagues/legend': leaguesLegend,
+  'leagues/ruby': leaguesRuby,
+  'leagues/sapphire': leaguesSapphire,
+  'leagues/silver': leaguesSilver,
+  'levels/cartographer': levelsCartographer,
+  'levels/navigator': levelsNavigator,
+  'levels/pathfinder': levelsPathfinder,
+  'levels/pioneer': levelsPioneer,
+  'levels/voyager': levelsVoyager,
+  'levels/wanderer': levelsWanderer,
+  'levels/worldkeeper': levelsWorldkeeper,
+  'rewards/coin': rewardsCoin,
+  'rewards/gem': rewardsGem,
+  'rewards/heart': rewardsHeart,
+  'rewards/streak-flame': rewardsStreakFlame,
+  'rewards/streak-freeze': rewardsStreakFreeze,
+  'rewards/trophy': rewardsTrophy,
+  'rewards/xp-orb': rewardsXpOrb,
 } as const satisfies Readonly<Record<string, ArtModule>>
 
 /** Every illustration this build ships. */

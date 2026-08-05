@@ -45,7 +45,7 @@
 const { chromium } = require('playwright')
 const { launchOptions } = require('./chromium.cjs')
 const { token } = require('./tokens.cjs')
-const { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } = require('node:fs')
+const { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync, statSync } = require('node:fs')
 const { join, dirname } = require('node:path')
 
 const ROOT = join(__dirname, '..')
@@ -188,28 +188,60 @@ const APP_ICONS = [
   },
 ]
 
-/** Illustrations, by the name the app refers to them by. */
-const ILLUSTRATIONS = [
-  'atlas/welcome',
-  'atlas/celebrate',
-  'atlas/thinking',
-  'atlas/encouraging',
-  'atlas/waving-back',
-  'atlas/broken-compass',
-  'atlas/resting',
-  'onboarding/explore',
-  'onboarding/learn',
-  'onboarding/conquer',
-  'states/empty-caught-up',
-  'states/empty-no-friends',
-  'states/empty-profile',
-  'states/empty-collection',
-  'states/error-generic',
-  'states/offline',
-  'states/hearts-empty',
-  'celebration/burst',
-  'celebration/rays',
+/**
+ * Illustrations, DISCOVERED from the master library rather than listed here.
+ *
+ * It was a hardcoded array of nineteen names, which was fine while nineteen was the
+ * number. A delivery of fifty-eight more made it a list nobody would keep in step: an
+ * artist drops a PNG in `docs/design/assets/rewards/` and nothing ships it, with no
+ * error, because a name that is absent from an array looks exactly like a name that
+ * was never drawn. Same failure mode as the screenshot harness's hardcoded frame list,
+ * and the same fix — read the directory.
+ *
+ * Explicit directories rather than a recursive walk, because this folder also holds
+ * things that must NOT ship: `screens/` is the rendered screenshot record, `app/` and
+ * `brand/` are masters the four platform icons are derived from above, and
+ * `mockup-v1.png` is a 15-screen design reference.
+ */
+const ART_DIRS = [
+  'atlas',
+  'onboarding',
+  'states',
+  'celebration',
+  'achievements',
+  'avatars',
+  'continents',
+  'leagues',
+  'levels',
+  'rewards',
 ]
+
+/**
+ * Masters in an art directory that are still not shipped, each with the reason.
+ *
+ * `character-sheet` is a model sheet — a reference for keeping Atlas consistent between
+ * generations, not a picture any screen draws. `sparkle-sheet` is a 2048x512 sprite
+ * strip of eight frames, and the resize below would scale it like a single image and
+ * silently break the frame arithmetic; it needs sprite handling before it can ship.
+ */
+const NOT_SHIPPED = new Set(['atlas/character-sheet', 'celebration/sparkle-sheet'])
+
+const ILLUSTRATIONS = ART_DIRS.flatMap((dir) =>
+  readdirSync(join(MASTERS, dir))
+    .filter((f) => f.endsWith('.png'))
+    .map((f) => `${dir}/${f.replace(/\.png$/, '')}`)
+    .filter((name) => !NOT_SHIPPED.has(name))
+    .sort(),
+)
+
+/**
+ * The continents are full-bleed backgrounds, not subjects on transparency.
+ *
+ * `cover` and opaque: a continent card is a filled panel with real Natural Earth
+ * geometry composited on top (asset-prompts.md §8), so letterboxing it onto the canvas
+ * colour like a mascot would leave bands down either side of the card.
+ */
+const isBackground = (name) => name.startsWith('continents/')
 
 /**
  * Draw one master into a canvas and read the bytes back.
@@ -395,7 +427,13 @@ export type ArtName = keyof typeof ART_BY_NAME
     // count over it would have made every line report its own weight as its resolution.
     let chosen = null
     for (const rung of LADDER) {
-      const written = write(out, await render(page, master, { ...ILLUSTRATION, ...rung, fit: 'cover' }))
+      // `opaque` for a background, and it is not cosmetic: the edge feather below only
+      // runs when `opaque` is false, and feathering a full-bleed continent card would
+      // fade its own edges to transparent — the opposite of what it is for.
+      const written = write(
+        out,
+        await render(page, master, { ...ILLUSTRATION, ...rung, fit: 'cover', opaque: isBackground(name) }),
+      )
       chosen = { ...rung, bytes: written }
       if (written <= ILLUSTRATION.budget) break
     }
