@@ -16,11 +16,16 @@ begin;
 -- table quietly dropping out of the list. Adding a table means adding it to the query
 -- AND incrementing this number.
 --
--- 21 → 24 → 27: `record_lesson` brought three assertions, two of them the pair every
--- SECURITY DEFINER function in this schema now gets (unreachable by a client, reachable
--- by service_role) and one confirming `streaks` still has no client write path now that
--- it finally has a server-side writer.
-select plan(29);
+-- 21 → 24 → 29 → 32. `record_lesson` brought three: the pair every SECURITY DEFINER
+-- function in this schema now gets (unreachable by a client, reachable by service_role)
+-- plus one confirming `streaks` still has no client write path, now that it finally has a
+-- server-side writer at all. `purchase_item` brought three more and `shop_items` a
+-- thirteenth row to the table list — that function is the ONE here a signed-in client may
+-- call, which is worth saying out loud and worth testing from both directions. The
+-- hardening pass brought the last three: append-only on `review_log` and a pinned
+-- search_path on every SECURITY DEFINER function were rules this schema stated in prose
+-- and did not enforce, and `lessons.kind` was free text that reached the XP ledger.
+select plan(32);
 
 -- Every table that holds user data must have RLS on. This catches the classic
 -- failure: a new table added months from now with RLS quietly left off.
@@ -199,6 +204,46 @@ select is_empty(
   $$ select policyname from pg_policies
       where tablename = 'shop_items' and cmd in ('INSERT','UPDATE','DELETE') $$,
   'no client write policy on shop_items'
+);
+
+
+-- ── the hardening pass ──────────────────────────────────────────────────────
+--
+-- `review_log` opens `create_learning.sql` with "APPEND-ONLY and authoritative", and the
+-- whole recovery guarantee of the learning engine rests on it. RLS could not enforce it:
+-- the table has a SELECT policy and no other, which stops a client and does nothing to
+-- `service_role`, which every edge function runs as. So it needed a trigger, and the
+-- trigger needs a test — an append-only claim nobody checks is a comment.
+select throws_ok(
+  $$ delete from review_log where id = -1 $$,
+  'P0001',
+  null,
+  'review_log refuses a delete'
+);
+
+-- Every SECURITY DEFINER function in this schema pins its search_path. The two wallet
+-- functions were created with `search_path = public` and left that way by the migration
+-- that wrote down the rule, which is how a rule acquires an exception nobody remembers.
+select is_empty(
+  $$ select p.proname
+       from pg_proc p
+       join pg_namespace n on n.oid = p.pronamespace
+      where n.nspname = 'public'
+        and p.prosecdef
+        and not coalesce(p.proconfig::text like '%search_path=%', false) $$,
+  'every SECURITY DEFINER function pins a search_path'
+);
+
+-- `lessons.kind` reached `xp_ledger.reason` as free text from an unvalidated request
+-- field. The ledger's reason is what answers "where did my XP come from"; a column a
+-- client can write arbitrary strings into cannot answer it.
+select throws_ok(
+  $$ insert into lessons (id, user_id, kind, items, correct, started_at)
+     values ('00000000-0000-0000-0000-0000000000ff',
+             '00000000-0000-0000-0000-000000000001', 'free_xp_please', 1, 1, now()) $$,
+  '22P02',
+  null,
+  'lessons.kind refuses a value outside the enum'
 );
 
 select * from finish();
