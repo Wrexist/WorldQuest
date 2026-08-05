@@ -154,12 +154,16 @@ reason the product did not yet *look like itself*.
 > 3. **The icon could not be used as delivered.** `app/icon.png` is 1536×1024 **with an
 >    alpha channel**. App Store Connect rejects both, at upload rather than at review.
 >    The build squares it and flattens it onto the canvas colour.
-> 4. **Palette.** `brand/mark.png` is on-palette — deep navy, sky blue, warm gold. The
->    app icon master is a grey-green vignette that is not on this page's palette, and
->    leans photoreal where the style block asks for rounded chunky forms. It is used as
->    delivered because the art direction is not this document's call to overrule; the
->    mark is what the adaptive icon and favicon are cut from, so the two do not match
->    each other as closely as they eventually should.
+> 4. **Palette — and one thing that fixed itself.** `brand/mark.png` is on-palette:
+>    deep navy, sky blue, warm gold. The icon MASTER is a grey-green vignette that is
+>    not, and leans photoreal where the style block asks for rounded chunky forms.
+>
+>    The shipped icon is on-palette anyway, and not by intention: that vignette is in
+>    the alpha channel, so flattening it onto `colors.bg.canvas` — which the store rules
+>    forced, since an icon may not carry transparency — replaced the grey-green with
+>    #0B1730. Worth knowing before anyone "fixes" the master, because the two look
+>    different and the derived one is the better of them. The rendering style still does
+>    not match the mark, which is what the adaptive icon and favicon are cut from.
 >
 > **Still missing:** the wordmark and lockup (1b, 1c), the mono silhouette below, the
 > Android notification icon — which needs that silhouette and cannot be derived from a
