@@ -58,6 +58,22 @@ const CONSUMERS = [
   join(ROOT, 'apps/mobile/app'),
   join(ROOT, 'apps/mobile/src'),
   join(ROOT, 'packages/content/scripts'),
+  /**
+   * The edge functions, and this is the entry that changes what the allowlist MEANS.
+   *
+   * Five entries below said "server-authoritative" — `applyActivity`, `grantFreeze`,
+   * `markBroken`, `heartsNow` and one for a function that does not exist — about code no
+   * server imported.
+   * The reason was unfalsifiable, because the only tree that could confirm or deny it was
+   * not scanned. So "the server does this" and "nobody built this" produced an identical
+   * green run, which is precisely the distinction this file exists to draw.
+   *
+   * With `_src` scanned, a claim about the server is checkable: wire it and the entry goes
+   * stale and fails; leave it unwired and it stays honestly on the list. `applyActivity`
+   * moved from the allowlist to `reachable` the day `record_lesson` called it, which is
+   * the behaviour the header describes and did not have.
+   */
+  join(ROOT, 'supabase/functions/_src'),
 ]
 
 /**
@@ -68,20 +84,16 @@ const CONSUMERS = [
  */
 const ALLOWED: Record<string, string> = {
   // ── the server decides; the client's copy is only ever a prediction (ADR 0006)
-  xpForAnswer: 'server-authoritative reward maths',
-  xpForLesson: 'server-authoritative reward maths',
-  coinsForLesson: 'server-authoritative reward maths',
-  applyStreakBonus: 'server-authoritative reward maths',
-  applyActivity: 'streaks are server-authoritative — "a client that can write them is a client that can be edited"',
-  startOfLocalDay: 'used by applyActivity, server-side',
-  grantFreeze: 'a purchase; the server owns the balance',
-  markBroken: 'the server decides a streak is broken, never the client',
-  applyStoreNotification: 'the store notification handler runs on the server and is the ONLY caller — a client that could apply an App Store notification could grant itself Premium. Pure and fully tested here precisely because the handler needs Apple/Google credentials to exercise.',
+  //
+  // This block held four more entries — `xpForAnswer`, `xpForLesson`, `coinsForLesson`
+  // and `applyStreakBonus` — all reading "server-authoritative reward maths", for four
+  // functions that have never existed. Three more under Leagues said the same about
+  // `leagueFor`, `promotionZone` and `relegationZone`. Seven of the thirty-five entries
+  // on this list, a fifth of it, were decisions about code nobody had written; the ghost
+  // check below the loop is what found them and what stops them coming back.
+
 
   // ── roadmapped, and deliberately not built during v1.0
-  leagueFor: 'Leagues are v2.0 (roadmap.md). The Home tile stays a tile.',
-  promotionZone: 'Leagues are v2.0',
-  relegationZone: 'Leagues are v2.0',
 
   // ── consumed by another engine rather than by a screen
   evaluate: 'the single-definition form; the client calls evaluateAll',
@@ -89,7 +101,6 @@ const ALLOWED: Record<string, string> = {
   SLOTS: 'the type is what callers use; the screen keys its titles by Slot',
   SPEED_ROUND_MS: 'the whole-lesson goal for the speed_round quest slot, read inside advanceTask — NOT the same thing as SPEED_SECONDS, which is per question',
   hasExpired: 'the quest is regenerated per (user, day) by seed, so a stale one cannot be shown',
-  candidatePool: 'used inside composeLesson',
   itemsForFact: 'used inside composeLesson — every presentation of a fact, including the screen-reader-safe siblings, so a template that cannot be asked costs the lesson nothing',
   applySoftCap: 'used inside gradeLesson, which the server runs',
   selectItems: 'used inside composeLesson',
@@ -104,8 +115,6 @@ const ALLOWED: Record<string, string> = {
   REPAIR_WINDOW_HOURS: 'used inside repairAvailability, which the streak screen calls',
   REPAIR_COOLDOWN_DAYS: 'used inside repairAvailability',
   STREAK_MILESTONES: 'used inside isMilestone',
-  clockFrom: 'test and server seam',
-  simulateEconomy: 'a `pnpm balance-check` tool, not a runtime path',
 }
 
 /**
@@ -120,6 +129,19 @@ const ALLOWED: Record<string, string> = {
  */
 const KNOWN_GAPS: Record<string, string> = {
   hasUnsyncedProgress: 'meant to warn before sign-out; there is no sign-out yet',
+
+  // Moved here from ALLOWED once the server tree became scannable. All three were
+  // allowlisted with reasons that read as decisions — "a purchase; the server owns the
+  // balance", "the server decides a streak is broken", "server-authoritative reward
+  // maths" — and were descriptions of code nobody had written. That is exactly the
+  // "we forgot" wearing "we decided not to" that this file's footer warns about, and
+  // it survived because the only tree that could disprove it was not being read.
+  grantFreeze:
+    'a streak freeze is a coin spend and there is no endpoint for one — purchase_item ' +
+    'sells cosmetics only',
+  markBroken:
+    'nothing expires a streak on a day with no lesson; record_lesson only reacts to ' +
+    'activity, and the missing half needs a scheduled job',
 }
 
 // ── collect engine exports ───────────────────────────────────────────────────
@@ -180,6 +202,22 @@ const unreachable: Array<{ name: string; file: string }> = []
 const staleAllowances: string[] = []
 const gaps: string[] = []
 
+/**
+ * An allowlist entry for a symbol nobody exports.
+ *
+ * `applyStreakBonus: 'server-authoritative reward maths'` sat in ALLOWED, and there is no
+ * such function anywhere in the engine. Both loops below iterate `exported`, so a name
+ * that is not exported is never compared against anything — the entry was unreachable by
+ * the very check it lived in, and would have stayed there for ever.
+ *
+ * Ghosts are worse than stale reasons. A stale reason is a sentence that stopped being
+ * true; a ghost is evidence that the list was written from memory rather than from the
+ * code, which is a reason to distrust the entries that ARE real.
+ */
+const ghosts = [...Object.keys(ALLOWED), ...Object.keys(KNOWN_GAPS)].filter(
+  (name) => !exported.has(name),
+)
+
 for (const [name, file] of exported) {
   if (mentioned(name)) {
     // Wired AND listed means the note is out of date — a stale reason is worse than
@@ -193,6 +231,14 @@ for (const [name, file] of exported) {
     continue
   }
   unreachable.push({ name, file })
+}
+
+if (ghosts.length > 0) {
+  console.error('\n  ! allowlisted names that nothing exports:')
+  for (const name of ghosts) console.error(`      · ${name}`)
+  console.error('    Delete them. An entry for a symbol that does not exist was never')
+  console.error('    checked against anything, and it makes the real entries less')
+  console.error('    believable.\n')
 }
 
 console.log('Engine reachability\n')
@@ -216,7 +262,7 @@ for (const { name, file } of unreachable) {
   console.log(`  ✗ ${name}  (${file})`)
 }
 
-if (unreachable.length > 0 || staleAllowances.length > 0) {
+if (unreachable.length > 0 || staleAllowances.length > 0 || ghosts.length > 0) {
   console.error(
     `\n✗ ${unreachable.length} engine export(s) no screen can reach, ` +
       `${staleAllowances.length} stale allowance(s).\n` +
