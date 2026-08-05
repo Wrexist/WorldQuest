@@ -77,17 +77,20 @@ function parseBody(raw: unknown): SubmitBody | null {
   // RangeError there — an uncaught 500 any client could ask for.
   if (!isFiniteMs(b.startedAt)) return null
   if (!Array.isArray(b.answers) || b.answers.length === 0) return null
-  // A statistic, not a reward input — nothing is paid or withheld on it, which is what
-  // makes an unverifiable client number acceptable here. Bounded anyway, because a
-  // smallint column and an absurd value are a bad combination.
+  // `heartsLost` is NOT validated here, because like `wasCorrect` below it is no longer
+  // read. It used to be: range-checked, clamped, and written to `lessons.hearts_lost`.
   //
-  // The ceiling is `hearts.max * 10`, not `hearts.max`. This comment used to say the
-  // latter, on the reasoning that "a revive restores to full rather than beyond it" —
-  // true of the BALANCE and irrelevant to this number, which is cumulative. A lesson
-  // that spends five hearts, revives, and spends five more legitimately reports ten.
-  // Ten revives is already far past anything a real session does, so the bound is
-  // generous by design: it exists to reject a forged integer, not to police play.
-  if (b.heartsLost !== undefined && !isFiniteMs(b.heartsLost)) return null
+  // The defence for that was "a statistic, not a reward input — nothing is paid or
+  // withheld on it". Both halves were true and the conclusion did not follow.
+  // `docs/systems/xp-economy.md §7` reads heart-block rate per accuracy band to decide
+  // whether the mechanic is aimed the right way, and §3 stakes the entire design of
+  // hearts on that reading — so a caller who could choose the number could choose the
+  // evidence for the next balance change. Shape validation constrains a forged value to
+  // a plausible one, which is the harder kind to notice.
+  //
+  // `gradeLesson` derives it now, from the correctness the server itself decided and the
+  // memory record the server itself holds.
+  //
   // A lesson longer than the documented maximum is a forged payload, not a session.
   if (b.answers.length > 50) return null
 
@@ -391,10 +394,10 @@ async function handle(req: Request): Promise<Response> {
         }
       : null,
     p_max_per_hour: BALANCE.integrity.maxLessonSubmitsPerHour,
-    p_hearts_lost: Math.min(
-      Math.max(Math.trunc(body.heartsLost ?? 0), 0),
-      BALANCE.hearts.max * 10,
-    ),
+    // Derived by the grader from server-decided correctness, not taken from the payload.
+    // No clamp: the replay cannot produce a value outside 0..answers.length by
+    // construction, and a clamp here would be a second rule quietly disagreeing with it.
+    p_hearts_lost: result.heartsLost,
     p_streak_xp: milestone.xp,
     p_streak_coins: milestone.coins,
   })

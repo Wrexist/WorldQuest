@@ -72,6 +72,23 @@ export type GradeResult = {
    * the event had no producer and all three tiers sat at zero.
    */
   readonly overdueCleared: number
+  /**
+   * Hearts spent during this lesson, DERIVED here rather than reported by the client.
+   *
+   * It used to arrive in the submit payload. The server range-checked it and wrote it
+   * to `lessons.hearts_lost` — so any authenticated caller could pick the number,
+   * within bounds, and `docs/systems/xp-economy.md §7` watches heart-block rate per
+   * accuracy band as an economy health metric. A metric the measured party can set is
+   * not a measurement, and the whole argument of §3 — that hearts must protect the
+   * struggling learner most — is settled by reading exactly this number back.
+   *
+   * Nothing is trusted to compute it. `wasCorrect` is already re-decided from the
+   * answer key before grading, `memory` is the server's own record of what the user
+   * had seen, and the replay below is the same rule set as `lesson/machine.ts`,
+   * against the same BALANCE constants. It is not an anti-cheat check bolted on; it
+   * is the same derivation, run where the data is authoritative.
+   */
+  readonly heartsLost: number
 }
 
 const DEFAULT_MEDIAN_MS = 8_000
@@ -165,6 +182,21 @@ export function gradeLesson(input: GradeInput): GradeResult {
   let speedBonuses = 0
   let overdueCleared = 0
 
+  // The heart replay. Mirrors `lesson/machine.ts` — same constants, same order — and
+  // has to, because the client renders hearts live from the machine and this decides
+  // what is recorded. Two implementations of one rule is the drift the whole
+  // shared-grader design exists to prevent, so if either side changes, both do.
+  //
+  // `heartsEnabled` has no equivalent here because no caller sets it: Relaxed Mode and
+  // Classroom Mode turn hearts off and are v2 (see roadmap), and `useLesson` takes the
+  // `true` default on every path today. When they arrive they arrive as server-known
+  // state — a mode, not a client claim — and this replay reads it like everything else.
+  // Annotated, because `BALANCE` is `as const` and the initialiser would otherwise
+  // narrow this to the literal type `5`.
+  let hearts: number = BALANCE.hearts.max
+  let correctRun = 0
+  let heartsLost = 0
+
   for (const answer of answers) {
     // Sub-400ms answers are not credible. They earn nothing AND never reach the
     // scheduler — letting them through would corrupt the memory model, which is
@@ -207,6 +239,13 @@ export function gradeLesson(input: GradeInput): GradeResult {
     if (answer.wasCorrect) {
       correct++
 
+      correctRun++
+      // A run of correct answers earns a heart back. Capped, and counted on the run
+      // rather than the total, so recovery is what pays.
+      if (correctRun % BALANCE.hearts.restoreEveryCorrectStreak === 0) {
+        hearts = Math.min(BALANCE.hearts.max, hearts + 1)
+      }
+
       // The whole point of computing `wasOverdue`, and the half that was missing.
       // `ach.review.faithful` counts these, `recordServerOutcome` loops
       // `overdueCleared` times, and the number returned below was the 0 it was
@@ -248,6 +287,24 @@ export function gradeLesson(input: GradeInput): GradeResult {
       coins += award.coins
       // Counted from what was actually paid, not from a second copy of the condition.
       if (award.speedBonus) speedBonuses++
+    } else {
+      correctRun = 0
+
+      // New items never cost a heart — you cannot lose a life for not knowing
+      // something you have never been taught (§3 rule 2). `before === null` is that
+      // test, and it is the server's own memory record rather than a flag the payload
+      // could set. Note it is read from `updatedMemory`, so a fact answered twice in
+      // one lesson is new only the first time; the client's machine fixes `isNew` when
+      // the question is built and would call it new both times. The two disagree only
+      // in that case, and this side is the one that gets written down.
+      const chargeable = before !== null || BALANCE.hearts.newItemsCostHearts
+      if (chargeable) {
+        // Only a heart actually held is a heart lost. Answering wrong at zero costs
+        // nothing further — the lesson has already ended for hearts purposes, and
+        // counting it would inflate the very metric §7 reads.
+        if (hearts > 0) heartsLost++
+        hearts = Math.max(0, hearts - 1)
+      }
     }
   }
 
@@ -282,6 +339,7 @@ export function gradeLesson(input: GradeInput): GradeResult {
     perfect,
     rejected,
     overdueCleared,
+    heartsLost,
   }
 }
 

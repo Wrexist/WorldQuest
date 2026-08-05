@@ -6,7 +6,7 @@ import { buildIndex, type Entity, type Fact, type Question, type Template } from
 import { BALANCE } from '../xp/balance.js'
 import { gradeLesson } from '../grading/index.js'
 import { review } from '../learning/fsrs.js'
-import type { MemoryState } from '../learning/types.js'
+import { MIN_CREDIBLE_ANSWER_MS, type MemoryState } from '../learning/types.js'
 import { composeLesson } from './compose.js'
 import {
   accuracy,
@@ -391,6 +391,87 @@ describe('gradeLesson', () => {
       now: T0,
     })
     expect(r.overdueCleared).toBe(0)
+  })
+
+  describe('derives hearts lost, rather than being told', () => {
+    // The number used to arrive in the submit payload, be range-checked, and be written
+    // to `lessons.hearts_lost` — so the party being measured chose the measurement, and
+    // xp-economy.md §7 reads heart-block rate per accuracy band to decide whether the
+    // mechanic is aimed the right way. These assert the derivation matches the machine
+    // the client renders from, because two implementations of one rule is exactly the
+    // drift the shared grader exists to prevent.
+    const seen = (factId: string) => ({
+      factId, stability: 10, difficulty: 5, reps: 2, lapses: 0,
+      lastReviewAt: T0 - 5 * 86_400_000,
+      dueAt: T0 + 86_400_000,
+      suspended: false,
+    })
+
+    it('charges a heart for a wrong REVIEW answer', () => {
+      const r = gradeLesson({
+        lessonId: 'l-hearts-review',
+        answers: answersFrom(['fact.a', 'fact.b'], [false, false]),
+        memory: new Map([['fact.a', seen('fact.a')], ['fact.b', seen('fact.b')]]),
+        now: T0,
+      })
+      expect(r.heartsLost).toBe(2)
+    })
+
+    it('charges nothing for a wrong answer on a NEW item', () => {
+      // §3 rule 2, and the one the simulation showed matters most: heart loss scales
+      // with error rate, so charging new items aims the mechanic at the learner who is
+      // struggling hardest.
+      const r = gradeLesson({
+        lessonId: 'l-hearts-new',
+        answers: answersFrom(['fact.a', 'fact.b', 'fact.c'], [false, false, false]),
+        memory: new Map(),
+        now: T0,
+      })
+      expect(r.heartsLost).toBe(0)
+    })
+
+    it('gives one back after a run of correct answers', () => {
+      // Wrong once (−1), then five correct (+1). The run restores, so one net loss —
+      // and `heartsLost` counts what was SPENT, so it stays at 1 rather than dropping
+      // back to 0: the lesson did cost a heart, and it was earned back.
+      const facts = ['fact.a', 'fact.b', 'fact.c', 'fact.d', 'fact.e', 'fact.f']
+      const memory = new Map(facts.map((f) => [f, seen(f)] as const))
+      const r = gradeLesson({
+        lessonId: 'l-hearts-restore',
+        answers: answersFrom(facts, [false, true, true, true, true, true]),
+        memory,
+        now: T0,
+      })
+      expect(r.heartsLost).toBe(1)
+    })
+
+    it('stops counting once the hearts are gone', () => {
+      // Six wrong reviews against five hearts is five losses, not six. Counting the
+      // sixth would inflate the very metric §7 reads.
+      const facts = ['fact.a', 'fact.b', 'fact.c', 'fact.d', 'fact.e', 'fact.f']
+      const memory = new Map(facts.map((f) => [f, seen(f)] as const))
+      const r = gradeLesson({
+        lessonId: 'l-hearts-floor',
+        answers: answersFrom(facts, [false, false, false, false, false, false]),
+        memory,
+        now: T0,
+      })
+      expect(r.heartsLost).toBe(BALANCE.hearts.max)
+    })
+
+    it('ignores answers too fast to be credible', () => {
+      // Consistent with everything else about a sub-400ms answer: it earns nothing and
+      // never reaches the scheduler, so it does not cost a heart either. The one place
+      // this deliberately diverges from the client's live heart display.
+      const r = gradeLesson({
+        lessonId: 'l-hearts-fast',
+        answers: answersFrom(['fact.a'], [false], MIN_CREDIBLE_ANSWER_MS - 1),
+        memory: new Map([['fact.a', seen('fact.a')]]),
+        now: T0,
+      })
+      expect(r.rejected).toBe(1)
+      expect(r.heartsLost).toBe(0)
+    })
   })
 
   it('rejects sub-400ms answers from XP and from the scheduler', () => {
