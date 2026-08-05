@@ -14,6 +14,7 @@ import { AppState, type AppStateStatus } from 'react-native'
 import {
   accuracy,
   awardForAnswer,
+  SPEED_BONUS_MS,
   currentQuestion,
   gradeLesson,
   initialState,
@@ -203,7 +204,9 @@ export function useLesson({
       const before = memory.get(answer.factId) ?? null
       const speedBonusesUsed = state.answers
         .slice(0, state.answers.indexOf(answer))
-        .filter((a) => a.wasCorrect && a.elapsedMs < 3_000).length
+        // The engine's threshold, not a copy of it. A local literal here is a preview
+        // that can promise a bonus the grader will not pay.
+        .filter((a) => a.wasCorrect && a.elapsedMs < SPEED_BONUS_MS).length
       return awardForAnswer({
         wasCorrect: answer.wasCorrect,
         elapsedMs: answer.elapsedMs,

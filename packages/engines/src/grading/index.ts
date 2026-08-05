@@ -76,8 +76,21 @@ export type GradeResult = {
 
 const DEFAULT_MEDIAN_MS = 8_000
 
-/** What one answer is worth. The per-item half of the reward rules. */
-export type Award = { readonly xp: number; readonly coins: number }
+/**
+ * What one answer is worth. The per-item half of the reward rules.
+ *
+ * `speedBonus` is reported rather than left for the caller to re-derive. The grader has
+ * to know whether a bonus was paid, because the next answer's eligibility depends on the
+ * running count — and it used to answer that by repeating the `elapsedMs < SPEED_BONUS_MS
+ * && used < max` condition beside the call. Two copies of a rule drift; the one that pays
+ * and the one that counts drifting apart means a lesson pays more bonuses than it allows.
+ */
+export type Award = {
+  readonly xp: number
+  readonly coins: number
+  /** This answer was paid a speed bonus, so it counts against the per-lesson cap. */
+  readonly speedBonus: boolean
+}
 
 export type AwardInput = {
   readonly wasCorrect: boolean
@@ -90,8 +103,14 @@ export type AwardInput = {
   readonly speedBonusesUsed: number
 }
 
-/** Under this, an answer is fast enough to be worth a bonus. */
-const SPEED_BONUS_MS = 3_000
+/**
+ * Under this, an answer is fast enough to be worth a bonus.
+ *
+ * Exported because the lesson screen previews the award as the user answers, and it was
+ * counting its own eligible answers against a local `3_000`. A threshold written twice is
+ * a preview that can promise a bonus the grader does not pay.
+ */
+export const SPEED_BONUS_MS = 3_000
 
 /**
  * The reward for a single answer, in one place.
@@ -108,20 +127,19 @@ const SPEED_BONUS_MS = 3_000
  * makes `gradeLesson` itself one module rather than two.
  */
 export function awardForAnswer(input: AwardInput): Award {
-  if (!input.wasCorrect) return { xp: 0, coins: 0 }
+  if (!input.wasCorrect) return { xp: 0, coins: 0, speedBonus: false }
 
   const cheapRepeat = input.alreadyKnown && !input.wasOverdue
   let xp = cheapRepeat ? BALANCE.xp.repeatKnownNotDue : BALANCE.xp.correctAnswer
 
   if (input.wasOverdue) xp += BALANCE.xp.overdueReviewBonus
-  if (
+
+  const speedBonus =
     input.elapsedMs < SPEED_BONUS_MS &&
     input.speedBonusesUsed < BALANCE.xp.speedBonusMaxPerLesson
-  ) {
-    xp += BALANCE.xp.speedBonus
-  }
+  if (speedBonus) xp += BALANCE.xp.speedBonus
 
-  return { xp, coins: BALANCE.coins.correctAnswer }
+  return { xp, coins: BALANCE.coins.correctAnswer, speedBonus }
 }
 
 export function gradeLesson(input: GradeInput): GradeResult {
@@ -189,6 +207,14 @@ export function gradeLesson(input: GradeInput): GradeResult {
     if (answer.wasCorrect) {
       correct++
 
+      // The whole point of computing `wasOverdue`, and the half that was missing.
+      // `ach.review.faithful` counts these, `recordServerOutcome` loops
+      // `overdueCleared` times, and the number returned below was the 0 it was
+      // initialised to — so the achievement this product's core loop earns had no
+      // producer and sat at zero across all three tiers. The award used `wasOverdue`
+      // and nothing counted it.
+      if (wasOverdue) overdueCleared++
+
       /**
        * Re-answering something already known, when it was NOT due, is near-worthless.
        * This is what stops XP tracking activity instead of learning.
@@ -220,13 +246,8 @@ export function gradeLesson(input: GradeInput): GradeResult {
       })
       rawXp += award.xp
       coins += award.coins
-
-      if (
-        answer.elapsedMs < SPEED_BONUS_MS &&
-        speedBonuses < BALANCE.xp.speedBonusMaxPerLesson
-      ) {
-        speedBonuses++
-      }
+      // Counted from what was actually paid, not from a second copy of the condition.
+      if (award.speedBonus) speedBonuses++
     }
   }
 

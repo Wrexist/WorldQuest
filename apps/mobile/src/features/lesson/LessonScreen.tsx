@@ -21,7 +21,7 @@ import {
   text,
 } from '@worldquest/design'
 import { deriveRating, lessonLength } from '@worldquest/engines'
-import type { ContentIndex, GradeResult, LessonState, Question } from '@worldquest/engines'
+import type { ContentIndex, GradeResult, LessonState, Question, Slot } from '@worldquest/engines'
 import { Flag } from '../../components/Flag.js'
 import { CountryMap } from '../../components/CountryMap.js'
 import { useLesson } from './hooks/useLesson.js'
@@ -168,11 +168,31 @@ export function LessonScreen({
     // one quest while the lesson ticked another.
     if (index !== null) {
       const quest = todaysQuest(index.index, memory)
-      const done = recordQuestEvent(quest, {
-        type: 'lesson_completed',
-        accuracy: optimistic.accuracy,
-        durationMs,
-      })
+
+      // The answers first, because that is the order they happened in, and then the
+      // lesson. Both paths can complete a task, so both returns are collected: a quest
+      // whose last outstanding requirement is a fact answer used to finish in silence,
+      // because the loop below threw its completions away and only the lesson event was
+      // ever checked.
+      const done: Slot[] = []
+      for (const answer of state.answers) {
+        if (answer.chosenOptionId === null) continue
+        done.push(
+          ...recordQuestEvent(quest, {
+            type: 'fact_answered',
+            factId: answer.factId,
+            correct: answer.wasCorrect,
+          }),
+        )
+      }
+      done.push(
+        ...recordQuestEvent(quest, {
+          type: 'lesson_completed',
+          accuracy: optimistic.accuracy,
+          durationMs,
+        }),
+      )
+
       if (done.length > 0) {
         track('quest_completed', { quest_id: quest.date })
         // `ach.quest.regular` counts `daily_quest_completed` and had no producer at all,
@@ -181,14 +201,6 @@ export function LessonScreen({
         for (const unlock of recordQuestCompleted(Date.now())) {
           track('achievement_unlocked', { achievement_id: unlock.achievementId, tier: unlock.tier })
         }
-      }
-      for (const answer of state.answers) {
-        if (answer.chosenOptionId === null) continue
-        recordQuestEvent(quest, {
-          type: 'fact_answered',
-          factId: answer.factId,
-          correct: answer.wasCorrect,
-        })
       }
     }
 
@@ -199,7 +211,11 @@ export function LessonScreen({
       correct: optimistic.correct,
       accuracy: optimistic.accuracy,
       duration_ms: Date.now() - (state.startedAt ?? Date.now()),
-      hearts_lost: 5 - state.hearts,
+      // The cumulative count, the same figure `enqueueLesson` sends. `5 - state.hearts`
+      // is the BALANCE, not the history: a lesson that spent three hearts and had two
+      // restored reported one. Two numbers for one lesson, and the dashboard's was the
+      // wrong one. (It also spelled the heart maximum as a literal.)
+      hearts_lost: state.heartsLost,
       xp_awarded: optimistic.xpAwarded,
       was_offline: isOffline,
     })
