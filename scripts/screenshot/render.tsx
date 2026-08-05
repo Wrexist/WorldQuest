@@ -30,6 +30,7 @@ import {
 import nav from '../../packages/i18n/locales/en/nav.json'
 import lessonStrings from '../../packages/i18n/locales/en/lesson.json'
 import {
+  BALANCE,
   buildIndex,
   composeLesson,
   emptyProgress,
@@ -705,7 +706,17 @@ function Gallery() {
             art misplaced and nobody looking. They are here to be looked at. */}
         <Phone label="Lesson · out of hearts" id="lesson-out-of-hearts">
           <View style={s.centreBox}>
-            <OutOfHearts coins={520} onRevive={() => {}} onFinish={() => {}} />
+            {/* The balance comes from the table, not from a number picked to look
+                plausible. `canAfford` is `coins >= continueLesson`, so the price
+                itself is the boundary this frame is meant to sit on — and had the
+                price ever risen past a hardcoded 520, the frame would have quietly
+                started rendering the CANNOT-afford branch under a caption saying
+                otherwise. */}
+            <OutOfHearts
+              coins={BALANCE.prices.continueLesson}
+              onRevive={() => {}}
+              onFinish={() => {}}
+            />
           </View>
         </Phone>
 

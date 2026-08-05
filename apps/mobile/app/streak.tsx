@@ -103,14 +103,21 @@ export default function StreakRoute() {
       .finally(() => setBuyingFreeze(false))
   }, [buyingFreeze])
 
-  // Every number on this screen comes from the server, so a failed fetch with nothing
-  // cached must not render — `data?.x ?? 0` would show a streak of zero, a longest of
-  // zero and no freezes to a user who has all three. That is the wrong-fact failure
+  // Every number on this screen comes from the server, so a fetch that has not
+  // ARRIVED must not render either — `data?.x ?? 0` shows a streak of zero, a longest
+  // of zero and no freezes to a user who has all three. That is the wrong-fact failure
   // mode, on the one screen whose entire subject is a number the user cares about.
-  // `useProgress` has reported `status: 'error'` (only when there is no cache to fall
-  // back on) since it was written; this route read `data` and ignored it.
+  // `useProgress` has reported both `loading` and `error` (the latter only when there
+  // is no cache to fall back on) since it was written; this route read `data` and
+  // ignored the status entirely.
+  //
+  // `showLoading` is not the default on `ContentGate` because most screens here have
+  // their own skeleton and would otherwise get two. This one has no skeleton of its
+  // own, and the first fix covered only the error half — a zero streak during the
+  // ordinary first second of a cold open is the same lie as a zero streak after a
+  // failure, and it is the one a user actually sees.
   return (
-    <ContentGate status={status} onRetry={refetch}>
+    <ContentGate status={status} onRetry={refetch} showLoading>
       <StreakScreen
         onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))}
         // What the streak IS today, not what the database last wrote. `streaks.current` is
