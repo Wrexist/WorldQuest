@@ -285,6 +285,18 @@ export function LessonScreen({
 
   const answered = lesson.state.phase === 'answered'
   const lastAnswer = lesson.state.answers[lesson.state.answers.length - 1]
+  /**
+   * What that answer was actually worth.
+   *
+   * The card rendered `"+10"` and `"+5"` as string literals, which broke the rule that
+   * reward numbers live only in the balance table — and, more to the point, was false.
+   * The real figure is 2 for a known fact the scheduler did not ask for, 12 for one it
+   * did, 14 with the speed bonus, and a quarter of any of those past the daily cap.
+   *
+   * `awardForAnswer` is the same function the grader and the server run, so the number
+   * under a user's thumb is the number that lands in the ledger.
+   */
+  const lastAward = lastAnswer ? lesson.awardFor(lastAnswer) : null
 
   return (
     <View style={styles.screen}>
@@ -473,8 +485,16 @@ export function LessonScreen({
               <>
                 <Text style={styles.feedbackTitleOk}>{t('lesson:feedback.correct.title')}</Text>
                 <View style={styles.rewards}>
-                  <Stat kind="xp" value="+10" accessibilityLabel={t('lesson:reward.xp', { amount: 10 })} />
-                  <Stat kind="coin" value="+5" accessibilityLabel={t('lesson:reward.coins', { amount: 5 })} />
+                  <Stat
+                    kind="xp"
+                    value={`+${lastAward?.xp ?? 0}`}
+                    accessibilityLabel={t('lesson:reward.xp', { amount: lastAward?.xp ?? 0 })}
+                  />
+                  <Stat
+                    kind="coin"
+                    value={`+${lastAward?.coins ?? 0}`}
+                    accessibilityLabel={t('lesson:reward.coins', { amount: lastAward?.coins ?? 0 })}
+                  />
                 </View>
               </>
             ) : (

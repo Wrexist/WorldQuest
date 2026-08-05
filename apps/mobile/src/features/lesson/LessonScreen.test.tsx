@@ -12,6 +12,7 @@
 
 import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { BALANCE } from '@worldquest/engines'
 import { LessonScreen } from './LessonScreen.js'
 
 // The sync queue writes to MMKV and would try to reach Supabase. The queue's own
@@ -53,6 +54,39 @@ describe('Lesson', () => {
     fireEvent.click(options[0]!)
 
     expect(screen.getByRole('button', { name: 'Continue' })).toBeTruthy()
+  })
+
+  it('shows the reward it is actually going to award', () => {
+    // The card rendered the string literals "+10" and "+5". That broke the rule that
+    // reward numbers live only in the balance table, and it was also false: the real
+    // figure is 2 for a known fact the scheduler did not ask for, 12 for one it did, 14
+    // with the speed bonus, a quarter of any of those past the daily cap.
+    //
+    // Asserted against BALANCE rather than against "10", so changing a reward number in
+    // the one place it is allowed to change does not fail this test — and hardcoding one
+    // back into the screen does.
+    const { container } = render(<LessonScreen onExit={() => {}} />)
+    const options = answerButtons()
+    const correct = options.find((o) => o.getAttribute('aria-label') !== null) ?? options[0]!
+    fireEvent.click(correct)
+
+    const shown = container.textContent ?? ''
+    const rewards = [...shown.matchAll(/\+(\d+)/g)].map((m) => Number(m[1]))
+    // Every figure on the card is a value the balance table can produce for one answer.
+    const possibleXp = [
+      0,
+      BALANCE.xp.repeatKnownNotDue,
+      BALANCE.xp.correctAnswer,
+      BALANCE.xp.correctAnswer + BALANCE.xp.speedBonus,
+      BALANCE.xp.correctAnswer + BALANCE.xp.overdueReviewBonus,
+      BALANCE.xp.correctAnswer + BALANCE.xp.overdueReviewBonus + BALANCE.xp.speedBonus,
+    ]
+    for (const value of rewards) {
+      expect(
+        possibleXp.includes(value) || value === BALANCE.coins.correctAnswer,
+        `"+${value}" is not a reward this economy can pay for one answer`,
+      ).toBe(true)
+    }
   })
 
   it('never punishes a wrong answer', () => {

@@ -67,6 +67,54 @@ export type GradeResult = {
 
 const DEFAULT_MEDIAN_MS = 8_000
 
+/** What one answer is worth. The per-item half of the reward rules. */
+export type Award = { readonly xp: number; readonly coins: number }
+
+export type AwardInput = {
+  readonly wasCorrect: boolean
+  readonly elapsedMs: number
+  /** The scheduler asked for this review — see `overdueReviewBonus`. */
+  readonly wasOverdue: boolean
+  /** Already at `mastered` or better before this lesson. */
+  readonly alreadyKnown: boolean
+  /** How many speed bonuses this lesson has already paid. */
+  readonly speedBonusesUsed: number
+}
+
+/** Under this, an answer is fast enough to be worth a bonus. */
+const SPEED_BONUS_MS = 3_000
+
+/**
+ * The reward for a single answer, in one place.
+ *
+ * Extracted so the feedback card can show what the user ACTUALLY earned. It used to
+ * render the string `"+10"` and `"+5"`, hardcoded — which broke the rule that reward
+ * numbers live only in the balance table, and was also simply untrue: the real figure
+ * is 2 for a known fact that was not due, 12 for one the scheduler asked for, 14 with
+ * the speed bonus, and a quarter of any of those past the daily soft cap.
+ *
+ * Importing `BALANCE.xp.correctAnswer` into the screen would have fixed the rule and
+ * left the lie. A function both the grader and the screen call fixes both, and means
+ * the two can never disagree about what a user just earned — the same argument that
+ * makes `gradeLesson` itself one module rather than two.
+ */
+export function awardForAnswer(input: AwardInput): Award {
+  if (!input.wasCorrect) return { xp: 0, coins: 0 }
+
+  const cheapRepeat = input.alreadyKnown && !input.wasOverdue
+  let xp = cheapRepeat ? BALANCE.xp.repeatKnownNotDue : BALANCE.xp.correctAnswer
+
+  if (input.wasOverdue) xp += BALANCE.xp.overdueReviewBonus
+  if (
+    input.elapsedMs < SPEED_BONUS_MS &&
+    input.speedBonusesUsed < BALANCE.xp.speedBonusMaxPerLesson
+  ) {
+    xp += BALANCE.xp.speedBonus
+  }
+
+  return { xp, coins: BALANCE.coins.correctAnswer }
+}
+
 export function gradeLesson(input: GradeInput): GradeResult {
   const {
     lessonId,
@@ -153,19 +201,20 @@ export function gradeLesson(input: GradeInput): GradeResult {
        * had never once been taken in production. Fixing that column is what turned a
        * dormant mispricing into a live one.
        */
-      const cheapRepeat = masteredBefore.has(answer.factId) && !wasOverdue
-      rawXp += cheapRepeat
-        ? BALANCE.xp.repeatKnownNotDue
-        : BALANCE.xp.correctAnswer
-      coins += BALANCE.coins.correctAnswer
-
-      if (wasOverdue) rawXp += BALANCE.xp.overdueReviewBonus
+      const award = awardForAnswer({
+        wasCorrect: true,
+        elapsedMs: answer.elapsedMs,
+        wasOverdue,
+        alreadyKnown: masteredBefore.has(answer.factId),
+        speedBonusesUsed: speedBonuses,
+      })
+      rawXp += award.xp
+      coins += award.coins
 
       if (
-        answer.elapsedMs < 3_000 &&
+        answer.elapsedMs < SPEED_BONUS_MS &&
         speedBonuses < BALANCE.xp.speedBonusMaxPerLesson
       ) {
-        rawXp += BALANCE.xp.speedBonus
         speedBonuses++
       }
     }

@@ -21,6 +21,7 @@ import type { AnsweredItem } from '@worldquest/engines'
 import { submitLesson } from '@worldquest/api'
 import { currentUser, isConfigured, supabase } from './supabase.js'
 import { isOnline, onConnectivityChange } from './connectivity.js'
+import { invalidateProgress } from './query.js'
 import { readJson, writeJson } from './storage.js'
 
 const QUEUE_KEY = 'sync.queue.v1'
@@ -178,6 +179,24 @@ async function send(mutation: QueuedMutation): Promise<void> {
     startedAt: submission.startedAt,
     answers: submission.answers,
   })
+
+  /**
+   * The reconcile every comment in this codebase promised and nothing performed.
+   *
+   * `submitLesson`'s result was discarded here. The client showed an optimistic
+   * prediction, the server computed the truth, and the truth went in the bin — while
+   * `useShop`, `useLesson` and `useProgress` all carry comments saying "the server's
+   * answer overwrites this on the next reconcile". Home kept the numbers it had until
+   * TanStack Query happened to refetch for some other reason, so a user finishing a
+   * lesson watched their XP not move.
+   *
+   * Invalidating rather than writing the response into the cache, deliberately. This
+   * flush may be one of several queued lessons, and the last response is not the current
+   * total; the query knows how to ask for the total. And the streak, the wallet and the
+   * mastery count all move together — a single refetch is both cheaper and less likely
+   * to leave two of the three stale than three hand-written cache writes.
+   */
+  invalidateProgress()
 }
 
 export const peekQueue = (): SyncQueue => queue

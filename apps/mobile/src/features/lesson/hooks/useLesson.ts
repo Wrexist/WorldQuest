@@ -13,10 +13,12 @@ import { useCallback, useEffect, useMemo, useReducer, useRef } from 'react'
 import { AppState, type AppStateStatus } from 'react-native'
 import {
   accuracy,
+  awardForAnswer,
   currentQuestion,
   gradeLesson,
   initialState,
   isFinished,
+  masteryOf,
   transition,
   type GradeResult,
   type LessonEvent,
@@ -162,8 +164,34 @@ export function useLesson({
     onComplete(state, optimistic)
   }
 
+  /**
+   * What a given answer earned, using the same rule the server will apply.
+   *
+   * Lives here rather than in the screen because it needs `memory` — whether the fact
+   * was due, and whether it was already known — which is exactly the information the
+   * hardcoded `"+10"` was standing in for.
+   */
+  const awardFor = useCallback(
+    (answer: LessonState['answers'][number]) => {
+      const before = memory.get(answer.factId) ?? null
+      const speedBonusesUsed = state.answers
+        .slice(0, state.answers.indexOf(answer))
+        .filter((a) => a.wasCorrect && a.elapsedMs < 3_000).length
+      return awardForAnswer({
+        wasCorrect: answer.wasCorrect,
+        elapsedMs: answer.elapsedMs,
+        wasOverdue: before !== null && before.dueAt <= answer.answeredAt,
+        alreadyKnown:
+          before !== null && ['mastered', 'burnished'].includes(masteryOf(before, answer.answeredAt)),
+        speedBonusesUsed,
+      })
+    },
+    [memory, state.answers],
+  )
+
   return {
     state,
+    awardFor,
     question: currentQuestion(state),
     progress: {
       current: Math.min(state.index + 1, state.questions.length),
