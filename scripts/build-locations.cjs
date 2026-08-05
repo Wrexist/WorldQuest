@@ -161,9 +161,29 @@ writeFileSync(
         'wrong fact of the worst kind: quietly wrong, and only on one screen. ' +
         "The GROUPING is this app's own, not UN M49 — M49 places Cuba and Mexico in 'Latin " +
         "America and the Caribbean' while this pack groups them under North America, which is " +
-        'true continentally and is what a ten-year-old is taught. The source field points at ' +
-        'the entities pack rather than at M49 for exactly that reason: citing a standard we ' +
-        'have deliberately diverged from would be a false citation.',
+        'true continentally and is what a ten-year-old is taught. Citing M49 would therefore ' +
+        'be a false citation, and so would citing the entities pack: a fact whose source is ' +
+        'another file in this repository has no external provenance at all, and the validator ' +
+        'now refuses one. So each row names the classification as WHAT IT IS — an editorial ' +
+        'choice, made here — and cites the seven-continent model it rests on. The derivation ' +
+        'is mechanical; the classification being derived is a judgement, and the citation ' +
+        'describes the judgement rather than the copy step. ' +
+        'Every fact here is `stable` by construction — the value is which subregion a ' +
+        'country sits in, and a continent does not move. Grading them per row would be ' +
+        'grading the projection rather than its source, which is why `volatilityReviewed` ' +
+        'is set below.',
+      /**
+       * The uniformity opt-out, EMITTED rather than added by hand.
+       *
+       * `content:validate` warns when every row in a pack shares one volatility tag,
+       * because that is usually a tag nobody graded — and it is right to, but here the
+       * uniformity is a property of the data: a projection of `subregion` cannot have
+       * rows that go stale at different rates. It was added to the pack by hand once,
+       * and the next `pnpm build:locations` deleted it, because a generated file only
+       * contains what its generator emits. A hand edit to a generated file is a change
+       * with a scheduled expiry date.
+       */
+      volatilityReviewed: true,
       packId: 'geography.locations',
       version: '1.0.0',
       subject: 'geography',

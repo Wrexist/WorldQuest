@@ -257,10 +257,20 @@ false citation: plausible, uncheckable by CI, and wrong about where the value ca
 Emitting them citing the package is honest, but it lowers the bar for hundreds of facts
 at once, and nobody has read any of them.
 
-`build-locations.cjs` is the worked example of getting this right. It derives 65 facts
-mechanically and cites **the entities pack it derived them from**, explicitly refusing to
-cite UN M49 — a standard the grouping deliberately diverges from — because a citation you
+`build-locations.cjs` is the worked example of getting this right, and it took two goes.
+It derives 65 facts mechanically from `subregion` in the entities pack, and it refuses to
+cite UN M49 — a standard the grouping deliberately diverges from, since M49 puts Mexico in
+"Latin America and the Caribbean" while this pack teaches North America. A citation you
 have diverged from is worse than no citation at all.
+
+It used to cite **the entities pack** instead, which is the failure this section warns
+about wearing the opposite mask: a fact whose source is another file in this repository
+has no external provenance, the link answers nothing a reader could check, and the one
+that shipped pointed into a private repo that 404s for everybody. `content:validate`
+rejects a self-citation now. So each row names its provenance as what it actually is —
+**a WorldQuest editorial classification on the seven-continent model** — and cites that
+model. The derivation is mechanical; the classification being derived is a judgement, and
+a citation has to describe the judgement rather than the copy step.
 
 So: generate the *shape* of a fact freely, and generate its *value* only from something
 this repo already owns. Everything else is authoring, one source at a time. That is slow
