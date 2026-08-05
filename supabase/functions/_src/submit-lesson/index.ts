@@ -24,6 +24,7 @@ import { BALANCE } from '../../../packages/engines/src/xp/balance.ts'
 import type { AnsweredItem } from '../../../packages/engines/src/lesson/machine.ts'
 import type { MemoryState } from '../../../packages/engines/src/learning/types.ts'
 import { startOfLocalDay } from '../../../packages/engines/src/time/index.ts'
+import { isFiniteMs, retimeLesson } from '../_shared/submission-time.ts'
 import { ANSWER_BY_FACT } from './_content/answers.ts'
 
 type SubmitBody = {
@@ -47,7 +48,10 @@ function parseBody(raw: unknown): SubmitBody | null {
   const b = raw as Record<string, unknown>
 
   if (typeof b.lessonId !== 'string' || !/^[0-9a-f-]{36}$/i.test(b.lessonId)) return null
-  if (typeof b.startedAt !== 'number') return null
+  // `isFiniteMs`, not `typeof === 'number'`. The latter admits NaN, Infinity and 1e300,
+  // all three of which reach `new Date(x).toISOString()` further down and throw a
+  // RangeError there — an uncaught 500 any client could ask for.
+  if (!isFiniteMs(b.startedAt)) return null
   if (!Array.isArray(b.answers) || b.answers.length === 0) return null
   // A lesson longer than the documented maximum is a forged payload, not a session.
   if (b.answers.length > 50) return null
@@ -59,14 +63,19 @@ function parseBody(raw: unknown): SubmitBody | null {
     if (typeof item.templateId !== 'string') return null
     // `wasCorrect` is deliberately NOT validated, because it is deliberately not
     // read. The server decides correctness itself further down.
-    if (typeof item.elapsedMs !== 'number') return null
-    if (typeof item.answeredAt !== 'number') return null
+    //
+    // `elapsedMs` and `answeredAt` are checked for shape here and CLAMPED below. Shape
+    // alone was never enough: `answeredAt` is the clock the scheduler runs on, and a
+    // client that could date an answer in the future could mint mastery. See
+    // _shared/submission-time.ts.
+    if (!isFiniteMs(item.elapsedMs)) return null
+    if (!isFiniteMs(item.answeredAt)) return null
   }
 
   return b as unknown as SubmitBody
 }
 
-Deno.serve(async (req: Request): Promise<Response> => {
+async function handle(req: Request): Promise<Response> {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405)
 
   const authHeader = req.headers.get('Authorization')
@@ -198,9 +207,22 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
   if (answers.length === 0) return json({ error: 'no_gradable_answers' }, 422)
 
+  // ── decide WHEN, too ──────────────────────────────────────────────────────
+  //
+  // Correctness was decided here and time was not, which left the whole
+  // server-authoritative claim resting on a field the client picked. An answer dated a
+  // year ahead scored retrievability ≈ 0 — the largest stability multiplier the curve
+  // has — and was overdue by definition, so one payload minted mastery, the overdue
+  // bonus and `factMastered` XP together.
+  //
+  // Clamped rather than rejected, because a lesson finished in a tunnel is the reason
+  // per-answer timestamps exist at all. A real offline submission passes through
+  // unchanged; only a claim the server has no reason to accept moves.
+  const retimed = retimeLesson(answers, body.startedAt, Date.now())
+
   const result = gradeLesson({
     lessonId: body.lessonId,
-    answers,
+    answers: retimed.answers,
     memory,
     // Server time is authoritative for the submission; per-answer timestamps
     // still drive scheduling so an offline lesson schedules from when it was
@@ -223,7 +245,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
     correct: result.correct,
     xp_awarded: result.xpAwarded,
     coins_awarded: result.coinsAwarded,
-    started_at: new Date(body.startedAt).toISOString(),
+    started_at: new Date(retimed.startedAt).toISOString(),
     completed_at: new Date().toISOString(),
     client_version: body.clientVersion ?? null,
   })
@@ -296,7 +318,36 @@ Deno.serve(async (req: Request): Promise<Response> => {
     masteryChanges: result.masteryChanges,
     perfect: result.perfect,
     rejected: result.rejected,
+    // Reported rather than swallowed, for the same reason `rejected` is: a spike in
+    // either is the signal that a build is sending nonsense, and a number nobody
+    // returns is a number nobody can graph.
+    timingDiscarded: retimed.timingDiscarded,
     replayed: false,
   })
+}
+
+/**
+ * The outer boundary. Nothing above may reach the runtime as a rejected promise.
+ *
+ * There was no catch here, and the two `new Date(...).toISOString()` calls below the
+ * parser could both throw a RangeError on input that passed `typeof x === 'number'`.
+ * That is fixed at the source now — `isFiniteMs` in the parser and the clamp after it —
+ * but a handler whose correctness depends on nothing further down ever throwing is a
+ * handler one refactor away from returning an unhandled rejection to a user who has just
+ * finished a lesson.
+ *
+ * The message is not returned. It is the only place in this function where an internal
+ * string could reach a device, and an error message is the classic accidental
+ * exfiltration channel — a Postgres error quotes the row it failed on. The client is
+ * told which request to quote; the log holds the rest.
+ */
+Deno.serve(async (req: Request): Promise<Response> => {
+  const requestId = crypto.randomUUID()
+  try {
+    return await handle(req)
+  } catch (error) {
+    console.error(`submit-lesson ${requestId}`, error)
+    return json({ error: 'internal_error', requestId }, 500)
+  }
 })
 

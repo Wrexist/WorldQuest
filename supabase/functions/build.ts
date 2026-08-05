@@ -75,7 +75,7 @@ const FUNCTIONS: Record<string, FunctionSpec> = {
       'grading/index.ts',
       'time/index.ts',
     ],
-    shared: [],
+    shared: ['submission-time.ts'],
     generated: () => [
       // Shimmed rather than vendored: each is one small binding behind a module that
       // would drag the content engine into every cold start. See the two shims.

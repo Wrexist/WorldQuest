@@ -109,6 +109,13 @@ export type SubmitLessonResponse = {
   coinsAwarded: number
   perfect: boolean
   rejected: number
+  /**
+   * The session was too short to contain the answers it claimed, so its timing was
+   * discarded and every answer graded as average. Not shown to the user — a real client
+   * cannot produce it, and telling someone their clock looked forged is a conversation
+   * for a support ticket, not a summary screen. It exists so a spike is graphable.
+   */
+  timingDiscarded: boolean
   replayed: boolean
 }
 

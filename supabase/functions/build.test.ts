@@ -114,8 +114,19 @@ describe('submit-lesson bundle', () => {
   })
 
   it('stays small enough to cold-start quickly', () => {
+    // 60 000 → 70 000, and the budget failing is what made it a decision rather than a
+    // drift. `_shared/submission-time.ts` is the whole of the increase: it is what stops
+    // a client dating its answers in the future, which was minting mastery, the overdue
+    // bonus and `factMastered` XP on every item. That is worth 7 KB parsed per cold
+    // start, and it is the same trade `bundle:native` recorded when Sentry pushed the
+    // app bundle past its ceiling — raise it in the open, with the reason attached, or
+    // do not raise it.
+    //
+    // The budget still bites. It is what keeps the state machine, the content engine and
+    // `selection` out of a function called once per lesson (see the test above), and it
+    // is the reason `AnsweredItem` is a shim rather than an import.
     const total = files.reduce((sum, f) => sum + f.content.length, 0)
-    expect(total).toBeLessThan(60_000)
+    expect(total).toBeLessThan(70_000)
   })
 
   it('never accepts a client-supplied reward value', () => {

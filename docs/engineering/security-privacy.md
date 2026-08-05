@@ -71,6 +71,8 @@ There is no endpoint that accepts "give me 500 XP".
 | Forged results | Server re-grades from submitted answers; XP is computed, never accepted |
 | Replay | `lessons.id` is a client UUID and a primary key — duplicates are no-ops |
 | Impossible speed | Answers < 400 ms earn nothing and don't affect scheduling |
+| Forged answer times | `answeredAt` is clamped to `[startedAt, now]` and made monotonic; `startedAt` to a 7-day window. Nothing may be dated in the future — that was minting mastery, the overdue bonus and `factMastered` XP together. `_shared/submission-time.ts` |
+| Forged answer durations | `elapsedMs` capped by the gap to the next answer. A session shorter than 400 ms × items has its timing discarded entirely and grades as average — the server cannot prove an answer was slow, so it declines to infer rather than paying out |
 | Clock manipulation | Server timestamps are authoritative for streaks, dailies, heart regen |
 | Scripting | Rate limits + behavioural flags (inhuman timing variance, sustained 100 % at speed) |
 | Modified client | Signed content packs; every award server-validated |
