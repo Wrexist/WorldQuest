@@ -57,8 +57,17 @@ export const BALANCE = {
      */
     dailySoftCap: 3000,
     softCapMultiplier: 0.25,
-    /** Re-answering an already-mastered fact the same day. */
-    repeatMasteredSameDay: 2,
+    /**
+     * Re-answering an already-known fact that was NOT due.
+     *
+     * Renamed from `repeatMasteredSameDay`, because the name said "same day" and the
+     * code meant "ever" — and a fact returning on schedule after three months was
+     * therefore paid 2 XP instead of 10. That is the economy charging a premium for the
+     * one behaviour a spaced-repetition product exists to produce. The penalty now
+     * applies only when the scheduler did not ask for the review, which is the case it
+     * was always described as covering.
+     */
+    repeatKnownNotDue: 2,
     /** Below this many items, no completion bonus. */
     minItemsForCompletionBonus: 5,
   },

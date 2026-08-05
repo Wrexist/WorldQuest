@@ -219,7 +219,7 @@ export const BALANCE = {
     factMastered: 20, friendActivated: 100, collectionComplete: 100,
     streakMilestones: { 7: 50, 30: 200, 100: 500, 365: 1000 },
     dailySoftCap: 3000, softCapMultiplier: 0.25,
-    repeatMasteredSameDay: 2,
+    repeatKnownNotDue: 2,
   },
   coins: { /* … */ },
   hearts: {

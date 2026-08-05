@@ -131,11 +131,31 @@ export function gradeLesson(input: GradeInput): GradeResult {
     if (answer.wasCorrect) {
       correct++
 
-      // Re-answering something already mastered the same day is near-worthless.
-      // This is what stops XP tracking activity instead of learning.
-      const alreadyMastered = masteredBefore.has(answer.factId)
-      rawXp += alreadyMastered
-        ? BALANCE.xp.repeatMasteredSameDay
+      /**
+       * Re-answering something already known, when it was NOT due, is near-worthless.
+       * This is what stops XP tracking activity instead of learning.
+       *
+       * `&& !wasOverdue` is the whole of the rule, and it was missing. The constant is
+       * named `repeatKnownNotDue`; the check was `masteredBefore.has(factId)`, which
+       * means "mastered at any point ever". So a fact learned three months ago and now
+       * legitimately due came back at 2 XP, plus the 2 XP overdue bonus, against 10 for a
+       * brand-new item — the economy paid nearly three times as much for grinding fresh
+       * content as for the spaced review this product exists to deliver. An app whose
+       * scheduler is the platform bet cannot price its own core loop last.
+       *
+       * With the clause, a due review of a mastered fact earns 10 + 2 and a new item
+       * earns 10, which is the ordering the balance table's own comment on
+       * `overdueReviewBonus` describes: "rewards coming back to an overdue review rather
+       * than grinding fresh items."
+       *
+       * The bug was invisible until now for a second reason worth recording: nothing ever
+       * wrote `user_facts.mastery`, so `masteredBefore` was always empty and this branch
+       * had never once been taken in production. Fixing that column is what turned a
+       * dormant mispricing into a live one.
+       */
+      const cheapRepeat = masteredBefore.has(answer.factId) && !wasOverdue
+      rawXp += cheapRepeat
+        ? BALANCE.xp.repeatKnownNotDue
         : BALANCE.xp.correctAnswer
       coins += BALANCE.coins.correctAnswer
 

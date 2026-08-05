@@ -366,7 +366,7 @@ describe('gradeLesson', () => {
     expect(r.updatedMemory.size).toBe(0)
   })
 
-  it('nearly zeroes XP for repeating an already-mastered fact', () => {
+  it('nearly zeroes XP for repeating an already-mastered fact that was not due', () => {
     const r = gradeLesson({
       lessonId: 'l5',
       answers: answersFrom(['geo.SE.capital'], [true]),
@@ -375,6 +375,46 @@ describe('gradeLesson', () => {
       masteredBefore: new Set(['geo.SE.capital']),
     })
     expect(r.xpAwarded).toBeLessThan(BALANCE.xp.correctAnswer)
+  })
+
+  it('pays FULL value for a mastered fact that came back due', () => {
+    // The penalty is named `repeatKnownNotDue` and was applied to any fact ever
+    // mastered, due or not. That priced a three-month-old fact returning on schedule at
+    // 4 XP against 10 for grinding a brand-new one — the economy paying more for
+    // avoiding the core loop than for running it.
+    const factId = 'geo.SE.capital'
+    const overdue = new Map([
+      [factId, {
+        factId,
+        stability: 40,
+        difficulty: 5,
+        reps: 6,
+        lapses: 0,
+        lastReviewAt: T0 - 60 * 86_400_000,
+        dueAt: T0 - 86_400_000, // due yesterday
+        suspended: false,
+      }],
+    ])
+
+    const due = gradeLesson({
+      lessonId: 'l5-due',
+      answers: answersFrom([factId], [true]),
+      memory: overdue,
+      now: T0,
+      masteredBefore: new Set([factId]),
+    })
+    const fresh = gradeLesson({
+      lessonId: 'l5-fresh',
+      answers: answersFrom(['geo.NO.capital'], [true]),
+      memory: new Map(),
+      now: T0,
+    })
+
+    expect(due.xpAwarded).toBeGreaterThanOrEqual(
+      BALANCE.xp.correctAnswer + BALANCE.xp.overdueReviewBonus,
+    )
+    // The ordering that makes this a spaced-repetition economy rather than a quiz one.
+    expect(due.xpAwarded).toBeGreaterThan(fresh.xpAwarded)
   })
 
   it('caps the speed bonus so speed is not a strategy', () => {

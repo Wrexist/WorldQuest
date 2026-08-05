@@ -109,7 +109,7 @@ describe('balance invariants', () => {
   })
 
   it('makes repeating a mastered fact nearly worthless the same day', () => {
-    expect(BALANCE.xp.repeatMasteredSameDay).toBeLessThan(BALANCE.xp.correctAnswer / 3)
+    expect(BALANCE.xp.repeatKnownNotDue).toBeLessThan(BALANCE.xp.correctAnswer / 3)
   })
 
   it('sets a daily soft cap that a healthy session cannot reach', () => {
