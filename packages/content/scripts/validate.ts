@@ -23,6 +23,14 @@ const warnings: Problem[] = []
 
 /** Volatile facts go stale. These are the re-verification windows from the spec. */
 const MAX_AGE_DAYS = { stable: 730, slow: 365, fast: 0 } as const
+
+/**
+ * Warn this far before the error. A fact that fails CI on a Tuesday morning blocks
+ * whoever happens to be pushing; a fact that has been warning for two months is a
+ * scheduled piece of work. Same numbers, radically different experience of them.
+ */
+const STALE_WARNING_FRACTION = 0.75
+
 const TODAY = new Date('2026-07-31')
 
 function walk(dir: string): string[] {
@@ -71,6 +79,10 @@ const validate = ajv.compile(schema)
 
 const packFiles = walk(join(root, 'packs'))
 const seenIds = new Map<string, string>()
+/** Every volatility tag seen per pack — see the uniformity check below the loop. */
+const volatilityByPack = new Map<string, string[]>()
+/** Packs that have declared their uniform volatility deliberate. */
+const reviewedVolatility = new Set<string>()
 let factCount = 0
 let sensitiveCount = 0
 let todoCount = 0
@@ -91,6 +103,7 @@ for (const file of packFiles) {
 
   const locales = pack.locales as string[]
   const items = pack.items as Record<string, any>[]
+  if (pack.volatilityReviewed === true) reviewedVolatility.add(rel)
 
   for (const item of items) {
     // 2. IDs are permanent and must be unique — they ship in save data.
@@ -132,8 +145,30 @@ for (const file of packFiles) {
           file: rel,
           message: `${item.id}: verifiedAt is ${Math.round(ageDays)} days old (${item.volatility} limit is ${limit})`,
         })
+      } else if (item.volatility !== 'fast' && ageDays > limit * STALE_WARNING_FRACTION) {
+        warnings.push({
+          file: rel,
+          message:
+            `${item.id}: verifiedAt is ${Math.round(ageDays)} days old and expires at ` +
+            `${limit} — re-verify before it fails`,
+        })
       }
     }
+
+    // Every capital carried `volatility: "stable"`, all 65 of them, which is what turns
+    // this whole freshness mechanism off: `stable` is a two-year window, so a pack
+    // verified once is unchallenged until 2028. Two of those countries are actively
+    // relocating their seat of government — Indonesia to Nusantara by law since 2022,
+    // Egypt to the New Administrative Capital — and both read `stable`.
+    //
+    // A tag that is the same on every row is not a classification, and there is no
+    // mechanical test for "is this one really stable?". So the check is comparative: a
+    // pack where EVERY fact claims the longest window is a pack nobody graded, and that
+    // is visible without knowing any geography.
+    if (item.volatility !== undefined) volatilityByPack.set(rel, [
+      ...(volatilityByPack.get(rel) ?? []),
+      item.volatility as string,
+    ])
 
     // 4. Volatile facts must never be quiz answers.
     if (item.volatility === 'fast' && item.quizzable !== false) {
@@ -298,6 +333,33 @@ for (const file of packFiles) {
         })
       }
     }
+  }
+}
+
+// ── 10. A volatility tag that is the same on every row is not a classification ──
+//
+// All 65 capitals read `stable`, which is a two-year re-verification window — so the
+// freshness machinery above could not fire on any of them until 2028, including on the
+// two countries actively relocating their seat of government.
+//
+// There is no mechanical test for "is this one really stable?", so this asks the question
+// that IS mechanical: did anybody grade this pack at all? A pack of more than ten facts
+// where every single one claims the longest window is a pack where the field was filled
+// in once and copied down.
+for (const [rel, tags] of volatilityByPack) {
+  if (tags.length < 10) continue
+  // A pack may say "yes, we looked, and they really are all stable" — a continent does
+  // not move, and a national flag changes on a scale of decades. `volatilityReviewed`
+  // turns the silence into a claim somebody made, which is the same trade the
+  // reachability allowlist and the escape-hatch allowlist both take.
+  if (reviewedVolatility.has(rel)) continue
+  if (new Set(tags).size === 1 && tags[0] === 'stable') {
+    warnings.push({
+      file: rel,
+      message:
+        `all ${tags.length} facts are volatility "stable" — that is a 2-year window on ` +
+        `every row, which switches the freshness check off. Grade the ones that move.`,
+    })
   }
 }
 

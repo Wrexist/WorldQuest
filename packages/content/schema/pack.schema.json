@@ -66,6 +66,10 @@
       "items": {
         "$ref": "#/$defs/item"
       }
+    },
+    "volatilityReviewed": {
+      "type": "boolean",
+      "description": "Set when every fact in this pack shares one volatility tag AND that is a graded decision rather than an unfilled field. content:validate warns otherwise, because a tag identical on every row switches the freshness check off."
     }
   },
   "$defs": {
