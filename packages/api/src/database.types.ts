@@ -574,6 +574,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      record_lesson: {
+        Args: {
+          p_client_version: string
+          p_coins: number
+          p_correct: number
+          p_facts: Json
+          p_items: number
+          p_kind: string
+          p_lesson_id: string
+          p_max_per_hour: number
+          p_reviews: Json
+          p_started_at: string
+          p_streak: Json
+          p_topic_id: string
+          p_user_id: string
+          p_xp: number
+        }
+        Returns: Json
+      }
       record_subscription_event: {
         Args: {
           p_kind: string

@@ -116,6 +116,21 @@ export type SubmitLessonResponse = {
    * for a support ticket, not a summary screen. It exists so a spike is graphable.
    */
   timingDiscarded: boolean
+  /**
+   * The streak as the server now has it — the first time this endpoint has had one to
+   * report, because until `record_lesson` nothing wrote `streaks` at all.
+   *
+   * Optional because a replayed submission returns the original row and does not
+   * recompute it: awarding a streak day twice for one lesson is the same class of bug as
+   * awarding XP twice.
+   */
+  streak?: {
+    current: number
+    longest: number
+    extended: boolean
+    freezeUsed: boolean
+    reset: boolean
+  }
   replayed: boolean
 }
 

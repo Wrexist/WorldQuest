@@ -15,7 +15,12 @@ begin;
 -- The plan is worth keeping rather than replacing with `no_plan` — it is what catches a
 -- table quietly dropping out of the list. Adding a table means adding it to the query
 -- AND incrementing this number.
-select plan(21);
+--
+-- 21 → 24: `record_lesson` brought three assertions, two of them the pair every
+-- SECURITY DEFINER function in this schema now gets (unreachable by a client, reachable
+-- by service_role) and one confirming `streaks` still has no client write path now that
+-- it finally has a server-side writer.
+select plan(24);
 
 -- Every table that holds user data must have RLS on. This catches the classic
 -- failure: a new table added months from now with RLS quietly left off.
@@ -117,6 +122,42 @@ select ok(
      join pg_namespace n on n.oid = p.pronamespace
     where n.nspname = 'public' and p.proname = 'record_subscription_event'),
   'record_subscription_event is callable by service_role'
+);
+
+-- ── the lesson recorder's RPC ───────────────────────────────────────────────
+--
+-- Same shape, higher stakes. `record_lesson` is SECURITY DEFINER and writes `xp_ledger`
+-- and `coin_ledger` directly, so a grant left in place is `/rest/v1/rpc/record_lesson`
+-- away from arbitrary currency for anyone holding the anon key — which ships in the app
+-- bundle and is not a secret. There is no endpoint that accepts "give me 500 XP", and
+-- this assertion is part of what keeps that sentence true.
+select is_empty(
+  $$ select p.proname
+       from pg_proc p
+       join pg_namespace n on n.oid = p.pronamespace
+      where n.nspname = 'public'
+        and p.proname = 'record_lesson'
+        and (has_function_privilege('anon', p.oid, 'EXECUTE')
+             or has_function_privilege('authenticated', p.oid, 'EXECUTE')) $$,
+  'record_lesson is not callable by a client over the REST API'
+);
+
+select ok(
+  (select has_function_privilege('service_role', p.oid, 'EXECUTE')
+     from pg_proc p
+     join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public' and p.proname = 'record_lesson'),
+  'record_lesson is callable by service_role'
+);
+
+-- The streak is written by that function and by nothing else. A client write policy on
+-- `streaks` would be a client that can set its own streak to 400 — the reachability
+-- allowlist has claimed for months that streaks are server-authoritative, and until
+-- `record_lesson` existed there was no server writer at all to be authoritative.
+select is_empty(
+  $$ select policyname from pg_policies
+      where tablename = 'streaks' and cmd in ('INSERT','UPDATE','DELETE') $$,
+  'no client write policy on streaks'
 );
 
 -- The out-of-order guard needs somewhere to live. `applyStoreNotification` compares
