@@ -27,7 +27,7 @@
 -- "never applied one" is exactly what null means here.
 alter table subscriptions add column notified_at timestamptz;
 
-create or replace function public.record_subscription_event(
+create or replace function record_subscription_event(
   p_user_id         uuid,
   p_notification_id text,
   p_platform        text,

@@ -115,7 +115,7 @@ create policy own_subscription_select on subscriptions
 -- `updated_at` is server-owned. A client cannot write this table at all, but the
 -- notification handler is code too, and "remember to touch updated_at" is a thing code
 -- forgets.
-create or replace function public.touch_subscription_updated_at()
+create or replace function touch_subscription_updated_at()
 returns trigger language plpgsql
 -- Empty search_path, as `harden_security_advisories` requires of every function here.
 -- This one is not SECURITY DEFINER and does not need to be — it touches one column of
