@@ -87,3 +87,52 @@ describe('titleKeyForLevel', () => {
     for (const title of TITLES) expect(title.key).toMatch(/^titles:[a-z]+$/)
   })
 })
+
+/**
+ * The closed form has to agree with the ladder it inverts.
+ *
+ * `levelForXp` was a loop — O(level) with a `Math.pow` per step, on a curve that is
+ * uncapped by design, called from every render that shows a level. The analytic version
+ * is only safe if it lands on exactly the same integer, and `xpForLevel` rounds, so the
+ * algebra alone is not an argument. This is.
+ */
+describe('levelForXp inverts xpForLevel exactly', () => {
+  const bruteForce = (totalXp: number): number => {
+    let level = 1
+    while (xpForLevel(level + 1) <= totalXp) level++
+    return level
+  }
+
+  it('agrees with the loop it replaced, across the whole curve', () => {
+    for (let level = 1; level <= 200; level++) {
+      for (const xp of [xpForLevel(level) - 1, xpForLevel(level), xpForLevel(level) + 1]) {
+        if (xp < 0) continue
+        expect(levelForXp(xp), `at ${xp} XP`).toBe(bruteForce(xp))
+      }
+    }
+  })
+
+  it('agrees on arbitrary values too, not only on boundaries', () => {
+    for (let xp = 0; xp < 400_000; xp += 977) {
+      expect(levelForXp(xp), `at ${xp} XP`).toBe(bruteForce(xp))
+    }
+  })
+
+  it('does not spin on an absurd total', () => {
+    // The loop did ~3.6 million `Math.pow` calls to answer this. Timed on its own —
+    // `bruteForce` is the slow thing being replaced, so including it in the measurement
+    // would time the bug rather than the fix.
+    const started = process.hrtime.bigint()
+    const level = levelForXp(1e15)
+    const elapsedNs = Number(process.hrtime.bigint() - started)
+
+    expect(elapsedNs).toBeLessThan(5_000_000)
+    expect(level).toBe(bruteForce(1e15))
+  })
+
+  it('is level 1 for nothing, and for nonsense', () => {
+    expect(levelForXp(0)).toBe(1)
+    expect(levelForXp(-5)).toBe(1)
+    expect(levelForXp(Number.NaN)).toBe(1)
+  })
+})

@@ -205,11 +205,29 @@ export function xpForLevel(level: number): number {
   return Math.round(BALANCE.levels.base * Math.pow(level, BALANCE.levels.exponent))
 }
 
-/** Inverse of xpForLevel. */
+/**
+ * Inverse of xpForLevel.
+ *
+ * Analytic rather than a loop. `while (xpForLevel(level + 1) <= totalXp) level++` is
+ * O(level) with a `Math.pow` per step, and it is called on every render that shows a
+ * level — Home, Profile, the shop, the summary. It is fine at level 43 and it is a
+ * spin at the top of the curve, which is uncapped by design.
+ *
+ * `xpForLevel` rounds, so the closed form can land one either side of the boundary.
+ * The correction below fixes that in at most two steps, and `level.test.ts` asserts the
+ * two agree across the whole range rather than trusting the algebra.
+ */
 export function levelForXp(totalXp: number): number {
-  let level = 1
+  if (!Number.isFinite(totalXp) || totalXp < xpForLevel(2)) return 1
+
+  const { base, exponent } = BALANCE.levels
+  let level = Math.floor(Math.pow(totalXp / base, 1 / exponent))
+
+  // Rounding in `xpForLevel` can put the estimate on the wrong side by one.
+  while (level > 1 && xpForLevel(level) > totalXp) level--
   while (xpForLevel(level + 1) <= totalXp) level++
-  return level
+
+  return Math.max(1, level)
 }
 
 /** Titles are the cheapest status reward that exists, and they're chased for months. */
