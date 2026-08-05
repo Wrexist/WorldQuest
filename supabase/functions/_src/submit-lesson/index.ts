@@ -377,6 +377,11 @@ async function handle(req: Request): Promise<Response> {
           longest: outcome.longest,
           lastActiveDate: outcome.lastActiveDate,
           freezesHeld: outcome.freezesHeld,
+          // The bit `record_lesson` actually applies. `freezesHeld` above is derived
+          // from a row read before `purchase_freeze` may have run, so writing it back
+          // absolutely erases a freeze bought in between. What this lesson DECIDED is
+          // one bit, and a delta commutes with a concurrent purchase.
+          freezeUsed: outcome.freezeUsed,
         }
       : null,
     p_max_per_hour: BALANCE.integrity.maxLessonSubmitsPerHour,

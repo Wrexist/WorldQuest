@@ -595,22 +595,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      expire_streaks: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      purchase_freeze: {
-        Args: {
-          p_price?: number
-        }
-        Returns: Json
-      }
-      purchase_item: {
-        Args: {
-          p_item_id: string
-        }
-        Returns: Json
-      }
+      expire_streaks: { Args: never; Returns: number }
+      purchase_freeze: { Args: { p_price?: number }; Returns: Json }
+      purchase_item: { Args: { p_item_id: string }; Returns: Json }
       record_lesson: {
         Args: {
           p_client_version: string
