@@ -1,7 +1,9 @@
+import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { MS_PER_DAY } from '../shared/index.js'
 import {
   DEFAULT_WEIGHTS,
+  MASTERY_THRESHOLDS,
   deriveRating,
   intervalDays,
   masteryOf,
@@ -209,6 +211,98 @@ describe('masteryOf', () => {
 
   it('withholds burnished from a fact that has ever lapsed', () => {
     expect(masteryOf(stateWith({ stability: 200, reps: 9, lapses: 1 }), T0)).toBe('mastered')
+  })
+})
+
+/**
+ * The stored half of mastery, and the only guard that can exist against it drifting.
+ *
+ * `user_facts.mastery` is derived by a Postgres trigger. A trigger cannot import this
+ * module, so the rule genuinely exists twice — the one situation this repo's "two
+ * copies of a rule are one copy and one bug" note cannot design away. What it CAN do is
+ * make the second copy fail loudly when the first one moves.
+ *
+ * So the numbers have names (`MASTERY_THRESHOLDS`) and this reads the migration and
+ * checks the CASE uses them. Change a boundary in `masteryOf` without changing the
+ * migration and the count on Home starts disagreeing with the label on the country
+ * card — silently, and only for users whose facts sit near the boundary. That is the
+ * failure this exists to make impossible.
+ */
+describe('stored mastery agrees with masteryOf', () => {
+  const migration = readFileSync(
+    new URL('../../../../supabase/migrations/20260805090000_mastery_is_derived.sql', import.meta.url),
+    'utf8',
+  )
+
+  /** Both copies of the CASE — the trigger body and the backfill — must match. */
+  const cases = migration.match(/when new\.stability[\s\S]*?else 'learning'/g) ?? []
+  const backfills = migration.match(/when stability[\s\S]*?else 'learning'/g) ?? []
+
+  it('the migration still contains both copies of the rule', () => {
+    expect(cases).toHaveLength(1)
+    expect(backfills).toHaveLength(1)
+  })
+
+  it.each([
+    ['burnished', MASTERY_THRESHOLDS.burnishedStability, /stability >= (\d+) and \w*\.?lapses = 0\s+then 'burnished'/],
+    ['mastered', MASTERY_THRESHOLDS.masteredStability, /stability >= (\d+)\s+and \w*\.?reps\s+>= \d+\s+then 'mastered'/],
+    ['proficient', MASTERY_THRESHOLDS.proficientStability, /stability >= (\d+)\s+and \w*\.?reps\s+>= \d+ and \w*\.?lapses <= \d+\s+then 'proficient'/],
+  ])('the %s stability boundary is %i in SQL too', (_level, expected, pattern) => {
+    for (const clause of [...cases, ...backfills]) {
+      const found = clause.match(pattern)
+      expect(found, `no ${_level} clause in:\n${clause}`).not.toBeNull()
+      expect(Number(found![1])).toBe(expected)
+    }
+  })
+
+  it('SQL never claims a level that depends on retrievability', () => {
+    // 'familiar' and 'unseen' are functions of `now`, so a stored column cannot hold
+    // them. If one appears here somebody has stored an answer that expires.
+    expect(migration).not.toMatch(/then 'familiar'/)
+    expect(migration).not.toMatch(/then 'unseen'/)
+  })
+
+  /**
+   * The behavioural half: for every level the trigger CAN produce, it must produce the
+   * same one `masteryOf` does. Transcribed from the SQL rather than shared with it,
+   * which is the point — a transcription that stops matching is what fails.
+   */
+  it('agrees with masteryOf on every level a row can store', () => {
+    const stored = (s: MemoryState): string => {
+      const t = MASTERY_THRESHOLDS
+      if (s.stability >= t.burnishedStability && s.lapses === 0) return 'burnished'
+      if (s.stability >= t.masteredStability && s.reps >= t.masteredReps) return 'mastered'
+      if (
+        s.stability >= t.proficientStability &&
+        s.reps >= t.proficientReps &&
+        s.lapses <= t.proficientLapses
+      ) {
+        return 'proficient'
+      }
+      return 'learning'
+    }
+
+    for (const stability of [0.5, 1, 6.9, 7, 20.9, 21, 179.9, 180, 400]) {
+      for (const reps of [1, 2, 3, 4, 5, 12]) {
+        for (const lapses of [0, 1, 2, 9]) {
+          const state: MemoryState = {
+            factId: FACT,
+            stability,
+            difficulty: 5,
+            reps,
+            lapses,
+            lastReviewAt: T0,
+            dueAt: T0 + MS_PER_DAY,
+            suspended: false,
+          }
+          const live = masteryOf(state, T0)
+          // 'familiar' has no stored form, so the only legitimate disagreement is the
+          // trigger saying 'learning' where the live label says 'familiar'.
+          const expected = live === 'familiar' ? 'learning' : live
+          expect(stored(state), `s=${stability} reps=${reps} lapses=${lapses}`).toBe(expected)
+        }
+      }
+    }
   })
 })
 

@@ -61,7 +61,7 @@ ADR: [`../adr/0004-spaced-repetition.md`](../adr/0004-spaced-repetition.md).
 | `reps` | Successful reviews |
 | `lapses` | Times forgotten after being known |
 | `lastReviewAt`, `dueAt` | Timestamps |
-| `mastery` | Derived label for the UI (see §4) |
+| `mastery` | Derived label for the UI (see §4). Stored by a trigger, never by a writer — the three levels at `proficient` and above are pure functions of the row; `familiar` depends on retrievability and so exists only live on the client. |
 | `avgMs` | Rolling mean answer time — feeds confidence, not scheduling |
 
 ### 2.2 Forgetting curve

@@ -190,19 +190,51 @@ export function review(input: ReviewInput, weights: Weights = DEFAULT_WEIGHTS): 
 }
 
 /**
+ * The mastery boundaries, named because they exist in two languages.
+ *
+ * `user_facts.mastery` is derived by a Postgres trigger from the same three rules —
+ * see supabase/migrations/20260805090000_mastery_is_derived.sql. Two copies of a rule
+ * are one copy and one bug waiting for the input that separates them, and this repo has
+ * shipped that exact shape before. It cannot be one copy here: a trigger cannot import
+ * TypeScript. So the numbers get names, and `fsrs.test.ts` reads the migration and
+ * asserts the CASE uses these ones.
+ *
+ * `familiar` is deliberately absent. It is the only level that depends on
+ * retrievability — an answer that changes while the row sits still — so it has no
+ * stored form, and the migration says so at length.
+ */
+export const MASTERY_THRESHOLDS = {
+  burnishedStability: 180,
+  masteredStability: 21,
+  masteredReps: 5,
+  proficientStability: 7,
+  proficientReps: 3,
+  proficientLapses: 1,
+  familiarStability: 1,
+  familiarRetrievability: 0.9,
+} as const
+
+/**
  * The UI label. Boundaries are exact and tested — `mastered` is the claim behind
  * "183 / 195 countries", so it has to mean something specific.
  */
 export function masteryOf(state: MemoryState | null, now: number): Mastery {
   if (state === null || state.lastReviewAt === null) return 'unseen'
 
+  const t = MASTERY_THRESHOLDS
   const stabilityDays = state.stability
   const r = retrievability(state, now)
 
-  if (stabilityDays >= 180 && state.lapses === 0) return 'burnished'
-  if (stabilityDays >= 21 && state.reps >= 5) return 'mastered'
-  if (stabilityDays >= 7 && state.reps >= 3 && state.lapses <= 1) return 'proficient'
-  if (stabilityDays >= 1 && r >= 0.9) return 'familiar'
+  if (stabilityDays >= t.burnishedStability && state.lapses === 0) return 'burnished'
+  if (stabilityDays >= t.masteredStability && state.reps >= t.masteredReps) return 'mastered'
+  if (
+    stabilityDays >= t.proficientStability &&
+    state.reps >= t.proficientReps &&
+    state.lapses <= t.proficientLapses
+  ) {
+    return 'proficient'
+  }
+  if (stabilityDays >= t.familiarStability && r >= t.familiarRetrievability) return 'familiar'
   return 'learning'
 }
 

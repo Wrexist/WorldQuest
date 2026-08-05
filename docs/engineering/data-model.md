@@ -121,6 +121,10 @@ create table user_facts (
   lapses         int  not null default 0,
   last_review_at timestamptz,
   due_at         timestamptz not null,
+  -- DERIVED, never written. A before-insert-or-update trigger recomputes it from
+  -- stability/reps/lapses, so a writer can neither forget it nor disagree with it —
+  -- see 20260805090000_mastery_is_derived.sql for why that is a trigger and not a
+  -- generated column, and why 'familiar' has no stored form.
   mastery        mastery_level not null default 'learning',
   avg_ms         int,
   suspended      boolean not null default false,   -- leeches
