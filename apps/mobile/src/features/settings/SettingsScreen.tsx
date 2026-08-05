@@ -75,7 +75,19 @@ export type SettingsScreenProps = {
    * and completely unreachable. Absent (rather than zero) when there is nothing
    * waiting — a permanent "0 items waiting" row is anxiety with no cause.
    */
-  readonly sync?: { readonly parked: number; readonly onRetry: () => void } | undefined
+  /**
+   * Structural rather than `SyncStatus` imported: this screen is presentational and the
+   * hook lives beside it, so importing the hook's type would make the screen unmountable
+   * in a test that does not want a queue.
+   */
+  readonly sync?:
+    | {
+        readonly parked: number
+        readonly pending: number
+        readonly hasUnsynced: boolean
+        readonly onRetry: () => void
+      }
+    | undefined
   /**
    * Absent on a child account, and that is deliberate rather than a shortcut: Apple
    * requires commerce behind a parental gate for under-13s, and "manage subscription"
@@ -185,13 +197,23 @@ export function SettingsScreen({
         <PremiumSection premium={premium} />
       )}
 
-      {sync !== undefined && sync.parked > 0 && (
+      {sync !== undefined && sync.hasUnsynced && (
         <Section title={t('settings:section.sync')}>
           {/* States what is true and what happens next. Never "sync failed" — the
               work is safe, it just has not arrived, and a child reading "failed"
               hears "your lessons are gone". */}
-          <Note body={t('settings:sync.waiting', { count: sync.parked })} />
-          <LinkRow label={t('settings:sync.retry')} onPress={sync.onRetry} />
+          {sync.parked > 0 ? (
+            <Note body={t('settings:sync.waiting', { count: sync.parked })} />
+          ) : (
+            /* Queued and still trying, which the section could not previously say. It
+               only appeared once work had exhausted its retries, so a lesson finished on
+               a train — the case a user is most likely to be anxious about, and the one
+               that is most certainly fine — showed nothing at all. */
+            <Note body={t('settings:sync.pending', { count: sync.pending })} />
+          )}
+          {sync.parked > 0 && (
+            <LinkRow label={t('settings:sync.retry')} onPress={sync.onRetry} />
+          )}
         </Section>
       )}
 

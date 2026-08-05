@@ -134,7 +134,6 @@ const ALLOWED: Record<string, string> = {
  * Each one is a row in docs/plan/ui-completion.md. Emptying this list is the work.
  */
 const KNOWN_GAPS: Record<string, string> = {
-  hasUnsyncedProgress: 'meant to warn before sign-out; there is no sign-out yet',
 
   // Moved here from ALLOWED once the server tree became scannable. All three were
   // allowlisted with reasons that read as decisions — "a purchase; the server owns the
