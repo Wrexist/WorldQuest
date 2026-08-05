@@ -137,8 +137,22 @@ if (typeof window !== 'undefined' && window.matchMedia === undefined) {
  * test after it onto the other branch — and the whole point of the note above is that
  * which branch runs should be a decision rather than a side effect.
  */
+let fullMotionScopes = 0
+let preferenceBeforeFullMotion = true
+
 export function withFullMotion<T>(body: () => T): T {
+  // Counted, because the restore is not "set it back to true" — it is "set it back to
+  // whatever it was". A nested or overlapping call finishing first would otherwise turn
+  // reduced motion back on underneath the outer one, which is the same silent-reinstate
+  // bug as the async case below, arriving from the other direction.
+  if (fullMotionScopes === 0) preferenceBeforeFullMotion = prefersReducedMotion
+  fullMotionScopes += 1
   prefersReducedMotion = false
+
+  const restore = (): void => {
+    fullMotionScopes -= 1
+    if (fullMotionScopes === 0) prefersReducedMotion = preferenceBeforeFullMotion
+  }
   // An ASYNC body needs the restore to wait for it. A plain `finally` runs the moment
   // the promise is returned, not when it settles, so an awaited body would have run its
   // interesting part with reduced motion back on — the exact condition the caller turned
@@ -146,14 +160,12 @@ export function withFullMotion<T>(body: () => T): T {
   try {
     const result = body()
     if (result instanceof Promise) {
-      return result.finally(() => {
-        prefersReducedMotion = true
-      }) as T
+      return result.finally(restore) as T
     }
-    prefersReducedMotion = true
+    restore()
     return result
   } catch (error) {
-    prefersReducedMotion = true
+    restore()
     throw error
   }
 }
