@@ -32,17 +32,34 @@ begin;
 -- 34 → 36: `expire_streaks`. It is the opposite case — a job, callable by nobody but the
 -- scheduler — and it writes `streaks.current`, so a client that could call it could break
 -- its own streak, or anyone's.
-select plan(36);
+--
+-- 36 → 35, downwards, which is the interesting direction. The number was arithmetic on a
+-- number that was already wrong — 13 tables were being counted as 14 — and every increment
+-- since carried the error forward untouched, because each one only ever added to the
+-- previous total. The count below is now derived the only way that cannot drift: the
+-- table list is qualified to `public` so it yields exactly as many rows as it names, and
+-- 13 + 22 standalone assertions is 35.
+select plan(35);
 
 -- Every table that holds user data must have RLS on. This catches the classic
 -- failure: a new table added months from now with RLS quietly left off.
-select ok(relrowsecurity, 'RLS enabled on ' || relname)
-from pg_class
-where relname in (
-  'profiles','entitlements','user_facts','review_log','lessons',
-  'xp_ledger','coin_ledger','wallets','inventory','streaks',
-  'subscriptions','subscription_events','shop_items'
-);
+--
+-- Qualified to `public` and to ordinary tables on purpose. `pg_class` holds every
+-- relation in every schema — indexes and sequences included — so an unqualified
+-- `relname in (...)` returns however many rows the rest of the database happens to
+-- contain under those names, and the plan above then has to guess at a number nobody
+-- can derive from this list. Thirteen names, thirteen rows, and adding a table means
+-- adding it here and incrementing the plan by one.
+select ok(relrowsecurity, 'RLS enabled on ' || c.relname)
+from pg_class c
+join pg_namespace n on n.oid = c.relnamespace
+where n.nspname = 'public'
+  and c.relkind = 'r'
+  and c.relname in (
+    'profiles','entitlements','user_facts','review_log','lessons',
+    'xp_ledger','coin_ledger','wallets','inventory','streaks',
+    'subscriptions','subscription_events','shop_items'
+  );
 
 -- No client-facing write path may exist on a reward table. The absence of a
 -- policy is the security control, so assert the absence.
@@ -221,6 +238,12 @@ select is_empty(
 -- the table has a SELECT policy and no other, which stops a client and does nothing to
 -- `service_role`, which every edge function runs as. So it needed a trigger, and the
 -- trigger needs a test — an append-only claim nobody checks is a comment.
+--
+-- `id = -1` matches nothing, deliberately: a test that deletes a real row can run once,
+-- in one order, and leaves the table different afterwards. That is also what made this
+-- assertion useful — the first trigger was FOR EACH ROW, so a statement matching no rows
+-- fired nothing and returned DELETE 0 happily, and the test said so. Append-only is a
+-- property of the statement, and `review_log_is_append_only_stmt` is what makes it one.
 select throws_ok(
   $$ delete from review_log where id = -1 $$,
   'P0001',
