@@ -76,7 +76,6 @@ const ALLOWED: Record<string, string> = {
   startOfLocalDay: 'used by applyActivity, server-side',
   grantFreeze: 'a purchase; the server owns the balance',
   markBroken: 'the server decides a streak is broken, never the client',
-  heartsNow: 'hearts reset per lesson on the client; regeneration is a server clock',
   applyStoreNotification: 'the store notification handler runs on the server and is the ONLY caller — a client that could apply an App Store notification could grant itself Premium. Pure and fully tested here precisely because the handler needs Apple/Google credentials to exercise.',
 
   // ── roadmapped, and deliberately not built during v1.0

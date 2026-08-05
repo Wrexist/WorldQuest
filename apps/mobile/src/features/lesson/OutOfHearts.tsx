@@ -49,7 +49,7 @@ export type OutOfHeartsProps = {
 
 export function OutOfHearts({ coins, onRevive, onFinish }: OutOfHeartsProps) {
   const t = useT()
-  const price = BALANCE.prices.heartRefill
+  const price = BALANCE.prices.continueLesson
   const canAfford = coins >= price
 
   return (

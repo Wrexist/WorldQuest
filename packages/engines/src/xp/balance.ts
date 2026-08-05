@@ -89,7 +89,15 @@ export const BALANCE = {
 
   /** Prices. Target: a meaningful cosmetic is 4–7 days of saving. */
   prices: {
-    heartRefill: 250,
+    /**
+     * Finishing the lesson you are already in, after running out of hearts.
+     *
+     * Named `heartRefill` until now, which described the mechanic this product does not
+     * have: hearts reset per lesson, so there is no pool to refill and nothing a refill
+     * would persist. `OutOfHearts` has always spent it on exactly one thing — carrying
+     * on from the next question — and the name now says so.
+     */
+    continueLesson: 250,
     streakFreeze: 400,
     streakRepair: 600,
     avatarItem: { min: 300, max: 2000 },
@@ -109,9 +117,20 @@ export const BALANCE = {
    */
   hearts: {
     max: 5,
-    regenMinutes: 45,
-    /** Child accounts regenerate twice as fast. */
-    childRegenMinutes: 22,
+    /*
+     * There is no regeneration clock, and there must not be one.
+     *
+     * `regenMinutes: 45` and `childRegenMinutes: 22` lived here beside
+     * `resetPerLesson: true`, which are two designs for the same mechanic and only one
+     * of them can be true. If hearts reset at the start of every lesson then a
+     * regeneration rate describes nothing — there is no state to regenerate — and
+     * `heartsNow()`, `wallets.hearts` and `wallets.hearts_updated_at` were all machinery
+     * for a system this product had already decided against.
+     *
+     * The per-lesson design is the one with the argument behind it (see `resetPerLesson`
+     * below), so the other one is gone rather than left as a second answer for the next
+     * reader to find and believe.
+     */
     /** A correct answer on a previously-failed review gives one back. */
     restoreOnRedemption: 1,
     /**
@@ -208,17 +227,3 @@ export const TITLES: ReadonlyArray<{ level: number; key: string }> = [
   { level: 100, key: 'titles:atlas' },
 ]
 
-/** Current hearts, computed from the last update rather than stored ticking. */
-export function heartsNow(
-  stored: number,
-  lastUpdatedAt: number,
-  now: number,
-  isChild: boolean,
-): number {
-  if (stored >= BALANCE.hearts.max) return BALANCE.hearts.max
-  const minutes = isChild
-    ? BALANCE.hearts.childRegenMinutes
-    : BALANCE.hearts.regenMinutes
-  const regenerated = Math.floor((now - lastUpdatedAt) / (minutes * 60_000))
-  return Math.min(BALANCE.hearts.max, stored + Math.max(0, regenerated))
-}
