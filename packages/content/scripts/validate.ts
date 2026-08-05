@@ -112,6 +112,18 @@ for (const file of packFiles) {
     if (!item.source?.url) {
       warnings.push({ file: rel, message: `${item.id}: source has no URL` })
     }
+    // A fact whose source is another file in this repository has no external provenance
+    // at all — the citation is circular and answers nothing a reader could check. The
+    // locations pack cited `entities.countries.v1.json` on GitHub for all 65 of its
+    // facts, via a `blob/main` link into a private repo that 404s for everybody.
+    if (typeof item.source?.url === 'string' && /github\.com\/[Ww]rexist\/[Ww]orld[Qq]uest/.test(item.source.url)) {
+      errors.push({
+        file: rel,
+        message:
+          `${item.id}: source points back into this repository — a fact whose source is ` +
+          `our own file has no provenance. Cite what the value actually came from.`,
+      })
+    }
     if (verifiedAt) {
       const ageDays = (TODAY.getTime() - new Date(verifiedAt).getTime()) / 86_400_000
       const limit = MAX_AGE_DAYS[item.volatility as keyof typeof MAX_AGE_DAYS] ?? 365

@@ -1,6 +1,6 @@
 {
   "$schema": "../../schema/pack.schema.json",
-  "$comment": "The worked example the sensitive-content policy refers to. South Africa has three capitals, so it is NOT a single-answer question: quizzable is false until a human decides how to present it, and Cape Town and Bloemfontein must never become distractors here because they are also correct.",
+  "$comment": "The worked examples the sensitive-content policy refers to. South Africa has three capitals, so it is NOT a single-answer question: quizzable is false until a human decides how to present it, and Cape Town and Bloemfontein must never become distractors here because they are also correct.",
   "packId": "geography.facts.sensitive",
   "version": "1.0.0",
   "subject": "geography",
@@ -17,7 +17,6 @@
       "entity": "ZA",
       "attribute": "capital",
       "value": {
-        "id": "ZA-GP",
         "names": {
           "en": "Pretoria",
           "sv": "Pretoria"
@@ -40,6 +39,34 @@
         "verifiedAt": "2026-07-31"
       },
       "volatility": "stable"
+    },
+    {
+      "id": "geo.ZW.currency",
+      "entity": "ZW",
+      "attribute": "currency",
+      "value": {
+        "names": {
+          "en": "Zimbabwe Gold (ZiG)",
+          "sv": "Zimbabwe Gold (ZiG)"
+        },
+        "asOf": "2026-07-31"
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency",
+        "africa",
+        "eastern-africa",
+        "multi-value"
+      ],
+      "$comment": "Zimbabwe's currency has changed repeatedly and the country has spent long periods multi-currency — the US dollar and the South African rand circulate alongside whatever the domestic unit is. ZiG replaced the RTGS dollar in April 2024. This is NOT a single-answer question and must not become one: 'US dollar' would also be a defensible answer, so it can never be a distractor here, and the other African currencies in this pack are not safe distractors either while the correct answer is contested. Flagged for a human, like South Africa's three capitals.",
+      "sensitivity": "review-required",
+      "quizzable": false,
+      "source": {
+        "name": "Reserve Bank of Zimbabwe",
+        "url": "https://www.rbz.co.zw/",
+        "verifiedAt": "2026-07-31"
+      },
+      "volatility": "slow"
     }
   ]
 }

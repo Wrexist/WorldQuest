@@ -24,9 +24,19 @@
  *
  * UN M49 places Cuba and Mexico in "Latin America and the Caribbean"; this pack groups
  * them under North America, which is true continentally and is what a ten-year-old is
- * taught. So `source` points at the entities pack rather than at M49 — citing a
- * standard we have deliberately diverged from would be a false citation, and this repo
+ * taught. Citing M49 as the source would therefore be a false citation, and this repo
  * treats a wrong fact as unshippable.
+ *
+ * The first answer to that was to point `source.url` at this repo's own entities pack on
+ * GitHub — which is worse, in two ways. A fact whose source is another file in the same
+ * repository has no external provenance at all; the citation is circular and answers
+ * nothing a reader could check. And the URL was a `blob/main` link into a private
+ * repository, so it 404s for everyone outside the org, including the org.
+ *
+ * So the source now says what it actually is: OUR classification, on a continental model
+ * somebody else defines. The name carries the editorial claim and the URL carries the
+ * external basis for the continent boundaries we group by. `content:validate` refuses a
+ * source URL pointing back into this repository, so the circular version cannot return.
  *
  * Run: pnpm build:locations
  */
@@ -128,9 +138,11 @@ const items = [...entities]
     difficulty: difficultyFor(e.id),
     tags: ['location', e.subregion, 'core'],
     source: {
-      name: 'WorldQuest geography pack — entities.countries.v1.json',
-      url: 'https://github.com/Wrexist/WorldQuest/blob/main/packages/content/packs/geography/entities.countries.v1.json',
-      verifiedAt: '2026-08-03',
+      name:
+        'WorldQuest editorial classification, on the seven-continent model ' +
+        '(deliberately NOT UN M49 — see the note at the top of build-locations.cjs)',
+      url: 'https://www.britannica.com/science/continent',
+      verifiedAt: '2026-08-05',
     },
     volatility: 'stable',
   }))
