@@ -98,7 +98,7 @@
       "position is tablet-in-portrait, and definition-of-done-status.md now says that",
       "rather than claiming tablet support in general."
     ],
-    "primaryColor": "#F5A61E",
+    "primaryColor": "#FFC800",
     "runtimeVersion": {
       "policy": "appVersion"
     }
