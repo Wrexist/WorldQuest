@@ -25,6 +25,7 @@
 
 const { chromium } = require('playwright')
 const { launchOptions } = require('./chromium.cjs')
+const { token } = require('./tokens.cjs')
 
 const url = process.argv[2]
 const mobile = process.argv.includes('--mobile')
@@ -34,9 +35,15 @@ if (url === undefined || !/^https?:\/\//.test(url)) {
   process.exit(1)
 }
 
-/** This app's own surfaces, so every measured colour is judged where it would land. */
-const CANVAS = '#0B1730'
-const SURFACE = '#15274A'
+/**
+ * This app's own surfaces, so every measured colour is judged where it would land.
+ *
+ * Read from tokens.json rather than copied: a stale copy here reports a contrast ratio
+ * against a canvas this app no longer has, and the number looks exactly as authoritative
+ * as a correct one.
+ */
+const CANVAS = token('color.bg.canvas')
+const SURFACE = token('color.bg.surface')
 
 const lin = (c) => {
   const s = c / 255

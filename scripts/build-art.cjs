@@ -5,7 +5,8 @@
  * generation output is not a shippable asset. Measured on arrival:
  *
  *   · every illustration is 1536×1024 — a 3:2 landscape frame, where the delivery spec
- *     asks for 1024×1024, and where the SLOTS that render them are square;
+ *     asks for 1024×1024. They are kept at 3:2 rather than squared; see ILLUSTRATION_WIDTH
+ *     for why squaring them was tried first and was wrong;
  *   · `app/icon.png` is 1536×1024 **with an alpha channel**. Both halves are
  *     disqualifying on their own: App Store Connect rejects an icon that is not square,
  *     and it rejects one with transparency at upload rather than at review;
@@ -32,7 +33,7 @@
  * PNG is lossless and stores exactly that kind of image badly. Measured, not assumed:
  * the nineteen masters total 42 MB as delivered PNGs and 2.0 MB as the WebP this
  * writes — `atlas/resting` goes 2.0 MB → 41 KB, and the worst of them,
- * `celebration/burst`, still goes 2.7 MB → 149 KB.
+ * `celebration/burst`, still goes 2.7 MB → 120 KB.
  *
  * The four app-level icons stay PNG because the platforms require it — Expo's
  * `icon`/`splash` are handed to native packagers that expect PNG, and a WebP icon fails
@@ -43,6 +44,7 @@
 
 const { chromium } = require('playwright')
 const { launchOptions } = require('./chromium.cjs')
+const { token } = require('./tokens.cjs')
 const { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } = require('node:fs')
 const { join, dirname } = require('node:path')
 
@@ -52,8 +54,15 @@ const APP = join(ROOT, 'apps', 'mobile', 'assets')
 const ART = join(APP, 'art')
 const INDEX = join(ROOT, 'apps', 'mobile', 'src', 'lib', 'art.generated.ts')
 
-/** `colors.bg.canvas`. Everything composites onto this, so gaps are filled with it. */
-const CANVAS = '#0B1730'
+/**
+ * Everything composites onto this, so gaps are filled with it — the letterbox bands
+ * beside a 3:2 illustration, the opaque backing an App Store icon needs, and the
+ * backdrop of the Android adaptive icon, which has to be the same colour as
+ * `app.json`'s `adaptiveIcon.backgroundColor` or the seam shows through the mask.
+ *
+ * Read from the token file rather than copied, because it is baked into PNGs here.
+ */
+const CANVAS = token('color.bg.canvas')
 
 /**
  * Per-asset budget for a shipped illustration.
@@ -61,24 +70,43 @@ const CANVAS = '#0B1730'
  * `asset-prompts.md` says ≤120 KB per @3x asset after compression. 768px is the @3x of
  * a 256pt slot, which is the largest any of these is drawn at.
  */
-const ILLUSTRATION = { budget: 120 * 1024, format: 'image/webp' }
+const ILLUSTRATION = { budget: 120 * 1024, format: 'image/webp', fit: 'contain' }
+
+/**
+ * Illustrations keep the master's aspect ratio. They are not square, and squaring them
+ * was wrong.
+ *
+ * The first version of this centre-cropped them to 1024×1024 on the reasoning that the
+ * style block asks for "subject centred with generous padding". That is what the brief
+ * says; it is not what the art does. `onboarding/explore` is a 3:2 COMPOSITION — Atlas
+ * descending by parachute at the upper right, a planet curving across the lower left —
+ * and cropping the middle square out of it put the mascot in a corner and sliced the
+ * planet in half. It is the first illustration a new user ever sees.
+ *
+ * So the width is fixed and the height follows the source. `<Art>` renders into a square
+ * box with `resizeMode: contain`, which centres the whole frame and lets the transparent
+ * bands fall where they will — nothing is lost, and a master that IS square (as some of
+ * these are) simply fills the box.
+ *
+ * Checked by looking at the output rather than by trusting the brief, which is rule 5 on
+ * that page and the step this skipped the first time round.
+ */
+const ILLUSTRATION_WIDTH = 768
 
 /**
  * Assets allowed past the budget, each with the reason and its own ceiling.
  *
  * Same shape as the contrast waivers and the escape-hatch allowlist: an exception is
  * allowed to exist, has to be named, and a stale one fails exactly like a violation.
- *
- * All three are the same picture problem — dense high-frequency detail over a starfield,
- * which is precisely what a lossy codec cannot discard. They bottom out around 150 KB at
- * 640px, and the rung below that visibly blotches the gold particles. Holding resolution
- * and spending 90 KB in total is the better trade against a 2.90 MB asset payload; the
- * alternative is three soft illustrations in the two places a new user looks first.
  */
 const ALLOWANCE = {
-  'atlas/welcome': { max: 170 * 1024, why: 'gold particle field over stars; the taster slide' },
-  'onboarding/explore': { max: 140 * 1024, why: 'starfield behind a full-frame planet' },
-  'celebration/burst': { max: 160 * 1024, why: 'confetti — noise in every pixel by design' },
+  // Empty, and it earned being empty. Three entries lived here while the illustrations
+  // were being centre-cropped to square: cropping throws away the transparent margin,
+  // so what remained was all subject and all detail, and three of them could not be
+  // squeezed under 120 KB at any quality worth shipping. Keeping the master's aspect put
+  // the margin back — `celebration/burst` went 149 KB → 120 KB without a quality change
+  // — and the stale check below is what said so rather than letting three exemptions sit
+  // there being quietly untrue.
 }
 
 /**
@@ -95,12 +123,12 @@ const ALLOWANCE = {
  * is cheaper than a resolution step until roughly q0.6 where WebP starts to blotch.
  */
 const LADDER = [
-  { size: 768, quality: 0.86 },
-  { size: 768, quality: 0.78 },
-  { size: 768, quality: 0.7 },
-  { size: 768, quality: 0.62 },
-  { size: 640, quality: 0.7 },
-  { size: 640, quality: 0.62 },
+  { width: ILLUSTRATION_WIDTH, quality: 0.86 },
+  { width: ILLUSTRATION_WIDTH, quality: 0.78 },
+  { width: ILLUSTRATION_WIDTH, quality: 0.7 },
+  { width: ILLUSTRATION_WIDTH, quality: 0.62 },
+  { width: 640, quality: 0.7 },
+  { width: 640, quality: 0.62 },
 ]
 
 /**
@@ -108,11 +136,10 @@ const LADDER = [
  *
  * `fit` is the whole reason this table exists rather than a loop over a directory:
  *
- *   · `cover` centre-crops to fill a square. Safe for these because every master has the
- *     subject centred with padding — that is what the style block asked for and what the
- *     delivered art does.
- *   · `contain` letterboxes onto the canvas colour, for art whose composition is the
- *     point and must not lose its edges.
+ *   · `cover` centre-crops to fill the frame. Correct for the app icon, which must be
+ *     square and full-bleed and has no other option.
+ *   · `contain` fits the whole image inside it. Correct for everything whose COMPOSITION
+ *     carries the meaning — which turned out to be the illustrations too, see below.
  */
 const APP_ICONS = [
   {
@@ -193,17 +220,21 @@ const ILLUSTRATIONS = [
  */
 async function render(page, sourceBytes, spec) {
   const width = spec.width ?? spec.size
-  const height = spec.height ?? spec.size
+  // `null` means "whatever the master's aspect gives" — computed in the page, where the
+  // decoded image is, rather than by parsing the PNG header out here.
+  const height = spec.height ?? spec.size ?? null
 
   return page.evaluate(
-    async ({ dataUrl, width, height, fit, opaque, inset, canvasColor, format, quality }) => {
+    async ({ dataUrl, width, height: requested, fit, opaque, inset, canvasColor, format, quality }) => {
+      let height = requested
       const img = new Image()
       img.src = dataUrl
       await img.decode()
 
       const canvas = document.createElement('canvas')
       canvas.width = width
-      canvas.height = height
+      canvas.height = height ?? Math.round((width * img.height) / img.width)
+      height = canvas.height
       const ctx = canvas.getContext('2d')
 
       if (opaque) {
@@ -342,7 +373,7 @@ export type ArtName = keyof typeof ART_BY_NAME
     // asset is comfortable or was squeezed to fit, and the one that dropped to 640 is
     // the one to look at first when somebody says the art looks soft.
     console.log(
-      `  ${name.padEnd(28)} ${`${chosen.size}px`.padStart(5)} q${chosen.quality.toFixed(2)}` +
+      `  ${name.padEnd(28)} ${`${chosen.width}px`.padStart(5)} q${chosen.quality.toFixed(2)}` +
         `${(chosen.bytes / 1024).toFixed(0).padStart(6)} KB`,
     )
   }

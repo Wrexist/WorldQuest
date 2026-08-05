@@ -21,11 +21,16 @@
  * this cannot do for flags, where the key comes from a content pack and has to be
  * checked at runtime instead.
  *
- * ## Square, because the slots are
+ * ## A square BOX, holding art that is not square
  *
- * The masters are 3:2 and the derivation centre-crops them to square (see
- * `scripts/build-art.cjs`). Callers give a size, not a width and a height, so there is
- * no way to letterbox one by accident.
+ * Callers give one size, so the box is square and the rhythm of a column of these stays
+ * even. The art inside keeps the master's 3:2 and is centred with `contain`, which is
+ * the fix for having squared them in the build at first: `onboarding/explore` is a
+ * composition — Atlas descending at the upper right, a planet curving across the lower
+ * left — and the square crop put the mascot in a corner and cut the planet in half.
+ *
+ * The transparent bands that leaves above and below are free. These sit on the canvas
+ * colour and most of the masters have a transparent margin anyway.
  */
 
 import { Image, StyleSheet, View } from 'react-native'
@@ -60,8 +65,8 @@ export function Art({ name, size, label }: ArtProps) {
       <Image
         source={source}
         style={{ width: size, height: size }}
-        // `contain` rather than `cover`: the crop already happened in the build, and
-        // cropping twice would eat the 8% safe-area padding the style block requires.
+        // `contain`, never `cover`. The build deliberately does not crop these, so the
+        // whole composition arrives here and cropping it now would undo that.
         resizeMode="contain"
         accessibilityLabel={label}
         alt={label ?? ''}
@@ -71,8 +76,10 @@ export function Art({ name, size, label }: ArtProps) {
 }
 
 const styles = StyleSheet.create({
-  // Clipped, because several masters carry a baked background rather than the
-  // transparency the delivery spec asks for. A rounded frame makes that read as a
-  // deliberate illustration panel instead of a rectangle that missed its cutout.
+  // Clipped, because the delivery is mixed: some masters are clean cutouts on
+  // transparency (`atlas/broken-compass`) and some carry a baked vignette
+  // (`atlas/welcome`). A rounded frame makes the second kind read as a deliberate
+  // illustration panel rather than a rectangle that missed its cutout, and costs the
+  // first kind nothing — there is nothing there to clip.
   frame: { borderRadius: radius.lg, overflow: 'hidden' },
 })
