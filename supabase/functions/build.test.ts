@@ -113,20 +113,48 @@ describe('submit-lesson bundle', () => {
     expect(byName.get('_engines/lesson/machine.ts')!.length).toBeLessThan(1_000)
   })
 
+  /**
+   * The budget is two numbers now, because it was measuring two things and reporting one.
+   *
+   * It counted raw source bytes and failed three times in one afternoon — every time on a
+   * change that added no runtime work at all, only the explanation of why the runtime work
+   * was needed. In a repo whose whole convention is that comments carry the reasoning,
+   * a single ceiling on source bytes is a ceiling on documentation, and the pressure it
+   * applies is "explain this less". That is exactly backwards on the function that grades
+   * every lesson.
+   *
+   * So: CODE bytes carry the tight budget, because "is the dependency graph growing
+   * quietly?" is a question about code. Raw bytes keep a loose one, because a cold start
+   * really does lex every byte and an unbounded file is still a cost.
+   *
+   * The stripper is deliberately crude and lives only here. It cannot affect what ships —
+   * the vendored modules stay byte-identical to their sources, which is the anti-drift
+   * guarantee three tests above depend on — and if it miscounts a few bytes inside a
+   * string literal, the budget is a few bytes off. That is the right blast radius for a
+   * regex pretending to be a parser.
+   */
+  const stripComments = (code: string): string =>
+    code
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/^\s*\/\/.*$/gm, '')
+      .replace(/\n{2,}/g, '\n')
+
+  it('does not grow its code graph quietly', () => {
+    // 40 000 against ~37 500 today, and the 2.5 KB of headroom is calibrated rather than
+    // guessed: every engine module this function might plausibly acquire next is bigger
+    // than that. `selection` is 4.0 KB of code, `progression` 4.9, `lesson/machine` 5.7,
+    // `content/index` 9.6. So vendoring any one of them fails this, which is precisely
+    // the event worth stopping — while renaming a symbol or writing a paragraph does not.
+    const code = files.reduce((sum, f) => sum + stripComments(f.content).length, 0)
+    expect(code).toBeLessThan(40_000)
+  })
+
   it('stays small enough to cold-start quickly', () => {
-    // 60 000 → 70 000, and the budget failing is what made it a decision rather than a
-    // drift. `_shared/submission-time.ts` is the whole of the increase: it is what stops
-    // a client dating its answers in the future, which was minting mastery, the overdue
-    // bonus and `factMastered` XP on every item. That is worth 7 KB parsed per cold
-    // start, and it is the same trade `bundle:native` recorded when Sentry pushed the
-    // app bundle past its ceiling — raise it in the open, with the reason attached, or
-    // do not raise it.
-    //
-    // The budget still bites. It is what keeps the state machine, the content engine and
-    // `selection` out of a function called once per lesson (see the test above), and it
-    // is the reason `AnsweredItem` is a shim rather than an import.
+    // Loose, and it is meant to be. What actually keeps this function cheap is the
+    // assertion above and the one before it — no state machine, no content engine, no
+    // `selection`, and `AnsweredItem` as a shim rather than an import.
     const total = files.reduce((sum, f) => sum + f.content.length, 0)
-    expect(total).toBeLessThan(70_000)
+    expect(total).toBeLessThan(120_000)
   })
 
   it('never accepts a client-supplied reward value', () => {
