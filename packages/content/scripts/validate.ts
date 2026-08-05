@@ -78,11 +78,28 @@ addFormats(ajv)
 const validate = ajv.compile(schema)
 
 const packFiles = walk(join(root, 'packs'))
+
+/**
+ * entity → region, read up front so the difficulty report below can group by it.
+ *
+ * Cheap and worth it: `difficulty` is authored by hand, once, by one person, and applies
+ * to every user on earth. Nothing has ever measured whether it says more about the facts
+ * or about whoever wrote it.
+ */
+const entityRegion = new Map<string, string>()
+for (const file of packFiles) {
+  const parsed = JSON.parse(readFileSync(file, 'utf8')) as { items?: { id?: string; type?: string; region?: string }[] }
+  for (const item of parsed.items ?? []) {
+    if (item.type === 'country' && item.id && item.region) entityRegion.set(item.id, item.region)
+  }
+}
 const seenIds = new Map<string, string>()
 /** Every volatility tag seen per pack — see the uniformity check below the loop. */
 const volatilityByPack = new Map<string, string[]>()
 /** Packs that have declared their uniform volatility deliberate. */
 const reviewedVolatility = new Set<string>()
+/** Authored difficulty per `pack → region` — see the bias report below the loop. */
+const difficultyByRegion = new Map<string, Map<string, number[]>>()
 let factCount = 0
 let sensitiveCount = 0
 let todoCount = 0
@@ -119,6 +136,18 @@ for (const file of packFiles) {
     // testing that alone would treat every template as an unsourced fact.
     if (item.attribute === undefined || item.entity === undefined) continue
     factCount++
+
+    if (typeof item.difficulty === 'number') {
+      const region = entityRegion.get(item.entity)
+      if (region) {
+        // Per PACK, not pooled. Pooling averages a skewed pack against an even one and
+        // reports a smaller number than either — the wrong direction for a bias check,
+        // and it took the real 1.9 in the capitals pack down to 1.4 across all four.
+        const perRegion = difficultyByRegion.get(rel) ?? new Map<string, number[]>()
+        perRegion.set(region, [...(perRegion.get(region) ?? []), item.difficulty as number])
+        difficultyByRegion.set(rel, perRegion)
+      }
+    }
 
     // 3. Sourcing and freshness.
     const verifiedAt = item.source?.verifiedAt
@@ -359,6 +388,52 @@ for (const [rel, tags] of volatilityByPack) {
       message:
         `all ${tags.length} facts are volatility "stable" — that is a 2-year window on ` +
         `every row, which switches the freshness check off. Grade the ones that move.`,
+    })
+  }
+}
+
+// ── 11. Authored difficulty is a prior, and priors carry the author's horizon ───
+//
+// The schema already calls `difficulty` an "authored prior" the engine overrides per
+// user, which is the right design. What nothing measured is how far the prior starts
+// from neutral — and it starts a long way. Across the capitals pack the mean authored
+// difficulty runs from 1.8 in Europe to 3.7 in Africa: every Western European capital is
+// 1 or 2 and every African one is 3 to 5.
+//
+// That is a real signal for the learner it was written for — a Swedish twelve-year-old
+// genuinely finds Stockholm easier than Gaborone. It is not a fact about the world, and
+// it is applied to every user. A child in Accra is told Accra is hard and Stockholm is
+// easy, and the item selector orders their new content accordingly.
+//
+// (Named in prose rather than by its identifier on purpose: `pnpm reachability` greps
+// consumer sources for engine export names, and this file is one of its consumers.
+// Writing the symbol here makes the selector look "wired up" from a comment — the
+// crude-question failure mode that script documents in its own header.)
+//
+// The real fix is empirical and needs data the product does not have yet: `review_log`
+// records every answer, so after enough reviews the prior can be replaced by observed
+// p(correct) per cohort — the same threshold `fsrs.ts` already names for re-fitting its
+// weights. Until then the least this can do is stop the bias being invisible. It is a
+// warning with a number in it, printed on every run, so it is a thing somebody decided
+// to live with rather than a thing nobody knew.
+for (const [rel, perRegion] of difficultyByRegion) {
+  const means = [...perRegion.entries()]
+    .filter(([, ds]) => ds.length >= 4)
+    .map(([region, ds]) => ({ region, mean: ds.reduce((a, b) => a + b, 0) / ds.length }))
+    .sort((a, b) => a.mean - b.mean)
+
+  const lowest = means[0]
+  const highest = means[means.length - 1]
+  if (means.length < 3 || !lowest || !highest) continue
+  if (highest.mean - lowest.mean > 1.5) {
+    warnings.push({
+      file: rel,
+      message:
+        `authored difficulty runs ${lowest.mean.toFixed(1)} (${lowest.region}) to ` +
+        `${highest.mean.toFixed(1)} (${highest.region}) — a prior written from one ` +
+        `learner's horizon and applied to every user on earth. Not a bug to fix by ` +
+        `hand; see docs/systems/content-pipeline.md on replacing it with observed ` +
+        `p(correct) from review_log.`,
     })
   }
 }
