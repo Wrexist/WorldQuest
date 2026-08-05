@@ -28,7 +28,11 @@ begin;
 --
 -- 32 → 34: `purchase_freeze`, the second function a signed-in client may call. It spends
 -- coins, so it gets the same pair as `purchase_item`.
-select plan(34);
+--
+-- 34 → 36: `expire_streaks`. It is the opposite case — a job, callable by nobody but the
+-- scheduler — and it writes `streaks.current`, so a client that could call it could break
+-- its own streak, or anyone's.
+select plan(36);
 
 -- Every table that holds user data must have RLS on. This catches the classic
 -- failure: a new table added months from now with RLS quietly left off.
@@ -273,6 +277,29 @@ select is_empty(
         and has_function_privilege('anon', p.oid, 'EXECUTE') $$,
   'purchase_freeze is not callable by anon'
 );
+
+-- ── the streak expiry job ───────────────────────────────────────────────────
+--
+-- The only function here that is not called by a request at all. It runs on pg_cron and
+-- writes `streaks.current` for every user at once, so a client grant would be a client
+-- that can break somebody else's streak. `authenticated` is revoked as well as `anon`,
+-- unlike the two purchase functions, because there is no signed-in caller either.
+select is_empty(
+  $$ select p.proname
+       from pg_proc p
+       join pg_namespace n on n.oid = p.pronamespace
+      where n.nspname = 'public'
+        and p.proname = 'expire_streaks'
+        and (has_function_privilege('anon', p.oid, 'EXECUTE')
+             or has_function_privilege('authenticated', p.oid, 'EXECUTE')) $$,
+  'expire_streaks is callable by no client at all'
+);
+
+-- The column the repair window opens on. `repairAvailability` returns `not-broken` while
+-- it is null, so before this existed the entire repair feature was unreachable — written,
+-- tested, priced, and gated on a value nothing wrote.
+select has_column('streaks', 'broken_on',
+  'streaks records the local date a run ended, so a repair can be offered');
 
 select * from finish();
 rollback;

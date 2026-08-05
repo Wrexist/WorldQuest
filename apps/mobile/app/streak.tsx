@@ -39,10 +39,10 @@ export default function StreakRoute() {
    * `''` and `0` with a note saying they "do NOT exist in the progress payload yet" —
    * they existed in `streaks` the whole time and nothing selected them.
    *
-   * `brokenOn` and `lastRepairAt` are still honest defaults, and the consequence is still
-   * correct: `repairAvailability` returns `not-broken`, so the repair card does not
-   * appear. Nothing writes those two, because a break is the absence of activity and only
-   * a scheduled job can notice one.
+   * `brokenOn` and `lastRepairAt` come from the server too, now that `expire_streaks()`
+   * runs hourly and records a break. Until it existed nothing wrote either, so
+   * `repairAvailability` returned `not-broken` for everyone and the repair card — a
+   * 600-coin sink with a 48-hour window, fully written and tested — could never appear.
    */
   const state = useMemo<RecoveryState>(
     () => ({
@@ -50,8 +50,8 @@ export default function StreakRoute() {
       longest: data?.longestStreak ?? 0,
       lastActiveDate: data?.lastActiveDate ?? '',
       freezesHeld: data?.freezesHeld ?? 0,
-      brokenOn: null,
-      lastRepairAt: null,
+      brokenOn: data?.brokenOn ?? null,
+      lastRepairAt: data?.lastRepairAt ?? null,
     }),
     [data],
   )

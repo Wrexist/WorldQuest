@@ -117,6 +117,8 @@ describe('fetchProgress', () => {
       longestStreak: 0,
       lastActiveDate: null,
       freezesHeld: 0,
+      brokenOn: null,
+      lastRepairAt: null,
       factsMastered: 0,
     })
   })
@@ -126,7 +128,14 @@ describe('fetchProgress', () => {
       fakeClient({
         wallets: { data: { xp_total: 4820, coins: 430, hearts: 4 }, error: null },
         streaks: {
-          data: { current: 12, longest: 31, last_active_date: '2026-08-05', freezes_held: 1 },
+          data: {
+            current: 12,
+            longest: 31,
+            last_active_date: '2026-08-05',
+            freezes_held: 1,
+            broken_on: null,
+            last_repair_at: null,
+          },
           error: null,
         },
         userFacts: { data: null, error: null, count: 7 },
@@ -144,6 +153,10 @@ describe('fetchProgress', () => {
       // selected them, so the freeze mechanic could not be shown OR bought.
       lastActiveDate: '2026-08-05',
       freezesHeld: 1,
+      // `repairAvailability` opens on `brokenOn`, so while nothing wrote the column the
+      // entire repair feature returned `not-broken` for everyone.
+      brokenOn: null,
+      lastRepairAt: null,
       factsMastered: 7,
     })
   })

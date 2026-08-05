@@ -319,6 +319,7 @@ export type Database = {
       }
       streaks: {
         Row: {
+          broken_on: string | null
           current: number
           freeze_used_on: string | null
           freezes_held: number
@@ -329,6 +330,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          broken_on?: string | null
           current?: number
           freeze_used_on?: string | null
           freezes_held?: number
@@ -339,6 +341,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          broken_on?: string | null
           current?: number
           freeze_used_on?: string | null
           freezes_held?: number
@@ -592,6 +595,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      expire_streaks: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       purchase_freeze: {
         Args: {
           p_price?: number

@@ -208,6 +208,16 @@ export type Progress = {
    */
   readonly lastActiveDate: string | null
   readonly freezesHeld: number
+  /**
+   * The local date the streak broke, or null while it is intact.
+   *
+   * `repairAvailability` opens on this and returns `not-broken` when it is null, so the
+   * whole repair feature — a 600-coin sink with a 48-hour window and a 30-day cooldown,
+   * written and tested — could never be offered to anyone. Nothing wrote the column,
+   * because a break is the ABSENCE of activity and only a scheduled job notices one.
+   */
+  readonly brokenOn: string | null
+  readonly lastRepairAt: number | null
 }
 
 /** Mastery levels that count as learned for the progress ring. */
@@ -226,7 +236,10 @@ const MASTERED: readonly Database['public']['Enums']['mastery_level'][] = [
 export async function fetchProgress(client: WorldQuestClient): Promise<Progress> {
   const [wallet, streak, mastered] = await Promise.all([
     client.from('wallets').select('xp_total, coins, hearts').maybeSingle(),
-    client.from('streaks').select('current, longest, last_active_date, freezes_held').maybeSingle(),
+    client
+      .from('streaks')
+      .select('current, longest, last_active_date, freezes_held, broken_on, last_repair_at')
+      .maybeSingle(),
     client
       .from('user_facts')
       .select('fact_id', { count: 'exact', head: true })
@@ -247,6 +260,8 @@ export async function fetchProgress(client: WorldQuestClient): Promise<Progress>
     longestStreak: streak.data?.longest ?? 0,
     lastActiveDate: streak.data?.last_active_date ?? null,
     freezesHeld: streak.data?.freezes_held ?? 0,
+    brokenOn: streak.data?.broken_on ?? null,
+    lastRepairAt: streak.data?.last_repair_at ? Date.parse(streak.data.last_repair_at) : null,
     factsMastered: mastered.count ?? 0,
   }
 }

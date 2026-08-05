@@ -95,6 +95,11 @@ const ALLOWED: Record<string, string> = {
 
   // ── roadmapped, and deliberately not built during v1.0
 
+  markBroken:
+    'superseded, not unbuilt. A break is the ABSENCE of activity, so it is recorded by ' +
+    '`expire_streaks()` on an hourly pg_cron schedule — nothing in a request-driven ' +
+    'system ever runs on an absence, which is why this sat unwired for so long. The ' +
+    'engine keeps the pure version for `repairAvailability` to reason against.',
   grantFreeze:
     'superseded, not unbuilt. The freeze IS purchasable — `purchase_freeze` — and the cap ' +
     'is enforced in SQL for the same reason the price is: a client that chooses its own ' +
@@ -141,11 +146,6 @@ const KNOWN_GAPS: Record<string, string> = {
   // maths" — and were descriptions of code nobody had written. That is exactly the
   // "we forgot" wearing "we decided not to" that this file's footer warns about, and
   // it survived because the only tree that could disprove it was not being read.
-  markBroken:
-    'nothing expires a streak on a day with no lesson; record_lesson only reacts to ' +
-    'activity, and recording a break means noticing an ABSENCE, which needs a scheduled ' +
-    'job. `currentStreak` makes the DISPLAY honest in the meantime; this is the other ' +
-    'half, which starts the repair window.',
 }
 
 // ── collect engine exports ───────────────────────────────────────────────────
