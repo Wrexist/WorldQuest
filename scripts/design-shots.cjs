@@ -23,12 +23,13 @@
  *
  * ## Usage
  *
- *   pnpm design:shots                          # the default route set
- *   pnpm design:shots /lesson /country/SE      # specific routes
+ *   pnpm design:shots                          # every route, plus the two flows
+ *   pnpm design:shots /lesson /country/SE      # specific routes (flows still run)
+ *   WQ_NO_FLOWS=1 pnpm design:shots /home      # routes only, when iterating on one
  *
- * Writes to node_modules/.cache/wq-design-shots/, one PNG per route per viewport,
- * plus `report.json` with the measured values a review should be arguing about
- * rather than eyeballing.
+ * Writes to node_modules/.cache/wq-design-shots/, one PNG per route per viewport plus
+ * ten per viewport for the onboarding and lesson flows, and `report.json` with the
+ * measured values a review should be arguing about rather than eyeballing.
  */
 
 const { chromium } = require('playwright')
@@ -73,7 +74,27 @@ const DEFAULT_ROUTES = [
   // here — the harness has no lesson behind it.
   '/paywall?source=settings',
   '/shop',
+  // Reached by a gate in the root layout and by the "we miss you" push, never by a tap.
+  // It went unphotographed for that reason and was rendering "It's been 0 days." to
+  // anyone who followed the notification the same afternoon.
+  '/welcome-back',
 ]
+
+/**
+ * The screens that are not routes, and were therefore invisible to this tool.
+ *
+ * A review that only visits `DEFAULT_ROUTES` sees about two thirds of the app. The
+ * onboarding flow is one route showing four different screens; the lesson is one route
+ * showing five. Between them that is nine screens nobody could photograph, and the
+ * first review that drove them by hand found a broken layout in the feedback sheet at
+ * 320, a screen-reader contradiction in the onboarding dots, and two illustrations
+ * missing entirely — none of which any route in the list above could have shown.
+ *
+ * So the script drives them. Onboarding is free: the harness already clicks through it
+ * to get past the gate, and now it stops for a picture on the way. The lesson costs one
+ * extra playthrough per viewport.
+ */
+const SHOOT_FLOWS = process.env.WQ_NO_FLOWS === undefined
 
 const TYPES = {
   '.html': 'text/html',
@@ -131,17 +152,22 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
    * the one the E2E already proves works, and a storage shape is an implementation
    * detail that would rot the day the onboarding key changes.
    */
-  const completeOnboarding = async (page) => {
+  const completeOnboarding = async (page, shot) => {
     await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' })
     await page.waitForTimeout(1200)
     if (!/Get started|Next/i.test(await page.evaluate(() => document.body.innerText))) return
 
+    // Each slide, on the way past. Free: the clicks were happening anyway, and the
+    // three intro slides are three different screens sharing one route.
     for (let i = 0; i < 2; i++) {
+      await shot(`onboarding-slide-${i + 1}`)
       await page.getByText('Next', { exact: true }).first().click()
       await page.waitForTimeout(350)
     }
+    await shot('onboarding-slide-3')
     await page.getByText('Get started', { exact: true }).first().click()
     await page.waitForTimeout(500)
+    await shot('onboarding-age')
 
     // An adult year, so the flow continues past the child branch.
     const adultYear = new Date().getFullYear() - 30
@@ -151,10 +177,65 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
     await page.waitForTimeout(250)
     await page.getByText('Continue', { exact: true }).first().click()
     await page.waitForTimeout(500)
+    await shot('onboarding-goal')
     await page.getByText('Continue', { exact: true }).first().click()
     await page.waitForTimeout(500)
+    await shot('onboarding-taster')
     await page.getByText('Start learning', { exact: true }).first().click()
     await page.waitForTimeout(1200)
+  }
+
+  /**
+   * The lesson's other four screens: paused, correct feedback, wrong feedback, summary.
+   *
+   * Answering the FIRST option every time is what gets both verdicts out of one
+   * playthrough without knowing any answers — some questions have it right and some do
+   * not, which is exactly the distribution needed here. The correct/wrong test reads the
+   * last few lines of the body rather than a testID, because the sheet is the thing
+   * being photographed and pinning it to a testID would let a redesign quietly stop
+   * taking the picture.
+   */
+  const shootLessonPhases = async (page, shot) => {
+    await page.goto(`http://localhost:${PORT}/lesson`, { waitUntil: 'networkidle' })
+    await page.waitForTimeout(1600)
+
+    const close = page.getByRole('button', { name: /close|exit|quit|pause/i }).first()
+    if ((await close.count()) > 0) {
+      await close.click()
+      await page.waitForTimeout(600)
+      await shot('lesson-paused')
+      const resume = page.getByText(/^(Keep going|Resume|Continue)$/).first()
+      if ((await resume.count()) > 0) {
+        await resume.click()
+        await page.waitForTimeout(700)
+      }
+    }
+
+    let gotCorrect = false
+    let gotWrong = false
+    for (let q = 0; q < 40; q++) {
+      const options = await page.getByTestId('answer-option').all()
+      if (options.length === 0) break
+      await options[0].click()
+      await page.waitForTimeout(550)
+      const tail = (await page.evaluate(() => document.body.innerText)).split('\n').slice(-8).join(' ')
+      const correct = /Perfect|Nice|Yes/i.test(tail)
+      if (correct && !gotCorrect) {
+        await shot('lesson-feedback-correct')
+        gotCorrect = true
+      }
+      if (!correct && !gotWrong) {
+        await shot('lesson-feedback-wrong')
+        gotWrong = true
+      }
+      const next = page.getByText(/^(Continue|Finish|Got it)$/).first()
+      if ((await next.count()) === 0) break
+      await next.click()
+      await page.waitForTimeout(500)
+    }
+    await page.waitForTimeout(800)
+    await shot('lesson-summary')
+    return { gotCorrect, gotWrong }
   }
 
   for (const viewport of VIEWPORTS) {
@@ -167,7 +248,10 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
       if (m.type() === 'error') consoleErrors.push(m.text())
     })
 
-    await completeOnboarding(page)
+    const shot = (name) =>
+      page.screenshot({ path: path.join(OUT, `${name}@${viewport.name}.png`) })
+
+    await completeOnboarding(page, SHOOT_FLOWS ? shot : async () => {})
 
     for (const route of ROUTES) {
       const slug = route === '/' ? 'home' : route.replace(/^\//, '').replace(/\//g, '-')
@@ -213,6 +297,14 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
       report.routes[slug][viewport.name] = measured
     }
 
+    if (SHOOT_FLOWS) {
+      const phases = await shootLessonPhases(page, shot)
+      if (!phases.gotCorrect || !phases.gotWrong) {
+        report.flowGaps ??= {}
+        report.flowGaps[viewport.name] = `lesson feedback: correct=${phases.gotCorrect} wrong=${phases.gotWrong}`
+      }
+    }
+
     if (consoleErrors.length > 0) {
       report.consoleErrors ??= {}
       report.consoleErrors[viewport.name] = [...new Set(consoleErrors)].slice(0, 10)
@@ -250,6 +342,19 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
   if (report.consoleErrors) {
     problems++
     console.log(`\n  ⚠ console errors: ${JSON.stringify(report.consoleErrors).slice(0, 300)}`)
+  }
+  // Said out loud rather than left as a missing file. A flow shot that silently did not
+  // happen is worse than no flow shots at all: the reviewer opens the folder, does not
+  // notice the absence, and reports the screen as fine.
+  if (report.flowGaps) {
+    problems++
+    console.log(`\n  ⚠ a lesson verdict was never reached: ${JSON.stringify(report.flowGaps)}`)
+  }
+  if (SHOOT_FLOWS) {
+    console.log(
+      `\n  + ${VIEWPORTS.length * 10} flow shots (onboarding-*, lesson-*) — screens that are ` +
+        `states rather than routes, and were invisible to this tool until they were not`,
+    )
   }
 
   console.log(`\nshots → ${OUT}`)
