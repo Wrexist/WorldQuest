@@ -24,6 +24,7 @@ import {
   palette,
   radius,
   space,
+  Tally,
   staggerStyle,
   text,
   useStagger,
@@ -155,9 +156,9 @@ export function AchievementsScreen({ rows, onStartLesson, onBack }: Achievements
             {t('achievements:title')}
           </Text>
         )}
-        <Text style={styles.body}>
+        <Tally style={styles.body} numberStyle={styles.countNumber}>
           {t('achievements:progress', { unlocked, total: rows.length })}
-        </Text>
+        </Tally>
       </View>
 
       {sorted.map((row, index) => (
@@ -256,6 +257,7 @@ const styles = StyleSheet.create({
 
   header: { gap: space[1] },
   title: { ...text('h1'), color: colors.text.primary },
+  countNumber: { ...text('caption', { weight: '700', numeric: true }), color: colors.text.primary },
   body: { ...text('caption'), color: colors.text.secondary },
 
   card: { gap: space[2], borderRadius: radius.lg },

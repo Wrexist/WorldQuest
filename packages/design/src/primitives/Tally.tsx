@@ -34,6 +34,23 @@
  * locale this app intends to reach — `lint:a11y` already checks RTL — and a `[0-9]`
  * split would quietly stop emphasising anything at all there rather than failing
  * loudly. The Unicode property escape costs nothing and is right everywhere.
+ *
+ * ## Putting this on a line BREAKS `getByText`, and that is expected
+ *
+ * The line becomes several nodes, so Testing Library's `getByText('0 of 56 learned')`
+ * stops matching. It happened seven times while this was being rolled out, so: the fix
+ * is `expect(container.textContent).toContain(…)`, which is what those assertions
+ * always meant. How many nodes it takes to draw the line is this component's business,
+ * and a test that pins it turns a styling change into a counting bug.
+ *
+ * ## Accessibility: check the line has a name before you split it
+ *
+ * Every current caller sits inside an element with an explicit `aria-label` — the
+ * Explore tile, the region row, the world card, `ProgressBar`'s own track — so the
+ * split is visual only and no reader hears "0", "of 56", "learned" as fragments.
+ * Nested `Text` is the standard React Native way to mix styles and readers join it, but
+ * a bare `Tally` with no labelled ancestor is worth a second look rather than an
+ * assumption.
  */
 
 import { Text, type StyleProp, type TextStyle } from 'react-native'

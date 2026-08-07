@@ -87,8 +87,10 @@ describe('Achievements screen', () => {
   })
 
   it('counts what is unlocked', () => {
-    render(<AchievementsScreen rows={rowsFor()} />)
-    expect(screen.getByText(`0 of ${CATALOGUE.length} unlocked`)).toBeTruthy()
+    // `textContent`: the count styles its digits apart from its words, so the line is
+    // several nodes.
+    const { container } = render(<AchievementsScreen rows={rowsFor()} />)
+    expect(container.textContent).toContain(`0 of ${CATALOGUE.length} unlocked`)
   })
 
   it('puts earned achievements first', () => {

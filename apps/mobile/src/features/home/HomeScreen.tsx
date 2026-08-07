@@ -322,9 +322,9 @@ export function HomeScreen({
                 nudge that fires on an empty inbox is how an app trains people to
                 ignore it. */}
             {world.factsDue > 0 && (
-              <Text style={styles.worldDue}>
+              <Tally style={styles.worldDue} numberStyle={styles.worldDueNumber}>
                 {t('home:world.due', { count: world.factsDue })}
-              </Text>
+              </Tally>
             )}
 
             {/* A row, not a button in a box.
@@ -486,7 +486,12 @@ const styles = StyleSheet.create({
     ...text('caption', { weight: '700', numeric: true }),
     color: colors.text.primary,
   },
-  worldDue: { ...text('caption', { weight: '700' }), color: colors.reward.xp },
+  // Gold on the whole line, deliberately: this is the only time-sensitive number on
+  // Home and the colour is what makes it findable. So here the digits take WEIGHT
+  // rather than a different colour — recolouring them would spend the one signal the
+  // line exists for.
+  worldDue: { ...text('caption'), color: colors.reward.xp },
+  worldDueNumber: { ...text('caption', { weight: '800', numeric: true }), color: colors.reward.xp },
   levelCard: { gap: space[3] },
   chips: { flexDirection: 'row', gap: space[2] },
   worldRow: { flexDirection: 'row', alignItems: 'center', gap: space[3] },

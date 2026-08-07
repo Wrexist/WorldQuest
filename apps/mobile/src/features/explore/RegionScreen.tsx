@@ -163,12 +163,12 @@ export function RegionScreen({
           total={Math.max(1, regionTotals.factsTotal)}
           label={t('explore:countries.title')}
         />
-        <Text style={styles.totals}>
+        <Tally style={styles.totals} numberStyle={styles.totalsNumber}>
           {t('explore:region.complete', {
             complete: regionTotals.entitiesComplete,
             total: regionTotals.entitiesTotal,
           })}
-        </Text>
+        </Tally>
       </View>
 
       <View style={styles.list}>
@@ -237,6 +237,7 @@ const styles = StyleSheet.create({
   // not 4.5:1, and this is a 13pt caption. It was wrong on a plain surface before the
   // sky went behind it; the sky only made it measurable. Over Africa's it read 4.0:1.
   totals: { ...text('caption'), color: colors.text.secondary },
+  totalsNumber: { ...text('caption', { weight: '700', numeric: true }), color: colors.text.primary },
   list: { backgroundColor: colors.bg.surface, borderRadius: radius.lg, overflow: 'hidden' },
   row: {
     flexDirection: 'row',

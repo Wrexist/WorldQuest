@@ -218,8 +218,8 @@ describe('Home — your world', () => {
 
   it('surfaces what is due, which was previously two taps into Explore', () => {
     // The only time-sensitive number in a spaced-repetition app, and Home never said it.
-    withWorld()
-    expect(screen.getByText('7 facts ready to review')).toBeTruthy()
+    const { container } = withWorld()
+    expect(container.textContent).toContain('7 facts ready to review')
   })
 
   it('says nothing at all when nothing is due', () => {
