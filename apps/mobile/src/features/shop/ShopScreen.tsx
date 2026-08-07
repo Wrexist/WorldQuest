@@ -35,6 +35,9 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Button, Card, colors, radius, space, text } from '@worldquest/design'
 import { coinsShort, purchase, type ShopItem } from '@worldquest/engines'
 import { Icon } from '../../components/Icon.js'
+import { Art } from '../../components/Art.js'
+import type { ArtName } from '../../lib/art.generated.js'
+import { INSIGNIA_SIZE, insigniaFor } from '../../lib/insignia.js'
 import { Stat } from '../../components/Stat.js'
 import { FailureState } from '../../components/FailureState.js'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
@@ -126,6 +129,7 @@ export function ShopScreen({
           <TitleRow
             name={t(levelTitleKey as TranslationKey)}
             help={t('shop:levelTitle.help')}
+            insignia={insigniaFor(levelTitleKey)}
             owned
             equipped={equippedId === null}
             onEquip={() => onEquip(null)}
@@ -177,6 +181,7 @@ export function ShopScreen({
 function TitleRow({
   name,
   help,
+  insignia,
   owned,
   equipped,
   price,
@@ -187,6 +192,15 @@ function TitleRow({
 }: {
   readonly name: string
   readonly help?: string
+  /**
+   * The rank insignia, for the one row that has one.
+   *
+   * Only the level title is a rank, and only ranks have been drawn — the shop's own
+   * titles are bought, not climbed to, and `asset-prompts.md` briefs no art for them.
+   * So one row in seven carries a picture, which is not an inconsistency to tidy up:
+   * that row is the earned one, and looking different is the whole point of it.
+   */
+  readonly insignia?: ArtName | null | undefined
   readonly owned: boolean
   readonly equipped: boolean
   readonly price?: string
@@ -199,6 +213,7 @@ function TitleRow({
 
   return (
     <Card level={equipped ? 2 : 1} style={[styles.row, equipped && styles.rowOn]}>
+      {insignia != null && <Art name={insignia} size={INSIGNIA_SIZE} />}
       <View style={styles.rowText}>
         <Text style={styles.rowName}>{name}</Text>
         {help !== undefined && <Text style={styles.rowHelp}>{help}</Text>}

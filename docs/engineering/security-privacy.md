@@ -183,7 +183,7 @@ A real blocker, tracked here so it doesn't surprise us in v1.5.
 | **Map geometry** | Natural Earth is public domain; OSM-derived data is ODbL and carries attribution obligations — pick one and record it |
 | **Landmark photographs** | **The expensive one.** Wikimedia is mixed-licence; many images require attribution or are non-commercial. Either license a stock set, commission illustrations, or use only CC-BY with in-app attribution |
 | **Country facts** | Facts aren't copyrightable; a *database* can be. Use primary sources (UN, World Bank) and cite them |
-| **Fonts** | Inter (OFL) and Baloo 2 (OFL) — both fine, ship the licence |
+| **Fonts** | **Nunito (OFL)**, five weights, via `@expo-google-fonts/nunito` — fine, ship the licence. This row named Inter and Baloo 2 until the app moved to one family; the licence that ships has to match the font that ships. |
 | **Sound** | Commission or buy a royalty-free pack with a recorded licence |
 
 **Every asset records `license` and `attribution` in its pack, and CI rejects an asset

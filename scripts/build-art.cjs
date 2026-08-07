@@ -223,8 +223,23 @@ const ART_DIRS = [
  * generations, not a picture any screen draws. `sparkle-sheet` is a 2048x512 sprite
  * strip of eight frames, and the resize below would scale it like a single image and
  * silently break the frame arithmetic; it needs sprite handling before it can ship.
+ *
+ * `levels/pioneer` is not a rank. The title ladder is wanderer · scout · navigator ·
+ * cartographer · pathfinder · voyager · circumnavigator · trailblazer · globetrotter ·
+ * worldkeeper · atlas, and `ProfileScreen.insigniaFor` looks the art up by rank name, so
+ * nothing can ever reach a file called `pioneer` — it would be 39 KB of bundle for a
+ * picture with no way in. It is also a near-duplicate of `trailblazer`, a summit with a
+ * flag, which is a clue about how it happened. The master stays; it just does not ship.
+ *
+ * The other half of that mismatch is a gap rather than a spare: **level 100, `atlas`, has
+ * no insignia** and is the one rank that should. It renders without art rather than with
+ * the wrong art, and the prompt for it is in asset-prompts.md §12.
  */
-const NOT_SHIPPED = new Set(['atlas/character-sheet', 'celebration/sparkle-sheet'])
+const NOT_SHIPPED = new Set([
+  'atlas/character-sheet',
+  'celebration/sparkle-sheet',
+  'levels/pioneer',
+])
 
 const ILLUSTRATIONS = ART_DIRS.flatMap((dir) =>
   readdirSync(join(MASTERS, dir))

@@ -32,7 +32,7 @@ import { formatCompact, useT, currentLocale, type TranslationKey } from '../../l
 import { REGIONS, type RegionCode } from '../explore/ExploreScreen.js'
 import { Art } from '../../components/Art.js'
 import { avatarArt } from '../settings/AvatarPicker.js'
-import { ART_BY_NAME, type ArtName } from '../../lib/art.generated.js'
+import { INSIGNIA_SIZE, insigniaFor } from '../../lib/insignia.js'
 import { Icon } from '../../components/Icon.js'
 
 const REGION_NAME: Record<RegionCode, TranslationKey> = {
@@ -90,21 +90,6 @@ export type ProfileScreenProps = {
   readonly onStartLesson?: (() => void) | undefined
   /** The chosen avatar id, or null/absent for initials. */
   readonly avatar?: string | null | undefined
-}
-
-/** How big the rank insignia sits beside the level title. */
-const INSIGNIA = 40
-
-/**
- * `titles:navigator` → `levels/navigator`, when that rank has been drawn.
- *
- * Returns null rather than a placeholder for the four ranks with no art yet and for
- * any shop title, which is not a rank. A missing picture is better than the wrong one.
- */
-function insigniaFor(titleKey: string): ArtName | null {
-  const rank = titleKey.split(':')[1] ?? ''
-  const name = `levels/${rank}` as ArtName
-  return name in ART_BY_NAME ? name : null
 }
 
 export function ProfileScreen({
@@ -192,7 +177,7 @@ export function ProfileScreen({
             rather than guessing. Decorative — the title is right beside it in words. */}
         {insignia !== null && (
           <View style={styles.insignia}>
-            <Art name={insignia} size={INSIGNIA} />
+            <Art name={insignia} size={INSIGNIA_SIZE} />
           </View>
         )}
         <Text style={styles.levelTitle}>

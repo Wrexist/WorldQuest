@@ -74,7 +74,6 @@ import levelsCircumnavigator from '../../assets/art/levels/circumnavigator.webp'
 import levelsGlobetrotter from '../../assets/art/levels/globetrotter.webp'
 import levelsNavigator from '../../assets/art/levels/navigator.webp'
 import levelsPathfinder from '../../assets/art/levels/pathfinder.webp'
-import levelsPioneer from '../../assets/art/levels/pioneer.webp'
 import levelsScout from '../../assets/art/levels/scout.webp'
 import levelsTrailblazer from '../../assets/art/levels/trailblazer.webp'
 import levelsVoyager from '../../assets/art/levels/voyager.webp'
@@ -162,7 +161,6 @@ export const ART_BY_NAME = {
   'levels/globetrotter': levelsGlobetrotter,
   'levels/navigator': levelsNavigator,
   'levels/pathfinder': levelsPathfinder,
-  'levels/pioneer': levelsPioneer,
   'levels/scout': levelsScout,
   'levels/trailblazer': levelsTrailblazer,
   'levels/voyager': levelsVoyager,
@@ -266,7 +264,6 @@ export const ART_GEOMETRY = {
   'levels/globetrotter': { aspect: 1.5, x: 0.3164, y: 0.2012, w: 0.3646, h: 0.5195 },
   'levels/navigator': { aspect: 1, x: 0.3164, y: 0.306, w: 0.3594, h: 0.3971 },
   'levels/pathfinder': { aspect: 1, x: 0.3151, y: 0.3125, w: 0.3503, h: 0.3581 },
-  'levels/pioneer': { aspect: 1, x: 0.3151, y: 0.306, w: 0.3789, h: 0.3997 },
   'levels/scout': { aspect: 1.5, x: 0.2956, y: 0.2305, w: 0.4115, h: 0.5273 },
   'levels/trailblazer': { aspect: 1.5, x: 0.319, y: 0.2363, w: 0.3724, h: 0.4883 },
   'levels/voyager': { aspect: 1, x: 0.332, y: 0.3203, w: 0.3906, h: 0.4219 },

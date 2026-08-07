@@ -18,7 +18,7 @@ factual error or a legal problem.
 | **Flags** ✅ **done** | A generated flag has the wrong number of stars, the wrong proportions, the wrong shade. In a learning app that is a **wrong fact** — our worst class of bug. | **`flag-icons` 7.5.0, MIT.** `pnpm build:flags` rasterises all 65 to `apps/mobile/assets/flags/`; the licence is recorded per entity in the countries pack. |
 | **Country / continent geometry** ✅ **done** | Generated maps have invented coastlines and wrong borders. That is both a wrong fact and a political problem. | **Natural Earth** (public domain), via `world-atlas` 2.0.2 (ISC). `pnpm build:maps` projects and rasterises 6 region + 65 country layers; licence recorded per entity in `assets.map`. |
 | **UI icons** (tab bar, chevrons, close) ✅ **done** | Generated icons drift in weight and optical size, and none of them mirror correctly for RTL. | **Lucide 1.28.0, ISC.** `pnpm build:icons` rasterises 26 to `apps/mobile/assets/icons/` as white-on-transparent alpha masks, recoloured at runtime with `tintColor`. |
-| **Fonts** | — | **Inter** and **Baloo 2**, both OFL, from Google Fonts. |
+| **Fonts** | — | **Nunito**, OFL, from Google Fonts, via `@expo-google-fonts/nunito`. Five weights, one family. It was Inter for body and Baloo 2 for headings; see `apps/mobile/src/lib/fonts.ts` for why that pairing was dropped. |
 | **Real landmark photography** | Licensing. Wikimedia is mixed-licence and much of it is non-commercial. | Commission illustration (recommended), or licence a stock set. Never generate a "photo" of a real place — it will be subtly wrong and read as fake. |
 
 Everything below this line is safe to generate.
@@ -206,13 +206,29 @@ borders, multiple pins
 for the "no text" rule in the negative block. A wordmark with a subtly malformed `Q`
 is a brand you cannot use and cannot fix.
 
-Set it instead, in **Baloo 2 ExtraBold** — the display face this app already ships and
-licences (OFL) — as `WorldQuest`, one word, capital W and capital Q. Then:
+Set it instead, in **Nunito Black (900)** — the face this app ships and licences (OFL),
+at the weight the `display` type step already uses — as `WorldQuest`, one word, capital W
+and capital Q. Then:
 
 - Convert to outlines and deliver as SVG.
 - `brand/wordmark-light.svg` — near-white `#F2F6FF`, for the dark canvas.
 - `brand/wordmark-gold.svg` — the warm gold `#F5A61E`, for the splash and store art.
 - Optical spacing pass by hand. The default kerning between `d` and `Q` is loose.
+
+> **This said Baloo 2 ExtraBold until the fonts changed underneath it.** The app dropped
+> the Inter + Baloo 2 pairing for a single Nunito family, and this section went on naming
+> a typeface the product no longer ships — which would have produced a logo in the wrong
+> face and nobody would have noticed until it was on a store page.
+
+**The app is not blocked on this.** `SplashScreen` sets the wordmark as live text in the
+`display` step, which is the same face at the same weight, and live text is the better
+answer inside the app: it scales with the type settings, it localises, and it is not an
+asset anyone has to keep in sync. The SVG is for the places live text cannot go — the
+store listing, press, and anywhere the mark appears outside a React Native tree.
+
+It is also the one asset here that a build script cannot produce. Converting type to
+outlines needs a font-parsing library this repo does not have and should not gain to set
+one logo, and the optical kerning pass above is a hand job by definition.
 
 ### 1c. The lockup
 
@@ -617,10 +633,19 @@ two linked rings (social) · a crown (premium) · a keyhole (hidden) · a laurel
 
 ## 12. Level insignia
 
-`packages/content/assets/levels/*.png` · 256×256 · 8 ranks
+`docs/design/assets/levels/*.png` · 1536×1024 · **11 ranks — ten delivered, one missing**
 
 The profile shows a level *and a title* — "Level 38 – Navigator" in the mockup — and
-the title ladder has no art, so a rank that takes weeks to earn arrives as a word.
+the title ladder had no art, so a rank that takes weeks to earn arrived as a word.
+
+> **This section was wrong when the art was commissioned, and the art came back wrong
+> because of it.** The table below used to list eight ranks including a "Pioneer" that
+> is not in the ladder, and omitted Circumnavigator, Trailblazer, Globetrotter and
+> Atlas. The delivery matched the table: a `levels/pioneer.png` nothing can reach, and
+> no insignia for level 100. `pioneer` is in `NOT_SHIPPED` and the master is kept; it is
+> a near-duplicate of `trailblazer` anyway. The warning at the foot of this section was
+> already there, in those words, and was not followed — which is why the table now
+> records what the ladder actually is and what was actually drawn.
 
 ```
 [STYLE BLOCK]
@@ -632,21 +657,35 @@ the other ranks in the set.
 [NEGATIVE BLOCK], text, numerals, shield, medal frame, laurel
 ```
 
-| Rank | `{INSIGNIA}` | `{METAL}` |
-|---|---|---|
-| Wanderer | a single simple footprint | weathered pewter |
-| Scout | a folded paper map corner | warm bronze |
-| Pathfinder | a compass needle pointing up | brushed bronze |
-| Navigator | a sextant arc | brushed silver |
-| Cartographer | a rolled chart with a ribbon | polished silver |
-| Voyager | a stylised sailing pennant | warm gold |
-| Pioneer | a mountain peak with a flag | polished gold |
-| Worldkeeper | a small globe held in an open hand | iridescent violet |
+The ladder is `docs/systems/progression.md` §1 and `packages/i18n/locales/en/titles.json`.
+`{INSIGNIA}` below describes **what was delivered**, not what was originally asked for —
+the two diverged on several ranks, and the set has to stay internally consistent, so a
+redraw should match its neighbours rather than the first brief.
 
-> The names must match `packages/content/packs/shop/titles.v1.json` and the level
-> ladder in `docs/systems/progression.md`. **Check them before generating** — a rank
-> insignia for a title that does not exist is eight wasted assets, and renaming a title
-> is a migration rather than a rename because it ships in save data.
+| Level | Rank | `{INSIGNIA}` | `{METAL}` | |
+|---|---|---|---|---|
+| 1 | Wanderer | a single simple footprint | weathered pewter | ✅ |
+| 10 | Scout | a folded paper map with a marked X | warm bronze | ✅ |
+| 20 | Navigator | a compass rose struck on a round medal | warm bronze | ✅ |
+| 30 | Cartographer | a sextant | brushed silver | ✅ |
+| 40 | Pathfinder | a map with a dotted trail across it | warm gold | ✅ |
+| 50 | Voyager | a stylised pennant on a staff | warm gold | ✅ |
+| 60 | Circumnavigator | a ringed planet | brushed silver | ✅ |
+| 70 | Trailblazer | a mountain summit with a flag | polished gold | ✅ |
+| 80 | Globetrotter | two footprints circling a small globe | polished gold | ✅ |
+| 90 | Worldkeeper | a small globe held in an open hand | iridescent violet | ✅ |
+| 100 | Atlas | **a figure bearing a globe on its shoulders** | iridescent violet with a warm gold rim | ❌ **missing** |
+
+Level 100 is the top of a roughly three-year climb and the only rank named after the
+mascot, so it is the one that most needs a picture and the one that has none. It renders
+without art rather than with a borrowed one — `ProfileScreen.insigniaFor` returns null
+for a rank with no file, deliberately, because a wrong insignia on the rarest rank in the
+game is worse than no insignia.
+
+> The names must match `packages/i18n/locales/en/titles.json` and the level ladder in
+> `docs/systems/progression.md`. **Check them before generating** — a rank insignia for a
+> title that does not exist is a wasted asset, and renaming a title is a migration rather
+> than a rename because it ships in save data.
 
 ## 13. League tier badges
 
