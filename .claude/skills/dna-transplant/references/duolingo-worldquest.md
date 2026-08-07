@@ -164,13 +164,33 @@ mascot half the width of its sheet.
 | Bare icon+number rewards instead of pills | `Stat` is the design system's reward chip and appears identically on Home and the streak screen. Taking the donor's lighter treatment *here only* would make one value look like two things. The cost is real and accepted: at 320 the two chips wrap to a second row. |
 | The solid red heart | Ours is a token pair that clears contrast. Theirs is a colour we would have to re-derive against a dark canvas — the same trap as the accents in the first graft. |
 
-## Deferred, not rejected
+## The fourth mechanic, which looked best and is a trap
 
 **A flag beside each answer option.** The reference puts Poland's flag against "Polish
-złoty", the EU's against "Euro". It is the best idea on the screen and it is a *content*
-mechanic rather than a layout one: each option would have to carry an entity to draw a
-flag for, which is a change to how questions are composed rather than to how they are
-drawn. Worth doing; not doable in the same edit.
+złoty", the EU's against "Euro". It looks like the best idea on the screen. It was
+recorded here as "deferred, worth doing" — and that was wrong, which is worth leaving in
+rather than editing out.
+
+`packages/engines/src/content/types.ts` already carried the reason: per-option art was
+tried once and removed, because for a template answered by country name it prints the
+answer beside each name. The currency question looks like it escapes that — none of the
+four flags is Germany's. It does not. `buildQuestion` builds the correct option as
+`{ id: item.entityId }`, so **the option's entity is the entity in the prompt**: drawing
+its flag puts Germany's flag against "Euro" and hands over the answer to anyone who
+recognises a flag and knows nothing about currencies. Silently, and only to sighted users
+— the worst shape a giveaway can take, and the same shape the locator rule exists to
+prevent.
+
+The donor hangs the flag on the **value** (Euro → the EU flag), not on the entity the
+value came from. That is not expressible in our content model: a `Fact`'s value is
+`{ id?, names? }` and only an `Entity` carries `assets`. It needs value-level assets
+*and* a licensed symbol per currency with a source and a `verifiedAt`.
+
+**This is the step-4 failure mode in the skill, caught one layer later than it should
+have been:** the donor supplies interaction, not values, and "make the question easier to
+answer without knowing the fact" is a value this product does not hold. A transplant that
+overrides your product's ethics is a rejection, not a graft — and in a learning app,
+correctness is the ethic.
 
 ## Consequence
 
