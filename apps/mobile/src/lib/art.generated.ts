@@ -69,9 +69,13 @@ import leaguesRuby from '../../assets/art/leagues/ruby.webp'
 import leaguesSapphire from '../../assets/art/leagues/sapphire.webp'
 import leaguesSilver from '../../assets/art/leagues/silver.webp'
 import levelsCartographer from '../../assets/art/levels/cartographer.webp'
+import levelsCircumnavigator from '../../assets/art/levels/circumnavigator.webp'
+import levelsGlobetrotter from '../../assets/art/levels/globetrotter.webp'
 import levelsNavigator from '../../assets/art/levels/navigator.webp'
 import levelsPathfinder from '../../assets/art/levels/pathfinder.webp'
 import levelsPioneer from '../../assets/art/levels/pioneer.webp'
+import levelsScout from '../../assets/art/levels/scout.webp'
+import levelsTrailblazer from '../../assets/art/levels/trailblazer.webp'
 import levelsVoyager from '../../assets/art/levels/voyager.webp'
 import levelsWanderer from '../../assets/art/levels/wanderer.webp'
 import levelsWorldkeeper from '../../assets/art/levels/worldkeeper.webp'
@@ -152,9 +156,13 @@ export const ART_BY_NAME = {
   'leagues/sapphire': leaguesSapphire,
   'leagues/silver': leaguesSilver,
   'levels/cartographer': levelsCartographer,
+  'levels/circumnavigator': levelsCircumnavigator,
+  'levels/globetrotter': levelsGlobetrotter,
   'levels/navigator': levelsNavigator,
   'levels/pathfinder': levelsPathfinder,
   'levels/pioneer': levelsPioneer,
+  'levels/scout': levelsScout,
+  'levels/trailblazer': levelsTrailblazer,
   'levels/voyager': levelsVoyager,
   'levels/wanderer': levelsWanderer,
   'levels/worldkeeper': levelsWorldkeeper,
