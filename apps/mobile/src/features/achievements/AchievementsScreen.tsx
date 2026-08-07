@@ -15,8 +15,19 @@
  *    rest. Sorting alphabetically buries the two rows a user actually wants to see.
  */
 
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import { Button, Card, ProgressBar, colors, palette, radius, space, text } from '@worldquest/design'
+import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native'
+import {
+  Button,
+  Card,
+  ProgressBar,
+  colors,
+  palette,
+  radius,
+  space,
+  staggerStyle,
+  text,
+  useStagger,
+} from '@worldquest/design'
 import {
   TIERS,
   tierProgress,
@@ -149,8 +160,8 @@ export function AchievementsScreen({ rows, onStartLesson, onBack }: Achievements
         </Text>
       </View>
 
-      {sorted.map((row) => (
-        <AchievementCard key={row.def.id} row={row} />
+      {sorted.map((row, index) => (
+        <AchievementCard key={row.def.id} row={row} index={index} />
       ))}
     </ScrollView>
   )
@@ -176,8 +187,9 @@ function remainingToNextTier({ def, progress }: AchievementRow): number {
 /** Big enough for the glyph inside the frame to read; small enough for a list row. */
 const MEDAL = 56
 
-function AchievementCard({ row }: { row: AchievementRow }) {
+function AchievementCard({ row, index }: { row: AchievementRow; index: number }) {
   const t = useT()
+  const entrance = useStagger(index)
   const { def, progress } = row
   const { next, fraction } = tierProgress(def, progress)
 
@@ -188,6 +200,7 @@ function AchievementCard({ row }: { row: AchievementRow }) {
   const remaining = remainingToNextTier(row)
 
   return (
+    <Animated.View style={staggerStyle(entrance)}>
     <Card
       style={styles.card}
       // A stable handle for tests, alongside the label a person hears. The card was
@@ -232,6 +245,7 @@ function AchievementCard({ row }: { row: AchievementRow }) {
         </>
       )}
     </Card>
+    </Animated.View>
   )
 }
 

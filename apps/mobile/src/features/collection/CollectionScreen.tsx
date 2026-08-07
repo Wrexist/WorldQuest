@@ -23,7 +23,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Animated, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
 import { Art } from '../../components/Art.js'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { Flag } from '../../components/Flag.js'
@@ -35,7 +35,9 @@ import {
   colors,
   radius,
   space,
+  staggerStyle,
   text,
+  useStagger,
 } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
@@ -252,8 +254,8 @@ export function CollectionScreen({
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.grid} showsVerticalScrollIndicator={false}>
-          {shown.map((tile) => (
-            <Tile key={tile.id} tile={tile} art={art} onOpen={onOpen} />
+          {shown.map((tile, index) => (
+            <Tile key={tile.id} tile={tile} index={index} art={art} onOpen={onOpen} />
           ))}
         </ScrollView>
       )}
@@ -263,14 +265,20 @@ export function CollectionScreen({
 
 function Tile({
   tile,
+  index,
   art,
   onOpen,
 }: {
   readonly tile: CollectionTile
+  readonly index: number
   readonly art: boolean
   readonly onOpen: ((id: string) => void) | undefined
 }) {
   const t = useT()
+  // This grid is the case `motion.stagger`'s `maxItems` was written for: sixty-five
+  // tiles at 40 ms each would take two and a half seconds to finish arriving. The
+  // cascade covers the first screenful and everything below it lands with the sixth.
+  const entrance = useStagger(index)
 
   // Everything the tile says, said once, to a screen reader — the name, what it is,
   // whether it has been collected, and whether it is starred. Without the subtitle
@@ -286,6 +294,7 @@ function Tile({
     .join(', ')
 
   return (
+    <Animated.View style={[styles.tileCell, staggerStyle(entrance)]}>
     <Card
       level={tile.collected ? 2 : 1}
       // The state is IN the label, not only in the dimming. A screen-reader user gets
@@ -322,6 +331,7 @@ function Tile({
         <Icon name="star" size={14} color={colors.action.secondary} />
       )}
     </Card>
+    </Animated.View>
   )
 }
 
@@ -378,7 +388,11 @@ const styles = StyleSheet.create({
   // Two columns needs no platform branch and no conditional: it is simply wide enough,
   // at every text size, on every renderer. The tiles are chunkier for it, which suits
   // the rest of the system.
-  tile: { width: '48%', minHeight: 116, padding: space[3], alignItems: 'center', justifyContent: 'center', gap: space[1] },
+  // The cell owns the grid width; the tile fills the cell. Split when the tiles gained
+  // a staggered entrance — the transform belongs on a wrapper rather than on the Card,
+  // which has its own press transform.
+  tileCell: { width: '48%' },
+  tile: { width: '100%', minHeight: 116, padding: space[3], alignItems: 'center', justifyContent: 'center', gap: space[1] },
   // Dimmed, never hidden. See the header comment — this is the whole design.
   tileDim: { opacity: 0.45 },
   tileName: { ...text('caption', { weight: '700' }), color: colors.text.primary, textAlign: 'center' },

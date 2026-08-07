@@ -15,7 +15,7 @@
  */
 
 import { useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
+import { Animated, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
 import {
   ArtScrim,
   Card,
@@ -25,7 +25,9 @@ import {
   palette,
   radius,
   space,
+  staggerStyle,
   text,
+  useStagger,
 } from '@worldquest/design'
 import type { WorldProgress } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
@@ -95,6 +97,8 @@ export type ExploreScreenProps = {
   readonly onSelectRegion: (region: RegionCode) => void
 }
 
+type TileSize = { readonly width: number; readonly height: number }
+
 /** `width: '48%'` of the grid, which is the screen inside its own padding. */
 const estimateTileWidth = (windowWidth: number) => (windowWidth - space[4] * 2) * 0.48
 
@@ -110,7 +114,6 @@ export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection
   if (loading || world === null) return <ExploreSkeleton />
 
   const byRegion = new Map(world.regions.map((r) => [r.region, r]))
-  const percent = (fraction: number): string => `${Math.round(fraction * 100)}%`
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
@@ -164,99 +167,132 @@ export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection
       )}
 
       <View style={styles.grid}>
-        {REGIONS.map((region) => {
-          const progress = byRegion.get(region)
-          const tint = palette.continent[region]
-          const empty = progress === undefined || progress.factsTotal === 0
-
-          return (
-            <Pressable
-              key={region}
-              role="button"
-              aria-label={t('explore:region.label', {
-                region: t(REGION_NAME[region]),
-                percent: percent(progress?.fraction ?? 0),
-              })}
-              aria-disabled={empty}
-              disabled={empty}
-              onPress={() => onSelectRegion(region)}
-              onLayout={(event) => {
-                const { width, height } = event.nativeEvent.layout
-                // Guarded, because setting state from a layout that the state itself
-                // feeds is how a render loop starts. Sub-point changes are noise.
-                setTile((current) =>
-                  Math.abs(current.width - width) < 1 && Math.abs(current.height - height) < 1
-                    ? current
-                    : { width, height },
-                )
-              }}
-              // A continent with no content yet is dimmed rather than hidden. Hiding
-              // it would read as a smaller world; dimming says "not yet".
-              style={[styles.tile, { borderColor: tint }, empty && styles.tileEmpty]}
-            >
-              {/* The continent's own sky, behind its card.
-                  This screen is the second tab of a geography app and had no picture on
-                  it at all — seven navy rectangles told apart by a 4pt coloured bar. The
-                  art is briefed per continent in asset-prompts.md §8 as atmosphere only:
-                  no landmass, no coastline, no borders, because a generated coastline is
-                  a wrong fact and a generated border is a political claim. Real Natural
-                  Earth geometry composites on top of this later.
-
-                  Decorative — the tile already announces the continent and its progress
-                  through `aria-label`, and a screen reader naming the weather over Asia
-                  is noise. */}
-              <View style={styles.tileArt} pointerEvents="none">
-                <Art name={CONTINENT_ART[region]} size={tileArtSize(tile.width, tile.height)} />
-                {/* A scrim, and it is not decoration. Four of these skies are bright —
-                    Africa's gold, South America's yellow-green, Oceania's turquoise —
-                    and text over them was unreadable, which is a WCAG AA failure the
-                    contrast gate cannot catch because it checks token PAIRS and this is
-                    text over a picture.
-
-                    It was a flat wash at 0.55 and that was measured, on the rendered
-                    tiles, as not enough: 1.5:1 on Oceania against a 4.5:1 floor. Raising
-                    the flat wash far enough for the worst sky would have flattened all
-                    seven back to navy. `ArtScrim` weights it downward instead, towards
-                    the small text, and leaves the top of the sky alone. */}
-                <ArtScrim />
-              </View>
-              <View style={[styles.swatch, { backgroundColor: tint }]} />
-              <Text style={styles.regionName}>{t(REGION_NAME[region])}</Text>
-
-              {empty ? (
-                <Text style={styles.regionMeta}>{t('explore:region.empty')}</Text>
-              ) : (
-                <>
-                  <Text style={styles.regionMeta}>
-                    {t('explore:region.progress', {
-                      learned: progress.factsLearned,
-                      total: progress.factsTotal,
-                    })}
-                  </Text>
-                  <ProgressBar
-                    current={progress.factsLearned}
-                    total={Math.max(1, progress.factsTotal)}
-                    showCount={false}
-                    // Reward tone where there is something to review — the same gold
-                    // the streak uses, so "come back to this" reads consistently.
-                    tone={progress.factsDue > 0 ? 'reward' : 'progress'}
-                  />
-                  <Text style={styles.regionDue}>
-                    {/* Zero due means "nothing is waiting for you", which is only true
-                        once something has been learned. On a continent at 0 of 56 the
-                        same branch rendered "Up to date" — an invitation turned into a
-                        claim that the user had finished it. */}
-                    {progress.factsLearned === 0
-                      ? t('explore:region.notStarted')
-                      : t('explore:region.due', { count: progress.factsDue })}
-                  </Text>
-                </>
-              )}
-            </Pressable>
-          )
-        })}
+        {REGIONS.map((region, index) => (
+          <ContinentTile
+            key={region}
+            region={region}
+            index={index}
+            progress={byRegion.get(region)}
+            art={tileArtSize(tile.width, tile.height)}
+            onSelect={onSelectRegion}
+            onMeasure={setTile}
+          />
+        ))}
       </View>
     </ScrollView>
+  )
+}
+
+/**
+ * One continent, as its own component so it can hold a hook.
+ *
+ * It was inline in the grid's `.map` until the tiles needed a staggered entrance, and a
+ * hook cannot be called from a loop body. Extracting it is the fix React asks for rather
+ * than a workaround: seven tiles is seven components, and the one that animates is the
+ * one that knows its own index.
+ */
+function ContinentTile({
+  region,
+  index,
+  progress,
+  art,
+  onSelect,
+  onMeasure,
+}: {
+  readonly region: RegionCode
+  readonly index: number
+  readonly progress: WorldProgress['regions'][number] | undefined
+  readonly art: number
+  readonly onSelect: (region: RegionCode) => void
+  readonly onMeasure: (next: (current: TileSize) => TileSize) => void
+}) {
+  const t = useT()
+  const entrance = useStagger(index)
+  const tint = palette.continent[region]
+  const empty = progress === undefined || progress.factsTotal === 0
+  const percent = `${Math.round((progress?.fraction ?? 0) * 100)}%`
+
+  return (
+    <Animated.View style={[styles.tileCell, staggerStyle(entrance)]}>
+      <Pressable
+        role="button"
+        aria-label={t('explore:region.label', { region: t(REGION_NAME[region]), percent })}
+        aria-disabled={empty}
+        disabled={empty}
+        onPress={() => onSelect(region)}
+        onLayout={(event) => {
+          const { width, height } = event.nativeEvent.layout
+          // Guarded, because setting state from a layout that the state itself feeds is
+          // how a render loop starts. Sub-point changes are noise.
+          onMeasure((current) =>
+            Math.abs(current.width - width) < 1 && Math.abs(current.height - height) < 1
+              ? current
+              : { width, height },
+          )
+        }}
+        // A continent with no content yet is dimmed rather than hidden. Hiding it would
+        // read as a smaller world; dimming says "not yet".
+        style={[styles.tile, { borderColor: tint }, empty && styles.tileEmpty]}
+      >
+        {/* The continent's own sky, behind its card.
+            This screen is the second tab of a geography app and had no picture on it at
+            all — seven navy rectangles told apart by a 4pt coloured bar. The art is
+            briefed per continent in asset-prompts.md §8 as atmosphere only: no landmass,
+            no coastline, no borders, because a generated coastline is a wrong fact and a
+            generated border is a political claim. Real Natural Earth geometry composites
+            on top of this later.
+
+            Decorative — the tile already announces the continent and its progress
+            through `aria-label`, and a screen reader naming the weather over Asia is
+            noise. */}
+        <View style={styles.tileArt} pointerEvents="none">
+          <Art name={CONTINENT_ART[region]} size={art} />
+          {/* A scrim, and it is not decoration. Four of these skies are bright —
+              Africa's gold, South America's yellow-green, Oceania's turquoise — and text
+              over them was unreadable, which is a WCAG AA failure the contrast gate
+              cannot catch because it checks token PAIRS and this is text over a picture.
+
+              It was a flat wash at 0.55 and that was measured, on the rendered tiles, as
+              not enough: 1.5:1 on Oceania against a 4.5:1 floor. Raising the flat wash
+              far enough for the worst sky would have flattened all seven back to navy.
+              `ArtScrim` weights it downward instead, towards the small text, and leaves
+              the top of the sky alone. */}
+          <ArtScrim />
+        </View>
+        <View style={[styles.swatch, { backgroundColor: tint }]} />
+        <Text style={styles.regionName}>{t(REGION_NAME[region])}</Text>
+
+        {empty ? (
+          <Text style={styles.regionMeta}>{t('explore:region.empty')}</Text>
+        ) : (
+          <>
+            <Text style={styles.regionMeta}>
+              {t('explore:region.progress', {
+                learned: progress.factsLearned,
+                total: progress.factsTotal,
+              })}
+            </Text>
+            <ProgressBar
+              current={progress.factsLearned}
+              total={Math.max(1, progress.factsTotal)}
+              showCount={false}
+              // Reward tone where there is something to review — the same gold the streak
+              // uses, so "come back to this" reads consistently.
+              tone={progress.factsDue > 0 ? 'reward' : 'progress'}
+            />
+            <Text style={styles.regionDue}>
+              {/* Zero due means "nothing is waiting for you", which is only true once
+                  something has been learned. On a continent at 0 of 56 the same branch
+                  rendered "Up to date" — an invitation turned into a claim that the user
+                  had finished it. */}
+              {progress.factsLearned === 0
+                ? t('explore:region.notStarted')
+                : t('explore:region.due', { count: progress.factsDue })}
+            </Text>
+          </>
+        )}
+      </Pressable>
+    </Animated.View>
   )
 }
 
@@ -295,10 +331,12 @@ const styles = StyleSheet.create({
   // Clipped, so the oversized background stops at the card edge, and positioned so
   // the swatch, name and progress stack on top of it.
   tileArt: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
+  // The cell owns the grid width; the tile fills the cell. Split when the tiles gained a
+  // staggered entrance — the transform has to sit on a wrapper, because animating the
+  // Pressable itself would fight `press3d` for the same transform property.
+  tileCell: { width: '48%' },
   tile: {
-    // Two per row at phone width, with the grid's gap between them. `48%` rather
-    // than a computed pixel width so it survives 200 % text and a tablet.
-    width: '48%',
+    width: '100%',
     minHeight: 132,
     gap: space[2],
     padding: space[3],
