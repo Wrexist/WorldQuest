@@ -14,7 +14,7 @@ import { useEffect, useRef } from 'react'
 import { Stack, router, usePathname } from 'expo-router'
 import { DarkTheme, ThemeProvider } from '@react-navigation/native'
 import { SafeAreaView, StatusBar, StyleSheet } from 'react-native'
-import { colors, motion, ScreenBackground } from '@worldquest/design'
+import { colors, layout, motion, ScreenBackground } from '@worldquest/design'
 import { ErrorBoundary } from '../src/components/ErrorBoundary.js'
 import { readOnboarding } from '../src/features/onboarding/useOnboarding.js'
 import { SplashScreen, useSplashPhase } from '../src/features/splash/SplashScreen.js'
@@ -208,11 +208,25 @@ export default function RootLayout() {
               // Transparent, so the root gradient behind the router is what shows.
               // A flat fill here would sit on top of it and the token would go back to
               // having no readers.
-              contentStyle: { backgroundColor: 'transparent' },
+              // The same cap the tab scenes get, for every screen that is NOT a tab —
+              // country, collection, streak, shop, achievements, the paywall. Without it
+              // half the app is a readable column on a tablet and half is stretched.
+              contentStyle: {
+                backgroundColor: 'transparent',
+                width: '100%',
+                maxWidth: layout.maxContentWidth,
+                alignSelf: 'center',
+              },
               animationDuration: motion.quick.duration,
             }}
           >
-            <Stack.Screen name="(tabs)" />
+            {/* The one screen that opts OUT of the width cap, because it is not a
+                screen — it is the tab navigator, and the cap belongs to the content
+                inside it rather than to the bar around it. Capped here, the tab bar
+                itself came out 600pt wide and centred, floating with dark bands either
+                side. `(tabs)/_layout.tsx` applies the same cap to its SCENES, which is
+                where it was always meant to go. */}
+            <Stack.Screen name="(tabs)" options={{ contentStyle: { backgroundColor: 'transparent' } }} />
             {/* No back gesture: onboarding is a one-way flow, and swiping out of the
                 age gate would leave the app not knowing whether it is talking to a
                 child. The only ways forward are the buttons. */}
