@@ -14,8 +14,10 @@
  * carry the continents until then, and neither is a placeholder.
  */
 
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { useState } from 'react'
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
 import {
+  ArtScrim,
   Card,
   ProgressBar,
   Skeleton,
@@ -56,13 +58,21 @@ const CONTINENT_ART: Record<RegionCode, ArtName> = {
 }
 
 /**
- * Drawn larger than the tile it fills.
+ * Drawn larger than the tile it fills, and MEASURED from the tile rather than fixed.
  *
  * These are 3:2 and the tile is roughly square, so sizing the art to the tile's width
  * would leave bands above and below. Over-sizing lets the middle of the sky fill the
  * card and the card's own `overflow: hidden` crops the rest.
+ *
+ * It was a constant 260 until a tablet shot showed why that cannot work: at 768 the
+ * tiles are ~355 wide, so the sky stopped 95 points short of the right edge and each
+ * card had a navy stripe down its side. 200 % text has the same effect on the other
+ * axis — a taller tile outgrows a fixed square just as a wider one does.
+ *
+ * `Art` draws a 3:2 image `size` wide and `size / 1.5` tall, so covering a `w × h` tile
+ * needs `size ≥ w` and `size ≥ 1.5 h`, whichever binds.
  */
-const TILE_ART = 260
+const tileArtSize = (width: number, height: number) => Math.ceil(Math.max(width, height * 1.5))
 
 const REGION_NAME: Record<RegionCode, TranslationKey> = {
   EU: 'explore:region.EU',
@@ -85,8 +95,17 @@ export type ExploreScreenProps = {
   readonly onSelectRegion: (region: RegionCode) => void
 }
 
+/** `width: '48%'` of the grid, which is the screen inside its own padding. */
+const estimateTileWidth = (windowWidth: number) => (windowWidth - space[4] * 2) * 0.48
+
 export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection }: ExploreScreenProps) {
   const t = useT()
+
+  // All seven tiles are the same size, so one measurement serves them all. Seeded from
+  // the window rather than from zero, so the first frame already has its sky instead of
+  // flashing seven navy rectangles and then filling them in.
+  const { width: windowWidth } = useWindowDimensions()
+  const [tile, setTile] = useState({ width: estimateTileWidth(windowWidth), height: 0 })
 
   if (loading || world === null) return <ExploreSkeleton />
 
@@ -161,6 +180,16 @@ export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection
               aria-disabled={empty}
               disabled={empty}
               onPress={() => onSelectRegion(region)}
+              onLayout={(event) => {
+                const { width, height } = event.nativeEvent.layout
+                // Guarded, because setting state from a layout that the state itself
+                // feeds is how a render loop starts. Sub-point changes are noise.
+                setTile((current) =>
+                  Math.abs(current.width - width) < 1 && Math.abs(current.height - height) < 1
+                    ? current
+                    : { width, height },
+                )
+              }}
               // A continent with no content yet is dimmed rather than hidden. Hiding
               // it would read as a smaller world; dimming says "not yet".
               style={[styles.tile, { borderColor: tint }, empty && styles.tileEmpty]}
@@ -177,15 +206,19 @@ export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection
                   through `aria-label`, and a screen reader naming the weather over Asia
                   is noise. */}
               <View style={styles.tileArt} pointerEvents="none">
-                <Art name={CONTINENT_ART[region]} size={TILE_ART} />
+                <Art name={CONTINENT_ART[region]} size={tileArtSize(tile.width, tile.height)} />
                 {/* A scrim, and it is not decoration. Four of these skies are bright —
                     Africa's gold, South America's yellow-green, Oceania's turquoise —
-                    and `text.secondary` over them was unreadable, which is a WCAG AA
-                    failure the contrast gate cannot catch because it checks token
-                    PAIRS and this is text over a picture. The canvas colour at 0.55
-                    puts the tile back on its own background without flattening the
-                    atmosphere to nothing. */}
-                <View style={styles.tileScrim} />
+                    and text over them was unreadable, which is a WCAG AA failure the
+                    contrast gate cannot catch because it checks token PAIRS and this is
+                    text over a picture.
+
+                    It was a flat wash at 0.55 and that was measured, on the rendered
+                    tiles, as not enough: 1.5:1 on Oceania against a 4.5:1 floor. Raising
+                    the flat wash far enough for the worst sky would have flattened all
+                    seven back to navy. `ArtScrim` weights it downward instead, towards
+                    the small text, and leaves the top of the sky alone. */}
+                <ArtScrim />
               </View>
               <View style={[styles.swatch, { backgroundColor: tint }]} />
               <Text style={styles.regionName}>{t(REGION_NAME[region])}</Text>
@@ -262,7 +295,6 @@ const styles = StyleSheet.create({
   // Clipped, so the oversized background stops at the card edge, and positioned so
   // the swatch, name and progress stack on top of it.
   tileArt: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
-  tileScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: colors.bg.canvas, opacity: 0.55 },
   tile: {
     // Two per row at phone width, with the grid's gap between them. `48%` rather
     // than a computed pixel width so it survives 200 % text and a tablet.
@@ -280,5 +312,9 @@ const styles = StyleSheet.create({
   swatch: { width: 28, height: 6, borderRadius: radius.full },
   regionName: { ...text('h3'), color: colors.text.primary },
   regionMeta: { ...text('caption'), color: colors.text.secondary },
-  regionDue: { ...text('caption'), color: colors.text.tertiary },
+  // `secondary`, not `tertiary`. The contrast matrix records tertiary as large-text
+  // only — it clears 3:1 and not 4.5:1 — and this is a 13pt caption. It was wrong on a
+  // plain surface before it was ever put over a picture; the artwork only made it
+  // visible.
+  regionDue: { ...text('caption'), color: colors.text.secondary },
 })
