@@ -1,9 +1,15 @@
 /**
  * One continent's countries.
  *
- * Not the country detail page (that needs flags, which are sourced and not yet in the
- * bundle) — this is the list, and the list is what a user actually wants here: which
- * of these do I know, and which have I not touched.
+ * Not the country detail page — this is the list, and the list is what a user actually
+ * wants here: which of these do I know, and which have I not touched.
+ *
+ * It carried a note saying flags were "sourced and not yet in the bundle", and that
+ * stopped being true when `pnpm build:flags` landed and the collection grid started
+ * drawing them at 72pt. So nineteen European countries were rendering as plain text
+ * rows, in a geography app that ships 65 rasterised flags, on the strength of a comment
+ * describing a constraint that had been lifted. A stale reason reads exactly like a live
+ * one, which is the whole hazard of writing them down.
  *
  * Sorted by the locale's collator, never `.sort()`. In Swedish, Ängelholm comes after
  * Zimbabwe, and a raw sort puts it between Andorra and Argentina — invisible to
@@ -16,6 +22,7 @@ import { ArtScrim, Button, ProgressBar, colors, palette, radius, space, text } f
 import type { EntityProgress, Mastery, RegionProgress } from '@worldquest/engines'
 import { collator, currentLocale, useT, type TranslationKey } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
+import { Flag } from '../../components/Flag.js'
 import { CONTINENT_ART, continentArtSize, type RegionCode } from './ExploreScreen.js'
 
 const MASTERY_LABEL: Record<Mastery, TranslationKey> = {
@@ -40,8 +47,25 @@ const MASTERY_COLOR: Record<Mastery, string> = {
 export type CountryRow = {
   readonly id: string
   readonly name: string
+  /**
+   * The content pack's `assets.flag.path`, e.g. `flags/SE.png`.
+   *
+   * Optional because it comes from a content pack rather than from code — a pack
+   * without flags is a valid pack, and `Flag` already draws its own placeholder for a
+   * path the bundle does not have.
+   */
+  readonly flagPath?: string | undefined
   readonly progress: EntityProgress
 }
+
+/**
+ * How wide a flag is in the list.
+ *
+ * Small enough not to compete with the country name it identifies, large enough that
+ * a tricolour is still three colours: the collection grid draws them at 72 where the
+ * flag IS the content, and here the name is.
+ */
+const ROW_FLAG = 36
 
 export type RegionScreenProps = {
   readonly region: RegionCode
@@ -148,7 +172,7 @@ export function RegionScreen({
       </View>
 
       <View style={styles.list}>
-        {sorted.map(({ id, name, progress }) => (
+        {sorted.map(({ id, name, flagPath, progress }) => (
           <Pressable
             key={id}
             role="button"
@@ -163,6 +187,9 @@ export function RegionScreen({
             )}`}
             style={styles.row}
           >
+            {/* Decorative. The row's own `aria-label` already names the country, and a
+                reader saying "flag of Sweden, Sweden" is the same fact twice. */}
+            <Flag path={flagPath} width={ROW_FLAG} />
             <View style={styles.rowText}>
               <Text style={styles.countryName}>{name}</Text>
               <Text style={styles.countryMeta}>

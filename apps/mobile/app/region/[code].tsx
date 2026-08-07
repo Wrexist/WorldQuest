@@ -67,6 +67,8 @@ export default function RegionRoute() {
         // Country names are content, not copy — they live in the pack, translated at
         // the data layer. English is the fallback, never a machine translation.
         name: entity.names[locale] ?? entity.names['en'] ?? entity.id,
+        // The same lookup the collection grid does. Optional in the pack, optional here.
+        flagPath: entity.assets?.['flag']?.path,
         progress: entityProgress(index.index, entity.id, memory, now),
       }))
   }, [index, memory, region])
