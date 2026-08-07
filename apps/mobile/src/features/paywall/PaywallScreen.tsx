@@ -39,6 +39,7 @@ import { useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
 import { yearlySavingPercent, type Plan, type PurchaseResult } from './purchases.js'
 import { Icon } from '../../components/Icon.js'
+import { Art } from '../../components/Art.js'
 
 /** One country the taster covered, resolved from the pack by the route. */
 export type PaywallCountry = {
@@ -98,6 +99,14 @@ export type PaywallScreenProps = {
 
 type Page = 0 | 1 | 2
 const PAGES: readonly Page[] = [0, 1, 2]
+
+/**
+ * The illustration on the two states where page 3 has no prices to show.
+ *
+ * 140, the size every other error and empty state in the app draws at, so this reads as
+ * the same kind of moment rather than as a different screen's idea.
+ */
+const STATE_ART = 140
 
 /** Same as the lesson summary's, so the two screens read as one moment. */
 const FLAG_WIDTH = 56
@@ -249,6 +258,21 @@ export function PaywallScreen({
             {/* The four ways page 3 can have no prices on it, each said differently.
                 Collapsing them into one "something went wrong" would tell a user on a
                 train to retry forever, and tell a user with a real failure nothing. */}
+            {/* The two states that PERSIST get the picture the rest of the app gives
+                them — the same `states/offline` and `states/error-generic` that
+                `ContentGate` draws, so a store that cannot be reached looks like every
+                other thing that cannot be reached rather than like a page that forgot
+                to render. Loading does not get one: it is a moment, and an illustration
+                that appears and vanishes is a flicker. "No plans configured" does not
+                either — that is our own misconfiguration, not the user's world, and
+                dressing it up as a weather event would be a lie told in pictures.
+
+                Decorative: the sentence below says the same thing in words. */}
+            {plans.length === 0 && !plansLoading && (isOffline || plansFailed) && (
+              <View style={styles.stateArt}>
+                <Art name={isOffline ? 'states/offline' : 'states/error-generic'} size={STATE_ART} />
+              </View>
+            )}
             {plans.length === 0 && (
               <Text style={styles.terms} role={plansFailed && !isOffline ? 'alert' : undefined}>
                 {isOffline
@@ -460,6 +484,7 @@ const styles = StyleSheet.create({
   perkLabel: { ...text('bodyStrong'), color: colors.text.primary },
   free: { ...text('bodyStrong'), color: colors.status.progress, textAlign: 'center' },
   terms: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
+  stateArt: { alignItems: 'center' },
   error: { ...text('caption'), color: colors.text.primary, textAlign: 'center' },
 
   plan: { alignSelf: 'stretch', gap: space[1] },
