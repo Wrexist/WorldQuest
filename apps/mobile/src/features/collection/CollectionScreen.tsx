@@ -326,7 +326,7 @@ function Tile({
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.bg.canvas },
+  root: { flex: 1 },
   header: { padding: space[4], gap: space[3] },
   title: { ...text('h1'), color: colors.text.primary },
   search: {

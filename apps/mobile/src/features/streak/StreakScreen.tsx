@@ -38,7 +38,7 @@ import {
   type RepairAvailability,
 } from '@worldquest/engines'
 import { useT } from '../../lib/i18n.js'
-import { Icon } from '../../components/Icon.js'
+import { Art } from '../../components/Art.js'
 import { Stat } from '../../components/Stat.js'
 
 /**
@@ -168,7 +168,11 @@ export function StreakScreen({
     <View style={styles.root}>
       {onBack !== undefined && <ScreenHeader onBack={onBack} />}
       <View style={styles.hero}>
-        <Icon name="streak" size={44} color={colors.status.streak} />
+        {/* The streak flame, as the delivered object rather than a 44pt line glyph.
+            This is the hero of the screen — the number underneath it is the whole
+            subject — and it is drawn large enough for the art to read, which a chip at
+            18pt is not. Decorative: the heading below states the streak in words. */}
+        <Art name="rewards/streak-flame" size={72} />
         <Text style={styles.count} role="heading" aria-level={1}>
           {t('streak:days', { count: current })}
         </Text>
@@ -316,7 +320,7 @@ function RepairAction({
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[3] },
+  root: { flex: 1, padding: space[4], gap: space[3] },
   hero: { alignItems: 'center', gap: space[1], paddingVertical: space[5] },
   flame: { ...text('display'), color: colors.status.streak },
   count: { ...text('display', { numeric: true }), color: colors.text.primary },

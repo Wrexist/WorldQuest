@@ -31,6 +31,7 @@ import { levelProgress, type WorldProgress } from '@worldquest/engines'
 import { formatCompact, useT, currentLocale, type TranslationKey } from '../../lib/i18n.js'
 import { REGIONS, type RegionCode } from '../explore/ExploreScreen.js'
 import { Art } from '../../components/Art.js'
+import { ART_BY_NAME, type ArtName } from '../../lib/art.generated.js'
 import { Icon } from '../../components/Icon.js'
 
 const REGION_NAME: Record<RegionCode, TranslationKey> = {
@@ -88,6 +89,21 @@ export type ProfileScreenProps = {
   readonly onStartLesson?: (() => void) | undefined
 }
 
+/** How big the rank insignia sits beside the level title. */
+const INSIGNIA = 40
+
+/**
+ * `titles:navigator` → `levels/navigator`, when that rank has been drawn.
+ *
+ * Returns null rather than a placeholder for the four ranks with no art yet and for
+ * any shop title, which is not a rank. A missing picture is better than the wrong one.
+ */
+function insigniaFor(titleKey: string): ArtName | null {
+  const rank = titleKey.split(':')[1] ?? ''
+  const name = `levels/${rank}` as ArtName
+  return name in ART_BY_NAME ? name : null
+}
+
 export function ProfileScreen({
   stats,
   week,
@@ -134,6 +150,9 @@ export function ProfileScreen({
   // the next level" is the position INSIDE the band — computing it in a component is
   // how a bar ends up disagreeing with the number printed beside it.
   const progress = levelProgress(stats.xpTotal)
+  // From the EARNED rank, never the worn one: a bought title is a different hat, and
+  // showing a rank insignia beside it would claim a level the user has not reached.
+  const insignia = insigniaFor(progress.titleKey)
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
@@ -148,6 +167,17 @@ export function ProfileScreen({
         {/* The title is the reward here, not the number. Levels are a ladder; a title
             is something a user says out loud, and it is the cheapest status reward
             that exists (xp-economy.md). */}
+        {/* The rank's own insignia, when it has one.
+            The title ladder is the slowest reward in the app — a rank takes weeks — and
+            it arrived as a word. Six of the ten ranks are drawn (`asset-prompts.md`
+            §12); `scout`, `circumnavigator`, `trailblazer` and `globetrotter` are not
+            yet, and a bought shop title is not a rank at all, so this renders nothing
+            rather than guessing. Decorative — the title is right beside it in words. */}
+        {insignia !== null && (
+          <View style={styles.insignia}>
+            <Art name={insignia} size={INSIGNIA} />
+          </View>
+        )}
         <Text style={styles.levelTitle}>
           {t('profile:levelTitle', {
             level: progress.level,
@@ -326,6 +356,7 @@ function WeeklyActivity({ week }: { readonly week: WeekActivity }) {
 }
 
 const styles = StyleSheet.create({
+  insignia: { alignSelf: 'flex-start', marginBottom: space[1] },
   levelTitle: { ...text('h3'), color: colors.text.primary, marginBottom: space[2] },
   week: { flexDirection: 'row', justifyContent: 'space-between', gap: space[2], height: 96 },
   weekDay: { flex: 1, alignItems: 'center', gap: space[1] },
@@ -334,7 +365,7 @@ const styles = StyleSheet.create({
   weekLabel: { ...text('overline'), color: colors.text.tertiary },
   weekEmpty: { ...text('body'), color: colors.text.secondary },
   emptyCta: { marginTop: space[4] },
-  screen: { flex: 1, backgroundColor: colors.bg.canvas },
+  screen: { flex: 1 },
   content: { padding: space[4], gap: space[4] },
   centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },
 

@@ -26,6 +26,7 @@ import {
 } from '@worldquest/engines'
 import { tContent, useT, type TranslationKey } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
+import { AchievementMedal } from './AchievementMedal.js'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 
 const TIER_LABEL: Record<Tier, TranslationKey> = {
@@ -172,6 +173,9 @@ function remainingToNextTier({ def, progress }: AchievementRow): number {
   return Math.max(0, target - progress.value)
 }
 
+/** Big enough for the glyph inside the frame to read; small enough for a list row. */
+const MEDAL = 56
+
 function AchievementCard({ row }: { row: AchievementRow }) {
   const t = useT()
   const { def, progress } = row
@@ -196,6 +200,8 @@ function AchievementCard({ row }: { row: AchievementRow }) {
       }`}
     >
       <View style={styles.cardHeader}>
+        {/* The medal, so the row reads as something collected rather than a setting. */}
+        <AchievementMedal achievementId={def.id} tier={progress.tier} size={MEDAL} />
         <View style={styles.cardText}>
           <Text style={styles.name}>{tContent(nameKey(def.id))}</Text>
           {/* Locked rows still say what they ask for. A grey question mark is a
@@ -230,7 +236,7 @@ function AchievementCard({ row }: { row: AchievementRow }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg.canvas },
+  screen: { flex: 1 },
   content: { padding: space[4], gap: space[3] },
   centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },
 

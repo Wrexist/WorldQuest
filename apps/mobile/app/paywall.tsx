@@ -17,7 +17,6 @@
  */
 
 import { StyleSheet, View } from 'react-native'
-import { colors } from '@worldquest/design'
 import { router, useLocalSearchParams } from 'expo-router'
 import {
   PaywallScreen,
@@ -115,5 +114,5 @@ const styles = StyleSheet.create({
   // Deliberately blank rather than a skeleton. This is the hand-off frame between a
   // lesson summary and the paywall, measured in a frame or two off a warm cache; a
   // skeleton flashing in that gap draws attention to a wait that is not happening.
-  wait: { flex: 1, backgroundColor: colors.bg.canvas },
+  wait: { flex: 1 },
 })

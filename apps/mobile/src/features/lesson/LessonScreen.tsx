@@ -742,7 +742,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   clockFill: { height: '100%', backgroundColor: colors.status.streak },
-  screen: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[4] },
+  screen: { flex: 1, padding: space[4], gap: space[4] },
   centered: { alignItems: 'center', justifyContent: 'center' },
   flex: { flex: 1 },
   header: { flexDirection: 'row', alignItems: 'center', gap: space[3] },

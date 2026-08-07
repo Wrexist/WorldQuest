@@ -245,7 +245,7 @@ function SkeletonRows() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg.canvas },
+  screen: { flex: 1 },
   content: { padding: space[4], gap: space[3] },
 
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },

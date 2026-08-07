@@ -302,7 +302,7 @@ function PremiumSection({ premium }: { premium: PremiumStatus }) {
 
 const styles = StyleSheet.create({
   syncArt: { alignSelf: 'center' },
-  screen: { flex: 1, backgroundColor: colors.bg.canvas },
+  screen: { flex: 1 },
   content: { padding: space[4], gap: space[5] },
   title: { ...text('h1'), color: colors.text.primary },
   // Room to scroll past the last card rather than ending flush against the tab bar.

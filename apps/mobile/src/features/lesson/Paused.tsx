@@ -80,7 +80,6 @@ const styles = StyleSheet.create({
   // score. "Covered" has to mean not rendered, or it only covers it for some users.
   backdrop: {
     flex: 1,
-    backgroundColor: colors.bg.canvas,
     alignItems: 'center',
     justifyContent: 'center',
     padding: space[5],

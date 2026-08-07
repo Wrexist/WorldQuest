@@ -12,8 +12,9 @@
 
 import { useEffect, useRef } from 'react'
 import { Stack, router, usePathname } from 'expo-router'
+import { DarkTheme, ThemeProvider } from '@react-navigation/native'
 import { SafeAreaView, StatusBar, StyleSheet } from 'react-native'
-import { colors, motion } from '@worldquest/design'
+import { colors, motion, ScreenBackground } from '@worldquest/design'
 import { ErrorBoundary } from '../src/components/ErrorBoundary.js'
 import { readOnboarding } from '../src/features/onboarding/useOnboarding.js'
 import { SplashScreen, useSplashPhase } from '../src/features/splash/SplashScreen.js'
@@ -189,12 +190,25 @@ export default function RootLayout() {
     <SafeAreaView style={styles.root}>
       <StatusBar barStyle="light-content" backgroundColor={colors.bg.canvas} />
       <ErrorBoundary>
+        <ScreenBackground>
+        {/* React Navigation paints its own background behind every screen, and its
+            default theme is LIGHT — `rgb(242,242,242)`, absolutely positioned over the
+            whole viewport. Every screen used to paint `bg.canvas` on top of it, which
+            hid it completely; the moment the screens went transparent so the canvas
+            gradient could show, that grey surfaced on every route. `sceneStyle` does
+            not reach it — it comes from the theme, so the theme is where it is fixed. */}
+        <ThemeProvider
+          value={{ ...DarkTheme, colors: { ...DarkTheme.colors, background: 'transparent' } }}
+        >
         <QueryProvider>
           <SubscriptionSync />
           <Stack
             screenOptions={{
               headerShown: false,
-              contentStyle: { backgroundColor: colors.bg.canvas },
+              // Transparent, so the root gradient behind the router is what shows.
+              // A flat fill here would sit on top of it and the token would go back to
+              // having no readers.
+              contentStyle: { backgroundColor: 'transparent' },
               animationDuration: motion.quick.duration,
             }}
           >
@@ -223,11 +237,16 @@ export default function RootLayout() {
             />
           </Stack>
         </QueryProvider>
+        </ThemeProvider>
+        </ScreenBackground>
       </ErrorBoundary>
     </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
+  // The flat canvas stays as the base coat under the gradient: it is what paints
+  // during the frame before layout, and what shows if the native gradient module is
+  // ever absent.
   root: { flex: 1, backgroundColor: colors.bg.canvas },
 })

@@ -364,7 +364,7 @@ function HomeSkeleton() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg.canvas },
+  screen: { flex: 1 },
   content: { padding: space[4], gap: space[3], paddingBottom: space[5] },
   flex: { flex: 1 },
 

@@ -90,7 +90,7 @@ export function WelcomeBackScreen({
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[3] },
+  root: { flex: 1, padding: space[4], gap: space[3] },
   hero: { alignItems: 'center', gap: space[2], paddingTop: space[6] },
   title: { ...text('h1'), color: colors.text.primary, textAlign: 'center' },
   body: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },

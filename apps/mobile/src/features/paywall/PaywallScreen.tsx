@@ -438,7 +438,7 @@ function PlanCard({
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[4] },
+  screen: { flex: 1, padding: space[4], gap: space[4] },
   centred: { alignItems: 'center', justifyContent: 'center' },
   body: { flexGrow: 1, justifyContent: 'center', gap: space[4] },
 

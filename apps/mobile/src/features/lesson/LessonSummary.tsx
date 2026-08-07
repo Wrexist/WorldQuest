@@ -319,7 +319,7 @@ function OfflineNote() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[4] },
+  screen: { flex: 1, padding: space[4], gap: space[4] },
   body: { flexGrow: 1, alignItems: 'center', justifyContent: 'center', gap: space[4] },
 
   title: { ...text('h1'), color: colors.text.primary, textAlign: 'center' },

@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   collection: { flex: 1, padding: space[3], alignItems: 'center', gap: space[1] },
   collectionGlyph: { ...text('h1'), color: colors.text.primary },
   collectionName: { ...text('caption', { weight: '700' }), color: colors.text.secondary },
-  screen: { flex: 1, backgroundColor: colors.bg.canvas },
+  screen: { flex: 1 },
   content: { padding: space[4], gap: space[4] },
   header: { gap: space[1] },
   title: { ...text('h1'), color: colors.text.primary },

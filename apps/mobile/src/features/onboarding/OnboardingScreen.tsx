@@ -427,7 +427,7 @@ function Chip({
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.bg.canvas },
+  root: { flex: 1 },
   progress: { paddingHorizontal: space[4], paddingTop: space[2] },
   // The scroll container. Separate from `body`, which is a TEXT style — handing a
   // text style to a ScrollView carried its font and padding onto the layout and

@@ -217,7 +217,7 @@ function QuestSkeleton() {
 const styles = StyleSheet.create({
   speed: { padding: space[4], gap: space[2], marginTop: space[3] },
   speedTitle: { ...text('h3'), color: colors.text.primary },
-  screen: { flex: 1, backgroundColor: colors.bg.canvas },
+  screen: { flex: 1 },
   content: { padding: space[4], gap: space[3] },
   centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },
 
