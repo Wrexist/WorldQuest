@@ -73,32 +73,29 @@ const FLAG_PROMPT_WIDTH = 200
  * scroll flow. `atlas/celebrate` carries its own burst, which is the reference's mechanic
  * anyway — the confetti belongs to the character, not to the furniture. The ribbon master
  * stays; nothing draws it today.
+ *
+ * ## And what happens when even that ratio does not fit
+ *
+ * At 390 it does. At 320 it does not: measured off the render, the XP and coin chips
+ * wrap into two rows and the lower one lands at `176–195 × 692–716`, inside the
+ * mascot's `−18–190 × 661–800`. The coin reward is printed behind Atlas's arm, and a
+ * picture of the sheet at 390 shows none of it — which is the argument for
+ * photographing 320 first.
+ *
+ * No breakpoint, because a breakpoint would be wrong in the cases that matter most: a
+ * locale with longer chip labels, or the 200 % text setting the Definition of Done
+ * requires, both cram the row at widths where a "320" threshold says there is room.
+ * The sheet asks the row whether it wrapped and believes the answer — see `WRAPPED_AT`.
+ *
+ * When it did, the mascot swaps sides at the SAME size: the text gives up its indent
+ * and takes the sheet's full width, and he moves to the end edge, where a start-aligned
+ * column of text and chips is not. Same bottom anchor, same occlusion by the button;
+ * only the side changes, because the side was the only thing in the way. Shrinking him
+ * instead was the first attempt and looked worse than the bug — he has to stand taller
+ * than the button plus its offset to be seen at all, so a mascot small enough to clear
+ * the chips was a hat peeking out from behind a button.
  */
 const MASCOT_OF_SHEET = 0.375
-
-/**
- * The same mascot, once the reward chips have proved they do not fit beside him.
- *
- * A ratio was supposed to be enough, and at 390 it is. At 320 it is not: measured off
- * the render, the XP and coin chips wrap into two rows and the lower one lands at
- * `176–195 × 692–716`, inside the mascot's `−18–190 × 661–800`. The coin reward is
- * printed behind Atlas's arm. A picture of the sheet at 390 shows none of this, which
- * is the argument for photographing 320 first.
- *
- * No breakpoint, because a breakpoint would be wrong in the cases that matter most:
- * a locale with longer chip labels, or the 200 % text setting the Definition of Done
- * requires, both cram the row at widths where a 320 threshold says there is room. The
- * sheet asks the row whether it wrapped and believes the answer.
- *
- * When it did, the mascot swaps sides: the text gives up its indent and takes the
- * sheet's full width, and he moves to the END edge, where a start-aligned column of
- * text and chips is not. Same size, same bottom anchor, same occlusion by the button —
- * only the side changes, because the side is the only thing that was in the way.
- *
- * Shrinking him instead was the first attempt and it looked worse than the bug: he has
- * to be taller than the button plus its offset to be seen at all, so a mascot small
- * enough to clear the chips was a hat peeking out from behind a button.
- */
 
 /**
  * How much taller than one chip the reward row has to be before we call it wrapped.
@@ -890,7 +887,12 @@ const styles = StyleSheet.create({
   centered: { alignItems: 'center', justifyContent: 'center' },
   flex: { flex: 1 },
   header: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
-  body: { gap: space[5], paddingBottom: space[6] },
+  // `flexGrow` + `center` so a question shorter than the screen sits in the middle of
+  // it rather than jammed under the progress bar with half the display empty beneath.
+  // On a tablet that empty half was 45 % of the screen; on a phone the content is
+  // taller than the viewport, `flexGrow` has nothing to grow into, and this is inert —
+  // which is why it is safe to apply everywhere instead of behind a width test.
+  body: { gap: space[5], paddingBottom: space[6], flexGrow: 1, justifyContent: 'center' },
   prompt: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
   promptArt: { alignItems: 'center' },
   options: { gap: space[2] },

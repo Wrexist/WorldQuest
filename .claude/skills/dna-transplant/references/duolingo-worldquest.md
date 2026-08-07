@@ -198,3 +198,60 @@ correctness is the ethic.
 ribbon straddling the top edge of a card that is no longer a card in the scroll flow —
 and the character carries the confetti now. Moved to `NOT_SHIPPED` rather than left in
 the bundle, per the rule the league badges earned.
+
+---
+
+# Graft four: the Home screen
+
+The reference was our own Home IA, redrawn in the donor's visual language — same
+greeting, same "Today's Quest", same 0/5, same Explore card, same five tabs, in white
+and their green with their owl. That framing is unusually honest about what a transplant
+is for: the information architecture was already right, so anything left is mechanics.
+
+## Measured, not eyeballed
+
+`.wq-measure-ref.cjs` (throwaway; `measure-design.cjs` needs a live URL and this was a
+PNG). Geometry only — the palette was rejected before measuring, so the adoptable part is
+the arithmetic. Numbers off an 853×1844 render:
+
+| | Reference | Ours, at 390 |
+|---|---|---|
+| Hero card, share of screen height | 28.3 % | 29.4 % |
+| Hero card inset from screen edge | 4.3 % of width | 4.1 % |
+| Hero card aspect | 1.49 : 1 | 1.44 : 1 |
+| Character, share of card width | 28.1 % | 36.9 % |
+| Economy chips in the header | 2 | 0 |
+
+**The card was already right.** That is the finding that justified measuring instead of
+redesigning: three of the four proportions were within a point and a half, so the visible
+difference between the two screenshots is not the card's geometry at all. Two rounds of
+eyeball-driven "make the card more like the reference" would have moved numbers that were
+already correct.
+
+Segmenting the PNG took three attempts and each failure is worth recording, because each
+produced a confident wrong number: a global bbox over "green pixels" returned 91 % of the
+page (the tab bar's Home icon and the "EXPLORE THE WORLD" label are green too); row
+density at a 30 % threshold cut the card off two thirds down (beside the white CTA the
+only green left is two thin margins); and a "warm or near-white" character mask reported
+the mascot as 100 % of the card's width, because the card's own white heading is
+near-white. The card's height was finally taken from a single column 8 px inside its left
+edge, which is green for its whole height.
+
+## Mechanics taken
+
+| Mechanic | How it landed |
+|---|---|
+| **The economy lives in the header, from the first screen** | Coins chip beside the bell; the streak badge moved up from the greeting row so the two are one group. The balance was already on Home — in a `Stat` inside the LEVEL card, below the fold and gated on `!isNewUser`, so the currency the product turns on was invisible to the only user who has never seen it. |
+| **One count and one bar, measuring the same thing** | The card drew `questDone / questTotal` under "0 of 5 lessons today" — a different quantity. Hidden for new users, so nobody had seen them stacked; showing the bar revealed "0 of 5 lessons" above "Progress 0 / 10". The bar is the goal's now, `showCount` off, and quest-task progress stays on Quests where all five tasks are drawn. |
+| **The scaffold is shown at zero** | `!isNewUser` hid the bar from exactly the user it scaffolds for. An empty bar says "there is a shape to fill"; nothing says nothing. |
+
+## Mechanics rejected
+
+| Rejected | Why |
+|---|---|
+| **The green card and the white canvas** | This is the surface, not the mechanic. Our identity is the night sky and a gold character; a brand-coloured hero block is *their* brand doing the work, and on a dark canvas dominance comes from light rather than from fill. Adopting it would repeat graft one's original error — the donor's numbers were chosen for the donor's context. |
+| **The inverted CTA (white button on a coloured card)** | Falls with the above: it is only coherent if the card is the accent block. Our card is a surface and the button is the accent, which is one primary green per screen. |
+| **The owl** | We have Atlas. |
+| **A live "INVITE FRIENDS" button** | Friends is v2.0 in `roadmap.md`. A bright CTA for a feature that does not exist is building v2.0 during v1.0 *and* a dark pattern under rule 7. The placeholder stays honest and inert. |
+| **The gem chip** | ADR 0011: coins and gems are different currencies, and only coins exist. `rewards/gem` is already in `NOT_SHIPPED`. |
+| **A streak chip at 0** | Their header shows the streak always. `HomeScreen.test.tsx` records the opposite decision and it is the right one — "0 day streak" is a worse first impression than none. Coins show at zero and the streak does not, and that is not an inconsistency: a wallet reading 0 is a fact about a balance, a streak reading 0 is a verdict on the person holding it. |

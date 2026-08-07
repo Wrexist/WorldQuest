@@ -148,23 +148,27 @@ export function HomeScreen({
         <View style={styles.topRow}>
           <Avatar initials="EX" accessibilityLabel={t('home:avatar.label')} />
           <View style={styles.spacer} />
-          <View style={styles.bell} accessible aria-label={t('home:inbox.label')}>
-            <Icon name="bell" size={20} color={colors.text.secondary} />
-          </View>
-        </View>
-
-        {/* Two-tier greeting: light salutation, bold role. Matches the mockup and
-            keeps the header to two lines instead of three. */}
-        <View style={styles.greetingRow}>
-          <View style={styles.greetingText}>
-            <Text style={styles.salutation}>{t(greetingKey(new Date().getHours()))}</Text>
-            <Text style={styles.explorer} role="heading">
-              {t('home:greeting.role')}
-            </Text>
-          </View>
-          {/* The badge is now the way in to freezes and repair. A streak the user can
-              see but cannot protect is a number; making it tappable is what turns it
-              into something they can act on. */}
+          {/* The economy, in the header, from the first screen.
+   
+              Measured off the reference: two chips, right-aligned, each about 2 % of the
+              screen's height, above the hero card. Ours had a bell and nothing else —
+              the coin balance was real and on this screen the whole time, in a `Stat`
+              inside the LEVEL card, below the fold and gated on `!isNewUser`. So the
+              currency the entire product turns on was invisible to precisely the user
+              who has never seen it.
+   
+              Coins show at zero and the streak does not, and that is not an
+              inconsistency. A wallet reading 0 is a fact about a balance; a streak
+              reading 0 is a verdict on the person holding it. The test one row down
+              says so in the case that matters: "0 day streak" is a worse first
+              impression than none. */}
+          {progress && (
+            <Stat
+              kind="coin"
+              value={progress.coins}
+              accessibilityLabel={t('home:stats.coins', { amount: progress.coins })}
+            />
+          )}
           {progress && progress.streak > 0 && (
             <StreakBadge
               days={progress.streak}
@@ -176,6 +180,25 @@ export function HomeScreen({
               {...(onOpenStreak !== undefined ? { onPress: onOpenStreak } : {})}
             />
           )}
+          <View style={styles.bell} accessible aria-label={t('home:inbox.label')}>
+            <Icon name="bell" size={20} color={colors.text.secondary} />
+          </View>
+        </View>
+
+        {/* Two-tier greeting: light salutation, bold role. Matches the mockup and
+            keeps the header to two lines instead of three. */}
+        {/* The streak used to sit here, beside the greeting. It has moved up into the
+            row above so that the two economy chips are one group in one place, which is
+            what the reference does and what makes them findable — a streak on the
+            second row and a coin balance three cards down are two facts a user has to
+            hunt for separately. */}
+        <View style={styles.greetingRow}>
+          <View style={styles.greetingText}>
+            <Text style={styles.salutation}>{t(greetingKey(new Date().getHours()))}</Text>
+            <Text style={styles.explorer} role="heading">
+              {t('home:greeting.role')}
+            </Text>
+          </View>
         </View>
 
         {/* Today's Quest — the one primary action. */}
@@ -208,24 +231,40 @@ export function HomeScreen({
             </View>
           </View>
 
-          {!isNewUser && (
-            <ProgressBar
-              current={progress?.questDone ?? 0}
-              total={progress?.questTotal ?? 10}
-              tone="reward"
-              label={t('home:quest.progress')}
-            />
-          )}
 
-          {/* The daily goal, in the unit the user actually experiences: lessons, not
-              minutes. Reached rather than exceeded — passing the goal is not a reason
-              to stop, so the copy congratulates and the bar simply fills. */}
+          {/* The bar measures the SENTENCE ABOVE IT, and nothing else.
+   
+              It used to draw `questDone / questTotal` — the daily quest's five tasks —
+              directly under "0 of 5 lessons today", which is a different quantity. With
+              the bar hidden for new users nobody saw the two together; showing it
+              revealed them stacked and disagreeing, one reading "0 of 5 lessons" and
+              the one below it "Progress 0 / 10". Two counts, six pixels apart, about
+              different things.
+   
+              So the bar is the goal's, `showCount` is off because the sentence is
+              already the count, and quest-task progress stays on the Quests tab, which
+              draws all five tasks and can say which is which.
+   
+              Shown at zero, which it was not: `!isNewUser` hid it from exactly the user
+              it scaffolds for. Someone on their first launch got a sentence and a
+              button; someone who had already worked out how the app fits together got
+              the diagram. An empty bar says "there is a shape to fill". */}
           {goal !== undefined && (
-            <Text style={styles.goalLine}>
-              {goal.done >= goal.target
-                ? t('home:goal.met', { count: goal.done })
-                : t('home:goal.progress', { done: goal.done, target: goal.target })}
-            </Text>
+            <ProgressBar
+              current={goal.done}
+              total={Math.max(1, goal.target)}
+              tone="reward"
+              // The sentence IS the count, so the bar's own counter is off. `label`
+              // renders visibly and as the accessible name, which is why the goal line
+              // is no longer a separate `Text` above it — passing the same words to
+              // both put "1 of 3 lessons today" on screen twice, six pixels apart.
+              showCount={false}
+              label={
+                goal.done >= goal.target
+                  ? t('home:goal.met', { count: goal.done })
+                  : t('home:goal.progress', { done: goal.done, target: goal.target })
+              }
+            />
           )}
 
           <Button label={t('common:continue')} onPress={onStartLesson} />
@@ -338,16 +377,13 @@ export function HomeScreen({
               total={Math.max(1, levelCeiling - levelFloor)}
               label={t('home:level', { level })}
             />
+            {/* XP only. Coins moved to the header, where a balance belongs; XP stays
+                here because it is what the bar above it is measuring. */}
             <View style={styles.chips}>
               <Stat
                 kind="xp"
                 value={progress.xpTotal}
                 accessibilityLabel={t('home:stats.xp', { amount: progress.xpTotal })}
-              />
-              <Stat
-                kind="coin"
-                value={progress.coins}
-                accessibilityLabel={t('home:stats.coins', { amount: progress.coins })}
               />
             </View>
           </Card>
@@ -381,7 +417,7 @@ const styles = StyleSheet.create({
   content: { padding: space[4], gap: space[3], paddingBottom: space[5] },
   flex: { flex: 1 },
 
-  topRow: { flexDirection: 'row', alignItems: 'center' },
+  topRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
   spacer: { flex: 1 },
   bell: {
     width: 36,
@@ -412,7 +448,6 @@ const styles = StyleSheet.create({
   questBody: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   questText: { flex: 1, gap: space[1] },
   questTitle: { ...text('h2'), color: colors.text.primary },
-  goalLine: { ...text('caption'), color: colors.text.secondary },
 
   challengeCard: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   challengeText: { flex: 1, gap: space[1] },
