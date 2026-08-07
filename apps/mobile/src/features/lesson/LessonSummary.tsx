@@ -53,8 +53,20 @@ export function outcomeOf(result: GradeResult | null, wasAbandoned: boolean): Su
   if (wasAbandoned) return 'early'
   if (result === null) return 'done'
   if (result.perfect) return 'perfect'
-  return result.accuracy >= 0.8 ? 'strong' : 'done'
+  return result.accuracy >= STRONG_ACCURACY ? 'strong' : 'done'
 }
+
+/**
+ * Where a lesson stops being "done" and starts being "strong".
+ *
+ * Named because the accuracy tile now reads it too. The tile was tinted
+ * `status.progress` unconditionally, so 35 % accuracy was printed in the same green as
+ * "Perfect!", a completed bar and every other good thing in the app — on the one screen
+ * built to be kind, the palette was the only thing lying. Below the bar it goes to
+ * `text.primary`: honest, not red. We state the truth and do not punish, and a number
+ * that has to stop claiming to be good does not have to start claiming to be bad.
+ */
+const STRONG_ACCURACY = 0.8
 
 const HEADLINE = {
   perfect: 'lesson:summary.perfect.title',
@@ -211,7 +223,11 @@ export function LessonSummary({
               <StatTile
                 value={t('lesson:summary.stat.percent', { value: accuracyPct })}
                 label={t('lesson:summary.stat.accuracy')}
-                tint={colors.status.progress}
+                tint={
+                  result.accuracy >= STRONG_ACCURACY
+                    ? colors.status.progress
+                    : colors.text.primary
+                }
                 accessibilityLabel={t('lesson:summary.stat.accuracy.a11y', {
                   correct: result.correct,
                   total: result.items,
