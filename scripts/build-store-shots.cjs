@@ -260,11 +260,23 @@ async function compose(page, screenshot, size, headline) {
       await img.decode()
 
       const frameTop = y + Math.round(fontSize * 1.6)
-      const frameWidth = Math.round(W * 0.78)
-      // From the capture's own aspect, so the screen inside the frame is never squashed;
-      // it runs off the bottom of the canvas, which is what makes it read as a device in
-      // use rather than a rectangle floating in space.
-      const frameHeight = Math.round((frameWidth * img.height) / img.width)
+      // Wide enough to dominate the frame, then held back if the whole screen would not
+      // fit under the headline.
+      //
+      // A phone screenshot is nearly 1:2.2, so at 78 % of the canvas width it runs off
+      // the bottom — which is what makes it read as a device in use rather than a
+      // rectangle floating in space, and is right. A TABLET is nearly 3:4, so the same
+      // rule bled its bottom third off the canvas and took the tab bar with it, leaving
+      // a listing image that was more than half empty navy with no navigation visible.
+      //
+      // So the frame fits when it can and bleeds when it cannot, rather than one rule
+      // pretending both devices are the same shape.
+      const naturalWidth = Math.round(W * 0.78)
+      const naturalHeight = Math.round((naturalWidth * img.height) / img.width)
+      const available = H - frameTop
+      const fits = naturalHeight <= available
+      const frameHeight = fits ? naturalHeight : Math.max(available, naturalHeight * 0.72)
+      const frameWidth = Math.round((frameHeight * img.width) / img.height)
       const frameX = Math.round((W - frameWidth) / 2)
       // Half what it was. At 0.09 the corner arc reached far enough into the frame to
       // clip the app's own top-left heading — "Today's Quest" lost its T on the iPad
