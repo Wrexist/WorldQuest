@@ -60,6 +60,17 @@ export type QuestScreenProps = {
   readonly onStartSpeedRound?: (() => void) | undefined
 }
 
+/**
+ * Atlas beside the Quests heading.
+ *
+ * The same 84 as Explore's, and the same reasoning: he stands next to a title rather
+ * than being the subject, and a mascot that out-weighs the heading it decorates has
+ * stopped decorating it. Matching the number matters more than choosing it — the five
+ * tabs should feel like five rooms in one building, and a header that is 84 on one and
+ * 96 on the next is how that stops being true.
+ */
+const HEADER_ART = 84
+
 export function QuestScreen({ quest, loading, onStart, onStartSpeedRound }: QuestScreenProps) {
   const t = useT()
 
@@ -89,10 +100,24 @@ export function QuestScreen({ quest, loading, onStart, onStartSpeedRound }: Ques
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.header}>
-        <Text style={styles.title} role="heading">
-          {t('quests:title')}
-        </Text>
-        <Text style={styles.subtitle}>{t('quests:subtitle')}</Text>
+        <View style={styles.headerText}>
+          <Text style={styles.title} role="heading">
+            {t('quests:title')}
+          </Text>
+          <Text style={styles.subtitle}>{t('quests:subtitle')}</Text>
+        </View>
+        {/* The same Atlas, at the same size, in the same place as Explore's — imported
+            nothing, but deliberately identical, because a tab bar's five destinations
+            should feel like five rooms in one building.
+
+            This was the flattest screen in the app and one tap from the richest: five
+            numbered panels with two colours of figure down the right rail, on the tab
+            whose whole job is to make today's work look worth doing. `thinking` and not
+            `celebrate` — nothing has been achieved yet; the quest is the question.
+
+            Decorative, like every other Atlas: the heading beside it already says what
+            the screen is. */}
+        <Art name="atlas/thinking" size={HEADER_ART} />
       </View>
 
       <Card style={styles.summary}>
@@ -115,7 +140,7 @@ export function QuestScreen({ quest, loading, onStart, onStartSpeedRound }: Ques
         )}
       </Card>
 
-      <View style={styles.list}>
+      <View style={styles.list} testID="quest-tasks">
         {quest.tasks.map((task, i) => (
           <TaskRow key={task.slot} task={task} step={i + 1} />
         ))}
@@ -221,7 +246,8 @@ const styles = StyleSheet.create({
   content: { padding: space[4], gap: space[3] },
   centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },
 
-  header: { gap: space[1] },
+  header: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  headerText: { flex: 1, gap: space[1] },
   title: { ...text('h1'), color: colors.text.primary },
   subtitle: { ...text('body'), color: colors.text.secondary },
   cta: { marginTop: space[3] },
