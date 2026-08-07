@@ -23,6 +23,7 @@ import statesErrorGeneric from '../../assets/art/states/error-generic.webp'
 import statesHeartsEmpty from '../../assets/art/states/hearts-empty.webp'
 import statesOffline from '../../assets/art/states/offline.webp'
 import celebrationBurst from '../../assets/art/celebration/burst.webp'
+import celebrationBurstWide from '../../assets/art/celebration/burst-wide.webp'
 import celebrationRays from '../../assets/art/celebration/rays.webp'
 import achievementsGlyphCapitals from '../../assets/art/achievements/glyph-capitals.webp'
 import achievementsGlyphCollections from '../../assets/art/achievements/glyph-collections.webp'
@@ -110,6 +111,7 @@ export const ART_BY_NAME = {
   'states/hearts-empty': statesHeartsEmpty,
   'states/offline': statesOffline,
   'celebration/burst': celebrationBurst,
+  'celebration/burst-wide': celebrationBurstWide,
   'celebration/rays': celebrationRays,
   'achievements/glyph-capitals': achievementsGlyphCapitals,
   'achievements/glyph-collections': achievementsGlyphCollections,

@@ -407,7 +407,7 @@ who most need the feedback.
 Confetti must be `accessibilityElementsHidden` in code; it is decoration and a screen
 reader announcing it is noise. That is a code note, but it belongs beside the asset.
 
-### 7b. `celebration/burst-wide.png` — 1536×512
+### 7b. `celebration/burst-wide.png` — 1536×512 · **delivered**
 
 **This one was found by trying to ship without it.** The correct-answer feedback card is
 the most-seen "good thing happened" frame in the product — it fires ten to twenty times
@@ -446,6 +446,26 @@ roughly 110 pt tall, so it must read at that aspect and must have something to s
 its middle. Transparent background, like every other asset in this section: the delivered
 `empty-profile`, `empty-no-friends` and `atlas/resting` came back with an opaque ground
 baked in and `pnpm build:art` now has to feather their edges to hide the seam.
+
+#### What actually arrived, and what that changed
+
+The generator returned the usual 1536×1024 frame with the ribbon painted across the
+middle of it — content 1536×237, so **6.5:1 inside a 3:2 file, 77 % of it empty**. Two
+things follow, and both are now handled in code rather than by asking for a re-draw:
+
+- `pnpm build:art` trims a master to its content when that content is at least 4:1
+  (`BANNER_ASPECT`). Measured, not listed, like the edge feather beside it — a banner
+  delivered already tight is a no-op, and nobody has to remember to edit an array. The
+  shipped asset is 768×129.
+- `<Art>` takes an optional `height`. Its box is square by default, which is right for
+  a subject in a 3:2 frame and five-sixths empty for a ribbon.
+
+**It is not drawn whole.** Row coverage runs 1 % at the top to 98 % at the middle, and
+the solid core reads as a strip of gumballs when it is put in the gap above the feedback
+card — which is the fourth failed attempt, after the three above. The lesson draws the
+top 26 % only, clipped, tucked 8 pt behind the card: loose confetti above the card, the
+dense core never rendered. So a future redraw should keep the **gradient from scatter to
+core**, which is the part being used, and need not worry about the core being pretty.
 
 ---
 

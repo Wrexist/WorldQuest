@@ -244,6 +244,26 @@ const ILLUSTRATIONS = ART_DIRS.flatMap((dir) =>
 const isBackground = (name) => name.startsWith('continents/')
 
 /**
+ * How wide-to-tall a master's *content* has to be before it is trimmed to it.
+ *
+ * Every generator here returns a 3:2 frame, whatever was asked for. That is right for a
+ * subject — Atlas has margin around him and the margin is part of the composition — and
+ * wrong for a banner: `celebration/burst-wide` is a confetti ribbon 1536×237 sitting in
+ * the middle of a 1536×1024 frame, so 77 % of the shipped file is empty pixels and the
+ * band arrives 23 % as tall as the box the app draws it in. Rendered behind the lesson's
+ * feedback card it vanished completely — the card is opaque and the band was centred
+ * exactly underneath it.
+ *
+ * MEASURED, like the feather below, not listed. A master whose content bbox is at least
+ * this wide relative to its height is a banner and is trimmed to that bbox; everything
+ * else keeps its frame untouched. 4:1 is well clear of the 3:2 the illustrations arrive
+ * at and of any subject that happens to sit wide in frame, so the rule fires on ribbons
+ * and nothing else — and if a future banner is delivered pre-trimmed, the bbox already
+ * fills the frame, the trim is a no-op, and nobody has to remember to edit a list.
+ */
+const BANNER_ASPECT = 4
+
+/**
  * Draw one master into a canvas and read the bytes back.
  *
  * The image is passed in as a data URL rather than a file path because the page has no
@@ -257,15 +277,68 @@ async function render(page, sourceBytes, spec) {
   const height = spec.height ?? spec.size ?? null
 
   return page.evaluate(
-    async ({ dataUrl, width, height: requested, fit, opaque, inset, canvasColor, format, quality }) => {
+    async ({ dataUrl, width, height: requested, fit, opaque, inset, canvasColor, format, quality, bannerAspect }) => {
       let height = requested
       const img = new Image()
       img.src = dataUrl
       await img.decode()
 
+      // The source rectangle, which is the whole master unless it turns out to be a
+      // banner — see BANNER_ASPECT.
+      let sx = 0
+      let sy = 0
+      let sw = img.width
+      let sh = img.height
+
+      if (bannerAspect !== undefined) {
+        // Measured on a downscaled copy: the bbox only has to be right to within a
+        // pixel of the master, and reading 1.5 M pixels once per rung per image is
+        // minutes of nothing. The result is padded by one probe cell before it is
+        // mapped back, so the downscale's own smoothing cannot shave a confetto.
+        const PROBE = 256
+        const probe = document.createElement('canvas')
+        probe.width = PROBE
+        probe.height = Math.max(1, Math.round((PROBE * img.height) / img.width))
+        const pctx = probe.getContext('2d')
+        pctx.drawImage(img, 0, 0, probe.width, probe.height)
+        const pixels = pctx.getImageData(0, 0, probe.width, probe.height).data
+
+        let x0 = probe.width
+        let y0 = probe.height
+        let x1 = -1
+        let y1 = -1
+        for (let y = 0; y < probe.height; y++) {
+          for (let x = 0; x < probe.width; x++) {
+            if (pixels[(y * probe.width + x) * 4 + 3] > 8) {
+              if (x < x0) x0 = x
+              if (x > x1) x1 = x
+              if (y < y0) y0 = y
+              if (y > y1) y1 = y
+            }
+          }
+        }
+
+        if (x1 >= x0 && y1 >= y0) {
+          const scaleBack = img.width / probe.width
+          const pad = 1
+          const bx = Math.max(0, Math.floor((x0 - pad) * scaleBack))
+          const by = Math.max(0, Math.floor((y0 - pad) * scaleBack))
+          const bw = Math.min(img.width - bx, Math.ceil((x1 - x0 + 1 + pad * 2) * scaleBack))
+          const bh = Math.min(img.height - by, Math.ceil((y1 - y0 + 1 + pad * 2) * scaleBack))
+          // Both conditions, not just the aspect: a master already delivered as a tight
+          // ribbon would pass the aspect test and gain nothing from being re-cropped.
+          if (bh > 0 && bw / bh >= bannerAspect && bh < img.height * 0.75) {
+            sx = bx
+            sy = by
+            sw = bw
+            sh = bh
+          }
+        }
+      }
+
       const canvas = document.createElement('canvas')
       canvas.width = width
-      canvas.height = height ?? Math.round((width * img.height) / img.width)
+      canvas.height = height ?? Math.round((width * sh) / sw)
       height = canvas.height
       const ctx = canvas.getContext('2d')
 
@@ -278,13 +351,13 @@ async function render(page, sourceBytes, spec) {
       // drawn art within the frame without changing the frame.
       const scale =
         fit === 'cover'
-          ? Math.max(width / img.width, height / img.height)
-          : Math.min(width / img.width, height / img.height) * (inset ?? 1)
+          ? Math.max(width / sw, height / sh)
+          : Math.min(width / sw, height / sh) * (inset ?? 1)
 
-      const w = img.width * scale
-      const h = img.height * scale
+      const w = sw * scale
+      const h = sh * scale
       ctx.imageSmoothingQuality = 'high'
-      ctx.drawImage(img, (width - w) / 2, (height - h) / 2, w, h)
+      ctx.drawImage(img, sx, sy, sw, sh, (width - w) / 2, (height - h) / 2, w, h)
 
       // Feather a baked-in background, if there is one.
       //
@@ -341,6 +414,7 @@ async function render(page, sourceBytes, spec) {
       canvasColor: CANVAS,
       format: spec.format ?? 'image/png',
       quality: spec.quality,
+      bannerAspect: spec.bannerAspect,
     },
   )
 }
@@ -432,7 +506,13 @@ export type ArtName = keyof typeof ART_BY_NAME
       // fade its own edges to transparent — the opposite of what it is for.
       const written = write(
         out,
-        await render(page, master, { ...ILLUSTRATION, ...rung, fit: 'cover', opaque: isBackground(name) }),
+        await render(page, master, {
+          ...ILLUSTRATION,
+          ...rung,
+          fit: 'cover',
+          opaque: isBackground(name),
+          bannerAspect: BANNER_ASPECT,
+        }),
       )
       chosen = { ...rung, bytes: written }
       if (written <= ILLUSTRATION.budget) break

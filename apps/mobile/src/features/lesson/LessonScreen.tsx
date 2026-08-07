@@ -8,7 +8,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
 import {
   AnswerOption,
   Button,
@@ -55,6 +55,58 @@ type ScreenState = 'loading' | 'error' | 'empty' | 'ready'
  * and small enough that the four answers below it stay on screen at 320pt.
  */
 const FLAG_PROMPT_WIDTH = 200
+
+/**
+ * The aspect of `celebration/burst-wide`, which is a ribbon rather than a picture.
+ *
+ * The build trims that master to its content, so the shipped asset is the band itself at
+ * 768×129 and nothing else (`scripts/build-art.cjs`, BANNER_ASPECT). Drawing it needs the
+ * number here because `Art` boxes are square unless told otherwise, and a square box for
+ * a 6:1 ribbon is five parts empty to one part confetti.
+ */
+const BURST_ASPECT = 768 / 129
+
+/**
+ * How much of the ribbon is allowed above the card, as a fraction of its height.
+ *
+ * MEASURED off the shipped asset, not chosen by eye: its rows go from 1 % coverage at
+ * the top to 98 % at the middle, and the solid core starts at 27 %. Showing half of it
+ * — the obvious thing, and the thing that was tried — put that core in the gap between
+ * the last answer and the card, where it read as a strip of gumballs with a ruler-straight
+ * bottom edge rather than as anything celebrating.
+ *
+ * Stopping just short of the core shows only the scatter: loose confetti above the card,
+ * with the dense part of the spray never drawn. It also makes the straight cut invisible,
+ * because there is nothing solid left at the cut to look straight.
+ *
+ * CLIPPED to this, rather than left for the card to cover. Letting the card do the
+ * hiding works across the card and nowhere else: the ribbon is wider than the card, so
+ * the core kept showing in the sixteen points of screen padding either side, as a yellow
+ * smear at both top corners.
+ */
+const BURST_ABOVE = 0.26
+
+/**
+ * How far the clipped edge is tucked behind the card, in points.
+ *
+ * The clip has to fall somewhere, and wherever it falls it is a straight line. Across
+ * the card's own width the card hides it; the eight points here are what puts it there,
+ * so the confetti reads as coming out from behind the card rather than as a strip that
+ * ends. Only the sixteen points of screen padding either side see the cut at all, and at
+ * 26 % the ribbon is loose enough there that a straight line through it has nothing to
+ * be straight about.
+ */
+const BURST_TUCK = space[2]
+
+/**
+ * Drawn wider than the screen, so the ends leave the frame instead of stopping inside it.
+ *
+ * At exactly screen width the ribbon tapers to nothing just before both edges, which
+ * reads as a picture of confetti. Overhanging turns it back into confetti — and because
+ * the ribbon's aspect is fixed, overhanging is also what buys the scatter enough height
+ * to be seen once the dense core is cropped away.
+ */
+const BURST_OVERHANG = 2
 
 /**
  * The locator map beside a question.
@@ -119,6 +171,13 @@ export function LessonScreen({
   const t = useT()
   const { index, memory, status, reload, isOffline } = useContent()
   const [screen, setScreen] = useState<ScreenState>('loading')
+
+  // The confetti ribbon spans the device, so it is measured rather than guessed: a fixed
+  // width would stop short of the edge on a tablet and hang off it at 320.
+  const { width } = useWindowDimensions()
+  const burstWidth = Math.round(width * BURST_OVERHANG)
+  const burstHeight = Math.round(burstWidth / BURST_ASPECT)
+  const burstVisible = Math.round(burstHeight * BURST_ABOVE)
 
   // Sized from the user's own pace, not a hardcoded ten. `lessonLength` aims at a
   // two-minute lesson so that "five minutes a day" is a real promise rather than a
@@ -504,7 +563,55 @@ export function LessonScreen({
         </View>
 
         {answered && (
-          <Card level={2} style={styles.feedback}>
+          <View style={styles.feedbackWrap}>
+            {/* The confetti, on the frame that actually earns it.
+
+                This fires ten to twenty times a lesson — the most-seen "good thing
+                happened" moment in the product — and it was a green word and two chips.
+                Reusing the square `celebration/burst` here failed three times: it
+                radiates from a deliberately empty centre, so clipped to a short wide
+                panel the only part that lands inside is the empty middle, and drawn
+                behind it, it put confetti on the answer options and a smear under the
+                card. The geometry was the problem, not the placement.
+
+                `burst-wide` is the asset drawn for this shape, and it is drawn on the
+                card's top EDGE rather than behind its middle. Behind the middle was the
+                fourth failure and the most instructive one: the card is opaque, so a
+                band centred under it is a band nobody can see. Straddling the edge, the
+                card covers the lower half and the upper half sprays out above it, which
+                is what confetti bursting out of something looks like.
+
+                Wider than the screen and centred on it, so both ends leave the frame
+                rather than tapering to nothing just inside it.
+
+                `pointerEvents="none"` because celebration never blocks input
+                (apps/mobile/CLAUDE.md), and decorative because a screen reader
+                announcing confetti after every correct answer is the definition of
+                noise. */}
+            {lastAnswer?.wasCorrect === true && (
+              <View
+                style={[
+                  styles.burst,
+                  {
+                    width: burstWidth,
+                    // The window onto the ribbon, sitting directly on the card's top
+                    // edge; the ribbon inside it is `burstHeight` tall and hangs out of
+                    // the bottom, where it is clipped.
+                    height: burstVisible,
+                    // Centred on the screen, from a box inset by the screen's padding.
+                    // `start`, not `left`: the ribbon is symmetric and the wrap is inset
+                    // equally on both sides, so this mirrors to the identical result in
+                    // RTL rather than pushing the confetti off one edge.
+                    insetInlineStart: -space[4] - (burstWidth - width) / 2,
+                    top: -(burstVisible - BURST_TUCK),
+                  },
+                ]}
+                pointerEvents="none"
+              >
+                <Art name="celebration/burst-wide" size={burstWidth} height={burstHeight} />
+              </View>
+            )}
+            <Card level={2} style={styles.feedback}>
             {lastAnswer?.wasCorrect ? (
               <>
                 <Text style={styles.feedbackTitleOk}>{t('lesson:feedback.correct.title')}</Text>
@@ -546,7 +653,8 @@ export function LessonScreen({
                 </Text>
               </>
             )}
-          </Card>
+            </Card>
+          </View>
         )}
       </ScrollView>
 
@@ -751,6 +859,12 @@ const styles = StyleSheet.create({
   promptArt: { alignItems: 'center' },
   options: { gap: space[2] },
   feedback: { gap: space[2] },
+  // A positioning context for the confetti, which is drawn behind the card and is
+  // deliberately allowed to overflow it — nothing here clips.
+  feedbackWrap: { alignSelf: 'stretch' },
+  // Position, size and offset are all measured from the window, so they come from the
+  // component; this says only that it is out of flow and that it crops what it holds.
+  burst: { position: 'absolute', overflow: 'hidden' },
   feedbackTitle: { ...text('h3'), color: colors.text.primary },
   feedbackTitleOk: { ...text('h2'), color: colors.feedback.correct },
   feedbackBody: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },

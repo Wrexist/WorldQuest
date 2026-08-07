@@ -23,14 +23,21 @@
  *
  * ## A square BOX, holding art that is not square
  *
- * Callers give one size, so the box is square and the rhythm of a column of these stays
- * even. The art inside keeps the master's 3:2 and is centred with `contain`, which is
- * the fix for having squared them in the build at first: `onboarding/explore` is a
- * composition — Atlas descending at the upper right, a planet curving across the lower
- * left — and the square crop put the mascot in a corner and cut the planet in half.
+ * Callers give one size, so the box is square by default and the rhythm of a column of
+ * these stays even. The art inside keeps the master's 3:2 and is centred with `contain`,
+ * which is the fix for having squared them in the build at first: `onboarding/explore`
+ * is a composition — Atlas descending at the upper right, a planet curving across the
+ * lower left — and the square crop put the mascot in a corner and cut the planet in half.
  *
  * The transparent bands that leaves above and below are free. These sit on the canvas
  * colour and most of the masters have a transparent margin anyway.
+ *
+ * `height` is the exception, and it exists for one shape: a banner. Every illustration
+ * here is a subject in a 3:2 frame except `celebration/burst-wide`, which is a confetti
+ * ribbon at roughly 6:1. A square box for a 6:1 ribbon is 84 % empty, and the emptiness
+ * is not free when the box is positioned against something — the ribbon came out
+ * centred in 420pt of nothing, directly behind an opaque card, and was invisible. Pass
+ * `height` to match the art's own aspect and the box becomes the art.
  */
 
 import { Image, StyleSheet, View } from 'react-native'
@@ -39,8 +46,14 @@ import { ART_BY_NAME, type ArtName } from '../lib/art.generated.js'
 
 export type ArtProps = {
   readonly name: ArtName
-  /** Width and height in points. */
+  /** Width in points, and height too unless `height` says otherwise. */
   readonly size: number
+  /**
+   * Height in points, for art that is not meant to sit in a square box.
+   *
+   * Defaults to `size`. Only the banner needs it — see the note above.
+   */
+  readonly height?: number | undefined
   /**
    * Announce the image, with this text.
    *
@@ -50,21 +63,22 @@ export type ArtProps = {
   readonly label?: string | undefined
 }
 
-export function Art({ name, size, label }: ArtProps) {
+export function Art({ name, size, height, label }: ArtProps) {
   const asset = ART_BY_NAME[name]
   // Metro gives a number, Vite a URL string — see types/assets.d.ts.
   const source = typeof asset === 'string' ? { uri: asset } : asset
+  const box = { width: size, height: height ?? size }
 
   return (
     <View
-      style={[styles.frame, { width: size, height: size }]}
+      style={[styles.frame, box]}
       {...(label === undefined
         ? { accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' as const, 'aria-hidden': true }
         : {})}
     >
       <Image
         source={source}
-        style={{ width: size, height: size }}
+        style={box}
         // `contain`, never `cover`. The build deliberately does not crop these, so the
         // whole composition arrives here and cropping it now would undo that.
         resizeMode="contain"
