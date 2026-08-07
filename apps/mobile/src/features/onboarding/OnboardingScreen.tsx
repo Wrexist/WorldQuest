@@ -66,6 +66,15 @@ type Step = 'slides' | 'age' | 'goal' | 'taster'
 const STEPS: readonly Step[] = ['slides', 'age', 'goal', 'taster']
 
 /**
+ * Atlas on a step where the user is choosing something.
+ *
+ * Deliberately smaller than the 200 the slides and the taster use. Those screens are
+ * the picture plus a sentence; this one is three cards the user has to read and pick
+ * between, and an illustration the same size as theirs would be arguing with them.
+ */
+const DECISION_ART = 120
+
+/**
  * The slides as literal key pairs rather than a number and string interpolation.
  *
  * `t()` is typed per key — each one carries its own parameter type — so a computed
@@ -195,7 +204,11 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
                 <Pressable
                   key={s.title}
                   role="tab"
-                  aria-label={t('onboarding:progress', { step: i + 1, total: SLIDES.length })}
+                  // `slide`, not `progress`. The bar above counts the flow's four
+                  // steps and these count the three slides inside the first one, so
+                  // sharing a string meant a reader heard "Step 2 of 4" and then
+                  // "Step 1 of 3" about the same moment.
+                  aria-label={t('onboarding:slide.position', { index: i + 1, total: SLIDES.length })}
                   aria-selected={i === slide}
                   // Pressable, not a View with onTouchEnd — see TabBar. onTouchEnd
                   // responds to a finger and to nothing else: no mouse, no keyboard,
@@ -283,6 +296,17 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
 
         {step === 'goal' && (
           <>
+            {/* The flow warmed up, went cold, then warmed up again: slides one and two
+                and the taster all carry a 200pt illustration, and the two decision steps
+                between them carried none — with 350pt of empty screen under the options
+                on the one being decorated here.
+
+                Smaller than the slides' 200, and above the choice rather than beside it.
+                These three cards are the content of the step and the picture is not
+                allowed to compete with them; the age step gets nothing at all for the
+                same reason, since its eleven decade chips already reach the CTA at 320.
+                `thinking`, because a question is being asked. */}
+            <Art name="atlas/thinking" size={DECISION_ART} />
             <Text style={styles.title}>{t('onboarding:goal.title')}</Text>
             <Text style={styles.body}>{t('onboarding:goal.body')}</Text>
             <View style={styles.goals}>
