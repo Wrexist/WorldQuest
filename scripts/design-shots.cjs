@@ -96,6 +96,29 @@ const DEFAULT_ROUTES = [
  */
 const SHOOT_FLOWS = process.env.WQ_NO_FLOWS === undefined
 
+/**
+ * The routes worth photographing a SECOND time with the network pulled out.
+ *
+ * The five states are content, loading, empty, error and offline, and a review that
+ * only walks routes sees the first three. Loading and error are not reachable here and
+ * saying so is more useful than pretending: content ships in the binary and
+ * `useContent` builds its index synchronously, so there is no loading window to
+ * photograph and no failure to induce short of corrupting a pack. The paywall's error
+ * state is the exception and shows up unprompted — there is no store to reach from a
+ * test harness, which is why every paywall shot in this folder is already the error
+ * branch.
+ *
+ * Offline IS reachable, and it is the state this product cares most about. Two of the
+ * three personas are defined by it — Priya on the metro, Emma's tablet with no SIM —
+ * and the banner written for them was unreachable for the app's entire first month
+ * because `isOffline` was a hardcoded `false`. A regression back to that would look
+ * exactly like nothing at all.
+ *
+ * `context.setOffline` fires the browser's own `offline` event, which is the same
+ * path `connectivity.ts` listens on in a real browser. Not a mock, not a test seam.
+ */
+const OFFLINE_ROUTES = ['/', '/shop', '/streak', '/more', '/paywall?source=settings']
+
 const TYPES = {
   '.html': 'text/html',
   '.js': 'text/javascript',
@@ -245,7 +268,12 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
     const consoleErrors = []
     page.on('pageerror', (e) => consoleErrors.push(String(e)))
     page.on('console', (m) => {
-      if (m.type() === 'error') consoleErrors.push(m.text())
+      // The offline pass disconnects the radio on purpose, and Chromium says so on the
+      // console. Reporting our own instruction back as a finding is how a summary line
+      // stops being read.
+      if (m.type() === 'error' && !/ERR_INTERNET_DISCONNECTED/.test(m.text())) {
+        consoleErrors.push(m.text())
+      }
     })
 
     const shot = (name) =>
@@ -298,6 +326,21 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
     }
 
     if (SHOOT_FLOWS) {
+      for (const route of OFFLINE_ROUTES) {
+        const slug = route === '/' ? 'home' : route.replace(/^\//, '').replace(/\//g, '-')
+        // Load first, THEN pull the radio. `setOffline` blocks localhost too, so a
+        // navigation made while offline serves nothing and photographs a blank page —
+        // which is a picture of the harness, not of the app. Toggling per route costs a
+        // few hundred milliseconds and is the only order that renders the screen.
+        await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'networkidle' })
+        await page.waitForTimeout(900)
+        await page.context().setOffline(true)
+        await page.waitForTimeout(700)
+        await shot(`offline-${slug}`)
+        await page.context().setOffline(false)
+        await page.waitForTimeout(300)
+      }
+
       const phases = await shootLessonPhases(page, shot)
       if (!phases.gotCorrect || !phases.gotWrong) {
         report.flowGaps ??= {}

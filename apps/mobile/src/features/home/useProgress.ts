@@ -19,8 +19,17 @@ export type ProgressStatus = 'loading' | 'ready' | 'error'
 export type UseProgress = {
   readonly data: Progress | null
   readonly status: ProgressStatus
-  /** True when the numbers on screen came from the cache rather than the server. */
-  readonly isStale: boolean
+  /**
+   * True when the last attempt to refresh these numbers FAILED and we are showing the
+   * cache instead.
+   *
+   * Not "the cache has gone stale". It was `query.isError || query.isStale`, and
+   * `staleTime` is 60 seconds — so a tab left open for a minute on a perfect
+   * connection set this, and Home printed "You're offline — lessons still work. We'll
+   * sync later." at someone with four bars. Staleness is a refetch policy; it is not
+   * evidence about the network, and the banner is a claim about the network.
+   */
+  readonly refreshFailed: boolean
   readonly refetch: () => void
 }
 
@@ -50,9 +59,9 @@ export function useProgress(): UseProgress {
   return {
     data: query.data ?? null,
     status,
-    // `isStale` here means "what you are looking at did not come from the server just
-    // now", which is exactly what the offline banner is telling the user.
-    isStale: query.data !== undefined && (query.isError || query.isStale),
+    // Only with data in hand: without it the screen is in the `error` state, which is a
+    // wall rather than a badge, and reporting both at once would draw both.
+    refreshFailed: query.data !== undefined && query.isError,
     refetch: () => void query.refetch(),
   }
 }
