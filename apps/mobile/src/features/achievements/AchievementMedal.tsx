@@ -16,10 +16,11 @@
  * ten-year-old they are shut out of something.
  */
 
-import { Image, StyleSheet, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { colors, radius } from '@worldquest/design'
 import type { Tier } from '@worldquest/engines'
 import { ART_BY_NAME, type ArtName } from '../../lib/art.generated.js'
+import { Art } from '../../components/Art.js'
 
 /**
  * Which glyph belongs to which achievement, keyed on the CATEGORY segment of the id.
@@ -70,16 +71,24 @@ export type AchievementMedalProps = {
 }
 
 /**
+ * How much of the medal the glyph takes, framed and unframed.
+ *
+ * Framed, it has to clear the tier ring, and 0.52 is that ring's inner diameter in the
+ * delivered art. Unframed there is no ring to clear, so a glyph held to the framed size
+ * would sit in the middle of an empty disc looking like a loading state — which is the
+ * opposite of what a locked row is for. It is the same picture either way; only the
+ * thing around it changes.
+ */
+const GLYPH_IN_FRAME = 0.52
+const GLYPH_ALONE = 0.66
+
+/**
  * Decorative throughout. The card already announces its name and tier through
  * `accessibilityLabel`, and a reader saying "gold frame, flag glyph" after it is the
  * same picture described twice.
  */
 export function AchievementMedal({ achievementId, tier, size }: AchievementMedalProps) {
   const glyph = glyphFor(achievementId)
-  const source = (name: ArtName) => {
-    const asset = ART_BY_NAME[name]
-    return typeof asset === 'string' ? { uri: asset } : asset
-  }
 
   return (
     <View
@@ -88,18 +97,23 @@ export function AchievementMedal({ achievementId, tier, size }: AchievementMedal
       importantForAccessibility="no-hide-descendants"
       aria-hidden
     >
+      {/* `Art`, not a bare `Image`, and that is the whole fix.
+          These were drawn with `StyleSheet.absoluteFill` and a margin, which reads as
+          "fill the medal, inset a little" and is not what happened: React Native Web
+          pins an Image to its source's intrinsic size, so the four zero insets were
+          overruled and every glyph rendered at 768×768 inside a 56pt disc. All twelve
+          medals came out blank. `Art` takes points and gives points, and it fits the
+          SUBJECT to them — which matters twice over here, because a tier frame fills
+          about 63 % of its file and a glyph about 48 %. */}
       {tier !== null && (
-        <Image source={source(FRAME[tier])} style={StyleSheet.absoluteFill} resizeMode="contain" alt="" />
+        <View style={StyleSheet.absoluteFill}>
+          <Art name={FRAME[tier]} size={size} />
+        </View>
       )}
       {glyph !== null && (
-        <Image
-          source={source(glyph)}
-          // Inset so the glyph sits inside the frame's ring rather than over it. 0.52
-          // is the frame's own inner diameter in the delivered art.
-          style={[styles.glyph, tier === null && styles.locked, { margin: size * 0.24 }]}
-          resizeMode="contain"
-          alt=""
-        />
+        <View style={tier === null ? styles.locked : undefined}>
+          <Art name={glyph} size={Math.round(size * (tier === null ? GLYPH_ALONE : GLYPH_IN_FRAME))} />
+        </View>
       )}
     </View>
   )
@@ -112,7 +126,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.full,
     backgroundColor: colors.bg.surface,
   },
-  glyph: { ...StyleSheet.absoluteFillObject },
   // Present but quiet. Not hidden, and never a padlock. 0.45 is the dim this codebase
   // already uses for "there, but not yet yours" — `tileEmpty` on Explore and `tileDim`
   // on the collection grid — so a locked medal reads the same as a locked anything.
