@@ -81,9 +81,14 @@ describe('Explore', () => {
     // 0 due, and "no reviews waiting" rendered as "Up to date" — which beside "0 of 2
     // learned" reads as "you have finished this", on the one screen whose entire job is
     // to invite. Zero due only means "caught up" once something has been started.
+    //
+    // The replacement for that was "Not started yet", which was the third line on the
+    // tile to mean zero. It now names the continent's size — the only number here the
+    // user does not already have from the two lines above it.
     render(<ExploreScreen world={world()} loading={false} onSelectRegion={() => {}} />)
-    expect(screen.getByText('Not started yet')).toBeTruthy()
+    expect(screen.getByText('1 country to meet')).toBeTruthy()
     expect(screen.queryByText('Up to date')).toBeNull()
+    expect(screen.queryByText('Not started yet')).toBeNull()
   })
 
   it('still says "up to date" once there is something to be up to date on', () => {

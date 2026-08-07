@@ -309,9 +309,15 @@ function ContinentTile({
               {/* Zero due means "nothing is waiting for you", which is only true once
                   something has been learned. On a continent at 0 of 56 the same branch
                   rendered "Up to date" — an invitation turned into a claim that the user
-                  had finished it. */}
+                  had finished it.
+
+                  The replacement for that was "Not started yet", which was the third
+                  line on the tile to mean zero: under "0 of 56 learned" and an empty
+                  bar, a caption saying nothing had started. The continent's SIZE is the
+                  one number here a user does not already have, and it is the one that
+                  makes an untouched tile look worth opening. */}
               {progress.factsLearned === 0
-                ? t('explore:region.notStarted')
+                ? t('explore:region.size', { count: progress.entitiesTotal })
                 : t('explore:region.due', { count: progress.factsDue })}
             </Text>
           </>
