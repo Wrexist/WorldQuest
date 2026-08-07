@@ -62,6 +62,10 @@ const DEFAULT_ROUTES = [
   '/more',
   '/collection/flags',
   '/country/SE',
+  // The continent detail. Absent from this list until it was noticed that it had no
+  // illustration at all — which is the argument for the list being the whole app rather
+  // than the screens somebody remembered.
+  '/region/EU',
   '/achievements',
   '/streak',
   // `?source=settings` so it opens on the plans page. From onboarding it opens on

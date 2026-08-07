@@ -49,7 +49,7 @@ export type RegionCode = (typeof REGIONS)[number]
  * Keyed by region code so the map cannot drift from `REGIONS` — a continent added to
  * that list without art here is a type error rather than a blank tile.
  */
-const CONTINENT_ART: Record<RegionCode, ArtName> = {
+export const CONTINENT_ART: Record<RegionCode, ArtName> = {
   EU: 'continents/EU',
   AS: 'continents/AS',
   AF: 'continents/AF',
@@ -74,7 +74,7 @@ const CONTINENT_ART: Record<RegionCode, ArtName> = {
  * `Art` draws a 3:2 image `size` wide and `size / 1.5` tall, so covering a `w × h` tile
  * needs `size ≥ w` and `size ≥ 1.5 h`, whichever binds.
  */
-const tileArtSize = (width: number, height: number) => Math.ceil(Math.max(width, height * 1.5))
+export const continentArtSize = (width: number, height: number) => Math.ceil(Math.max(width, height * 1.5))
 
 const REGION_NAME: Record<RegionCode, TranslationKey> = {
   EU: 'explore:region.EU',
@@ -173,7 +173,7 @@ export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection
             region={region}
             index={index}
             progress={byRegion.get(region)}
-            art={tileArtSize(tile.width, tile.height)}
+            art={continentArtSize(tile.width, tile.height)}
             onSelect={onSelectRegion}
             onMeasure={setTile}
           />

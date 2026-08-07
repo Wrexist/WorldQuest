@@ -66,7 +66,11 @@ function loadGradient(): GradientComponent | null {
  * `tokens.json` because they are not a colour anyone should reach for — they are this
  * component's own ramp, and the numbers that make the measurement pass.
  */
-const TOP = '8C' // 55 %, which is what the flat wash this replaced was, everywhere
+// 62 %. Was 55 — the flat wash's value — until the region banner put a 13pt caption near
+// the TOP of a short panel, where the ramp has barely started. Over Oceania's turquoise
+// that measured 4.45:1 against a 4.5 floor: a 1 % miss is still a miss, and the fix
+// belongs to the primitive rather than to the one screen that happened to find it.
+const TOP = '9E'
 const MIDDLE = 'BF' // 75 %
 const BOTTOM = 'E6' // 90 %
 
