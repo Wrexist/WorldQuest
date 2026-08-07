@@ -528,6 +528,50 @@ borders — purely atmospheric texture. Dominant accent colour {ACCENT}.
 > seventh card, and a set of six that later needs a seventh generated in a different
 > session never matches.
 
+### 8b. The silhouette layer — implied by a reference, not yet drawn
+
+A reference restyled our Explore tiles as **one flat continent colour with a landmark
+silhouette on the right**, at low opacity. It is worth understanding why that is a good
+idea rather than just a different one: a flat field is a single known colour, so text on
+it is legible by construction. Our tiles use photographic skies, and the contrast fight
+that caused has now been had twice — 1.5:1 over Oceania on Explore, then 4.45:1 on the
+region banner — and is the reason `ArtScrim` exists at all.
+
+The skies are better-looking and they are already delivered. The silhouette is an
+**additive** layer, not a replacement: it sits on the scrim, in the lower right, where
+the tile's own text is not.
+
+```
+[STYLE BLOCK]
+
+A single flat silhouette of {SUBJECT}, solid white on transparent, no gradient, no
+outline, no detail inside the shape. Simple enough to read at 40px and to survive being
+drawn at 12 % opacity. Composed to sit in the lower-right corner of a card.
+
+[NEGATIVE BLOCK], photorealism, texture, gradient, colour, outline, background, ground
+line, people, text
+```
+
+> **Pick the subject carefully, and this is a legal note rather than an aesthetic one.**
+> The reference uses the Eiffel Tower, Christ the Redeemer and the Sydney Opera House.
+> All three are encumbered: France restricts commercial images of the *illuminated*
+> Eiffel Tower, Christ the Redeemer is under copyright held by the Archdiocese of Rio,
+> and the Sydney Opera House is trademarked. Freedom of panorama differs by country and
+> a silhouette is still a derivative of the structure.
+>
+> So `{SUBJECT}` should be **landform, not architecture** — which is also more honest for
+> a geography app, where the continent is the subject and a single building is a city.
+
+| Continent | `{SUBJECT}` |
+|---|---|
+| Europe | a range of alpine peaks with a fjord inlet |
+| Asia | a stepped mountain ridge with terraced foothills |
+| Africa | a flat-topped acacia beside rolling savanna |
+| North America | a canyon rim with mesa buttes |
+| South America | a high andean ridge above rainforest canopy |
+| Oceania | a coral atoll ring with palms |
+| Antarctica | a tabular iceberg and pressure ridges |
+
 ## 9. Avatar set
 
 `packages/content/assets/avatars/*.png` · 512×512 · **12 to start**
@@ -579,6 +623,13 @@ Generate all twelve, varying `{DESCRIPTOR}` and keeping everything else identica
 | `rewards/heart.png` | `A rounded glossy red heart with a soft highlight, slightly three-dimensional, gently glowing. Friendly, not clinical.` |
 | `rewards/streak-freeze.png` | `A rounded flame encased in translucent pale-blue ice with soft frost crystals at its base. Preserved, protected, calm.` |
 | `rewards/xp-orb.png` | `A small rounded orb of soft signal-green light with a brighter core and a faint trailing wisp, as if drifting upward. Energetic, weightless, not a gem.` |
+| `progress/globe.png` **not yet drawn** | `A small rounded desk globe on a warm gold meridian arc and a short stand, tilted slightly, oceans in deep blue and land in soft green, lit warmly from the upper left with a gentle glow beneath. Friendly object, not a scientific model.` |
+
+> `progress/globe` is implied by a reference that puts a globe on the "Your world" card —
+> the one card in the app that reports how much of the world you know and currently
+> carries only a progress bar. **Draw generic landmasses or none**: a globe showing real
+> coastlines is the geometry rule in the never-generate table, and an invented coastline
+> in a geography app is a wrong fact whether or not anyone is quizzed on it.
 
 > `xp-orb` is new because XP is the most-awarded thing in the app and had no mark of
 > its own, so every XP number renders as bare type while coins and gems have artwork.

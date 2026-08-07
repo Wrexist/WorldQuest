@@ -97,6 +97,15 @@ export type ExploreScreenProps = {
   readonly onSelectRegion: (region: RegionCode) => void
 }
 
+/**
+ * Atlas beside the Explore heading.
+ *
+ * 84, against the 132 he gets on Home's quest card. That card is the one primary action
+ * and he is half its subject; this is a heading he stands next to, and a mascot that
+ * out-weighs the title of the screen he is decorating has stopped decorating it.
+ */
+const HEADER_ART = 84
+
 type TileSize = { readonly width: number; readonly height: number }
 
 /** `width: '48%'` of the grid, which is the screen inside its own padding. */
@@ -117,11 +126,27 @@ export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      {/* Atlas at screen level, beside the title.
+   
+          The reference puts its mascot in the Explore header holding a magnifying
+          glass, and that placement answers a note `HomeScreen` has carried for a while:
+          the character appeared on onboarding, welcome-back, five empty states, an
+          error, a pause and an out-of-hearts card — every one of them a moment where
+          something is missing or has gone wrong — which taught the user that seeing him
+          is bad news. He now stands in two ordinary screens as well.
+   
+          `thinking` rather than `celebrate`: this is the browse tab, and the pose the
+          brief calls "curious, not confused" is what a screen about where to go next
+          wants. Decorative — the heading and its subtitle already say what the screen
+          is, and a reader announcing a robot before them is length without meaning. */}
       <View style={styles.header}>
-        <Text style={styles.title} role="heading">
-          {t('explore:title')}
-        </Text>
-        <Text style={styles.subtitle}>{t('explore:subtitle')}</Text>
+        <View style={styles.headerText}>
+          <Text style={styles.title} role="heading">
+            {t('explore:title')}
+          </Text>
+          <Text style={styles.subtitle}>{t('explore:subtitle')}</Text>
+        </View>
+        <Art name="atlas/thinking" size={HEADER_ART} />
       </View>
 
       <Card style={styles.worldCard} accessibilityLabel={t('explore:world.label')}>
@@ -320,7 +345,10 @@ const styles = StyleSheet.create({
   collectionName: { ...text('caption', { weight: '700' }), color: colors.text.secondary },
   screen: { flex: 1 },
   content: { padding: space[4], gap: space[4] },
-  header: { gap: space[1] },
+  // A row now, with the mascot on the end. `space[1]` still separates the two lines of
+  // text, which is why the gap moved inward rather than staying here.
+  header: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  headerText: { flex: 1, gap: space[1] },
   title: { ...text('h1'), color: colors.text.primary },
   subtitle: { ...text('body'), color: colors.text.secondary },
 
