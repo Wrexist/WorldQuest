@@ -620,27 +620,41 @@ export function LessonScreen({
                it, so the praise and the way onward were two objects with a gap between
                them. One sheet is the mechanic worth taking. */
             <View style={styles.sheet}>
-              {lastAnswer?.wasCorrect === true && (
-                /* Behind the button because it is drawn BEFORE it and positioned to
-                   overlap — later siblings paint on top, so the occlusion is the layout
-                   rather than a mask. Decorative: the sheet already says "Perfect!" and
-                   reads out the reward, and a screen reader announcing the mascot after
-                   every correct answer is the definition of noise. */
-                <View
-                  style={[
-                    rewardsWrapped ? styles.sheetMascotEnd : styles.sheetMascot,
-                    { width: mascot },
-                  ]}
-                  pointerEvents="none"
-                >
-                  <Art name="atlas/celebrate" size={mascot} />
-                </View>
-              )}
+              {/* Behind the button because it is drawn BEFORE it and positioned to
+                  overlap — later siblings paint on top, so the occlusion is the layout
+                  rather than a mask. Decorative: the sheet already says what happened
+                  and reads out the reward, and a screen reader announcing the mascot
+                  after every answer is the definition of noise.
+
+                  He appears on BOTH verdicts, which he did not before. Correct got
+                  Atlas cheering and wrong got two lines of text and a button, so the
+                  character turned up only when you were already pleased — and the
+                  screen where "gentle settle, we don't punish" is the actual rule was
+                  the coldest surface in the app. `encouraging` and not `celebrate`:
+                  the register changes, the presence does not.
+
+                  On the end side when wrong, because that copy is a full sentence
+                  naming the right answer rather than one word of praise, and a sentence
+                  reads better against the start edge than indented past a mascot. */}
+              <View
+                style={[
+                  lastAnswer?.wasCorrect === true && !rewardsWrapped
+                    ? styles.sheetMascot
+                    : styles.sheetMascotEnd,
+                  { width: mascot },
+                ]}
+                pointerEvents="none"
+              >
+                <Art
+                  name={lastAnswer?.wasCorrect === true ? 'atlas/celebrate' : 'atlas/encouraging'}
+                  size={mascot}
+                />
+              </View>
               <View
                 style={
                   lastAnswer?.wasCorrect === true && !rewardsWrapped
                     ? [styles.sheetText, { paddingStart: mascot - space[3] }]
-                    : styles.sheetText
+                    : [styles.sheetText, { paddingEnd: mascot - space[3] }]
                 }
               >
                 {lastAnswer?.wasCorrect ? (
