@@ -217,69 +217,14 @@ const ART_DIRS = [
 ]
 
 /**
- * Masters in an art directory that are still not shipped, each with the reason.
+ * Masters that exist and are deliberately not shipped.
  *
- * `character-sheet` is a model sheet — a reference for keeping Atlas consistent between
- * generations, not a picture any screen draws. `sparkle-sheet` is a 2048x512 sprite
- * strip of eight frames, and the resize below would scale it like a single image and
- * silently break the frame arithmetic; it needs sprite handling before it can ship.
- *
- * `levels/pioneer` is not a rank. The title ladder is wanderer · scout · navigator ·
- * cartographer · pathfinder · voyager · circumnavigator · trailblazer · globetrotter ·
- * worldkeeper · atlas, and `ProfileScreen.insigniaFor` looks the art up by rank name, so
- * nothing can ever reach a file called `pioneer` — it would be 39 KB of bundle for a
- * picture with no way in. It is also a near-duplicate of `trailblazer`, a summit with a
- * flag, which is a clue about how it happened. The master stays; it just does not ship.
- *
- * The other half of that mismatch is a gap rather than a spare: **level 100, `atlas`, has
- * no insignia** and is the one rank that should. It renders without art rather than with
- * the wrong art, and the prompt for it is in asset-prompts.md §12.
- *
- * The seven **league badges** are the same defect as `pioneer` at fifteen times the size.
- * Nothing imports them — leagues are v2.0 (`roadmap.md`, which lists them under "Social &
- * business" and names them in v1.0's "explicitly not in" line) — so they were 604 KB of
- * bundle, a fifth of everything this app ships, for a feature no screen has. Building the
- * league screen to justify the art would be building v2.0 during v1.0, which `CLAUDE.md`
- * calls the most expensive mistake available.
- *
- * The masters stay. When the league screen is built, delete the seven lines below and
- * they ship — that is the whole cost of deferring them, and it is the right way round:
- * art waiting for a feature costs nothing, art shipping ahead of one costs every user
- * their download.
- *
- * Five of the seven **reward illustrations** are here for a different reason, and it is a
- * measurement rather than a missing feature. `coin`, `gem`, `heart`, `trophy` and
- * `xp-orb` were briefed for slots the app draws at **18 points** — the icon inside a
- * `Stat` chip — against a style block whose own bar is "reads clearly at 96px". A 3D
- * render with a subsurface glow at 18pt is a smudge, and the flat Lucide icons already
- * in those chips are not a placeholder for these: they are the right answer at that size.
- *
- * The line is the size, not the asset. `streak-flame` and `streak-freeze` ship because
- * the streak screen draws them at 72 and 64, where an illustration is exactly right. If a
- * screen ever draws a coin or a trophy large — a league podium, a purchase confirmation —
- * these come back by deleting a line.
- *
- * `states/empty-no-friends` is the leagues case again: friends are v2.0, so the empty
- * state it illustrates has no screen to appear on.
+ * The list and its reasons live in `art-manifest.cjs`, shared with `import-art.cjs`. That
+ * script has to tell a PARKED master apart from an UNMAPPED one — they look identical on
+ * disk and mean opposite things — and with one list neither script can disagree with the
+ * other about which is which.
  */
-const NOT_SHIPPED = new Set([
-  'atlas/character-sheet',
-  'celebration/sparkle-sheet',
-  'levels/pioneer',
-  'leagues/bronze',
-  'leagues/silver',
-  'leagues/gold',
-  'leagues/sapphire',
-  'leagues/ruby',
-  'leagues/diamond',
-  'leagues/legend',
-  'rewards/coin',
-  'rewards/gem',
-  'rewards/heart',
-  'rewards/trophy',
-  'rewards/xp-orb',
-  'states/empty-no-friends',
-])
+const NOT_SHIPPED = new Set(Object.keys(require('./art-manifest.cjs').NOT_SHIPPED))
 
 const ILLUSTRATIONS = ART_DIRS.flatMap((dir) =>
   readdirSync(join(MASTERS, dir))

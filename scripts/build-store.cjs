@@ -8,8 +8,8 @@
  *   · `store/play-feature-graphic.png` — 1024×500, no alpha. Mandatory on Play.
  *   · `store/play-icon.png` — 512×512, no alpha.
  *   · `store/ios-icon.png` — 1024×1024, no alpha. Apple flattens alpha to black.
- *   · `store/wordmark-light.png` and `store/wordmark-gold.png` — the mark set in the
- *     app's own face, for the places live text cannot go.
+ *   · `store/wordmark-{light,gold}.png` and `.svg` — the mark set in the app's own face,
+ *     raster and vector, for the places live text cannot go.
  *
  * The other two — phone and tablet screenshots — are **not** built here, and that is a
  * decision rather than an omission. §14 marks their pixel dimensions `TODO(verify)`
@@ -28,10 +28,9 @@
  * the reason §1b gives: an image model garbles letterforms, and a wordmark with a subtly
  * malformed Q is a brand you cannot use and cannot fix.
  *
- * This does NOT produce the outlined SVG §1b asks for. Converting type to outlines needs
- * a font-parsing library this repo does not have and should not gain to set one logo, and
- * the optical kerning pass §1b specifies is a hand job. What this produces is the raster
- * form, at 4× the size it is ever placed at, which is what the feature graphic needs.
+ * The SVG carries the TTF inside it rather than converting the letters to outlines —
+ * see `wordmarkSvg` for what that buys and what it does not. Outlining proper still wants
+ * a type tool, and so does §1b's optical kerning pass.
  *
  * Run: `pnpm build:store`. Only when the icon, the wordmark or the palette changes.
  */
@@ -166,6 +165,54 @@ async function wordmark(page, colour, height) {
 }
 
 /**
+ * The wordmark as a scalable vector, with the typeface carried inside it.
+ *
+ * §1b asks for "convert to outlines and deliver as SVG", and outlines are the one part
+ * this cannot do: extracting glyph contours needs a font-parsing library the repo does
+ * not have and should not gain in order to set one logo. Chromium can render the letters
+ * but will not hand back their paths.
+ *
+ * What it CAN do is the thing outlining is usually for — make the file render correctly
+ * on a machine that does not have the font. Embedding the TTF as a data URI does that:
+ * the SVG is self-contained, scales without limit, and its letterforms are the app's own
+ * because it carries the app's own font file. It opens in a browser, in Figma, in
+ * Illustrator, and in a store console.
+ *
+ * What it does NOT do is survive a tool that ignores `@font-face` in SVG, and it is
+ * ~180 KB where an outlined version would be under two. So §1b keeps its outlining note
+ * for print, and this covers everything else. Being precise about which of the two you
+ * have is the point — "SVG" alone would imply both.
+ */
+function wordmarkSvg(fontBase64, colour, height) {
+  // The advance width is measured by the same font that will render it, so the viewBox
+  // is tight rather than padded by guesswork.
+  return (page) =>
+    page.evaluate(
+      async ({ text, colour, height, fontBase64 }) => {
+        const probe = document.createElement('canvas').getContext('2d')
+        probe.font = `${height}px WQWordmark`
+        const metrics = probe.measureText(text)
+        const width = Math.ceil(metrics.width)
+        const ascent = Math.ceil(metrics.actualBoundingBoxAscent)
+        const descent = Math.ceil(metrics.actualBoundingBoxDescent)
+        const left = Math.floor(metrics.actualBoundingBoxLeft)
+
+        return [
+          `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${ascent + descent}" width="${width}" height="${ascent + descent}" role="img" aria-label="${text}">`,
+          '<title>WorldQuest</title>',
+          '<defs><style type="text/css">',
+          '@font-face{font-family:"WorldQuest Wordmark";font-weight:900;font-style:normal;',
+          `src:url(data:font/ttf;base64,${fontBase64}) format("truetype");}`,
+          '</style></defs>',
+          `<text x="${left}" y="${ascent}" fill="${colour}" font-family="WorldQuest Wordmark" font-weight="900" font-size="${height}" xml:space="preserve">${text}</text>`,
+          '</svg>',
+        ].join('')
+      },
+      { text: WORDMARK, colour, height, fontBase64 },
+    )
+}
+
+/**
  * Play's feature graphic: 1024×500, opaque, and cropped hard in some placements.
  *
  * §14's constraint is the one that decides the layout — "nothing in the outer 10 %,
@@ -294,6 +341,16 @@ async function featureGraphic(page, iconBytes, markSize) {
   // 4× the largest place it is ever set, so it is never upscaled.
   wrote.push(['store/wordmark-light.png', write(join(OUT, 'wordmark-light.png'), await wordmark(page, LIGHT, 512)), 'set in Nunito Black'])
   wrote.push(['store/wordmark-gold.png', write(join(OUT, 'wordmark-gold.png'), await wordmark(page, GOLD, 512)), 'set in Nunito Black'])
+
+  // The SVGs, beside the rasters. 512 as the internal em size — an SVG scales, so the
+  // number only sets the coordinate precision.
+  const fontBase64 = readFileSync(FONT).toString('base64')
+  for (const [file, colour] of [['wordmark-light.svg', LIGHT], ['wordmark-gold.svg', GOLD]]) {
+    const svg = await wordmarkSvg(fontBase64, colour, 512)(page)
+    mkdirSync(OUT, { recursive: true })
+    writeFileSync(join(OUT, file), svg)
+    wrote.push([`store/${file}`, statSync(join(OUT, file)).size, 'vector, font embedded'])
+  }
 
   const MARK = 190
   const feature = await featureGraphic(page, iconBytes, MARK)
