@@ -255,3 +255,54 @@ edge, which is green for its whole height.
 | **A live "INVITE FRIENDS" button** | Friends is v2.0 in `roadmap.md`. A bright CTA for a feature that does not exist is building v2.0 during v1.0 *and* a dark pattern under rule 7. The placeholder stays honest and inert. |
 | **The gem chip** | ADR 0011: coins and gems are different currencies, and only coins exist. `rewards/gem` is already in `NOT_SHIPPED`. |
 | **A streak chip at 0** | Their header shows the streak always. `HomeScreen.test.tsx` records the opposite decision and it is the right one — "0 day streak" is a worse first impression than none. Coins show at zero and the streak does not, and that is not an inconsistency: a wallet reading 0 is a fact about a balance, a streak reading 0 is a verdict on the person holding it. |
+
+---
+
+# Graft five: Explore and the Profile empty state
+
+A second reference, same framing as the fourth: our own screens redrawn in the donor's
+visual language. Two phones — Explore on a dark canvas, the Profile empty state on a
+light one, which is the mock being inconsistent rather than a mechanic.
+
+Most of what it shows was already known and already recorded, which is itself the
+useful result:
+
+- **The landmark silhouette layer** is `asset-prompts.md §8b`, written from an earlier
+  reference and still not drawn — including the legal note that the Eiffel Tower, Christ
+  the Redeemer and the Sydney Opera House are all encumbered.
+- **The globe on the world card** is `§10 progress/globe`, briefed and marked *not yet
+  drawn*, with the instruction to draw generic landmasses or none.
+- **Flat continent colours instead of photographic skies** is the trade `ArtScrim`'s
+  header already argues both sides of. The skies are delivered and better-looking; the
+  silhouette is additive, not a replacement.
+
+## The one mechanic that was neither drawn nor recorded
+
+**The digits are emphasised against their words.** "0 / 56 learned" sets the numbers
+brighter and heavier than the sentence around them — on the tiles, the world card, the
+Home quest card. Ours drew each line in one flat colour, so the only numbers on Explore
+had exactly the weight of the word "learned".
+
+It appears in *both* references and I missed it on the first one, which is worth
+recording as a method failure: I measured the first reference's geometry, found the card
+already correct, and stopped — without measuring its typography, where the actual
+difference was.
+
+| Taken | How it landed |
+|---|---|
+| Digits brighter and heavier than their words | `Tally` + `splitTally` in `packages/design`, applied to the Explore tiles, both world cards, the region rows, and `ProgressBar`'s label — which is where most of this app's counts actually live. |
+
+It takes the **already formatted string** and restyles the digit runs inside it. A
+component taking `{ learned, total }` would have to decide where the word "learned" goes,
+which is the translator's call and the concatenation rule with extra steps. `\p{N}` and
+not `[0-9]`, because `Intl.NumberFormat('ar')` emits Arabic-Indic digits and an ASCII
+splitter would stop working there without failing anywhere.
+
+## Rejected
+
+| Rejected | Why |
+|---|---|
+| **Flat continent fills replacing the skies** | See above and `ArtScrim`. The skies are delivered, and the contrast problem the flat fill solves has already been solved by the scrim. |
+| **Those three landmarks specifically** | Encumbered — §8b carries the detail. A silhouette is still a derivative of the structure. |
+| **A framed plate under the empty-state art** | The reference's empty-state illustration is a CUTOUT with sparkles, sitting directly on the page. Ours is a baked plate, which is why it needed a radius and then a hairline to stop reading as pasted. That confirms the fix is a new master with a transparent background, not more framing — the framing is a holding action and should be recorded as one. |
+| **The owl, the white canvas, the brand green** | As graft four. |
