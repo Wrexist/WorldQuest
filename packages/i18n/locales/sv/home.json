@@ -28,5 +28,5 @@
   "home:world.countries": "{complete} av {total} länder",
   "home:world.facts": "{learned} av {total} fakta",
   "home:world.due": "{count, plural, one {# fakta redo att repetera} other {# fakta redo att repetera}}",
-  "home:world.open": "Utforska"
+  "home:world.open": "Utforska världen"
 }

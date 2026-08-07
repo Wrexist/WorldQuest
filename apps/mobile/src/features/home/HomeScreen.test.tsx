@@ -242,7 +242,7 @@ describe('Home — your world', () => {
   it('opens Explore rather than duplicating it', () => {
     const onOpenWorld = vi.fn()
     withWorld(WORLD, onOpenWorld)
-    fireEvent.click(screen.getByRole('button', { name: 'Explore' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Explore the world' }))
     expect(onOpenWorld).toHaveBeenCalledOnce()
   })
 
@@ -250,6 +250,6 @@ describe('Home — your world', () => {
     // Same rule as the shop row and the streak badge: absent hides the control rather
     // than drawing a dead one.
     withWorld()
-    expect(screen.queryByRole('button', { name: 'Explore' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Explore the world' })).toBeNull()
   })
 })

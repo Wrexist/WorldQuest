@@ -326,13 +326,31 @@ export function HomeScreen({
               </Text>
             )}
 
+            {/* A row, not a button in a box.
+   
+                Measured off the reference: its equivalent is a full-width row carrying
+                an icon, a label and a chevron — the icon says which world, the chevron
+                says "there is more through here". Ours was a small outlined `Button`
+                floating in the card's own padding, which reads as an optional extra
+                rather than as the way into the section it is sitting inside.
+   
+                The pattern is Profile's shop row, imported by shape rather than by
+                code: a `Card` that is itself pressable, icon, label, spacer, chevron.
+                Reusing it beats inventing a second row that looks almost the same,
+                which is how two conventions start. */}
             {onOpenWorld !== undefined && (
-              <Button
-                label={t('home:world.open')}
+              <Card
+                level={1}
                 onPress={onOpenWorld}
-                variant="tertiary"
-                size="sm"
-              />
+                role="button"
+                accessibilityLabel={t('home:world.open')}
+                style={styles.worldRow}
+              >
+                <Icon name="globe" size={20} color={colors.status.progress} />
+                <Text style={styles.worldRowLabel}>{t('home:world.open')}</Text>
+                <View style={styles.spacer} />
+                <Icon name="chevron" size={18} color={colors.text.tertiary} />
+              </Card>
             )}
           </Card>
         )}
@@ -464,6 +482,8 @@ const styles = StyleSheet.create({
   worldDue: { ...text('caption', { weight: '700' }), color: colors.reward.xp },
   levelCard: { gap: space[3] },
   chips: { flexDirection: 'row', gap: space[2] },
+  worldRow: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  worldRowLabel: { ...text('body', { weight: '700' }), color: colors.text.primary },
 
   cardLabel: { ...text('caption'), color: colors.text.secondary },
   cardTitle: { ...text('h3'), color: colors.text.primary },

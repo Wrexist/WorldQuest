@@ -56,6 +56,6 @@
   "home:world.facts__note": "Label on the Home world progress bar, and what a screen reader announces as its value. Counts facts, not countries, so the bar moves every session.",
   "home:world.due": "{count, plural, one {# fact ready to review} other {# facts ready to review}}",
   "home:world.due__note": "Shown only when at least one fact is due. ICU plural. \"Ready to review\" rather than \"overdue\" or \"waiting\" — a spaced-repetition prompt must never read as a debt the user has fallen behind on.",
-  "home:world.open": "Explore",
-  "home:world.open__note": "Button on the Home world card, opening the continents grid. Max 12 characters."
+  "home:world.open": "Explore the world",
+  "home:world.open__note": "The row at the foot of the Home world card, opening the continents grid. It was \"Explore\" while it was a small button squeezed into the card's padding; as a full-width row there is space to say what it opens, and a row labelled with one word next to a chevron makes the reader guess. Max 22 characters."
 }
