@@ -103,10 +103,24 @@ const PAGES: readonly Page[] = [0, 1, 2]
 /**
  * The illustration on the two states where page 3 has no prices to show.
  *
- * 140, the size every other error and empty state in the app draws at, so this reads as
- * the same kind of moment rather than as a different screen's idea.
+ * 88, and it is the one place in the app that does not use the 140 every other error and
+ * empty state draws at. MEASURED, not chosen: at 140 the 200 %-text E2E check failed
+ * here — the added height pushed "Every lesson stays free. Always." underneath the
+ * footer button, which is the last line before the call to action and the one sentence
+ * on this screen that has to survive.
+ *
+ * This screen carries more copy than any other empty state — a headline, a paragraph,
+ * four distinct explanations of why there are no prices, a retry, and the free-forever
+ * line — so it has the least room left for a picture, and doubling every string spends
+ * what remains. `flex: 1` on the scroll area was tried first and did not fix it; neither
+ * did keying the art off `fontScale`, which react-native-web reports as 1 regardless, so
+ * the guard would have been dead code on the only harness that can see the bug.
+ *
+ * 88 passes at 200 %. It is smaller than the convention and that is the right trade: a
+ * user who has doubled their text has said which of the two they came for.
  */
-const STATE_ART = 140
+const STATE_ART = 88
+
 
 /** Same as the lesson summary's, so the two screens read as one moment. */
 const FLAG_WIDTH = 56
@@ -195,7 +209,20 @@ export function PaywallScreen({
 
   return (
     <View style={styles.screen}>
-      <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+      {/* `style={styles.scroll}` — `flex: 1`, and it is the fix for a real overlap
+          rather than a tidy-up. Without a bound, a ScrollView in a flex column sizes to
+          its CONTENT, so at 200 % text this one grew past the bottom of the screen and
+          the footer drew on top of "Every lesson stays free. Always." — the last line
+          before the button, and the one sentence on the screen that has to survive.
+          Caught by the 200 %-text E2E check, which is exactly what it is for.
+
+          Bounding it means the content scrolls instead, which is what a ScrollView is
+          for and what every other screen here already does. */}
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.body}
+        showsVerticalScrollIndicator={false}
+      >
         {page === 0 && (
           <>
             <Text style={styles.title} role="heading" aria-level={1}>
@@ -464,6 +491,7 @@ function PlanCard({
 const styles = StyleSheet.create({
   screen: { flex: 1, padding: space[4], gap: space[4] },
   centred: { alignItems: 'center', justifyContent: 'center' },
+  scroll: { flex: 1 },
   body: { flexGrow: 1, justifyContent: 'center', gap: space[4] },
 
   title: { ...text('h1'), color: colors.text.primary, textAlign: 'center' },
