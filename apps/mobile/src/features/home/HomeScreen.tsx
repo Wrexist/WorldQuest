@@ -14,7 +14,6 @@
 
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
-  ArtSlot,
   Avatar,
   Button,
   Card,
@@ -22,7 +21,6 @@ import {
   Skeleton,
   StreakBadge,
   colors,
-  palette,
   radius,
   space,
   text,
@@ -53,6 +51,19 @@ export type HomeProgress = {
   readonly leagueTier?: string
   readonly leaguePercentile?: string
 }
+
+/**
+ * How big Atlas is drawn on the quest card.
+ *
+ * MEASURED off the reference: the mascot fills the card's right third and its full
+ * height. 132 against a card that is ~326 wide inside its padding at 390 puts him at
+ * about 40 % — a shade more than the donor, because ours is a cutout standing on a flat
+ * card while theirs is a figure in a painted landscape that fills the rest of the space.
+ *
+ * It replaces a 92pt `ArtSlot`: a tinted placeholder frame from before the art existed,
+ * still being drawn around the real thing.
+ */
+const QUEST_ART = 132
 
 export type HomeScreenProps = {
   readonly progress: HomeProgress | null
@@ -176,23 +187,25 @@ export function HomeScreen({
                 {progress?.questTitle ?? t('home:quest.empty')}
               </Text>
             </View>
-            {/* Atlas, on the one card a returning user opens the app to see.
-                This slot held a 40pt flat map glyph — an icon standing in for artwork
-                inside a component built to hold artwork. The mascot was on onboarding,
-                welcome-back, and (after the illustration pass) five empty states, an
-                error, a pause and an out-of-hearts card: every one of them a moment
-                where something is missing or has gone wrong. He appeared nowhere in
-                the daily loop, which taught the user that seeing him is bad news.
-
-                The mockup puts a map of Europe here and that is still the better
-                answer — it is `asset-prompts.md` §8, which is not drawn yet. This is
-                the stand-in until it is, and it is a character rather than a glyph. */}
-            <ArtSlot
-              tint={palette.continent.EU}
-              art={<Art name="atlas/thinking" size={84} />}
-              width={92}
-              height={92}
-            />
+            {/* Atlas as a SCENE, not a thumbnail.
+   
+                Measured off the reference: the mascot fills the card's right third and
+                its art runs to the card's own right edge, which the card clips. Ours sat
+                in a 92pt tinted `ArtSlot` — a placeholder frame from before the art
+                existed, still being drawn around the real thing, so the most-opened card
+                in the product read as a panel with a sticker on it.
+   
+                In the ROW, not behind the card. Absolute-and-bottom-anchored was tried
+                first, copying the lesson sheet where the mascot leans out from behind the
+                Continue button — and here that put him underneath it with only his hat
+                showing. The same mechanic in a different frame is a different mechanic:
+                on the sheet the button is furniture he leans past, on this card the
+                button is below him and the thing he bleeds past is the card's own edge.
+   
+                Decorative — the card already says what the quest is. */}
+            <View style={styles.questArt} pointerEvents="none">
+              <Art name="atlas/thinking" size={QUEST_ART} />
+            </View>
           </View>
 
           {!isNewUser && (
@@ -385,7 +398,17 @@ const styles = StyleSheet.create({
   salutation: { ...text('body'), color: colors.text.secondary },
   explorer: { ...text('h1'), color: colors.text.primary },
 
-  questCard: { gap: space[3] },
+  // `overflow: hidden` so the mascot stops at the card's rounded corner. That clip is
+  // the mechanic, not a tidy-up: art that ends before the edge is a picture placed in a
+  // box, and art the box cuts is a scene the box is a window onto.
+  questCard: { gap: space[3], overflow: 'hidden' },
+  // Bleeds off the card's end edge and a little below its own row, so he overlaps the
+  // gap toward the progress bar rather than sitting in a reserved rectangle. Negative
+  // margins rather than absolute positioning: he still claims width in the row, which is
+  // what keeps the title clear of him at every text size.
+  // `End`, not `Right`: the whole card mirrors in RTL and the mascot belongs to whichever
+  // side the text is not on.
+  questArt: { marginEnd: -space[4], marginBottom: -space[3] },
   questBody: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   questText: { flex: 1, gap: space[1] },
   questTitle: { ...text('h2'), color: colors.text.primary },
