@@ -23,6 +23,7 @@ import {
   colors,
   radius,
   space,
+  Tally,
   text,
 } from '@worldquest/design'
 import { levelForXp, xpForLevel } from '@worldquest/engines'
@@ -290,12 +291,12 @@ export function HomeScreen({
           <Card style={styles.worldCard} accessibilityLabel={t('home:world.label')}>
             <View style={styles.worldHead}>
               <Text style={styles.cardTitle}>{t('home:world.title')}</Text>
-              <Text style={styles.worldCountries}>
+              <Tally style={styles.worldCountries} numberStyle={styles.worldCountriesNumber}>
                 {t('home:world.countries', {
                   complete: world.entitiesComplete,
                   total: world.entitiesTotal,
                 })}
-              </Text>
+              </Tally>
             </View>
 
             <ProgressBar
@@ -478,7 +479,13 @@ const styles = StyleSheet.create({
 
   worldCard: { gap: space[3] },
   worldHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
-  worldCountries: { ...text('caption', { weight: '700', numeric: true }), color: colors.text.secondary },
+  // The words plain, the digits emphasised — the whole line was bold-secondary, which
+  // is a caption shouting rather than a count reading as one.
+  worldCountries: { ...text('caption'), color: colors.text.secondary },
+  worldCountriesNumber: {
+    ...text('caption', { weight: '700', numeric: true }),
+    color: colors.text.primary,
+  },
   worldDue: { ...text('caption', { weight: '700' }), color: colors.reward.xp },
   levelCard: { gap: space[3] },
   chips: { flexDirection: 'row', gap: space[2] },
