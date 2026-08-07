@@ -234,11 +234,30 @@ const ART_DIRS = [
  * The other half of that mismatch is a gap rather than a spare: **level 100, `atlas`, has
  * no insignia** and is the one rank that should. It renders without art rather than with
  * the wrong art, and the prompt for it is in asset-prompts.md §12.
+ *
+ * The seven **league badges** are the same defect as `pioneer` at fifteen times the size.
+ * Nothing imports them — leagues are v2.0 (`roadmap.md`, which lists them under "Social &
+ * business" and names them in v1.0's "explicitly not in" line) — so they were 604 KB of
+ * bundle, a fifth of everything this app ships, for a feature no screen has. Building the
+ * league screen to justify the art would be building v2.0 during v1.0, which `CLAUDE.md`
+ * calls the most expensive mistake available.
+ *
+ * The masters stay. When the league screen is built, delete the seven lines below and
+ * they ship — that is the whole cost of deferring them, and it is the right way round:
+ * art waiting for a feature costs nothing, art shipping ahead of one costs every user
+ * their download.
  */
 const NOT_SHIPPED = new Set([
   'atlas/character-sheet',
   'celebration/sparkle-sheet',
   'levels/pioneer',
+  'leagues/bronze',
+  'leagues/silver',
+  'leagues/gold',
+  'leagues/sapphire',
+  'leagues/ruby',
+  'leagues/diamond',
+  'leagues/legend',
 ])
 
 const ILLUSTRATIONS = ART_DIRS.flatMap((dir) =>

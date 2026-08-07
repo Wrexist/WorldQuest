@@ -62,13 +62,6 @@ import continentsEU from '../../assets/art/continents/EU.webp'
 import continentsNA from '../../assets/art/continents/NA.webp'
 import continentsOC from '../../assets/art/continents/OC.webp'
 import continentsSA from '../../assets/art/continents/SA.webp'
-import leaguesBronze from '../../assets/art/leagues/bronze.webp'
-import leaguesDiamond from '../../assets/art/leagues/diamond.webp'
-import leaguesGold from '../../assets/art/leagues/gold.webp'
-import leaguesLegend from '../../assets/art/leagues/legend.webp'
-import leaguesRuby from '../../assets/art/leagues/ruby.webp'
-import leaguesSapphire from '../../assets/art/leagues/sapphire.webp'
-import leaguesSilver from '../../assets/art/leagues/silver.webp'
 import levelsCartographer from '../../assets/art/levels/cartographer.webp'
 import levelsCircumnavigator from '../../assets/art/levels/circumnavigator.webp'
 import levelsGlobetrotter from '../../assets/art/levels/globetrotter.webp'
@@ -149,13 +142,6 @@ export const ART_BY_NAME = {
   'continents/NA': continentsNA,
   'continents/OC': continentsOC,
   'continents/SA': continentsSA,
-  'leagues/bronze': leaguesBronze,
-  'leagues/diamond': leaguesDiamond,
-  'leagues/gold': leaguesGold,
-  'leagues/legend': leaguesLegend,
-  'leagues/ruby': leaguesRuby,
-  'leagues/sapphire': leaguesSapphire,
-  'leagues/silver': leaguesSilver,
   'levels/cartographer': levelsCartographer,
   'levels/circumnavigator': levelsCircumnavigator,
   'levels/globetrotter': levelsGlobetrotter,
@@ -252,13 +238,6 @@ export const ART_GEOMETRY = {
   'continents/NA': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
   'continents/OC': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
   'continents/SA': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
-  'leagues/bronze': { aspect: 1, x: 0.3125, y: 0.2813, w: 0.3672, h: 0.4336 },
-  'leagues/diamond': { aspect: 1, x: 0.2552, y: 0.1875, w: 0.4948, h: 0.6237 },
-  'leagues/gold': { aspect: 1, x: 0.1992, y: 0.1875, w: 0.6042, h: 0.6445 },
-  'leagues/legend': { aspect: 1, x: 0.2422, y: 0.1875, w: 0.5182, h: 0.6458 },
-  'leagues/ruby': { aspect: 1, x: 0.2344, y: 0.1862, w: 0.5195, h: 0.6107 },
-  'leagues/sapphire': { aspect: 1, x: 0.2448, y: 0.2188, w: 0.513, h: 0.5872 },
-  'leagues/silver': { aspect: 1, x: 0.3138, y: 0.2799, w: 0.3646, h: 0.4635 },
   'levels/cartographer': { aspect: 1, x: 0.332, y: 0.3151, w: 0.3464, h: 0.3516 },
   'levels/circumnavigator': { aspect: 1.5, x: 0.3268, y: 0.2656, w: 0.3568, h: 0.4551 },
   'levels/globetrotter': { aspect: 1.5, x: 0.3164, y: 0.2012, w: 0.3646, h: 0.5195 },
