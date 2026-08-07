@@ -30,6 +30,8 @@
     "build:icons": "node scripts/build-icons.cjs",
     "$comment:build:art": "Derives every shipped illustration and the four app icons from the delivered masters in docs/design/assets — resize, letterbox onto the canvas colour, compress to the per-asset budget, and write apps/mobile/src/lib/art.generated.ts. The masters are 1536x1024 PNGs with alpha; the store rules are not: an iOS icon must be square and opaque, and an Android adaptive icon must be inset to survive an arbitrary mask. Deriving rather than hand-exporting is what keeps those four in step with the art they came from. Run it when the masters change; the output is committed, so it is not part of verify.",
     "build:art": "node scripts/build-art.cjs",
+    "$comment:build:store": "The store listing art that can be derived from what the repo already owns \u2014 the two store icons, the Play feature graphic, and the wordmark set in the app's own typeface. NOT the screenshots: asset-prompts.md \u00a714 marks their required pixel sizes TODO(verify) because Apple changes them, and a guessed canvas size is a rejected submission.",
+    "build:store": "node scripts/build-store.cjs",
     "$comment:build:locations": "Derives facts.locations.v1.json from the `subregion` already declared on every entity, so a country's location fact can never disagree with its own entity. Invents no geography — it is a projection of data the pack holds. Run it when the country list changes; the JSON is committed, so it is not part of verify.",
     "build:locations": "node scripts/build-locations.cjs",
     "content:validate": "pnpm --filter @worldquest/content validate",

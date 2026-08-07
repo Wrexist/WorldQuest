@@ -223,12 +223,20 @@ and capital Q. Then:
 **The app is not blocked on this.** `SplashScreen` sets the wordmark as live text in the
 `display` step, which is the same face at the same weight, and live text is the better
 answer inside the app: it scales with the type settings, it localises, and it is not an
-asset anyone has to keep in sync. The SVG is for the places live text cannot go — the
+asset anyone has to keep in sync. The file is for the places live text cannot go — the
 store listing, press, and anywhere the mark appears outside a React Native tree.
 
-It is also the one asset here that a build script cannot produce. Converting type to
-outlines needs a font-parsing library this repo does not have and should not gain to set
-one logo, and the optical kerning pass above is a hand job by definition.
+**The raster form is built: `pnpm build:store`.** `docs/design/assets/store/wordmark-light.png`
+and `wordmark-gold.png`, set from the app's own TTF — `@expo-google-fonts` ships it, so
+the letterforms in the logo are byte-for-byte the letterforms on the splash screen — and
+trimmed to their own ink, because a wordmark with baked padding cannot be aligned and the
+§1c ratio below is measured from cap height.
+
+**Still outstanding: the outlined SVG.** Converting type to outlines needs a font-parsing
+library this repo does not have and should not gain in order to set one logo, and the
+optical kerning pass above is a hand job by definition. The raster is at 4× any size it is
+placed at, which covers the feature graphic and press; the SVG is for print and for
+anywhere it has to scale without limit.
 
 ### 1c. The lockup
 
@@ -723,13 +731,23 @@ submission day rather than before it.
 
 ## 14. Store listing art
 
-| Asset | Spec | What it is |
-|---|---|---|
-| Play feature graphic | **1024×500**, no alpha | Mandatory. Shown at the top of the Play listing. The lockup on the splash field, wordmark legible at thumbnail size, nothing in the outer 10 % (Play crops it in some placements). |
-| Play icon | **512×512**, no alpha | The §2a icon, re-exported. |
-| iOS App Store icon | **1024×1024**, no alpha | The §2a icon. Apple flattens alpha to black, so never submit transparency. |
-| Phone screenshots | `TODO(verify)` against the current App Store Connect and Play Console requirements — Apple changes required device sizes most years, and a guessed pixel dimension is a rejected submission | 5–8 per platform. |
-| Tablet screenshots | `TODO(verify)`, same reason | `supportsTablet` is now `true`, so Apple will ask for these. |
+**`pnpm build:store` builds the first three.** They are fixed sizes stated by the
+platforms, composed from assets this repo already owns, so they are derived rather than
+briefed — same rule as the flags, the maps and the icons. The safe area is *checked*, not
+eyeballed: the script fails if the lockup runs into the outer 10 % Play crops.
+
+| Asset | Spec | What it is | |
+|---|---|---|---|
+| Play feature graphic | **1024×500**, no alpha | Mandatory. Shown at the top of the Play listing. The lockup on the splash field, wordmark legible at thumbnail size, nothing in the outer 10 % (Play crops it in some placements). The strapline is the onboarding headline, not a new marketing line — a listing that promises something the first screen does not is the same lie as a screenshot of a screen the app does not have. | ✅ |
+| Play icon | **512×512**, no alpha | The §2a icon, re-exported. | ✅ |
+| iOS App Store icon | **1024×1024**, no alpha | The §2a icon. Apple flattens alpha to black, so never submit transparency. | ✅ |
+| Phone screenshots | `TODO(verify)` against the current App Store Connect and Play Console requirements — Apple changes required device sizes most years, and a guessed pixel dimension is a rejected submission | 5–8 per platform. | ❌ |
+| Tablet screenshots | `TODO(verify)`, same reason | `supportsTablet` is now `true`, so Apple will ask for these. | ❌ |
+
+The two screenshot rows are deliberately **not** in `build:store`. Everything else on this
+page refuses to invent a fact, and a required canvas size is a fact. Once the current
+requirements are checked, the composite step belongs in that script — the real rendered
+screens it needs are already produced by `pnpm design:shots`, at three widths.
 
 Screenshots are **composites, not raw captures**: a device frame, one short headline
 per shot, and the real screen inside it. Use the real rendered screens from
