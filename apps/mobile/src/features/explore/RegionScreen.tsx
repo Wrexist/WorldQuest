@@ -18,7 +18,7 @@
 
 import { useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { ArtScrim, Button, ProgressBar, colors, palette, radius, space, text } from '@worldquest/design'
+import { ArtScrim, Button, ProgressBar, Tally, colors, palette, radius, space, text } from '@worldquest/design'
 import type { EntityProgress, Mastery, RegionProgress } from '@worldquest/engines'
 import { collator, currentLocale, useT, type TranslationKey } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
@@ -192,12 +192,12 @@ export function RegionScreen({
             <Flag path={flagPath} width={ROW_FLAG} />
             <View style={styles.rowText}>
               <Text style={styles.countryName}>{name}</Text>
-              <Text style={styles.countryMeta}>
+              <Tally style={styles.countryMeta} numberStyle={styles.countryMetaNumber}>
                 {t('explore:region.progress', {
                   learned: progress.factsLearned,
                   total: progress.factsTotal,
                 })}
-              </Text>
+              </Tally>
             </View>
             <Text style={[styles.mastery, { color: MASTERY_COLOR[progress.mastery] }]}>
               {t(MASTERY_LABEL[progress.mastery])}
@@ -248,5 +248,9 @@ const styles = StyleSheet.create({
   rowText: { flex: 1, gap: space[1] },
   countryName: { ...text('bodyStrong'), color: colors.text.primary },
   countryMeta: { ...text('caption'), color: colors.text.secondary },
+  countryMetaNumber: {
+    ...text('caption', { weight: '700', numeric: true }),
+    color: colors.text.primary,
+  },
   mastery: { ...text('caption', { weight: '600' }) },
 })

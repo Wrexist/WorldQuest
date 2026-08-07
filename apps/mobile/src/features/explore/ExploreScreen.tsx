@@ -26,6 +26,7 @@ import {
   radius,
   space,
   staggerStyle,
+  Tally,
   text,
   useStagger,
 } from '@worldquest/design'
@@ -155,12 +156,12 @@ export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection
           total={Math.max(1, world.factsTotal)}
           label={t('explore:world.label')}
         />
-        <Text style={styles.worldCount}>
+        <Tally style={styles.worldCount} numberStyle={styles.worldCountNumber}>
           {t('explore:world.countries', {
             complete: world.entitiesComplete,
             total: world.entitiesTotal,
           })}
-        </Text>
+        </Tally>
       </Card>
 
       {/* Collections sit ABOVE the continent grid deliberately. The grid is
@@ -291,12 +292,24 @@ function ContinentTile({
           <Text style={styles.regionMeta}>{t('explore:region.empty')}</Text>
         ) : (
           <>
-            <Text style={styles.regionMeta}>
+            {/* The digits carry the emphasis, the words do not.
+   
+                Both references restyled this app and both did the same thing to every
+                count on screen: "0 / 56 learned" sets the numbers brighter than the
+                words around them. Ours drew the whole line in one colour, so the only
+                numbers on the Explore screen had exactly the weight of the word
+                "learned" — a caption where the reference has a score.
+   
+                `Tally` takes the ALREADY FORMATTED string and restyles the digit runs
+                inside it, so where the numbers sit in the sentence stays a translator's
+                decision. A component taking `{ learned, total }` would have to place
+                the word itself, which is the concatenation rule with extra steps. */}
+            <Tally style={styles.regionMeta} numberStyle={styles.regionMetaNumber}>
               {t('explore:region.progress', {
                 learned: progress.factsLearned,
                 total: progress.factsTotal,
               })}
-            </Text>
+            </Tally>
             <ProgressBar
               current={progress.factsLearned}
               total={Math.max(1, progress.factsTotal)}
@@ -305,7 +318,7 @@ function ContinentTile({
               // uses, so "come back to this" reads consistently.
               tone={progress.factsDue > 0 ? 'reward' : 'progress'}
             />
-            <Text style={styles.regionDue}>
+            <Tally style={styles.regionDue} numberStyle={styles.regionMetaNumber}>
               {/* Zero due means "nothing is waiting for you", which is only true once
                   something has been learned. On a continent at 0 of 56 the same branch
                   rendered "Up to date" — an invitation turned into a claim that the user
@@ -319,7 +332,7 @@ function ContinentTile({
               {progress.factsLearned === 0
                 ? t('explore:region.size', { count: progress.entitiesTotal })
                 : t('explore:region.due', { count: progress.factsDue })}
-            </Text>
+            </Tally>
           </>
         )}
       </Pressable>
@@ -360,6 +373,10 @@ const styles = StyleSheet.create({
 
   worldCard: { gap: space[2] },
   worldCount: { ...text('caption'), color: colors.text.secondary },
+  worldCountNumber: {
+    ...text('caption', { weight: '700', numeric: true }),
+    color: colors.text.primary,
+  },
 
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: space[3] },
   // Clipped, so the oversized background stops at the card edge, and positioned so
@@ -384,6 +401,12 @@ const styles = StyleSheet.create({
   swatch: { width: 28, height: 6, borderRadius: radius.full },
   regionName: { ...text('h3'), color: colors.text.primary },
   regionMeta: { ...text('caption'), color: colors.text.secondary },
+  // Same size, brighter and heavier. `numeric` for tabular figures so a column of
+  // tiles does not jitter between "0 of 56" and "12 of 56".
+  regionMetaNumber: {
+    ...text('caption', { weight: '700', numeric: true }),
+    color: colors.text.primary,
+  },
   // `secondary`, not `tertiary`. The contrast matrix records tertiary as large-text
   // only — it clears 3:1 and not 4.5:1 — and this is a 13pt caption. It was wrong on a
   // plain surface before it was ever put over a picture; the artwork only made it
