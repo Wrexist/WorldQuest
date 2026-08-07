@@ -65,6 +65,15 @@ describe('WelcomeBackScreen', () => {
     expect(screen.getByText(/It's been a day/)).toBeTruthy()
   })
 
+  it('does not tell someone who came straight back that it has been 0 days', () => {
+    // Not a dead branch. This screen is deep-linkable from the "we miss you" push, and
+    // the route passes 0 when it cannot tell how long it has been — so tapping the
+    // notification the same afternoon rendered a sentence saying nothing happened.
+    render(<WelcomeBackScreen {...props({ daysAway: 0 })} />)
+    expect(screen.queryByText(/0 days/)).toBeNull()
+    expect(screen.getByText(/Good to see you again/)).toBeTruthy()
+  })
+
   it('leaves no raw key or unformatted placeholder on screen', () => {
     const { container } = render(<WelcomeBackScreen {...props()} />)
     expect(container.textContent).not.toMatch(/\bwelcome:[a-z]/)
