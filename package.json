@@ -32,6 +32,8 @@
     "build:art": "node scripts/build-art.cjs",
     "$comment:build:store": "The store listing art that can be derived from what the repo already owns \u2014 the two store icons, the Play feature graphic, and the wordmark set in the app's own typeface. NOT the screenshots: asset-prompts.md \u00a714 marks their required pixel sizes TODO(verify) because Apple changes them, and a guessed canvas size is a rejected submission.",
     "build:store": "node scripts/build-store.cjs",
+    "$comment:build:store:shots": "The six store screenshots from asset-prompts.md \u00a714, composed from the REAL app at the two sizes Apple requires \u2014 read off Apple's own spec rather than remembered, because a guessed canvas size is a rejected submission. Drives the app the way the E2E does, since two of the six shots need a lesson played. Play is absent: its requirements live on hosts this session's egress policy blocks.",
+    "build:store:shots": "node scripts/build-store-shots.cjs",
     "$comment:build:locations": "Derives facts.locations.v1.json from the `subregion` already declared on every entity, so a country's location fact can never disagree with its own entity. Invents no geography — it is a projection of data the pack holds. Run it when the country list changes; the JSON is committed, so it is not part of verify.",
     "build:locations": "node scripts/build-locations.cjs",
     "content:validate": "pnpm --filter @worldquest/content validate",

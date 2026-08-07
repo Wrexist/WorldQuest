@@ -741,13 +741,34 @@ eyeballed: the script fails if the lockup runs into the outer 10 % Play crops.
 | Play feature graphic | **1024×500**, no alpha | Mandatory. Shown at the top of the Play listing. The lockup on the splash field, wordmark legible at thumbnail size, nothing in the outer 10 % (Play crops it in some placements). The strapline is the onboarding headline, not a new marketing line — a listing that promises something the first screen does not is the same lie as a screenshot of a screen the app does not have. | ✅ |
 | Play icon | **512×512**, no alpha | The §2a icon, re-exported. | ✅ |
 | iOS App Store icon | **1024×1024**, no alpha | The §2a icon. Apple flattens alpha to black, so never submit transparency. | ✅ |
-| Phone screenshots | `TODO(verify)` against the current App Store Connect and Play Console requirements — Apple changes required device sizes most years, and a guessed pixel dimension is a rejected submission | 5–8 per platform. | ❌ |
-| Tablet screenshots | `TODO(verify)`, same reason | `supportsTablet` is now `true`, so Apple will ask for these. | ❌ |
+| iPhone screenshots | **1320×2868** (6.9"), portrait PNG, no alpha | 6 shots, the list below. Apple scales every smaller iPhone size down from this one. | ✅ |
+| iPad screenshots | **2064×2752** (13"), portrait PNG, no alpha | 6 shots. `supportsTablet` is `true`, which is what makes these mandatory rather than optional — turning that flag on quietly added a required asset. | ✅ |
+| Play screenshots | `TODO(verify)` | Still unchecked, and the reason is recorded rather than the requirement guessed — see below. | ❌ |
 
-The two screenshot rows are deliberately **not** in `build:store`. Everything else on this
-page refuses to invent a fact, and a required canvas size is a fact. Once the current
-requirements are checked, the composite step belongs in that script — the real rendered
-screens it needs are already produced by `pnpm design:shots`, at three widths.
+> **The sizes are read, not remembered.** Source:
+> [Apple's screenshot specifications](https://developer.apple.com/help/app-store-connect/reference/screenshot-specifications/),
+> verified 2026-08-07. Recorded the way a content pack records `source` and `verifiedAt`,
+> because a store requirement goes stale exactly like a population figure — Apple changes
+> the required device sizes most years, and a guessed pixel dimension is a rejected
+> submission rather than a cosmetic mistake.
+>
+> **Play is still open, and deliberately.** Its requirements live on `support.google.com`
+> and `play.google.com`, both blocked by this session's egress policy, so they could not
+> be checked. The twelve files above are portrait PNG with no alpha, which is very likely
+> acceptable on Play too — "very likely" is not "verified", and that difference is this
+> whole section's point. Check the console, then add a `SIZES` row to
+> `scripts/build-store-shots.cjs`; nothing else needs to change.
+
+`pnpm build:store:shots` builds all twelve. It drives the **real app** rather than
+reusing `design:shots`, for two reasons: a review shot is 390 CSS pixels wide and a store
+screenshot is 1320 device pixels, so it captures at the device scale rather than
+upscaling; and two of the six shots — a lesson mid-question, and the summary after one —
+need clicks that no static render can reach.
+
+The celebration shot is a genuinely perfect lesson, not a mocked one. The script plays
+the lesson twice: the first pass reads each correct answer off the label the app already
+exposes for screen readers (`lesson:answer.correct`), the second pass replays it and
+scores 100 %. Every number in that frame was awarded by the real engine.
 
 Screenshots are **composites, not raw captures**: a device frame, one short headline
 per shot, and the real screen inside it. Use the real rendered screens from
