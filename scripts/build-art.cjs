@@ -508,6 +508,44 @@ const write = (path, dataUrl) => {
 }
 
 /**
+ * Art the app EXPECTS and does not have.
+ *
+ * A missing illustration is silent in a way an extra one is not. `<Art>` will not compile
+ * against a name that does not exist, so the code simply never asks — and the screen
+ * renders without a picture, which looks like a design decision. `ProfileScreen`'s
+ * `insigniaFor` returns null for a rank with no file precisely so that a gap degrades
+ * gracefully; the cost of degrading gracefully is that nobody notices.
+ *
+ * Level 100 has had no insignia since the set was delivered, and the delivery contained a
+ * "Pioneer" that is not a rank instead. That mismatch survived because nothing said it
+ * out loud. This says it, every build.
+ *
+ * A warning rather than a failure: a missing asset must not stop everyone else's build,
+ * and there is nothing a developer can do about it in the moment. `/wq-ship-check` is
+ * where a gap should block, because that is the point at which someone can commission it.
+ */
+function reportGaps() {
+  const ladder = Object.keys(
+    JSON.parse(readFileSync(join(ROOT, 'packages', 'i18n', 'locales', 'en', 'titles.json'), 'utf8')),
+  )
+    .filter((key) => !key.endsWith('__note'))
+    .map((key) => key.slice('titles:'.length))
+
+  const missing = ladder.filter(
+    (rank) => !existsSync(join(MASTERS, 'levels', `${rank}.png`)),
+  )
+  if (missing.length === 0) return
+
+  console.log(
+    `\n⚠ ${missing.length} rank insignia missing: ${missing.join(', ')}` +
+      '\n\n  The ladder is docs/systems/progression.md §1 and the prompt is asset-prompts.md §12.' +
+      '\n  Nothing breaks — `insigniaFor` returns null and the rank renders without art — which' +
+      '\n  is exactly why this needs saying out loud. Drop the PNG into docs/design/assets/levels' +
+      '\n  and re-run; the masters are discovered, so no list needs editing.',
+  )
+}
+
+/**
  * The index, generated for the same reason the flags' is.
  *
  * Metro resolves assets at BUILD time, so every import specifier has to be a literal —
@@ -680,4 +718,5 @@ ${geometryEntries.join('\n')}
 
   writeIndex(ILLUSTRATIONS, geometry)
   console.log(`\n✓ ${APP_ICONS.length} app icons + ${ILLUSTRATIONS.length} illustrations · ${(bytes / 1024 / 1024).toFixed(2)} MB total`)
+  reportGaps()
 })()
