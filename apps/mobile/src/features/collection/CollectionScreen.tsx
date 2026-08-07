@@ -192,7 +192,22 @@ export function CollectionScreen({
           autoCorrect={false}
         />
 
-        <View style={styles.filters}>
+        {/* Scrolls sideways rather than wrapping.
+   
+            Four chips do not fit one row at 320, so "Starred" dropped alone onto a
+            second line — a row of controls that changes height between devices, with
+            one member visually demoted for no reason a user could infer. Wrapping is
+            also the wrong direction to fail: a fifth filter, or a locale with longer
+            words, makes the block taller on exactly the screens with least room.
+   
+            `alwaysBounceHorizontal` off so it does not rubber-band on a phone wide
+            enough to hold all four, where there is nothing to scroll to. */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          alwaysBounceHorizontal={false}
+          contentContainerStyle={styles.filters}
+        >
           {FILTERS.map((option) => (
             <Card
               key={option}
@@ -208,7 +223,7 @@ export function CollectionScreen({
               </Text>
             </Card>
           ))}
-        </View>
+        </ScrollView>
       </View>
 
       {loading ? (
@@ -350,7 +365,7 @@ const styles = StyleSheet.create({
   },
   // Wraps: four chips do not fit on one line at 390pt, and they fit on none of them at
   // 200 % text. Two rows of two is the honest layout rather than a hidden scroller.
-  filters: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
+  filters: { flexDirection: 'row', gap: space[2], paddingEnd: space[4] },
   // 44pt floor, met by the chip itself rather than by hit slop. Padding alone put
   // these at 40pt — close enough to look right in a screenshot and wrong under a
   // thumb, which is precisely the class of defect `pnpm design:shots` exists to
