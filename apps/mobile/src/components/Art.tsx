@@ -88,7 +88,7 @@
  */
 
 import { Image, StyleSheet, View } from 'react-native'
-import { radius } from '@worldquest/design'
+import { colors, radius } from '@worldquest/design'
 import { ART_BY_NAME, ART_GEOMETRY, type ArtName } from '../lib/art.generated.js'
 
 export type ArtProps = {
@@ -158,7 +158,15 @@ export function Art({ name, size, height, label, frame = 'auto' }: ArtProps) {
         box,
         // Round, not rounded, when the plate is square: a character on a square plate is
         // a portrait, and this app already draws portraits round.
-        panel && { borderRadius: box.width === box.height ? radius.full : radius['2xl'] },
+        panel && {
+          borderRadius: box.width === box.height ? radius.full : radius['2xl'],
+          // A hairline, so the edge is a frame the design put there rather than where
+          // the picture happened to stop. Radius alone was not enough on a wide, short
+          // block: 28pt of corner on a 93pt-tall panel still meets the canvas along two
+          // long straight edges, and a near-black plate on navy shows every one of them.
+          borderWidth: 1,
+          borderColor: colors.border.subtle,
+        },
       ]}
       {...(label === undefined
         ? { accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' as const, 'aria-hidden': true }
