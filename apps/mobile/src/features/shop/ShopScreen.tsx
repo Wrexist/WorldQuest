@@ -213,7 +213,16 @@ function TitleRow({
 
   return (
     <Card level={equipped ? 2 : 1} style={[styles.row, equipped && styles.rowOn]}>
-      {insignia != null && <Art name={insignia} size={INSIGNIA_SIZE} />}
+      {/* The slot is reserved even when it is empty.
+   
+          Only rank titles carry an insignia; the cosmetic ones have no art and never
+          will, because they are not ranks. Rendering the image conditionally meant the
+          one row with a picture indented its name and the four without it did not, so a
+          list of otherwise identical rows had two left edges and the earned title read
+          as a different KIND of thing rather than as the same thing, owned. */}
+      <View style={styles.insignia}>
+        {insignia != null && <Art name={insignia} size={INSIGNIA_SIZE} />}
+      </View>
       <View style={styles.rowText}>
         <Text style={styles.rowName}>{name}</Text>
         {help !== undefined && <Text style={styles.rowHelp}>{help}</Text>}
@@ -283,6 +292,7 @@ const styles = StyleSheet.create({
   rowOn: { borderColor: colors.status.progress },
   rowSkeleton: { minHeight: 64 },
   skeletonBar: { height: 16, flex: 1, borderRadius: radius.sm, backgroundColor: colors.bg.surfaceRaised },
+  insignia: { width: INSIGNIA_SIZE, alignItems: 'center' },
   rowText: { flex: 1, gap: space[1] },
   rowName: { ...text('bodyStrong'), color: colors.text.primary },
   rowHelp: { ...text('caption'), color: colors.text.secondary },
