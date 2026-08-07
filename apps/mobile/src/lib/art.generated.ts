@@ -179,3 +179,104 @@ export const ART_BY_NAME = {
 
 /** Every illustration this build ships. */
 export type ArtName = keyof typeof ART_BY_NAME
+
+/**
+ * Where the subject sits inside each illustration, as fractions of the image.
+ *
+ * `aspect` is width ÷ height; `x`/`y`/`w`/`h` are the opaque content's bounding box.
+ * MEASURED off the shipped WebP, so it already accounts for anything the build did to
+ * the master. `<Art>` uses it to size the SUBJECT rather than the frame — see the note
+ * on `measure()` in scripts/build-art.cjs for why that gap was worth closing.
+ */
+export type ArtGeometry = {
+  readonly aspect: number
+  readonly x: number
+  readonly y: number
+  readonly w: number
+  readonly h: number
+}
+
+export const ART_GEOMETRY = {
+  'atlas/broken-compass': { aspect: 1.5, x: 0.3268, y: 0.0742, w: 0.4154, h: 0.7188 },
+  'atlas/celebrate': { aspect: 1.5, x: 0.2227, y: 0.1172, w: 0.5755, h: 0.7324 },
+  'atlas/encouraging': { aspect: 1.5, x: 0.3021, y: 0.0625, w: 0.3737, h: 0.6816 },
+  'atlas/resting': { aspect: 1, x: 0, y: 0, w: 1, h: 1 },
+  'atlas/thinking': { aspect: 1.5, x: 0.332, y: 0.0977, w: 0.3568, h: 0.6133 },
+  'atlas/waving-back': { aspect: 1.5, x: 0.3008, y: 0.0898, w: 0.4674, h: 0.6133 },
+  'atlas/welcome': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'onboarding/conquer': { aspect: 1.5, x: 0.1927, y: 0.2773, w: 0.8073, h: 0.7227 },
+  'onboarding/explore': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'onboarding/learn': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'states/empty-caught-up': { aspect: 1.5, x: 0.2995, y: 0.293, w: 0.3659, h: 0.5742 },
+  'states/empty-collection': { aspect: 1.5, x: 0.2448, y: 0.0684, w: 0.4831, h: 0.7891 },
+  'states/empty-no-friends': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'states/empty-profile': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'states/error-generic': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'states/hearts-empty': { aspect: 1.5, x: 0.3047, y: 0.1055, w: 0.3789, h: 0.7891 },
+  'states/offline': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'celebration/burst': { aspect: 1.5, x: 0.1341, y: 0.0449, w: 0.7318, h: 0.875 },
+  'celebration/burst-wide': { aspect: 5.9535, x: 0, y: 0, w: 1, h: 1 },
+  'celebration/rays': { aspect: 1.5, x: 0.2891, y: 0.1641, w: 0.4128, h: 0.5449 },
+  'achievements/glyph-capitals': { aspect: 1, x: 0.2305, y: 0.2096, w: 0.5378, h: 0.5703 },
+  'achievements/glyph-collections': { aspect: 1, x: 0.2422, y: 0.2318, w: 0.5065, h: 0.5195 },
+  'achievements/glyph-consistency': { aspect: 1, x: 0.2461, y: 0.2383, w: 0.4974, h: 0.5443 },
+  'achievements/glyph-countries': { aspect: 1, x: 0.2161, y: 0.2279, w: 0.5404, h: 0.5846 },
+  'achievements/glyph-events': { aspect: 1, x: 0.2487, y: 0.1719, w: 0.5365, h: 0.5951 },
+  'achievements/glyph-exploration': { aspect: 1, x: 0.207, y: 0.2044, w: 0.5742, h: 0.6211 },
+  'achievements/glyph-flags': { aspect: 1, x: 0.3268, y: 0.2552, w: 0.4193, h: 0.4805 },
+  'achievements/glyph-hidden': { aspect: 1, x: 0.3333, y: 0.2578, w: 0.332, h: 0.5078 },
+  'achievements/glyph-landmarks': { aspect: 1, x: 0.224, y: 0.2422, w: 0.5456, h: 0.526 },
+  'achievements/glyph-legendary': { aspect: 1, x: 0.2344, y: 0.2917, w: 0.5313, h: 0.4349 },
+  'achievements/glyph-perfect': { aspect: 1, x: 0.25, y: 0.237, w: 0.5078, h: 0.5339 },
+  'achievements/glyph-premium': { aspect: 1, x: 0.2552, y: 0.2839, w: 0.4714, h: 0.4727 },
+  'achievements/glyph-social': { aspect: 1, x: 0.2279, y: 0.2591, w: 0.556, h: 0.4193 },
+  'achievements/tier-bronze': { aspect: 1, x: 0.1625, y: 0.175, w: 0.6859, h: 0.6891 },
+  'achievements/tier-gold': { aspect: 1, x: 0.2005, y: 0.1979, w: 0.5872, h: 0.6263 },
+  'achievements/tier-legendary': { aspect: 1, x: 0.1719, y: 0.1901, w: 0.6523, h: 0.7214 },
+  'achievements/tier-platinum': { aspect: 1, x: 0.2057, y: 0.1979, w: 0.5846, h: 0.6328 },
+  'achievements/tier-silver': { aspect: 1, x: 0.1927, y: 0.1979, w: 0.5924, h: 0.6393 },
+  'avatars/avatar-01': { aspect: 1.5, x: 0.1042, y: 0.0469, w: 0.7057, h: 0.9531 },
+  'avatars/avatar-02': { aspect: 1.5, x: 0.2109, y: 0.0684, w: 0.5156, h: 0.9316 },
+  'avatars/avatar-03': { aspect: 1.5, x: 0.1953, y: 0.0586, w: 0.6133, h: 0.9414 },
+  'avatars/avatar-04': { aspect: 1.5, x: 0.1641, y: 0.0586, w: 0.6758, h: 0.9414 },
+  'avatars/avatar-05': { aspect: 1.5, x: 0.1484, y: 0.0723, w: 0.638, h: 0.9277 },
+  'avatars/avatar-06': { aspect: 1, x: 0.1133, y: 0.0352, w: 0.7214, h: 0.9648 },
+  'avatars/avatar-07': { aspect: 1, x: 0, y: 0, w: 1, h: 1 },
+  'avatars/avatar-08': { aspect: 1, x: 0.0969, y: 0.0391, w: 0.8187, h: 0.9609 },
+  'avatars/avatar-09': { aspect: 1, x: 0.0891, y: 0.0375, w: 0.8359, h: 0.9625 },
+  'avatars/avatar-10': { aspect: 1, x: 0.0875, y: 0.0375, w: 0.8344, h: 0.9625 },
+  'avatars/avatar-11': { aspect: 1, x: 0.0922, y: 0.0453, w: 0.8313, h: 0.9547 },
+  'avatars/avatar-12': { aspect: 1, x: 0.0953, y: 0.0484, w: 0.8359, h: 0.9516 },
+  'continents/AF': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'continents/AN': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'continents/AS': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'continents/EU': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'continents/NA': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'continents/OC': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'continents/SA': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'leagues/bronze': { aspect: 1, x: 0.3125, y: 0.2813, w: 0.3672, h: 0.4336 },
+  'leagues/diamond': { aspect: 1, x: 0.2552, y: 0.1875, w: 0.4948, h: 0.6237 },
+  'leagues/gold': { aspect: 1, x: 0.1992, y: 0.1875, w: 0.6042, h: 0.6445 },
+  'leagues/legend': { aspect: 1, x: 0.2422, y: 0.1875, w: 0.5182, h: 0.6458 },
+  'leagues/ruby': { aspect: 1, x: 0.2344, y: 0.1862, w: 0.5195, h: 0.6107 },
+  'leagues/sapphire': { aspect: 1, x: 0.2448, y: 0.2188, w: 0.513, h: 0.5872 },
+  'leagues/silver': { aspect: 1, x: 0.3138, y: 0.2799, w: 0.3646, h: 0.4635 },
+  'levels/cartographer': { aspect: 1, x: 0.332, y: 0.3151, w: 0.3464, h: 0.3516 },
+  'levels/circumnavigator': { aspect: 1.5, x: 0.3268, y: 0.2656, w: 0.3568, h: 0.4551 },
+  'levels/globetrotter': { aspect: 1.5, x: 0.3164, y: 0.2012, w: 0.3646, h: 0.5195 },
+  'levels/navigator': { aspect: 1, x: 0.3164, y: 0.306, w: 0.3594, h: 0.3971 },
+  'levels/pathfinder': { aspect: 1, x: 0.3151, y: 0.3125, w: 0.3503, h: 0.3581 },
+  'levels/pioneer': { aspect: 1, x: 0.3151, y: 0.306, w: 0.3789, h: 0.3997 },
+  'levels/scout': { aspect: 1.5, x: 0.2956, y: 0.2305, w: 0.4115, h: 0.5273 },
+  'levels/trailblazer': { aspect: 1.5, x: 0.319, y: 0.2363, w: 0.3724, h: 0.4883 },
+  'levels/voyager': { aspect: 1, x: 0.332, y: 0.3203, w: 0.3906, h: 0.4219 },
+  'levels/wanderer': { aspect: 1, x: 0.3398, y: 0.2891, w: 0.2747, h: 0.4362 },
+  'levels/worldkeeper': { aspect: 1, x: 0.3164, y: 0.3216, w: 0.3802, h: 0.3451 },
+  'rewards/coin': { aspect: 1, x: 0.1406, y: 0.1203, w: 0.7641, h: 0.775 },
+  'rewards/gem': { aspect: 1, x: 0.1849, y: 0.1875, w: 0.6419, h: 0.668 },
+  'rewards/heart': { aspect: 1, x: 0.194, y: 0.2227, w: 0.6185, h: 0.6302 },
+  'rewards/streak-flame': { aspect: 1, x: 0.2539, y: 0.1276, w: 0.5065, h: 0.7487 },
+  'rewards/streak-freeze': { aspect: 1, x: 0.1081, y: 0.1706, w: 0.7604, h: 0.6966 },
+  'rewards/trophy': { aspect: 1, x: 0.1146, y: 0.1042, w: 0.7799, h: 0.8529 },
+  'rewards/xp-orb': { aspect: 1, x: 0.3581, y: 0.1706, w: 0.2839, h: 0.6289 },
+} as const satisfies Readonly<Record<ArtName, ArtGeometry>>

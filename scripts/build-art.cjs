@@ -419,6 +419,88 @@ async function render(page, sourceBytes, spec) {
   )
 }
 
+/**
+ * Where the subject actually is inside a shipped illustration.
+ *
+ * Returned normalised — `{ aspect, x, y, w, h }` with the box in fractions of the
+ * image's own width and height — because the app never learns an asset's pixel
+ * dimensions and should not have to.
+ *
+ * ## Why the app needs this
+ *
+ * Every master is a subject inside a 3:2 frame with a generous transparent margin, and
+ * the margin is not small: `atlas/thinking` is 274×314 of a 768×512 file, so drawing the
+ * FRAME at 84pt drew ATLAS at about 34. Measured across the set, the subject filled
+ * 38–62 % of the box a screen asked for. That is the whole of "the mockup is image-led
+ * and the app is text-led" in one number — the art was landed, sized to the brief, and
+ * still arrived at half scale everywhere, because `size` meant the empty frame.
+ *
+ * The alternative was to trim every master to its content the way a banner is trimmed.
+ * That was rejected on measurement, not taste: trimming keeps the pixel width and throws
+ * away the empty part, so the same 768px carries strictly more detail and the files grow.
+ * `celebration/burst` already sits on the 120 KB budget at the bottom of the ladder. The
+ * geometry costs nothing — it is four numbers per asset in a file that is generated
+ * anyway — and it leaves the shipped bytes exactly as they were.
+ */
+async function measure(page, webpBytes) {
+  return page.evaluate(async (dataUrl) => {
+    const img = new Image()
+    img.src = dataUrl
+    await img.decode()
+
+    const canvas = document.createElement('canvas')
+    canvas.width = img.width
+    canvas.height = img.height
+    const ctx = canvas.getContext('2d')
+    ctx.drawImage(img, 0, 0)
+    const pixels = ctx.getImageData(0, 0, img.width, img.height).data
+
+    // 24, not 0: WebP is lossy, so a transparent margin comes back with a scatter of
+    // alpha-1..8 noise in it. At 0 the "subject" of every asset is the whole frame and
+    // this measures nothing.
+    let x0 = img.width
+    let y0 = img.height
+    let x1 = -1
+    let y1 = -1
+    for (let y = 0; y < img.height; y++) {
+      for (let x = 0; x < img.width; x++) {
+        if (pixels[(y * img.width + x) * 4 + 3] > 24) {
+          if (x < x0) x0 = x
+          if (x > x1) x1 = x
+          if (y < y0) y0 = y
+          if (y > y1) y1 = y
+        }
+      }
+    }
+
+    // A fully opaque asset — a continent card — has no margin to find, and a fully
+    // transparent one would be a bug elsewhere. Both come back as the whole frame, which
+    // is the behaviour the app had before this existed.
+    const whole = { aspect: img.width / img.height, x: 0, y: 0, w: 1, h: 1 }
+    if (x1 < x0 || y1 < y0) return whole
+
+    const w = (x1 - x0 + 1) / img.width
+    const h = (y1 - y0 + 1) / img.height
+
+    // A picture that already fills its frame is reported as filling its frame, exactly.
+    //
+    // Not a rounding nicety — this is the difference between the feather working and not.
+    // `states/empty-profile`, `states/empty-no-friends`, `atlas/resting` and
+    // `atlas/welcome` carry a baked ground, and the build ramps their outer eighth to
+    // transparent so the edge does not read as a rectangle pasted onto the canvas. That
+    // ramp measures as margin here: the box came back at ~95 %, the app scaled the image
+    // up by the missing 5 % to make the "subject" fit, and the frame clipped the ramp
+    // clean off — a hard-edged dark rectangle, which is the exact bug the feather exists
+    // to prevent, reintroduced from the other end.
+    //
+    // 85 % separates the two populations with room to spare: a baked ground measures 92–100 %
+    // and a cutout measures 36–73 %. Nothing in the set sits between.
+    if (w >= 0.85 && h >= 0.85) return whole
+
+    return { aspect: img.width / img.height, x: x0 / img.width, y: y0 / img.height, w, h }
+  }, `data:image/webp;base64,${webpBytes.toString('base64')}`)
+}
+
 const write = (path, dataUrl) => {
   mkdirSync(dirname(path), { recursive: true })
   writeFileSync(path, Buffer.from(dataUrl.split(',')[1], 'base64'))
@@ -432,10 +514,15 @@ const write = (path, dataUrl) => {
  * a computed `require(`../../assets/art/${name}.webp`)` bundles nothing and fails at
  * runtime rather than at build. Nineteen literals is not something to maintain by hand.
  */
-function writeIndex(names) {
+function writeIndex(names, geometry) {
   const ident = (n) => n.replace(/[/-]([a-z])/g, (_, c) => c.toUpperCase()).replace(/[/-]/g, '')
   const imports = names.map((n) => `import ${ident(n)} from '../../assets/art/${n}.webp'`)
   const entries = names.map((n) => `  '${n}': ${ident(n)},`)
+  const round = (v) => Number(v.toFixed(4))
+  const geometryEntries = names.map((n) => {
+    const g = geometry[n]
+    return `  '${n}': { aspect: ${round(g.aspect)}, x: ${round(g.x)}, y: ${round(g.y)}, w: ${round(g.w)}, h: ${round(g.h)} },`
+  })
 
   writeFileSync(
     INDEX,
@@ -458,6 +545,26 @@ ${entries.join('\n')}
 
 /** Every illustration this build ships. */
 export type ArtName = keyof typeof ART_BY_NAME
+
+/**
+ * Where the subject sits inside each illustration, as fractions of the image.
+ *
+ * \`aspect\` is width ÷ height; \`x\`/\`y\`/\`w\`/\`h\` are the opaque content's bounding box.
+ * MEASURED off the shipped WebP, so it already accounts for anything the build did to
+ * the master. \`<Art>\` uses it to size the SUBJECT rather than the frame — see the note
+ * on \`measure()\` in scripts/build-art.cjs for why that gap was worth closing.
+ */
+export type ArtGeometry = {
+  readonly aspect: number
+  readonly x: number
+  readonly y: number
+  readonly w: number
+  readonly h: number
+}
+
+export const ART_GEOMETRY = {
+${geometryEntries.join('\n')}
+} as const satisfies Readonly<Record<ArtName, ArtGeometry>>
 `,
   )
 }
@@ -472,6 +579,7 @@ export type ArtName = keyof typeof ART_BY_NAME
   const missing = []
   const over = []
   const stale = []
+  const geometry = {}
   let bytes = 0
 
   for (const spec of APP_ICONS) {
@@ -519,6 +627,9 @@ export type ArtName = keyof typeof ART_BY_NAME
     }
 
     bytes += chosen.bytes
+    // Off the file that was actually written, not off the master: the ladder may have
+    // changed its width, and a banner was cropped.
+    geometry[name] = await measure(page, readFileSync(out))
     const allowed = ALLOWANCE[name]
     const ceiling = allowed ? allowed.max : ILLUSTRATION.budget
     if (chosen.bytes > ceiling) {
@@ -567,6 +678,6 @@ export type ArtName = keyof typeof ART_BY_NAME
     process.exit(1)
   }
 
-  writeIndex(ILLUSTRATIONS)
+  writeIndex(ILLUSTRATIONS, geometry)
   console.log(`\n✓ ${APP_ICONS.length} app icons + ${ILLUSTRATIONS.length} illustrations · ${(bytes / 1024 / 1024).toFixed(2)} MB total`)
 })()
