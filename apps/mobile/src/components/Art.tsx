@@ -114,6 +114,15 @@ export function Art({ name, size, height, label }: ArtProps) {
     >
       <Image
         source={source}
+        // Hidden at THIS level too, not only on the frame above. `aria-hidden` is
+        // inherited by a subtree, so the frame's is enough for a real screen reader —
+        // but "decorative" should be true of everything this component renders rather
+        // than true by inheritance, and `LessonSummary.test.tsx` asserts the strict
+        // version: every node inside the XP card, individually. A promise that holds
+        // only because of an ancestor is a promise that breaks when someone reparents it.
+        {...(label === undefined
+          ? { accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' as const, 'aria-hidden': true }
+          : {})}
         style={{ width: imageWidth, height: imageHeight, transform: shift }}
         // The box already matches the image's aspect exactly, so this only guards
         // against a rounding disagreement. Never `cover`: the build deliberately does

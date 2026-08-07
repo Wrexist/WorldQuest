@@ -246,6 +246,21 @@ const ART_DIRS = [
  * they ship — that is the whole cost of deferring them, and it is the right way round:
  * art waiting for a feature costs nothing, art shipping ahead of one costs every user
  * their download.
+ *
+ * Five of the seven **reward illustrations** are here for a different reason, and it is a
+ * measurement rather than a missing feature. `coin`, `gem`, `heart`, `trophy` and
+ * `xp-orb` were briefed for slots the app draws at **18 points** — the icon inside a
+ * `Stat` chip — against a style block whose own bar is "reads clearly at 96px". A 3D
+ * render with a subsurface glow at 18pt is a smudge, and the flat Lucide icons already
+ * in those chips are not a placeholder for these: they are the right answer at that size.
+ *
+ * The line is the size, not the asset. `streak-flame` and `streak-freeze` ship because
+ * the streak screen draws them at 72 and 64, where an illustration is exactly right. If a
+ * screen ever draws a coin or a trophy large — a league podium, a purchase confirmation —
+ * these come back by deleting a line.
+ *
+ * `states/empty-no-friends` is the leagues case again: friends are v2.0, so the empty
+ * state it illustrates has no screen to appear on.
  */
 const NOT_SHIPPED = new Set([
   'atlas/character-sheet',
@@ -258,6 +273,12 @@ const NOT_SHIPPED = new Set([
   'leagues/ruby',
   'leagues/diamond',
   'leagues/legend',
+  'rewards/coin',
+  'rewards/gem',
+  'rewards/heart',
+  'rewards/trophy',
+  'rewards/xp-orb',
+  'states/empty-no-friends',
 ])
 
 const ILLUSTRATIONS = ART_DIRS.flatMap((dir) =>

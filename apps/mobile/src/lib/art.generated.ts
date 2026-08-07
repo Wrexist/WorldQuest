@@ -17,7 +17,6 @@ import onboardingExplore from '../../assets/art/onboarding/explore.webp'
 import onboardingLearn from '../../assets/art/onboarding/learn.webp'
 import statesEmptyCaughtUp from '../../assets/art/states/empty-caught-up.webp'
 import statesEmptyCollection from '../../assets/art/states/empty-collection.webp'
-import statesEmptyNoFriends from '../../assets/art/states/empty-no-friends.webp'
 import statesEmptyProfile from '../../assets/art/states/empty-profile.webp'
 import statesErrorGeneric from '../../assets/art/states/error-generic.webp'
 import statesHeartsEmpty from '../../assets/art/states/hearts-empty.webp'
@@ -72,13 +71,8 @@ import levelsTrailblazer from '../../assets/art/levels/trailblazer.webp'
 import levelsVoyager from '../../assets/art/levels/voyager.webp'
 import levelsWanderer from '../../assets/art/levels/wanderer.webp'
 import levelsWorldkeeper from '../../assets/art/levels/worldkeeper.webp'
-import rewardsCoin from '../../assets/art/rewards/coin.webp'
-import rewardsGem from '../../assets/art/rewards/gem.webp'
-import rewardsHeart from '../../assets/art/rewards/heart.webp'
 import rewardsStreakFlame from '../../assets/art/rewards/streak-flame.webp'
 import rewardsStreakFreeze from '../../assets/art/rewards/streak-freeze.webp'
-import rewardsTrophy from '../../assets/art/rewards/trophy.webp'
-import rewardsXpOrb from '../../assets/art/rewards/xp-orb.webp'
 
 /** Metro hands back a numeric handle; Vite hands back a URL. Both are real. */
 export type ArtModule = number | string
@@ -97,7 +91,6 @@ export const ART_BY_NAME = {
   'onboarding/learn': onboardingLearn,
   'states/empty-caught-up': statesEmptyCaughtUp,
   'states/empty-collection': statesEmptyCollection,
-  'states/empty-no-friends': statesEmptyNoFriends,
   'states/empty-profile': statesEmptyProfile,
   'states/error-generic': statesErrorGeneric,
   'states/hearts-empty': statesHeartsEmpty,
@@ -152,13 +145,8 @@ export const ART_BY_NAME = {
   'levels/voyager': levelsVoyager,
   'levels/wanderer': levelsWanderer,
   'levels/worldkeeper': levelsWorldkeeper,
-  'rewards/coin': rewardsCoin,
-  'rewards/gem': rewardsGem,
-  'rewards/heart': rewardsHeart,
   'rewards/streak-flame': rewardsStreakFlame,
   'rewards/streak-freeze': rewardsStreakFreeze,
-  'rewards/trophy': rewardsTrophy,
-  'rewards/xp-orb': rewardsXpOrb,
 } as const satisfies Readonly<Record<string, ArtModule>>
 
 /** Every illustration this build ships. */
@@ -193,7 +181,6 @@ export const ART_GEOMETRY = {
   'onboarding/learn': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
   'states/empty-caught-up': { aspect: 1.5, x: 0.2995, y: 0.293, w: 0.3659, h: 0.5742 },
   'states/empty-collection': { aspect: 1.5, x: 0.2448, y: 0.0684, w: 0.4831, h: 0.7891 },
-  'states/empty-no-friends': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
   'states/empty-profile': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
   'states/error-generic': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
   'states/hearts-empty': { aspect: 1.5, x: 0.3047, y: 0.1055, w: 0.3789, h: 0.7891 },
@@ -248,11 +235,6 @@ export const ART_GEOMETRY = {
   'levels/voyager': { aspect: 1, x: 0.332, y: 0.3203, w: 0.3906, h: 0.4219 },
   'levels/wanderer': { aspect: 1, x: 0.3398, y: 0.2891, w: 0.2747, h: 0.4362 },
   'levels/worldkeeper': { aspect: 1, x: 0.3164, y: 0.3216, w: 0.3802, h: 0.3451 },
-  'rewards/coin': { aspect: 1, x: 0.1406, y: 0.1203, w: 0.7641, h: 0.775 },
-  'rewards/gem': { aspect: 1, x: 0.1849, y: 0.1875, w: 0.6419, h: 0.668 },
-  'rewards/heart': { aspect: 1, x: 0.194, y: 0.2227, w: 0.6185, h: 0.6302 },
   'rewards/streak-flame': { aspect: 1, x: 0.2539, y: 0.1276, w: 0.5065, h: 0.7487 },
   'rewards/streak-freeze': { aspect: 1, x: 0.1081, y: 0.1706, w: 0.7604, h: 0.6966 },
-  'rewards/trophy': { aspect: 1, x: 0.1146, y: 0.1042, w: 0.7799, h: 0.8529 },
-  'rewards/xp-orb': { aspect: 1, x: 0.3581, y: 0.1706, w: 0.2839, h: 0.6289 },
 } as const satisfies Readonly<Record<ArtName, ArtGeometry>>

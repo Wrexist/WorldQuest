@@ -3,9 +3,12 @@
  *
  * ## Why this is not a "Shop"
  *
- * Freezes and repairs are the only coin sinks that exist without artwork — the
- * cosmetics that form the real sink (avatar items, pets, map skins, themes) all need
- * assets nobody has drawn yet. A two-row store would be a shop in name only.
+ * Freezes and repairs are the only coin sinks that exist yet — the cosmetics that form
+ * the real sink (avatar items, pets, map skins, themes) still need assets nobody has
+ * drawn. A two-row store would be a shop in name only.
+ *
+ * This used to say the two of them existed "without artwork", and that stopped being
+ * true when `rewards/streak-freeze` was delivered. The freeze card draws it now.
  *
  * They also belong here on the merits. "Buy a freeze" is a decision a user makes while
  * looking at the streak it protects, not while browsing a catalogue. Context is the
@@ -40,6 +43,16 @@ import {
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 import { Stat } from '../../components/Stat.js'
+
+/**
+ * The freeze on its own card.
+ *
+ * 64 rather than the 140 an empty state uses: this is an object inside a card that also
+ * has a title, a count, a paragraph and a button, not the subject of the screen. The
+ * flame above it is 72 and stays the larger of the two, because the streak is what the
+ * screen is about and the freeze is what protects it.
+ */
+const FREEZE_ART = 64
 
 /**
  * Where this streak sits relative to the milestones that actually pay out.
@@ -209,6 +222,15 @@ export function StreakScreen({
       )}
 
       <Card level={2} style={styles.card}>
+        {/* The freeze itself. This card is asking for coins, and a purchase with no
+            picture of the thing being bought is the weakest frame in the product — the
+            user is being asked to trade a real balance for a paragraph.
+
+            Decorative: the title, the count and the body already say what it is and what
+            it does, so a screen reader announcing a snowflake adds length, not meaning. */}
+        <View style={styles.cardArt}>
+          <Art name="rewards/streak-freeze" size={FREEZE_ART} />
+        </View>
         <Text style={styles.cardTitle}>{t('streak:freeze.title')}</Text>
         <Text style={styles.held}>{t('streak:freeze.held', { held: freezesHeld, max: MAX_FREEZES })}</Text>
         <Text style={styles.body}>{t('streak:freeze.body')}</Text>
@@ -337,6 +359,7 @@ const styles = StyleSheet.create({
   balance: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   earned: { ...text('caption'), color: colors.text.tertiary, flex: 1 },
   card: { padding: space[4], gap: space[2] },
+  cardArt: { alignItems: 'center' },
   cardTitle: { ...text('h3'), color: colors.text.primary },
   held: { ...text('caption', { weight: '700', numeric: true }), color: colors.status.progress },
   body: { ...text('body'), color: colors.text.secondary },
