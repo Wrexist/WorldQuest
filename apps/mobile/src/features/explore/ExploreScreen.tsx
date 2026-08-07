@@ -271,7 +271,7 @@ function ContinentTile({
             through `aria-label`, and a screen reader naming the weather over Asia is
             noise. */}
         <View style={styles.tileArt} pointerEvents="none">
-          <Art name={CONTINENT_ART[region]} size={art} />
+          <Art name={CONTINENT_ART[region]} size={art} frame="bleed" />
           {/* A scrim, and it is not decoration. Four of these skies are bright —
               Africa's gold, South America's yellow-green, Oceania's turquoise — and text
               over them was unreadable, which is a WCAG AA failure the contrast gate

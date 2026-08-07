@@ -57,6 +57,34 @@
  * is not free when the box is positioned against something — the ribbon came out
  * centred in 420pt of nothing, directly behind an opaque card, and was invisible. Pass
  * `height` to match the art's own aspect and the box becomes the art.
+ *
+ * ## Art with no transparent edge is a PANEL, not a picture floating on the canvas
+ *
+ * Fifteen of the masters measure as their own whole frame — they were generated on an
+ * opaque plate rather than cut out. Drawn flat on `bg.canvas` that plate has a hard
+ * visible seam, and the review found it everywhere it happens: Paused was a bright
+ * orange square on a blue card, the Profile empty state a near-black block on navy, and
+ * onboarding's first slide a globe with the horizon sliced off by a straight edge. All
+ * three read as a screenshot pasted into the layout.
+ *
+ * The square box made it worse rather than better. `states/empty-profile` is 3:2 drawn
+ * in a 140pt square, so the image was 140×93 and the frame's rounded corners sat in the
+ * 47pt of empty space above and below it — the radius was clipping nothing, and the
+ * only corners on screen were the picture's own right-angled ones.
+ *
+ * So whole-frame art takes its own aspect for a box, which puts the frame's corners on
+ * the art's corners where the radius can bite, and rounds hard enough to read as a
+ * deliberate illustration panel. A square one becomes a circle: a character on a plate
+ * is a portrait, and this app already draws portraits round — the avatar, the medals.
+ *
+ * The seven continent skies opt out. They are not panels on a canvas; they FILL a tile
+ * that owns its own edge, and a second rounded rectangle inside the first is the seam
+ * this is trying to remove. That is what `frame="bleed"` is for, and it is the caller's
+ * call because it is the caller that knows what the art is sitting in.
+ *
+ * Default `auto` rather than an allowlist of the seven that need it, deliberately: a
+ * whole-frame master delivered next month is then correct on arrival, and the two known
+ * exceptions are the ones that had to say so.
  */
 
 import { Image, StyleSheet, View } from 'react-native'
@@ -80,14 +108,32 @@ export type ArtProps = {
    * only where the picture says something the surrounding text does not.
    */
   readonly label?: string | undefined
+  /**
+   * `bleed` for art that fills a container which owns its own edge — the continent
+   * tiles. `auto`, the default, gives whole-frame art a panel's shape. See above.
+   */
+  readonly frame?: 'auto' | 'bleed' | undefined
 }
 
-export function Art({ name, size, height, label }: ArtProps) {
+/**
+ * Where "the subject fills its own frame" starts, and the same number the build uses to
+ * decide it. Measured, the split is not close: a cutout covers 36–73 % of its file and a
+ * baked plate 92–100 %, so nothing sits near the line for this to get wrong.
+ */
+const WHOLE_FRAME = 0.85
+
+export function Art({ name, size, height, label, frame = 'auto' }: ArtProps) {
   const asset = ART_BY_NAME[name]
   // Metro gives a number, Vite a URL string — see types/assets.d.ts.
   const source = typeof asset === 'string' ? { uri: asset } : asset
-  const box = { width: size, height: height ?? size }
   const geometry = ART_GEOMETRY[name]
+
+  const panel =
+    frame === 'auto' && geometry.w >= WHOLE_FRAME && geometry.h >= WHOLE_FRAME
+  // A panel's box is the art's own shape, so the radius lands on the art's own corners.
+  // Everything else keeps the square box: a cutout has transparent margin to spare and a
+  // column of square boxes is what keeps a list of illustrations on an even rhythm.
+  const box = { width: size, height: height ?? (panel ? size / geometry.aspect : size) }
 
   // How wide the whole image has to be drawn for its subject to just fit the box —
   // `contain`, but measured against the subject instead of the frame. Whichever of the
@@ -107,7 +153,13 @@ export function Art({ name, size, height, label }: ArtProps) {
 
   return (
     <View
-      style={[styles.frame, box]}
+      style={[
+        styles.frame,
+        box,
+        // Round, not rounded, when the plate is square: a character on a square plate is
+        // a portrait, and this app already draws portraits round.
+        panel && { borderRadius: box.width === box.height ? radius.full : radius['2xl'] },
+      ]}
       {...(label === undefined
         ? { accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' as const, 'aria-hidden': true }
         : {})}

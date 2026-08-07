@@ -118,7 +118,11 @@ export function RegionScreen({
         }}
       >
         <View style={styles.bannerArt} pointerEvents="none">
-          <Art name={CONTINENT_ART[region]} size={continentArtSize(banner.width, banner.height)} />
+          <Art
+            name={CONTINENT_ART[region]}
+            size={continentArtSize(banner.width, banner.height)}
+            frame="bleed"
+          />
           <ArtScrim />
         </View>
         <View style={styles.header}>
