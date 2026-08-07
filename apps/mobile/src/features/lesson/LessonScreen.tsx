@@ -7,7 +7,7 @@
  * control is labelled, and the five states are all present.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
 import {
   AnswerOption,
@@ -77,6 +77,40 @@ const FLAG_PROMPT_WIDTH = 200
 const MASCOT_OF_SHEET = 0.375
 
 /**
+ * The same mascot, once the reward chips have proved they do not fit beside him.
+ *
+ * A ratio was supposed to be enough, and at 390 it is. At 320 it is not: measured off
+ * the render, the XP and coin chips wrap into two rows and the lower one lands at
+ * `176–195 × 692–716`, inside the mascot's `−18–190 × 661–800`. The coin reward is
+ * printed behind Atlas's arm. A picture of the sheet at 390 shows none of this, which
+ * is the argument for photographing 320 first.
+ *
+ * No breakpoint, because a breakpoint would be wrong in the cases that matter most:
+ * a locale with longer chip labels, or the 200 % text setting the Definition of Done
+ * requires, both cram the row at widths where a 320 threshold says there is room. The
+ * sheet asks the row whether it wrapped and believes the answer.
+ *
+ * When it did, the mascot swaps sides: the text gives up its indent and takes the
+ * sheet's full width, and he moves to the END edge, where a start-aligned column of
+ * text and chips is not. Same size, same bottom anchor, same occlusion by the button —
+ * only the side changes, because the side is the only thing that was in the way.
+ *
+ * Shrinking him instead was the first attempt and it looked worse than the bug: he has
+ * to be taller than the button plus its offset to be seen at all, so a mascot small
+ * enough to clear the chips was a hat peeking out from behind a button.
+ */
+
+/**
+ * How much taller than one chip the reward row has to be before we call it wrapped.
+ *
+ * Compared against a CHIP's own measured height rather than a constant, so it holds at
+ * any text scale — the thing being detected is "two rows of chips", and two rows are
+ * always about twice one chip whatever a chip currently is. Half a chip of slack
+ * absorbs the row's own line-height rounding without reaching a second row.
+ */
+const WRAPPED_AT = 1.5
+
+/**
  * The locator map beside a question.
  *
  * The same 200pt as the flag prompt, because it is now the same kind of object: the
@@ -143,7 +177,25 @@ export function LessonScreen({
   // The sheet stops widening at `maxContentWidth`, so the mascot measures against that
   // rather than against a tablet's whole screen.
   const { width } = useWindowDimensions()
-  const mascot = Math.round(Math.min(width, layout.maxContentWidth) * MASCOT_OF_SHEET)
+  const sheetWidth = Math.min(width, layout.maxContentWidth)
+
+  // Latched, never unlatched. Moving the mascot is what gives the row room to unwrap,
+  // so a flag that followed the measurement would flip back the moment it took effect
+  // and oscillate forever. Once the chips have told us they do not fit beside him, that
+  // is a fact about this screen at this width and stays true until it remounts.
+  const [rewardsWrapped, setRewardsWrapped] = useState(false)
+  const chipHeight = useRef(0)
+  const rowHeight = useRef(0)
+  // Called from BOTH `onLayout`s rather than only the row's, because their order is not
+  // guaranteed — on web these come from a ResizeObserver, and a row that measured before
+  // its chip would compare against a height of zero and conclude, permanently, that
+  // nothing wrapped. Whichever arrives second is the one that decides.
+  const measureRewards = useCallback(() => {
+    if (chipHeight.current > 0 && rowHeight.current > chipHeight.current * WRAPPED_AT) {
+      setRewardsWrapped(true)
+    }
+  }, [])
+  const mascot = Math.round(sheetWidth * MASCOT_OF_SHEET)
 
 
   // Sized from the user's own pace, not a hardcoded ten. `lessonLength` aims at a
@@ -574,26 +626,46 @@ export function LessonScreen({
                    rather than a mask. Decorative: the sheet already says "Perfect!" and
                    reads out the reward, and a screen reader announcing the mascot after
                    every correct answer is the definition of noise. */
-                <View style={[styles.sheetMascot, { width: mascot }]} pointerEvents="none">
+                <View
+                  style={[
+                    rewardsWrapped ? styles.sheetMascotEnd : styles.sheetMascot,
+                    { width: mascot },
+                  ]}
+                  pointerEvents="none"
+                >
                   <Art name="atlas/celebrate" size={mascot} />
                 </View>
               )}
               <View
                 style={
-                  lastAnswer?.wasCorrect === true
+                  lastAnswer?.wasCorrect === true && !rewardsWrapped
                     ? [styles.sheetText, { paddingStart: mascot - space[3] }]
-                    : undefined
+                    : styles.sheetText
                 }
               >
                 {lastAnswer?.wasCorrect ? (
             <>
               <Text style={styles.feedbackTitleOk}>{t('lesson:feedback.correct.title')}</Text>
-              <View style={styles.rewards}>
-                <Stat
-                  kind="xp"
-                  value={`+${lastAward?.xp ?? 0}`}
-                  accessibilityLabel={t('lesson:reward.xp', { amount: lastAward?.xp ?? 0 })}
-                />
+              <View
+                style={styles.rewards}
+                onLayout={(e) => {
+                  rowHeight.current = e.nativeEvent.layout.height
+                  measureRewards()
+                }}
+              >
+                {/* One chip measures itself so the row above knows what one row is. */}
+                <View
+                  onLayout={(e) => {
+                    chipHeight.current = e.nativeEvent.layout.height
+                    measureRewards()
+                  }}
+                >
+                  <Stat
+                    kind="xp"
+                    value={`+${lastAward?.xp ?? 0}`}
+                    accessibilityLabel={t('lesson:reward.xp', { amount: lastAward?.xp ?? 0 })}
+                  />
+                </View>
                 <Stat
                   kind="coin"
                   value={`+${lastAward?.coins ?? 0}`}
@@ -838,6 +910,11 @@ const styles = StyleSheet.create({
   // 16 of screen inset puts the mascot ~7 % in from the screen edge, which is where the
   // reference has it.
   sheetMascot: { position: 'absolute', insetInlineStart: space[3], bottom: space[5] },
+  // The other side, for when the chips need the start edge. `insetInlineEnd` and not
+  // `right`: this mirrors in RTL, and it has to — the text it is getting out of the way
+  // of mirrors too, so a mascot pinned to a physical edge would be standing on the copy
+  // in Arabic and nowhere near it in English.
+  sheetMascotEnd: { position: 'absolute', insetInlineEnd: space[3], bottom: space[5] },
   // Clear of the mascot. The reference lets its text start 32px inside the mascot's
   // bounding box, because a mascot's box is wider than its shoulders — so this leans on
   // the same slack rather than adding the full width.
