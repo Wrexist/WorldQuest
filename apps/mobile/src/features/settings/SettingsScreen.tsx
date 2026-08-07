@@ -16,6 +16,7 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { colors, space, text } from '@worldquest/design'
 import { ChoiceRow, LinkRow, Note, Section, SwitchRow } from '../../components/SettingsRow.js'
+import { AvatarPicker } from './AvatarPicker.js'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 import {
@@ -176,6 +177,17 @@ export function SettingsScreen({
           help={t('settings:motion.help')}
           value={preferences.reduceMotion}
           onChange={(value) => set('reduceMotion', value)}
+        />
+      </Section>
+
+      <Section title={t('settings:section.appearance')}>
+        {/* Twelve portraits shipped and nothing could choose between them, so every
+            user was initials. The set exists to cover a real range of skin tones, ages,
+            hair textures and head coverings — a set nobody can pick from does none of
+            that. No uploads, ever: a child-safety rule, not a scope cut. */}
+        <AvatarPicker
+          value={preferences.avatar}
+          onChange={(value) => set('avatar', value)}
         />
       </Section>
 

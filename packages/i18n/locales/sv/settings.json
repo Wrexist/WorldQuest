@@ -38,5 +38,13 @@
   "settings:about.credits": "Kart- och flaggdata kommer från öppna källor och anges vid varje fakta.",
   "settings:on": "På",
   "settings:off": "Av",
-  "settings:sync.pending": "{count, plural, one {# lektion väntar på att nå servern} other {# lektioner väntar på att nå servern}}. Den skickas så fort du är uppkopplad."
+  "settings:sync.pending": "{count, plural, one {# lektion väntar på att nå servern} other {# lektioner väntar på att nå servern}}. Den skickas så fort du är uppkopplad.",
+  "settings:section.appearance": "Utseende",
+  "settings:section.appearance__note": "Section heading. Max 14 characters.",
+  "settings:avatar.label": "Välj din avatar",
+  "settings:avatar.label__note": "Heading for the row of avatar portraits the user picks from.",
+  "settings:avatar.none": "Initialer",
+  "settings:avatar.none__note": "The option that shows the user's initials instead of a portrait. Max 12 characters.",
+  "settings:avatar.option": "Avatar {number} av {total}",
+  "settings:avatar.option__note": "Spoken label for one portrait. Numbered rather than described, so it does not assert what the character looks like. {number} and {total} are integers."
 }

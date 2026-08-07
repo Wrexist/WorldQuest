@@ -71,5 +71,13 @@
   "settings:off": "Off",
   "settings:off__note": "Accessibility state for a switch that is disabled.",
   "settings:sync.pending": "{count, plural, one {# lesson is waiting to reach the server} other {# lessons are waiting to reach the server}}. It will go as soon as you're online.",
-  "settings:sync.pending__note": "Shown when work is queued but has NOT exhausted its retries — a lesson finished on a train, thirty seconds ago. Distinct from sync.waiting, which is about work that gave up. Both end on reassurance; neither ever says 'failed'."
+  "settings:sync.pending__note": "Shown when work is queued but has NOT exhausted its retries — a lesson finished on a train, thirty seconds ago. Distinct from sync.waiting, which is about work that gave up. Both end on reassurance; neither ever says 'failed'.",
+  "settings:section.appearance": "Appearance",
+  "settings:section.appearance__note": "Section heading. Max 14 characters.",
+  "settings:avatar.label": "Choose your avatar",
+  "settings:avatar.label__note": "Heading for the row of avatar portraits the user picks from.",
+  "settings:avatar.none": "Initials",
+  "settings:avatar.none__note": "The option that shows the user's initials instead of a portrait. Max 12 characters.",
+  "settings:avatar.option": "Avatar {number} of {total}",
+  "settings:avatar.option__note": "Spoken label for one portrait. Numbered rather than described, so it does not assert what the character looks like. {number} and {total} are integers."
 }

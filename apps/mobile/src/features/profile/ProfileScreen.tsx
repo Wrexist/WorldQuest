@@ -31,6 +31,7 @@ import { levelProgress, type WorldProgress } from '@worldquest/engines'
 import { formatCompact, useT, currentLocale, type TranslationKey } from '../../lib/i18n.js'
 import { REGIONS, type RegionCode } from '../explore/ExploreScreen.js'
 import { Art } from '../../components/Art.js'
+import { avatarArt } from '../settings/AvatarPicker.js'
 import { ART_BY_NAME, type ArtName } from '../../lib/art.generated.js'
 import { Icon } from '../../components/Icon.js'
 
@@ -87,6 +88,8 @@ export type ProfileScreenProps = {
    * reason as the two above: absent hides the control rather than rendering a dead one.
    */
   readonly onStartLesson?: (() => void) | undefined
+  /** The chosen avatar id, or null/absent for initials. */
+  readonly avatar?: string | null | undefined
 }
 
 /** How big the rank insignia sits beside the level title. */
@@ -113,16 +116,25 @@ export function ProfileScreen({
   wornTitleKey,
   onOpenShop,
   onStartLesson,
+  avatar,
 }: ProfileScreenProps) {
   const t = useT()
   const locale = currentLocale()
+  // Falls back to initials when nothing is chosen, and also when a stored id names an
+  // avatar this build does not ship — a set that shrinks must not leave a blank circle.
+  const portrait = avatarArt(avatar ?? null)
 
   if (loading) return <ProfileSkeleton />
 
   if (stats === null || stats.xpTotal === 0) {
     return (
       <View style={[styles.screen, styles.centered]}>
-        <Avatar initials="EX" size={72} accessibilityLabel={t('profile:anonymous')} />
+        <Avatar
+          size={72}
+          accessibilityLabel={t('profile:anonymous')}
+          initials="EX"
+          {...(portrait !== null ? { image: <Art name={portrait} size={72} /> } : {})}
+        />
         {/* The blank explorer's journal, briefed for this screen as "ready to be
             filled, not sad" — which is the same distinction `profile:empty.body`
             draws in words. */}
@@ -157,7 +169,12 @@ export function ProfileScreen({
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.identity}>
-        <Avatar initials="EX" size={72} accessibilityLabel={t('profile:anonymous')} />
+        <Avatar
+          size={72}
+          accessibilityLabel={t('profile:anonymous')}
+          initials="EX"
+          {...(portrait !== null ? { image: <Art name={portrait} size={72} /> } : {})}
+        />
         <Text style={styles.name} role="heading">
           {t('profile:anonymous')}
         </Text>

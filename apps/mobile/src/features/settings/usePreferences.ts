@@ -35,6 +35,15 @@ export type Preferences = {
   readonly reduceMotion: boolean
   readonly analytics: boolean
   readonly language: LanguageChoice
+  /**
+   * The chosen avatar, as its art name suffix — `avatar-07` — or null for initials.
+   *
+   * A name rather than an index: the twelve are a set that will grow, and an index
+   * silently re-points at a different face the day one is inserted. Null is a real
+   * choice, not a missing value; initials are the accessible default the component
+   * was built around and stay available.
+   */
+  readonly avatar: string | null
 }
 
 /**
@@ -56,6 +65,9 @@ export const DEFAULTS: Preferences = {
   reduceMotion: false,
   analytics: true,
   language: 'system',
+  // No face until the user picks one. Assigning one at random would be the app
+  // deciding what somebody looks like.
+  avatar: null,
 }
 
 function load(): Preferences {
