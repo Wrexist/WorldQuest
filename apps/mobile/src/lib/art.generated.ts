@@ -22,7 +22,6 @@ import statesErrorGeneric from '../../assets/art/states/error-generic.webp'
 import statesHeartsEmpty from '../../assets/art/states/hearts-empty.webp'
 import statesOffline from '../../assets/art/states/offline.webp'
 import celebrationBurst from '../../assets/art/celebration/burst.webp'
-import celebrationBurstWide from '../../assets/art/celebration/burst-wide.webp'
 import celebrationRays from '../../assets/art/celebration/rays.webp'
 import achievementsGlyphCapitals from '../../assets/art/achievements/glyph-capitals.webp'
 import achievementsGlyphCollections from '../../assets/art/achievements/glyph-collections.webp'
@@ -96,7 +95,6 @@ export const ART_BY_NAME = {
   'states/hearts-empty': statesHeartsEmpty,
   'states/offline': statesOffline,
   'celebration/burst': celebrationBurst,
-  'celebration/burst-wide': celebrationBurstWide,
   'celebration/rays': celebrationRays,
   'achievements/glyph-capitals': achievementsGlyphCapitals,
   'achievements/glyph-collections': achievementsGlyphCollections,
@@ -186,7 +184,6 @@ export const ART_GEOMETRY = {
   'states/hearts-empty': { aspect: 1.5, x: 0.3047, y: 0.1055, w: 0.3789, h: 0.7891 },
   'states/offline': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
   'celebration/burst': { aspect: 1.5, x: 0.1341, y: 0.0449, w: 0.7318, h: 0.875 },
-  'celebration/burst-wide': { aspect: 5.9535, x: 0, y: 0, w: 1, h: 1 },
   'celebration/rays': { aspect: 1.5, x: 0.2891, y: 0.1641, w: 0.4128, h: 0.5449 },
   'achievements/glyph-capitals': { aspect: 1, x: 0.2305, y: 0.2096, w: 0.5378, h: 0.5703 },
   'achievements/glyph-collections': { aspect: 1, x: 0.2422, y: 0.2318, w: 0.5065, h: 0.5195 },

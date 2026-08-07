@@ -48,6 +48,14 @@ module.exports.NOT_SHIPPED = {
   'rewards/trophy': 'Only ever drawn at 18pt, where an illustration cannot read.',
   'rewards/xp-orb': 'Only ever drawn at 18pt, where an illustration cannot read.',
 
+  'celebration/burst-wide':
+    'Built for a frame that no longer exists: a confetti ribbon straddling the top edge ' +
+    'of the lesson feedback card, back when that card sat in the scroll flow. The card ' +
+    'is now a pinned sheet with Atlas leaning out from behind the Continue button, and ' +
+    '`atlas/celebrate` carries its own burst — the confetti belongs to the character ' +
+    'rather than to the furniture. See .claude/skills/dna-transplant/references. The ' +
+    'master stays; nothing draws it today.',
+
   'states/empty-no-friends':
     'Friends are v2.0, so the empty state this illustrates has no screen to appear on.',
 }

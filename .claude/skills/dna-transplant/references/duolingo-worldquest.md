@@ -112,3 +112,69 @@ None of that is visible at 100 % in a screenshot. All of it is what "shippable" 
 - `8817e3e` — the token and primitive rebuild
 - `1be1827` — 200 % text measurement, and the two bugs it caught
 - `9ae4eb1` — overlap detection, and the three it caught
+
+---
+
+# The second graft: the correct-answer sheet
+
+The first transplant took the *chrome* — type, press mechanic, accents, progress. This
+one took a **frame**: the panel a user sees ten to twenty times a lesson, which is the
+most-repeated moment in the product.
+
+## Step 1 — the feel
+
+*Someone is pleased with you, and they're right there.* The mascot's arrival is the
+reward; the number is the receipt. Our version had the receipt and not the arrival.
+
+## Step 2/3 — the mechanics, and what measuring changed
+
+Three were named from looking. **Measuring the reference contradicted the first one**,
+which is the whole argument for step 3:
+
+| Named from looking | What the pixels said |
+|---|---|
+| "The mascot breaks the panel's top edge" | **False.** Its top is 89 px *below* the panel edge. It never touches it. |
+| "Confetti around its head" | True, but it belongs to the *character* — `atlas/celebrate` already carries its own burst. It is not a layer on the panel. |
+| "The panel owns the primary action" | True, and the load-bearing one. |
+
+What is actually happening is better than what it looked like: the mascot's lower body
+is **occluded by the CONTINUE button**, so it reads as leaning out from behind the
+furniture. Had the first reading been built, two of the three mechanics would have been
+constructed around something that was not happening.
+
+Measured, as ratios rather than points:
+
+| | Reference | Ours |
+|---|---|---|
+| Mascot width | 320 / 852 = **37.5 % of the sheet** | `MASCOT_OF_SHEET` |
+| Mascot left inset | 62 / 852 = 7.3 % | `space[3]` inside a sheet already inset `space[4]` |
+| Mascot bottom | occluded by the button | drawn first, button paints over |
+| Primary action | inside the panel | sheet moved out of the scroll flow into the pinned footer |
+
+**Keeping it as a ratio was not pedantry.** A constant 150 was tried first and 320pt
+exposed it: 38 % of a 390 screen is 47 % of a 320 one, so the smallest phone got a
+mascot half the width of its sheet.
+
+## Step 4 — rejected, and why
+
+| Rejected | Why |
+|---|---|
+| The owl | We have Atlas. That was the brief. |
+| **"Gems" as the lesson reward** | ADR 0011 makes coins and gems *different currencies*. A lesson awards coins; labelling them gems would teach the wrong economy to keep a screenshot. |
+| Bare icon+number rewards instead of pills | `Stat` is the design system's reward chip and appears identically on Home and the streak screen. Taking the donor's lighter treatment *here only* would make one value look like two things. The cost is real and accepted: at 320 the two chips wrap to a second row. |
+| The solid red heart | Ours is a token pair that clears contrast. Theirs is a colour we would have to re-derive against a dark canvas — the same trap as the accents in the first graft. |
+
+## Deferred, not rejected
+
+**A flag beside each answer option.** The reference puts Poland's flag against "Polish
+złoty", the EU's against "Euro". It is the best idea on the screen and it is a *content*
+mechanic rather than a layout one: each option would have to carry an entity to draw a
+flag for, which is a change to how questions are composed rather than to how they are
+drawn. Worth doing; not doable in the same edit.
+
+## Consequence
+
+`celebration/burst-wide` is now unused. It was built for the frame this replaced — a
+ribbon straddling the top edge of a card that is no longer a card in the scroll flow —
+and the character carries the confetti now. Moved to `NOT_SHIPPED` rather than left in
+the bundle, per the rule the league badges earned.
