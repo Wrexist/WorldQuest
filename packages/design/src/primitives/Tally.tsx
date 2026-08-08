@@ -43,14 +43,21 @@
  * always meant. How many nodes it takes to draw the line is this component's business,
  * and a test that pins it turns a styling change into a counting bug.
  *
- * ## Accessibility: check the line has a name before you split it
+ * ## Accessibility: the line names itself, and it has to
  *
- * Every current caller sits inside an element with an explicit `aria-label` — the
- * Explore tile, the region row, the world card, `ProgressBar`'s own track — so the
- * split is visual only and no reader hears "0", "of 56", "learned" as fragments.
- * Nested `Text` is the standard React Native way to mix styles and readers join it, but
- * a bare `Tally` with no labelled ancestor is worth a second look rather than an
- * assumption.
+ * This comment used to say "every current caller sits inside an element with an
+ * explicit `aria-label`, so the split is visual only". That was true when it was
+ * written and false a day later, because three more callers arrived — the achievements
+ * header, the region banner's totals, and `ProgressBar`'s label inside a quest card
+ * that has no label of its own. An accessibility guarantee that depends on every future
+ * caller's ancestor is a guarantee that expires quietly, which is the same failure mode
+ * as the stale comment that left the continent list without flags.
+ *
+ * So the outer `Text` carries the whole formatted string as its own accessible name.
+ * Whatever the nesting does to the tree, one node answers with the full sentence, and
+ * the promise no longer depends on where the component is used. Inside a caller that is
+ * already an accessible element — the Explore tile, the region row — this changes
+ * nothing: that ancestor's name still wins for the ancestor.
  */
 
 import { Text, type StyleProp, type TextStyle } from 'react-native'
@@ -69,7 +76,10 @@ export function Tally({ children, style, numberStyle }: TallyProps) {
   const parts = splitTally(children)
 
   return (
-    <Text style={style}>
+    // `aria-label` AND `accessibilityLabel`: the first is what react-native-web reads,
+    // the second is what iOS and Android read. Both, because this primitive is the only
+    // thing standing between a split line and a reader announcing it in pieces.
+    <Text style={style} aria-label={children} accessibilityLabel={children}>
       {parts.map((part, i) =>
         // Odd indices are the captured number runs — `split` with one capturing group
         // always alternates, so this needs no second test against the pattern.
