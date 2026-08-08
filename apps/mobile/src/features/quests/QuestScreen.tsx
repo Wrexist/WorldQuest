@@ -213,7 +213,12 @@ function TaskRow({ task, step }: { task: QuestTask; step: number }) {
       </View>
 
       <View style={styles.taskMeta}>
-        <Text style={styles.taskCount}>
+        {/* Green only once something has happened. This was `status.progress` on every
+            row, so a fresh quest showed five "0 / 4"s in success green — the same lie
+            the lesson summary told with a 35 % accuracy and the streak screen told with
+            "0 of 2 held". A standalone caption in the success colour is a claim; here it
+            claimed five times over that nothing was something. */}
+        <Text style={task.progress > 0 || task.complete ? styles.taskCount : styles.taskCountNone}>
           {task.complete
             ? t('quests:task.done')
             : t('quests:task.count', { progress: task.progress, target: task.target })}
@@ -294,5 +299,9 @@ const styles = StyleSheet.create({
   taskBody: { ...text('caption'), color: colors.text.secondary },
   taskMeta: { alignItems: 'flex-end', gap: space[1] },
   taskCount: { ...text('caption', { weight: '700', numeric: true }), color: colors.status.progress },
+  taskCountNone: {
+    ...text('caption', { weight: '700', numeric: true }),
+    color: colors.text.secondary,
+  },
   taskXp: { ...text('caption'), color: colors.reward.xp },
 })
