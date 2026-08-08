@@ -156,12 +156,24 @@ export function RegionScreen({
           </Text>
         </View>
 
+        {/* Labelled with what it MEASURES. It said "Countries" while counting facts, so
+            the banner read "Countries 0 / 56" directly above "0 of 19 countries
+            finished" — two different numbers for the same noun, six pixels apart. Same
+            defect as Home's quest card, where a bar of quest tasks sat under a sentence
+            about lessons.
+
+            `showCount` off because the label now carries both figures; leaving it on
+            printed "0 / 56" twice on one line. */}
         <ProgressBar
           current={regionTotals.factsLearned}
           // `max(1, …)` because a region whose facts are all non-quizzable would divide
           // by zero, and an empty continent should read as 0 %, not as NaN.
           total={Math.max(1, regionTotals.factsTotal)}
-          label={t('explore:countries.title')}
+          showCount={false}
+          label={t('explore:region.facts', {
+            learned: regionTotals.factsLearned,
+            total: regionTotals.factsTotal,
+          })}
         />
         <Tally style={styles.totals} numberStyle={styles.totalsNumber}>
           {t('explore:region.complete', {

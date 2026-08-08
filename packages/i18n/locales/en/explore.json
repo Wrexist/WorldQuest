@@ -17,6 +17,8 @@
   "explore:region.AN": "Antarctica",
   "explore:region.AN__note": "Continent name. Max 16 characters.",
   "explore:region.progress": "{learned} of {total} learned",
+  "explore:region.facts": "{learned} of {total} facts learned",
+  "explore:region.facts__note": "Label on the continent banner's progress bar. It counts FACTS, and it has to say so: the bar was labelled \"Countries\" while measuring facts, so the banner read \"Countries 0 / 56\" directly above \"0 of 19 countries finished\" — two different numbers for the same noun, six pixels apart. Max 28 characters.",
   "explore:region.progress__note": "Counts FACTS, not countries — 3 of 12 learned. Both are whole numbers.",
   "explore:region.complete": "{complete} of {total} countries finished",
   "explore:region.complete__note": "Under the region progress bar. 'Finished' means every quizzable fact about that country is mastered — it is a statement of fact, not a nudge. Never phrased as how many are left.",
