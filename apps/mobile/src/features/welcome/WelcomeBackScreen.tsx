@@ -26,8 +26,8 @@
  * Purely presentational.
  */
 
-import { StyleSheet, Text, View } from 'react-native'
-import { Button, Card, colors, space, text } from '@worldquest/design'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Button, Card, Tally, colors, space, text } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 
@@ -52,7 +52,18 @@ export function WelcomeBackScreen({
   const t = useT()
 
   return (
-    <View style={styles.root}>
+    /* A ScrollView, because this screen did not have one.
+
+       Measured at 320 before changing it: the content ended at 668 of 700, and that is
+       the version WITHOUT the STILL YOURS card — which is the normal case, since this
+       screen exists for a user who has been away and therefore has progress to be
+       reassured about. At 200 % text it needs 1008. `root` was a `flex: 1` View, so on a
+       device the way out ("Just looking around") was below the fold and unreachable, on
+       the screen whose whole argument is that the user is not trapped here.
+
+       It looked fine in this repo's harness only because a browser scrolls the document
+       when a page overflows. A phone does not. */
+    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.hero}>
         {/* Atlas waving with both arms, from a low angle. The brief for this frame is
             specifically "greeting someone returning after a long time — warm, glad, NO
@@ -66,12 +77,30 @@ export function WelcomeBackScreen({
       </View>
 
       {/* The counts, right under the promise. "Everything you learned is still here"
-          is a sentence; these are the evidence, and evidence is what settles a fear. */}
-      <Card level={2} style={styles.card}>
-        <Text style={styles.cardTitle}>{t('welcome:kept.title')}</Text>
-        <Text style={styles.kept}>{t('welcome:kept.facts', { count: factsLearned })}</Text>
-        <Text style={styles.kept}>{t('welcome:kept.countries', { count: countriesMet })}</Text>
-      </Card>
+          is a sentence; these are the evidence, and evidence is what settles a fear.
+
+          Hidden when there is nothing kept, which this screen reaches: it is
+          deep-linkable from the "we miss you" push, and a first-launch tap on that
+          notification rendered a card headed STILL YOURS whose entire contents were
+          "0 facts learned / 0 countries" — a reassurance about nothing, in the most
+          prominent block on the screen, directly above a line already saying "nothing
+          is waiting". The screen said nothing three times.
+
+          Same rule as Home's due line and the streak badge: a row that exists only to
+          report zero is a row that should not be there. `factsLearned` alone decides
+          it, because countries are complete only once their facts are, so there is no
+          state where the second number is non-zero and the first is not. */}
+      {factsLearned > 0 && (
+        <Card level={2} style={styles.card}>
+          <Text style={styles.cardTitle}>{t('welcome:kept.title')}</Text>
+          <Tally style={styles.kept} numberStyle={styles.keptNumber}>
+            {t('welcome:kept.facts', { count: factsLearned })}
+          </Tally>
+          <Tally style={styles.kept} numberStyle={styles.keptNumber}>
+            {t('welcome:kept.countries', { count: countriesMet })}
+          </Tally>
+        </Card>
+      )}
 
       <Text style={styles.due}>
         {/* "Ready for review", never "overdue". A user who lived their life for two
@@ -85,18 +114,27 @@ export function WelcomeBackScreen({
             must be able to look around. */}
         <Button variant="ghost" label={t('welcome:later')} onPress={onDismiss} />
       </View>
-    </View>
+    </ScrollView>
   )
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[3] },
+  screen: { flex: 1 },
+  // `flexGrow: 1` so `actions`' auto top margin still has free space to consume and the
+  // two buttons stay at the bottom of a short screen. When the content is taller than the
+  // viewport the auto margin resolves to zero and they simply follow the text, which is
+  // the correct behaviour and the reason this is a ScrollView.
+  content: { padding: space[4], gap: space[3], flexGrow: 1 },
   hero: { alignItems: 'center', gap: space[2], paddingTop: space[6] },
   title: { ...text('h1'), color: colors.text.primary, textAlign: 'center' },
   body: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
   card: { padding: space[4], gap: space[1] },
   cardTitle: { ...text('overline'), color: colors.text.tertiary },
-  kept: { ...text('h3', { numeric: true }), color: colors.text.primary },
+  // The words at h3, the digits at h3 too — same size, and the emphasis is already
+  // carried by this being the only bright text in the card. `Tally` still splits them so
+  // the figure gets tabular numerals: "12 facts" and "112 facts" must not shift the line.
+  kept: { ...text('h3'), color: colors.text.secondary },
+  keptNumber: { ...text('h3', { numeric: true }), color: colors.text.primary },
   due: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
   actions: { marginTop: 'auto', gap: space[2] },
 })

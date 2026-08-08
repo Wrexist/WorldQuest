@@ -10,6 +10,7 @@ import { useMemo } from 'react'
 import { useRouter } from 'expo-router'
 import { HomeScreen, type HomeProgress } from '../../src/features/home/HomeScreen.js'
 import { useContent } from '../../src/lib/content.js'
+import { useOnline } from '../../src/lib/connectivity.js'
 import { useProgress } from '../../src/features/home/useProgress.js'
 import { lessonsToday } from '../../src/features/profile/useWeekActivity.js'
 import { useItemPace } from '../../src/features/lesson/usePace.js'
@@ -28,7 +29,8 @@ const COLD_START: HomeProgress = {
 
 export default function HomeRoute() {
   const router = useRouter()
-  const { data, status, isStale } = useProgress()
+  const { data, status, refreshFailed } = useProgress()
+  const online = useOnline()
 
   // The SAME call Explore makes, rather than a second count assembled here. Two
   // places counting the same thing agree until one of them changes — and these two
@@ -63,9 +65,16 @@ export default function HomeRoute() {
     <HomeScreen
       progress={progress}
       loading={status === 'loading'}
-      // Stale numbers are exactly what "offline" means to a user: what you see is
-      // real, it is just from last time. The banner says so instead of hiding it.
-      isOffline={isStale || status === 'error'}
+      // The radio first, and the failed refresh second. This read
+      // `isStale || status === 'error'`, and `staleTime` is 60 seconds — so Home told
+      // anyone who left the tab open for a minute that they were offline. Meanwhile a
+      // user who actually WAS offline saw nothing until the cache aged out, and a
+      // build with no backend configured could never show the banner at all, which is
+      // why every screenshot ever taken of this screen looked fine.
+      //
+      // `useOnline` is the same source the Shop's "buying is paused" notice reads, so
+      // two screens can no longer disagree about whether the device is connected.
+      isOffline={!online || refreshFailed || status === 'error'}
       onOpenStreak={() => router.push('/streak')}
       onStartLesson={() => router.push('/lesson')}
       goal={goal}

@@ -16,6 +16,7 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { colors, space, text } from '@worldquest/design'
 import { ChoiceRow, LinkRow, Note, Section, SwitchRow } from '../../components/SettingsRow.js'
+import { AvatarPicker } from './AvatarPicker.js'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 import {
@@ -179,6 +180,17 @@ export function SettingsScreen({
         />
       </Section>
 
+      <Section title={t('settings:section.appearance')}>
+        {/* Twelve portraits shipped and nothing could choose between them, so every
+            user was initials. The set exists to cover a real range of skin tones, ages,
+            hair textures and head coverings — a set nobody can pick from does none of
+            that. No uploads, ever: a child-safety rule, not a scope cut. */}
+        <AvatarPicker
+          value={preferences.avatar}
+          onChange={(value) => set('avatar', value)}
+        />
+      </Section>
+
       <Section title={t('settings:section.language')}>
         <ChoiceRow<LanguageChoice>
           label={t('settings:language.label')}
@@ -210,15 +222,19 @@ export function SettingsScreen({
           {/* States what is true and what happens next. Never "sync failed" — the
               work is safe, it just has not arrived, and a child reading "failed"
               hears "your lessons are gone". */}
-          {sync.parked > 0 ? (
-            <Note body={t('settings:sync.waiting', { count: sync.parked })} />
-          ) : (
-            /* Queued and still trying, which the section could not previously say. It
-               only appeared once work had exhausted its retries, so a lesson finished on
-               a train — the case a user is most likely to be anxious about, and the one
-               that is most certainly fine — showed nothing at all. */
-            <Note body={t('settings:sync.pending', { count: sync.pending })} />
-          )}
+          {/* Both, when both are true, rather than one or the other. These were a
+              ternary on `parked > 0`, so a queue holding one parked lesson and one still
+              trying said "1 lesson hasn't reached the server yet" and never mentioned the
+              second — in the one section whose entire job is to account for work that has
+              not arrived. They are different facts with different endings ("it will try
+              again" / "as soon as you're online"), so neither can stand in for the
+              other. */}
+          {sync.parked > 0 && <Note body={t('settings:sync.waiting', { count: sync.parked })} />}
+          {/* Queued and still trying, which the section could not previously say. It only
+              appeared once work had exhausted its retries, so a lesson finished on a
+              train — the case a user is most likely to be anxious about, and the one that
+              is most certainly fine — showed nothing at all. */}
+          {sync.pending > 0 && <Note body={t('settings:sync.pending', { count: sync.pending })} />}
           {sync.parked > 0 && (
             <LinkRow label={t('settings:sync.retry')} onPress={sync.onRetry} />
           )}
@@ -302,7 +318,7 @@ function PremiumSection({ premium }: { premium: PremiumStatus }) {
 
 const styles = StyleSheet.create({
   syncArt: { alignSelf: 'center' },
-  screen: { flex: 1, backgroundColor: colors.bg.canvas },
+  screen: { flex: 1 },
   content: { padding: space[4], gap: space[5] },
   title: { ...text('h1'), color: colors.text.primary },
   // Room to scroll past the last card rather than ending flush against the tab bar.

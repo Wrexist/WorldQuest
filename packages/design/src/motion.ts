@@ -220,3 +220,77 @@ export function useCelebration(trigger: unknown): Animated.Value {
 
   return scale
 }
+
+/**
+ * The entrance for one item in a list, offset by its position.
+ *
+ * ## Why this exists
+ *
+ * `motion.stagger` — `{ stepMs: 40, maxItems: 6 }` — has been in `tokens.json` since the
+ * token file was written and had **no readers at all**. It is the third token found in
+ * that state, after `bg.canvasGradient` and the pressed/glow accents, and they share a
+ * cause: a value can be designed, named, reviewed and committed without one line of code
+ * ever asking for it, and nothing in the build says so.
+ *
+ * What it buys is the difference between a grid that is simply *there* on arrival and one
+ * that arrives. Seven continent tiles appearing in the same frame reads as a page load;
+ * the same seven arriving 40 ms apart reads as the app dealing you a hand. It is the
+ * cheapest motion in the product and the one users never consciously notice.
+ *
+ * ## `maxItems` is the whole design of it
+ *
+ * The cascade stops after six. A 65-item collection grid at 40 ms a row would take two
+ * and a half seconds to finish arriving, and the user would be looking at row forty
+ * wondering why the app is slow — a stagger that runs long stops being polish and starts
+ * being latency. Six is the most anyone perceives as one gesture; everything after it
+ * lands with the sixth.
+ *
+ * ## Reduced motion
+ *
+ * Returns 1 immediately — the item is THERE, it just did not travel. A stagger that
+ * skipped the animation by leaving opacity at 0 would hide most of a list from exactly
+ * the user who asked for less movement, which is the usual way this gets implemented
+ * wrong (see the note at the top of this file).
+ */
+export function useStagger(index: number, step: MotionStep = 'base'): Animated.Value {
+  const reduced = useReducedMotion()
+  const timing = useTiming(step)
+  const value = useRef(new Animated.Value(reduced ? 1 : 0)).current
+
+  useEffect(() => {
+    if (reduced) {
+      value.setValue(1)
+      return
+    }
+    const animation = Animated.timing(value, {
+      toValue: 1,
+      delay: Math.min(index, motion.stagger.maxItems) * motion.stagger.stepMs,
+      duration: timing.duration,
+      easing: timing.easing,
+      useNativeDriver: true,
+    })
+    animation.start()
+    return () => animation.stop()
+    // `timing` is rebuilt each render; its two fields are what actually matter.
+  }, [index, reduced, value, timing.duration, timing.easing])
+
+  return value
+}
+
+/**
+ * `useStagger`'s value as a ready-made style: fade up into place.
+ *
+ * A translation of eight points, not twenty. The item should look like it settled, not
+ * like it flew in from off-screen — and on a grid, a long travel makes neighbouring
+ * tiles cross each other, which is the tell of an effect applied without looking at it.
+ */
+export function staggerStyle(value: Animated.Value) {
+  return {
+    opacity: value,
+    transform: [
+      {
+        translateY: value.interpolate({ inputRange: [0, 1], outputRange: [8, 0] }),
+      },
+    ],
+  }
+}

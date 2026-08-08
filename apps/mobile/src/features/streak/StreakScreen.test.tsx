@@ -19,10 +19,41 @@ const props = (over: Partial<StreakScreenProps> = {}): StreakScreenProps => ({
 })
 
 describe('StreakScreen', () => {
+  it('says nothing about a personal best when there is not one yet', () => {
+    // At zero the screen already says "No days yet" as its heading and "Finish a lesson
+    // today to start one" below it. "Longest: 0 days" between the two was the third
+    // statement of the same nothing. Same rule as the welcome screen's STILL YOURS card.
+    const { container } = render(<StreakScreen {...props({ current: 0, longest: 0 })} />)
+    expect(container.textContent).not.toContain('Longest: 0 days')
+    expect(container.textContent).toMatch(/no days yet/i)
+  })
+
+  it('does not colour a freeze count of zero as though it were progress', () => {
+    // The same lie the lesson summary told with 35 % accuracy in success green: the
+    // colour said good while the number said none. Asserted as "these differ" rather
+    // than against a hex, so a theme change is not a regression.
+    // One held, not the cap: at `MAX_FREEZES` the card swaps to "holding the maximum"
+    // and the line under test is a different branch.
+    const heldLine = (heldCount: number) => {
+      const { container } = render(<StreakScreen {...props({ freezesHeld: heldCount })} />)
+      const wanted = `${heldCount} of ${MAX_FREEZES} held`
+      const el = Array.from(container.querySelectorAll('*')).find(
+        (node) => node.textContent === wanted && node.children.length === 0,
+      )
+      expect(el, `no element rendering ${JSON.stringify(wanted)}`).toBeTruthy()
+      // `className`, not `style`: react-native-web compiles a static StyleSheet entry
+      // to a generated class and leaves the inline style attribute null, so comparing
+      // `style` here compares null with null and passes no matter what the colours are.
+      return el?.getAttribute('class')
+    }
+    expect(heldLine(0)).not.toBe(heldLine(1))
+  })
+
   it('shows the streak and the record', () => {
-    render(<StreakScreen {...props()} />)
+    // `textContent` for the record: its digits are styled apart from its words.
+    const { container } = render(<StreakScreen {...props()} />)
     expect(screen.getByText(/12 days/)).toBeTruthy()
-    expect(screen.getByText(/Longest: 40 days/)).toBeTruthy()
+    expect(container.textContent).toContain('Longest: 40 days')
   })
 
   it('names the next milestone as something to reach, not something to lose', () => {
@@ -201,9 +232,9 @@ describe('StreakScreen — offline (H7, scoped)', () => {
   })
 
   it('leaves everything that does not need a server alone', () => {
-    render(<StreakScreen {...props({ offline: true })} />)
+    const { container } = render(<StreakScreen {...props({ offline: true })} />)
     expect(screen.getByText(/12 days/)).toBeTruthy()
-    expect(screen.getByText(/Longest: 40 days/)).toBeTruthy()
+    expect(container.textContent).toContain('Longest: 40 days')
   })
 
   it('says none of it when the connection is fine', () => {

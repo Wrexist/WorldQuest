@@ -7,15 +7,16 @@
  * control is labelled, and the five states are all present.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
 import {
   AnswerOption,
   Button,
-  Card,
   ProgressBar,
   Skeleton,
+  Spacer,
   colors,
+  layout,
   radius,
   space,
   text,
@@ -57,23 +58,100 @@ type ScreenState = 'loading' | 'error' | 'empty' | 'ready'
 const FLAG_PROMPT_WIDTH = 200
 
 /**
+ * How wide the celebrating mascot is, as a fraction of the sheet.
+ *
+ * MEASURED off the reference — 320 of an 852-point screen — and kept as the RATIO rather
+ * than the 146 points it works out to at 390. A constant was tried and 320pt is what
+ * exposed it: 150 points is 38 % of a 390 screen and 47 % of a 320 one, so the small
+ * phone got a mascot half the width of the sheet, the reward chips stacked into two rows
+ * to fit beside it, and the sheet grew a third taller on the device with least room.
+ *
+ * Against the SHEET's width, not the window's: above `maxContentWidth` the sheet stops
+ * growing, and a mascot that kept scaling with a tablet's screen would burst out of it.
+ *
+ * This replaces `celebration/burst-wide`, which was built for the frame this one deletes:
+ * a confetti ribbon straddling the top edge of a card that is no longer a card in the
+ * scroll flow. `atlas/celebrate` carries its own burst, which is the reference's mechanic
+ * anyway — the confetti belongs to the character, not to the furniture. The ribbon master
+ * stays; nothing draws it today.
+ *
+ * ## And what happens when even that ratio does not fit
+ *
+ * At 390 it does. At 320 it does not: measured off the render, the XP and coin chips
+ * wrap into two rows and the lower one lands at `176–195 × 692–716`, inside the
+ * mascot's `−18–190 × 661–800`. The coin reward is printed behind Atlas's arm, and a
+ * picture of the sheet at 390 shows none of it — which is the argument for
+ * photographing 320 first.
+ *
+ * No breakpoint, because a breakpoint would be wrong in the cases that matter most: a
+ * locale with longer chip labels, or the 200 % text setting the Definition of Done
+ * requires, both cram the row at widths where a "320" threshold says there is room.
+ * The sheet asks the row whether it wrapped and believes the answer — see `WRAPPED_AT`.
+ *
+ * When it did, the mascot swaps sides at the SAME size: the text gives up its indent
+ * and takes the sheet's full width, and he moves to the end edge, where a start-aligned
+ * column of text and chips is not. Same bottom anchor, same occlusion by the button;
+ * only the side changes, because the side was the only thing in the way. Shrinking him
+ * instead was the first attempt and looked worse than the bug — he has to stand taller
+ * than the button plus its offset to be seen at all, so a mascot small enough to clear
+ * the chips was a hat peeking out from behind a button.
+ */
+const MASCOT_OF_SHEET = 0.375
+
+/**
+ * How much taller than one chip the reward row has to be before we call it wrapped.
+ *
+ * Compared against a CHIP's own measured height rather than a constant, so it holds at
+ * any text scale — the thing being detected is "two rows of chips", and two rows are
+ * always about twice one chip whatever a chip currently is. Half a chip of slack
+ * absorbs the row's own line-height rounding without reaching a second row.
+ */
+const WRAPPED_AT = 1.5
+
+/**
+ * A phone short enough that the question does not fit at its comfortable size.
+ *
+ * Measured, not chosen: at 320 wide the prompt, a locator map and four options need about
+ * 690pt. So anything under 700 is short — which includes every 320-wide phone there is
+ * (iPhone SE 1 is 320×568) and the 375×667 generation, iPhone SE 2 and 3 and the 8.
+ *
+ * This number is the correction to a claim that was written twice below and was wrong
+ * both times: "four answers still fit below it at 320pt". They fit at 320×700, which is
+ * the height this repo's screenshot harness happens to use and is a height no 320-wide
+ * phone has ever had. At 320×568 the fourth option sat at 559–618 of 568 — reachable by
+ * scrolling, and on a quiz an option you cannot see is one you do not consider.
+ */
+const SHORT_SCREEN = 700
+
+/**
  * The locator map beside a question.
  *
  * The same 200pt as the flag prompt, because it is now the same kind of object: the
  * map is framed on the country rather than on its continent, so it carries real
  * information at a glance instead of being a decorative smudge that had to be kept
- * small to avoid wasting space. Four answers still fit below it at 320pt.
+ * small to avoid wasting space.
+ *
+ * 132 on a short screen. The map is CONTEXT — the prompt already names the country in
+ * words — and the options are the interaction, so when there is not room for both at
+ * full size it is the picture that gives way. Never zero: "where in the world is this"
+ * is half of what the screen teaches.
  */
 const LOCATOR_WIDTH = 200
+const LOCATOR_WIDTH_SHORT = 132
 
 /**
  * A map question's map — the prompt itself rather than context beside one.
  *
  * 240 rather than the locator's 200: this is the only thing on screen carrying the
  * question, and the country is drawn at 46 % of the frame, so the shape a user has to
- * recognise is smaller than the picture. Four answers still fit below it at 320pt.
+ * recognise is smaller than the picture.
+ *
+ * Shrinks less than the locator on a short screen, and that asymmetry is the point: this
+ * map IS the question. 180 is the floor at which telling Norway from Sweden is still a
+ * question about a coastline rather than about eyesight.
  */
 const MAP_PROMPT_WIDTH = 240
+const MAP_PROMPT_WIDTH_SHORT = 180
 
 /**
  * What the lesson tells whoever mounted it on the way out.
@@ -119,6 +197,39 @@ export function LessonScreen({
   const t = useT()
   const { index, memory, status, reload, isOffline } = useContent()
   const [screen, setScreen] = useState<ScreenState>('loading')
+
+  // The sheet stops widening at `maxContentWidth`, so the mascot measures against that
+  // rather than against a tablet's whole screen.
+  const { width, height } = useWindowDimensions()
+  const sheetWidth = Math.min(width, layout.maxContentWidth)
+  /**
+   * Short phones get a tighter question, so all four options are on screen at once.
+   *
+   * Height rather than width, because this is the one screen in the app whose content
+   * must fit rather than scroll: an answer the user has to scroll to find is an answer
+   * they answer without. Everything it changes is decoration and breathing room; nothing
+   * it changes is a target size, so the 44pt floor holds at both settings.
+   */
+  const compact = height < SHORT_SCREEN
+
+  // Latched, never unlatched. Moving the mascot is what gives the row room to unwrap,
+  // so a flag that followed the measurement would flip back the moment it took effect
+  // and oscillate forever. Once the chips have told us they do not fit beside him, that
+  // is a fact about this screen at this width and stays true until it remounts.
+  const [rewardsWrapped, setRewardsWrapped] = useState(false)
+  const chipHeight = useRef(0)
+  const rowHeight = useRef(0)
+  // Called from BOTH `onLayout`s rather than only the row's, because their order is not
+  // guaranteed — on web these come from a ResizeObserver, and a row that measured before
+  // its chip would compare against a height of zero and conclude, permanently, that
+  // nothing wrapped. Whichever arrives second is the one that decides.
+  const measureRewards = useCallback(() => {
+    if (chipHeight.current > 0 && rowHeight.current > chipHeight.current * WRAPPED_AT) {
+      setRewardsWrapped(true)
+    }
+  }, [])
+  const mascot = Math.round(sheetWidth * MASCOT_OF_SHEET)
+
 
   // Sized from the user's own pace, not a hardcoded ten. `lessonLength` aims at a
   // two-minute lesson so that "five minutes a day" is a real promise rather than a
@@ -361,7 +472,13 @@ export function LessonScreen({
         )}
       </View>
 
-      <ScrollView contentContainerStyle={styles.body}>
+      <ScrollView contentContainerStyle={[styles.body, compact && styles.bodyShort]}>
+        {/* Centred by spacers, not by `justifyContent` — see `Spacer`. A two-option
+            question should not cling to the top of a tall phone, and at 320×568 the
+            prompt plus a map plus four options overflow, which is where centring with
+            `justifyContent` puts the prompt above scroll position zero and out of reach.
+            Measured before the change: option four sat at 535–594 of 568. */}
+        <Spacer />
         <Text style={styles.prompt} role="heading">
           {/* The prompt key and its params come from the question template in the
               content pack, so they are validated by `pnpm content:validate` rather
@@ -411,7 +528,15 @@ export function LessonScreen({
               // A map question's map is the prompt, so it gets the same width as the
               // flag prompt does — big enough that telling Norway from Sweden is a
               // question about the coastline rather than about eyesight.
-              width={question.modality === 'map' ? MAP_PROMPT_WIDTH : LOCATOR_WIDTH}
+              width={
+                question.modality === 'map'
+                  ? compact
+                    ? MAP_PROMPT_WIDTH_SHORT
+                    : MAP_PROMPT_WIDTH
+                  : compact
+                    ? LOCATOR_WIDTH_SHORT
+                    : LOCATOR_WIDTH
+              }
               // Labelled ONLY when it is the question. Beside a capital-city question
               // the prompt already names the country in words, so a reader announcing
               // the map would repeat it. Here nothing else says what is on screen —
@@ -503,51 +628,7 @@ export function LessonScreen({
           })}
         </View>
 
-        {answered && (
-          <Card level={2} style={styles.feedback}>
-            {lastAnswer?.wasCorrect ? (
-              <>
-                <Text style={styles.feedbackTitleOk}>{t('lesson:feedback.correct.title')}</Text>
-                <View style={styles.rewards}>
-                  <Stat
-                    kind="xp"
-                    value={`+${lastAward?.xp ?? 0}`}
-                    accessibilityLabel={t('lesson:reward.xp', { amount: lastAward?.xp ?? 0 })}
-                  />
-                  <Stat
-                    kind="coin"
-                    value={`+${lastAward?.coins ?? 0}`}
-                    accessibilityLabel={t('lesson:reward.coins', { amount: lastAward?.coins ?? 0 })}
-                  />
-                </View>
-              </>
-            ) : (
-              // Never "Wrong!". State the truth, name the right answer, move on.
-              <>
-                <Text style={styles.feedbackTitle}>
-                  {/* A timeout has no chosen option. "That's undefined." is what the
-                      normal branch would render, and the clock running out is not the
-                      user choosing wrongly — it deserves its own neutral sentence. */}
-                  {lastAnswer?.chosenOptionId == null
-                    ? t('lesson:speed.timeUp')
-                    : t('lesson:feedback.wrong.title', {
-                        chosen: chosenLabel(question, lastAnswer.chosenOptionId),
-                      })}
-                </Text>
-                <Text style={styles.feedbackBody}>
-                  {question.hint
-                    ? t('lesson:feedback.wrong.body', {
-                        correct: question.options.find((o) => o.isCorrect)?.label ?? '',
-                        hint: question.hint,
-                      })
-                    : t('lesson:feedback.wrong.bodyPlain', {
-                        correct: question.options.find((o) => o.isCorrect)?.label ?? '',
-                      })}
-                </Text>
-              </>
-            )}
-          </Card>
-        )}
+        <Spacer />
       </ScrollView>
 
       {answered && (
@@ -570,7 +651,118 @@ export function LessonScreen({
               }}
             />
           ) : (
-            <Button label={t('common:continue')} onPress={lesson.advance} />
+            /* The verdict, the reward and the way onward as ONE pinned sheet.
+   
+               Measured off the reference rather than eyeballed: the mascot is 37.5 % of
+               the screen wide, sits ~7 % in from the edge, and its lower body is
+               OCCLUDED BY THE BUTTON rather than cropped by the panel — it leans out
+               from behind the furniture, which is what makes it read as arriving rather
+               than as a sticker placed in a box.
+   
+               The first reading of that reference was wrong and the measurement caught
+               it: the mascot's top is 89 px BELOW the panel edge, so it does not break
+               the top edge at all. Two of the three grafted mechanics would have been
+               built around a thing that was not happening.
+   
+               This block used to sit in the scroll flow with the button pinned beneath
+               it, so the praise and the way onward were two objects with a gap between
+               them. One sheet is the mechanic worth taking. */
+            <View style={styles.sheet}>
+              {/* Behind the button because it is drawn BEFORE it and positioned to
+                  overlap — later siblings paint on top, so the occlusion is the layout
+                  rather than a mask. Decorative: the sheet already says what happened
+                  and reads out the reward, and a screen reader announcing the mascot
+                  after every answer is the definition of noise.
+
+                  He appears on BOTH verdicts, which he did not before. Correct got
+                  Atlas cheering and wrong got two lines of text and a button, so the
+                  character turned up only when you were already pleased — and the
+                  screen where "gentle settle, we don't punish" is the actual rule was
+                  the coldest surface in the app. `encouraging` and not `celebrate`:
+                  the register changes, the presence does not.
+
+                  On the end side when wrong, because that copy is a full sentence
+                  naming the right answer rather than one word of praise, and a sentence
+                  reads better against the start edge than indented past a mascot. */}
+              <View
+                style={[
+                  lastAnswer?.wasCorrect === true && !rewardsWrapped
+                    ? styles.sheetMascot
+                    : styles.sheetMascotEnd,
+                  { width: mascot },
+                ]}
+                pointerEvents="none"
+              >
+                <Art
+                  name={lastAnswer?.wasCorrect === true ? 'atlas/celebrate' : 'atlas/encouraging'}
+                  size={mascot}
+                />
+              </View>
+              <View
+                style={
+                  lastAnswer?.wasCorrect === true && !rewardsWrapped
+                    ? [styles.sheetText, { paddingStart: mascot - space[3] }]
+                    : [styles.sheetText, { paddingEnd: mascot - space[3] }]
+                }
+              >
+                {lastAnswer?.wasCorrect ? (
+            <>
+              <Text style={styles.feedbackTitleOk}>{t('lesson:feedback.correct.title')}</Text>
+              <View
+                style={styles.rewards}
+                onLayout={(e) => {
+                  rowHeight.current = e.nativeEvent.layout.height
+                  measureRewards()
+                }}
+              >
+                {/* One chip measures itself so the row above knows what one row is. */}
+                <View
+                  onLayout={(e) => {
+                    chipHeight.current = e.nativeEvent.layout.height
+                    measureRewards()
+                  }}
+                >
+                  <Stat
+                    kind="xp"
+                    value={`+${lastAward?.xp ?? 0}`}
+                    accessibilityLabel={t('lesson:reward.xp', { amount: lastAward?.xp ?? 0 })}
+                  />
+                </View>
+                <Stat
+                  kind="coin"
+                  value={`+${lastAward?.coins ?? 0}`}
+                  accessibilityLabel={t('lesson:reward.coins', { amount: lastAward?.coins ?? 0 })}
+                />
+              </View>
+            </>
+          ) : (
+            // Never "Wrong!". State the truth, name the right answer, move on.
+            <>
+              <Text style={styles.feedbackTitle}>
+                {/* A timeout has no chosen option. "That's undefined." is what the
+                    normal branch would render, and the clock running out is not the
+                    user choosing wrongly — it deserves its own neutral sentence. */}
+                {lastAnswer?.chosenOptionId == null
+                  ? t('lesson:speed.timeUp')
+                  : t('lesson:feedback.wrong.title', {
+                      chosen: chosenLabel(question, lastAnswer.chosenOptionId),
+                    })}
+              </Text>
+              <Text style={styles.feedbackBody}>
+                {question.hint
+                  ? t('lesson:feedback.wrong.body', {
+                      correct: question.options.find((o) => o.isCorrect)?.label ?? '',
+                      hint: question.hint,
+                    })
+                  : t('lesson:feedback.wrong.bodyPlain', {
+                      correct: question.options.find((o) => o.isCorrect)?.label ?? '',
+                    })}
+              </Text>
+            </>
+          )}
+              </View>
+              <Button label={t('common:continue')} onPress={lesson.advance} />
+            </View>
           )}
         </View>
       )}
@@ -742,22 +934,77 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   clockFill: { height: '100%', backgroundColor: colors.status.streak },
-  screen: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[4] },
+  screen: { flex: 1, padding: space[4], gap: space[4] },
   centered: { alignItems: 'center', justifyContent: 'center' },
   flex: { flex: 1 },
   header: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
-  body: { gap: space[5], paddingBottom: space[6] },
+  // `flexGrow` + `center` so a question shorter than the screen sits in the middle of
+  // it rather than jammed under the progress bar with half the display empty beneath.
+  // On a tablet that empty half was 45 % of the screen; on a phone the content is
+  // taller than the viewport, `flexGrow` has nothing to grow into, and this is inert —
+  // which is why it is safe to apply everywhere instead of behind a width test.
+  body: { gap: space[5], paddingBottom: space[6], flexGrow: 1 },
+  // The gap and the tail, tightened. `space[6]` of padding under the last option exists so
+  // the feedback sheet does not appear to grow out of it; on a short screen that padding
+  // is the difference between four options and three, and the sheet has a surface and a
+  // shadow of its own to separate it.
+  bodyShort: { gap: space[3], paddingBottom: space[4] },
   prompt: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
   promptArt: { alignItems: 'center' },
   options: { gap: space[2] },
   feedback: { gap: space[2] },
+  // A positioning context for the confetti, which is drawn behind the card and is
+  // deliberately allowed to overflow it — nothing here clips.
+  // The pinned sheet: verdict, reward and the way onward in one block.
+  // `overflow: hidden` so the mascot is clipped by the sheet's own rounded corners rather
+  // than hanging outside it, and `position: relative` so its absolute child measures
+  // against this rather than the screen.
+  sheet: {
+    position: 'relative',
+    overflow: 'hidden',
+    gap: space[3],
+    padding: space[4],
+    // Taller at the top than the sides, so the mascot has room to stand up to the
+    // heading rather than topping out at the reward chips. Measured against the
+    // reference, whose panel is a quarter of the screen tall where ours was a fifth.
+    paddingTop: space[5],
+    borderRadius: radius.lg,
+    backgroundColor: colors.bg.surfaceRaised,
+  },
+  // Anchored so the feet land INSIDE the button's band rather than on the sheet's floor.
+  // The button is a later sibling in normal flow, so it paints over — that overlap is the
+  // whole mechanic, and a mascot that stops neatly above the button is a sticker. At
+  // `bottom: 0` the feet cleared the button's underside and reappeared in the sheet's
+  // bottom padding as a smudge; 24 puts them safely behind it.
+  //
+  // Inset from the sheet's edge rather than flush to it, because the mascot's glow is
+  // part of the art and `overflow: hidden` was slicing it off. 12 against the sheet's own
+  // 16 of screen inset puts the mascot ~7 % in from the screen edge, which is where the
+  // reference has it.
+  sheetMascot: { position: 'absolute', insetInlineStart: space[3], bottom: space[5] },
+  // The other side, for when the chips need the start edge. `insetInlineEnd` and not
+  // `right`: this mirrors in RTL, and it has to — the text it is getting out of the way
+  // of mirrors too, so a mascot pinned to a physical edge would be standing on the copy
+  // in Arabic and nowhere near it in English.
+  sheetMascotEnd: { position: 'absolute', insetInlineEnd: space[3], bottom: space[5] },
+  // Clear of the mascot. The reference lets its text start 32px inside the mascot's
+  // bounding box, because a mascot's box is wider than its shoulders — so this leans on
+  // the same slack rather than adding the full width.
+  sheetText: { gap: space[2] },
   feedbackTitle: { ...text('h3'), color: colors.text.primary },
   feedbackTitleOk: { ...text('h2'), color: colors.feedback.correct },
-  feedbackBody: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
+  // Start-aligned, not centred. It was centred when this lived in a centred card; the
+  // sheet is a left-anchored column now and a centred sentence under a left-aligned
+  // heading reads as two blocks that were never introduced.
+  feedbackBody: { ...text('body'), color: colors.text.secondary },
 
   close: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   closeGlyph: { ...text('h3'), color: colors.text.secondary },
-  rewards: { flexDirection: 'row', gap: space[2], justifyContent: 'center' },
+  // `flex-start` and wrapping, for the same reason: the chips belong to the column
+  // beside the mascot, and centring them in the sheet's full width floated them away
+  // from the heading they belong to. Wrapping because at 200 % text two chips do not
+  // share a row that is already 150 points narrower than the sheet.
+  rewards: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
   footer: { paddingBottom: space[4] },
   retry: { marginTop: space[4] },
   offline: {

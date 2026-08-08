@@ -16,7 +16,17 @@ import { fontFamily, text } from '../typography.js'
 // ── avatar ──────────────────────────────────────────────────────────────────
 
 export type AvatarProps = {
-  /** Initials until the illustrated avatar set is commissioned. */
+  /**
+   * The chosen avatar portrait, clipped to the circle.
+   *
+   * A node rather than a source, for the same reason `StatChip` takes its icon that
+   * way: the artwork is an app asset and this package must not import from the app.
+   * Absent falls back to `initials`, which is not a placeholder — it is the accessible
+   * default this component was built around, and the answer for anyone who has not
+   * chosen a face.
+   */
+  image?: React.ReactNode
+  /** Initials, when no portrait has been chosen. */
   initials?: string
   size?: number
   /**
@@ -36,7 +46,13 @@ export type AvatarProps = {
   accessibilityLabel: string
 }
 
-export function Avatar({ initials = '', size = 40, ringed = true, accessibilityLabel }: AvatarProps) {
+export function Avatar({
+  image,
+  initials = '',
+  size = 40,
+  ringed = true,
+  accessibilityLabel,
+}: AvatarProps) {
   return (
     <View
       accessible
@@ -48,10 +64,14 @@ export function Avatar({ initials = '', size = 40, ringed = true, accessibilityL
           height: size,
           borderRadius: size / 2,
           borderWidth: ringed ? 2 : 0,
+          // Clipped only when there is a portrait to clip. The initials draw inside the
+          // circle already, and `overflow: hidden` on every avatar would be a rule that
+          // exists for one branch.
+          ...(image !== undefined ? { overflow: 'hidden' as const } : {}),
         },
       ]}
     >
-      <Text style={[styles.avatarText, { fontSize: size * 0.4 }]}>{initials}</Text>
+      {image ?? <Text style={[styles.avatarText, { fontSize: size * 0.4 }]}>{initials}</Text>}
     </View>
   )
 }

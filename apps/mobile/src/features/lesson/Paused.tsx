@@ -64,8 +64,15 @@ export function Paused({ answered, onResume, onFinish }: PausedProps) {
           {answered > 0 ? t('lesson:paused.kept', { count: answered }) : t('lesson:paused.body')}
         </Text>
 
+        {/* One invitation and one exit, not two invitations. These were primary green
+            and secondary blue — both solid, both the same weight, both leaning forward
+            — so a card whose whole job is "take your time" opened with two equally
+            confident buttons. `tertiary` is the outlined skin: still obviously
+            pressable, no longer competing. Not `ghost`, which is for the actions we
+            offer without inviting; stopping a lesson is a real choice and a user who
+            needs it has to be able to find it. */}
         <Button label={t('lesson:paused.resume')} onPress={onResume} />
-        <Button label={t('lesson:paused.finish')} variant="secondary" onPress={onFinish} />
+        <Button label={t('lesson:paused.finish')} variant="tertiary" onPress={onFinish} />
       </Card>
     </View>
   )
@@ -80,7 +87,6 @@ const styles = StyleSheet.create({
   // score. "Covered" has to mean not rendered, or it only covers it for some users.
   backdrop: {
     flex: 1,
-    backgroundColor: colors.bg.canvas,
     alignItems: 'center',
     justifyContent: 'center',
     padding: space[5],

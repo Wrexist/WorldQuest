@@ -1,8 +1,8 @@
 {
   "welcome:title": "The world missed you",
   "welcome:title__note": "Headline for a user returning after a week or more. Warm, and about US missing THEM — never about what they failed to do.",
-  "welcome:body": "{days, plural, one {It's been a day} other {It's been # days}}. Everything you learned is still here.",
-  "welcome:body__note": "Reassurance on return. The second sentence is the important one: returning users fear their progress is gone.",
+  "welcome:body": "{days, plural, =0 {Good to see you again} one {It's been a day} other {It's been # days}}. Everything you learned is still here.",
+  "welcome:body__note": "Reassurance on return. The second sentence is the important one: returning users fear their progress is gone. The =0 case is not dead — this screen is deep-linkable from the 'we miss you' notification, and someone who taps it the same afternoon was reading 'It's been 0 days.', which is a sentence that says nothing happened.",
   "welcome:kept.title": "Still yours",
   "welcome:kept.title__note": "Heading above the counts a returning user keeps.",
   "welcome:kept.facts": "{count, plural, one {# fact learned} other {# facts learned}}",

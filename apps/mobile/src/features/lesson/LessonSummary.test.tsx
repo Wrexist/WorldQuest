@@ -7,7 +7,7 @@
  */
 
 import { describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { factsStrengthened } from '@worldquest/engines'
 import type { GradeResult, Mastery } from '@worldquest/engines'
 import { LessonSummary, outcomeOf } from './LessonSummary.js'
@@ -107,6 +107,24 @@ describe('LessonSummary — the numbers', () => {
     const tile = screen.getByTestId('summary-accuracy')
     expect(tile.getAttribute('aria-label')).toBe('7 of 10 right — 70 percent')
     expect(tile.textContent).toContain('70%')
+  })
+
+  it('does not print a poor score in the colour it uses for good news', () => {
+    // The review caught this on a rendered summary: 35 % accuracy in the same green as
+    // "Perfect!", a completed bar and every other good thing in the app. Colour means
+    // one thing per the design system, and here it meant the opposite of the number.
+    //
+    // The two sides are asserted against EACH OTHER rather than against a hex literal.
+    // The claim is "these differ"; pinning the token's current value would make a
+    // theme change look like a regression, which is how a colour test rots.
+    summary({ items: 10, correct: 3, accuracy: 0.3 })
+    const poor = screen.getByText('30%').getAttribute('style')
+    cleanup()
+
+    summary({ items: 10, correct: 9, accuracy: 0.9 })
+    const strong = screen.getByText('90%').getAttribute('style')
+
+    expect(poor).not.toBe(strong)
   })
 
   it('counts only the facts that moved forward', () => {

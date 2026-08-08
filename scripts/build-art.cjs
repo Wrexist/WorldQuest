@@ -45,7 +45,7 @@
 const { chromium } = require('playwright')
 const { launchOptions } = require('./chromium.cjs')
 const { token } = require('./tokens.cjs')
-const { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } = require('node:fs')
+const { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync, statSync } = require('node:fs')
 const { join, dirname } = require('node:path')
 
 const ROOT = join(__dirname, '..')
@@ -188,28 +188,80 @@ const APP_ICONS = [
   },
 ]
 
-/** Illustrations, by the name the app refers to them by. */
-const ILLUSTRATIONS = [
-  'atlas/welcome',
-  'atlas/celebrate',
-  'atlas/thinking',
-  'atlas/encouraging',
-  'atlas/waving-back',
-  'atlas/broken-compass',
-  'atlas/resting',
-  'onboarding/explore',
-  'onboarding/learn',
-  'onboarding/conquer',
-  'states/empty-caught-up',
-  'states/empty-no-friends',
-  'states/empty-profile',
-  'states/empty-collection',
-  'states/error-generic',
-  'states/offline',
-  'states/hearts-empty',
-  'celebration/burst',
-  'celebration/rays',
+/**
+ * Illustrations, DISCOVERED from the master library rather than listed here.
+ *
+ * It was a hardcoded array of nineteen names, which was fine while nineteen was the
+ * number. A delivery of fifty-eight more made it a list nobody would keep in step: an
+ * artist drops a PNG in `docs/design/assets/rewards/` and nothing ships it, with no
+ * error, because a name that is absent from an array looks exactly like a name that
+ * was never drawn. Same failure mode as the screenshot harness's hardcoded frame list,
+ * and the same fix — read the directory.
+ *
+ * Explicit directories rather than a recursive walk, because this folder also holds
+ * things that must NOT ship: `screens/` is the rendered screenshot record, `app/` and
+ * `brand/` are masters the four platform icons are derived from above, and
+ * `mockup-v1.png` is a 15-screen design reference.
+ */
+const ART_DIRS = [
+  'atlas',
+  'onboarding',
+  'states',
+  'celebration',
+  'achievements',
+  'avatars',
+  'continents',
+  'leagues',
+  'levels',
+  'rewards',
 ]
+
+/**
+ * Masters that exist and are deliberately not shipped.
+ *
+ * The list and its reasons live in `art-manifest.cjs`, shared with `import-art.cjs`. That
+ * script has to tell a PARKED master apart from an UNMAPPED one — they look identical on
+ * disk and mean opposite things — and with one list neither script can disagree with the
+ * other about which is which.
+ */
+const NOT_SHIPPED = new Set(Object.keys(require('./art-manifest.cjs').NOT_SHIPPED))
+
+const ILLUSTRATIONS = ART_DIRS.flatMap((dir) =>
+  readdirSync(join(MASTERS, dir))
+    .filter((f) => f.endsWith('.png'))
+    .map((f) => `${dir}/${f.replace(/\.png$/, '')}`)
+    .filter((name) => !NOT_SHIPPED.has(name))
+    .sort(),
+)
+
+/**
+ * The continents are full-bleed backgrounds, not subjects on transparency.
+ *
+ * `cover` and opaque: a continent card is a filled panel with real Natural Earth
+ * geometry composited on top (asset-prompts.md §8), so letterboxing it onto the canvas
+ * colour like a mascot would leave bands down either side of the card.
+ */
+const isBackground = (name) => name.startsWith('continents/')
+
+/**
+ * How wide-to-tall a master's *content* has to be before it is trimmed to it.
+ *
+ * Every generator here returns a 3:2 frame, whatever was asked for. That is right for a
+ * subject — Atlas has margin around him and the margin is part of the composition — and
+ * wrong for a banner: `celebration/burst-wide` is a confetti ribbon 1536×237 sitting in
+ * the middle of a 1536×1024 frame, so 77 % of the shipped file is empty pixels and the
+ * band arrives 23 % as tall as the box the app draws it in. Rendered behind the lesson's
+ * feedback card it vanished completely — the card is opaque and the band was centred
+ * exactly underneath it.
+ *
+ * MEASURED, like the feather below, not listed. A master whose content bbox is at least
+ * this wide relative to its height is a banner and is trimmed to that bbox; everything
+ * else keeps its frame untouched. 4:1 is well clear of the 3:2 the illustrations arrive
+ * at and of any subject that happens to sit wide in frame, so the rule fires on ribbons
+ * and nothing else — and if a future banner is delivered pre-trimmed, the bbox already
+ * fills the frame, the trim is a no-op, and nobody has to remember to edit a list.
+ */
+const BANNER_ASPECT = 4
 
 /**
  * Draw one master into a canvas and read the bytes back.
@@ -225,15 +277,68 @@ async function render(page, sourceBytes, spec) {
   const height = spec.height ?? spec.size ?? null
 
   return page.evaluate(
-    async ({ dataUrl, width, height: requested, fit, opaque, inset, canvasColor, format, quality }) => {
+    async ({ dataUrl, width, height: requested, fit, opaque, inset, canvasColor, format, quality, bannerAspect }) => {
       let height = requested
       const img = new Image()
       img.src = dataUrl
       await img.decode()
 
+      // The source rectangle, which is the whole master unless it turns out to be a
+      // banner — see BANNER_ASPECT.
+      let sx = 0
+      let sy = 0
+      let sw = img.width
+      let sh = img.height
+
+      if (bannerAspect !== undefined) {
+        // Measured on a downscaled copy: the bbox only has to be right to within a
+        // pixel of the master, and reading 1.5 M pixels once per rung per image is
+        // minutes of nothing. The result is padded by one probe cell before it is
+        // mapped back, so the downscale's own smoothing cannot shave a confetto.
+        const PROBE = 256
+        const probe = document.createElement('canvas')
+        probe.width = PROBE
+        probe.height = Math.max(1, Math.round((PROBE * img.height) / img.width))
+        const pctx = probe.getContext('2d')
+        pctx.drawImage(img, 0, 0, probe.width, probe.height)
+        const pixels = pctx.getImageData(0, 0, probe.width, probe.height).data
+
+        let x0 = probe.width
+        let y0 = probe.height
+        let x1 = -1
+        let y1 = -1
+        for (let y = 0; y < probe.height; y++) {
+          for (let x = 0; x < probe.width; x++) {
+            if (pixels[(y * probe.width + x) * 4 + 3] > 8) {
+              if (x < x0) x0 = x
+              if (x > x1) x1 = x
+              if (y < y0) y0 = y
+              if (y > y1) y1 = y
+            }
+          }
+        }
+
+        if (x1 >= x0 && y1 >= y0) {
+          const scaleBack = img.width / probe.width
+          const pad = 1
+          const bx = Math.max(0, Math.floor((x0 - pad) * scaleBack))
+          const by = Math.max(0, Math.floor((y0 - pad) * scaleBack))
+          const bw = Math.min(img.width - bx, Math.ceil((x1 - x0 + 1 + pad * 2) * scaleBack))
+          const bh = Math.min(img.height - by, Math.ceil((y1 - y0 + 1 + pad * 2) * scaleBack))
+          // Both conditions, not just the aspect: a master already delivered as a tight
+          // ribbon would pass the aspect test and gain nothing from being re-cropped.
+          if (bh > 0 && bw / bh >= bannerAspect && bh < img.height * 0.75) {
+            sx = bx
+            sy = by
+            sw = bw
+            sh = bh
+          }
+        }
+      }
+
       const canvas = document.createElement('canvas')
       canvas.width = width
-      canvas.height = height ?? Math.round((width * img.height) / img.width)
+      canvas.height = height ?? Math.round((width * sh) / sw)
       height = canvas.height
       const ctx = canvas.getContext('2d')
 
@@ -246,13 +351,13 @@ async function render(page, sourceBytes, spec) {
       // drawn art within the frame without changing the frame.
       const scale =
         fit === 'cover'
-          ? Math.max(width / img.width, height / img.height)
-          : Math.min(width / img.width, height / img.height) * (inset ?? 1)
+          ? Math.max(width / sw, height / sh)
+          : Math.min(width / sw, height / sh) * (inset ?? 1)
 
-      const w = img.width * scale
-      const h = img.height * scale
+      const w = sw * scale
+      const h = sh * scale
       ctx.imageSmoothingQuality = 'high'
-      ctx.drawImage(img, (width - w) / 2, (height - h) / 2, w, h)
+      ctx.drawImage(img, sx, sy, sw, sh, (width - w) / 2, (height - h) / 2, w, h)
 
       // Feather a baked-in background, if there is one.
       //
@@ -309,8 +414,91 @@ async function render(page, sourceBytes, spec) {
       canvasColor: CANVAS,
       format: spec.format ?? 'image/png',
       quality: spec.quality,
+      bannerAspect: spec.bannerAspect,
     },
   )
+}
+
+/**
+ * Where the subject actually is inside a shipped illustration.
+ *
+ * Returned normalised — `{ aspect, x, y, w, h }` with the box in fractions of the
+ * image's own width and height — because the app never learns an asset's pixel
+ * dimensions and should not have to.
+ *
+ * ## Why the app needs this
+ *
+ * Every master is a subject inside a 3:2 frame with a generous transparent margin, and
+ * the margin is not small: `atlas/thinking` is 274×314 of a 768×512 file, so drawing the
+ * FRAME at 84pt drew ATLAS at about 34. Measured across the set, the subject filled
+ * 38–62 % of the box a screen asked for. That is the whole of "the mockup is image-led
+ * and the app is text-led" in one number — the art was landed, sized to the brief, and
+ * still arrived at half scale everywhere, because `size` meant the empty frame.
+ *
+ * The alternative was to trim every master to its content the way a banner is trimmed.
+ * That was rejected on measurement, not taste: trimming keeps the pixel width and throws
+ * away the empty part, so the same 768px carries strictly more detail and the files grow.
+ * `celebration/burst` already sits on the 120 KB budget at the bottom of the ladder. The
+ * geometry costs nothing — it is four numbers per asset in a file that is generated
+ * anyway — and it leaves the shipped bytes exactly as they were.
+ */
+async function measure(page, webpBytes) {
+  return page.evaluate(async (dataUrl) => {
+    const img = new Image()
+    img.src = dataUrl
+    await img.decode()
+
+    const canvas = document.createElement('canvas')
+    canvas.width = img.width
+    canvas.height = img.height
+    const ctx = canvas.getContext('2d')
+    ctx.drawImage(img, 0, 0)
+    const pixels = ctx.getImageData(0, 0, img.width, img.height).data
+
+    // 24, not 0: WebP is lossy, so a transparent margin comes back with a scatter of
+    // alpha-1..8 noise in it. At 0 the "subject" of every asset is the whole frame and
+    // this measures nothing.
+    let x0 = img.width
+    let y0 = img.height
+    let x1 = -1
+    let y1 = -1
+    for (let y = 0; y < img.height; y++) {
+      for (let x = 0; x < img.width; x++) {
+        if (pixels[(y * img.width + x) * 4 + 3] > 24) {
+          if (x < x0) x0 = x
+          if (x > x1) x1 = x
+          if (y < y0) y0 = y
+          if (y > y1) y1 = y
+        }
+      }
+    }
+
+    // A fully opaque asset — a continent card — has no margin to find, and a fully
+    // transparent one would be a bug elsewhere. Both come back as the whole frame, which
+    // is the behaviour the app had before this existed.
+    const whole = { aspect: img.width / img.height, x: 0, y: 0, w: 1, h: 1 }
+    if (x1 < x0 || y1 < y0) return whole
+
+    const w = (x1 - x0 + 1) / img.width
+    const h = (y1 - y0 + 1) / img.height
+
+    // A picture that already fills its frame is reported as filling its frame, exactly.
+    //
+    // Not a rounding nicety — this is the difference between the feather working and not.
+    // `states/empty-profile`, `states/empty-no-friends`, `atlas/resting` and
+    // `atlas/welcome` carry a baked ground, and the build ramps their outer eighth to
+    // transparent so the edge does not read as a rectangle pasted onto the canvas. That
+    // ramp measures as margin here: the box came back at ~95 %, the app scaled the image
+    // up by the missing 5 % to make the "subject" fit, and the frame clipped the ramp
+    // clean off — a hard-edged dark rectangle, which is the exact bug the feather exists
+    // to prevent, reintroduced from the other end.
+    //
+    // 85 % separates the two populations with room to spare: a baked ground measures 92–100 %
+    // and a cutout measures 36–73 %. Nothing in the set sits between.
+    if (w >= 0.85 && h >= 0.85) return whole
+
+    return { aspect: img.width / img.height, x: x0 / img.width, y: y0 / img.height, w, h }
+  }, `data:image/webp;base64,${webpBytes.toString('base64')}`)
 }
 
 const write = (path, dataUrl) => {
@@ -320,16 +508,59 @@ const write = (path, dataUrl) => {
 }
 
 /**
+ * Art the app EXPECTS and does not have.
+ *
+ * A missing illustration is silent in a way an extra one is not. `<Art>` will not compile
+ * against a name that does not exist, so the code simply never asks — and the screen
+ * renders without a picture, which looks like a design decision. `ProfileScreen`'s
+ * `insigniaFor` returns null for a rank with no file precisely so that a gap degrades
+ * gracefully; the cost of degrading gracefully is that nobody notices.
+ *
+ * Level 100 has had no insignia since the set was delivered, and the delivery contained a
+ * "Pioneer" that is not a rank instead. That mismatch survived because nothing said it
+ * out loud. This says it, every build.
+ *
+ * A warning rather than a failure: a missing asset must not stop everyone else's build,
+ * and there is nothing a developer can do about it in the moment. `/wq-ship-check` is
+ * where a gap should block, because that is the point at which someone can commission it.
+ */
+function reportGaps() {
+  const ladder = Object.keys(
+    JSON.parse(readFileSync(join(ROOT, 'packages', 'i18n', 'locales', 'en', 'titles.json'), 'utf8')),
+  )
+    .filter((key) => !key.endsWith('__note'))
+    .map((key) => key.slice('titles:'.length))
+
+  const missing = ladder.filter(
+    (rank) => !existsSync(join(MASTERS, 'levels', `${rank}.png`)),
+  )
+  if (missing.length === 0) return
+
+  console.log(
+    `\n⚠ ${missing.length} rank insignia missing: ${missing.join(', ')}` +
+      '\n\n  The ladder is docs/systems/progression.md §1 and the prompt is asset-prompts.md §12.' +
+      '\n  Nothing breaks — `insigniaFor` returns null and the rank renders without art — which' +
+      '\n  is exactly why this needs saying out loud. Drop the PNG into docs/design/assets/levels' +
+      '\n  and re-run; the masters are discovered, so no list needs editing.',
+  )
+}
+
+/**
  * The index, generated for the same reason the flags' is.
  *
  * Metro resolves assets at BUILD time, so every import specifier has to be a literal —
  * a computed `require(`../../assets/art/${name}.webp`)` bundles nothing and fails at
  * runtime rather than at build. Nineteen literals is not something to maintain by hand.
  */
-function writeIndex(names) {
+function writeIndex(names, geometry) {
   const ident = (n) => n.replace(/[/-]([a-z])/g, (_, c) => c.toUpperCase()).replace(/[/-]/g, '')
   const imports = names.map((n) => `import ${ident(n)} from '../../assets/art/${n}.webp'`)
   const entries = names.map((n) => `  '${n}': ${ident(n)},`)
+  const round = (v) => Number(v.toFixed(4))
+  const geometryEntries = names.map((n) => {
+    const g = geometry[n]
+    return `  '${n}': { aspect: ${round(g.aspect)}, x: ${round(g.x)}, y: ${round(g.y)}, w: ${round(g.w)}, h: ${round(g.h)} },`
+  })
 
   writeFileSync(
     INDEX,
@@ -352,6 +583,26 @@ ${entries.join('\n')}
 
 /** Every illustration this build ships. */
 export type ArtName = keyof typeof ART_BY_NAME
+
+/**
+ * Where the subject sits inside each illustration, as fractions of the image.
+ *
+ * \`aspect\` is width ÷ height; \`x\`/\`y\`/\`w\`/\`h\` are the opaque content's bounding box.
+ * MEASURED off the shipped WebP, so it already accounts for anything the build did to
+ * the master. \`<Art>\` uses it to size the SUBJECT rather than the frame — see the note
+ * on \`measure()\` in scripts/build-art.cjs for why that gap was worth closing.
+ */
+export type ArtGeometry = {
+  readonly aspect: number
+  readonly x: number
+  readonly y: number
+  readonly w: number
+  readonly h: number
+}
+
+export const ART_GEOMETRY = {
+${geometryEntries.join('\n')}
+} as const satisfies Readonly<Record<ArtName, ArtGeometry>>
 `,
   )
 }
@@ -366,6 +617,7 @@ export type ArtName = keyof typeof ART_BY_NAME
   const missing = []
   const over = []
   const stale = []
+  const geometry = {}
   let bytes = 0
 
   for (const spec of APP_ICONS) {
@@ -395,12 +647,27 @@ export type ArtName = keyof typeof ART_BY_NAME
     // count over it would have made every line report its own weight as its resolution.
     let chosen = null
     for (const rung of LADDER) {
-      const written = write(out, await render(page, master, { ...ILLUSTRATION, ...rung, fit: 'cover' }))
+      // `opaque` for a background, and it is not cosmetic: the edge feather below only
+      // runs when `opaque` is false, and feathering a full-bleed continent card would
+      // fade its own edges to transparent — the opposite of what it is for.
+      const written = write(
+        out,
+        await render(page, master, {
+          ...ILLUSTRATION,
+          ...rung,
+          fit: 'cover',
+          opaque: isBackground(name),
+          bannerAspect: BANNER_ASPECT,
+        }),
+      )
       chosen = { ...rung, bytes: written }
       if (written <= ILLUSTRATION.budget) break
     }
 
     bytes += chosen.bytes
+    // Off the file that was actually written, not off the master: the ladder may have
+    // changed its width, and a banner was cropped.
+    geometry[name] = await measure(page, readFileSync(out))
     const allowed = ALLOWANCE[name]
     const ceiling = allowed ? allowed.max : ILLUSTRATION.budget
     if (chosen.bytes > ceiling) {
@@ -449,6 +716,7 @@ export type ArtName = keyof typeof ART_BY_NAME
     process.exit(1)
   }
 
-  writeIndex(ILLUSTRATIONS)
+  writeIndex(ILLUSTRATIONS, geometry)
   console.log(`\n✓ ${APP_ICONS.length} app icons + ${ILLUSTRATIONS.length} illustrations · ${(bytes / 1024 / 1024).toFixed(2)} MB total`)
+  reportGaps()
 })()

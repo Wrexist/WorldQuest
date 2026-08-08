@@ -46,13 +46,28 @@ const walk = (dir: string): string[] =>
     return /\.tsx?$/.test(full) && !/\.test\.tsx?$/.test(full) ? [full] : []
   })
 
+/**
+ * Comments out, before anything is matched.
+ *
+ * Every rule below is a regex over raw source, and prose is source. `// the rule is
+ * right: an iOS-only shadow…` matched the RTL rule's `right\s*:` and failed the gate on
+ * a sentence — with no style property anywhere near it.
+ *
+ * That is worse than a wasted minute. A gate that fires on prose teaches people to
+ * reword the comment, and rewording is indistinguishable from fixing; the next real
+ * `right:` gets edited away just as easily. `scripts/five-states.ts` learned the same
+ * lesson and grew the same function.
+ */
+const stripProse = (code: string): string =>
+  code.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/^\s*\/\/.*$/gm, ' ')
+
 const findings: Finding[] = []
 const report = (file: string, rule: string, detail: string) =>
   findings.push({ file: file.slice(ROOT.length), rule, detail })
 
 for (const dir of ROOTS) {
   for (const file of walk(dir)) {
-    const code = readFileSync(file, 'utf8')
+    const code = stripProse(readFileSync(file, 'utf8'))
 
     /**
      * Physical edges do not mirror.

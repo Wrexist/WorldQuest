@@ -66,6 +66,15 @@ type Step = 'slides' | 'age' | 'goal' | 'taster'
 const STEPS: readonly Step[] = ['slides', 'age', 'goal', 'taster']
 
 /**
+ * Atlas on a step where the user is choosing something.
+ *
+ * Deliberately smaller than the 200 the slides and the taster use. Those screens are
+ * the picture plus a sentence; this one is three cards the user has to read and pick
+ * between, and an illustration the same size as theirs would be arguing with them.
+ */
+const DECISION_ART = 120
+
+/**
  * The slides as literal key pairs rather than a number and string interpolation.
  *
  * `t()` is typed per key — each one carries its own parameter type — so a computed
@@ -182,6 +191,31 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Two growing spacers, so a short step sits in the middle of its screen instead
+            of hanging from the top of it.
+
+            Measured before touching anything, at 320 / 390 / 768: the taster left 47 % /
+            59 % / 66 % of the viewport empty between the last word and the button, the
+            three slides 23 % / 36 % / 54 %. That is the flow's first impression and its
+            handover into the first lesson, and a block of content pinned to the top of a
+            mostly-empty screen reads as a page that has not finished loading.
+
+            Spacers rather than `justifyContent: 'center'` on the container, deliberately.
+            On native, centring a scroll view's content when that content overflows puts
+            its first child above scroll position zero, where no gesture reaches it — and
+            the age step at 200 % text is exactly that case: 1044pt of chips in a 684pt
+            view. A spacer with `flexBasis: 0` grows only into free space, so when there
+            is none it contributes nothing and the layout is the top-aligned one it is
+            today. Every step gains and no step can break.
+
+            Not something this repo's harness can police, and that is why it is written
+            down here: Chromium extended the scrollable overflow region to include
+            centred leading overflow, so the browser scrolls back to content that a
+            phone would strand. A check was written, watched to pass against a
+            deliberately centred container, and deleted rather than kept as reassurance
+            it could not give. */}
+        <View style={styles.spacer} />
+
         {step === 'slides' && (
           <>
             <Art name={SLIDES[slide]!.art} size={200} />
@@ -195,7 +229,11 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
                 <Pressable
                   key={s.title}
                   role="tab"
-                  aria-label={t('onboarding:progress', { step: i + 1, total: SLIDES.length })}
+                  // `slide`, not `progress`. The bar above counts the flow's four
+                  // steps and these count the three slides inside the first one, so
+                  // sharing a string meant a reader heard "Step 2 of 4" and then
+                  // "Step 1 of 3" about the same moment.
+                  aria-label={t('onboarding:slide.position', { index: i + 1, total: SLIDES.length })}
                   aria-selected={i === slide}
                   // Pressable, not a View with onTouchEnd — see TabBar. onTouchEnd
                   // responds to a finger and to nothing else: no mouse, no keyboard,
@@ -283,6 +321,17 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
 
         {step === 'goal' && (
           <>
+            {/* The flow warmed up, went cold, then warmed up again: slides one and two
+                and the taster all carry a 200pt illustration, and the two decision steps
+                between them carried none — with 350pt of empty screen under the options
+                on the one being decorated here.
+
+                Smaller than the slides' 200, and above the choice rather than beside it.
+                These three cards are the content of the step and the picture is not
+                allowed to compete with them; the age step gets nothing at all for the
+                same reason, since its eleven decade chips already reach the CTA at 320.
+                `thinking`, because a question is being asked. */}
+            <Art name="atlas/thinking" size={DECISION_ART} />
             <Text style={styles.title}>{t('onboarding:goal.title')}</Text>
             <Text style={styles.body}>{t('onboarding:goal.body')}</Text>
             <View style={styles.goals}>
@@ -313,6 +362,8 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
             <Text style={styles.body}>{t('onboarding:taster.body')}</Text>
           </>
         )}
+
+        <View style={styles.spacer} />
       </ScrollView>
 
       <View style={styles.actions}>
@@ -427,12 +478,18 @@ function Chip({
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.bg.canvas },
+  root: { flex: 1 },
   progress: { paddingHorizontal: space[4], paddingTop: space[2] },
   // The scroll container. Separate from `body`, which is a TEXT style — handing a
   // text style to a ScrollView carried its font and padding onto the layout and
   // squeezed the year grid down to two columns.
-  content: { alignItems: 'center', paddingBottom: space[5] },
+  // `flexGrow: 1` so the container is at least as tall as the viewport and the two
+  // spacers inside it have free space to divide. Without it the container is exactly as
+  // tall as its content, there is no free space, and the spacers do nothing.
+  content: { alignItems: 'center', paddingBottom: space[5], flexGrow: 1 },
+  // `flexBasis: 0` is what makes this safe: it takes free space and never demands any,
+  // so an overflowing step collapses both spacers and keeps its first child reachable.
+  spacer: { flexGrow: 1, flexShrink: 1, flexBasis: 0 },
   body: {
     ...text('body'),
     color: colors.text.secondary,

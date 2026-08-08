@@ -3,9 +3,12 @@
  *
  * ## Why this is not a "Shop"
  *
- * Freezes and repairs are the only coin sinks that exist without artwork — the
- * cosmetics that form the real sink (avatar items, pets, map skins, themes) all need
- * assets nobody has drawn yet. A two-row store would be a shop in name only.
+ * Freezes and repairs are the only coin sinks that exist yet — the cosmetics that form
+ * the real sink (avatar items, pets, map skins, themes) still need assets nobody has
+ * drawn. A two-row store would be a shop in name only.
+ *
+ * This used to say the two of them existed "without artwork", and that stopped being
+ * true when `rewards/streak-freeze` was delivered. The freeze card draws it now.
  *
  * They also belong here on the merits. "Buy a freeze" is a decision a user makes while
  * looking at the streak it protects, not while browsing a catalogue. Context is the
@@ -26,9 +29,9 @@
  * Purely presentational. Every decision comes in already made by the engine.
  */
 
-import { StyleSheet, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
-import { Button, Card, colors, space, text } from '@worldquest/design'
+import { Button, Card, Tally, colors, space, text } from '@worldquest/design'
 import {
   FREEZE_PRICE,
   MAX_FREEZES,
@@ -38,8 +41,18 @@ import {
   type RepairAvailability,
 } from '@worldquest/engines'
 import { useT } from '../../lib/i18n.js'
-import { Icon } from '../../components/Icon.js'
+import { Art } from '../../components/Art.js'
 import { Stat } from '../../components/Stat.js'
+
+/**
+ * The freeze on its own card.
+ *
+ * 64 rather than the 140 an empty state uses: this is an object inside a card that also
+ * has a title, a count, a paragraph and a button, not the subject of the screen. The
+ * flame above it is 72 and stays the larger of the two, because the streak is what the
+ * screen is about and the freeze is what protects it.
+ */
+const FREEZE_ART = 64
 
 /**
  * Where this streak sits relative to the milestones that actually pay out.
@@ -165,14 +178,40 @@ export function StreakScreen({
   const freezesFull = freezesHeld >= MAX_FREEZES
 
   return (
-    <View style={styles.root}>
+    /* A ScrollView, because this screen did not have one.
+
+       Measured at 320 before changing it: the content ended at 678 of 700 — twenty-two
+       pixels of headroom, and that is WITHOUT the repair card, since a broken streak adds
+       a whole card to a screen already flush with the bottom edge. At 200 % text it needs
+       1262. There was nothing to scroll: `root` was a `flex: 1` View, so on a device
+       everything past the fold is simply gone. It looked fine here only because a browser
+       scrolls the document when a page overflows, which is a thing no phone does.
+
+       The header goes INSIDE, as it does on Country, Collection and Achievements. Four
+       screens with a back button should put it in the same place. */
+    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       {onBack !== undefined && <ScreenHeader onBack={onBack} />}
       <View style={styles.hero}>
-        <Icon name="streak" size={44} color={colors.status.streak} />
+        {/* The streak flame, as the delivered object rather than a 44pt line glyph.
+            This is the hero of the screen — the number underneath it is the whole
+            subject — and it is drawn large enough for the art to read, which a chip at
+            18pt is not. Decorative: the heading below states the streak in words. */}
+        <Art name="rewards/streak-flame" size={72} />
         <Text style={styles.count} role="heading" aria-level={1}>
           {t('streak:days', { count: current })}
         </Text>
-        <Text style={styles.sub}>{t('streak:longest', { count: longest })}</Text>
+        {/* Silent at zero. "No days yet" is already the heading and "Finish a lesson
+            today to start one" is already the line below, so "Longest: 0 days" was the
+            third statement of the same nothing, stacked between the other two.
+
+            Same rule as the welcome screen's STILL YOURS card and Explore's tile
+            caption: a line that exists only to report zero is a line that should not be
+            there. A personal best only becomes worth naming once there is one. */}
+        {longest > 0 && (
+          <Tally style={styles.sub} numberStyle={styles.subNumber}>
+            {t('streak:longest', { count: longest })}
+          </Tally>
+        )}
         <Text style={styles.status}>
           {broken
             ? t('streak:broken.body')
@@ -205,8 +244,22 @@ export function StreakScreen({
       )}
 
       <Card level={2} style={styles.card}>
+        {/* The freeze itself. This card is asking for coins, and a purchase with no
+            picture of the thing being bought is the weakest frame in the product — the
+            user is being asked to trade a real balance for a paragraph.
+
+            Decorative: the title, the count and the body already say what it is and what
+            it does, so a screen reader announcing a snowflake adds length, not meaning. */}
+        <View style={styles.cardArt}>
+          <Art name="rewards/streak-freeze" size={FREEZE_ART} />
+        </View>
         <Text style={styles.cardTitle}>{t('streak:freeze.title')}</Text>
-        <Text style={styles.held}>{t('streak:freeze.held', { held: freezesHeld, max: MAX_FREEZES })}</Text>
+        {/* Green only when there is something to be pleased about. `status.progress` on
+            "0 of 2 held" is the same lie the lesson summary told with a 35 % accuracy in
+            success green: the colour said good while the number said none. */}
+        <Text style={freezesHeld > 0 ? styles.held : styles.heldNone}>
+          {t('streak:freeze.held', { held: freezesHeld, max: MAX_FREEZES })}
+        </Text>
         <Text style={styles.body}>{t('streak:freeze.body')}</Text>
 
         {freezesFull ? (
@@ -256,7 +309,7 @@ export function StreakScreen({
           </>
         )}
       </Card>
-    </View>
+    </ScrollView>
   )
 }
 
@@ -316,11 +369,13 @@ function RepairAction({
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[3] },
+  screen: { flex: 1 },
+  content: { padding: space[4], gap: space[3] },
   hero: { alignItems: 'center', gap: space[1], paddingVertical: space[5] },
   flame: { ...text('display'), color: colors.status.streak },
   count: { ...text('display', { numeric: true }), color: colors.text.primary },
   sub: { ...text('body'), color: colors.text.secondary },
+  subNumber: { ...text('body', { weight: '700', numeric: true }), color: colors.text.primary },
   status: { ...text('body'), color: colors.text.tertiary, textAlign: 'center', marginTop: space[2] },
   // The streak colour, because this line is about the streak's own progress — and
   // `numeric` so "23 days to go" does not reflow as the number shrinks day by day.
@@ -333,8 +388,10 @@ const styles = StyleSheet.create({
   balance: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   earned: { ...text('caption'), color: colors.text.tertiary, flex: 1 },
   card: { padding: space[4], gap: space[2] },
+  cardArt: { alignItems: 'center' },
   cardTitle: { ...text('h3'), color: colors.text.primary },
   held: { ...text('caption', { weight: '700', numeric: true }), color: colors.status.progress },
+  heldNone: { ...text('caption', { weight: '700', numeric: true }), color: colors.text.secondary },
   body: { ...text('body'), color: colors.text.secondary },
   note: { ...text('caption'), color: colors.text.tertiary },
 })

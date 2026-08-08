@@ -31,6 +31,8 @@ import { levelProgress, type WorldProgress } from '@worldquest/engines'
 import { formatCompact, useT, currentLocale, type TranslationKey } from '../../lib/i18n.js'
 import { REGIONS, type RegionCode } from '../explore/ExploreScreen.js'
 import { Art } from '../../components/Art.js'
+import { avatarArt } from '../settings/AvatarPicker.js'
+import { INSIGNIA_SIZE, insigniaFor } from '../../lib/insignia.js'
 import { Icon } from '../../components/Icon.js'
 
 const REGION_NAME: Record<RegionCode, TranslationKey> = {
@@ -86,6 +88,8 @@ export type ProfileScreenProps = {
    * reason as the two above: absent hides the control rather than rendering a dead one.
    */
   readonly onStartLesson?: (() => void) | undefined
+  /** The chosen avatar id, or null/absent for initials. */
+  readonly avatar?: string | null | undefined
 }
 
 export function ProfileScreen({
@@ -97,16 +101,25 @@ export function ProfileScreen({
   wornTitleKey,
   onOpenShop,
   onStartLesson,
+  avatar,
 }: ProfileScreenProps) {
   const t = useT()
   const locale = currentLocale()
+  // Falls back to initials when nothing is chosen, and also when a stored id names an
+  // avatar this build does not ship — a set that shrinks must not leave a blank circle.
+  const portrait = avatarArt(avatar ?? null)
 
   if (loading) return <ProfileSkeleton />
 
   if (stats === null || stats.xpTotal === 0) {
     return (
       <View style={[styles.screen, styles.centered]}>
-        <Avatar initials="EX" size={72} accessibilityLabel={t('profile:anonymous')} />
+        <Avatar
+          size={72}
+          accessibilityLabel={t('profile:anonymous')}
+          initials="EX"
+          {...(portrait !== null ? { image: <Art name={portrait} size={72} /> } : {})}
+        />
         {/* The blank explorer's journal, briefed for this screen as "ready to be
             filled, not sad" — which is the same distinction `profile:empty.body`
             draws in words. */}
@@ -134,11 +147,19 @@ export function ProfileScreen({
   // the next level" is the position INSIDE the band — computing it in a component is
   // how a bar ends up disagreeing with the number printed beside it.
   const progress = levelProgress(stats.xpTotal)
+  // From the EARNED rank, never the worn one: a bought title is a different hat, and
+  // showing a rank insignia beside it would claim a level the user has not reached.
+  const insignia = insigniaFor(progress.titleKey)
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.identity}>
-        <Avatar initials="EX" size={72} accessibilityLabel={t('profile:anonymous')} />
+        <Avatar
+          size={72}
+          accessibilityLabel={t('profile:anonymous')}
+          initials="EX"
+          {...(portrait !== null ? { image: <Art name={portrait} size={72} /> } : {})}
+        />
         <Text style={styles.name} role="heading">
           {t('profile:anonymous')}
         </Text>
@@ -148,6 +169,17 @@ export function ProfileScreen({
         {/* The title is the reward here, not the number. Levels are a ladder; a title
             is something a user says out loud, and it is the cheapest status reward
             that exists (xp-economy.md). */}
+        {/* The rank's own insignia, when it has one.
+            The title ladder is the slowest reward in the app — a rank takes weeks — and
+            it arrived as a word. Six of the ten ranks are drawn (`asset-prompts.md`
+            §12); `scout`, `circumnavigator`, `trailblazer` and `globetrotter` are not
+            yet, and a bought shop title is not a rank at all, so this renders nothing
+            rather than guessing. Decorative — the title is right beside it in words. */}
+        {insignia !== null && (
+          <View style={styles.insignia}>
+            <Art name={insignia} size={INSIGNIA_SIZE} />
+          </View>
+        )}
         <Text style={styles.levelTitle}>
           {t('profile:levelTitle', {
             level: progress.level,
@@ -326,6 +358,7 @@ function WeeklyActivity({ week }: { readonly week: WeekActivity }) {
 }
 
 const styles = StyleSheet.create({
+  insignia: { alignSelf: 'flex-start', marginBottom: space[1] },
   levelTitle: { ...text('h3'), color: colors.text.primary, marginBottom: space[2] },
   week: { flexDirection: 'row', justifyContent: 'space-between', gap: space[2], height: 96 },
   weekDay: { flex: 1, alignItems: 'center', gap: space[1] },
@@ -334,7 +367,7 @@ const styles = StyleSheet.create({
   weekLabel: { ...text('overline'), color: colors.text.tertiary },
   weekEmpty: { ...text('body'), color: colors.text.secondary },
   emptyCta: { marginTop: space[4] },
-  screen: { flex: 1, backgroundColor: colors.bg.canvas },
+  screen: { flex: 1 },
   content: { padding: space[4], gap: space[4] },
   centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },
 

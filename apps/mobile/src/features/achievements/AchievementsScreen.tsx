@@ -15,8 +15,20 @@
  *    rest. Sorting alphabetically buries the two rows a user actually wants to see.
  */
 
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import { Button, Card, ProgressBar, colors, palette, radius, space, text } from '@worldquest/design'
+import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native'
+import {
+  Button,
+  Card,
+  ProgressBar,
+  colors,
+  palette,
+  radius,
+  space,
+  Tally,
+  staggerStyle,
+  text,
+  useStagger,
+} from '@worldquest/design'
 import {
   TIERS,
   tierProgress,
@@ -26,6 +38,7 @@ import {
 } from '@worldquest/engines'
 import { tContent, useT, type TranslationKey } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
+import { AchievementMedal } from './AchievementMedal.js'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 
 const TIER_LABEL: Record<Tier, TranslationKey> = {
@@ -143,13 +156,13 @@ export function AchievementsScreen({ rows, onStartLesson, onBack }: Achievements
             {t('achievements:title')}
           </Text>
         )}
-        <Text style={styles.body}>
+        <Tally style={styles.body} numberStyle={styles.countNumber}>
           {t('achievements:progress', { unlocked, total: rows.length })}
-        </Text>
+        </Tally>
       </View>
 
-      {sorted.map((row) => (
-        <AchievementCard key={row.def.id} row={row} />
+      {sorted.map((row, index) => (
+        <AchievementCard key={row.def.id} row={row} index={index} />
       ))}
     </ScrollView>
   )
@@ -172,8 +185,12 @@ function remainingToNextTier({ def, progress }: AchievementRow): number {
   return Math.max(0, target - progress.value)
 }
 
-function AchievementCard({ row }: { row: AchievementRow }) {
+/** Big enough for the glyph inside the frame to read; small enough for a list row. */
+const MEDAL = 56
+
+function AchievementCard({ row, index }: { row: AchievementRow; index: number }) {
   const t = useT()
+  const entrance = useStagger(index)
   const { def, progress } = row
   const { next, fraction } = tierProgress(def, progress)
 
@@ -184,6 +201,7 @@ function AchievementCard({ row }: { row: AchievementRow }) {
   const remaining = remainingToNextTier(row)
 
   return (
+    <Animated.View style={staggerStyle(entrance)}>
     <Card
       style={styles.card}
       // A stable handle for tests, alongside the label a person hears. The card was
@@ -196,6 +214,8 @@ function AchievementCard({ row }: { row: AchievementRow }) {
       }`}
     >
       <View style={styles.cardHeader}>
+        {/* The medal, so the row reads as something collected rather than a setting. */}
+        <AchievementMedal achievementId={def.id} tier={progress.tier} size={MEDAL} />
         <View style={styles.cardText}>
           <Text style={styles.name}>{tContent(nameKey(def.id))}</Text>
           {/* Locked rows still say what they ask for. A grey question mark is a
@@ -226,16 +246,18 @@ function AchievementCard({ row }: { row: AchievementRow }) {
         </>
       )}
     </Card>
+    </Animated.View>
   )
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg.canvas },
+  screen: { flex: 1 },
   content: { padding: space[4], gap: space[3] },
   centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },
 
   header: { gap: space[1] },
   title: { ...text('h1'), color: colors.text.primary },
+  countNumber: { ...text('caption', { weight: '700', numeric: true }), color: colors.text.primary },
   body: { ...text('caption'), color: colors.text.secondary },
 
   card: { gap: space[2], borderRadius: radius.lg },

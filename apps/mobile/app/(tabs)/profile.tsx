@@ -13,12 +13,14 @@ import { equippedTitleKey, levelProgress, worldProgress } from '@worldquest/engi
 import { CATALOGUE } from '../../src/features/shop/catalogue.js'
 import { useShop } from '../../src/features/shop/useShop.js'
 import { useWeekActivity } from '../../src/features/profile/useWeekActivity.js'
+import { usePreferences } from '../../src/features/settings/usePreferences.js'
 import { ProfileScreen } from '../../src/features/profile/ProfileScreen.js'
 import { useProgress } from '../../src/features/home/useProgress.js'
 import { ContentGate } from '../../src/components/ContentGate.js'
 import { useContent } from '../../src/lib/content.js'
 
 export default function ProfileRoute() {
+  const { preferences } = usePreferences()
   const { data, status } = useProgress()
   // Renamed: `useProgress` already owns `status` on this screen, and two different
   // meanings behind one name is how the wrong one gets read.
@@ -75,6 +77,7 @@ export default function ProfileRoute() {
         // its own reason rather than becoming a permanent piece of furniture.
         onCreateAccount={undefined}
         wornTitleKey={worn}
+        avatar={preferences.avatar}
         onOpenShop={() => router.push('/shop')}
         onStartLesson={() => router.push('/lesson')}
       />

@@ -89,6 +89,16 @@ const ALLOWED: Record<string, string> = {
     'module resolves to `null` instead of failing at import — which would take down ' +
     'the screenshot harness and the component tests, the two things that exist to ' +
     'catch problems before a device does. A static import cannot be caught.',
+  'packages/design/src/primitives/ScreenBackground.tsx:eslint-disable':
+    'The same lazy `require` of expo-linear-gradient, for the same reason as Card — and ' +
+    'it matters more here, because this one wraps the entire app. A static import that ' +
+    'threw would take down every screen rather than one component, and the fallback it ' +
+    'guards is the flat canvas colour that shipped before the gradient existed.',
+  'packages/design/src/primitives/ArtScrim.tsx:eslint-disable':
+    'The third and last lazy `require` of expo-linear-gradient, for the same reason as ' +
+    'Card and ScreenBackground. This one guards a CONTRAST fix — text over the continent ' +
+    'artwork — so the fallback is deliberately the heavy flat wash rather than the light ' +
+    'one: without the module the tile looks duller, never less readable.',
 }
 
 // ── the two scans ────────────────────────────────────────────────────────────

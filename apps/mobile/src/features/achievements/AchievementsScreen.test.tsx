@@ -87,8 +87,26 @@ describe('Achievements screen', () => {
   })
 
   it('counts what is unlocked', () => {
-    render(<AchievementsScreen rows={rowsFor()} />)
-    expect(screen.getByText(`0 of ${CATALOGUE.length} unlocked`)).toBeTruthy()
+    // `textContent`: the count styles its digits apart from its words, so the line is
+    // several nodes.
+    const { container } = render(<AchievementsScreen rows={rowsFor()} />)
+    expect(container.textContent).toContain(`0 of ${CATALOGUE.length} unlocked`)
+  })
+
+  it('announces the count as one phrase, not as digits and leftovers', () => {
+    // This screen is the reason `Tally` names itself. Its header count sits inside no
+    // accessible ancestor, so before the primitive carried its own `aria-label` the
+    // guarantee "the split is visual only" rested on every caller happening to be
+    // wrapped in something labelled — which stopped being true the moment this caller
+    // was added. Verified on the rendered app first, then pinned here.
+    const { container } = render(<AchievementsScreen rows={rowsFor()} />)
+    const whole = `0 of ${CATALOGUE.length} unlocked`
+    const named = Array.from(container.querySelectorAll('[aria-label]')).map((el) =>
+      el.getAttribute('aria-label'),
+    )
+    expect(named).toContain(whole)
+    // No node may answer with just a number: that is the reader hearing fragments.
+    expect(named.filter((l) => l !== null && /^\d+$/.test(l.trim()))).toEqual([])
   })
 
   it('puts earned achievements first', () => {

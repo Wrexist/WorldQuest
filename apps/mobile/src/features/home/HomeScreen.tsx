@@ -14,7 +14,6 @@
 
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
-  ArtSlot,
   Avatar,
   Button,
   Card,
@@ -22,9 +21,9 @@ import {
   Skeleton,
   StreakBadge,
   colors,
-  palette,
   radius,
   space,
+  Tally,
   text,
 } from '@worldquest/design'
 import { levelForXp, xpForLevel } from '@worldquest/engines'
@@ -53,6 +52,19 @@ export type HomeProgress = {
   readonly leagueTier?: string
   readonly leaguePercentile?: string
 }
+
+/**
+ * How big Atlas is drawn on the quest card.
+ *
+ * MEASURED off the reference: the mascot fills the card's right third and its full
+ * height. 132 against a card that is ~326 wide inside its padding at 390 puts him at
+ * about 40 % — a shade more than the donor, because ours is a cutout standing on a flat
+ * card while theirs is a figure in a painted landscape that fills the rest of the space.
+ *
+ * It replaces a 92pt `ArtSlot`: a tinted placeholder frame from before the art existed,
+ * still being drawn around the real thing.
+ */
+const QUEST_ART = 132
 
 export type HomeScreenProps = {
   readonly progress: HomeProgress | null
@@ -137,23 +149,27 @@ export function HomeScreen({
         <View style={styles.topRow}>
           <Avatar initials="EX" accessibilityLabel={t('home:avatar.label')} />
           <View style={styles.spacer} />
-          <View style={styles.bell} accessible aria-label={t('home:inbox.label')}>
-            <Icon name="bell" size={20} color={colors.text.secondary} />
-          </View>
-        </View>
-
-        {/* Two-tier greeting: light salutation, bold role. Matches the mockup and
-            keeps the header to two lines instead of three. */}
-        <View style={styles.greetingRow}>
-          <View style={styles.greetingText}>
-            <Text style={styles.salutation}>{t(greetingKey(new Date().getHours()))}</Text>
-            <Text style={styles.explorer} role="heading">
-              {t('home:greeting.role')}
-            </Text>
-          </View>
-          {/* The badge is now the way in to freezes and repair. A streak the user can
-              see but cannot protect is a number; making it tappable is what turns it
-              into something they can act on. */}
+          {/* The economy, in the header, from the first screen.
+   
+              Measured off the reference: two chips, right-aligned, each about 2 % of the
+              screen's height, above the hero card. Ours had a bell and nothing else —
+              the coin balance was real and on this screen the whole time, in a `Stat`
+              inside the LEVEL card, below the fold and gated on `!isNewUser`. So the
+              currency the entire product turns on was invisible to precisely the user
+              who has never seen it.
+   
+              Coins show at zero and the streak does not, and that is not an
+              inconsistency. A wallet reading 0 is a fact about a balance; a streak
+              reading 0 is a verdict on the person holding it. The test one row down
+              says so in the case that matters: "0 day streak" is a worse first
+              impression than none. */}
+          {progress && (
+            <Stat
+              kind="coin"
+              value={progress.coins}
+              accessibilityLabel={t('home:stats.coins', { amount: progress.coins })}
+            />
+          )}
           {progress && progress.streak > 0 && (
             <StreakBadge
               days={progress.streak}
@@ -165,6 +181,25 @@ export function HomeScreen({
               {...(onOpenStreak !== undefined ? { onPress: onOpenStreak } : {})}
             />
           )}
+          <View style={styles.bell} accessible aria-label={t('home:inbox.label')}>
+            <Icon name="bell" size={20} color={colors.text.secondary} />
+          </View>
+        </View>
+
+        {/* Two-tier greeting: light salutation, bold role. Matches the mockup and
+            keeps the header to two lines instead of three. */}
+        {/* The streak used to sit here, beside the greeting. It has moved up into the
+            row above so that the two economy chips are one group in one place, which is
+            what the reference does and what makes them findable — a streak on the
+            second row and a coin balance three cards down are two facts a user has to
+            hunt for separately. */}
+        <View style={styles.greetingRow}>
+          <View style={styles.greetingText}>
+            <Text style={styles.salutation}>{t(greetingKey(new Date().getHours()))}</Text>
+            <Text style={styles.explorer} role="heading">
+              {t('home:greeting.role')}
+            </Text>
+          </View>
         </View>
 
         {/* Today's Quest — the one primary action. */}
@@ -176,43 +211,61 @@ export function HomeScreen({
                 {progress?.questTitle ?? t('home:quest.empty')}
               </Text>
             </View>
-            {/* Atlas, on the one card a returning user opens the app to see.
-                This slot held a 40pt flat map glyph — an icon standing in for artwork
-                inside a component built to hold artwork. The mascot was on onboarding,
-                welcome-back, and (after the illustration pass) five empty states, an
-                error, a pause and an out-of-hearts card: every one of them a moment
-                where something is missing or has gone wrong. He appeared nowhere in
-                the daily loop, which taught the user that seeing him is bad news.
-
-                The mockup puts a map of Europe here and that is still the better
-                answer — it is `asset-prompts.md` §8, which is not drawn yet. This is
-                the stand-in until it is, and it is a character rather than a glyph. */}
-            <ArtSlot
-              tint={palette.continent.EU}
-              art={<Art name="atlas/thinking" size={84} />}
-              width={92}
-              height={92}
-            />
+            {/* Atlas as a SCENE, not a thumbnail.
+   
+                Measured off the reference: the mascot fills the card's right third and
+                its art runs to the card's own right edge, which the card clips. Ours sat
+                in a 92pt tinted `ArtSlot` — a placeholder frame from before the art
+                existed, still being drawn around the real thing, so the most-opened card
+                in the product read as a panel with a sticker on it.
+   
+                In the ROW, not behind the card. Absolute-and-bottom-anchored was tried
+                first, copying the lesson sheet where the mascot leans out from behind the
+                Continue button — and here that put him underneath it with only his hat
+                showing. The same mechanic in a different frame is a different mechanic:
+                on the sheet the button is furniture he leans past, on this card the
+                button is below him and the thing he bleeds past is the card's own edge.
+   
+                Decorative — the card already says what the quest is. */}
+            <View style={styles.questArt} pointerEvents="none">
+              <Art name="atlas/thinking" size={QUEST_ART} />
+            </View>
           </View>
 
-          {!isNewUser && (
-            <ProgressBar
-              current={progress?.questDone ?? 0}
-              total={progress?.questTotal ?? 10}
-              tone="reward"
-              label={t('home:quest.progress')}
-            />
-          )}
 
-          {/* The daily goal, in the unit the user actually experiences: lessons, not
-              minutes. Reached rather than exceeded — passing the goal is not a reason
-              to stop, so the copy congratulates and the bar simply fills. */}
+          {/* The bar measures the SENTENCE ABOVE IT, and nothing else.
+   
+              It used to draw `questDone / questTotal` — the daily quest's five tasks —
+              directly under "0 of 5 lessons today", which is a different quantity. With
+              the bar hidden for new users nobody saw the two together; showing it
+              revealed them stacked and disagreeing, one reading "0 of 5 lessons" and
+              the one below it "Progress 0 / 10". Two counts, six pixels apart, about
+              different things.
+   
+              So the bar is the goal's, `showCount` is off because the sentence is
+              already the count, and quest-task progress stays on the Quests tab, which
+              draws all five tasks and can say which is which.
+   
+              Shown at zero, which it was not: `!isNewUser` hid it from exactly the user
+              it scaffolds for. Someone on their first launch got a sentence and a
+              button; someone who had already worked out how the app fits together got
+              the diagram. An empty bar says "there is a shape to fill". */}
           {goal !== undefined && (
-            <Text style={styles.goalLine}>
-              {goal.done >= goal.target
-                ? t('home:goal.met', { count: goal.done })
-                : t('home:goal.progress', { done: goal.done, target: goal.target })}
-            </Text>
+            <ProgressBar
+              current={goal.done}
+              total={Math.max(1, goal.target)}
+              tone="reward"
+              // The sentence IS the count, so the bar's own counter is off. `label`
+              // renders visibly and as the accessible name, which is why the goal line
+              // is no longer a separate `Text` above it — passing the same words to
+              // both put "1 of 3 lessons today" on screen twice, six pixels apart.
+              showCount={false}
+              label={
+                goal.done >= goal.target
+                  ? t('home:goal.met', { count: goal.done })
+                  : t('home:goal.progress', { done: goal.done, target: goal.target })
+              }
+            />
           )}
 
           <Button label={t('common:continue')} onPress={onStartLesson} />
@@ -238,12 +291,12 @@ export function HomeScreen({
           <Card style={styles.worldCard} accessibilityLabel={t('home:world.label')}>
             <View style={styles.worldHead}>
               <Text style={styles.cardTitle}>{t('home:world.title')}</Text>
-              <Text style={styles.worldCountries}>
+              <Tally style={styles.worldCountries} numberStyle={styles.worldCountriesNumber}>
                 {t('home:world.countries', {
                   complete: world.entitiesComplete,
                   total: world.entitiesTotal,
                 })}
-              </Text>
+              </Tally>
             </View>
 
             <ProgressBar
@@ -269,18 +322,36 @@ export function HomeScreen({
                 nudge that fires on an empty inbox is how an app trains people to
                 ignore it. */}
             {world.factsDue > 0 && (
-              <Text style={styles.worldDue}>
+              <Tally style={styles.worldDue} numberStyle={styles.worldDueNumber}>
                 {t('home:world.due', { count: world.factsDue })}
-              </Text>
+              </Tally>
             )}
 
+            {/* A row, not a button in a box.
+   
+                Measured off the reference: its equivalent is a full-width row carrying
+                an icon, a label and a chevron — the icon says which world, the chevron
+                says "there is more through here". Ours was a small outlined `Button`
+                floating in the card's own padding, which reads as an optional extra
+                rather than as the way into the section it is sitting inside.
+   
+                The pattern is Profile's shop row, imported by shape rather than by
+                code: a `Card` that is itself pressable, icon, label, spacer, chevron.
+                Reusing it beats inventing a second row that looks almost the same,
+                which is how two conventions start. */}
             {onOpenWorld !== undefined && (
-              <Button
-                label={t('home:world.open')}
+              <Card
+                level={1}
                 onPress={onOpenWorld}
-                variant="tertiary"
-                size="sm"
-              />
+                role="button"
+                accessibilityLabel={t('home:world.open')}
+                style={styles.worldRow}
+              >
+                <Icon name="globe" size={20} color={colors.status.progress} />
+                <Text style={styles.worldRowLabel}>{t('home:world.open')}</Text>
+                <View style={styles.spacer} />
+                <Icon name="chevron" size={18} color={colors.text.tertiary} />
+              </Card>
             )}
           </Card>
         )}
@@ -325,16 +396,13 @@ export function HomeScreen({
               total={Math.max(1, levelCeiling - levelFloor)}
               label={t('home:level', { level })}
             />
+            {/* XP only. Coins moved to the header, where a balance belongs; XP stays
+                here because it is what the bar above it is measuring. */}
             <View style={styles.chips}>
               <Stat
                 kind="xp"
                 value={progress.xpTotal}
                 accessibilityLabel={t('home:stats.xp', { amount: progress.xpTotal })}
-              />
-              <Stat
-                kind="coin"
-                value={progress.coins}
-                accessibilityLabel={t('home:stats.coins', { amount: progress.coins })}
               />
             </View>
           </Card>
@@ -364,11 +432,11 @@ function HomeSkeleton() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg.canvas },
+  screen: { flex: 1 },
   content: { padding: space[4], gap: space[3], paddingBottom: space[5] },
   flex: { flex: 1 },
 
-  topRow: { flexDirection: 'row', alignItems: 'center' },
+  topRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
   spacer: { flex: 1 },
   bell: {
     width: 36,
@@ -385,11 +453,20 @@ const styles = StyleSheet.create({
   salutation: { ...text('body'), color: colors.text.secondary },
   explorer: { ...text('h1'), color: colors.text.primary },
 
-  questCard: { gap: space[3] },
+  // `overflow: hidden` so the mascot stops at the card's rounded corner. That clip is
+  // the mechanic, not a tidy-up: art that ends before the edge is a picture placed in a
+  // box, and art the box cuts is a scene the box is a window onto.
+  questCard: { gap: space[3], overflow: 'hidden' },
+  // Bleeds off the card's end edge and a little below its own row, so he overlaps the
+  // gap toward the progress bar rather than sitting in a reserved rectangle. Negative
+  // margins rather than absolute positioning: he still claims width in the row, which is
+  // what keeps the title clear of him at every text size.
+  // `End`, not `Right`: the whole card mirrors in RTL and the mascot belongs to whichever
+  // side the text is not on.
+  questArt: { marginEnd: -space[4], marginBottom: -space[3] },
   questBody: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   questText: { flex: 1, gap: space[1] },
   questTitle: { ...text('h2'), color: colors.text.primary },
-  goalLine: { ...text('caption'), color: colors.text.secondary },
 
   challengeCard: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   challengeText: { flex: 1, gap: space[1] },
@@ -402,10 +479,23 @@ const styles = StyleSheet.create({
 
   worldCard: { gap: space[3] },
   worldHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
-  worldCountries: { ...text('caption', { weight: '700', numeric: true }), color: colors.text.secondary },
-  worldDue: { ...text('caption', { weight: '700' }), color: colors.reward.xp },
+  // The words plain, the digits emphasised — the whole line was bold-secondary, which
+  // is a caption shouting rather than a count reading as one.
+  worldCountries: { ...text('caption'), color: colors.text.secondary },
+  worldCountriesNumber: {
+    ...text('caption', { weight: '700', numeric: true }),
+    color: colors.text.primary,
+  },
+  // Gold on the whole line, deliberately: this is the only time-sensitive number on
+  // Home and the colour is what makes it findable. So here the digits take WEIGHT
+  // rather than a different colour — recolouring them would spend the one signal the
+  // line exists for.
+  worldDue: { ...text('caption'), color: colors.reward.xp },
+  worldDueNumber: { ...text('caption', { weight: '800', numeric: true }), color: colors.reward.xp },
   levelCard: { gap: space[3] },
   chips: { flexDirection: 'row', gap: space[2] },
+  worldRow: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  worldRowLabel: { ...text('body', { weight: '700' }), color: colors.text.primary },
 
   cardLabel: { ...text('caption'), color: colors.text.secondary },
   cardTitle: { ...text('h3'), color: colors.text.primary },

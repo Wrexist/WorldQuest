@@ -66,6 +66,23 @@ for (const file of baseFiles) {
     }
 
     // 3. Plurals must use ICU, not a hand-rolled conditional.
+    //
+    // This looks for `{count}` by NAME, which is narrower than the problem: it did not
+    // see `"Finish {threshold} lessons without a single mistake."`, and that shipped
+    // "Finish 1 lessons" onto the achievements screen at the bronze tier.
+    //
+    // Widening it to the shape — a placeholder followed by a word ending in s — was
+    // tried and reverted. It raised twenty-odd warnings and could not be made precise
+    // from the locale files alone, for two reasons. `\p{L}+s` matches verbs ("{city} IS
+    // the capital of…"), and more fundamentally a string like "{complete} of {total}
+    // countries" is CORRECT: the noun is governed by `total`, which is 65, not by the
+    // placeholder that can be 1. Knowing which placeholder governs the noun needs the
+    // content pack's thresholds, which this script does not read.
+    //
+    // A check that fires twenty times and is wrong several of them is worse than no
+    // check: it trains people to skip the whole warnings channel, which currently
+    // carries four real ones. So the narrow rule stays, and the gap it leaves is
+    // written down here rather than papered over.
     if (/\{count\}/.test(value) && !/plural/.test(value)) {
       warnings.push({
         message: `${file}: "${key}" interpolates {count} without an ICU plural — Swedish and German need forms English does not`,

@@ -106,7 +106,7 @@ migrations now.
 
 | # | Work | Notes | State |
 |---|---|---|---|
-| F1 | **Bundle Inter + Baloo 2** | Both OFL, both free. Loaded per weight — `fontFamily` + `fontWeight` does not combine for custom fonts on React Native, so this needed the `text()` helper and a guard, not just the files. | ✅ |
+| F1 | **Bundle the real typeface** | OFL and free. Loaded per weight — `fontFamily` + `fontWeight` does not combine for custom fonts on React Native, so this needed the `text()` helper and a guard, not just the files. Landed as Inter + Baloo 2 and later replaced by a single Nunito family; the pairing was fighting itself (see `design-system.md`). | ✅ |
 | F2 | **Card gradients** | Semantic `gradient.*` tokens, drawn by `Card`, with a flat fallback where there is no native module | ✅ |
 | F3 | **Motion pass** | `useReducedMotion` / `useTiming` / `useCelebration`, all token-driven, with a guard against raw durations | ✅ |
 

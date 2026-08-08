@@ -35,6 +35,9 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Button, Card, colors, radius, space, text } from '@worldquest/design'
 import { coinsShort, purchase, type ShopItem } from '@worldquest/engines'
 import { Icon } from '../../components/Icon.js'
+import { Art } from '../../components/Art.js'
+import type { ArtName } from '../../lib/art.generated.js'
+import { INSIGNIA_SIZE, insigniaFor } from '../../lib/insignia.js'
 import { Stat } from '../../components/Stat.js'
 import { FailureState } from '../../components/FailureState.js'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
@@ -126,6 +129,7 @@ export function ShopScreen({
           <TitleRow
             name={t(levelTitleKey as TranslationKey)}
             help={t('shop:levelTitle.help')}
+            insignia={insigniaFor(levelTitleKey)}
             owned
             equipped={equippedId === null}
             onEquip={() => onEquip(null)}
@@ -177,6 +181,7 @@ export function ShopScreen({
 function TitleRow({
   name,
   help,
+  insignia,
   owned,
   equipped,
   price,
@@ -187,6 +192,15 @@ function TitleRow({
 }: {
   readonly name: string
   readonly help?: string
+  /**
+   * The rank insignia, for the one row that has one.
+   *
+   * Only the level title is a rank, and only ranks have been drawn — the shop's own
+   * titles are bought, not climbed to, and `asset-prompts.md` briefs no art for them.
+   * So one row in seven carries a picture, which is not an inconsistency to tidy up:
+   * that row is the earned one, and looking different is the whole point of it.
+   */
+  readonly insignia?: ArtName | null | undefined
   readonly owned: boolean
   readonly equipped: boolean
   readonly price?: string
@@ -199,6 +213,16 @@ function TitleRow({
 
   return (
     <Card level={equipped ? 2 : 1} style={[styles.row, equipped && styles.rowOn]}>
+      {/* The slot is reserved even when it is empty.
+   
+          Only rank titles carry an insignia; the cosmetic ones have no art and never
+          will, because they are not ranks. Rendering the image conditionally meant the
+          one row with a picture indented its name and the four without it did not, so a
+          list of otherwise identical rows had two left edges and the earned title read
+          as a different KIND of thing rather than as the same thing, owned. */}
+      <View style={styles.insignia}>
+        {insignia != null && <Art name={insignia} size={INSIGNIA_SIZE} />}
+      </View>
       <View style={styles.rowText}>
         <Text style={styles.rowName}>{name}</Text>
         {help !== undefined && <Text style={styles.rowHelp}>{help}</Text>}
@@ -245,7 +269,7 @@ function SkeletonRows() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg.canvas },
+  screen: { flex: 1 },
   content: { padding: space[4], gap: space[3] },
 
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
@@ -268,6 +292,7 @@ const styles = StyleSheet.create({
   rowOn: { borderColor: colors.status.progress },
   rowSkeleton: { minHeight: 64 },
   skeletonBar: { height: 16, flex: 1, borderRadius: radius.sm, backgroundColor: colors.bg.surfaceRaised },
+  insignia: { width: INSIGNIA_SIZE, alignItems: 'center' },
   rowText: { flex: 1, gap: space[1] },
   rowName: { ...text('bodyStrong'), color: colors.text.primary },
   rowHelp: { ...text('caption'), color: colors.text.secondary },

@@ -138,7 +138,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: space[4],
     padding: space[5],
-    backgroundColor: colors.bg.canvas,
   },
   mark: { alignItems: 'center', justifyContent: 'center' },
   glyph: { ...text('display'), fontSize: 72, lineHeight: 84 },

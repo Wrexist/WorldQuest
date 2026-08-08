@@ -14,6 +14,7 @@
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native'
 import { colors, radius, space } from '../tokens.js'
 import { text } from '../typography.js'
+import { Tally } from './Tally.js'
 
 /**
  * `progress` is the default green. `reward` is the amber the mockup uses on the
@@ -93,7 +94,15 @@ export function ProgressBar({
     >
       {(label !== undefined || showCount) && (
         <View style={styles.header}>
-          {label !== undefined && <Text style={styles.label}>{label}</Text>}
+          {/* `Tally`, so a label that carries numbers reads as a count rather than as
+              a caption — the same mechanic the continent tiles use, applied here so it
+              lands on every bar in the app instead of on the screens somebody
+              remembered. A label with no digits in it is untouched. */}
+          {label !== undefined && (
+            <Tally style={styles.label} numberStyle={styles.labelNumber}>
+              {label}
+            </Tally>
+          )}
           {showCount && (
             <Text style={[styles.count, { color: fill }]}>
               {current} / {total}
@@ -122,6 +131,7 @@ const styles = StyleSheet.create({
   wrap: { gap: space[2] },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   label: { ...text('caption'), color: colors.text.secondary },
+  labelNumber: { ...text('caption', { weight: '700', numeric: true }), color: colors.text.primary },
   // Tabular: `9 / 10` must not shift width when it becomes `10 / 10`.
   count: { ...text('caption', { weight: '800', numeric: true }) },
   track: {

@@ -147,6 +147,27 @@ export type Question = {
    * carried its own entity's flag, which for a template answered by country NAME
    * would have printed the answer beside each name. Nothing rendered it, so it was
    * wrong quietly rather than loudly.
+   *
+   * ## This was re-proposed from a competitor screenshot, and is still wrong
+   *
+   * The reference showed a flag beside every answer on a CURRENCY question — Poland's
+   * against "Polish złoty", the EU's against "Euro" — which looks like it dodges the
+   * giveaway above, because none of those flags is the flag of the country being asked
+   * about. It does not, and the reason is in `buildQuestion`: the correct option is
+   * built as `{ id: item.entityId }`, so **the option's entity IS the entity in the
+   * prompt**. Drawing its flag puts Germany's flag beside "Euro" on "What money do
+   * people use in Germany?" — which identifies the answer to anyone who knows the flag
+   * and nothing about the currency. Silently, and only for sighted users.
+   *
+   * What the reference actually does is hang the flag on the VALUE (Euro → the EU
+   * flag), not on the entity the value came from. That is not expressible here: a
+   * `Fact`'s value is `{ id?, names? }` and only an `Entity` carries `assets`. Building
+   * it needs two things, in this order — value-level assets in the content model, and a
+   * licensed flag or symbol per currency with a source and a `verifiedAt`, like every
+   * other asset in a pack.
+   *
+   * Until both exist, per-option art makes the question easier to answer without
+   * knowing the fact, which in a learning app is the bug that matters most.
    */
   readonly promptAsset?: string
   /**

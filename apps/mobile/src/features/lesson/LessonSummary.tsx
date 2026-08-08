@@ -28,6 +28,7 @@ import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   Button,
   Card,
+  Spacer,
   colors,
   radius,
   space,
@@ -53,8 +54,20 @@ export function outcomeOf(result: GradeResult | null, wasAbandoned: boolean): Su
   if (wasAbandoned) return 'early'
   if (result === null) return 'done'
   if (result.perfect) return 'perfect'
-  return result.accuracy >= 0.8 ? 'strong' : 'done'
+  return result.accuracy >= STRONG_ACCURACY ? 'strong' : 'done'
 }
+
+/**
+ * Where a lesson stops being "done" and starts being "strong".
+ *
+ * Named because the accuracy tile now reads it too. The tile was tinted
+ * `status.progress` unconditionally, so 35 % accuracy was printed in the same green as
+ * "Perfect!", a completed bar and every other good thing in the app — on the one screen
+ * built to be kind, the palette was the only thing lying. Below the bar it goes to
+ * `text.primary`: honest, not red. We state the truth and do not punish, and a number
+ * that has to stop claiming to be good does not have to start claiming to be bad.
+ */
+const STRONG_ACCURACY = 0.8
 
 const HEADLINE = {
   perfect: 'lesson:summary.perfect.title',
@@ -132,6 +145,12 @@ export function LessonSummary({
       {isOffline && <OfflineNote />}
 
       <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+        {/* Centred by spacers rather than `justifyContent` — see `Spacer`. This screen's
+            centring was added in this same session, before the hazard was understood: a
+            summary with a wrapped reward row and a long streak line overflows a short
+            phone, and centring a scroll view that overflows puts its title above scroll
+            position zero, where nothing reaches it. */}
+        <Spacer />
         {/* The celebration frame: Atlas mid-jump — "pure delight, weightless" — with
             `rays` and `burst` radiating behind him. Both of those are briefed with an
             EMPTY CENTRE because content composites into it, and Atlas is the content.
@@ -211,7 +230,11 @@ export function LessonSummary({
               <StatTile
                 value={t('lesson:summary.stat.percent', { value: accuracyPct })}
                 label={t('lesson:summary.stat.accuracy')}
-                tint={colors.status.progress}
+                tint={
+                  result.accuracy >= STRONG_ACCURACY
+                    ? colors.status.progress
+                    : colors.text.primary
+                }
                 accessibilityLabel={t('lesson:summary.stat.accuracy.a11y', {
                   correct: result.correct,
                   total: result.items,
@@ -262,6 +285,7 @@ export function LessonSummary({
             </View>
           </View>
         )}
+        <Spacer />
       </ScrollView>
 
       <Button
@@ -319,8 +343,8 @@ function OfflineNote() {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[4] },
-  body: { flexGrow: 1, alignItems: 'center', justifyContent: 'center', gap: space[4] },
+  screen: { flex: 1, padding: space[4], gap: space[4] },
+  body: { flexGrow: 1, alignItems: 'center', gap: space[4] },
 
   title: { ...text('h1'), color: colors.text.primary, textAlign: 'center' },
   subtitle: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },

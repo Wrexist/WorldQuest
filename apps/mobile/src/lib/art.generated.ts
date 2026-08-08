@@ -5,51 +5,233 @@
  * for why they are WebP, why they are 768px, and why this file exists at all.
  */
 
-import atlasWelcome from '../../assets/art/atlas/welcome.webp'
-import atlasCelebrate from '../../assets/art/atlas/celebrate.webp'
-import atlasThinking from '../../assets/art/atlas/thinking.webp'
-import atlasEncouraging from '../../assets/art/atlas/encouraging.webp'
-import atlasWavingBack from '../../assets/art/atlas/waving-back.webp'
 import atlasBrokenCompass from '../../assets/art/atlas/broken-compass.webp'
+import atlasCelebrate from '../../assets/art/atlas/celebrate.webp'
+import atlasEncouraging from '../../assets/art/atlas/encouraging.webp'
 import atlasResting from '../../assets/art/atlas/resting.webp'
+import atlasThinking from '../../assets/art/atlas/thinking.webp'
+import atlasWavingBack from '../../assets/art/atlas/waving-back.webp'
+import atlasWelcome from '../../assets/art/atlas/welcome.webp'
+import onboardingConquer from '../../assets/art/onboarding/conquer.webp'
 import onboardingExplore from '../../assets/art/onboarding/explore.webp'
 import onboardingLearn from '../../assets/art/onboarding/learn.webp'
-import onboardingConquer from '../../assets/art/onboarding/conquer.webp'
 import statesEmptyCaughtUp from '../../assets/art/states/empty-caught-up.webp'
-import statesEmptyNoFriends from '../../assets/art/states/empty-no-friends.webp'
-import statesEmptyProfile from '../../assets/art/states/empty-profile.webp'
 import statesEmptyCollection from '../../assets/art/states/empty-collection.webp'
+import statesEmptyProfile from '../../assets/art/states/empty-profile.webp'
 import statesErrorGeneric from '../../assets/art/states/error-generic.webp'
-import statesOffline from '../../assets/art/states/offline.webp'
 import statesHeartsEmpty from '../../assets/art/states/hearts-empty.webp'
+import statesOffline from '../../assets/art/states/offline.webp'
 import celebrationBurst from '../../assets/art/celebration/burst.webp'
 import celebrationRays from '../../assets/art/celebration/rays.webp'
+import achievementsGlyphCapitals from '../../assets/art/achievements/glyph-capitals.webp'
+import achievementsGlyphCollections from '../../assets/art/achievements/glyph-collections.webp'
+import achievementsGlyphConsistency from '../../assets/art/achievements/glyph-consistency.webp'
+import achievementsGlyphCountries from '../../assets/art/achievements/glyph-countries.webp'
+import achievementsGlyphEvents from '../../assets/art/achievements/glyph-events.webp'
+import achievementsGlyphExploration from '../../assets/art/achievements/glyph-exploration.webp'
+import achievementsGlyphFlags from '../../assets/art/achievements/glyph-flags.webp'
+import achievementsGlyphHidden from '../../assets/art/achievements/glyph-hidden.webp'
+import achievementsGlyphLandmarks from '../../assets/art/achievements/glyph-landmarks.webp'
+import achievementsGlyphLegendary from '../../assets/art/achievements/glyph-legendary.webp'
+import achievementsGlyphPerfect from '../../assets/art/achievements/glyph-perfect.webp'
+import achievementsGlyphPremium from '../../assets/art/achievements/glyph-premium.webp'
+import achievementsGlyphSocial from '../../assets/art/achievements/glyph-social.webp'
+import achievementsTierBronze from '../../assets/art/achievements/tier-bronze.webp'
+import achievementsTierGold from '../../assets/art/achievements/tier-gold.webp'
+import achievementsTierLegendary from '../../assets/art/achievements/tier-legendary.webp'
+import achievementsTierPlatinum from '../../assets/art/achievements/tier-platinum.webp'
+import achievementsTierSilver from '../../assets/art/achievements/tier-silver.webp'
+import avatarsAvatar01 from '../../assets/art/avatars/avatar-01.webp'
+import avatarsAvatar02 from '../../assets/art/avatars/avatar-02.webp'
+import avatarsAvatar03 from '../../assets/art/avatars/avatar-03.webp'
+import avatarsAvatar04 from '../../assets/art/avatars/avatar-04.webp'
+import avatarsAvatar05 from '../../assets/art/avatars/avatar-05.webp'
+import avatarsAvatar06 from '../../assets/art/avatars/avatar-06.webp'
+import avatarsAvatar07 from '../../assets/art/avatars/avatar-07.webp'
+import avatarsAvatar08 from '../../assets/art/avatars/avatar-08.webp'
+import avatarsAvatar09 from '../../assets/art/avatars/avatar-09.webp'
+import avatarsAvatar10 from '../../assets/art/avatars/avatar-10.webp'
+import avatarsAvatar11 from '../../assets/art/avatars/avatar-11.webp'
+import avatarsAvatar12 from '../../assets/art/avatars/avatar-12.webp'
+import continentsAF from '../../assets/art/continents/AF.webp'
+import continentsAN from '../../assets/art/continents/AN.webp'
+import continentsAS from '../../assets/art/continents/AS.webp'
+import continentsEU from '../../assets/art/continents/EU.webp'
+import continentsNA from '../../assets/art/continents/NA.webp'
+import continentsOC from '../../assets/art/continents/OC.webp'
+import continentsSA from '../../assets/art/continents/SA.webp'
+import levelsCartographer from '../../assets/art/levels/cartographer.webp'
+import levelsCircumnavigator from '../../assets/art/levels/circumnavigator.webp'
+import levelsGlobetrotter from '../../assets/art/levels/globetrotter.webp'
+import levelsNavigator from '../../assets/art/levels/navigator.webp'
+import levelsPathfinder from '../../assets/art/levels/pathfinder.webp'
+import levelsScout from '../../assets/art/levels/scout.webp'
+import levelsTrailblazer from '../../assets/art/levels/trailblazer.webp'
+import levelsVoyager from '../../assets/art/levels/voyager.webp'
+import levelsWanderer from '../../assets/art/levels/wanderer.webp'
+import levelsWorldkeeper from '../../assets/art/levels/worldkeeper.webp'
+import rewardsStreakFlame from '../../assets/art/rewards/streak-flame.webp'
+import rewardsStreakFreeze from '../../assets/art/rewards/streak-freeze.webp'
 
 /** Metro hands back a numeric handle; Vite hands back a URL. Both are real. */
 export type ArtModule = number | string
 
 /** Art name → the bundled illustration. */
 export const ART_BY_NAME = {
-  'atlas/welcome': atlasWelcome,
-  'atlas/celebrate': atlasCelebrate,
-  'atlas/thinking': atlasThinking,
-  'atlas/encouraging': atlasEncouraging,
-  'atlas/waving-back': atlasWavingBack,
   'atlas/broken-compass': atlasBrokenCompass,
+  'atlas/celebrate': atlasCelebrate,
+  'atlas/encouraging': atlasEncouraging,
   'atlas/resting': atlasResting,
+  'atlas/thinking': atlasThinking,
+  'atlas/waving-back': atlasWavingBack,
+  'atlas/welcome': atlasWelcome,
+  'onboarding/conquer': onboardingConquer,
   'onboarding/explore': onboardingExplore,
   'onboarding/learn': onboardingLearn,
-  'onboarding/conquer': onboardingConquer,
   'states/empty-caught-up': statesEmptyCaughtUp,
-  'states/empty-no-friends': statesEmptyNoFriends,
-  'states/empty-profile': statesEmptyProfile,
   'states/empty-collection': statesEmptyCollection,
+  'states/empty-profile': statesEmptyProfile,
   'states/error-generic': statesErrorGeneric,
-  'states/offline': statesOffline,
   'states/hearts-empty': statesHeartsEmpty,
+  'states/offline': statesOffline,
   'celebration/burst': celebrationBurst,
   'celebration/rays': celebrationRays,
+  'achievements/glyph-capitals': achievementsGlyphCapitals,
+  'achievements/glyph-collections': achievementsGlyphCollections,
+  'achievements/glyph-consistency': achievementsGlyphConsistency,
+  'achievements/glyph-countries': achievementsGlyphCountries,
+  'achievements/glyph-events': achievementsGlyphEvents,
+  'achievements/glyph-exploration': achievementsGlyphExploration,
+  'achievements/glyph-flags': achievementsGlyphFlags,
+  'achievements/glyph-hidden': achievementsGlyphHidden,
+  'achievements/glyph-landmarks': achievementsGlyphLandmarks,
+  'achievements/glyph-legendary': achievementsGlyphLegendary,
+  'achievements/glyph-perfect': achievementsGlyphPerfect,
+  'achievements/glyph-premium': achievementsGlyphPremium,
+  'achievements/glyph-social': achievementsGlyphSocial,
+  'achievements/tier-bronze': achievementsTierBronze,
+  'achievements/tier-gold': achievementsTierGold,
+  'achievements/tier-legendary': achievementsTierLegendary,
+  'achievements/tier-platinum': achievementsTierPlatinum,
+  'achievements/tier-silver': achievementsTierSilver,
+  'avatars/avatar-01': avatarsAvatar01,
+  'avatars/avatar-02': avatarsAvatar02,
+  'avatars/avatar-03': avatarsAvatar03,
+  'avatars/avatar-04': avatarsAvatar04,
+  'avatars/avatar-05': avatarsAvatar05,
+  'avatars/avatar-06': avatarsAvatar06,
+  'avatars/avatar-07': avatarsAvatar07,
+  'avatars/avatar-08': avatarsAvatar08,
+  'avatars/avatar-09': avatarsAvatar09,
+  'avatars/avatar-10': avatarsAvatar10,
+  'avatars/avatar-11': avatarsAvatar11,
+  'avatars/avatar-12': avatarsAvatar12,
+  'continents/AF': continentsAF,
+  'continents/AN': continentsAN,
+  'continents/AS': continentsAS,
+  'continents/EU': continentsEU,
+  'continents/NA': continentsNA,
+  'continents/OC': continentsOC,
+  'continents/SA': continentsSA,
+  'levels/cartographer': levelsCartographer,
+  'levels/circumnavigator': levelsCircumnavigator,
+  'levels/globetrotter': levelsGlobetrotter,
+  'levels/navigator': levelsNavigator,
+  'levels/pathfinder': levelsPathfinder,
+  'levels/scout': levelsScout,
+  'levels/trailblazer': levelsTrailblazer,
+  'levels/voyager': levelsVoyager,
+  'levels/wanderer': levelsWanderer,
+  'levels/worldkeeper': levelsWorldkeeper,
+  'rewards/streak-flame': rewardsStreakFlame,
+  'rewards/streak-freeze': rewardsStreakFreeze,
 } as const satisfies Readonly<Record<string, ArtModule>>
 
 /** Every illustration this build ships. */
 export type ArtName = keyof typeof ART_BY_NAME
+
+/**
+ * Where the subject sits inside each illustration, as fractions of the image.
+ *
+ * `aspect` is width ÷ height; `x`/`y`/`w`/`h` are the opaque content's bounding box.
+ * MEASURED off the shipped WebP, so it already accounts for anything the build did to
+ * the master. `<Art>` uses it to size the SUBJECT rather than the frame — see the note
+ * on `measure()` in scripts/build-art.cjs for why that gap was worth closing.
+ */
+export type ArtGeometry = {
+  readonly aspect: number
+  readonly x: number
+  readonly y: number
+  readonly w: number
+  readonly h: number
+}
+
+export const ART_GEOMETRY = {
+  'atlas/broken-compass': { aspect: 1.5, x: 0.3268, y: 0.0742, w: 0.4154, h: 0.7188 },
+  'atlas/celebrate': { aspect: 1.5, x: 0.2227, y: 0.1172, w: 0.5755, h: 0.7324 },
+  'atlas/encouraging': { aspect: 1.5, x: 0.3021, y: 0.0625, w: 0.3737, h: 0.6816 },
+  'atlas/resting': { aspect: 1, x: 0, y: 0, w: 1, h: 1 },
+  'atlas/thinking': { aspect: 1.5, x: 0.332, y: 0.0977, w: 0.3568, h: 0.6133 },
+  'atlas/waving-back': { aspect: 1.5, x: 0.3008, y: 0.0898, w: 0.4674, h: 0.6133 },
+  'atlas/welcome': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'onboarding/conquer': { aspect: 1.5, x: 0.1927, y: 0.2773, w: 0.8073, h: 0.7227 },
+  'onboarding/explore': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'onboarding/learn': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'states/empty-caught-up': { aspect: 1.5, x: 0.2995, y: 0.293, w: 0.3659, h: 0.5742 },
+  'states/empty-collection': { aspect: 1.5, x: 0.2448, y: 0.0684, w: 0.4831, h: 0.7891 },
+  'states/empty-profile': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'states/error-generic': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'states/hearts-empty': { aspect: 1.5, x: 0.3047, y: 0.1055, w: 0.3789, h: 0.7891 },
+  'states/offline': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'celebration/burst': { aspect: 1.5, x: 0.1341, y: 0.0449, w: 0.7318, h: 0.875 },
+  'celebration/rays': { aspect: 1.5, x: 0.2891, y: 0.1641, w: 0.4128, h: 0.5449 },
+  'achievements/glyph-capitals': { aspect: 1, x: 0.2305, y: 0.2096, w: 0.5378, h: 0.5703 },
+  'achievements/glyph-collections': { aspect: 1, x: 0.2422, y: 0.2318, w: 0.5065, h: 0.5195 },
+  'achievements/glyph-consistency': { aspect: 1, x: 0.2461, y: 0.2383, w: 0.4974, h: 0.5443 },
+  'achievements/glyph-countries': { aspect: 1, x: 0.2161, y: 0.2279, w: 0.5404, h: 0.5846 },
+  'achievements/glyph-events': { aspect: 1, x: 0.2487, y: 0.1719, w: 0.5365, h: 0.5951 },
+  'achievements/glyph-exploration': { aspect: 1, x: 0.207, y: 0.2044, w: 0.5742, h: 0.6211 },
+  'achievements/glyph-flags': { aspect: 1, x: 0.3268, y: 0.2552, w: 0.4193, h: 0.4805 },
+  'achievements/glyph-hidden': { aspect: 1, x: 0.3333, y: 0.2578, w: 0.332, h: 0.5078 },
+  'achievements/glyph-landmarks': { aspect: 1, x: 0.224, y: 0.2422, w: 0.5456, h: 0.526 },
+  'achievements/glyph-legendary': { aspect: 1, x: 0.2344, y: 0.2917, w: 0.5313, h: 0.4349 },
+  'achievements/glyph-perfect': { aspect: 1, x: 0.25, y: 0.237, w: 0.5078, h: 0.5339 },
+  'achievements/glyph-premium': { aspect: 1, x: 0.2552, y: 0.2839, w: 0.4714, h: 0.4727 },
+  'achievements/glyph-social': { aspect: 1, x: 0.2279, y: 0.2591, w: 0.556, h: 0.4193 },
+  'achievements/tier-bronze': { aspect: 1, x: 0.1625, y: 0.175, w: 0.6859, h: 0.6891 },
+  'achievements/tier-gold': { aspect: 1, x: 0.2005, y: 0.1979, w: 0.5872, h: 0.6263 },
+  'achievements/tier-legendary': { aspect: 1, x: 0.1719, y: 0.1901, w: 0.6523, h: 0.7214 },
+  'achievements/tier-platinum': { aspect: 1, x: 0.2057, y: 0.1979, w: 0.5846, h: 0.6328 },
+  'achievements/tier-silver': { aspect: 1, x: 0.1927, y: 0.1979, w: 0.5924, h: 0.6393 },
+  'avatars/avatar-01': { aspect: 1.5, x: 0.1042, y: 0.0469, w: 0.7057, h: 0.9531 },
+  'avatars/avatar-02': { aspect: 1.5, x: 0.2109, y: 0.0684, w: 0.5156, h: 0.9316 },
+  'avatars/avatar-03': { aspect: 1.5, x: 0.1953, y: 0.0586, w: 0.6133, h: 0.9414 },
+  'avatars/avatar-04': { aspect: 1.5, x: 0.1641, y: 0.0586, w: 0.6758, h: 0.9414 },
+  'avatars/avatar-05': { aspect: 1.5, x: 0.1484, y: 0.0723, w: 0.638, h: 0.9277 },
+  'avatars/avatar-06': { aspect: 1, x: 0.1133, y: 0.0352, w: 0.7214, h: 0.9648 },
+  'avatars/avatar-07': { aspect: 1, x: 0, y: 0, w: 1, h: 1 },
+  'avatars/avatar-08': { aspect: 1, x: 0.0969, y: 0.0391, w: 0.8187, h: 0.9609 },
+  'avatars/avatar-09': { aspect: 1, x: 0.0891, y: 0.0375, w: 0.8359, h: 0.9625 },
+  'avatars/avatar-10': { aspect: 1, x: 0.0875, y: 0.0375, w: 0.8344, h: 0.9625 },
+  'avatars/avatar-11': { aspect: 1, x: 0.0922, y: 0.0453, w: 0.8313, h: 0.9547 },
+  'avatars/avatar-12': { aspect: 1, x: 0.0953, y: 0.0484, w: 0.8359, h: 0.9516 },
+  'continents/AF': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'continents/AN': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'continents/AS': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'continents/EU': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'continents/NA': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'continents/OC': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'continents/SA': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'levels/cartographer': { aspect: 1, x: 0.332, y: 0.3151, w: 0.3464, h: 0.3516 },
+  'levels/circumnavigator': { aspect: 1.5, x: 0.3268, y: 0.2656, w: 0.3568, h: 0.4551 },
+  'levels/globetrotter': { aspect: 1.5, x: 0.3164, y: 0.2012, w: 0.3646, h: 0.5195 },
+  'levels/navigator': { aspect: 1, x: 0.3164, y: 0.306, w: 0.3594, h: 0.3971 },
+  'levels/pathfinder': { aspect: 1, x: 0.3151, y: 0.3125, w: 0.3503, h: 0.3581 },
+  'levels/scout': { aspect: 1.5, x: 0.2956, y: 0.2305, w: 0.4115, h: 0.5273 },
+  'levels/trailblazer': { aspect: 1.5, x: 0.319, y: 0.2363, w: 0.3724, h: 0.4883 },
+  'levels/voyager': { aspect: 1, x: 0.332, y: 0.3203, w: 0.3906, h: 0.4219 },
+  'levels/wanderer': { aspect: 1, x: 0.3398, y: 0.2891, w: 0.2747, h: 0.4362 },
+  'levels/worldkeeper': { aspect: 1, x: 0.3164, y: 0.3216, w: 0.3802, h: 0.3451 },
+  'rewards/streak-flame': { aspect: 1, x: 0.2539, y: 0.1276, w: 0.5065, h: 0.7487 },
+  'rewards/streak-freeze': { aspect: 1, x: 0.1081, y: 0.1706, w: 0.7604, h: 0.6966 },
+} as const satisfies Readonly<Record<ArtName, ArtGeometry>>

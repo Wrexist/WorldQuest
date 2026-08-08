@@ -111,7 +111,6 @@ const styles = StyleSheet.create({
   loading: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[3] },
   screen: {
     flex: 1,
-    backgroundColor: colors.bg.canvas,
     alignItems: 'center',
     justifyContent: 'center',
     padding: space[5],

@@ -134,7 +134,9 @@ describe('Home — behaviour', () => {
 
 describe('Home — the daily goal', () => {
   it('shows the goal in lessons, the unit the user experiences', () => {
-    render(
+    // `textContent`, not `getByText`: the bar's label styles its digits apart from its
+    // words, so the line is several nodes. What is asserted is what the user reads.
+    const { container } = render(
       <HomeScreen
         progress={RETURNING}
         loading={false}
@@ -143,7 +145,7 @@ describe('Home — the daily goal', () => {
         goal={{ done: 1, target: 3 }}
       />,
     )
-    expect(screen.getByText('1 of 3 lessons today')).toBeTruthy()
+    expect(container.textContent).toContain('1 of 3 lessons today')
   })
 
   it('congratulates on reaching it without telling the user to stop', () => {
@@ -207,15 +209,17 @@ describe('Home — your world', () => {
   it('fills the half of the screen that had nothing real on it', () => {
     // Home had ONE real card. Everything under it was a stub or empty, so for a new
     // user the bottom 40% was void. This is the section that is true.
-    withWorld()
-    expect(screen.getByText('4 of 65 countries')).toBeTruthy()
-    expect(screen.getByText('31 of 259 facts')).toBeTruthy()
+    const { container } = withWorld()
+    // `textContent` for both: the world card's counts style their digits apart from
+    // their words, so each line is several nodes.
+    expect(container.textContent).toContain('4 of 65 countries')
+    expect(container.textContent).toContain('31 of 259 facts')
   })
 
   it('surfaces what is due, which was previously two taps into Explore', () => {
     // The only time-sensitive number in a spaced-repetition app, and Home never said it.
-    withWorld()
-    expect(screen.getByText('7 facts ready to review')).toBeTruthy()
+    const { container } = withWorld()
+    expect(container.textContent).toContain('7 facts ready to review')
   })
 
   it('says nothing at all when nothing is due', () => {
@@ -242,7 +246,7 @@ describe('Home — your world', () => {
   it('opens Explore rather than duplicating it', () => {
     const onOpenWorld = vi.fn()
     withWorld(WORLD, onOpenWorld)
-    fireEvent.click(screen.getByRole('button', { name: 'Explore' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Explore the world' }))
     expect(onOpenWorld).toHaveBeenCalledOnce()
   })
 
@@ -250,6 +254,6 @@ describe('Home — your world', () => {
     // Same rule as the shop row and the streak badge: absent hides the control rather
     // than drawing a dead one.
     withWorld()
-    expect(screen.queryByRole('button', { name: 'Explore' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Explore the world' })).toBeNull()
   })
 })

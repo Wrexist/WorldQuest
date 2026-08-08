@@ -67,13 +67,24 @@ describe('Explore', () => {
   })
 
   it('counts facts rather than countries, so the bar moves every session', () => {
-    render(<ExploreScreen world={world()} loading={false} onSelectRegion={() => {}} />)
-    expect(screen.getByText('3 of 8 learned')).toBeTruthy()
+    // `container.textContent`, not `getByText`: the caption's digits are styled
+    // separately from its words, so the line is several nodes. What matters here is
+    // that the user reads "3 of 8 learned" — the DOM shape it arrives in is `Tally`'s
+    // business, and asserting it here would make a styling change look like a
+    // counting bug.
+    const { container } = render(
+      <ExploreScreen world={world()} loading={false} onSelectRegion={() => {}} />,
+    )
+    expect(container.textContent).toContain('3 of 8 learned')
   })
 
   it('says how many reviews are waiting, and says so plainly when none are', () => {
-    render(<ExploreScreen world={world()} loading={false} onSelectRegion={() => {}} />)
-    expect(screen.getByText('2 reviews due')).toBeTruthy()
+    // `textContent` for the same reason as the caption above: the digits are styled
+    // apart from the words, so the line is more than one node.
+    const { container } = render(
+      <ExploreScreen world={world()} loading={false} onSelectRegion={() => {}} />,
+    )
+    expect(container.textContent).toContain('2 reviews due')
   })
 
   it('does not tell a user they are up to date on a continent they have never opened', () => {
@@ -81,9 +92,16 @@ describe('Explore', () => {
     // 0 due, and "no reviews waiting" rendered as "Up to date" — which beside "0 of 2
     // learned" reads as "you have finished this", on the one screen whose entire job is
     // to invite. Zero due only means "caught up" once something has been started.
-    render(<ExploreScreen world={world()} loading={false} onSelectRegion={() => {}} />)
-    expect(screen.getByText('Not started yet')).toBeTruthy()
-    expect(screen.queryByText('Up to date')).toBeNull()
+    //
+    // The replacement for that was "Not started yet", which was the third line on the
+    // tile to mean zero. It now names the continent's size — the only number here the
+    // user does not already have from the two lines above it.
+    const { container } = render(
+      <ExploreScreen world={world()} loading={false} onSelectRegion={() => {}} />,
+    )
+    expect(container.textContent).toContain('1 country to meet')
+    expect(container.textContent).not.toContain('Up to date')
+    expect(container.textContent).not.toContain('Not started yet')
   })
 
   it('still says "up to date" once there is something to be up to date on', () => {
@@ -103,8 +121,10 @@ describe('Explore', () => {
         },
       ],
     })
-    render(<ExploreScreen world={caughtUp} loading={false} onSelectRegion={() => {}} />)
-    expect(screen.getByText('Up to date')).toBeTruthy()
+    const { container } = render(
+      <ExploreScreen world={caughtUp} loading={false} onSelectRegion={() => {}} />,
+    )
+    expect(container.textContent).toContain('Up to date')
   })
 
   it('shows a skeleton while loading', () => {

@@ -63,8 +63,10 @@ describe('RegionScreen', () => {
   })
 
   it('reports the completed count the engine gave it', () => {
-    render(<RegionScreen {...props()} />)
-    expect(screen.getByText(/1 of 2 countries finished/)).toBeTruthy()
+    // `textContent` throughout this file: the caption styles its digits apart from its
+    // words, so the line is several nodes. The assertion is about what the user reads.
+    const { container } = render(<RegionScreen {...props()} />)
+    expect(container.textContent).toContain('1 of 2 countries finished')
   })
 
   it('trusts the engine totals over anything it could add up itself', () => {
@@ -73,18 +75,18 @@ describe('RegionScreen', () => {
     // prove the screen is reporting rather than deriving. `entitiesComplete` cannot be
     // reconstructed from the rendered rows without duplicating the "is this country
     // finished?" rule, which is the duplication this wiring removed.
-    render(
+    const { container } = render(
       <RegionScreen
         {...props({ progress: totals({ entitiesComplete: 5, entitiesTotal: 9 }) })}
       />,
     )
-    expect(screen.getByText(/5 of 9 countries finished/)).toBeTruthy()
-    expect(screen.queryByText(/1 of 2 countries finished/)).toBeNull()
+    expect(container.textContent).toContain('5 of 9 countries finished')
+    expect(container.textContent).not.toContain('1 of 2 countries finished')
   })
 
   it('shows the empty state rather than dividing by nothing', () => {
-    render(<RegionScreen {...props({ countries: [], progress: null })} />)
-    expect(screen.queryByText(/countries finished/)).toBeNull()
+    const { container } = render(<RegionScreen {...props({ countries: [], progress: null })} />)
+    expect(container.textContent).not.toContain('countries finished')
   })
 
   it('treats absent totals as not-yet-loaded, even with rows to show', () => {

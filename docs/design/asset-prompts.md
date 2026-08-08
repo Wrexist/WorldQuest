@@ -18,7 +18,7 @@ factual error or a legal problem.
 | **Flags** ✅ **done** | A generated flag has the wrong number of stars, the wrong proportions, the wrong shade. In a learning app that is a **wrong fact** — our worst class of bug. | **`flag-icons` 7.5.0, MIT.** `pnpm build:flags` rasterises all 65 to `apps/mobile/assets/flags/`; the licence is recorded per entity in the countries pack. |
 | **Country / continent geometry** ✅ **done** | Generated maps have invented coastlines and wrong borders. That is both a wrong fact and a political problem. | **Natural Earth** (public domain), via `world-atlas` 2.0.2 (ISC). `pnpm build:maps` projects and rasterises 6 region + 65 country layers; licence recorded per entity in `assets.map`. |
 | **UI icons** (tab bar, chevrons, close) ✅ **done** | Generated icons drift in weight and optical size, and none of them mirror correctly for RTL. | **Lucide 1.28.0, ISC.** `pnpm build:icons` rasterises 26 to `apps/mobile/assets/icons/` as white-on-transparent alpha masks, recoloured at runtime with `tintColor`. |
-| **Fonts** | — | **Inter** and **Baloo 2**, both OFL, from Google Fonts. |
+| **Fonts** | — | **Nunito**, OFL, from Google Fonts, via `@expo-google-fonts/nunito`. Five weights, one family. It was Inter for body and Baloo 2 for headings; see `apps/mobile/src/lib/fonts.ts` for why that pairing was dropped. |
 | **Real landmark photography** | Licensing. Wikimedia is mixed-licence and much of it is non-commercial. | Commission illustration (recommended), or licence a stock set. Never generate a "photo" of a real place — it will be subtly wrong and read as fake. |
 
 Everything below this line is safe to generate.
@@ -206,13 +206,37 @@ borders, multiple pins
 for the "no text" rule in the negative block. A wordmark with a subtly malformed `Q`
 is a brand you cannot use and cannot fix.
 
-Set it instead, in **Baloo 2 ExtraBold** — the display face this app already ships and
-licences (OFL) — as `WorldQuest`, one word, capital W and capital Q. Then:
+Set it instead, in **Nunito Black (900)** — the face this app ships and licences (OFL),
+at the weight the `display` type step already uses — as `WorldQuest`, one word, capital W
+and capital Q. Then:
 
 - Convert to outlines and deliver as SVG.
 - `brand/wordmark-light.svg` — near-white `#F2F6FF`, for the dark canvas.
 - `brand/wordmark-gold.svg` — the warm gold `#F5A61E`, for the splash and store art.
 - Optical spacing pass by hand. The default kerning between `d` and `Q` is loose.
+
+> **This said Baloo 2 ExtraBold until the fonts changed underneath it.** The app dropped
+> the Inter + Baloo 2 pairing for a single Nunito family, and this section went on naming
+> a typeface the product no longer ships — which would have produced a logo in the wrong
+> face and nobody would have noticed until it was on a store page.
+
+**The app is not blocked on this.** `SplashScreen` sets the wordmark as live text in the
+`display` step, which is the same face at the same weight, and live text is the better
+answer inside the app: it scales with the type settings, it localises, and it is not an
+asset anyone has to keep in sync. The file is for the places live text cannot go — the
+store listing, press, and anywhere the mark appears outside a React Native tree.
+
+**The raster form is built: `pnpm build:store`.** `docs/design/assets/store/wordmark-light.png`
+and `wordmark-gold.png`, set from the app's own TTF — `@expo-google-fonts` ships it, so
+the letterforms in the logo are byte-for-byte the letterforms on the splash screen — and
+trimmed to their own ink, because a wordmark with baked padding cannot be aligned and the
+§1c ratio below is measured from cap height.
+
+**Still outstanding: the outlined SVG.** Converting type to outlines needs a font-parsing
+library this repo does not have and should not gain in order to set one logo, and the
+optical kerning pass above is a hand job by definition. The raster is at 4× any size it is
+placed at, which covers the feature graphic and press; the SVG is for print and for
+anywhere it has to scale without limit.
 
 ### 1c. The lockup
 
@@ -407,7 +431,7 @@ who most need the feedback.
 Confetti must be `accessibilityElementsHidden` in code; it is decoration and a screen
 reader announcing it is noise. That is a code note, but it belongs beside the asset.
 
-### 7b. `celebration/burst-wide.png` — 1536×512
+### 7b. `celebration/burst-wide.png` — 1536×512 · **delivered**
 
 **This one was found by trying to ship without it.** The correct-answer feedback card is
 the most-seen "good thing happened" frame in the product — it fires ten to twenty times
@@ -447,6 +471,26 @@ its middle. Transparent background, like every other asset in this section: the 
 `empty-profile`, `empty-no-friends` and `atlas/resting` came back with an opaque ground
 baked in and `pnpm build:art` now has to feather their edges to hide the seam.
 
+#### What actually arrived, and what that changed
+
+The generator returned the usual 1536×1024 frame with the ribbon painted across the
+middle of it — content 1536×237, so **6.5:1 inside a 3:2 file, 77 % of it empty**. Two
+things follow, and both are now handled in code rather than by asking for a re-draw:
+
+- `pnpm build:art` trims a master to its content when that content is at least 4:1
+  (`BANNER_ASPECT`). Measured, not listed, like the edge feather beside it — a banner
+  delivered already tight is a no-op, and nobody has to remember to edit an array. The
+  shipped asset is 768×129.
+- `<Art>` takes an optional `height`. Its box is square by default, which is right for
+  a subject in a 3:2 frame and five-sixths empty for a ribbon.
+
+**It is not drawn whole.** Row coverage runs 1 % at the top to 98 % at the middle, and
+the solid core reads as a strip of gumballs when it is put in the gap above the feedback
+card — which is the fourth failed attempt, after the three above. The lesson draws the
+top 26 % only, clipped, tucked 8 pt behind the card: loose confetti above the card, the
+dense core never rendered. So a future redraw should keep the **gradient from scatter to
+core**, which is the part being used, and need not worry about the core being pretty.
+
 ---
 
 # P1 — v1.0 polish
@@ -483,6 +527,50 @@ borders — purely atmospheric texture. Dominant accent colour {ACCENT}.
 > moment any non-country content lands (ice, wildlife, research stations) it is the
 > seventh card, and a set of six that later needs a seventh generated in a different
 > session never matches.
+
+### 8b. The silhouette layer — implied by a reference, not yet drawn
+
+A reference restyled our Explore tiles as **one flat continent colour with a landmark
+silhouette on the right**, at low opacity. It is worth understanding why that is a good
+idea rather than just a different one: a flat field is a single known colour, so text on
+it is legible by construction. Our tiles use photographic skies, and the contrast fight
+that caused has now been had twice — 1.5:1 over Oceania on Explore, then 4.45:1 on the
+region banner — and is the reason `ArtScrim` exists at all.
+
+The skies are better-looking and they are already delivered. The silhouette is an
+**additive** layer, not a replacement: it sits on the scrim, in the lower right, where
+the tile's own text is not.
+
+```
+[STYLE BLOCK]
+
+A single flat silhouette of {SUBJECT}, solid white on transparent, no gradient, no
+outline, no detail inside the shape. Simple enough to read at 40px and to survive being
+drawn at 12 % opacity. Composed to sit in the lower-right corner of a card.
+
+[NEGATIVE BLOCK], photorealism, texture, gradient, colour, outline, background, ground
+line, people, text
+```
+
+> **Pick the subject carefully, and this is a legal note rather than an aesthetic one.**
+> The reference uses the Eiffel Tower, Christ the Redeemer and the Sydney Opera House.
+> All three are encumbered: France restricts commercial images of the *illuminated*
+> Eiffel Tower, Christ the Redeemer is under copyright held by the Archdiocese of Rio,
+> and the Sydney Opera House is trademarked. Freedom of panorama differs by country and
+> a silhouette is still a derivative of the structure.
+>
+> So `{SUBJECT}` should be **landform, not architecture** — which is also more honest for
+> a geography app, where the continent is the subject and a single building is a city.
+
+| Continent | `{SUBJECT}` |
+|---|---|
+| Europe | a range of alpine peaks with a fjord inlet |
+| Asia | a stepped mountain ridge with terraced foothills |
+| Africa | a flat-topped acacia beside rolling savanna |
+| North America | a canyon rim with mesa buttes |
+| South America | a high andean ridge above rainforest canopy |
+| Oceania | a coral atoll ring with palms |
+| Antarctica | a tabular iceberg and pressure ridges |
 
 ## 9. Avatar set
 
@@ -535,6 +623,13 @@ Generate all twelve, varying `{DESCRIPTOR}` and keeping everything else identica
 | `rewards/heart.png` | `A rounded glossy red heart with a soft highlight, slightly three-dimensional, gently glowing. Friendly, not clinical.` |
 | `rewards/streak-freeze.png` | `A rounded flame encased in translucent pale-blue ice with soft frost crystals at its base. Preserved, protected, calm.` |
 | `rewards/xp-orb.png` | `A small rounded orb of soft signal-green light with a brighter core and a faint trailing wisp, as if drifting upward. Energetic, weightless, not a gem.` |
+| `progress/globe.png` **not yet drawn** | `A small rounded desk globe on a warm gold meridian arc and a short stand, tilted slightly, oceans in deep blue and land in soft green, lit warmly from the upper left with a gentle glow beneath. Friendly object, not a scientific model.` |
+
+> `progress/globe` is implied by a reference that puts a globe on the "Your world" card —
+> the one card in the app that reports how much of the world you know and currently
+> carries only a progress bar. **Draw generic landmasses or none**: a globe showing real
+> coastlines is the geometry rule in the never-generate table, and an invented coastline
+> in a geography app is a wrong fact whether or not anyone is quizzed on it.
 
 > `xp-orb` is new because XP is the most-awarded thing in the app and had no mark of
 > its own, so every XP number renders as bare type while coins and gems have artwork.
@@ -597,10 +692,19 @@ two linked rings (social) · a crown (premium) · a keyhole (hidden) · a laurel
 
 ## 12. Level insignia
 
-`packages/content/assets/levels/*.png` · 256×256 · 8 ranks
+`docs/design/assets/levels/*.png` · 1536×1024 · **11 ranks — ten delivered, one missing**
 
 The profile shows a level *and a title* — "Level 38 – Navigator" in the mockup — and
-the title ladder has no art, so a rank that takes weeks to earn arrives as a word.
+the title ladder had no art, so a rank that takes weeks to earn arrived as a word.
+
+> **This section was wrong when the art was commissioned, and the art came back wrong
+> because of it.** The table below used to list eight ranks including a "Pioneer" that
+> is not in the ladder, and omitted Circumnavigator, Trailblazer, Globetrotter and
+> Atlas. The delivery matched the table: a `levels/pioneer.png` nothing can reach, and
+> no insignia for level 100. `pioneer` is in `NOT_SHIPPED` and the master is kept; it is
+> a near-duplicate of `trailblazer` anyway. The warning at the foot of this section was
+> already there, in those words, and was not followed — which is why the table now
+> records what the ladder actually is and what was actually drawn.
 
 ```
 [STYLE BLOCK]
@@ -612,21 +716,35 @@ the other ranks in the set.
 [NEGATIVE BLOCK], text, numerals, shield, medal frame, laurel
 ```
 
-| Rank | `{INSIGNIA}` | `{METAL}` |
-|---|---|---|
-| Wanderer | a single simple footprint | weathered pewter |
-| Scout | a folded paper map corner | warm bronze |
-| Pathfinder | a compass needle pointing up | brushed bronze |
-| Navigator | a sextant arc | brushed silver |
-| Cartographer | a rolled chart with a ribbon | polished silver |
-| Voyager | a stylised sailing pennant | warm gold |
-| Pioneer | a mountain peak with a flag | polished gold |
-| Worldkeeper | a small globe held in an open hand | iridescent violet |
+The ladder is `docs/systems/progression.md` §1 and `packages/i18n/locales/en/titles.json`.
+`{INSIGNIA}` below describes **what was delivered**, not what was originally asked for —
+the two diverged on several ranks, and the set has to stay internally consistent, so a
+redraw should match its neighbours rather than the first brief.
 
-> The names must match `packages/content/packs/shop/titles.v1.json` and the level
-> ladder in `docs/systems/progression.md`. **Check them before generating** — a rank
-> insignia for a title that does not exist is eight wasted assets, and renaming a title
-> is a migration rather than a rename because it ships in save data.
+| Level | Rank | `{INSIGNIA}` | `{METAL}` | |
+|---|---|---|---|---|
+| 1 | Wanderer | a single simple footprint | weathered pewter | ✅ |
+| 10 | Scout | a folded paper map with a marked X | warm bronze | ✅ |
+| 20 | Navigator | a compass rose struck on a round medal | warm bronze | ✅ |
+| 30 | Cartographer | a sextant | brushed silver | ✅ |
+| 40 | Pathfinder | a map with a dotted trail across it | warm gold | ✅ |
+| 50 | Voyager | a stylised pennant on a staff | warm gold | ✅ |
+| 60 | Circumnavigator | a ringed planet | brushed silver | ✅ |
+| 70 | Trailblazer | a mountain summit with a flag | polished gold | ✅ |
+| 80 | Globetrotter | two footprints circling a small globe | polished gold | ✅ |
+| 90 | Worldkeeper | a small globe held in an open hand | iridescent violet | ✅ |
+| 100 | Atlas | **a figure bearing a globe on its shoulders** | iridescent violet with a warm gold rim | ❌ **missing** |
+
+Level 100 is the top of a roughly three-year climb and the only rank named after the
+mascot, so it is the one that most needs a picture and the one that has none. It renders
+without art rather than with a borrowed one — `ProfileScreen.insigniaFor` returns null
+for a rank with no file, deliberately, because a wrong insignia on the rarest rank in the
+game is worse than no insignia.
+
+> The names must match `packages/i18n/locales/en/titles.json` and the level ladder in
+> `docs/systems/progression.md`. **Check them before generating** — a rank insignia for a
+> title that does not exist is a wasted asset, and renaming a title is a migration rather
+> than a rename because it ships in save data.
 
 ## 13. League tier badges
 
@@ -664,13 +782,44 @@ submission day rather than before it.
 
 ## 14. Store listing art
 
-| Asset | Spec | What it is |
-|---|---|---|
-| Play feature graphic | **1024×500**, no alpha | Mandatory. Shown at the top of the Play listing. The lockup on the splash field, wordmark legible at thumbnail size, nothing in the outer 10 % (Play crops it in some placements). |
-| Play icon | **512×512**, no alpha | The §2a icon, re-exported. |
-| iOS App Store icon | **1024×1024**, no alpha | The §2a icon. Apple flattens alpha to black, so never submit transparency. |
-| Phone screenshots | `TODO(verify)` against the current App Store Connect and Play Console requirements — Apple changes required device sizes most years, and a guessed pixel dimension is a rejected submission | 5–8 per platform. |
-| Tablet screenshots | `TODO(verify)`, same reason | `supportsTablet` is now `true`, so Apple will ask for these. |
+**`pnpm build:store` builds the first three.** They are fixed sizes stated by the
+platforms, composed from assets this repo already owns, so they are derived rather than
+briefed — same rule as the flags, the maps and the icons. The safe area is *checked*, not
+eyeballed: the script fails if the lockup runs into the outer 10 % Play crops.
+
+| Asset | Spec | What it is | |
+|---|---|---|---|
+| Play feature graphic | **1024×500**, no alpha | Mandatory. Shown at the top of the Play listing. The lockup on the splash field, wordmark legible at thumbnail size, nothing in the outer 10 % (Play crops it in some placements). The strapline is the onboarding headline, not a new marketing line — a listing that promises something the first screen does not is the same lie as a screenshot of a screen the app does not have. | ✅ |
+| Play icon | **512×512**, no alpha | The §2a icon, re-exported. | ✅ |
+| iOS App Store icon | **1024×1024**, no alpha | The §2a icon. Apple flattens alpha to black, so never submit transparency. | ✅ |
+| iPhone screenshots | **1320×2868** (6.9"), portrait PNG, no alpha | 6 shots, the list below. Apple scales every smaller iPhone size down from this one. | ✅ |
+| iPad screenshots | **2064×2752** (13"), portrait PNG, no alpha | 6 shots. `supportsTablet` is `true`, which is what makes these mandatory rather than optional — turning that flag on quietly added a required asset. | ✅ |
+| Play screenshots | `TODO(verify)` | Still unchecked, and the reason is recorded rather than the requirement guessed — see below. | ❌ |
+
+> **The sizes are read, not remembered.** Source:
+> [Apple's screenshot specifications](https://developer.apple.com/help/app-store-connect/reference/screenshot-specifications/),
+> verified 2026-08-07. Recorded the way a content pack records `source` and `verifiedAt`,
+> because a store requirement goes stale exactly like a population figure — Apple changes
+> the required device sizes most years, and a guessed pixel dimension is a rejected
+> submission rather than a cosmetic mistake.
+>
+> **Play is still open, and deliberately.** Its requirements live on `support.google.com`
+> and `play.google.com`, both blocked by this session's egress policy, so they could not
+> be checked. The twelve files above are portrait PNG with no alpha, which is very likely
+> acceptable on Play too — "very likely" is not "verified", and that difference is this
+> whole section's point. Check the console, then add a `SIZES` row to
+> `scripts/build-store-shots.cjs`; nothing else needs to change.
+
+`pnpm build:store:shots` builds all twelve. It drives the **real app** rather than
+reusing `design:shots`, for two reasons: a review shot is 390 CSS pixels wide and a store
+screenshot is 1320 device pixels, so it captures at the device scale rather than
+upscaling; and two of the six shots — a lesson mid-question, and the summary after one —
+need clicks that no static render can reach.
+
+The celebration shot is a genuinely perfect lesson, not a mocked one. The script plays
+the lesson twice: the first pass reads each correct answer off the label the app already
+exposes for screen readers (`lesson:answer.correct`), the second pass replays it and
+scores 100 %. Every number in that frame was awarded by the real engine.
 
 Screenshots are **composites, not raw captures**: a device frame, one short headline
 per shot, and the real screen inside it. Use the real rendered screens from

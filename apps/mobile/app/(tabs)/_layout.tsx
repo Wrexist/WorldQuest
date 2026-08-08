@@ -11,7 +11,7 @@
  */
 
 import { Tabs } from 'expo-router'
-import { TabBar, colors } from '@worldquest/design'
+import { TabBar, colors, layout } from '@worldquest/design'
 import { Icon } from '../../src/components/Icon.js'
 import type { IconName } from '../../src/lib/icons.generated.js'
 import { useT, type TranslationKey } from '../../src/lib/i18n.js'
@@ -40,7 +40,18 @@ export default function TabsLayout() {
 
   return (
     <Tabs
-      screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: 'transparent' } }}
+      screenOptions={{
+        headerShown: false,
+        // Capped and centred above the `lg` breakpoint — see `layout.maxContentWidth`.
+        // The TAB BAR is deliberately outside this: it is chrome and belongs to the
+        // device edge, while the content is a column and belongs to a readable width.
+        sceneStyle: {
+          backgroundColor: 'transparent',
+          width: '100%',
+          maxWidth: layout.maxContentWidth,
+          alignSelf: 'center',
+        },
+      }}
       tabBar={({ state, navigation }) => (
         <TabBar
           items={TABS.map((tab) => ({

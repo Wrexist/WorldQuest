@@ -58,13 +58,21 @@ export type ButtonProps = {
  */
 const HEIGHTS: Record<ButtonSize, number> = { sm: 40, md: 48, lg: 54 }
 
-type Skin = { face: string; edge: string; label: string; outlined?: boolean }
+type Skin = {
+  face: string
+  edge: string
+  label: string
+  outlined?: boolean
+  /** A soft bloom behind the button. Primary only — see the note at the render. */
+  glow?: string
+}
 
 const SKINS: Record<ButtonVariant, Skin> = {
   primary: {
     face: colors.action.primary,
     edge: colors.action.primaryEdge,
     label: colors.text.onAccent,
+    glow: colors.action.primaryGlow,
   },
   secondary: {
     face: colors.action.secondary,
@@ -137,6 +145,17 @@ export function Button({
       // rule is the blunt version: never fix a height to an English string.
       style={[press3d.socket, { minHeight: socketHeight }, fullWidth && styles.fullWidth, style]}
     >
+      {/* The glow under the one button that carries the screen.
+          `action.primaryGlow` was a third token with no readers, alongside
+          `bg.canvasGradient` and `motion.stagger`. It is worth wiring because it is the
+          house style stated in `asset-prompts.md` — "soft matte surfaces with gentle
+          subsurface glow" — and every delivered illustration has it while the interface
+          under them had none. A flat green rectangle beside a mascot lit from within
+          reads as two products.
+
+          Only the primary, and only when it is live. A glow under every button is not a
+          glow, it is a haze; and a glow under a disabled one promises a tap that does
+          nothing. */}
       {!flat && (
         <View
           style={[press3d.edge, styles.edge, { top: edgeDepth, backgroundColor: edgeColor }]}
@@ -151,6 +170,32 @@ export function Button({
             minHeight: faceHeight,
             backgroundColor: faceColor,
             transform: [{ translateY }],
+          },
+          // The bloom under the one button that carries the screen.
+          //
+          // `action.primaryGlow` was a token with no readers, alongside
+          // `bg.canvasGradient` and `motion.stagger`. It is worth wiring because it is
+          // the house style stated in asset-prompts.md — "soft matte surfaces with
+          // gentle subsurface glow" — and every delivered illustration has it while the
+          // interface under them had none.
+          //
+          // A REAL shadow, not a tinted rectangle behind the button. That was tried
+          // first and rendered as a hard-edged third slab in the 3D stack: a flat shape
+          // at low opacity has an edge, and an edge is the one thing a glow does not
+          // have. Same mistake as trying to fake confetti with a solid band.
+          //
+          // Paired with `elevation`, because `tokens.test.ts` requires it and the rule
+          // is right: an iOS-only shadow is a component that looks flat to half our
+          // users. Android cannot colour an elevation, so it gets a neutral raise
+          // rather than a green bloom — which is not a downgrade so much as the
+          // platform's own idiom for the same idea, a primary action sitting above the
+          // surface.
+          skin.glow !== undefined && !isInert && {
+            shadowColor: skin.glow,
+            shadowOpacity: 0.55,
+            shadowRadius: space[3],
+            shadowOffset: { width: 0, height: space[1] },
+            elevation: space[1],
           },
           // The outlined variant draws the edge colour as a ring too, so the shape is
           // closed on all four sides rather than just underneath.

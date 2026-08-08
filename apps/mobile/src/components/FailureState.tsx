@@ -63,7 +63,6 @@ export function FailureState({
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: colors.bg.canvas,
     alignItems: 'center',
     justifyContent: 'center',
     padding: space[5],

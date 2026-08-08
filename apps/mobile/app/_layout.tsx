@@ -12,8 +12,9 @@
 
 import { useEffect, useRef } from 'react'
 import { Stack, router, usePathname } from 'expo-router'
+import { DarkTheme, ThemeProvider } from '@react-navigation/native'
 import { SafeAreaView, StatusBar, StyleSheet } from 'react-native'
-import { colors, motion } from '@worldquest/design'
+import { colors, layout, motion, ScreenBackground } from '@worldquest/design'
 import { ErrorBoundary } from '../src/components/ErrorBoundary.js'
 import { readOnboarding } from '../src/features/onboarding/useOnboarding.js'
 import { SplashScreen, useSplashPhase } from '../src/features/splash/SplashScreen.js'
@@ -189,16 +190,43 @@ export default function RootLayout() {
     <SafeAreaView style={styles.root}>
       <StatusBar barStyle="light-content" backgroundColor={colors.bg.canvas} />
       <ErrorBoundary>
+        <ScreenBackground>
+        {/* React Navigation paints its own background behind every screen, and its
+            default theme is LIGHT — `rgb(242,242,242)`, absolutely positioned over the
+            whole viewport. Every screen used to paint `bg.canvas` on top of it, which
+            hid it completely; the moment the screens went transparent so the canvas
+            gradient could show, that grey surfaced on every route. `sceneStyle` does
+            not reach it — it comes from the theme, so the theme is where it is fixed. */}
+        <ThemeProvider
+          value={{ ...DarkTheme, colors: { ...DarkTheme.colors, background: 'transparent' } }}
+        >
         <QueryProvider>
           <SubscriptionSync />
           <Stack
             screenOptions={{
               headerShown: false,
-              contentStyle: { backgroundColor: colors.bg.canvas },
+              // Transparent, so the root gradient behind the router is what shows.
+              // A flat fill here would sit on top of it and the token would go back to
+              // having no readers.
+              // The same cap the tab scenes get, for every screen that is NOT a tab —
+              // country, collection, streak, shop, achievements, the paywall. Without it
+              // half the app is a readable column on a tablet and half is stretched.
+              contentStyle: {
+                backgroundColor: 'transparent',
+                width: '100%',
+                maxWidth: layout.maxContentWidth,
+                alignSelf: 'center',
+              },
               animationDuration: motion.quick.duration,
             }}
           >
-            <Stack.Screen name="(tabs)" />
+            {/* The one screen that opts OUT of the width cap, because it is not a
+                screen — it is the tab navigator, and the cap belongs to the content
+                inside it rather than to the bar around it. Capped here, the tab bar
+                itself came out 600pt wide and centred, floating with dark bands either
+                side. `(tabs)/_layout.tsx` applies the same cap to its SCENES, which is
+                where it was always meant to go. */}
+            <Stack.Screen name="(tabs)" options={{ contentStyle: { backgroundColor: 'transparent' } }} />
             {/* No back gesture: onboarding is a one-way flow, and swiping out of the
                 age gate would leave the app not knowing whether it is talking to a
                 child. The only ways forward are the buttons. */}
@@ -223,11 +251,16 @@ export default function RootLayout() {
             />
           </Stack>
         </QueryProvider>
+        </ThemeProvider>
+        </ScreenBackground>
       </ErrorBoundary>
     </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
+  // The flat canvas stays as the base coat under the gradient: it is what paints
+  // during the frame before layout, and what shows if the native gradient module is
+  // ever absent.
   root: { flex: 1, backgroundColor: colors.bg.canvas },
 })

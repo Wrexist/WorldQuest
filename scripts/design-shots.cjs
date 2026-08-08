@@ -23,12 +23,15 @@
  *
  * ## Usage
  *
- *   pnpm design:shots                          # the default route set
- *   pnpm design:shots /lesson /country/SE      # specific routes
+ *   pnpm design:shots                          # every route, plus the two flows
+ *   pnpm design:shots /lesson /country/SE      # specific routes (flows still run)
+ *   WQ_NO_FLOWS=1 pnpm design:shots /home      # routes only, when iterating on one
  *
- * Writes to node_modules/.cache/wq-design-shots/, one PNG per route per viewport,
- * plus `report.json` with the measured values a review should be arguing about
- * rather than eyeballing.
+ * Writes to node_modules/.cache/wq-design-shots/, one PNG per route per viewport, plus
+ * the flow shots — the onboarding steps, the lesson's four phases, and the offline pass
+ * — and `report.json` with the measured values a review should be arguing about rather
+ * than eyeballing. The run prints how many flow shots it actually took; no number is
+ * written down here, because the last one was stale within a day of being typed.
  */
 
 const { chromium } = require('playwright')
@@ -48,7 +51,19 @@ const PORT = 4174
  * tablet doing something silly with a phone-first grid.
  */
 const VIEWPORTS = [
-  { name: '320', width: 320, height: 700 },
+  /**
+   * 320×568 is iPhone SE 1 — a real phone, unlike the 320×700 this used to be.
+   *
+   * That height was invented, and inventing it hid a defect for as long as it existed: no
+   * 320-wide phone has ever been 700 tall, and at the real 568 the lesson's fourth answer
+   * option sat at 559–618 of 568. Two comments in `LessonScreen` recorded "four answers
+   * still fit below it at 320pt" — true at this harness's height and at no device's.
+   *
+   * 320 dp is also live on small Android and on a folded Fold's cover screen, so this is
+   * the floor rather than a museum piece. The lesson now compacts below 700 (`SHORT_SCREEN`),
+   * which means the old height photographed the wrong branch as well as the wrong phone.
+   */
+  { name: '320', width: 320, height: 568 },
   { name: '390', width: 390, height: 844 },
   { name: '768', width: 768, height: 1024 },
 ]
@@ -62,6 +77,10 @@ const DEFAULT_ROUTES = [
   '/more',
   '/collection/flags',
   '/country/SE',
+  // The continent detail. Absent from this list until it was noticed that it had no
+  // illustration at all — which is the argument for the list being the whole app rather
+  // than the screens somebody remembered.
+  '/region/EU',
   '/achievements',
   '/streak',
   // `?source=settings` so it opens on the plans page. From onboarding it opens on
@@ -69,7 +88,54 @@ const DEFAULT_ROUTES = [
   // here — the harness has no lesson behind it.
   '/paywall?source=settings',
   '/shop',
+  // Reached by a gate in the root layout and by the "we miss you" push, never by a tap.
+  // It went unphotographed for that reason and was rendering "It's been 0 days." to
+  // anyone who followed the notification the same afternoon.
+  '/welcome-back',
 ]
+
+/**
+ * The screens that are not routes, and were therefore invisible to this tool.
+ *
+ * A review that only visits `DEFAULT_ROUTES` sees about two thirds of the app. The
+ * onboarding flow is one route showing four different screens; the lesson is one route
+ * showing five. Between them that is nine screens nobody could photograph, and the
+ * first review that drove them by hand found a broken layout in the feedback sheet at
+ * 320, a screen-reader contradiction in the onboarding dots, and two illustrations
+ * missing entirely — none of which any route in the list above could have shown.
+ *
+ * So the script drives them. Onboarding is free: the harness already clicks through it
+ * to get past the gate, and now it stops for a picture on the way. The lesson costs one
+ * extra playthrough per viewport.
+ *
+ * This flag gates the offline pass below as well — it is the same idea applied to a
+ * state rather than a screen, and anyone turning flows off to iterate on one route
+ * wants it off too.
+ */
+const SHOOT_FLOWS = process.env.WQ_NO_FLOWS === undefined
+
+/**
+ * The routes worth photographing a SECOND time with the network pulled out.
+ *
+ * The five states are content, loading, empty, error and offline, and a review that
+ * only walks routes sees the first three. Loading and error are not reachable here and
+ * saying so is more useful than pretending: content ships in the binary and
+ * `useContent` builds its index synchronously, so there is no loading window to
+ * photograph and no failure to induce short of corrupting a pack. The paywall's error
+ * state is the exception and shows up unprompted — there is no store to reach from a
+ * test harness, which is why every paywall shot in this folder is already the error
+ * branch.
+ *
+ * Offline IS reachable, and it is the state this product cares most about. Two of the
+ * three personas are defined by it — Priya on the metro, Emma's tablet with no SIM —
+ * and the banner written for them was unreachable for the app's entire first month
+ * because `isOffline` was a hardcoded `false`. A regression back to that would look
+ * exactly like nothing at all.
+ *
+ * `context.setOffline` fires the browser's own `offline` event, which is the same
+ * path `connectivity.ts` listens on in a real browser. Not a mock, not a test seam.
+ */
+const OFFLINE_ROUTES = ['/', '/shop', '/streak', '/more', '/paywall?source=settings']
 
 const TYPES = {
   '.html': 'text/html',
@@ -127,17 +193,22 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
    * the one the E2E already proves works, and a storage shape is an implementation
    * detail that would rot the day the onboarding key changes.
    */
-  const completeOnboarding = async (page) => {
+  const completeOnboarding = async (page, shot) => {
     await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' })
     await page.waitForTimeout(1200)
     if (!/Get started|Next/i.test(await page.evaluate(() => document.body.innerText))) return
 
+    // Each slide, on the way past. Free: the clicks were happening anyway, and the
+    // three intro slides are three different screens sharing one route.
     for (let i = 0; i < 2; i++) {
+      await shot(`onboarding-slide-${i + 1}`)
       await page.getByText('Next', { exact: true }).first().click()
       await page.waitForTimeout(350)
     }
+    await shot('onboarding-slide-3')
     await page.getByText('Get started', { exact: true }).first().click()
     await page.waitForTimeout(500)
+    await shot('onboarding-age')
 
     // An adult year, so the flow continues past the child branch.
     const adultYear = new Date().getFullYear() - 30
@@ -147,10 +218,65 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
     await page.waitForTimeout(250)
     await page.getByText('Continue', { exact: true }).first().click()
     await page.waitForTimeout(500)
+    await shot('onboarding-goal')
     await page.getByText('Continue', { exact: true }).first().click()
     await page.waitForTimeout(500)
+    await shot('onboarding-taster')
     await page.getByText('Start learning', { exact: true }).first().click()
     await page.waitForTimeout(1200)
+  }
+
+  /**
+   * The lesson's other four screens: paused, correct feedback, wrong feedback, summary.
+   *
+   * Answering the FIRST option every time is what gets both verdicts out of one
+   * playthrough without knowing any answers — some questions have it right and some do
+   * not, which is exactly the distribution needed here. The correct/wrong test reads the
+   * last few lines of the body rather than a testID, because the sheet is the thing
+   * being photographed and pinning it to a testID would let a redesign quietly stop
+   * taking the picture.
+   */
+  const shootLessonPhases = async (page, shot) => {
+    await page.goto(`http://localhost:${PORT}/lesson`, { waitUntil: 'networkidle' })
+    await page.waitForTimeout(1600)
+
+    const close = page.getByRole('button', { name: /close|exit|quit|pause/i }).first()
+    if ((await close.count()) > 0) {
+      await close.click()
+      await page.waitForTimeout(600)
+      await shot('lesson-paused')
+      const resume = page.getByText(/^(Keep going|Resume|Continue)$/).first()
+      if ((await resume.count()) > 0) {
+        await resume.click()
+        await page.waitForTimeout(700)
+      }
+    }
+
+    let gotCorrect = false
+    let gotWrong = false
+    for (let q = 0; q < 40; q++) {
+      const options = await page.getByTestId('answer-option').all()
+      if (options.length === 0) break
+      await options[0].click()
+      await page.waitForTimeout(550)
+      const tail = (await page.evaluate(() => document.body.innerText)).split('\n').slice(-8).join(' ')
+      const correct = /Perfect|Nice|Yes/i.test(tail)
+      if (correct && !gotCorrect) {
+        await shot('lesson-feedback-correct')
+        gotCorrect = true
+      }
+      if (!correct && !gotWrong) {
+        await shot('lesson-feedback-wrong')
+        gotWrong = true
+      }
+      const next = page.getByText(/^(Continue|Finish|Got it)$/).first()
+      if ((await next.count()) === 0) break
+      await next.click()
+      await page.waitForTimeout(500)
+    }
+    await page.waitForTimeout(800)
+    await shot('lesson-summary')
+    return { gotCorrect, gotWrong }
   }
 
   for (const viewport of VIEWPORTS) {
@@ -160,10 +286,26 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
     const consoleErrors = []
     page.on('pageerror', (e) => consoleErrors.push(String(e)))
     page.on('console', (m) => {
-      if (m.type() === 'error') consoleErrors.push(m.text())
+      // The offline pass disconnects the radio on purpose, and Chromium says so on the
+      // console. Reporting our own instruction back as a finding is how a summary line
+      // stops being read.
+      if (m.type() === 'error' && !/ERR_INTERNET_DISCONNECTED/.test(m.text())) {
+        consoleErrors.push(m.text())
+      }
     })
 
-    await completeOnboarding(page)
+    // Counted, not assumed. This used to be reported as a hardcoded `VIEWPORTS.length *
+    // 10` and the number was wrong the moment the offline pass was added in this same
+    // file — fifteen shots per viewport reported as ten. A summary line whose whole
+    // purpose is "a shot that silently did not happen is worse than none" cannot itself
+    // be guessing at how many there were.
+    let taken = 0
+    const shot = (name) => {
+      taken += 1
+      return page.screenshot({ path: path.join(OUT, `${name}@${viewport.name}.png`) })
+    }
+
+    await completeOnboarding(page, SHOOT_FLOWS ? shot : async () => {})
 
     for (const route of ROUTES) {
       const slug = route === '/' ? 'home' : route.replace(/^\//, '').replace(/\//g, '-')
@@ -177,9 +319,51 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
        * Touch targets and sideways scroll are the two things a screenshot genuinely
        * cannot show you: a 30 pt button looks fine in a picture and fails under a
        * thumb, and a 4 px overflow is invisible until someone swipes.
+       *
+       * `deadSpaceBelow` is the fourth, and it is here because it found three screens
+       * a human had already looked at and passed. A screenshot shows emptiness but not
+       * how much, and a reviewer's eye grades it against the screen rather than against
+       * the other viewports — so onboarding's taster sat 47 % empty at 320 and 66 % at
+       * 768 through several review passes. As a percentage across three widths it is
+       * obvious, and it is a number a review can argue with.
        */
       const measured = await page.evaluate(() => {
         const doc = document.documentElement
+
+        /**
+         * How much of the viewport below the content is empty.
+         *
+         * Measured from the bottom of the deepest thing actually painted in the scroll
+         * area to the top of whatever is pinned below it — a footer, the tab bar — or to
+         * the bottom of the window when nothing is. Zero on any screen that scrolls,
+         * which is most of them; large only where short fixed content hangs from the top
+         * of a tall screen, which is the defect.
+         *
+         * Deliberately NOT a gate. A meditation screen might want to be mostly empty,
+         * "mostly empty" is sometimes the design, and a threshold here would either fire
+         * on those or be set so loose it fires on nothing. The number goes in the report
+         * and a person decides.
+         */
+        const deadSpaceBelow = (() => {
+          const scroller = Array.from(document.querySelectorAll('*')).find((node) => {
+            const style = getComputedStyle(node)
+            return /^(auto|scroll)$/.test(style.overflowY) && node.clientHeight > 200
+          })
+          if (scroller === undefined) return null
+          // A screen with more in it than fits has no dead space by definition.
+          if (scroller.scrollHeight > scroller.clientHeight + 4) return 0
+          const box = scroller.getBoundingClientRect()
+          let contentBottom = box.top
+          for (const node of scroller.querySelectorAll('*')) {
+            const r = node.getBoundingClientRect()
+            // Painted, inside the scroller, and not a zero-height wrapper.
+            if (r.height < 1 || r.width < 1 || r.top > box.bottom) continue
+            if (getComputedStyle(node).visibility === 'hidden') continue
+            contentBottom = Math.max(contentBottom, Math.min(r.bottom, box.bottom))
+          }
+          const gap = Math.round(box.bottom - contentBottom)
+          return { px: gap, percentOfViewport: Math.round((gap / window.innerHeight) * 100) }
+        })()
         const interactive = Array.from(
           document.querySelectorAll('[role="button"],[role="tab"],[role="radio"],[role="link"]'),
         )
@@ -199,6 +383,7 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
           sidewaysScroll: doc.scrollWidth - doc.clientWidth,
           belowMinTarget: small,
           unlabelledControls: unlabelled,
+          deadSpaceBelow,
           headings: Array.from(document.querySelectorAll('[role="heading"]'))
             .map((h) => (h.textContent ?? '').trim())
             .slice(0, 4),
@@ -207,6 +392,55 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
 
       report.routes[slug] ??= {}
       report.routes[slug][viewport.name] = measured
+    }
+
+    if (SHOOT_FLOWS) {
+      // Serve images from disk for the offline pass, so the pictures are of the APP
+      // being offline rather than of a browser that cannot fetch.
+      //
+      // `setOffline` blocks localhost too, and going offline SWAPS which art the paywall
+      // asks for — `states/error-generic` becomes `states/offline` — so the new file has
+      // never been fetched and cannot be. The shot came out with an empty bordered frame
+      // where the illustration belongs, which on a real device cannot happen: that art is
+      // in the binary. A screenshot that invents a broken image is worse than no
+      // screenshot, because the reviewer files a bug against the app.
+      //
+      // `route.fulfill` answers before the network layer, so it works while offline. Only
+      // images are intercepted; every other request still fails, which is the point.
+      await page.route('**/*.{png,webp,jpg,jpeg,svg,ttf,otf,woff2}', async (route) => {
+        const url = new URL(route.request().url())
+        const file = path.join(ROOT, decodeURIComponent(url.pathname))
+        if (!fs.existsSync(file)) return route.abort()
+        return route.fulfill({
+          status: 200,
+          contentType: TYPES[path.extname(file)] ?? 'application/octet-stream',
+          body: fs.readFileSync(file),
+        })
+      })
+
+      for (const route of OFFLINE_ROUTES) {
+        const slug = route === '/' ? 'home' : route.replace(/^\//, '').replace(/\//g, '-')
+        // Load first, THEN pull the radio. `setOffline` blocks localhost too, so a
+        // navigation made while offline serves nothing and photographs a blank page —
+        // which is a picture of the harness, not of the app. Toggling per route costs a
+        // few hundred milliseconds and is the only order that renders the screen.
+        await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'networkidle' })
+        await page.waitForTimeout(900)
+        await page.context().setOffline(true)
+        await page.waitForTimeout(700)
+        await shot(`offline-${slug}`)
+        await page.context().setOffline(false)
+        await page.waitForTimeout(300)
+      }
+      await page.unroute('**/*.{png,webp,jpg,jpeg,svg,ttf,otf,woff2}')
+
+      const phases = await shootLessonPhases(page, shot)
+      if (!phases.gotCorrect || !phases.gotWrong) {
+        report.flowGaps ??= {}
+        report.flowGaps[viewport.name] = `lesson feedback: correct=${phases.gotCorrect} wrong=${phases.gotWrong}`
+      }
+      report.flowShots ??= {}
+      report.flowShots[viewport.name] = taken
     }
 
     if (consoleErrors.length > 0) {
@@ -239,13 +473,42 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
       }
       if (m.unlabelledControls > 0) notes.push(`${vp}: ${m.unlabelledControls} unlabelled control(s)`)
     }
+    // Reported apart from `notes`, and only when it is large at every width. A tall
+    // viewport showing a short screen is normal; the SAME screen being mostly empty at
+    // 320 and at 768 is a screen that is not using its space, which is what onboarding
+    // was. Not counted as a problem — see `deadSpaceBelow` — so a review reads it and
+    // decides rather than being told.
+    const dead = Object.entries(byViewport)
+      .map(([vp, m]) => [vp, m.deadSpaceBelow])
+      .filter(([, d]) => d !== null && d !== 0)
+    const empty =
+      dead.length === VIEWPORTS.length && dead.every(([, d]) => d.percentOfViewport >= 25)
+        ? dead.map(([vp, d]) => `${vp}: ${d.percentOfViewport}%`).join(' · ')
+        : null
+
     problems += notes.length
     console.log(`  ${notes.length === 0 ? '✓' : '⚠'} ${slug}`)
     for (const n of notes) console.log(`      ${n}`)
+    if (empty !== null) console.log(`      empty below the content — ${empty}`)
   }
   if (report.consoleErrors) {
     problems++
     console.log(`\n  ⚠ console errors: ${JSON.stringify(report.consoleErrors).slice(0, 300)}`)
+  }
+  // Said out loud rather than left as a missing file. A flow shot that silently did not
+  // happen is worse than no flow shots at all: the reviewer opens the folder, does not
+  // notice the absence, and reports the screen as fine.
+  if (report.flowGaps) {
+    problems++
+    console.log(`\n  ⚠ a lesson verdict was never reached: ${JSON.stringify(report.flowGaps)}`)
+  }
+  if (SHOOT_FLOWS) {
+    const flowShots = Object.values(report.flowShots ?? {}).reduce((a, b) => a + b, 0)
+    console.log(
+      `\n  + ${flowShots} flow shots (onboarding-*, lesson-*, offline-*) — screens that are ` +
+        `states rather than routes, or the same route with the radio pulled out, and were ` +
+        `invisible to this tool until they were not`,
+    )
   }
 
   console.log(`\nshots → ${OUT}`)

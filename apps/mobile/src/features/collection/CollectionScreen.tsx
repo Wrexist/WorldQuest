@@ -23,7 +23,15 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import {
+  Animated,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  useWindowDimensions,
+} from 'react-native'
 import { Art } from '../../components/Art.js'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { Flag } from '../../components/Flag.js'
@@ -33,9 +41,12 @@ import {
   ProgressBar,
   Skeleton,
   colors,
+  layout,
   radius,
   space,
+  staggerStyle,
   text,
+  useStagger,
 } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
@@ -115,6 +126,10 @@ export function CollectionScreen({
   const t = useT()
   const [filter, setFilter] = useState<CollectionFilter>('all')
   const [query, setQuery] = useState('')
+  // At or above the content cap the column stops growing, so this is the only regime
+  // change there is — no breakpoint of its own. See `tileCellWide`.
+  const { width } = useWindowDimensions()
+  const wide = width >= layout.maxContentWidth
 
   const collected = tiles.filter((tile) => tile.collected).length
 
@@ -190,7 +205,22 @@ export function CollectionScreen({
           autoCorrect={false}
         />
 
-        <View style={styles.filters}>
+        {/* Scrolls sideways rather than wrapping.
+   
+            Four chips do not fit one row at 320, so "Starred" dropped alone onto a
+            second line — a row of controls that changes height between devices, with
+            one member visually demoted for no reason a user could infer. Wrapping is
+            also the wrong direction to fail: a fifth filter, or a locale with longer
+            words, makes the block taller on exactly the screens with least room.
+   
+            `alwaysBounceHorizontal` off so it does not rubber-band on a phone wide
+            enough to hold all four, where there is nothing to scroll to. */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          alwaysBounceHorizontal={false}
+          contentContainerStyle={styles.filters}
+        >
           {FILTERS.map((option) => (
             <Card
               key={option}
@@ -206,7 +236,7 @@ export function CollectionScreen({
               </Text>
             </Card>
           ))}
-        </View>
+        </ScrollView>
       </View>
 
       {loading ? (
@@ -252,8 +282,8 @@ export function CollectionScreen({
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.grid} showsVerticalScrollIndicator={false}>
-          {shown.map((tile) => (
-            <Tile key={tile.id} tile={tile} art={art} onOpen={onOpen} />
+          {shown.map((tile, index) => (
+            <Tile key={tile.id} tile={tile} index={index} art={art} wide={wide} onOpen={onOpen} />
           ))}
         </ScrollView>
       )}
@@ -263,14 +293,23 @@ export function CollectionScreen({
 
 function Tile({
   tile,
+  index,
   art,
+  wide,
   onOpen,
 }: {
   readonly tile: CollectionTile
+  readonly index: number
   readonly art: boolean
+  /** Three columns instead of two — see `tileCellWide`. */
+  readonly wide: boolean
   readonly onOpen: ((id: string) => void) | undefined
 }) {
   const t = useT()
+  // This grid is the case `motion.stagger`'s `maxItems` was written for: sixty-five
+  // tiles at 40 ms each would take two and a half seconds to finish arriving. The
+  // cascade covers the first screenful and everything below it lands with the sixth.
+  const entrance = useStagger(index)
 
   // Everything the tile says, said once, to a screen reader — the name, what it is,
   // whether it has been collected, and whether it is starred. Without the subtitle
@@ -286,6 +325,7 @@ function Tile({
     .join(', ')
 
   return (
+    <Animated.View style={[wide ? styles.tileCellWide : styles.tileCell, staggerStyle(entrance)]}>
     <Card
       level={tile.collected ? 2 : 1}
       // The state is IN the label, not only in the dimming. A screen-reader user gets
@@ -322,11 +362,12 @@ function Tile({
         <Icon name="star" size={14} color={colors.action.secondary} />
       )}
     </Card>
+    </Animated.View>
   )
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.bg.canvas },
+  root: { flex: 1 },
   header: { padding: space[4], gap: space[3] },
   title: { ...text('h1'), color: colors.text.primary },
   search: {
@@ -340,7 +381,7 @@ const styles = StyleSheet.create({
   },
   // Wraps: four chips do not fit on one line at 390pt, and they fit on none of them at
   // 200 % text. Two rows of two is the honest layout rather than a hidden scroller.
-  filters: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
+  filters: { flexDirection: 'row', gap: space[2], paddingEnd: space[4] },
   // 44pt floor, met by the chip itself rather than by hit slop. Padding alone put
   // these at 40pt — close enough to look right in a screenshot and wrong under a
   // thumb, which is precisely the class of defect `pnpm design:shots` exists to
@@ -362,7 +403,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: space[4],
     paddingBottom: space[6],
   },
-  // Two up, not three.
+  // Two up on a phone, not three.
   //
   // A country name is one unbreakable word and a three-column grid on a 390 pt screen
   // gives it about 105 pt. That holds "Chile" and does not hold "Argentina" — at the
@@ -378,7 +419,22 @@ const styles = StyleSheet.create({
   // Two columns needs no platform branch and no conditional: it is simply wide enough,
   // at every text size, on every renderer. The tiles are chunkier for it, which suits
   // the rest of the system.
-  tile: { width: '48%', minHeight: 116, padding: space[3], alignItems: 'center', justifyContent: 'center', gap: space[1] },
+  // The cell owns the grid width; the tile fills the cell. Split when the tiles gained
+  // a staggered entrance — the transform belongs on a wrapper rather than on the Card,
+  // which has its own press transform.
+  tileCell: { width: '48%' },
+  // Three up once the content has reached its cap, which is the case that reason above
+  // does NOT cover. It was measured at 390 and applied at every width, so a tablet got
+  // 65 flags in a 33-row column of half-empty cards. At the 600 pt cap three columns
+  // give each tile about 176 pt — larger than the 172 pt that two columns give at 390,
+  // where "Argentina" at 200 % text is known to fit. The constraint is a minimum tile
+  // width, not a column count, and this is the width at which three of them clear it.
+  //
+  // No new breakpoint: content stops growing at `maxContentWidth`, so there are exactly
+  // two regimes and that token already names the boundary. The e2e overlap check runs
+  // at 200 % text and will say so if this is wrong.
+  tileCellWide: { width: '31%' },
+  tile: { width: '100%', minHeight: 116, padding: space[3], alignItems: 'center', justifyContent: 'center', gap: space[1] },
   // Dimmed, never hidden. See the header comment — this is the whole design.
   tileDim: { opacity: 0.45 },
   tileName: { ...text('caption', { weight: '700' }), color: colors.text.primary, textAlign: 'center' },

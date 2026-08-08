@@ -4,6 +4,7 @@ import {
   MAX_ATTEMPTS,
   acknowledge,
   backoffMs,
+  countUnsyncedProgress,
   emptyQueue,
   enqueue,
   fail,
@@ -208,6 +209,38 @@ describe('unsynced progress', () => {
 
   it('is false for an empty queue', () => {
     expect(hasUnsyncedProgress(emptyQueue())).toBe(false)
+  })
+
+  it('counts only the kinds it calls progress, so a sentence about lessons can use it', () => {
+    // The bug this pins: Settings puts a number on "# lessons haven't reached the server"
+    // and used to read `queue.pending.length`. Finish a lesson offline, then change a
+    // setting, and the screen said 2 when one of them was a switch.
+    let q = enqueue(emptyQueue(), lesson('l1'))
+    q = enqueue(q, { id: 's1', kind: 'setting', payload: { sound: false }, clientTs: T0 })
+    q = enqueue(q, { id: 'p1', kind: 'purchase', payload: { item: 'freeze' }, clientTs: T0 })
+    expect(q.pending).toHaveLength(3)
+    expect(countUnsyncedProgress(q)).toEqual({ pending: 1, parked: 0 })
+  })
+
+  it('separates work still trying from work that gave up', () => {
+    // The two counts drive two different sentences and a retry link, so they must not
+    // be one total.
+    let q = enqueue(emptyQueue(), lesson('l1'))
+    q = enqueue(q, lesson('l2', T0 + 1_000))
+    for (let i = 0; i < MAX_ATTEMPTS; i++) q = fail(q, 'l1', 'network')
+    expect(countUnsyncedProgress(q)).toEqual({ pending: 1, parked: 1 })
+  })
+
+  it('counts nothing when only housekeeping is parked', () => {
+    // Same predicate as `hasUnsyncedProgress`, on the parked side too — otherwise the
+    // Settings section could be hidden while its count claimed one.
+    let q = enqueue(emptyQueue(), {
+      id: 's1', kind: 'setting', payload: { sound: false }, clientTs: T0,
+    })
+    for (let i = 0; i < MAX_ATTEMPTS; i++) q = fail(q, 's1', 'network')
+    expect(q.parked).toHaveLength(1)
+    expect(countUnsyncedProgress(q)).toEqual({ pending: 0, parked: 0 })
+    expect(hasUnsyncedProgress(q)).toBe(false)
   })
 })
 

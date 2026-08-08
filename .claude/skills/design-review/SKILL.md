@@ -17,12 +17,18 @@ code is a code review with opinions about colour. Every finding in your report m
 trace to something you saw rendered or something the harness measured.
 
 ```bash
-pnpm design:shots                       # all ten default routes × 320 / 390 / 768
+pnpm design:shots                       # 14 routes × 320 / 390 / 768, plus both flows
 pnpm design:shots /lesson /country/SE   # just the ones the change touches
 ```
 
 Then **open the PNGs** in `node_modules/.cache/wq-design-shots/`. Reading
 `report.json` is not looking at the app.
+
+It also drives the two flows, because a route list is not the app. Onboarding is one
+route showing four screens and the lesson is one route showing five, so a review that
+only visited routes was missing nine of them — and the first review to drive them by
+hand found a layout broken at 320, a screen-reader contradiction, and two illustrations
+missing. Those shots are named `onboarding-*` and `lesson-*`; open them too.
 
 The script gets past the onboarding gate itself. It did not, the first time it ran,
 and produced thirty photographs of onboarding slide one with an identical "finding" on
