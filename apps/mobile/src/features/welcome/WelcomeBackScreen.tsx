@@ -27,7 +27,7 @@
  */
 
 import { StyleSheet, Text, View } from 'react-native'
-import { Button, Card, colors, space, text } from '@worldquest/design'
+import { Button, Card, Tally, colors, space, text } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 
@@ -66,12 +66,30 @@ export function WelcomeBackScreen({
       </View>
 
       {/* The counts, right under the promise. "Everything you learned is still here"
-          is a sentence; these are the evidence, and evidence is what settles a fear. */}
-      <Card level={2} style={styles.card}>
-        <Text style={styles.cardTitle}>{t('welcome:kept.title')}</Text>
-        <Text style={styles.kept}>{t('welcome:kept.facts', { count: factsLearned })}</Text>
-        <Text style={styles.kept}>{t('welcome:kept.countries', { count: countriesMet })}</Text>
-      </Card>
+          is a sentence; these are the evidence, and evidence is what settles a fear.
+
+          Hidden when there is nothing kept, which this screen reaches: it is
+          deep-linkable from the "we miss you" push, and a first-launch tap on that
+          notification rendered a card headed STILL YOURS whose entire contents were
+          "0 facts learned / 0 countries" — a reassurance about nothing, in the most
+          prominent block on the screen, directly above a line already saying "nothing
+          is waiting". The screen said nothing three times.
+
+          Same rule as Home's due line and the streak badge: a row that exists only to
+          report zero is a row that should not be there. `factsLearned` alone decides
+          it, because countries are complete only once their facts are, so there is no
+          state where the second number is non-zero and the first is not. */}
+      {factsLearned > 0 && (
+        <Card level={2} style={styles.card}>
+          <Text style={styles.cardTitle}>{t('welcome:kept.title')}</Text>
+          <Tally style={styles.kept} numberStyle={styles.keptNumber}>
+            {t('welcome:kept.facts', { count: factsLearned })}
+          </Tally>
+          <Tally style={styles.kept} numberStyle={styles.keptNumber}>
+            {t('welcome:kept.countries', { count: countriesMet })}
+          </Tally>
+        </Card>
+      )}
 
       <Text style={styles.due}>
         {/* "Ready for review", never "overdue". A user who lived their life for two
@@ -96,7 +114,11 @@ const styles = StyleSheet.create({
   body: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
   card: { padding: space[4], gap: space[1] },
   cardTitle: { ...text('overline'), color: colors.text.tertiary },
-  kept: { ...text('h3', { numeric: true }), color: colors.text.primary },
+  // The words at h3, the digits at h3 too — same size, and the emphasis is already
+  // carried by this being the only bright text in the card. `Tally` still splits them so
+  // the figure gets tabular numerals: "12 facts" and "112 facts" must not shift the line.
+  kept: { ...text('h3'), color: colors.text.secondary },
+  keptNumber: { ...text('h3', { numeric: true }), color: colors.text.primary },
   due: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
   actions: { marginTop: 'auto', gap: space[2] },
 })

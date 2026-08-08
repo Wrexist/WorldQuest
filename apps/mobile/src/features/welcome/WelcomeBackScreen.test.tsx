@@ -14,10 +14,26 @@ const props = (over: Partial<WelcomeBackScreenProps> = {}): WelcomeBackScreenPro
 
 describe('WelcomeBackScreen', () => {
   it('says the progress is still there, which is the fear the user arrives with', () => {
-    render(<WelcomeBackScreen {...props()} />)
+    // `textContent` for the counts: their digits are styled apart from their words, so
+    // each line is several nodes.
+    const { container } = render(<WelcomeBackScreen {...props()} />)
     expect(screen.getByText(/still here/i)).toBeTruthy()
-    expect(screen.getByText(/47 facts learned/)).toBeTruthy()
-    expect(screen.getByText(/18 countries/)).toBeTruthy()
+    expect(container.textContent).toContain('47 facts learned')
+    expect(container.textContent).toContain('18 countries')
+  })
+
+  it('does not show a STILL YOURS card whose entire contents are zero', () => {
+    // Reachable, and this is the screen where it matters most: it is deep-linkable from
+    // the "we miss you" push, so a first-launch tap rendered a card headed STILL YOURS
+    // saying "0 facts learned / 0 countries" — a reassurance about nothing, in the
+    // largest block on screen, directly above a line already saying nothing is waiting.
+    const { container } = render(
+      <WelcomeBackScreen {...props({ factsLearned: 0, countriesMet: 0 })} />,
+    )
+    expect(container.textContent).not.toMatch(/still yours/i)
+    expect(container.textContent).not.toContain('0 facts learned')
+    // The welcome itself must survive: hiding the card is not hiding the screen.
+    expect(screen.getByText(/missed you/i)).toBeTruthy()
   })
 
   it('is about us missing them, never about what they failed to do', () => {
