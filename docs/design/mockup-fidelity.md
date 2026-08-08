@@ -97,6 +97,8 @@ The mockup's imagery is generated art. Matching it needs real assets:
 | ~~Card gradients~~ | Blue→dark, purple→dark | ✅ **Done.** Semantic `gradient.*` tokens drawn by `Card`, 135° top-left to bottom-right. |
 | ~~Typeface~~ | The real faces | ✅ **Bundled — now Nunito**, not the Inter + Baloo 2 pairing this row used to name. One rounded family across the whole app, per weight from `@expo-google-fonts`, splash held until they land. |
 | ~~Lesson illustration~~ | A map of the region, filling the middle third | ✅ **Done.** Every question that already names its country now carries a locator map — see below. |
+| `progress/globe` | A globe on the "Your world" card | **Briefed, undrawn, blocked on credits.** Prompt written in `asset-prompts.md §10` and preflighted at 2 credits; the workspace has none. Meanwhile the card carries an icon-and-chevron row rather than a substitute picture: reusing an onboarding scene here would put the same illustration in two places meaning two things, which is how a screen starts looking generated. |
+| §8b continent silhouettes | A landmark behind each continent tile | **Briefed, undrawn, blocked on TWO things.** Credits, and a subject choice per continent that is not legally encumbered — the reference's own three (illuminated Eiffel Tower, Christ the Redeemer, Sydney Opera House) are all restricted, and `asset-prompts.md §8b` carries the detail. That second block is not a budget problem and does not go away when credits return. |
 
 Prompts for every one of these are in [`asset-prompts.md`](asset-prompts.md).
 
@@ -143,6 +145,7 @@ things our own Definition of Done forbids.
 | `12,850 / 15,000 XP` on Profile | The real curve (`50·n^1.9`) | The mockup's numbers do not correspond to any coherent progression; see xp-economy.md |
 | No wrong-answer screen | A designed one | Users see it as often as the celebration. Leaving it undesigned is how apps end up making people feel stupid. |
 | Tab labels in title case at ~10 px | Title case at 11 px (`overline`, casing suppressed) | The size is on the scale; the casing follows the mockup rather than the type token, because five uppercase labels at that size read as a fence |
+| The `More` tab opening a screen headed `Settings` | Kept, both words as they are | A design review flagged the mismatch, and re-examining it settled the other way: `information-architecture.md` names the tab `MORE ⋯ "settings & extras"`, so a catch-all tab whose current contents are settings is the IA working rather than failing. `More` is fixed by the five-tabs rule and would be vague as a page heading; `Settings` is accurate about what the page holds today. Recorded here because an undocumented deviation is a finding and a documented one is a decision — revisit when Shop, Help and Report-a-fact actually land in that tab and the heading stops being true. |
 | Daily Challenge card with a live countdown (screen 3) | **Not rendered at all** | Nothing produces `challengeIn`. It shipped as "New challenge in —" for every user on every day. See below. |
 | `Gold I` / `Top 15%` on the League tile (screen 3) | The tile stays; it says **"Not open yet"** until Leagues exist | Leagues are v2.0. An em-dash is a missing value, not an empty state, and the user has to interpret it as one |
 
