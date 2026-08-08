@@ -191,6 +191,31 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Two growing spacers, so a short step sits in the middle of its screen instead
+            of hanging from the top of it.
+
+            Measured before touching anything, at 320 / 390 / 768: the taster left 47 % /
+            59 % / 66 % of the viewport empty between the last word and the button, the
+            three slides 23 % / 36 % / 54 %. That is the flow's first impression and its
+            handover into the first lesson, and a block of content pinned to the top of a
+            mostly-empty screen reads as a page that has not finished loading.
+
+            Spacers rather than `justifyContent: 'center'` on the container, deliberately.
+            On native, centring a scroll view's content when that content overflows puts
+            its first child above scroll position zero, where no gesture reaches it — and
+            the age step at 200 % text is exactly that case: 1044pt of chips in a 684pt
+            view. A spacer with `flexBasis: 0` grows only into free space, so when there
+            is none it contributes nothing and the layout is the top-aligned one it is
+            today. Every step gains and no step can break.
+
+            Not something this repo's harness can police, and that is why it is written
+            down here: Chromium extended the scrollable overflow region to include
+            centred leading overflow, so the browser scrolls back to content that a
+            phone would strand. A check was written, watched to pass against a
+            deliberately centred container, and deleted rather than kept as reassurance
+            it could not give. */}
+        <View style={styles.spacer} />
+
         {step === 'slides' && (
           <>
             <Art name={SLIDES[slide]!.art} size={200} />
@@ -337,6 +362,8 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
             <Text style={styles.body}>{t('onboarding:taster.body')}</Text>
           </>
         )}
+
+        <View style={styles.spacer} />
       </ScrollView>
 
       <View style={styles.actions}>
@@ -456,7 +483,13 @@ const styles = StyleSheet.create({
   // The scroll container. Separate from `body`, which is a TEXT style — handing a
   // text style to a ScrollView carried its font and padding onto the layout and
   // squeezed the year grid down to two columns.
-  content: { alignItems: 'center', paddingBottom: space[5] },
+  // `flexGrow: 1` so the container is at least as tall as the viewport and the two
+  // spacers inside it have free space to divide. Without it the container is exactly as
+  // tall as its content, there is no free space, and the spacers do nothing.
+  content: { alignItems: 'center', paddingBottom: space[5], flexGrow: 1 },
+  // `flexBasis: 0` is what makes this safe: it takes free space and never demands any,
+  // so an overflowing step collapses both spacers and keeps its first child reachable.
+  spacer: { flexGrow: 1, flexShrink: 1, flexBasis: 0 },
   body: {
     ...text('body'),
     color: colors.text.secondary,
