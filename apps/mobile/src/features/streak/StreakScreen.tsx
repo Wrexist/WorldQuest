@@ -31,7 +31,7 @@
 
 import { StyleSheet, Text, View } from 'react-native'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
-import { Button, Card, colors, space, text } from '@worldquest/design'
+import { Button, Card, Tally, colors, space, text } from '@worldquest/design'
 import {
   FREEZE_PRICE,
   MAX_FREEZES,
@@ -189,7 +189,18 @@ export function StreakScreen({
         <Text style={styles.count} role="heading" aria-level={1}>
           {t('streak:days', { count: current })}
         </Text>
-        <Text style={styles.sub}>{t('streak:longest', { count: longest })}</Text>
+        {/* Silent at zero. "No days yet" is already the heading and "Finish a lesson
+            today to start one" is already the line below, so "Longest: 0 days" was the
+            third statement of the same nothing, stacked between the other two.
+
+            Same rule as the welcome screen's STILL YOURS card and Explore's tile
+            caption: a line that exists only to report zero is a line that should not be
+            there. A personal best only becomes worth naming once there is one. */}
+        {longest > 0 && (
+          <Tally style={styles.sub} numberStyle={styles.subNumber}>
+            {t('streak:longest', { count: longest })}
+          </Tally>
+        )}
         <Text style={styles.status}>
           {broken
             ? t('streak:broken.body')
@@ -232,7 +243,12 @@ export function StreakScreen({
           <Art name="rewards/streak-freeze" size={FREEZE_ART} />
         </View>
         <Text style={styles.cardTitle}>{t('streak:freeze.title')}</Text>
-        <Text style={styles.held}>{t('streak:freeze.held', { held: freezesHeld, max: MAX_FREEZES })}</Text>
+        {/* Green only when there is something to be pleased about. `status.progress` on
+            "0 of 2 held" is the same lie the lesson summary told with a 35 % accuracy in
+            success green: the colour said good while the number said none. */}
+        <Text style={freezesHeld > 0 ? styles.held : styles.heldNone}>
+          {t('streak:freeze.held', { held: freezesHeld, max: MAX_FREEZES })}
+        </Text>
         <Text style={styles.body}>{t('streak:freeze.body')}</Text>
 
         {freezesFull ? (
@@ -347,6 +363,7 @@ const styles = StyleSheet.create({
   flame: { ...text('display'), color: colors.status.streak },
   count: { ...text('display', { numeric: true }), color: colors.text.primary },
   sub: { ...text('body'), color: colors.text.secondary },
+  subNumber: { ...text('body', { weight: '700', numeric: true }), color: colors.text.primary },
   status: { ...text('body'), color: colors.text.tertiary, textAlign: 'center', marginTop: space[2] },
   // The streak colour, because this line is about the streak's own progress — and
   // `numeric` so "23 days to go" does not reflow as the number shrinks day by day.
@@ -362,6 +379,7 @@ const styles = StyleSheet.create({
   cardArt: { alignItems: 'center' },
   cardTitle: { ...text('h3'), color: colors.text.primary },
   held: { ...text('caption', { weight: '700', numeric: true }), color: colors.status.progress },
+  heldNone: { ...text('caption', { weight: '700', numeric: true }), color: colors.text.secondary },
   body: { ...text('body'), color: colors.text.secondary },
   note: { ...text('caption'), color: colors.text.tertiary },
 })
