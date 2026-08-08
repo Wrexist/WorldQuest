@@ -386,15 +386,30 @@ export function PaywallScreen({
             size="lg"
           />
         ) : (
-          <Button
-            label={trial ? t('paywall:cta.trial') : t('paywall:cta.buy')}
-            onPress={() => void buy()}
-            disabled={chosen === undefined}
-            loading={busy}
-            fullWidth
-            size="lg"
-            testID="paywall-buy"
-          />
+          /* Absent when there is nothing to buy, not disabled.
+   
+             With no plans this drew a full-width `GET PREMIUM` in the disabled skin, and
+             at 768 it sat three hundred points below the sentence explaining that the
+             store could not be reached — a dead primary action, physically distant from
+             the error it cannot act on, while `TRY AGAIN` (the only control that can
+             change anything) was a small outline button in the middle of the page. The
+             hierarchy said the opposite of the truth.
+   
+             This codebase already has the rule, twice over: "absent hides the control
+             rather than drawing a dead one", on Profile's shop row and on the streak
+             badge. A purchase button with no price behind it is the same thing, and
+             removing it leaves `TRY AGAIN` as the only action on the page — which is
+             what it already was. */
+          chosen !== undefined && (
+            <Button
+              label={trial ? t('paywall:cta.trial') : t('paywall:cta.buy')}
+              onPress={() => void buy()}
+              loading={busy}
+              fullWidth
+              size="lg"
+              testID="paywall-buy"
+            />
+          )
         )}
 
         {/* Full size, always visible, from the first frame. A paywall you cannot leave

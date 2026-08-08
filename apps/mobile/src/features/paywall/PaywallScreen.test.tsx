@@ -228,6 +228,22 @@ describe('Paywall — when there are no prices', () => {
     return view
   }
 
+  it('draws no purchase button at all, rather than a dead one', () => {
+    // It used to render `GET PREMIUM` full-width in the disabled skin. At 768 that put a
+    // dead primary action three hundred points BELOW the sentence explaining the store
+    // could not be reached, while `TRY AGAIN` — the only control that can change
+    // anything — was a small outline button up the page. The hierarchy said the opposite
+    // of the truth.
+    //
+    // Same rule this codebase already applies to Profile's shop row and the streak
+    // badge: absent hides the control rather than drawing a dead one.
+    const { container } = plansPage({ plansFailed: true, onRetryPlans: () => {} })
+    expect(screen.queryByTestId('paywall-buy')).toBeNull()
+    // The two things that must survive: the way out, and the way to try again.
+    expect(screen.getByRole('button', { name: 'Not now' })).toBeTruthy()
+    expect(container.textContent).toMatch(/try again/i)
+  })
+
   it('says it is asking, rather than showing an empty page', () => {
     const { container } = plansPage({ plansLoading: true })
     expect(container.textContent).toMatch(/Checking prices with the store/i)
