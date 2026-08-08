@@ -340,6 +340,29 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
     }
 
     if (SHOOT_FLOWS) {
+      // Serve images from disk for the offline pass, so the pictures are of the APP
+      // being offline rather than of a browser that cannot fetch.
+      //
+      // `setOffline` blocks localhost too, and going offline SWAPS which art the paywall
+      // asks for — `states/error-generic` becomes `states/offline` — so the new file has
+      // never been fetched and cannot be. The shot came out with an empty bordered frame
+      // where the illustration belongs, which on a real device cannot happen: that art is
+      // in the binary. A screenshot that invents a broken image is worse than no
+      // screenshot, because the reviewer files a bug against the app.
+      //
+      // `route.fulfill` answers before the network layer, so it works while offline. Only
+      // images are intercepted; every other request still fails, which is the point.
+      await page.route('**/*.{png,webp,jpg,jpeg,svg,ttf,otf,woff2}', async (route) => {
+        const url = new URL(route.request().url())
+        const file = path.join(ROOT, decodeURIComponent(url.pathname))
+        if (!fs.existsSync(file)) return route.abort()
+        return route.fulfill({
+          status: 200,
+          contentType: TYPES[path.extname(file)] ?? 'application/octet-stream',
+          body: fs.readFileSync(file),
+        })
+      })
+
       for (const route of OFFLINE_ROUTES) {
         const slug = route === '/' ? 'home' : route.replace(/^\//, '').replace(/\//g, '-')
         // Load first, THEN pull the radio. `setOffline` blocks localhost too, so a
@@ -354,6 +377,7 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
         await page.context().setOffline(false)
         await page.waitForTimeout(300)
       }
+      await page.unroute('**/*.{png,webp,jpg,jpeg,svg,ttf,otf,woff2}')
 
       const phases = await shootLessonPhases(page, shot)
       if (!phases.gotCorrect || !phases.gotWrong) {
