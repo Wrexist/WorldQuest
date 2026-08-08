@@ -189,3 +189,4 @@ permanent exemption. Names cannot be invented from inside the repo.
 | Rollback plan | `docs/engineering/rollback-plan.md` |
 | Release notes | `docs/release-notes.md` — drafted, marked pending the device pass |
 | Pseudo-locale screenshots | `pnpm design:shots` runs an `en-XA` pass over 6 routes × 3 viewports; clean at +40 % inflation |
+| Support docs | `docs/support/known-issues.md` — the questions users will ask and the honest answer to each, plus the known-issues table. What still needs a person is a support *function* to hand it to. |
