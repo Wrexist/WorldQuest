@@ -13,7 +13,26 @@
  */
 
 import { useTranslation } from 'react-i18next'
-import { i18n, t } from '@worldquest/i18n'
+import { enablePseudoLocale, i18n, t } from '@worldquest/i18n'
+
+/**
+ * The pseudo-locale, reachable from a page the harness did not compile.
+ *
+ * The Definition of Done asks for "pseudo-locale screenshots clean". Everything needed
+ * to produce them existed — `enablePseudoLocale()` builds `en-XA` in memory from the
+ * English bundle — and none of it was reachable: the screenshot harness drives the
+ * EXPORTED bundle, so `isDev()` is false, so the function returned false and said
+ * nothing. It had no caller outside its own unit test.
+ *
+ * Attaching it here is what closes that, because a Playwright script can only touch the
+ * window. Safe to attach unconditionally: the function still refuses in production
+ * unless `__WQ_PSEUDO__` is separately set to true, and `en-XA` is not in
+ * `SUPPORTED_LOCALES` or in the Settings picker either way. Attaching a function that
+ * refuses is not an escape hatch; leaving a Definition of Done box permanently
+ * unverifiable is worse.
+ */
+;(globalThis as { __wqEnablePseudoLocale?: () => Promise<boolean> }).__wqEnablePseudoLocale =
+  enablePseudoLocale
 
 // One typed `t` for the whole app. Re-exported rather than wrapped so that a call
 // site's key and params are checked against the generated key union.

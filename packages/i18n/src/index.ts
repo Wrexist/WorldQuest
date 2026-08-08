@@ -309,9 +309,27 @@ export async function setLocale(locale: Locale): Promise<void> {
  *
  * A no-op in production. Not because shipping it would be catastrophic, but because
  * a language nobody speaks appearing in a picker is a support ticket.
+ *
+ * ## Except when something asks for it on purpose
+ *
+ * `globalThis.__WQ_PSEUDO__` overrides the production gate, and it exists because the
+ * gate had made this function unreachable in the one place it was most useful. The
+ * Definition of Done asks for "pseudo-locale screenshots clean"; the screenshot harness
+ * drives the EXPORTED bundle, which is production, so `isDev()` was false and this
+ * returned false — and nothing said so. `pnpm i18n:pseudo` wrote files nobody rendered
+ * and this function had no caller outside its own unit test for as long as it existed.
+ *
+ * A global rather than a parameter, because the caller that needs it is a Playwright
+ * script reaching into a page it did not compile. It cannot change a call site, only the
+ * window it evaluates in.
+ *
+ * This is not a way into production: nothing sets it, `SUPPORTED_LOCALES` still excludes
+ * `en-XA`, and the language picker reads `LANGUAGE_CHOICES` rather than the loaded
+ * bundles — so a forced pseudo-locale cannot appear as an option to a real user.
  */
 export async function enablePseudoLocale(): Promise<boolean> {
-  if (!isDev()) return false
+  const forced = (globalThis as { __WQ_PSEUDO__?: boolean }).__WQ_PSEUDO__ === true
+  if (!isDev() && !forced) return false
 
   for (const [namespace, bundle] of Object.entries(RAW.en)) {
     const stripped = toBundle(namespace, bundle)

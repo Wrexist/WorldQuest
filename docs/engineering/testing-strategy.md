@@ -153,7 +153,7 @@ one — and it finds errors before users report them.
 | Cold start | Automated, real mid-tier Android | < 2.0 s |
 | Next-items query | Load test with 10 k synthetic users | p95 < 50 ms |
 | Frame rate in lessons | Instrumented profiling | ≥ 58 fps |
-| Bundle size | CI, fails on regression > 5 % | < 4 MB |
+| Bundle size | CI, fails on regression > 5 % | < 4 MB — **Contradicted by the enforced gate — see `docs/plan/cowork-handoff.md` §6.** `scripts/bundle-native.cjs` enforces 6.0 MB (raised from 4.5 when `@sentry/react-native` added 1.92 MB) and the current bundle is 5.93 MB: it passes the gate and fails this number. Which one is real is a product decision, not a typo. |
 | Memory in a long session | 30-min soak | No unbounded growth |
 
 ## 7. Accessibility testing

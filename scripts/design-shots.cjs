@@ -137,6 +137,16 @@ const SHOOT_FLOWS = process.env.WQ_NO_FLOWS === undefined
  */
 const OFFLINE_ROUTES = ['/', '/shop', '/streak', '/more', '/paywall?source=settings']
 
+/**
+ * The routes worth photographing with every string inflated by ~40 %.
+ *
+ * Chosen for where long copy actually lands rather than for coverage: the screens with
+ * the most words per pixel (Settings, the paywall), the ones whose numbers sit beside
+ * labels that could push them (Home, Streak), and the lesson, whose answer options are
+ * the only place in the app where a wrapped string costs a tap target.
+ */
+const PSEUDO_ROUTES = ['/', '/more', '/paywall?source=settings', '/streak', '/lesson', '/quests']
+
 const TYPES = {
   '.html': 'text/html',
   '.js': 'text/javascript',
@@ -434,6 +444,91 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
       }
       await page.unroute('**/*.{png,webp,jpg,jpeg,svg,ttf,otf,woff2}')
 
+      // ── pseudo-locale ─────────────────────────────────────────────────────
+      //
+      // "Pseudo-locale screenshots clean" is a Definition of Done box, and it had never
+      // been checkable. Everything for it existed — `enablePseudoLocale()` inflates and
+      // accents the English bundle in memory — and nothing could reach it: this harness
+      // drives the exported bundle, which is production, so the function's `isDev()`
+      // gate refused and returned false silently. It had no caller but its own test.
+      //
+      // Two things this catches that no other pass can. Swedish is the only other
+      // language shipped and is not reliably longer than English, so a layout that
+      // breaks at +40 % — German, Finnish — breaks first for a translator months from
+      // now. And anything still rendering in plain ASCII here never went through `t()`,
+      // which is the hardcoded-string check no grep does as well.
+      /**
+       * Enabled AFTER the navigation, per route — the same ordering the offline pass
+       * above had to learn.
+       *
+       * A `page.goto` reloads the SPA: fresh JS context, `__WQ_PSEUDO__` gone, i18n
+       * re-initialised to the device locale. Enabling once and then navigating six times
+       * photographed six English screens and reported every string on them as
+       * "untranslated plain ASCII" — which was true of the measurement and false of the
+       * app. The detector was right and the pass was wrong.
+       */
+      const enablePseudo = () =>
+        page.evaluate(async () => {
+          const w = globalThis
+          if (typeof w.__wqEnablePseudoLocale !== 'function') return 'no hook on the page'
+          w.__WQ_PSEUDO__ = true
+          return (await w.__wqEnablePseudoLocale()) ? 'on' : 'refused'
+        })
+
+      {
+        for (const route of PSEUDO_ROUTES) {
+          const slug = route === '/' ? 'home' : route.replace(/^\//, '').replace(/\//g, '-')
+          await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'networkidle' })
+          await page.waitForTimeout(900)
+          const pseudo = await enablePseudo()
+          if (pseudo !== 'on') {
+            // Said out loud rather than skipped. A pass that silently did not happen is
+            // the failure mode this whole block exists to correct.
+            report.pseudoGap ??= {}
+            report.pseudoGap[viewport.name] = `${slug}: ${pseudo}`
+            continue
+          }
+          await page.waitForTimeout(600)
+          await shot(`pseudo-${slug}`)
+          const measured = await page.evaluate(() => {
+            const doc = document.documentElement
+            // Text the pseudo-locale did NOT touch. `pseudo()` accents every letter it
+            // rewrites, so a leaf of pure ASCII letters is a string that never went
+            // through `t()` — or a name from a content pack, which is a fact rather than
+            // copy and is correctly left alone.
+            const untranslated = []
+            // `body` only, and only nodes that are actually laid out. The first version
+            // walked the whole document and dutifully reported `<title>WorldQuest`, the
+            // `@font-face` block inside a `<style>`, and the `<noscript>` fallback as
+            // untranslated copy — three things that are not copy and one of which is
+            // CSS. Head content and zero-height nodes are not on screen, so they cannot
+            // be a string a user reads.
+            for (const node of document.body.querySelectorAll('*')) {
+              if (node.children.length !== 0) continue
+              if (/^(STYLE|SCRIPT|NOSCRIPT|TITLE|TEMPLATE)$/.test(node.tagName)) continue
+              const box = node.getBoundingClientRect()
+              if (box.height < 1 || box.width < 1) continue
+              const text = (node.textContent ?? '').trim()
+              if (text.length < 4) continue
+              if (!/^[\x20-\x7E]+$/.test(text)) continue
+              if (!/[A-Za-z]{4}/.test(text)) continue
+              untranslated.push(text.slice(0, 40))
+            }
+            return {
+              sidewaysScroll: doc.scrollWidth - doc.clientWidth,
+              untranslated: [...new Set(untranslated)].slice(0, 8),
+            }
+          })
+          report.pseudo ??= {}
+          report.pseudo[viewport.name] ??= {}
+          report.pseudo[viewport.name][slug] = measured
+        }
+        // Back to English for the lesson phases below. A plain navigation is enough —
+        // the reload that broke the first version of this pass is exactly what resets it.
+        await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' })
+        await page.waitForTimeout(600)
+      }
+
       const phases = await shootLessonPhases(page, shot)
       if (!phases.gotCorrect || !phases.gotWrong) {
         report.flowGaps ??= {}
@@ -501,6 +596,27 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
   if (report.flowGaps) {
     problems++
     console.log(`\n  ⚠ a lesson verdict was never reached: ${JSON.stringify(report.flowGaps)}`)
+  }
+  if (report.pseudoGap) {
+    problems++
+    console.log(`\n  ⚠ the pseudo-locale pass did not run: ${JSON.stringify(report.pseudoGap)}`)
+  }
+  if (report.pseudo) {
+    // Reported, never gated. Untranslated ASCII is usually a country name from a content
+    // pack — a fact rather than copy, correctly left alone — so a threshold here would
+    // fire on correct behaviour. A person reads the list and knows which is which.
+    const notes = []
+    for (const [vp, routes] of Object.entries(report.pseudo)) {
+      for (const [slug, m] of Object.entries(routes)) {
+        if (m.sidewaysScroll > 2) notes.push(`${vp}/${slug}: scrolls sideways ${m.sidewaysScroll}px`)
+        if (m.untranslated.length > 0) {
+          notes.push(`${vp}/${slug}: plain ASCII — ${m.untranslated.slice(0, 3).map((s) => JSON.stringify(s)).join(', ')}`)
+        }
+      }
+    }
+    console.log(`\n  pseudo-locale (en-XA), ${PSEUDO_ROUTES.length} routes${notes.length === 0 ? ' — nothing inflated broke' : ':'}`)
+    for (const n of notes.slice(0, 12)) console.log(`      ${n}`)
+    if (notes.length > 12) console.log(`      +${notes.length - 12} more in report.json`)
   }
   if (SHOOT_FLOWS) {
     const flowShots = Object.values(report.flowShots ?? {}).reduce((a, b) => a + b, 0)
