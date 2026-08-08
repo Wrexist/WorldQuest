@@ -27,9 +27,11 @@
  *   pnpm design:shots /lesson /country/SE      # specific routes (flows still run)
  *   WQ_NO_FLOWS=1 pnpm design:shots /home      # routes only, when iterating on one
  *
- * Writes to node_modules/.cache/wq-design-shots/, one PNG per route per viewport plus
- * ten per viewport for the onboarding and lesson flows, and `report.json` with the
- * measured values a review should be arguing about rather than eyeballing.
+ * Writes to node_modules/.cache/wq-design-shots/, one PNG per route per viewport, plus
+ * the flow shots — the onboarding steps, the lesson's four phases, and the offline pass
+ * — and `report.json` with the measured values a review should be arguing about rather
+ * than eyeballing. The run prints how many flow shots it actually took; no number is
+ * written down here, because the last one was stale within a day of being typed.
  */
 
 const { chromium } = require('playwright')
@@ -93,6 +95,10 @@ const DEFAULT_ROUTES = [
  * So the script drives them. Onboarding is free: the harness already clicks through it
  * to get past the gate, and now it stops for a picture on the way. The lesson costs one
  * extra playthrough per viewport.
+ *
+ * This flag gates the offline pass below as well — it is the same idea applied to a
+ * state rather than a screen, and anyone turning flows off to iterate on one route
+ * wants it off too.
  */
 const SHOOT_FLOWS = process.env.WQ_NO_FLOWS === undefined
 
@@ -276,8 +282,16 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
       }
     })
 
-    const shot = (name) =>
-      page.screenshot({ path: path.join(OUT, `${name}@${viewport.name}.png`) })
+    // Counted, not assumed. This used to be reported as a hardcoded `VIEWPORTS.length *
+    // 10` and the number was wrong the moment the offline pass was added in this same
+    // file — fifteen shots per viewport reported as ten. A summary line whose whole
+    // purpose is "a shot that silently did not happen is worse than none" cannot itself
+    // be guessing at how many there were.
+    let taken = 0
+    const shot = (name) => {
+      taken += 1
+      return page.screenshot({ path: path.join(OUT, `${name}@${viewport.name}.png`) })
+    }
 
     await completeOnboarding(page, SHOOT_FLOWS ? shot : async () => {})
 
@@ -346,6 +360,8 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
         report.flowGaps ??= {}
         report.flowGaps[viewport.name] = `lesson feedback: correct=${phases.gotCorrect} wrong=${phases.gotWrong}`
       }
+      report.flowShots ??= {}
+      report.flowShots[viewport.name] = taken
     }
 
     if (consoleErrors.length > 0) {
@@ -394,9 +410,11 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
     console.log(`\n  ⚠ a lesson verdict was never reached: ${JSON.stringify(report.flowGaps)}`)
   }
   if (SHOOT_FLOWS) {
+    const flowShots = Object.values(report.flowShots ?? {}).reduce((a, b) => a + b, 0)
     console.log(
-      `\n  + ${VIEWPORTS.length * 10} flow shots (onboarding-*, lesson-*) — screens that are ` +
-        `states rather than routes, and were invisible to this tool until they were not`,
+      `\n  + ${flowShots} flow shots (onboarding-*, lesson-*, offline-*) — screens that are ` +
+        `states rather than routes, or the same route with the radio pulled out, and were ` +
+        `invisible to this tool until they were not`,
     )
   }
 
