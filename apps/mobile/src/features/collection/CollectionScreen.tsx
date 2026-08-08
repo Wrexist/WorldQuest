@@ -23,7 +23,15 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Animated, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import {
+  Animated,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  useWindowDimensions,
+} from 'react-native'
 import { Art } from '../../components/Art.js'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { Flag } from '../../components/Flag.js'
@@ -33,6 +41,7 @@ import {
   ProgressBar,
   Skeleton,
   colors,
+  layout,
   radius,
   space,
   staggerStyle,
@@ -117,6 +126,10 @@ export function CollectionScreen({
   const t = useT()
   const [filter, setFilter] = useState<CollectionFilter>('all')
   const [query, setQuery] = useState('')
+  // At or above the content cap the column stops growing, so this is the only regime
+  // change there is — no breakpoint of its own. See `tileCellWide`.
+  const { width } = useWindowDimensions()
+  const wide = width >= layout.maxContentWidth
 
   const collected = tiles.filter((tile) => tile.collected).length
 
@@ -270,7 +283,7 @@ export function CollectionScreen({
       ) : (
         <ScrollView contentContainerStyle={styles.grid} showsVerticalScrollIndicator={false}>
           {shown.map((tile, index) => (
-            <Tile key={tile.id} tile={tile} index={index} art={art} onOpen={onOpen} />
+            <Tile key={tile.id} tile={tile} index={index} art={art} wide={wide} onOpen={onOpen} />
           ))}
         </ScrollView>
       )}
@@ -282,11 +295,14 @@ function Tile({
   tile,
   index,
   art,
+  wide,
   onOpen,
 }: {
   readonly tile: CollectionTile
   readonly index: number
   readonly art: boolean
+  /** Three columns instead of two — see `tileCellWide`. */
+  readonly wide: boolean
   readonly onOpen: ((id: string) => void) | undefined
 }) {
   const t = useT()
@@ -309,7 +325,7 @@ function Tile({
     .join(', ')
 
   return (
-    <Animated.View style={[styles.tileCell, staggerStyle(entrance)]}>
+    <Animated.View style={[wide ? styles.tileCellWide : styles.tileCell, staggerStyle(entrance)]}>
     <Card
       level={tile.collected ? 2 : 1}
       // The state is IN the label, not only in the dimming. A screen-reader user gets
@@ -387,7 +403,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: space[4],
     paddingBottom: space[6],
   },
-  // Two up, not three.
+  // Two up on a phone, not three.
   //
   // A country name is one unbreakable word and a three-column grid on a 390 pt screen
   // gives it about 105 pt. That holds "Chile" and does not hold "Argentina" — at the
@@ -407,6 +423,17 @@ const styles = StyleSheet.create({
   // a staggered entrance — the transform belongs on a wrapper rather than on the Card,
   // which has its own press transform.
   tileCell: { width: '48%' },
+  // Three up once the content has reached its cap, which is the case that reason above
+  // does NOT cover. It was measured at 390 and applied at every width, so a tablet got
+  // 65 flags in a 33-row column of half-empty cards. At the 600 pt cap three columns
+  // give each tile about 176 pt — larger than the 172 pt that two columns give at 390,
+  // where "Argentina" at 200 % text is known to fit. The constraint is a minimum tile
+  // width, not a column count, and this is the width at which three of them clear it.
+  //
+  // No new breakpoint: content stops growing at `maxContentWidth`, so there are exactly
+  // two regimes and that token already names the boundary. The e2e overlap check runs
+  // at 200 % text and will say so if this is wrong.
+  tileCellWide: { width: '31%' },
   tile: { width: '100%', minHeight: 116, padding: space[3], alignItems: 'center', justifyContent: 'center', gap: space[1] },
   // Dimmed, never hidden. See the header comment — this is the whole design.
   tileDim: { opacity: 0.45 },
