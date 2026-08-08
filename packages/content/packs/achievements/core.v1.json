@@ -241,6 +241,7 @@
           }
         ]
       },
+      "showProgress": true,
       "tiers": [
         {
           "tier": "silver",
