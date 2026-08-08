@@ -151,10 +151,23 @@ export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection
       </View>
 
       <Card style={styles.worldCard} accessibilityLabel={t('explore:world.label')}>
+        {/* "Your world" is the card's TITLE, and it was being passed as the bar's label
+            — so the bar printed "Your world   0 / 192" and the 192 went out unlabelled,
+            directly above a labelled count of 65 countries. Two numbers, one described,
+            and no way to tell that 192 is facts.
+
+            Home's world card already does this correctly: a title, then a bar labelled
+            with the facts phrase, then the countries line. The same data was presented
+            two different ways on two screens, and this was the wrong one. */}
+        <Text style={styles.worldTitle}>{t('explore:world.label')}</Text>
         <ProgressBar
           current={world.factsLearned}
           total={Math.max(1, world.factsTotal)}
-          label={t('explore:world.label')}
+          showCount={false}
+          label={t('explore:region.facts', {
+            learned: world.factsLearned,
+            total: world.factsTotal,
+          })}
         />
         <Tally style={styles.worldCount} numberStyle={styles.worldCountNumber}>
           {t('explore:world.countries', {
@@ -372,6 +385,7 @@ const styles = StyleSheet.create({
   subtitle: { ...text('body'), color: colors.text.secondary },
 
   worldCard: { gap: space[2] },
+  worldTitle: { ...text('h3'), color: colors.text.primary },
   worldCount: { ...text('caption'), color: colors.text.secondary },
   worldCountNumber: {
     ...text('caption', { weight: '700', numeric: true }),
