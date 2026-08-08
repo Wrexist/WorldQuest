@@ -184,6 +184,39 @@ describe('primitives obey the token discipline', () => {
     }
   })
 
+  it('keeps Spacer to free space and nothing else', () => {
+    // `Spacer` exists to centre a scroll view's content without `justifyContent`, which
+    // strands the leading overflow above scroll position zero on native. Two properties
+    // carry that: it GROWS into free space and its basis is ZERO, so when there is no
+    // free space it collapses to nothing and every pixel stays reachable.
+    //
+    // Pinned as source rather than as a render because this package's tests run in node
+    // with no JSX transform — the same constraint that moved `splitTally` out of
+    // `Tally.tsx`. It is the right level anyway: the invariant is the style, and the
+    // tempting edit is `flex: 1` with a `minHeight`, which reads as equivalent and is
+    // not — a basis it can't shrink past turns the spacer into a margin that pushes
+    // content out of the view.
+    const spacer = sources.find(({ file }) => file.endsWith('Spacer.tsx'))
+    expect(spacer, 'Spacer.tsx is gone — so is the reason the lesson scrolls correctly')
+      .toBeDefined()
+    const code = spacer!.code
+    expect(code).toMatch(/flexGrow:\s*1/)
+    expect(code).toMatch(/flexBasis:\s*0\b/)
+    // No size of its own. A Spacer with one is a hardcoded margin in a component's
+    // clothes, and it is what breaks the collapse-to-nothing behaviour above.
+    //
+    // The prefixes are the point: this check was first written as `\bheight:` and passed
+    // a planted `minHeight: 8` — which is the exact edit it exists to stop, because a
+    // basis of zero the spacer cannot shrink below is a margin. `\b` cannot match inside
+    // `minHeight`, so the boundary has to be on the prefix instead.
+    const body = code.slice(code.indexOf('export function Spacer'))
+    const SIZES = [/(?:min|max)?(?:width|height)\s*:/i, /(?:margin|padding)\w*\s*:/i]
+    for (const forbidden of SIZES) {
+      expect(body, `Spacer sets a size (${forbidden}), so it can no longer collapse to nothing`)
+        .not.toMatch(forbidden)
+    }
+  })
+
   it('pairs every iOS shadow with an Android elevation', () => {
     // iOS shadows simply do not render on Android — a shadow without elevation is
     // a component that looks flat on half our users' devices.

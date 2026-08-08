@@ -28,6 +28,7 @@ import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   Button,
   Card,
+  Spacer,
   colors,
   radius,
   space,
@@ -144,6 +145,12 @@ export function LessonSummary({
       {isOffline && <OfflineNote />}
 
       <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+        {/* Centred by spacers rather than `justifyContent` — see `Spacer`. This screen's
+            centring was added in this same session, before the hazard was understood: a
+            summary with a wrapped reward row and a long streak line overflows a short
+            phone, and centring a scroll view that overflows puts its title above scroll
+            position zero, where nothing reaches it. */}
+        <Spacer />
         {/* The celebration frame: Atlas mid-jump — "pure delight, weightless" — with
             `rays` and `burst` radiating behind him. Both of those are briefed with an
             EMPTY CENTRE because content composites into it, and Atlas is the content.
@@ -278,6 +285,7 @@ export function LessonSummary({
             </View>
           </View>
         )}
+        <Spacer />
       </ScrollView>
 
       <Button
@@ -336,7 +344,7 @@ function OfflineNote() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, padding: space[4], gap: space[4] },
-  body: { flexGrow: 1, alignItems: 'center', justifyContent: 'center', gap: space[4] },
+  body: { flexGrow: 1, alignItems: 'center', gap: space[4] },
 
   title: { ...text('h1'), color: colors.text.primary, textAlign: 'center' },
   subtitle: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },

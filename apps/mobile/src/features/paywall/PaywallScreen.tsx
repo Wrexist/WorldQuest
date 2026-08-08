@@ -33,7 +33,7 @@
 
 import { useEffect, useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { Button, Card, colors, radius, space, text } from '@worldquest/design'
+import { Button, Card, Spacer, colors, radius, space, text } from '@worldquest/design'
 import { Flag } from '../../components/Flag.js'
 import { useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
@@ -223,6 +223,13 @@ export function PaywallScreen({
         contentContainerStyle={styles.body}
         showsVerticalScrollIndicator={false}
       >
+        {/* Centred by spacers rather than `justifyContent` — see `Spacer`. The comment
+            above is about bounding the art so the content scrolls instead; centring the
+            container undid half of that, because a scroll view centred on content taller
+            than itself puts the leading overflow above scroll position zero on native.
+            The paywall is the screen where losing the top means losing the title and the
+            promise that learning stays free. */}
+        <Spacer />
         {page === 0 && (
           <>
             <Text style={styles.title} role="heading" aria-level={1}>
@@ -365,6 +372,7 @@ export function PaywallScreen({
             )}
           </>
         )}
+        <Spacer />
       </ScrollView>
 
       <View style={styles.footer}>
@@ -507,7 +515,7 @@ const styles = StyleSheet.create({
   screen: { flex: 1, padding: space[4], gap: space[4] },
   centred: { alignItems: 'center', justifyContent: 'center' },
   scroll: { flex: 1 },
-  body: { flexGrow: 1, justifyContent: 'center', gap: space[4] },
+  body: { flexGrow: 1, gap: space[4] },
 
   title: { ...text('h1'), color: colors.text.primary, textAlign: 'center' },
   // A real text token, not the ScrollView's layout style. This paragraph spent one

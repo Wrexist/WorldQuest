@@ -14,6 +14,7 @@ import {
   Button,
   ProgressBar,
   Skeleton,
+  Spacer,
   colors,
   layout,
   radius,
@@ -108,23 +109,49 @@ const MASCOT_OF_SHEET = 0.375
 const WRAPPED_AT = 1.5
 
 /**
+ * A phone short enough that the question does not fit at its comfortable size.
+ *
+ * Measured, not chosen: at 320 wide the prompt, a locator map and four options need about
+ * 690pt. So anything under 700 is short — which includes every 320-wide phone there is
+ * (iPhone SE 1 is 320×568) and the 375×667 generation, iPhone SE 2 and 3 and the 8.
+ *
+ * This number is the correction to a claim that was written twice below and was wrong
+ * both times: "four answers still fit below it at 320pt". They fit at 320×700, which is
+ * the height this repo's screenshot harness happens to use and is a height no 320-wide
+ * phone has ever had. At 320×568 the fourth option sat at 559–618 of 568 — reachable by
+ * scrolling, and on a quiz an option you cannot see is one you do not consider.
+ */
+const SHORT_SCREEN = 700
+
+/**
  * The locator map beside a question.
  *
  * The same 200pt as the flag prompt, because it is now the same kind of object: the
  * map is framed on the country rather than on its continent, so it carries real
  * information at a glance instead of being a decorative smudge that had to be kept
- * small to avoid wasting space. Four answers still fit below it at 320pt.
+ * small to avoid wasting space.
+ *
+ * 132 on a short screen. The map is CONTEXT — the prompt already names the country in
+ * words — and the options are the interaction, so when there is not room for both at
+ * full size it is the picture that gives way. Never zero: "where in the world is this"
+ * is half of what the screen teaches.
  */
 const LOCATOR_WIDTH = 200
+const LOCATOR_WIDTH_SHORT = 132
 
 /**
  * A map question's map — the prompt itself rather than context beside one.
  *
  * 240 rather than the locator's 200: this is the only thing on screen carrying the
  * question, and the country is drawn at 46 % of the frame, so the shape a user has to
- * recognise is smaller than the picture. Four answers still fit below it at 320pt.
+ * recognise is smaller than the picture.
+ *
+ * Shrinks less than the locator on a short screen, and that asymmetry is the point: this
+ * map IS the question. 180 is the floor at which telling Norway from Sweden is still a
+ * question about a coastline rather than about eyesight.
  */
 const MAP_PROMPT_WIDTH = 240
+const MAP_PROMPT_WIDTH_SHORT = 180
 
 /**
  * What the lesson tells whoever mounted it on the way out.
@@ -173,8 +200,17 @@ export function LessonScreen({
 
   // The sheet stops widening at `maxContentWidth`, so the mascot measures against that
   // rather than against a tablet's whole screen.
-  const { width } = useWindowDimensions()
+  const { width, height } = useWindowDimensions()
   const sheetWidth = Math.min(width, layout.maxContentWidth)
+  /**
+   * Short phones get a tighter question, so all four options are on screen at once.
+   *
+   * Height rather than width, because this is the one screen in the app whose content
+   * must fit rather than scroll: an answer the user has to scroll to find is an answer
+   * they answer without. Everything it changes is decoration and breathing room; nothing
+   * it changes is a target size, so the 44pt floor holds at both settings.
+   */
+  const compact = height < SHORT_SCREEN
 
   // Latched, never unlatched. Moving the mascot is what gives the row room to unwrap,
   // so a flag that followed the measurement would flip back the moment it took effect
@@ -436,7 +472,13 @@ export function LessonScreen({
         )}
       </View>
 
-      <ScrollView contentContainerStyle={styles.body}>
+      <ScrollView contentContainerStyle={[styles.body, compact && styles.bodyShort]}>
+        {/* Centred by spacers, not by `justifyContent` — see `Spacer`. A two-option
+            question should not cling to the top of a tall phone, and at 320×568 the
+            prompt plus a map plus four options overflow, which is where centring with
+            `justifyContent` puts the prompt above scroll position zero and out of reach.
+            Measured before the change: option four sat at 535–594 of 568. */}
+        <Spacer />
         <Text style={styles.prompt} role="heading">
           {/* The prompt key and its params come from the question template in the
               content pack, so they are validated by `pnpm content:validate` rather
@@ -486,7 +528,15 @@ export function LessonScreen({
               // A map question's map is the prompt, so it gets the same width as the
               // flag prompt does — big enough that telling Norway from Sweden is a
               // question about the coastline rather than about eyesight.
-              width={question.modality === 'map' ? MAP_PROMPT_WIDTH : LOCATOR_WIDTH}
+              width={
+                question.modality === 'map'
+                  ? compact
+                    ? MAP_PROMPT_WIDTH_SHORT
+                    : MAP_PROMPT_WIDTH
+                  : compact
+                    ? LOCATOR_WIDTH_SHORT
+                    : LOCATOR_WIDTH
+              }
               // Labelled ONLY when it is the question. Beside a capital-city question
               // the prompt already names the country in words, so a reader announcing
               // the map would repeat it. Here nothing else says what is on screen —
@@ -578,6 +628,7 @@ export function LessonScreen({
           })}
         </View>
 
+        <Spacer />
       </ScrollView>
 
       {answered && (
@@ -892,7 +943,12 @@ const styles = StyleSheet.create({
   // On a tablet that empty half was 45 % of the screen; on a phone the content is
   // taller than the viewport, `flexGrow` has nothing to grow into, and this is inert —
   // which is why it is safe to apply everywhere instead of behind a width test.
-  body: { gap: space[5], paddingBottom: space[6], flexGrow: 1, justifyContent: 'center' },
+  body: { gap: space[5], paddingBottom: space[6], flexGrow: 1 },
+  // The gap and the tail, tightened. `space[6]` of padding under the last option exists so
+  // the feedback sheet does not appear to grow out of it; on a short screen that padding
+  // is the difference between four options and three, and the sheet has a surface and a
+  // shadow of its own to separate it.
+  bodyShort: { gap: space[3], paddingBottom: space[4] },
   prompt: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
   promptArt: { alignItems: 'center' },
   options: { gap: space[2] },

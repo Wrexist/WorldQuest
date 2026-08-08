@@ -51,7 +51,19 @@ const PORT = 4174
  * tablet doing something silly with a phone-first grid.
  */
 const VIEWPORTS = [
-  { name: '320', width: 320, height: 700 },
+  /**
+   * 320×568 is iPhone SE 1 — a real phone, unlike the 320×700 this used to be.
+   *
+   * That height was invented, and inventing it hid a defect for as long as it existed: no
+   * 320-wide phone has ever been 700 tall, and at the real 568 the lesson's fourth answer
+   * option sat at 559–618 of 568. Two comments in `LessonScreen` recorded "four answers
+   * still fit below it at 320pt" — true at this harness's height and at no device's.
+   *
+   * 320 dp is also live on small Android and on a folded Fold's cover screen, so this is
+   * the floor rather than a museum piece. The lesson now compacts below 700 (`SHORT_SCREEN`),
+   * which means the old height photographed the wrong branch as well as the wrong phone.
+   */
+  { name: '320', width: 320, height: 568 },
   { name: '390', width: 390, height: 844 },
   { name: '768', width: 768, height: 1024 },
 ]

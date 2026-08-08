@@ -121,6 +121,64 @@ const walkComponents = (dir: string): void => {
 }
 walkComponents(COMPONENTS)
 
+/**
+ * Rule two: a scroll view's content must not be centred with `justifyContent`.
+ *
+ * Same subject as rule one — can the user reach the words — and a nastier version of it.
+ * A centred content container is correct until the content is taller than the view, at
+ * which point the overflow goes to BOTH ends and the leading half lands above scroll
+ * position zero, where no gesture reaches it. The content is not below the fold; it is
+ * outside the scrollable region entirely.
+ *
+ * Three screens had it, and the reason to gate rather than fix-and-move-on is what they
+ * were: the lesson (at 320×568, iPhone SE and small Android, the prompt plus a map plus
+ * four options overflow — option four measured at 535–594 of 568), the lesson summary,
+ * and the paywall. The pattern is also the obvious thing to write. It was written twice
+ * more during the same session that documented why not to.
+ *
+ * `<Spacer />` above and below the content is the fix, and it is a primitive in
+ * `packages/design` so the reasoning lives in one place.
+ *
+ * ## Why this is not caught by anything else
+ *
+ * Chromium extended the scrollable overflow region to include centred leading overflow,
+ * so the browser scrolls back to content a phone would strand. Every visual check here
+ * runs in Chromium. A reachability assertion was written against a deliberately centred
+ * container, watched to pass, and deleted — see `OnboardingScreen`. Source is the only
+ * honest place left to check it.
+ */
+const CENTRED = /justifyContent:\s*'center'/
+
+type Centring = { screen: string; style: string }
+const centred: Centring[] = []
+
+for (const screen of screens) {
+  const code = stripProse(screen.code)
+  // Every style handed to a ScrollView as its content container, by name.
+  const names = [...code.matchAll(/contentContainerStyle=\{styles\.(\w+)\}/g)].map((m) => m[1]!)
+  for (const name of new Set(names)) {
+    // The style's own object literal, from its key to the brace that closes it. Counted
+    // rather than regexed to the next `}`, because these objects nest — `shadowOffset`
+    // and `transform` both open one, and a lazy match stops at the wrong brace and reads
+    // the NEXT style's properties as this one's.
+    const at = code.search(new RegExp(`^\\s*${name}:\\s*\\{`, 'm'))
+    if (at === -1) continue
+    let depth = 0
+    let end = at
+    for (let i = code.indexOf('{', at); i < code.length; i++) {
+      if (code[i] === '{') depth++
+      else if (code[i] === '}') {
+        depth--
+        if (depth === 0) {
+          end = i
+          break
+        }
+      }
+    }
+    if (CENTRED.test(code.slice(at, end + 1))) centred.push({ screen: screen.name, style: name })
+  }
+}
+
 console.log('Scrollable screens\n')
 
 let missing = 0
@@ -156,6 +214,13 @@ for (const screen of screens) {
 
 console.log(`\n  ${screens.length} screens · ${waived} waived with a recorded reason`)
 
+if (centred.length > 0) {
+  console.log('\n  Scroll content centred with justifyContent:')
+  for (const c of centred) console.log(`    ✗ ${c.screen} · styles.${c.style}`)
+} else {
+  console.log('  no scroll content is centred with justifyContent')
+}
+
 if (stale.length > 0) {
   console.log('\n  Stale waivers — delete these:')
   for (const line of stale) console.log(`    · ${line}`)
@@ -171,8 +236,18 @@ if (missing > 0) {
   )
   process.exit(1)
 }
+if (centred.length > 0) {
+  console.error(
+    `\n✗ ${centred.length} scroll container(s) centre their content with ` +
+      `\`justifyContent: 'center'\`. That works until the content is taller than the view, ` +
+      `and then the top of it sits above scroll position zero on native, where nothing ` +
+      `reaches it. Use <Spacer /> above and below the content instead, and keep ` +
+      `\`flexGrow: 1\` on the container — see packages/design/src/primitives/Spacer.tsx.\n`,
+  )
+  process.exit(1)
+}
 if (stale.length > 0) {
   console.error('\n✗ stale waiver(s) above — a waiver that is no longer true is a lie in a script\n')
   process.exit(1)
 }
-console.log('\n✓ every screen scrolls, or says why it cannot need to\n')
+console.log('\n✓ every screen scrolls and none of them centre their way out of reach\n')
