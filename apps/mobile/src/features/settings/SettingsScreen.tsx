@@ -222,15 +222,19 @@ export function SettingsScreen({
           {/* States what is true and what happens next. Never "sync failed" — the
               work is safe, it just has not arrived, and a child reading "failed"
               hears "your lessons are gone". */}
-          {sync.parked > 0 ? (
-            <Note body={t('settings:sync.waiting', { count: sync.parked })} />
-          ) : (
-            /* Queued and still trying, which the section could not previously say. It
-               only appeared once work had exhausted its retries, so a lesson finished on
-               a train — the case a user is most likely to be anxious about, and the one
-               that is most certainly fine — showed nothing at all. */
-            <Note body={t('settings:sync.pending', { count: sync.pending })} />
-          )}
+          {/* Both, when both are true, rather than one or the other. These were a
+              ternary on `parked > 0`, so a queue holding one parked lesson and one still
+              trying said "1 lesson hasn't reached the server yet" and never mentioned the
+              second — in the one section whose entire job is to account for work that has
+              not arrived. They are different facts with different endings ("it will try
+              again" / "as soon as you're online"), so neither can stand in for the
+              other. */}
+          {sync.parked > 0 && <Note body={t('settings:sync.waiting', { count: sync.parked })} />}
+          {/* Queued and still trying, which the section could not previously say. It only
+              appeared once work had exhausted its retries, so a lesson finished on a
+              train — the case a user is most likely to be anxious about, and the one that
+              is most certainly fine — showed nothing at all. */}
+          {sync.pending > 0 && <Note body={t('settings:sync.pending', { count: sync.pending })} />}
           {sync.parked > 0 && (
             <LinkRow label={t('settings:sync.retry')} onPress={sync.onRetry} />
           )}

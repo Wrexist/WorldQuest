@@ -150,13 +150,47 @@ export function reconcile(
 }
 
 /**
+ * Which mutation kinds are the user's learning progress, and which are housekeeping.
+ *
+ * A purchase and a settings change also live in this queue, and losing either is a
+ * nuisance rather than a wound: the coins are still on the server and the switch can be
+ * flipped again. A finished lesson is the thing nobody can reconstruct.
+ */
+const carriesProgress = (m: QueuedMutation): boolean =>
+  m.kind === 'lesson_complete' || m.kind === 'quest_progress'
+
+/**
+ * How much learning progress is still in flight, split by whether it is still trying.
+ *
+ * Exported alongside `hasUnsyncedProgress` because Settings needs the NUMBER, not just
+ * the fact, and was reaching for `queue.pending.length` to get it — the whole queue,
+ * including the purchases and settings this predicate deliberately excludes. So finishing
+ * a lesson offline and then changing a setting rendered "2 lessons are waiting to reach
+ * the server" when one of them was a setting. The same class of bug as a progress bar
+ * labelled with a quantity it does not measure, and it cannot come back while both
+ * questions are answered by the one predicate above.
+ */
+export type UnsyncedProgress = {
+  /** Queued and still trying. A lesson finished a minute ago on a train. */
+  readonly pending: number
+  /** Exhausted its retries. Preserved, not dropped, and surfaced in Settings → Sync. */
+  readonly parked: number
+}
+
+export function countUnsyncedProgress(queue: SyncQueue): UnsyncedProgress {
+  return {
+    pending: queue.pending.filter(carriesProgress).length,
+    parked: queue.parked.filter(carriesProgress).length,
+  }
+}
+
+/**
  * Does this queue hold work the user would be upset to lose?
  *
  * Used to warn before sign-out or account deletion. "I lost my progress" is the
  * single most trust-destroying bug a learning app can have.
  */
 export function hasUnsyncedProgress(queue: SyncQueue): boolean {
-  const carries = (m: QueuedMutation) =>
-    m.kind === 'lesson_complete' || m.kind === 'quest_progress'
-  return queue.pending.some(carries) || queue.parked.some(carries)
+  const { pending, parked } = countUnsyncedProgress(queue)
+  return pending + parked > 0
 }

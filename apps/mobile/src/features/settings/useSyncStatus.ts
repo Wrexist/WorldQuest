@@ -8,10 +8,20 @@
  */
 
 import { useSyncExternalStore } from 'react'
-import { hasUnsyncedProgress } from '@worldquest/engines'
+import { countUnsyncedProgress } from '@worldquest/engines'
 import { onQueueChange, peekQueue, retryParkedMutation } from '../../lib/sync.js'
 
 export type SyncStatus = {
+  /**
+   * Parked learning progress — retries exhausted. **Not** `queue.parked.length`.
+   *
+   * These two counts are what the Settings copy puts a number on, and that copy says
+   * "lesson". The queue also holds purchases and settings changes, so the raw lengths
+   * counted things the sentence does not name: a lesson finished offline plus one flipped
+   * switch read "2 lessons are waiting to reach the server". `countUnsyncedProgress`
+   * applies the same predicate `hasUnsyncedProgress` does, so the number and the section's
+   * own visibility can no longer disagree about what progress is.
+   */
   readonly parked: number
   /** Queued and still trying. Not parked — this is a lesson finished a minute ago. */
   readonly pending: number
@@ -47,26 +57,34 @@ export type SyncStatus = {
  * bought nothing, because `useSyncExternalStore` compares with `Object.is` and any
  * primitive works, and a string has no ceiling.
  *
- * `hasUnsynced` is encoded here too, rather than read beside the snapshot. Read outside
- * it, the store only re-rendered when the packed number changed — so if the queue's
- * COMPOSITION changed while both lengths stayed equal, the flag kept a stale value.
- * Putting it in the snapshot removes that class of bug rather than the instance.
+ * `hasUnsynced` used to be a third field here, because with raw queue lengths the flag
+ * and the counts answered different questions: the composition could change — a lesson
+ * acknowledged, a setting queued — while both lengths stayed equal, and a flag read
+ * outside the snapshot went stale. Now both come from `countUnsyncedProgress`, so any
+ * change that could flip the flag has already moved one of these two numbers. The field
+ * is derived rather than transported, which is the version of that fix that cannot rot.
  */
 const queueSnapshot = (): string => {
-  const q = peekQueue()
-  return `${q.parked.length}:${q.pending.length}:${hasUnsyncedProgress(q) ? 1 : 0}`
+  const { parked, pending } = countUnsyncedProgress(peekQueue())
+  return `${parked}:${pending}`
 }
 
 export function useSyncStatus(): SyncStatus {
-  const [parked = '0', pending = '0', unsynced = '0'] = useSyncExternalStore(
+  const [parkedCount = '0', pendingCount = '0'] = useSyncExternalStore(
     onQueueChange,
     queueSnapshot,
     queueSnapshot,
   ).split(':')
+  const parked = Number(parkedCount)
+  const pending = Number(pendingCount)
   return {
-    parked: Number(parked),
-    pending: Number(pending),
-    hasUnsynced: unsynced === '1',
+    parked,
+    pending,
+    hasUnsynced: parked + pending > 0,
+    // Every parked mutation, not only the ones counted above: a parked purchase is
+    // surfaced nowhere else in the app, so this link is its one chance to be sent. The
+    // counts are narrow because they carry a sentence that says "lesson"; the retry is
+    // wide because a flush has no reason to be picky.
     onRetry: () => {
       for (const mutation of peekQueue().parked) retryParkedMutation(mutation.id)
     },

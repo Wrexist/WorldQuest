@@ -367,6 +367,25 @@ describe('Settings — work that is merely waiting', () => {
     expect(container.textContent).not.toMatch(/failed|error|couldn'?t sync|problem/i)
   })
 
+  it('accounts for both, when some has given up and some is still trying', () => {
+    // A ternary on `parked > 0` said "1 lesson hasn't reached the server yet" and never
+    // mentioned the other one — in the section whose whole job is to account for work
+    // that has not arrived. The two sentences also end differently ("it will try again"
+    // / "as soon as you're online"), so neither can stand in for the other.
+    const { container } = render(
+      <SettingsScreen
+        version="1.0.0"
+        preferences={DEFAULTS}
+        onChange={vi.fn()}
+        sync={sync({ parked: 1, pending: 2 })}
+      />,
+    )
+    expect(container.textContent).toMatch(/1 lesson hasn'?t reached the server/i)
+    expect(container.textContent).toMatch(/2 lessons are waiting to reach the server/i)
+    // And the retry is offered, because one of them has in fact given up.
+    expect(screen.getByText('Try sending again')).toBeTruthy()
+  })
+
   it('stays silent when the queue is empty', () => {
     const { container } = render(
       <SettingsScreen
