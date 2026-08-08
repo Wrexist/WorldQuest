@@ -29,7 +29,7 @@
  * Purely presentational. Every decision comes in already made by the engine.
  */
 
-import { StyleSheet, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { Button, Card, Tally, colors, space, text } from '@worldquest/design'
 import {
@@ -178,7 +178,18 @@ export function StreakScreen({
   const freezesFull = freezesHeld >= MAX_FREEZES
 
   return (
-    <View style={styles.root}>
+    /* A ScrollView, because this screen did not have one.
+
+       Measured at 320 before changing it: the content ended at 678 of 700 — twenty-two
+       pixels of headroom, and that is WITHOUT the repair card, since a broken streak adds
+       a whole card to a screen already flush with the bottom edge. At 200 % text it needs
+       1262. There was nothing to scroll: `root` was a `flex: 1` View, so on a device
+       everything past the fold is simply gone. It looked fine here only because a browser
+       scrolls the document when a page overflows, which is a thing no phone does.
+
+       The header goes INSIDE, as it does on Country, Collection and Achievements. Four
+       screens with a back button should put it in the same place. */
+    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       {onBack !== undefined && <ScreenHeader onBack={onBack} />}
       <View style={styles.hero}>
         {/* The streak flame, as the delivered object rather than a 44pt line glyph.
@@ -298,7 +309,7 @@ export function StreakScreen({
           </>
         )}
       </Card>
-    </View>
+    </ScrollView>
   )
 }
 
@@ -358,7 +369,8 @@ function RepairAction({
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, padding: space[4], gap: space[3] },
+  screen: { flex: 1 },
+  content: { padding: space[4], gap: space[3] },
   hero: { alignItems: 'center', gap: space[1], paddingVertical: space[5] },
   flame: { ...text('display'), color: colors.status.streak },
   count: { ...text('display', { numeric: true }), color: colors.text.primary },

@@ -307,9 +307,51 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
        * Touch targets and sideways scroll are the two things a screenshot genuinely
        * cannot show you: a 30 pt button looks fine in a picture and fails under a
        * thumb, and a 4 px overflow is invisible until someone swipes.
+       *
+       * `deadSpaceBelow` is the fourth, and it is here because it found three screens
+       * a human had already looked at and passed. A screenshot shows emptiness but not
+       * how much, and a reviewer's eye grades it against the screen rather than against
+       * the other viewports — so onboarding's taster sat 47 % empty at 320 and 66 % at
+       * 768 through several review passes. As a percentage across three widths it is
+       * obvious, and it is a number a review can argue with.
        */
       const measured = await page.evaluate(() => {
         const doc = document.documentElement
+
+        /**
+         * How much of the viewport below the content is empty.
+         *
+         * Measured from the bottom of the deepest thing actually painted in the scroll
+         * area to the top of whatever is pinned below it — a footer, the tab bar — or to
+         * the bottom of the window when nothing is. Zero on any screen that scrolls,
+         * which is most of them; large only where short fixed content hangs from the top
+         * of a tall screen, which is the defect.
+         *
+         * Deliberately NOT a gate. A meditation screen might want to be mostly empty,
+         * "mostly empty" is sometimes the design, and a threshold here would either fire
+         * on those or be set so loose it fires on nothing. The number goes in the report
+         * and a person decides.
+         */
+        const deadSpaceBelow = (() => {
+          const scroller = Array.from(document.querySelectorAll('*')).find((node) => {
+            const style = getComputedStyle(node)
+            return /^(auto|scroll)$/.test(style.overflowY) && node.clientHeight > 200
+          })
+          if (scroller === undefined) return null
+          // A screen with more in it than fits has no dead space by definition.
+          if (scroller.scrollHeight > scroller.clientHeight + 4) return 0
+          const box = scroller.getBoundingClientRect()
+          let contentBottom = box.top
+          for (const node of scroller.querySelectorAll('*')) {
+            const r = node.getBoundingClientRect()
+            // Painted, inside the scroller, and not a zero-height wrapper.
+            if (r.height < 1 || r.width < 1 || r.top > box.bottom) continue
+            if (getComputedStyle(node).visibility === 'hidden') continue
+            contentBottom = Math.max(contentBottom, Math.min(r.bottom, box.bottom))
+          }
+          const gap = Math.round(box.bottom - contentBottom)
+          return { px: gap, percentOfViewport: Math.round((gap / window.innerHeight) * 100) }
+        })()
         const interactive = Array.from(
           document.querySelectorAll('[role="button"],[role="tab"],[role="radio"],[role="link"]'),
         )
@@ -329,6 +371,7 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
           sidewaysScroll: doc.scrollWidth - doc.clientWidth,
           belowMinTarget: small,
           unlabelledControls: unlabelled,
+          deadSpaceBelow,
           headings: Array.from(document.querySelectorAll('[role="heading"]'))
             .map((h) => (h.textContent ?? '').trim())
             .slice(0, 4),
@@ -418,9 +461,23 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
       }
       if (m.unlabelledControls > 0) notes.push(`${vp}: ${m.unlabelledControls} unlabelled control(s)`)
     }
+    // Reported apart from `notes`, and only when it is large at every width. A tall
+    // viewport showing a short screen is normal; the SAME screen being mostly empty at
+    // 320 and at 768 is a screen that is not using its space, which is what onboarding
+    // was. Not counted as a problem — see `deadSpaceBelow` — so a review reads it and
+    // decides rather than being told.
+    const dead = Object.entries(byViewport)
+      .map(([vp, m]) => [vp, m.deadSpaceBelow])
+      .filter(([, d]) => d !== null && d !== 0)
+    const empty =
+      dead.length === VIEWPORTS.length && dead.every(([, d]) => d.percentOfViewport >= 25)
+        ? dead.map(([vp, d]) => `${vp}: ${d.percentOfViewport}%`).join(' · ')
+        : null
+
     problems += notes.length
     console.log(`  ${notes.length === 0 ? '✓' : '⚠'} ${slug}`)
     for (const n of notes) console.log(`      ${n}`)
+    if (empty !== null) console.log(`      empty below the content — ${empty}`)
   }
   if (report.consoleErrors) {
     problems++

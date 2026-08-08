@@ -152,7 +152,7 @@ unless asked. Full rules: [`PROJECT.md §11`](PROJECT.md#11-git-workflow).
 - There is **no ESLint in this repo yet**, so there is no `pnpm lint`. The rules a
   linter would carry are enforced by scripts instead: `pnpm escape-hatches` (`any`,
   `@ts-expect-error`, `eslint-disable`), `pnpm lint:a11y`, `pnpm design:contrast`,
-  `pnpm reachability`, `pnpm five-states`. All are in `pnpm verify`.
+  `pnpm reachability`, `pnpm five-states`, `pnpm scrollable`. All are in `pnpm verify`.
 - `pnpm design:shots` — renders 14 routes × 320/390/768, drives the onboarding and
   lesson flows for the nine screens that are states rather than routes, and measures
   what a picture cannot show (targets under 44 pt, sideways scroll, unlabelled

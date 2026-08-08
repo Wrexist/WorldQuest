@@ -26,7 +26,7 @@
  * Purely presentational.
  */
 
-import { StyleSheet, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { Button, Card, Tally, colors, space, text } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
@@ -52,7 +52,18 @@ export function WelcomeBackScreen({
   const t = useT()
 
   return (
-    <View style={styles.root}>
+    /* A ScrollView, because this screen did not have one.
+
+       Measured at 320 before changing it: the content ended at 668 of 700, and that is
+       the version WITHOUT the STILL YOURS card — which is the normal case, since this
+       screen exists for a user who has been away and therefore has progress to be
+       reassured about. At 200 % text it needs 1008. `root` was a `flex: 1` View, so on a
+       device the way out ("Just looking around") was below the fold and unreachable, on
+       the screen whose whole argument is that the user is not trapped here.
+
+       It looked fine in this repo's harness only because a browser scrolls the document
+       when a page overflows. A phone does not. */
+    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.hero}>
         {/* Atlas waving with both arms, from a low angle. The brief for this frame is
             specifically "greeting someone returning after a long time — warm, glad, NO
@@ -103,12 +114,17 @@ export function WelcomeBackScreen({
             must be able to look around. */}
         <Button variant="ghost" label={t('welcome:later')} onPress={onDismiss} />
       </View>
-    </View>
+    </ScrollView>
   )
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, padding: space[4], gap: space[3] },
+  screen: { flex: 1 },
+  // `flexGrow: 1` so `actions`' auto top margin still has free space to consume and the
+  // two buttons stay at the bottom of a short screen. When the content is taller than the
+  // viewport the auto margin resolves to zero and they simply follow the text, which is
+  // the correct behaviour and the reason this is a ScrollView.
+  content: { padding: space[4], gap: space[3], flexGrow: 1 },
   hero: { alignItems: 'center', gap: space[2], paddingTop: space[6] },
   title: { ...text('h1'), color: colors.text.primary, textAlign: 'center' },
   body: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
