@@ -15,7 +15,7 @@
       "backgroundColor": "#0B1730"
     },
     "ios": {
-      "bundleIdentifier": "com.worldquest.app",
+      "bundleIdentifier": "com.wrexist.worldquest",
       "supportsTablet": true,
       "buildNumber": "1",
       "config": {
@@ -39,7 +39,7 @@
       }
     },
     "android": {
-      "package": "com.worldquest.app",
+      "package": "com.wrexist.worldquest",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0B1730"
