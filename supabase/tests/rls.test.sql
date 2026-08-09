@@ -84,9 +84,17 @@ select is_empty(
   'subscription_events is unreadable by any client, including its owner'
 );
 
+-- feature_flags is the one deliberate exception (2026-08-09): its migration
+-- (20260809090000_create_feature_flags.sql) grants anon+authenticated SELECT with
+-- `using (true)` on purpose — a flag's rollout percentage is not sensitive, and a
+-- signed-out user must be able to evaluate flags during the taster lesson, before any
+-- session exists to scope a policy to. Naming it here, rather than loosening the
+-- assertion generally, keeps this test doing its job for every table that has no
+-- reason to be world-readable — this failed for real the day feature_flags shipped,
+-- which is the check working, not a false alarm.
 select is_empty(
-  $$ select policyname from pg_policies where qual = 'true' $$,
-  'no policy is unconditionally permissive'
+  $$ select policyname from pg_policies where qual = 'true' and tablename <> 'feature_flags' $$,
+  'no policy is unconditionally permissive, except feature_flags (deliberately public — see its migration header)'
 );
 
 -- PostgREST publishes every function in `public` as an RPC endpoint, so a trigger
