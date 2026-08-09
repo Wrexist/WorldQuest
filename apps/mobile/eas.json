@@ -64,6 +64,23 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "$comment": [
+        "2026-08-09: the app record now exists in App Store Connect, so ascAppId is a real",
+        "value rather than a gap. `eas submit` uses it to know which app to upload to, and",
+        "scripts/next-build-number.mjs reads it to ask Apple for the highest build number",
+        "already on record — without it that script silently falls back to epoch seconds.",
+        "",
+        "ascApiKeyPath / ascApiKeyId / ascApiKeyIssuerId are deliberately NOT here. Both",
+        "TestFlight workflows write them into this file at runtime from GitHub secrets and",
+        "delete the key afterwards, so no credential is ever committed.",
+        "",
+        "appleTeamId is still unset. EAS resolves it from the authenticated session, and it",
+        "is not a secret — fill it in if a build ever fails to work it out."
+      ],
+      "ios": {
+        "ascAppId": "6799761965"
+      }
+    }
   }
 }
