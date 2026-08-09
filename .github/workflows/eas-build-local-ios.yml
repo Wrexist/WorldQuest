@@ -82,6 +82,11 @@ jobs:
         with:
           persist-credentials: false
 
+      # eas.json is validated by `pnpm verify` below (scripts/check-eas-json.ts):
+      # eas-cli rejects unknown keys, and run #1 of this workflow died on a
+      # `$comment` key on the macOS runner, after the bill, having compiled
+      # nothing. See docs/engineering/eas-build-profiles.md.
+
       # Fail fast if the requested marketing version isn't a full
       # MAJOR.MINOR.PATCH string — the "Set marketing version" step in
       # build-ios writes this straight into app.json with no further
@@ -137,8 +142,29 @@ jobs:
       # The same local gate this repo runs everywhere else (typecheck + lint
       # + test + escape-hatches) — matches .github/workflows/ci.yml exactly,
       # so this workflow never diverges from what "the code is good" means.
+      # Includes `pnpm check:eas`, which is what would have caught run #1's
+      # eas.json failure here, at 1x, instead of on the macOS runner.
       - name: Verify
         run: pnpm verify
+
+      # ADVISORY, never fatal. apps/mobile/app.json declares no
+      # extra.eas.projectId and no owner, so EAS resolves the project from the
+      # authenticated account and the `worldquest` slug. That resolution is the
+      # next thing that can fail in --non-interactive mode, and it would fail on
+      # the 10x runner. Probing it here is free and tells you before the bill —
+      # but it does NOT gate the build: eas-cli's build-time resolution is not
+      # guaranteed to be identical to project:info's, and a preflight that
+      # blocks a build which would have worked is worse than no preflight.
+      - name: Probe EAS project link (advisory)
+        continue-on-error: true
+        working-directory: apps/mobile
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          npx --yes eas-cli@latest project:info --non-interactive || {
+            echo "::warning::EAS could not resolve a project for slug 'worldquest'. If the macOS build fails with a project-configuration error, run \`eas init\` locally once and commit the resulting extra.eas.projectId in apps/mobile/app.json."
+            exit 1
+          }
 
   # ---- Expensive COMPILE on macOS (submission is a separate ubuntu job) ----
   build-ios:
