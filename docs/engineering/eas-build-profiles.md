@@ -19,8 +19,38 @@ eas.json is not valid.
 `$comment:<key>` sibling keys work in `package.json` and in this repo's own content
 packs because npm and our own validators ignore unknown keys. EAS does not. So the
 rule for `apps/mobile/eas.json` is: **strict JSON, schema keys only, no comments of
-any kind** — `scripts/check-eas-json.ts` enforces it in `pnpm verify` so the next
+any kind** — `scripts/check-eas-config.ts` enforces it in `pnpm verify` so the next
 person cannot rediscover this on a 10x-billed macOS runner.
+
+## The project link
+
+Run #2, minutes later, got past the schema and died on the next config field:
+
+```
+EAS project not configured. To configure it non-interactively, choose the
+account that should own the project and run:
+  eas init --account <name> --non-interactive
+Accounts you have permissions to create projects in: isacm
+```
+
+`eas build --non-interactive` has to know which EAS project it is building.
+`apps/mobile/app.json` declared neither `expo.owner` nor `expo.extra.eas.projectId`,
+and eas-cli will not pick an owning account on your behalf — reasonably, since
+picking wrong creates a project in a stranger's account.
+
+`expo.owner` is now `"isacm"`, read from that run's own output rather than assumed.
+That alone is sufficient. Both workflows additionally run `eas init
+--non-interactive --force` before building, which resolves and writes
+`extra.eas.projectId` into the working-tree `app.json` so build and submit agree on
+the project; the step is `continue-on-error: true`, because `owner` is the
+documented alternative and a hiccup in a belt-and-braces step should not cost a
+whole run.
+
+**The better end state is a committed `extra.eas.projectId`**, which removes the
+resolution step entirely. That needs one authenticated `eas init` from a machine
+with an Expo login — no environment that has worked on this repo has had one.
+`scripts/check-eas-config.ts` accepts either, so committing the id later is a
+straight improvement and breaks nothing.
 
 ---
 

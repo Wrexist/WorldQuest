@@ -161,6 +161,17 @@ jobs:
             fs.writeFileSync(path, JSON.stringify(cfg, null, 2) + '\n');
           "
 
+      # Same requirement as the local workflow: `eas build --non-interactive`
+      # needs a project ID, and will not choose an owning account for you.
+      # apps/mobile/app.json declares `owner`, which is enough on its own —
+      # this resolves and writes extra.eas.projectId as well, so build and
+      # submit agree. Non-fatal for the same reason as over there.
+      - name: Link EAS project
+        continue-on-error: true
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas init --non-interactive --force
+
       - name: Build (EAS Build, production profile)
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}

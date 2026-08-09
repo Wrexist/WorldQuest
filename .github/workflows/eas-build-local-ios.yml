@@ -205,6 +205,21 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
+      # Run #2 died here: "EAS project not configured." `eas build` needs a
+      # project ID, app.json has none, and in --non-interactive mode eas-cli
+      # will not pick an owning account for you. apps/mobile/app.json now
+      # declares `owner`, which is enough on its own; this writes the resolved
+      # extra.eas.projectId into the working tree as well, so the build, and
+      # the submit job's `eas submit`, both resolve the same project without
+      # re-deriving it. Working-tree only — nothing is committed.
+      #
+      # Non-fatal on purpose: `owner` alone is the documented alternative, so a
+      # hiccup here should not cost the whole run. If the build below then
+      # fails on project configuration, this step's log says why.
+      - name: Link EAS project
+        continue-on-error: true
+        run: eas init --non-interactive --force
+
       - name: Show Xcode version
         run: |
           xcodebuild -version
@@ -336,6 +351,13 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
+
+      # This job checks the repo out fresh, so the projectId the build job's
+      # `eas init` wrote is not here. `eas submit` resolves the project too —
+      # same reasoning, same non-fatal treatment, same `owner` fallback.
+      - name: Link EAS project
+        continue-on-error: true
+        run: eas init --non-interactive --force
 
       # Tolerant decode: accepts APP_STORE_CONNECT_API_KEY_BASE64 as a raw
       # PEM, a Windows-CRLF-mangled base64 paste, or clean base64 — the exact
