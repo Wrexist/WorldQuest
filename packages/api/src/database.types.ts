@@ -117,15 +117,6 @@ export type Database = {
           },
         ]
       }
-      // Hand-added 2026-08-09, against this file's own header: no Supabase CLI or
-      // local stack was available in this environment to run `pnpm db:types` for
-      // real. The shape below matches `supabase/migrations/20260809090000_create_
-      // feature_flags.sql` exactly and was cross-checked against
-      // `generate_typescript_types` run against the actual `worldquest-dev` project,
-      // where this migration has also been applied — so it should be byte-identical
-      // to what a real `pnpm db:types` produces once the local stack includes this
-      // migration. Run it for real the next time the local stack is available, and
-      // this comment should disappear with no other diff.
       feature_flags: {
         Row: {
           description: string
