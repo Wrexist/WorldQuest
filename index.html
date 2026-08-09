@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WorldQuest — Learn the world in five minutes a day</title>
+<meta name="description" content="WorldQuest teaches you countries, flags and capitals in five minutes a day. No ads, ever. Free to play.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --space-900:#00050F; --space-800:#001227; --space-700:#052342;
+    --surface-1:#0A1F3C; --surface-2:#102A4D; --border:#1B3A63;
+    --blue:#1E86E8; --green:#22A73A; --gold:#F5A61E; --flame:#FF6A14;
+    --t1:#FFFFFF; --t2:#9FB3D1; --t3:#6B82A6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Nunito',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:linear-gradient(180deg,var(--space-700) 0%,var(--space-800) 45%,var(--space-900) 100%);
+    background-attachment:fixed;
+    color:var(--t1);line-height:1.6;min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:0 24px}
+  header{padding:80px 0 56px;text-align:center}
+  .mark{
+    display:inline-flex;align-items:center;gap:12px;
+    font-size:15px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:28px;
+  }
+  .mark .dot{width:10px;height:10px;border-radius:999px;background:var(--gold);
+    box-shadow:0 0 16px rgba(245,166,30,.7)}
+  h1{font-size:clamp(34px,7vw,52px);line-height:1.12;font-weight:800;letter-spacing:-.02em}
+  h1 .accent{color:var(--gold)}
+  .sub{margin-top:20px;font-size:19px;color:var(--t2);max-width:520px;margin-left:auto;margin-right:auto}
+  .cards{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin:56px 0}
+  .card{
+    background:var(--surface-1);border:1px solid var(--border);border-radius:16px;
+    padding:24px;box-shadow:0 2px 8px rgba(0,0,0,.35);
+  }
+  .card h3{font-size:17px;font-weight:700;margin-bottom:8px}
+  .card p{color:var(--t2);font-size:15px}
+  .card .ico{font-size:26px;margin-bottom:14px;display:block}
+  .pledge{
+    border:1px solid var(--border);border-left:3px solid var(--green);
+    background:var(--surface-2);border-radius:12px;padding:22px 24px;margin:8px 0 56px;
+  }
+  .pledge strong{color:var(--green)}
+  .pledge p{color:var(--t2);font-size:15px;margin-top:6px}
+  nav.links{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:64px}
+  nav.links a{
+    display:inline-block;padding:13px 24px;border-radius:12px;
+    background:var(--blue);color:#fff;text-decoration:none;font-weight:700;font-size:15px;
+    box-shadow:0 0 24px rgba(30,134,232,.3);transition:transform .1s ease,background .15s ease;
+  }
+  nav.links a.ghost{background:transparent;border:1px solid var(--border);color:var(--t1);box-shadow:none}
+  nav.links a:hover{transform:translateY(-1px);background:#1467C4}
+  nav.links a.ghost:hover{background:var(--surface-2)}
+  footer{border-top:1px solid var(--border);padding:32px 0 64px;text-align:center;color:var(--t3);font-size:14px}
+  footer a{color:var(--t2)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="mark"><span class="dot"></span> WorldQuest</div>
+    <h1>Learn the world in <span class="accent">five minutes</span> a day.</h1>
+    <p class="sub">Countries, flags and capitals — as a daily habit, not a study chore.</p>
+  </header>
+
+  <div class="cards">
+    <div class="card">
+      <span class="ico">🌍</span>
+      <h3>Short daily lessons</h3>
+      <p>Most sessions take under five minutes, and they end. No endless scroll.</p>
+    </div>
+    <div class="card">
+      <span class="ico">🧠</span>
+      <h3>It actually sticks</h3>
+      <p>Lessons adapt to what you know and resurface what you're about to forget.</p>
+    </div>
+    <div class="card">
+      <span class="ico">🔥</span>
+      <h3>Never punishing</h3>
+      <p>A wrong answer shows you the right one and moves on. A lost streak offers a repair.</p>
+    </div>
+    <div class="card">
+      <span class="ico">✈️</span>
+      <h3>Works offline</h3>
+      <p>Start a lesson on the subway. Finish it anywhere.</p>
+    </div>
+  </div>
+
+  <div class="pledge">
+    <strong>No ads. Not ever.</strong>
+    <p>WorldQuest doesn't run ads — not for free users, not for anyone. Every lesson is
+       free and stays free. Premium sells depth, never access.</p>
+  </div>
+
+  <nav class="links">
+    <a href="./support.html">Support</a>
+    <a class="ghost" href="./privacy.html">Privacy Policy</a>
+    <a class="ghost" href="https://github.com/Wrexist/WorldQuest">Source</a>
+  </nav>
+
+</div>
+<footer>
+  <div class="wrap">
+    © 2026 WorldQuest · <a href="mailto:isacmolin@gmail.com">isacmolin@gmail.com</a>
+  </div>
+</footer>
+</body>
+</html>
