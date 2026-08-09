@@ -1,0 +1,373 @@
+name: iOS TestFlight (local build · no cloud credits)
+
+# Builds the iOS app with `eas build --local` on a GitHub macOS runner and
+# (optionally) submits to TestFlight. Unlike .github/workflows/eas-testflight.yml
+# (which uses Expo's cloud build queue and its `autoIncrement: true`), this
+# consumes ZERO EAS Build credits — use it when the monthly cloud quota from
+# the other workflow is exhausted. Ported 2026-08-09 from
+# Wrexist/DeepLifeSimulator's workflow of the same shape; the 3-job cost-split
+# architecture and the App Store Connect JWT build-number resolver are
+# generic, everything else below is adapted to WorldQuest specifically:
+#   - pnpm, not npm (this is a pnpm workspace monorepo — apps/mobile,
+#     apps/web, packages/*), and pnpm install/verify run from the repo root
+#     while every `eas` command runs from apps/mobile, where eas.json lives.
+#   - The verify gate is this repo's own `pnpm verify` (typecheck + lint +
+#     test + escape-hatches, matching .github/workflows/ci.yml exactly)
+#     instead of DeepLifeSimulator's separate steps — there is no
+#     ADMOB/IAP/preflight-check.js surface here to port, WorldQuest doesn't
+#     have that config.
+#   - WorldQuest has a static apps/mobile/app.json (appVersionSource:
+#     "local"), not an app.config.js that reads package.json — so the
+#     version-stamp step below patches app.json's expo.version and
+#     expo.ios.buildNumber directly with a small node -e script, the same
+#     technique eas-testflight.yml already uses to patch eas.json's submit
+#     credentials at runtime.
+#   - The build-number resolver (scripts/next-build-number.mjs, adapted
+#     alongside this file) reads APP_STORE_CONNECT_KEY_ID /
+#     APP_STORE_CONNECT_ISSUER_ID / APP_STORE_CONNECT_API_KEY_BASE64 — the
+#     same three secret names eas-testflight.yml already asks for — instead
+#     of DeepLifeSimulator's differently-named ASC_KEY_ID/ASC_ISSUER_ID/
+#     ASC_KEY_P8, so this workflow needs no secrets beyond what the cloud
+#     workflow already documents. All four (EXPO_TOKEN plus the three
+#     APP_STORE_CONNECT_* ones) do not exist yet as of 2026-08-09 — see
+#     eas-testflight.yml's header for how to create them.
+#   - EAS_SKIP_AUTO_FINGERPRINT is carried over from DeepLifeSimulator (where
+#     it works around a real @expo/fingerprint crash) but is unverified here:
+#     WorldQuest has no expo-updates dependency at all, so EAS's fingerprint
+#     computation is likely never invoked either way. Left in as a harmless,
+#     free precaution rather than something this repo has hit.
+#
+# Cost note (measured on DeepLifeSimulator, run #50): macOS runner minutes
+# bill ~10x. A build that just compiles takes ~17m; a build that also waits
+# on `eas submit`'s Apple queue on the SAME macOS runner took an extra 53m of
+# pure idle time at the 10x rate — 73% of a 1h13m job, ~530 billed minutes
+# for nothing. `eas submit` only needs the .ipa, eas.json and EXPO_TOKEN,
+# none of which require macOS, so submission is its own ubuntu job below,
+# picking the binary up from the artifact the build job uploads. Same wait,
+# same pass/fail signal, one tenth the cost.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Marketing version to ship (e.g. 0.2.0). Apple rejects a version that was already released — bump it for every store release.'
+        type: string
+        # Required with no default: forces an explicit choice on every run, so
+        # a stale app.json version can never be submitted by accident
+        # ("You've already submitted this version of the app").
+        required: true
+      submit:
+        description: 'Submit the build to TestFlight after building'
+        type: boolean
+        # Safe by default: TestFlight submission is outward-facing and hard to
+        # reverse, so it is opt-in — tick this when you actually want to submit.
+        default: false
+
+concurrency:
+  group: ios-local-release
+  cancel-in-progress: false
+
+# Least privilege: these jobs only read code, run EAS, and pass an artifact
+# between two of themselves.
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  # ---- Cheap gates on ubuntu, before any macOS (10x-billed) minutes --------
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      # Fail fast if the requested marketing version isn't a full
+      # MAJOR.MINOR.PATCH string — the "Set marketing version" step in
+      # build-ios writes this straight into app.json with no further
+      # validation, and Apple's own version-already-used rejection surfaces
+      # far later (after a 10x-billed compile) if this is wrong.
+      - name: Validate marketing version input
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          if ! printf '%s' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Version '$VERSION' must be a full MAJOR.MINOR.PATCH string (e.g. 0.2.0)."
+            exit 1
+          fi
+          CURRENT=$(node -p "require('./apps/mobile/app.json').expo.version")
+          echo "::notice::Building marketing version $VERSION (apps/mobile/app.json currently: $CURRENT)"
+
+      # Fail fast on ubuntu if the EAS auth token is missing, before the
+      # build job spends 10x-billed macOS minutes on a login that will fail.
+      - name: Require EXPO_TOKEN
+        run: test -n "$EXPO_TOKEN" || { echo "::error::EXPO_TOKEN repo secret is not set — add it under Settings > Secrets and variables > Actions."; exit 1; }
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      # Only required when this run will actually submit — same reasoning as
+      # above, checked here (ubuntu, 1x) rather than in submit-ios (also
+      # ubuntu, but only after a macOS compile has already happened).
+      - name: Require App Store Connect secrets (submit requested)
+        if: inputs.submit
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+        run: |
+          missing=()
+          [ -z "$APP_STORE_CONNECT_KEY_ID" ] && missing+=("APP_STORE_CONNECT_KEY_ID")
+          [ -z "$APP_STORE_CONNECT_ISSUER_ID" ] && missing+=("APP_STORE_CONNECT_ISSUER_ID")
+          [ -z "$APP_STORE_CONNECT_API_KEY_BASE64" ] && missing+=("APP_STORE_CONNECT_API_KEY_BASE64")
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::error::submit was requested but these secrets are missing: ${missing[*]}"
+            exit 1
+          fi
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # The same local gate this repo runs everywhere else (typecheck + lint
+      # + test + escape-hatches) — matches .github/workflows/ci.yml exactly,
+      # so this workflow never diverges from what "the code is good" means.
+      - name: Verify
+        run: pnpm verify
+
+  # ---- Expensive COMPILE on macOS (submission is a separate ubuntu job) ----
+  build-ios:
+    needs: verify
+    runs-on: macos-26
+    # A hung compile must not sit on a 10x runner until the 6h default. The
+    # DeepLifeSimulator reference measured ~17m for a comparable app; 60
+    # covers a cold cache and a slow queue with real headroom.
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        working-directory: .
+        run: pnpm install --frozen-lockfile
+
+      # Authenticates eas-cli non-interactively via EXPO_TOKEN so `eas build
+      # --local` can resolve EAS project/account context while logged in.
+      # NOTE: the build number is NOT taken from EAS here — see "Compute
+      # unique build number" below. Remote autoIncrement (eas.json's
+      # build.production.autoIncrement) only runs on EAS *cloud* builds,
+      # never on --local, so the version is minted locally.
+      - name: Expo/EAS login
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Show Xcode version
+        run: |
+          xcodebuild -version
+          xcode-select -p
+          ls /Applications | grep Xcode
+
+      # CFBundleVersion must be UNIQUE for every App Store upload — Apple
+      # rejects a resubmission of a build number it has already seen
+      # ("You've already submitted this build of the app"). `eas build
+      # --local` does NOT auto-increment it (remote autoIncrement only runs
+      # on EAS cloud builds), so resolve it here: scripts/next-build-number.mjs
+      # returns one HIGHER than App Store Connect's current highest build
+      # (when the three APP_STORE_CONNECT_* secrets are set AND an app record
+      # already exists there for com.worldquest.app — it doesn't yet, as of
+      # 2026-08-09), else a monotonic epoch-seconds fallback that is always
+      # unique. Baked into app.json below (eas.json appVersionSource: local).
+      - name: Compute unique build number (CFBundleVersion)
+        working-directory: .
+        run: echo "BUILD_NUMBER=$(node scripts/next-build-number.mjs)" >> "$GITHUB_ENV"
+        env:
+          # Optional — set these three repo secrets (shared with
+          # eas-testflight.yml) to track App Store Connect exactly. Without
+          # them the resolver falls back to epoch seconds, still unique.
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+
+      # WorldQuest has no app.config.js — apps/mobile/app.json is the single
+      # static source of truth (eas.json appVersionSource: "local"), so patch
+      # it directly rather than stamping package.json and relying on a config
+      # loader to re-read it. Working-tree-only: nothing is committed or
+      # pushed, this only affects the compile that follows.
+      - name: Set marketing version and build number
+        working-directory: .
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const p = "apps/mobile/app.json";
+            const json = JSON.parse(fs.readFileSync(p, "utf8"));
+            json.expo.version = process.env.VERSION;
+            json.expo.ios.buildNumber = String(process.env.BUILD_NUMBER);
+            fs.writeFileSync(p, JSON.stringify(json, null, 2) + "\n");
+          '
+          echo "::notice::apps/mobile/app.json now: version $VERSION, ios.buildNumber $BUILD_NUMBER"
+
+      # --local compiles on THIS runner (zero EAS Build credits). --output
+      # pins the artifact path so the upload/submit steps are deterministic.
+      - name: EAS Build iOS (local)
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/build"
+          eas build \
+            --platform ios \
+            --profile production \
+            --local \
+            --non-interactive \
+            --output "$GITHUB_WORKSPACE/build/worldquest.ipa"
+        env:
+          # Unverified workaround, carried over from DeepLifeSimulator where
+          # it fixes a real @expo/fingerprint crash — see this file's header.
+          EAS_SKIP_AUTO_FINGERPRINT: '1'
+
+      # Always keep the .ipa, even if submit is skipped or later fails — lets
+      # you upload it manually via Transporter as a fallback.
+      - name: Upload .ipa artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: worldquest-ios-ipa
+          path: build/worldquest.ipa
+          if-no-files-found: error
+          retention-days: 14
+
+  # ---- Submit on ubuntu (1x billing) ----------------------------------------
+  # Submit does NOT consume EAS build credits, and it does not need macOS: the
+  # .ipa is already built, and `eas submit` just hands it to EAS, which
+  # uploads it to App Store Connect using an App Store Connect API key — the
+  # same credentials-at-runtime approach eas-testflight.yml uses, so nothing
+  # sensitive is ever committed to eas.json.
+  submit-ios:
+    needs: build-ios
+    if: ${{ inputs.submit }}
+    runs-on: ubuntu-latest
+    # The wait is EAS's queue talking to Apple, not our work. Bounded so a
+    # stuck submission ends in a red job instead of running to the 6h
+    # default — at 1x, but still.
+    timeout-minutes: 120
+    defaults:
+      run:
+        working-directory: apps/mobile
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Verify required secrets
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+        run: |
+          missing=()
+          [ -z "$APP_STORE_CONNECT_KEY_ID" ] && missing+=("APP_STORE_CONNECT_KEY_ID")
+          [ -z "$APP_STORE_CONNECT_ISSUER_ID" ] && missing+=("APP_STORE_CONNECT_ISSUER_ID")
+          [ -z "$APP_STORE_CONNECT_API_KEY_BASE64" ] && missing+=("APP_STORE_CONNECT_API_KEY_BASE64")
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::error::Missing required secret(s): ${missing[*]}"
+            exit 1
+          fi
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      # eas-cli resolves the project config through the project's own
+      # installed `expo`, so deps are installed even though nothing is
+      # compiled here. --ignore-scripts since no native postinstall is
+      # needed on this ubuntu job. Cheap insurance (~1 min at 1x) against a
+      # release blocked at the very last step.
+      - name: Install dependencies
+        working-directory: .
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Expo/EAS login
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      # Tolerant decode: accepts APP_STORE_CONNECT_API_KEY_BASE64 as a raw
+      # PEM, a Windows-CRLF-mangled base64 paste, or clean base64 — the exact
+      # same handling eas-testflight.yml already uses for this secret, since
+      # both workflows read it.
+      - name: Install App Store Connect API key
+        env:
+          APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+        run: |
+          printf '%s' "$APP_STORE_CONNECT_API_KEY_BASE64" | tr -d '\r' > /tmp/asc_key.raw
+          if grep -q 'BEGIN PRIVATE KEY' /tmp/asc_key.raw; then
+            cp /tmp/asc_key.raw AuthKey.p8
+          else
+            tr -d '\n' < /tmp/asc_key.raw | base64 -d > AuthKey.p8 2>/dev/null \
+              || base64 -d /tmp/asc_key.raw > AuthKey.p8
+          fi
+          rm -f /tmp/asc_key.raw
+          grep -q 'BEGIN PRIVATE KEY' AuthKey.p8 || { echo "::error::AuthKey.p8 does not look like a PEM private key after decoding — check APP_STORE_CONNECT_API_KEY_BASE64."; exit 1; }
+
+      # Patches submit.production.ios into eas.json at runtime — never
+      # committed. Same technique, same fields, as eas-testflight.yml.
+      - name: Write submit credentials into eas.json
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const p = "eas.json";
+            const json = JSON.parse(fs.readFileSync(p, "utf8"));
+            json.submit = json.submit || {};
+            json.submit.production = json.submit.production || {};
+            json.submit.production.ios = {
+              ...(json.submit.production.ios || {}),
+              ascApiKeyPath: "./AuthKey.p8",
+              ascApiKeyId: process.env.APP_STORE_CONNECT_KEY_ID,
+              ascApiKeyIssuerId: process.env.APP_STORE_CONNECT_ISSUER_ID,
+            };
+            fs.writeFileSync(p, JSON.stringify(json, null, 2) + "\n");
+          '
+
+      # The exact binary the macOS job compiled — not a rebuild. Rebuilding
+      # would produce a different CFBundleVersion and defeat the "Compute
+      # unique build number" step's uniqueness guarantee.
+      - name: Download .ipa artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: worldquest-ios-ipa
+          path: build
+
+      - name: Submit to TestFlight
+        run: |
+          eas submit \
+            --platform ios \
+            --profile production \
+            --path "$GITHUB_WORKSPACE/build/worldquest.ipa" \
+            --non-interactive
+
+      - name: Clean up API key
+        if: always()
+        run: rm -f AuthKey.p8
