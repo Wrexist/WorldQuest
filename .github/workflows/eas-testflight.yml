@@ -1,0 +1,173 @@
+name: iOS TestFlight
+
+# Build the Expo-managed iOS app on EAS's own build servers (no macOS runner needed
+# here — that's the whole point of EAS Build over a raw Xcode/Capacitor pipeline) and
+# submit the result to TestFlight via an App Store Connect API key.
+#
+# Modelled on Wrexist/Silicon-Tech-Tycoon's ios-testflight-capacitor.yml — same shape
+# (workflow_dispatch with a version input, a "verify required secrets" step before
+# anything expensive runs, an API-key .p8 decoded from a base64 secret, cleaned up
+# `if: always()`) — but this project is Expo-managed, not Capacitor, so the actual
+# build step is `eas build` against Expo's cloud rather than local `xcodebuild`
+# against a checked-in ios/ Xcode project. WorldQuest has no ios/ folder — EAS Build
+# generates the native project on its own servers, which is why `runs-on: ubuntu-latest`
+# is enough here where the Capacitor workflow needs `macos-26`.
+#
+# Required repository secrets  (Settings → Secrets and variables → Actions):
+#   EXPO_TOKEN                        An Expo access token (expo.dev → Account settings
+#                                      → Access tokens → Create). This is what lets
+#                                      `eas build`/`eas submit` run non-interactively in
+#                                      CI instead of prompting for a browser login.
+#   APP_STORE_CONNECT_KEY_ID          App Store Connect API key ID         (e.g. ABC123XYZ9)
+#                                      The key needs at least the App Manager role to
+#                                      submit builds; Admin also works.
+#   APP_STORE_CONNECT_ISSUER_ID       API key issuer ID                    (a UUID)
+#   APP_STORE_CONNECT_API_KEY_BASE64  base64 of the .p8 key file. Any of:
+#                                        macOS/Linux:  base64 -i AuthKey_XXXX.p8 | pbcopy
+#                                        Windows PS:   [Convert]::ToBase64String([IO.File]::ReadAllBytes('AuthKey_XXXX.p8')) | Set-Clipboard
+#                                      (The decode step below also accepts the raw .p8
+#                                      text pasted directly — same tolerant handling as
+#                                      the Capacitor workflow's key-install step.)
+#
+# None of these exist yet as of 2026-08-09 — there is no Apple Developer Program
+# membership, no App Store Connect app record, and no Expo access token on file. This
+# workflow is the destination those setup steps are aimed at, not a claim that a
+# TestFlight build has gone out. See docs/plan/device-pass.md and
+# docs/engineering/release-checklist.md for what's still open.
+
+on:
+  workflow_dispatch:
+    inputs:
+      submit_testflight:
+        description: "Submit the build to TestFlight after building"
+        required: false
+        default: true
+        type: boolean
+
+# The iOS build number bumps itself — `apps/mobile/eas.json`'s `production` profile
+# already sets `autoIncrement: true`, which EAS Build reads and increments on its own
+# servers. Nothing here needs to pass one in; a manual input would just be a second
+# source of truth that can disagree with the first.
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-testflight-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  testflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: apps/mobile
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Verify required secrets
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          API_KEY_B64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+        run: |
+          missing=()
+          [ -n "$EXPO_TOKEN" ]   || missing+=("EXPO_TOKEN")
+          [ -n "$KEY_ID" ]      || missing+=("APP_STORE_CONNECT_KEY_ID")
+          [ -n "$ISSUER_ID" ]   || missing+=("APP_STORE_CONNECT_ISSUER_ID")
+          [ -n "$API_KEY_B64" ] || missing+=("APP_STORE_CONNECT_API_KEY_BASE64")
+          if [ ${#missing[@]} -ne 0 ]; then
+            echo "::error::Missing required secret(s): ${missing[*]}. Add them under Settings → Secrets and variables → Actions. See the header comment in this file for what each one is and where it comes from."
+            exit 1
+          fi
+          echo "All required secrets are present."
+
+      # No `version:` here — same reasoning as ci.yml: package.json declares
+      # `packageManager: pnpm@9.15.0` and action-setup v4 refuses to run when both are set.
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+
+      - name: Install dependencies
+        working-directory: .
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install App Store Connect API key
+        # Same tolerant decode as the Capacitor workflow's key-install step: accepts a
+        # raw pasted .p8, Windows certutil's CRLF-wrapped base64, or a clean single-line
+        # base64, because different OSes produce different shapes and a build should not
+        # fail forty minutes in on a whitespace difference.
+        env:
+          API_KEY_B64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+        run: |
+          set -euo pipefail
+          KEY_PATH="$PWD/AuthKey.p8"
+          if printf '%s' "$API_KEY_B64" | grep -q 'BEGIN PRIVATE KEY'; then
+            printf '%s' "$API_KEY_B64" | tr -d '\r' > "$KEY_PATH"
+          else
+            printf '%s' "$API_KEY_B64" | tr -d '[:space:]' | openssl base64 -d -A > "$KEY_PATH"
+          fi
+          chmod 600 "$KEY_PATH"
+          if ! grep -q 'BEGIN PRIVATE KEY' "$KEY_PATH"; then
+            echo "::error::APP_STORE_CONNECT_API_KEY_BASE64 did not decode to a valid .p8 private key."
+            echo "::error::Set it to the base64 of your AuthKey_*.p8 file, or paste the .p8 text directly."
+            exit 1
+          fi
+          echo "Decoded a valid App Store Connect API key."
+
+      - name: Write submit credentials into eas.json
+        # ascApiKeyId / ascApiKeyIssuerId are identifiers, not secrets (Apple's own
+        # docs treat them as non-sensitive) — but they don't exist yet either, so they
+        # are not committed as placeholders. Written here at run time from the same
+        # secrets as the key itself, which keeps GitHub Secrets the single source of
+        # truth instead of splitting it across a committed file and the secret store.
+        env:
+          KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          node -e "
+            const fs = require('fs');
+            const path = 'eas.json';
+            const cfg = JSON.parse(fs.readFileSync(path, 'utf8'));
+            cfg.submit ??= {};
+            cfg.submit.production ??= {};
+            cfg.submit.production.ios = {
+              ...(cfg.submit.production.ios ?? {}),
+              ascApiKeyPath: './AuthKey.p8',
+              ascApiKeyId: process.env.KEY_ID,
+              ascApiKeyIssuerId: process.env.ISSUER_ID,
+            };
+            fs.writeFileSync(path, JSON.stringify(cfg, null, 2) + '\n');
+          "
+
+      - name: Build (EAS Build, production profile)
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          eas build \
+            --platform ios \
+            --profile production \
+            --non-interactive \
+            --wait
+
+      - name: Submit to TestFlight
+        if: inputs.submit_testflight
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas submit --platform ios --latest --non-interactive
+
+      - name: Clean up API key
+        if: always()
+        run: rm -f AuthKey.p8
