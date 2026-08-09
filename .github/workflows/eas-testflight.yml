@@ -98,6 +98,15 @@ jobs:
         working-directory: .
         run: pnpm install --frozen-lockfile
 
+      # eas-cli validates eas.json against a closed schema and rejects unknown keys.
+      # The local-build workflow hit that on its first run — a `$comment` key, caught
+      # only after a macOS runner had been paid for. Here it would burn EAS build
+      # credits instead. Seconds, and it fails before either.
+      # See docs/engineering/eas-build-profiles.md.
+      - name: Validate eas.json
+        working-directory: .
+        run: pnpm check:eas
+
       - name: Setup EAS
         uses: expo/expo-github-action@v8
         with:

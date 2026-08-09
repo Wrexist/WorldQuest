@@ -1,38 +1,14 @@
 {
-  "$comment": [
-    "Build profiles, so the one thing this project still needs — a session with a real",
-    "phone — is a single command rather than an afternoon of setup.",
-    "",
-    "`preview` is the one that matters: it produces an installable build (an .apk you",
-    "can sideload, an internal-distribution .ipa) without touching a store. That is the",
-    "profile that closes four Definition of Done boxes at once — runs on device,",
-    "performance on mid-tier Android, VoiceOver and TalkBack.",
-    "",
-    "Nothing here has been run. EAS builds on Expo's infrastructure and needs an",
-    "authenticated account, which this environment does not have. The config is written",
-    "from the documented schema and should be treated as a first draft until one build",
-    "has actually gone through — see docs/plan/device-pass.md.",
-    "",
-    "2026-08-09: ../../.github/workflows/eas-testflight.yml runs `production` and submits",
-    "it to TestFlight non-interactively. It needs an EXPO_TOKEN and three",
-    "APP_STORE_CONNECT_* GitHub secrets that do not exist yet — see that file's header.",
-    "TestFlight is itself a reasonable way to run the device-pass checklist below on a",
-    "real iPhone (Isac has one) without a store review, but the checklist still has to",
-    "actually be walked on the device once a build lands there — a TestFlight install",
-    "nobody has opened is the same unverified state this file already warns about."
-  ],
   "cli": {
     "version": ">= 5.9.0",
     "appVersionSource": "local"
   },
   "build": {
     "development": {
-      "$comment": "A dev client, for iterating with Metro attached to a real device.",
       "developmentClient": true,
       "distribution": "internal"
     },
     "preview": {
-      "$comment": "The device-pass build. Installable, no store, production JS.",
       "distribution": "internal",
       "android": {
         "buildType": "apk"
@@ -45,18 +21,12 @@
       }
     },
     "preview-simulator": {
-      "$comment": "Same thing for an iOS Simulator, for whoever has a Mac.",
       "distribution": "internal",
       "ios": {
         "simulator": true
       }
     },
     "production": {
-      "$comment": [
-        "Store builds. Do not run this until the device pass has been done — shipping",
-        "an app nobody has opened on a phone is the specific thing the Definition of",
-        "Done exists to prevent."
-      ],
       "autoIncrement": true,
       "env": {
         "EXPO_PUBLIC_ENV": "production"
@@ -65,19 +35,6 @@
   },
   "submit": {
     "production": {
-      "$comment": [
-        "2026-08-09: the app record now exists in App Store Connect, so ascAppId is a real",
-        "value rather than a gap. `eas submit` uses it to know which app to upload to, and",
-        "scripts/next-build-number.mjs reads it to ask Apple for the highest build number",
-        "already on record — without it that script silently falls back to epoch seconds.",
-        "",
-        "ascApiKeyPath / ascApiKeyId / ascApiKeyIssuerId are deliberately NOT here. Both",
-        "TestFlight workflows write them into this file at runtime from GitHub secrets and",
-        "delete the key afterwards, so no credential is ever committed.",
-        "",
-        "appleTeamId is still unset. EAS resolves it from the authenticated session, and it",
-        "is not a secret — fill it in if a build ever fails to work it out."
-      ],
       "ios": {
         "ascAppId": "6799761965"
       }

@@ -17,9 +17,12 @@ npx eas build --profile preview --platform android   # .apk, sideload it
 npx eas build --profile preview --platform ios       # internal distribution
 ```
 
-`eas.json` is written from the documented schema and **has never been run** — this
-environment has no authenticated Expo account. Treat the first build as part of the
-task, not as setup that will obviously work.
+`eas.json` is written from the documented schema and **has never been run to
+completion** — this environment has no authenticated Expo account. Treat the first
+build as part of the task, not as setup that will obviously work. The first real
+attempt (2026-08-09, the TestFlight workflow) died on the config before compiling
+anything; what the profiles are for, and why the file carries no comments, is in
+[`docs/engineering/eas-build-profiles.md`](../engineering/eas-build-profiles.md).
 
 If you only have one device, do Android. It is the platform with the wider hardware
 spread, the worse average performance, and the accessibility service that behaves least
