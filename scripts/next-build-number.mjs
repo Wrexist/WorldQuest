@@ -169,7 +169,7 @@ async function fromAppStoreConnect() {
     log(
       'No ascAppId in apps/mobile/eas.json and ASC_APP_ID unset — skipping App Store ' +
         'Connect lookup. This is expected until an app record exists in App Store ' +
-        'Connect for com.worldquest.app.',
+        'Connect for com.wrexist.worldquest.',
     );
     return null;
   }
