@@ -88,7 +88,7 @@ const payload = {
   notificationType: 'DID_RENEW',
   notificationUUID: 'test-uuid-0001',
   signedDate: SIGNED_DATE,
-  data: { bundleId: 'com.worldquest.app', environment: 'Production' },
+  data: { bundleId: 'com.wrexist.worldquest', environment: 'Production' },
 }
 
 /**
@@ -102,7 +102,7 @@ const payload = {
 const transactionInfo = {
   originalTransactionId: '2000000000000001',
   transactionId: '2000000000000002',
-  bundleId: 'com.worldquest.app',
+  bundleId: 'com.wrexist.worldquest',
   environment: 'Production',
   purchaseDate: SIGNED_DATE - 30 * 86_400_000,
   expiresDate: SIGNED_DATE + 30 * 86_400_000,
@@ -121,7 +121,7 @@ const notificationFor = (over = {}, txOver = {}, txKey = 'leaf') => {
       signedDate: SIGNED_DATE,
       data: {
         appAppleId: 1234567890,
-        bundleId: 'com.worldquest.app',
+        bundleId: 'com.wrexist.worldquest',
         bundleVersion: '1',
         environment: 'Production',
         signedTransactionInfo: tx,
