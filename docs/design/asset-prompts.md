@@ -562,15 +562,37 @@ line, people, text
 > So `{SUBJECT}` should be **landform, not architecture** — which is also more honest for
 > a geography app, where the continent is the subject and a single building is a city.
 
-| Continent | `{SUBJECT}` |
-|---|---|
-| Europe | a range of alpine peaks with a fjord inlet |
-| Asia | a stepped mountain ridge with terraced foothills |
-| Africa | a flat-topped acacia beside rolling savanna |
-| North America | a canyon rim with mesa buttes |
-| South America | a high andean ridge above rainforest canopy |
-| Oceania | a coral atoll ring with palms |
-| Antarctica | a tabular iceberg and pressure ridges |
+| Continent | `{SUBJECT}` | Status |
+|---|---|---|
+| Europe | a range of alpine peaks with a fjord inlet | **drawn 2026-08-09** |
+| Asia | a stepped mountain ridge with terraced foothills | **drawn 2026-08-09** |
+| Africa | a flat-topped acacia beside rolling savanna | **drawn 2026-08-09** |
+| North America | a canyon rim with mesa buttes | **drawn 2026-08-09** |
+| South America | a high andean ridge above rainforest canopy | **drawn 2026-08-09** |
+| Oceania | a coral atoll ring with palms | **drawn 2026-08-09** |
+| Antarctica | a tabular iceberg and pressure ridges | not drawn — deferred, see §8a note on the seventh card |
+
+> **Delivered 2026-08-09, six of seven.** Generated via ChatGPT's web image tool
+> (Higgsfield credits were exhausted) using a variant of the style block above — solid
+> white shape on solid black, rather than white-on-transparent directly, because a flat
+> two-tone image is far more reliable to key by a plain luminance threshold than to trust
+> an AI background-removal pass on a graphic (non-photographic) shape. Each was
+> thresholded (white → opaque, black → transparent), cropped to its alpha bounding box,
+> and padded 8%, the same pipeline as `progress/globe.png` above. All six passed a
+> post-hoc check for stray colour (max channel spread ≤ 11/255 everywhere, i.e.
+> compression noise only, not real chroma) and for clean alpha (transparent at every
+> corner). Antarctica was **not** generated — §8a already says it isn't drawn until
+> non-country content exists to justify a seventh Explore card, and generating an asset
+> nothing references yet is exactly the kind of unreviewed inventory this repo tries not
+> to accumulate.
+>
+> **Path is a judgement call, not a spec.** This section never named a target path (unlike
+> `rewards/*.png` and `progress/globe.png`). Committed to
+> `docs/design/assets/continents-silhouette/{EU,AS,AF,NA,SA,OC}.png`, matching the
+> two-letter continent codes already used by `docs/design/assets/continents/{code}.png`
+> (the atmospheric sky masters this layer sits on top of, per the callout above). If that
+> convention is wrong, it's a one-line rename before `pnpm build:art` picks it up — nothing
+> else references the path yet.
 
 ## 9. Avatar set
 
@@ -623,13 +645,23 @@ Generate all twelve, varying `{DESCRIPTOR}` and keeping everything else identica
 | `rewards/heart.png` | `A rounded glossy red heart with a soft highlight, slightly three-dimensional, gently glowing. Friendly, not clinical.` |
 | `rewards/streak-freeze.png` | `A rounded flame encased in translucent pale-blue ice with soft frost crystals at its base. Preserved, protected, calm.` |
 | `rewards/xp-orb.png` | `A small rounded orb of soft signal-green light with a brighter core and a faint trailing wisp, as if drifting upward. Energetic, weightless, not a gem.` |
-| `progress/globe.png` **not yet drawn** | `A small rounded desk globe on a warm gold meridian arc and a short stand, tilted slightly, oceans in deep blue and land in soft green, lit warmly from the upper left with a gentle glow beneath. Friendly object, not a scientific model.` |
+| `progress/globe.png` **drawn 2026-08-09** | `A small rounded desk globe on a warm gold meridian arc and a short stand, tilted slightly, oceans in deep blue and land in soft green, lit warmly from the upper left with a gentle glow beneath. Friendly object, not a scientific model.` |
 
 > `progress/globe` is implied by a reference that puts a globe on the "Your world" card —
 > the one card in the app that reports how much of the world you know and currently
 > carries only a progress bar. **Draw generic landmasses or none**: a globe showing real
 > coastlines is the geometry rule in the never-generate table, and an invented coastline
 > in a geography app is a wrong fact whether or not anyone is quizzed on it.
+>
+> **Delivered 2026-08-09.** Higgsfield credits were exhausted (1.08 of 1.25 needed), so
+> this was generated instead via ChatGPT's web image tool against the exact prompt above,
+> background-removed with `rembg` (U2Net), then cropped to its alpha bounding box and
+> padded 8% at native resolution (1156×1156, 874.6 KB) — no downscale, because the 120 KB
+> budget in §1 applies to the `pnpm build:art`-derived `@3x` variant, not the master. The
+> generated landmasses are stylised blobs, not a real map projection, so the
+> never-real-coastlines rule holds. Committed to `docs/design/assets/rewards/globe.png`.
+> **`pnpm build:art` still needs to be run** to derive the in-app `@1x/@2x/@3x` variants —
+> there was no local Supabase/Node stack available in this session to run it.
 
 > `xp-orb` is new because XP is the most-awarded thing in the app and had no mark of
 > its own, so every XP number renders as bare type while coins and gems have artwork.

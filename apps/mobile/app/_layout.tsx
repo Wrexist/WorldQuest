@@ -26,19 +26,32 @@ import { t } from '../src/lib/i18n.js'
 import { useDeviceLocale } from '../src/lib/locale.js'
 import { QueryProvider } from '../src/lib/query.js'
 import { initCrashReporting } from '../src/lib/reporting.js'
+import { isConfigured } from '../src/lib/supabase.js'
+import { startFeatureFlagPolling } from '../src/lib/featureFlags.js'
 
 /**
  * At module scope, deliberately — not in an effect.
  *
  * This module is evaluated before React renders anything, so a crash in the very
- * first render is captured. An effect runs after that first render, which is exactly
- * the window where a bad font load or a corrupt storage read takes the app down, and
- * exactly the crash nobody would ever see reported.
+ * first render would be captured by whatever is behind `initCrashReporting`. An effect
+ * runs after that first render, which is exactly the window where a bad font load or a
+ * corrupt storage read takes the app down, and exactly the crash nobody would ever see
+ * reported.
  *
- * A no-op when `EXPO_PUBLIC_SENTRY_DSN` is unset, which is every build in this repo
- * so far. See lib/reporting.ts for why nothing is half-configured.
+ * Always a no-op as of 2026-08-09 — `@sentry/react-native` was removed to hold the
+ * 4 MiB bundle budget (see lib/reporting.ts header). The call stays so re-adding a
+ * transport later does not mean re-wiring this file.
  */
 initCrashReporting()
+
+/**
+ * Also at module scope, and also never torn down — same shape as the `NetInfo`
+ * subscription in `connectivity.ts`. This is a process-wide poll for the app's whole
+ * life, not a component concern, so there is nothing to clean up until the process
+ * exits. Guarded on `isConfigured()` so a fork with no Supabase project configured
+ * does not spend a request every five minutes on a call that can only fail.
+ */
+if (isConfigured()) startFeatureFlagPolling()
 
 /**
  * Sends a first-time user to onboarding, once.

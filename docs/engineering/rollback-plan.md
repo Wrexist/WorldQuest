@@ -97,8 +97,14 @@ So, before redeploying a previous edge-function revision:
 2. **Revert the edge functions first.** It is the only reversible layer, it is fast, and it
    is where grading lives.
 3. **Halt the rollout.** Staged rollout percentages exist in the plan
-   (`docs/plan/build-order.md`) and **the flag system to enforce them does not exist yet**
-   — see the gap below. Today "halt" means pulling the release in the store consoles.
+   (`docs/plan/build-order.md`), and as of 2026-08-09 there is a flag system to enforce
+   them — `supabase/migrations/20260809090000_create_feature_flags.sql` and
+   `apps/mobile/src/lib/featureFlags.ts`. Setting a flag's `enabled` to `false` (or its
+   `rollout_percent` to `0`) in the `feature_flags` table reaches a foregrounded,
+   online device within one poll interval (5 minutes) — no store console, no new
+   binary. Pulling the release in the store consoles is still the right move for
+   anything the flag system does not cover, which today is everything already built
+   before this system existed and never wrapped in a flag.
 4. **Decide on the database.** If a migration is implicated, write the compensating
    migration. If it is not, change nothing — a database change made in a hurry during an
    incident is how a recoverable release becomes an unrecoverable one.
@@ -109,15 +115,20 @@ So, before redeploying a previous edge-function revision:
 
 ## What this plan cannot do yet, and who it blocks
 
-Two dependencies are named in the release checklist and are not built. This plan is
-written assuming they will be, and says plainly what it means until then:
+One dependency named in the release checklist is still not built; the other resolved
+2026-08-09:
 
-- **No feature flags.** There is no way to stage a rollout or to turn a feature off
-  without shipping a new binary. Until there is, every release is 100 % on arrival, and
-  step 3 above degrades to "pull it from the store" — which takes hours and does not help
-  users who already updated.
-- **No telemetry.** No Sentry DSN, no analytics backend, 18 of 28 events wired. Step 1 is
-  currently "wait for a user to complain", which is not a detection strategy.
+- ~~**No feature flags.**~~ **Built, 2026-08-09** — see step 3 above. A release that
+  wraps its risky surface in a flag can be halted in minutes; a release built without
+  one is still 100 % on arrival the moment it ships, because the flag system can only
+  gate code that was written to check it. New risky work should default to shipping
+  behind a flag from now on, not because the checklist asks but because "we could not
+  halt this" is a choice made at write time, not at incident time.
+- **No telemetry.** No Sentry DSN, no analytics backend, 18 of 28 events wired. Sentry
+  was in fact built and then removed on 2026-08-09 to hold the 4 MiB bundle budget (see
+  `docs/plan/cowork-handoff.md` §6) — so this is now "no telemetry, by a decision" where
+  it was previously "no telemetry, not yet built". Step 1 is currently "wait for a user
+  to complain", which is not a detection strategy.
 
 Neither is a reason not to have this plan. Both are reasons the first release should be
 small.
@@ -125,5 +136,12 @@ small.
 ## The person
 
 A rollback needs someone empowered to decide, available for 48 hours after each release.
-**This is not assigned.** It is a name, not a task, and it cannot be filled in by anyone
-reading the repo — see `docs/plan/cowork-handoff.md`.
+
+**Isac Molin (isacmolin@gmail.com) — named 2026-08-09.** He confirmed this directly
+(not inferred from the repo, which is the reason this section sat unfilled — see
+`docs/plan/cowork-handoff.md` §6). Re-confirm availability before each release; a name
+here is a default reachable person, not a standing guarantee for every release window.
+
+He is also the owner of record for every "built but unverified" row in
+`docs/plan/definition-of-done-status.md` and every outstanding waiver in this plan set,
+until a specific item is reassigned in writing.

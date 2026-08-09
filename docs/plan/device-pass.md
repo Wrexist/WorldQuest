@@ -136,7 +136,13 @@ size is the one cause you can rule out on the way in.
 - [ ] The lesson works in aeroplane mode — content ships in the binary — and the queue
       drains when you turn it back on.
 
-## 7 · Sentry
+## 7 · Sentry — **removed 2026-08-09, this section is paused**
+
+`@sentry/react-native` was removed to hold the 4 MiB bundle budget rather than raise it
+(see `apps/mobile/src/lib/reporting.ts` and `docs/plan/cowork-handoff.md` §6). There is
+no transport to round-trip today — skip this section until a transport is re-added,
+which needs both a real Sentry account and a fresh look at the budget with real
+numbers. The rest of this document is unaffected.
 
 The only remaining box that is not about the device.
 

@@ -294,7 +294,7 @@ CI fails on a hardcoded hex colour, a raw user-facing string, or a magic economy
 | Cold start → interactive Home | < 2.0 s (mid-tier Android) |
 | Lesson item transition | < 100 ms |
 | Frame rate during animation | ≥ 58 fps |
-| JS bundle (mobile, initial) | < 4 MB — **the enforced gate says 6.0 and the bundle is 5.93, both in MiB; see `docs/plan/cowork-handoff.md` §6.** Neither the value nor its unit is changed here: rewriting 4 MB as 4 MiB would invent a stricter target (3.81 MiB) that nobody set, and which number is real is a decision rather than a typo. |
+| JS bundle (mobile, initial) | < 4.1 MiB — **resolved 2026-08-09, measured for real the same day.** The gate and this row disagreed (gate 6.0, bundle 5.93) because `@sentry/react-native` cost 1.92 MiB and raised the enforced number rather than the documented one. Isac decided to hold ~4 and drop Sentry (no account existed for it yet). The first pass set the gate to 4.0 MiB by arithmetic (5.93 − 1.92); a real `pnpm install` + `pnpm bundle:native` run later the same day measured **4.07 MiB** — a hair over — so `scripts/bundle-native.cjs` now enforces **4.1 MiB**, with the real number and the reason recorded in that file's own history comment. See `docs/plan/cowork-handoff.md` §6 for the original decision and `apps/mobile/src/lib/reporting.ts` for what replaced Sentry. |
 | Offline lesson start | works with **zero** network |
 
 ---

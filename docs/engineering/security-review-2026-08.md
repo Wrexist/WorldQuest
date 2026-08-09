@@ -111,16 +111,19 @@ process changing the language of their own copy of the app.
 harness, which is more machinery than the risk justifies today. Recorded so the decision
 is visible rather than discovered.
 
-### ⚠️ 2 · Sentry's round trip has never happened
+### ⚠️ 2 · Sentry's round trip has never happened — **superseded 2026-08-09**
 
-`Sentry.init` only runs with `EXPO_PUBLIC_SENTRY_DSN` set, and no DSN exists in any
-environment reachable from here. So the PII-free property above is proven by the type
-system and **not** by observing a single event. The first real DSN is the first time
-anyone learns whether the transport works at all.
+At review time, `Sentry.init` only ran with `EXPO_PUBLIC_SENTRY_DSN` set, and no DSN
+existed in any environment reachable from here, so the PII-free property above was
+proven by the type system and not by observing a single event.
 
-This is item 4 on the release checklist wearing a different hat: no beta, no crash-free
-number, no evidence the reporting path functions end to end. It belongs in the device
-pass, not in code review.
+**`@sentry/react-native` has since been removed entirely**, to hold the 4 MiB bundle
+budget rather than raise it to fit the SDK's 1.92 MiB (`docs/plan/cowork-handoff.md`
+§6). There is no round trip to verify because there is no transport. The PII-free
+*type* contract and the `scrub()` function this finding is about are unchanged and
+still tested in `apps/mobile/src/lib/reporting.ts` — they apply again immediately if a
+transport is re-added, which is the point of keeping them. Recommendation 1 below is
+paused, not satisfied, until that happens.
 
 ---
 
@@ -136,9 +139,10 @@ pass, not in code review.
 
 ## Recommendations, in order
 
-1. **Before any beta:** set a Sentry DSN in a staging build and confirm one event
-   arrives with no message field. That closes finding 2 and unblocks the crash-free
-   measurement the release checklist wants.
+1. **Before any beta:** ~~set a Sentry DSN in a staging build~~ — moot until a crash
+   transport is re-added (see finding 2). If/when it is: set a DSN in a staging build
+   and confirm one event arrives with no message field. That closes finding 2 and
+   unblocks the crash-free measurement the release checklist wants.
 2. **Before submission:** run the RLS suite against the deployed project, not only
    locally — using **two dedicated test accounts holding synthetic data**, or a staging
    project. Not two production accounts: a cross-user authorisation test is by

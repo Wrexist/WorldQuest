@@ -2,17 +2,19 @@
  * The privacy guarantee, asserted.
  *
  * `docs/plan/device-pass.md`: "Confirm the payload carries no message text ... That
- * property already holds; do not let the Sentry integration undo it."
+ * property already holds; do not let a future transport undo it."
  *
  * Most of it is enforced by the type system and therefore cannot be tested at runtime
- * — that is the point of putting it there. What CAN regress is `scrub`, which handles
- * the events the SDK captures on its own, and the rule that nothing initialises
- * without a DSN. Those are what these cover.
+ * — that is the point of putting it there. What CAN regress is `scrub`, which is what
+ * would handle events a transport SDK captures on its own, and the rule that reporting
+ * stays a no-op until something real is wired up. Those are what these cover.
+ *
+ * As of 2026-08-09 there is no transport behind `setCrashSink` — see the header of
+ * `reporting.ts` for why `@sentry/react-native` was removed. `scrub` has no caller
+ * today; it is tested anyway because it must work immediately if a transport returns.
  */
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 import {
   __resetCrashSinkForTests,
   initCrashReporting,
@@ -20,10 +22,6 @@ import {
   scrub,
   setCrashSink,
 } from './reporting.js'
-
-const source = readFileSync(join(import.meta.dirname, 'reporting.ts'), 'utf8')
-/** Source with commentary stripped — the header discusses every banned option by name. */
-const code = source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '')
 
 afterEach(() => {
   __resetCrashSinkForTests()
@@ -55,13 +53,13 @@ describe('reportCrash', () => {
 })
 
 describe('initCrashReporting', () => {
-  it('does nothing without a DSN, rather than half-configuring', () => {
+  it('is always a no-op — there is no transport to wire up', () => {
     // There must be no state where the app believes it is reporting and is not.
     expect(initCrashReporting(undefined)).toBe(false)
-    expect(initCrashReporting('')).toBe(false)
+    expect(initCrashReporting('a-dsn-would-not-matter')).toBe(false)
   })
 
-  it('leaves the console sink in place when there is no DSN', () => {
+  it('leaves the console sink in place', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     initCrashReporting(undefined)
     reportCrash({ domain: 'startup', name: 'Error', isFatal: true })
@@ -110,38 +108,5 @@ describe('scrub — the half the type system cannot reach', () => {
 
   it('does not choke on an event with no exception', () => {
     expect(() => scrub({ level: 'error' })).not.toThrow()
-  })
-})
-
-describe('the Sentry options that are privacy decisions', () => {
-  // Asserted against the SOURCE, because turning any of these on would not fail a
-  // runtime test — it would just quietly start collecting. Comments are stripped
-  // first: this repo has three times shipped a check that matched its own prose.
-  it('never sends default PII', () => {
-    expect(code).toMatch(/sendDefaultPii:\s*false/)
-  })
-
-  it('collects no breadcrumbs', () => {
-    expect(code).toMatch(/maxBreadcrumbs:\s*0/)
-  })
-
-  it('captures no screen content', () => {
-    expect(code).toMatch(/attachScreenshot:\s*false/)
-    expect(code).toMatch(/attachViewHierarchy:\s*false/)
-  })
-
-  it('enables no session replay', () => {
-    expect(code).not.toMatch(/replaysSessionSampleRate|replaysOnErrorSampleRate|mobileReplay/)
-  })
-
-  it('routes every event through the scrubber', () => {
-    expect(code).toMatch(/beforeSend:\s*\(event\)\s*=>\s*scrub\(event\)/)
-  })
-
-  it('sends no message field on the events it constructs itself', () => {
-    // `captureEvent` is ours; if a `message:` ever appears in it, the type guarantee
-    // has been routed around.
-    const captured = code.slice(code.indexOf('captureEvent'), code.indexOf('return true'))
-    expect(captured).not.toMatch(/message:/)
   })
 })

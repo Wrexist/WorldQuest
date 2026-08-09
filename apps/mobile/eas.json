@@ -11,7 +11,15 @@
     "Nothing here has been run. EAS builds on Expo's infrastructure and needs an",
     "authenticated account, which this environment does not have. The config is written",
     "from the documented schema and should be treated as a first draft until one build",
-    "has actually gone through — see docs/plan/device-pass.md."
+    "has actually gone through — see docs/plan/device-pass.md.",
+    "",
+    "2026-08-09: ../../.github/workflows/eas-testflight.yml runs `production` and submits",
+    "it to TestFlight non-interactively. It needs an EXPO_TOKEN and three",
+    "APP_STORE_CONNECT_* GitHub secrets that do not exist yet — see that file's header.",
+    "TestFlight is itself a reasonable way to run the device-pass checklist below on a",
+    "real iPhone (Isac has one) without a store review, but the checklist still has to",
+    "actually be walked on the device once a build lands there — a TestFlight install",
+    "nobody has opened is the same unverified state this file already warns about."
   ],
   "cli": {
     "version": ">= 5.9.0",
