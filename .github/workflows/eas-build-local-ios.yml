@@ -155,23 +155,21 @@ jobs:
       - name: Verify
         run: pnpm verify
 
-      # ADVISORY, never fatal. check:eas above proves app.json NAMES a project;
-      # this proves EXPO_TOKEN can actually SEE it. A token scoped to the wrong
-      # account, or revoked, fails the build on the 10x runner with a project
-      # error that reads exactly like a config error — this separates the two,
-      # in seconds, at 1x. It does not gate: eas-cli's build-time resolution is
-      # not guaranteed to be identical to project:info's, and a preflight that
-      # blocks a build which would have worked is worse than no preflight.
-      - name: Probe EAS project access (advisory)
-        continue-on-error: true
-        working-directory: apps/mobile
+      # check:eas above proves app.json NAMES a project. This asks EAS whether
+      # that project can actually sign a store build — the one prerequisite
+      # nothing in the repo can satisfy, because `eas build --non-interactive`
+      # refuses to mint a distribution certificate and will simply fail on the
+      # 10x runner after the compile is paid for.
+      #
+      # It also, incidentally, proves EXPO_TOKEN can see the project: a token
+      # scoped to the wrong account cannot read it.
+      #
+      # Fails only on a definite answer from EAS. No token, no network, an
+      # unexpected shape — it warns and passes. See the script's header.
+      - name: Check iOS signing credentials
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: |
-          npx --yes eas-cli@latest project:info --non-interactive || {
-            echo "::warning::EXPO_TOKEN could not read the EAS project pinned in apps/mobile/app.json (@isacm/worldquest). Check the token belongs to the isacm account and has not been revoked; if the macOS build fails with a project error, this is why."
-            exit 1
-          }
+        run: node scripts/check-ios-credentials.mjs
 
   # ---- Expensive COMPILE on macOS (submission is a separate ubuntu job) ----
   build-ios:

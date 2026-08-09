@@ -107,6 +107,17 @@ jobs:
         working-directory: .
         run: pnpm check:eas
 
+      # A store build needs an Apple distribution certificate and an App Store
+      # provisioning profile, and `eas build --non-interactive` will not create
+      # them — it fails. Here that failure would land after the build credits
+      # were already committed. Asks EAS directly; fails only on a definite
+      # answer. See scripts/check-ios-credentials.mjs.
+      - name: Check iOS signing credentials
+        working-directory: .
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: node scripts/check-ios-credentials.mjs
+
       - name: Setup EAS
         uses: expo/expo-github-action@v8
         with:
