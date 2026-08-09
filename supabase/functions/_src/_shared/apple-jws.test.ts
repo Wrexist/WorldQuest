@@ -133,7 +133,7 @@ describe('all three layers together, on a real notification', () => {
           signedDate: jws.payload['signedDate'] as number,
         },
         {
-          bundleId: 'com.worldquest.app',
+          bundleId: 'com.wrexist.worldquest',
           environment: 'production',
           now: jws.payload['signedDate'] as number,
           maxAgeMs: 3 * 86_400_000,

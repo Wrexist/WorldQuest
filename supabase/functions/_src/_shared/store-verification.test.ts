@@ -102,12 +102,12 @@ describe('the certificate chain', () => {
 
 describe('the claims, once the signature is known to be good', () => {
   const policy: ClaimPolicy = {
-    bundleId: 'com.worldquest.app',
+    bundleId: 'com.wrexist.worldquest',
     environment: 'production',
     now: NOW,
     maxAgeMs: 3 * 86_400_000,
   }
-  const claims = { bundleId: 'com.worldquest.app', environment: 'Production', signedDate: NOW - 1000 }
+  const claims = { bundleId: 'com.wrexist.worldquest', environment: 'Production', signedDate: NOW - 1000 }
 
   it('accepts a genuine, current notification about this app', () => {
     expect(verifyClaims(claims, policy)).toBeNull()

@@ -20,7 +20,7 @@ const fixtures = JSON.parse(
 
 const POLICY: AppleVerifyPolicy = {
   rootFingerprint: fixtures['rootFingerprint']!,
-  bundleId: 'com.worldquest.app',
+  bundleId: 'com.wrexist.worldquest',
   environment: 'production',
   // The fixtures are signed at a fixed instant; verifying "now" is that instant, so the
   // replay window is exercised rather than accidentally satisfied.

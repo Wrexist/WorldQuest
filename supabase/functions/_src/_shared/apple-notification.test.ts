@@ -15,7 +15,7 @@ const payload = {
   notificationType: 'DID_RENEW',
   notificationUUID: 'apple-uuid-0001',
   signedDate: 1_785_000_000_000,
-  data: { bundleId: 'com.worldquest.app', environment: 'Production' },
+  data: { bundleId: 'com.wrexist.worldquest', environment: 'Production' },
 }
 
 const transaction = {
