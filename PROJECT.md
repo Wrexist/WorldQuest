@@ -294,7 +294,7 @@ CI fails on a hardcoded hex colour, a raw user-facing string, or a magic economy
 | Cold start → interactive Home | < 2.0 s (mid-tier Android) |
 | Lesson item transition | < 100 ms |
 | Frame rate during animation | ≥ 58 fps |
-| JS bundle (mobile, initial) | < 4 MB |
+| JS bundle (mobile, initial) | < 4 MB — **the enforced gate says 6.0 and the bundle is 5.93, both in MiB; see `docs/plan/cowork-handoff.md` §6.** Neither the value nor its unit is changed here: rewriting 4 MB as 4 MiB would invent a stricter target (3.81 MiB) that nobody set, and which number is real is a decision rather than a typo. |
 | Offline lesson start | works with **zero** network |
 
 ---
