@@ -38,19 +38,68 @@ Accounts you have permissions to create projects in: isacm
 and eas-cli will not pick an owning account on your behalf — reasonably, since
 picking wrong creates a project in a stranger's account.
 
-`expo.owner` is now `"isacm"`, read from that run's own output rather than assumed.
-That alone is sufficient. Both workflows additionally run `eas init
---non-interactive --force` before building, which resolves and writes
-`extra.eas.projectId` into the working-tree `app.json` so build and submit agree on
-the project; the step is `continue-on-error: true`, because `owner` is the
-documented alternative and a hiccup in a belt-and-braces step should not cost a
-whole run.
+`apps/mobile/app.json` now pins both:
 
-**The better end state is a committed `extra.eas.projectId`**, which removes the
-resolution step entirely. That needs one authenticated `eas init` from a machine
-with an Expo login — no environment that has worked on this repo has had one.
-`scripts/check-eas-config.ts` accepts either, so committing the id later is a
-straight improvement and breaks nothing.
+```json
+"owner": "isacm",
+"extra": { "eas": { "projectId": "faee125b-31bf-4724-be04-c94f4c096f9b" } }
+```
+
+The EAS project `@isacm/worldquest` was created on 2026-08-09; `owner` must stay
+`isacm` because that is the account `EXPO_TOKEN` has rights to.
+
+**Neither workflow runs `eas init`, on purpose.** `eas init` *writes* these two
+values, and a CI runner's working tree is discarded at the end of the job — so an
+init-based setup would re-resolve the project on every run and could bind a build to
+a different project with nothing in the diff to show for it. Pinned, the mapping is
+reviewable and identical on every machine.
+
+`scripts/check-eas-config.ts` fails `pnpm verify` if `owner` and `projectId` both go
+missing, so run #2's failure cannot come back.
+
+## The one thing no check here can verify: iOS signing
+
+A `production` build is a **store** build, and a store build has to be signed with an
+Apple **distribution certificate** and an **App Store provisioning profile**. Those
+live on Apple's side and in EAS's credential store — not in this repo, and not in
+anything `pnpm verify` can read.
+
+`eas build --non-interactive` will not create them for you. If the EAS project has
+no iOS credentials yet, the build fails on the macOS runner with a credentials
+error, and no amount of config in this repo prevents that.
+
+**The fix is one interactive session, once, from a machine with an Apple Developer
+login:**
+
+```bash
+cd apps/mobile
+eas credentials            # iOS → production → set up a distribution certificate
+                           # and an App Store provisioning profile
+```
+
+EAS stores them against the project and every later CI build reuses them. It needs
+the Apple ID that owns the Apple Developer Program membership for
+`com.wrexist.worldquest`, which is why it cannot be done from CI or from an agent
+session.
+
+The advisory probe in `eas-build-local-ios.yml`'s cheap job checks the neighbouring
+question — whether `EXPO_TOKEN` can see the project at all — because a token scoped
+to the wrong account produces an error that reads almost identically.
+
+## Readiness, as of 2026-08-09
+
+| Thing | State |
+|---|---|
+| `eas.json` schema | ✅ valid, guarded by `pnpm check:eas` |
+| EAS project link (`owner` + `projectId`) | ✅ pinned to `@isacm/worldquest`, guarded |
+| `EXPO_TOKEN` | ✅ present (run #2 authenticated) |
+| `APP_STORE_CONNECT_*` secrets | ✅ present — run #2's build number came back as `1` from a live App Store Connect lookup |
+| App Store Connect app record | ✅ `ascAppId 6799761965` |
+| iOS bundle id | ✅ `com.wrexist.worldquest` — **must match** the ASC record, unverified from here |
+| Privacy manifest, icons, splash | ✅ in `app.json` |
+| iOS JS bundle | ✅ `pnpm bundle:native` compiles both platforms |
+| **Apple signing credentials** | ❓ **unverified — the likely next failure. See above.** |
+| A human has opened the build on a phone | ❌ [`device-pass.md`](../plan/device-pass.md) |
 
 ---
 

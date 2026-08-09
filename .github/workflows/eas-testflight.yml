@@ -98,12 +98,12 @@ jobs:
         working-directory: .
         run: pnpm install --frozen-lockfile
 
-      # eas-cli validates eas.json against a closed schema and rejects unknown keys.
-      # The local-build workflow hit that on its first run — a `$comment` key, caught
-      # only after a macOS runner had been paid for. Here it would burn EAS build
-      # credits instead. Seconds, and it fails before either.
-      # See docs/engineering/eas-build-profiles.md.
-      - name: Validate eas.json
+      # eas-cli validates eas.json against a closed schema and rejects unknown keys,
+      # and it needs app.json to name the EAS project. The local-build workflow hit
+      # both, on consecutive runs, each time only after a macOS runner had been paid
+      # for. Here they would burn EAS build credits instead. Seconds, and it fails
+      # before either. See docs/engineering/eas-build-profiles.md.
+      - name: Validate EAS config
         working-directory: .
         run: pnpm check:eas
 
@@ -161,16 +161,10 @@ jobs:
             fs.writeFileSync(path, JSON.stringify(cfg, null, 2) + '\n');
           "
 
-      # Same requirement as the local workflow: `eas build --non-interactive`
-      # needs a project ID, and will not choose an owning account for you.
-      # apps/mobile/app.json declares `owner`, which is enough on its own —
-      # this resolves and writes extra.eas.projectId as well, so build and
-      # submit agree. Non-fatal for the same reason as over there.
-      - name: Link EAS project
-        continue-on-error: true
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: eas init --non-interactive --force
+      # No `eas init` step, deliberately: apps/mobile/app.json pins `owner` and
+      # `extra.eas.projectId`, so `eas build --non-interactive` resolves the
+      # project straight from the checkout. Same reasoning as the local
+      # workflow — see that file, and app.json's own $comment.
 
       - name: Build (EAS Build, production profile)
         env:
