@@ -98,14 +98,25 @@ jobs:
         working-directory: .
         run: pnpm install --frozen-lockfile
 
-      # eas-cli validates eas.json against a closed schema and rejects unknown keys.
-      # The local-build workflow hit that on its first run — a `$comment` key, caught
-      # only after a macOS runner had been paid for. Here it would burn EAS build
-      # credits instead. Seconds, and it fails before either.
-      # See docs/engineering/eas-build-profiles.md.
-      - name: Validate eas.json
+      # eas-cli validates eas.json against a closed schema and rejects unknown keys,
+      # and it needs app.json to name the EAS project. The local-build workflow hit
+      # both, on consecutive runs, each time only after a macOS runner had been paid
+      # for. Here they would burn EAS build credits instead. Seconds, and it fails
+      # before either. See docs/engineering/eas-build-profiles.md.
+      - name: Validate EAS config
         working-directory: .
         run: pnpm check:eas
+
+      # A store build needs an Apple distribution certificate and an App Store
+      # provisioning profile, and `eas build --non-interactive` will not create
+      # them — it fails. Here that failure would land after the build credits
+      # were already committed. Asks EAS directly; fails only on a definite
+      # answer. See scripts/check-ios-credentials.mjs.
+      - name: Check iOS signing credentials
+        working-directory: .
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: node scripts/check-ios-credentials.mjs
 
       - name: Setup EAS
         uses: expo/expo-github-action@v8
@@ -160,6 +171,11 @@ jobs:
             };
             fs.writeFileSync(path, JSON.stringify(cfg, null, 2) + '\n');
           "
+
+      # No `eas init` step, deliberately: apps/mobile/app.json pins `owner` and
+      # `extra.eas.projectId`, so `eas build --non-interactive` resolves the
+      # project straight from the checkout. Same reasoning as the local
+      # workflow — see that file, and app.json's own $comment.
 
       - name: Build (EAS Build, production profile)
         env:

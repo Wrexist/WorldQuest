@@ -31,6 +31,13 @@ name: iOS TestFlight (local build · no cloud credits)
 #     workflow already documents. All four (EXPO_TOKEN plus the three
 #     APP_STORE_CONNECT_* ones) do not exist yet as of 2026-08-09 — see
 #     eas-testflight.yml's header for how to create them.
+#   - iOS SIGNING is the one prerequisite none of the gates below can check.
+#     A production build needs an Apple distribution certificate and an App
+#     Store provisioning profile, which live in EAS's credential store, and
+#     `eas build --non-interactive` will not create them. If a run fails on
+#     credentials, someone with the Apple Developer login for
+#     com.wrexist.worldquest has to run `eas credentials` once from
+#     apps/mobile — see docs/engineering/eas-build-profiles.md.
 #   - EAS_SKIP_AUTO_FINGERPRINT is carried over from DeepLifeSimulator (where
 #     it works around a real @expo/fingerprint crash) but is unverified here:
 #     WorldQuest has no expo-updates dependency at all, so EAS's fingerprint
@@ -82,9 +89,10 @@ jobs:
         with:
           persist-credentials: false
 
-      # eas.json is validated by `pnpm verify` below (scripts/check-eas-json.ts):
-      # eas-cli rejects unknown keys, and run #1 of this workflow died on a
-      # `$comment` key on the macOS runner, after the bill, having compiled
+      # Both EAS config files are validated by `pnpm verify` below
+      # (scripts/check-eas-config.ts). Run #1 of this workflow died on a
+      # `$comment` key in eas.json and run #2 on a missing project id in
+      # app.json — both on the macOS runner, after the bill, having compiled
       # nothing. See docs/engineering/eas-build-profiles.md.
 
       # Fail fast if the requested marketing version isn't a full
@@ -147,24 +155,21 @@ jobs:
       - name: Verify
         run: pnpm verify
 
-      # ADVISORY, never fatal. apps/mobile/app.json declares no
-      # extra.eas.projectId and no owner, so EAS resolves the project from the
-      # authenticated account and the `worldquest` slug. That resolution is the
-      # next thing that can fail in --non-interactive mode, and it would fail on
-      # the 10x runner. Probing it here is free and tells you before the bill —
-      # but it does NOT gate the build: eas-cli's build-time resolution is not
-      # guaranteed to be identical to project:info's, and a preflight that
-      # blocks a build which would have worked is worse than no preflight.
-      - name: Probe EAS project link (advisory)
-        continue-on-error: true
-        working-directory: apps/mobile
+      # check:eas above proves app.json NAMES a project. This asks EAS whether
+      # that project can actually sign a store build — the one prerequisite
+      # nothing in the repo can satisfy, because `eas build --non-interactive`
+      # refuses to mint a distribution certificate and will simply fail on the
+      # 10x runner after the compile is paid for.
+      #
+      # It also, incidentally, proves EXPO_TOKEN can see the project: a token
+      # scoped to the wrong account cannot read it.
+      #
+      # Fails only on a definite answer from EAS. No token, no network, an
+      # unexpected shape — it warns and passes. See the script's header.
+      - name: Check iOS signing credentials
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: |
-          npx --yes eas-cli@latest project:info --non-interactive || {
-            echo "::warning::EAS could not resolve a project for slug 'worldquest'. If the macOS build fails with a project-configuration error, run \`eas init\` locally once and commit the resulting extra.eas.projectId in apps/mobile/app.json."
-            exit 1
-          }
+        run: node scripts/check-ios-credentials.mjs
 
   # ---- Expensive COMPILE on macOS (submission is a separate ubuntu job) ----
   build-ios:
@@ -204,6 +209,15 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
+
+      # Run #2 died right here with "EAS project not configured." There is
+      # deliberately no `eas init` step to fix that: apps/mobile/app.json now
+      # pins both `owner` and `extra.eas.projectId`, so the project is resolved
+      # from the checkout and nothing needs to derive it. `eas init` WRITES
+      # those two values, and a runner's working tree is discarded at the end
+      # of the job — so an init-based setup would re-resolve on every run and
+      # could bind a build to a different project without anyone seeing it.
+      # Pinned, the mapping is reviewable in a diff. See that file's $comment.
 
       - name: Show Xcode version
         run: |
@@ -336,6 +350,11 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
+
+      # This job checks the repo out fresh and `eas submit` resolves the
+      # project too — which is exactly why the projectId is committed in
+      # app.json rather than derived per job. Both jobs read the same pinned
+      # value; neither has to agree with the other about anything.
 
       # Tolerant decode: accepts APP_STORE_CONNECT_API_KEY_BASE64 as a raw
       # PEM, a Windows-CRLF-mangled base64 paste, or clean base64 — the exact

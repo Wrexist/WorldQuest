@@ -61,6 +61,16 @@
       "typedRoutes": false
     },
     "$comment": [
+      "`owner` is the Expo account that owns the EAS project — not cosmetic. Without it",
+      "and without an extra.eas.projectId, `eas build --non-interactive` cannot tell which",
+      "account should own a project for the slug `worldquest` and refuses to guess:",
+      "\"EAS project not configured\", which is where the 2026-08-09 TestFlight run died,",
+      "on a 10x-billed macOS runner. The value is read from that run's own output",
+      "(\"Accounts you have permissions to create projects in: isacm\") rather than assumed.",
+      "Both are now pinned — see the 2026-08-09 note further down for why they are",
+      "hardcoded rather than resolved by `eas init` on each run. scripts/check-eas-config.ts",
+      "fails `pnpm verify` if either one goes missing again.",
+      "",
       "backgroundColor is colors.bg.canvas from packages/design/tokens.json. It is",
       "duplicated here because the native splash and window background are set before",
       "any JavaScript runs, so they cannot read a token. If the canvas colour changes,",
