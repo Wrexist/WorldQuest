@@ -2,6 +2,7 @@
   "expo": {
     "name": "WorldQuest",
     "slug": "worldquest",
+    "owner": "isacm",
     "scheme": "worldquest",
     "version": "0.1.0",
     "orientation": "portrait",
@@ -96,11 +97,30 @@
       "layout in this app has been built and measured at 320/390/768 in portrait; turning",
       "landscape on would ship an orientation nothing has ever rendered. The honest",
       "position is tablet-in-portrait, and definition-of-done-status.md now says that",
-      "rather than claiming tablet support in general."
+      "rather than claiming tablet support in general.",
+      "",
+      "2026-08-09: `owner` and `extra.eas.projectId` are what make a build possible at all.",
+      "Without them `eas build` stops before it compiles anything:",
+      "",
+      "  EAS project not configured. To configure it non-interactively, choose the",
+      "  account that should own the project and run: eas init --account <name>",
+      "",
+      "which is exactly what the first TestFlight run hit. They are deliberately hardcoded",
+      "rather than left to `eas init`: init WRITES these two values into this file, and a",
+      "CI runner's working tree is thrown away at the end of the job, so an init-based",
+      "setup would re-resolve the project on every run and could silently bind a build to",
+      "the wrong project. Pinned here, the mapping is reviewable in a diff and identical",
+      "on every machine. The projectId is the EAS project @isacm/worldquest; `owner` must",
+      "stay `isacm` because that is the account EXPO_TOKEN has rights to."
     ],
     "primaryColor": "#FFC800",
     "runtimeVersion": {
       "policy": "appVersion"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "faee125b-31bf-4724-be04-c94f4c096f9b"
+      }
     }
   }
 }
