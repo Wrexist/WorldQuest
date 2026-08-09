@@ -68,6 +68,25 @@ the payload still has to be accepted.
 Practical consequence: **never change the submission payload shape and the grading logic
 in the same release.**
 
+And because that rule can only be obeyed going forward, reverting has to assume it was
+once broken. `lessons.id` dedupes on replay, which stops a double award — it does **not**
+make an old function able to parse a new payload. A revert that lands on a function which
+rejects the payloads currently sitting in users' queues turns queued lessons into parked
+ones, which is the failure this whole subsystem exists to prevent.
+
+So, before redeploying a previous edge-function revision:
+
+1. **Contract-test it against a payload the current client produces.** Take a real queued
+   submission shape, send it to the candidate revision in staging, and confirm it is
+   accepted rather than 4xx'd. This is a five-minute check that distinguishes a clean
+   revert from an outage for everyone on a train.
+2. **If it rejects them, do not revert blind.** Either keep a compatibility shim in front
+   of the old revision that maps the new shape to the old one, or pause replay — the queue
+   holds work rather than dropping it, so pausing is safe and losing it is not.
+3. **Prefer a fix-forward** when neither is quick. A broken revert is worse than the bug
+   it was meant to undo, because it fails for the users who were offline and are least
+   able to tell you.
+
 ---
 
 ## The sequence, when something is wrong

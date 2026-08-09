@@ -1,7 +1,15 @@
 # Security & privacy review — 2026-08-08
 
 Against `docs/engineering/security-privacy.md` and the release Definition of Done box
-"Security review passed". Reviewed at `main` after PR #3.
+"Security review passed".
+
+**Reviewed at `d8253f2`** — this branch, not `main`. The distinction matters and the first
+draft got it wrong: it said "reviewed at `main` after PR #3", which is a tree that does
+**not** contain `__WQ_PSEUDO__` or `globalThis.__wqEnablePseudoLocale`. Both were added in
+`95c35de` on this branch, and finding 1 below is about them — so a sign-off pointing at
+`main` would have been a sign-off on a tree that lacks the very thing it reports. Both
+symbols are present in the reviewed revision; that is what makes finding 1 a finding
+rather than a prediction.
 
 **Verdict: no blocker found. Two findings, both ⚠️, neither release-stopping. Three
 properties could not be verified here and are listed as such rather than assumed.**
@@ -64,7 +72,12 @@ false) return`. Null is not permission. That ordering matters because the age an
 not stored until the end of onboarding, so every event before it is suppressed rather
 than attributed.
 
-**No real secret is committed.** The only high-entropy blobs are
+**No real secret is committed *in the reviewed files*.** Scoped deliberately: the method
+here is grep and file reads over the working tree, which does not cover git history, build
+artefacts, or low-entropy credentials that no entropy heuristic would flag. No secret
+scanner (gitleaks, trufflehog, or similar) has been run against this repository, and until
+one has, the honest claim is about the paths reviewed rather than about the repository.
+Within that scope the only high-entropy blobs are
 `supabase/functions/_src/_shared/__fixtures__/jws.json` — App Store notification
 fixtures signed by a synthetic chain whose CNs decode to "WorldQuest Test
 Root/Intermediate/Leaf", with bundles `com.worldquest.app` and `com.attacker.app`. They
@@ -127,7 +140,10 @@ pass, not in code review.
    arrives with no message field. That closes finding 2 and unblocks the crash-free
    measurement the release checklist wants.
 2. **Before submission:** run the RLS suite against the deployed project, not only
-   locally, with two real accounts.
+   locally — using **two dedicated test accounts holding synthetic data**, or a staging
+   project. Not two production accounts: a cross-user authorisation test is by
+   construction an attempt to read someone else's rows, and doing that against a real
+   person's data to prove they are protected is the wrong trade even when it succeeds.
 3. **Decide on finding 1** — ship the harness seam, or build a separate export target.
    Either is defensible; leaving it undecided is not.
 

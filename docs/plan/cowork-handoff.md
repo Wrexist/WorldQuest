@@ -16,17 +16,31 @@ Ordered by what unblocks the most downstream work.
 
 ## 1 · The device pass — blocks four checklist boxes at once
 
-**Needs:** an Android phone (preferred) or an iPhone, and an Expo account.
-**Closes:** real-device E2E, performance budgets, VoiceOver/TalkBack, and the device
-halves of haptics and reduced motion.
+**Needs:** an Expo account, and **both** an Android phone and an iPhone to close this
+fully — one device closes only its own platform.
+**Closes:** real-device E2E, **device** performance budgets (cold start and frame rate —
+*not* the bundle budget, which is unresolved and is a decision, see §6), and the device
+halves of haptics and reduced motion. Screen readers split by platform: TalkBack needs
+Android, VoiceOver needs iOS, and neither substitutes for the other.
 
-> I have a physical Android phone and an Expo account. In the WorldQuest repo, work
-> through `docs/plan/device-pass.md` end to end and record the result in that file as you
-> go, ticking each box or writing what actually happened instead.
+> I have a physical device and an Expo account. In the WorldQuest repo, work through
+> `docs/plan/device-pass.md` end to end and record the result in that file as you go,
+> ticking each box or writing what actually happened instead.
 >
-> Start with `npx eas build --profile preview --platform android`. Note that `eas.json`
-> was written from the documented schema and **has never been run** — treat the first
-> build as part of the task, not as setup that will obviously work.
+> ```bash
+> npx eas build --profile preview --platform android   # .apk, sideload it
+> npx eas build --profile preview --platform ios       # internal distribution
+> ```
+>
+> `eas.json` was written from the documented schema and **has never been run** — treat the
+> first build as part of the task, not as setup that will obviously work.
+>
+> **Do both platforms if you have both devices, and if you only have one, say which.** The
+> screen-reader box cannot be closed by one device: TalkBack is Android and VoiceOver is
+> iOS, and passing one tells you nothing about the other. Leave the untested platform's box
+> open rather than ticking the row. If you only have one device, do **Android** — wider
+> hardware spread, worse average performance, and the accessibility service that behaves
+> least like the web.
 >
 > Four things to be especially suspicious of, because nothing has ever seen them:
 > - **Tablet layout.** `supportsTablet` was `false` until that document was written and is
@@ -164,6 +178,8 @@ Neither is a task. Both block a checklist box.
 4 MB**. The enforced gate in `scripts/bundle-native.cjs` is **6.0 MB**, raised from 4.5
 when `@sentry/react-native` added 1.92 MB — with the reasoning recorded in that file. The
 current bundle is **5.93 MB**: it passes the gate and fails the constitution.
+
+One wrinkle worth knowing before deciding: `bundle-native.cjs` divides bytes by 1024 twice, so its 6.0 and 5.93 are **MiB**, while the documented 4 is unqualified. If the target was ever meant as decimal MB it is 3.81 MiB, and the gap is wider than it looks. The docs were not silently reunitised — inventing a stricter target while recording a contradiction would be its own small dishonesty — so pick the number *and* its unit.
 
 Someone has to decide which number is real. The options are genuinely different products:
 raise the documented budget and accept the size for crash visibility, or hold 4 MB and

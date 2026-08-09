@@ -29,8 +29,8 @@ still hoping is true.
 > - **Five-minute lessons.** Pick a continent or let us choose what you are closest to
 >   remembering.
 > - **A collection worth filling.** 65 countries to find, with the flags to prove it.
-> - **Your progress is yours.** Learn offline on the metro; everything syncs when you are
->   back.
+> - **Your progress is yours.** Learn offline on the metro; your lesson progress syncs
+>   when you are back.
 > - **No pressure.** Miss a day and your streak can be repaired. Nothing here is designed
 >   to make you feel bad about a day off.
 > - **Made for kids too.** Under-13 accounts have no social features and no third-party
@@ -45,6 +45,11 @@ still hoping is true.
 - "65 countries" comes from the shipped content pack. If the pack changes, this number
   changes; it is a fact, not copy, and a wrong fact in a learning app is the worst bug
   available.
+- "Lesson progress", not "everything". Finished lessons queue and replay; buying a
+  cosmetic and repairing a streak are deliberately **paused** offline rather than queued,
+  because taking coins for something we cannot deliver is worse than making someone wait.
+  The first draft of this line said "everything syncs", which contradicted our own support
+  doc — and a store listing is a promise, so it has to be the narrow true one.
 - No feature is named that a user cannot reach. Leagues and friends exist in the design
   system and not in the app — mentioning them here would be the store-listing version of
   a dead button.

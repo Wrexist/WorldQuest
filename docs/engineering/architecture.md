@@ -184,7 +184,7 @@ Steps 4 and 7 run **the same module**. That's the point of the pure core.
 | Next-items selection | < 50 ms p95 | Prebuilt indexes; selection is in-memory over a small candidate set |
 | Item transition | < 100 ms | Next item prepared during the current one's feedback |
 | Frame rate | ≥ 58 fps | Reanimated on the UI thread; no JS-driven animation |
-| Bundle | < 4 MB initial | Lazy routes, packs as assets not JS. **Contradicted by the enforced gate — see `docs/plan/cowork-handoff.md` §6.** `scripts/bundle-native.cjs` enforces 6.0 MB (raised from 4.5 when `@sentry/react-native` added 1.92 MB) and the current bundle is 5.93 MB: it passes the gate and fails this number. Which one is real is a product decision, not a typo. |
+| Bundle | < 4 MB initial | Lazy routes, packs as assets not JS. **Contradicted by the enforced gate — see `docs/plan/cowork-handoff.md` §6.** `scripts/bundle-native.cjs` enforces 6.0 and measures 5.93, in **MiB** (it divides bytes by 1024 twice); this row's 4 is unqualified. Read as MiB the gap is 4 → 6; read as decimal MB the target is 3.81 MiB and the gap is wider still. Either way it passes the gate and fails this number, and which is real is a product decision rather than a typo. |
 
 **Rendering rules:** every list virtualised (FlashList) · images via `expo-image` with
 `contentFit` and a blurhash placeholder · memoise list rows · never a JS-thread

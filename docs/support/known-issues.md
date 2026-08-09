@@ -41,8 +41,12 @@ turns into a support precedent.
 
 Two different situations, and they need different answers:
 
-- **A cosmetic bought with coins.** Coins are earned, never bought with money. If the item
-  did not arrive, the purchase queued offline — same answer as the sync question above.
+- **A cosmetic bought with coins.** Coins are earned, never bought with money. Buying is
+  **paused while offline** rather than queued — the shop says so on screen ("You're
+  offline, so buying is paused. Everything you own still works."). So an item that did not
+  arrive is not waiting in a queue: ask them to try again on a connection. If it still
+  fails with a connection, escalate — a spend that took coins without delivering is a
+  ledger problem, not a sync one.
 - **A Premium subscription.** Real money. Check **More → Settings → Premium** and have
   them tap **Restore purchases**, which both stores require and which fixes most of these
   (new phone, reinstall, different account). If the card was declined, Settings shows a
@@ -86,9 +90,8 @@ closes things.
 
 | Issue | What to say |
 |---|---|
-| **Tablet layout is unverified.** Tablet support was switched on and has never been seen rendered on hardware. | "That is a known gap on tablets and we are working on it — it works properly on phones today." Escalate with a screenshot; these are useful bug reports. |
+| **No layout has been confirmed on a physical device — phone or tablet.** Tablet support was switched on and has never been seen rendered on hardware at all. | "We have not finished testing on physical devices yet, and that is a real gap rather than a brush-off." Escalate with the device model, OS version and a screenshot; these are the most useful bug reports we can get right now. Do **not** tell a user it works properly on phones — every layout claim so far comes from a browser-based harness, and nothing here has established that. Treat early visual reports as credible rather than as user error. |
 | **No crash reporting yet in the first build.** | Nothing to say to users, but it means *their report is the only signal we have*. Get the phone model and OS version every time. |
-| **Nothing has been confirmed on a physical device.** Every layout claim so far comes from a browser-based harness. | Do not tell users this. Do treat early visual reports as credible rather than as user error. |
 | **Purchases and streak repair need a connection.** They are deliberately disabled offline rather than queued, because taking coins for something we cannot deliver is worse. | "That one needs a connection — everything else works offline." The app already says this on the button. |
 
 ---
