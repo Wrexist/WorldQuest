@@ -499,6 +499,20 @@ export function buildQuestion(
     template.modality === 'image' ? entity.assets?.[template.attribute]?.path : undefined
 
   /**
+   * The same asset, for AFTER the answer — see `Question.revealAsset`.
+   *
+   * A described-flag template asks in words and is answered in words, so the flag never
+   * appears; the user finishes the question without having seen the thing it is about.
+   * This hands the screen the picture to show once grading is done, when there is
+   * nothing left to give away.
+   *
+   * `promptAsset === undefined` is the whole condition. If the template already shows
+   * the asset, revealing it again is a second copy of something that never left.
+   */
+  const revealAsset =
+    promptAsset === undefined ? entity.assets?.[template.attribute]?.path : undefined
+
+  /**
    * The locator map, and the one rule that makes it safe.
    *
    * Only when the answer is NOT the entity. A template answered by `entity.names` is
@@ -540,6 +554,7 @@ export function buildQuestion(
     promptKey: template.prompt.key,
     promptParams,
     ...(promptAsset !== undefined ? { promptAsset } : {}),
+    ...(revealAsset !== undefined ? { revealAsset } : {}),
     ...(locator !== undefined ? { locator } : {}),
     // Shuffled with the injected rng — position must never become the answer.
     options: shuffle(options, rng),

@@ -187,6 +187,29 @@ export type Question = {
    * than one being derived from the other: each is a separately licensed asset.
    */
   readonly locator?: { readonly path: string; readonly contextPath: string }
+  /**
+   * The picture to show once the question has been ANSWERED.
+   *
+   * "Hur ser Japans flagga ut?" is answered in words — *en röd cirkel i mitten på vit
+   * botten* — and read off a device that is the whole of it: four sentences, a map of
+   * Japan for context, and at no point the flag. A user finishes a flag question having
+   * never seen the flag. In an app whose first promise is "flags, capitals and
+   * landmarks", that is the fact not being taught.
+   *
+   * It cannot be the prompt, and that is why this field exists rather than
+   * `promptAsset` being widened. Drawing the flag beside "what does Japan's flag look
+   * like?" hands the answer to anyone who can see it, silently and only to sighted
+   * users — the same giveaway `locator` is carefully kept away from. After the answer
+   * is graded there is nothing left to give away: the correct option is already marked.
+   *
+   * Indexed by the template's ATTRIBUTE, exactly like `promptAsset`, so this knows
+   * nothing about flags. A wildlife pack asking "what does a lion look like?" in words
+   * reveals `assets.photo` for the same reason and with no engine change.
+   *
+   * Absent when the asset is already on screen as the prompt — an image-modality
+   * template has shown it since before the user answered.
+   */
+  readonly revealAsset?: string
   readonly timeLimitMs: number | null
   /** For the wrong-answer explanation: "Japan is a red circle on white." */
   readonly hint?: string

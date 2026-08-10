@@ -210,6 +210,23 @@ the four options rendered as `…med en gul halvmåne och stjärna på en bl…`
 `…saffransgult, vitt, grönt — med ett mörkblått hj…`. An option you cannot read is an
 option you cannot choose, and a wrong guess costs a heart.
 
+**D4 · P1 — a flag question never showed the flag.** "Hur ser Japans flagga ut?" is asked
+in words and answered in words: four descriptions, a locator map of Japan for context, and
+at no point the flag itself. A user finishes a flag question having never seen the flag.
+In an app whose first promise is *flags, capitals and landmarks*, that is the fact not
+being taught.
+
+It cannot go beside the prompt — the mockup draws it there, but the mockup panel shows the
+*answered* state (its correct option is already ringed green). Showing it while the
+question is live hands the answer to anyone who can see it, silently and only to sighted
+users, which is the same giveaway the locator map is carefully kept away from. So it is
+revealed with the feedback, once grading is done and the correct option is already marked.
+
+Built in the engine as `Question.revealAsset`, indexed by the template's *attribute* like
+`promptAsset` — so it knows nothing about flags, and a wildlife pack asking "what does a
+lion look like?" in words reveals `assets.photo` with no engine change. Absent when the
+prompt is already showing the picture.
+
 **D3 · P1 — the feedback sheet hid the answer it was giving feedback on.** The sheet is a
 sibling below the scroll view, so when it appears the viewport shrinks by its height and
 the options scroll under it. On the Japan currency question the correct answer — *japansk

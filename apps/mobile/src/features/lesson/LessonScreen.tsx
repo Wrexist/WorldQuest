@@ -56,6 +56,16 @@ type ScreenState = 'loading' | 'error' | 'empty' | 'ready'
  * from Italy is a question about the coat of arms, and at tile size that is a smudge —
  * and small enough that the four answers below it stay on screen at 320pt.
  */
+/**
+ * The revealed flag on the feedback sheet.
+ *
+ * Smaller than `FLAG_PROMPT_WIDTH`: as a prompt the flag is the question and gets the
+ * room to be studied, and here it shares a sheet with a verdict, two reward chips, a
+ * mascot and the way onward. Big enough to read the design, small enough not to push
+ * the Continue button off a 320.
+ */
+const REVEAL_WIDTH = 96
+
 const FLAG_PROMPT_WIDTH = 200
 
 /**
@@ -731,6 +741,34 @@ export function LessonScreen({
                it, so the praise and the way onward were two objects with a gap between
                them. One sheet is the mechanic worth taking. */
             <View style={styles.sheet}>
+              {/* The thing the question was ABOUT, now that it can be shown.
+   
+                  "Hur ser Japans flagga ut?" is asked in words and answered in words,
+                  so before this the flag never appeared at all: four sentences, a
+                  locator map for context, and a user who finishes a flag question
+                  without ever seeing the flag. In an app whose first promise is "flags,
+                  capitals and landmarks", that is the fact not being taught.
+   
+                  It cannot go beside the prompt — drawing the flag next to "what does
+                  Japan's flag look like?" hands the answer to anyone who can see it,
+                  silently and only to sighted users. After grading there is nothing
+                  left to give away: the correct option is already marked, and the
+                  engine only sets `revealAsset` when the picture is not already on
+                  screen (see Question.revealAsset).
+   
+                  Labelled, like the flag prompt and unlike every decorative flag in the
+                  app: here the picture is the answer being taught, so a reader that
+                  skipped it would be skipping the lesson. */}
+              {question.revealAsset !== undefined && (
+                <View style={styles.reveal} testID="reveal-asset">
+                  <Flag
+                    path={question.revealAsset}
+                    width={REVEAL_WIDTH}
+                    label={tContent(question.promptKey, question.promptParams)}
+                  />
+                </View>
+              )}
+
               {/* Behind the button because it is drawn BEFORE it and positioned to
                   overlap — later siblings paint on top, so the occlusion is the layout
                   rather than a mask. Decorative: the sheet already says what happened
@@ -1055,6 +1093,9 @@ const styles = StyleSheet.create({
   // bounding box, because a mascot's box is wider than its shoulders — so this leans on
   // the same slack rather than adding the full width.
   sheetText: { gap: space[2] },
+  // Start-aligned with the sheet's text column rather than centred: the mascot owns one
+  // side of this sheet, and a centred picture would sit under him.
+  reveal: { alignItems: 'flex-start' },
   feedbackTitle: { ...text('h3'), color: colors.text.primary },
   feedbackTitleOk: { ...text('h2'), color: colors.feedback.correct },
   // Start-aligned, not centred. It was centred when this lived in a centred card; the
