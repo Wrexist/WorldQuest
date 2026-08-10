@@ -645,6 +645,50 @@ describe('presentation', () => {
     expect(q.revealAsset).toBeUndefined()
   })
 
+  it('draws the four flags as the ANSWERS when the answer is a flag', () => {
+    // The screenshot that started this: "Hur ser Belgiens flagga ut?" over four written
+    // descriptions — "tre lodräta band — svart, gult, rött" — which is a reading
+    // comprehension question in the one place the app owns a picture of the answer.
+    const item = index.itemsByFact
+      .get('geo.SE.flag')!
+      .find((i) => i.templateId === 'tpl.flag-of-country.mc4')!
+    const q = buildQuestion(index, item, 'en', seededRng(3))!
+
+    // Every option, not just the correct one. Three of four carrying art and one bare
+    // would mark the odd one out — which is the giveaway this feature has to avoid, in
+    // the most embarrassing possible form.
+    expect(q.options).toHaveLength(4)
+    for (const option of q.options) expect(option.asset).toBeDefined()
+    expect(q.options.find((o) => o.isCorrect)!.asset).toBe(
+      index.entities.get('SE')!.assets!['flag']!.path,
+    )
+
+    // And the words survive, which is why this needed no second template and no
+    // `equivalentTemplate` pairing: the label is still the description, so a screen
+    // reader announces exactly what it announced before the pictures arrived.
+    for (const option of q.options) expect(option.label.length).toBeGreaterThan(0)
+  })
+
+  it('never puts art on an option when the option is the ENTITY', () => {
+    // The rule that keeps the feature from handing over the answer. "Which country's
+    // flag is this?" shows one flag and is answered by four country NAMES — art on
+    // those options would be each country's own flag, and one of them is the prompt.
+    const q = buildQuestion(index, imageItem, 'en', seededRng(3))!
+    for (const option of q.options) expect(option.asset).toBeUndefined()
+  })
+
+  it('stops revealing a flag the options have been showing all along', () => {
+    // `revealAsset` used to fire whenever the PROMPT had no picture. The options can
+    // carry it now, so that condition alone would put the flag on the feedback sheet a
+    // second time, having never left the screen.
+    const item = index.itemsByFact
+      .get('geo.SE.flag')!
+      .find((i) => i.templateId === 'tpl.flag-of-country.mc4')!
+    const q = buildQuestion(index, item, 'en', seededRng(3))!
+    expect(q.promptAsset).toBeUndefined()
+    expect(q.revealAsset).toBeUndefined()
+  })
+
   it('reveals nothing for an attribute that has no artwork', () => {
     // Indexed by the template's ATTRIBUTE, so this knows nothing about flags: a capital
     // question looks for `assets.capital`, finds none, and reveals nothing. The same

@@ -277,6 +277,50 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
    * being photographed and pinning it to a testID would let a redesign quietly stop
    * taking the picture.
    */
+  /**
+   * A flag question, on purpose rather than by luck.
+   *
+   * The lesson pass above photographs whatever the shuffle serves, and for months that
+   * was never a flag-answer question — so "Hur ser Belgiens flagga ut?" shipped with
+   * four lines of written description where the four flags should have been, and every
+   * screenshot this harness produced agreed the app was fine. A picture nobody takes is
+   * a picture nobody checks.
+   *
+   * `?attr=flag` is the focus plumbing doing a second job it was not built for: the
+   * same query string a user gets from the country page makes a whole class of question
+   * addressable by the camera. Any future modality that renders differently should get
+   * a line here rather than waiting to be dealt off the top of the deck.
+   */
+  const shootFlagQuestion = async (page, shot) => {
+    await page.goto(`http://localhost:${PORT}/lesson?attr=flag`, { waitUntil: 'networkidle' })
+    await page.waitForTimeout(1600)
+
+    /**
+     * Walked forward rather than shot on arrival, because `attr=flag` narrows to the
+     * ATTRIBUTE and three templates share it: flag→name, description→name, and the one
+     * this exists to photograph, name→flag. Which of the three comes up first is the
+     * shuffle's business, so the camera answers its way along until it finds a question
+     * whose options are pictures.
+     */
+    for (let q = 0; q < 12; q++) {
+      const options = await page.getByTestId('answer-option').all()
+      if (options.length === 0) break
+
+      if ((await page.getByTestId('answer-option').locator('img').count()) > 0) {
+        await shot('lesson-flags')
+        return true
+      }
+
+      await options[0].click()
+      await page.waitForTimeout(500)
+      const next = page.getByText(/^(Continue|Finish|Got it)$/).first()
+      if ((await next.count()) === 0) break
+      await next.click()
+      await page.waitForTimeout(450)
+    }
+    return false
+  }
+
   const shootLessonPhases = async (page, shot) => {
     await page.goto(`http://localhost:${PORT}/lesson`, { waitUntil: 'networkidle' })
     await page.waitForTimeout(1600)
@@ -558,6 +602,11 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
         // the reload that broke the first version of this pass is exactly what resets it.
         await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' })
         await page.waitForTimeout(600)
+      }
+
+      if (!(await shootFlagQuestion(page, shot))) {
+        report.flowGaps ??= {}
+        report.flowGaps[viewport.name] = 'flag question: no options rendered'
       }
 
       const phases = await shootLessonPhases(page, shot)

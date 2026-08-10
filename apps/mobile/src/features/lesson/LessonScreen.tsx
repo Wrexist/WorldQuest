@@ -81,6 +81,17 @@ const STREAK_PRAISE = 3
 const REVEAL_WIDTH = 96
 
 /**
+ * How wide a flag drawn as an ANSWER is.
+ *
+ * Smaller than the reveal and much smaller than the prompt, because there are four of
+ * them stacked and they compete with nothing: the question is already read, and what is
+ * being asked of the eye is a comparison between four pictures rather than a study of
+ * one. 72pt keeps four options inside a 320-wide screen's scroll without the row growing
+ * past the 56pt option floor, so the list keeps the rhythm every other question has.
+ */
+const OPTION_FLAG_WIDTH = 72
+
+/**
  * How wide the flag in an image question is drawn.
  *
  * 200pt, and the asset is rasterised at exactly 3x of it (`scripts/build-flags.cjs`)
@@ -745,6 +756,22 @@ export function LessonScreen({
                   : state === 'wrong'
                     ? t('lesson:answer.wrong', { answer: option.label })
                     : undefined
+              }
+              // The answer as a PICTURE, when the option is one.
+              //
+              // "Hur ser Belgiens flagga ut?" used to offer four written descriptions —
+              // "tre lodräta band — svart, gult, rött" — so the one question in the app
+              // that is literally about what something looks like was answered by
+              // reading. `buildQuestion` attaches `asset` only to options that are fact
+              // VALUES, which is what keeps this from becoming the giveaway the
+              // `promptAsset` note refuses; see `AnswerOption.asset`.
+              //
+              // Undefined for every other attribute, so a capital or currency option is
+              // the same text row it has always been.
+              art={
+                option.asset !== undefined ? (
+                  <Flag path={option.asset} width={OPTION_FLAG_WIDTH} />
+                ) : undefined
               }
               // The non-colour half of the signal, as artwork rather than a character.
               // The wrong-answer mark used to be `→`, which points the same way in an

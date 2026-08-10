@@ -72,6 +72,24 @@ export type AnswerOptionProps = {
    */
   mark?: React.ReactNode
   /**
+   * The option drawn as a PICTURE, with `label` demoted to its accessible name.
+   *
+   * "Hur ser Belgiens flagga ut?" used to be answered by reading four written
+   * descriptions and picking one — a comprehension question about Swedish prose, in the
+   * one place the app had a picture of the answer and did not use it. When the option is
+   * a thing you can look at, looking at it IS the question.
+   *
+   * A node rather than a path, for the reason `mark` is: the artwork lives in
+   * `apps/mobile/assets` and this package may not reach across. The caller passes a
+   * `<Flag>`; this decides where it sits and how much room it gets.
+   *
+   * `label` is NOT dropped when this is present — it becomes the accessible name via
+   * `aria-label`, so a screen-reader user hears the description they always heard and a
+   * sighted user sees the flag. That is the whole reason this did not need a second
+   * template and an `equivalentTemplate` pairing: nothing was taken away from anybody.
+   */
+  art?: React.ReactNode
+  /**
    * The letter on the badge — "A", "B", "C", "D".
    *
    * Optional, and absent means no badge at all rather than an empty circle: a two-option
@@ -165,6 +183,7 @@ export function AnswerOption({
   onPress,
   accessibilityLabel,
   mark,
+  art,
   badge,
   style,
   testID,
@@ -242,9 +261,39 @@ export function AnswerOption({
           An uncapped label can grow, and growing is the correct failure: the lesson
           screen scrolls (`pnpm scrollable` proves it), so a long answer costs space.
           A truncated one costs the answer. */}
-      <Text style={[styles.label, badge === undefined && styles.labelCentre, { color: skin.label }]}>
-        {label}
-      </Text>
+      {art !== undefined ? (
+        // Hidden from the reader, exactly like the badge and the mark: `aria-label`
+        // above already announces the description this picture replaces, and a decoded
+        // image would announce it a second time or, worse, announce a filename.
+        <View style={styles.art} importantForAccessibility="no-hide-descendants" aria-hidden>
+          {art}
+        </View>
+      ) : (
+        /* NO `numberOfLines`. The line above it used to read "never truncate a
+           country name — let it wrap and grow" and then capped it at two, which is
+           long enough for every country name and is not what the answers are made of.
+
+           Flag questions are answered with descriptions, and on a device the four
+           options for "Hur ser Japans flagga ut?" rendered as
+
+             "fjorton röda och vita ränder, med en gul halvmåne och stjärna på en bl…"
+             "tre vågräta band — saffransgult, vitt, grönt — med ett mörkblått hj…"
+
+           Two of the four cut off mid-word. An option you cannot read is an option you
+           cannot choose, so a question with two of them is not a question — and the
+           user is charged a heart for guessing at it.
+
+           An uncapped label can grow, and growing is the correct failure: the lesson
+           screen scrolls (`pnpm scrollable` proves it), so a long answer costs space.
+           A truncated one costs the answer.
+
+           Still the right rendering wherever there is no picture — every attribute but
+           `flag` answers in words, and the described-flag templates deliberately do too
+           so that a screen-reader user has a question to be asked. */
+        <Text style={[styles.label, badge === undefined && styles.labelCentre, { color: skin.label }]}>
+          {label}
+        </Text>
+      )}
 
       {(mark ?? GLYPHS[state]) !== null && (
         <View style={styles.glyphWrap} importantForAccessibility="no-hide-descendants" aria-hidden>
@@ -287,6 +336,21 @@ const styles = StyleSheet.create({
   },
   badgeText: { ...text('caption', { weight: '800' }), color: colors.text.tertiary },
   badgeTextOn: { color: colors.text.onAccent },
+  /**
+   * Where a picture-answer sits: the whole row minus the rail, centred in it.
+   *
+   * Centred rather than hung off the badge, which is the opposite of what the label
+   * does, and deliberately. Text is READ, so it starts at the writing direction's start
+   * edge and the four starts line up into a column the eye can run down. A flag is
+   * LOOKED AT, and four flags of different aspect ratios pinned to the start edge leave
+   * a ragged gap down the trailing half of the card. Centred, the four read as four
+   * plates on a shelf.
+   *
+   * No height here. The caller sizes its own artwork — the design package cannot know
+   * what a flag's aspect ratio is, and a fixed box would letterbox Nepal's pennant and
+   * crop Switzerland's square.
+   */
+  art: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   /**
    * Alignment is stated only for the BADGELESS case, and that is an RTL decision.
    *

@@ -128,6 +128,41 @@ export type AnswerOption = {
   readonly id: string
   readonly label: string
   readonly isCorrect: boolean
+  /**
+   * A picture of THIS option, when the option is a value that has one.
+   *
+   * "What does Belgium's flag look like?" was answered by picking one of four written
+   * descriptions — *tre lodräta band — svart, gult, rött* — which is a reading
+   * comprehension question wearing a flag question's clothes. In an app whose first
+   * promise is flags, the flag is the answer and it should be the thing you point at.
+   *
+   * ## Why this is not the giveaway `promptAsset` refuses
+   *
+   * The note on `promptAsset` rejects per-option art, and it is right about the case it
+   * describes: for a template answered by `entity.names` the correct option's entity IS
+   * the entity in the prompt, so drawing its asset marks the answer. That is why this is
+   * populated for `fact.value.names` templates ONLY.
+   *
+   * Read the two side by side and the difference is total. "Which country's flag is
+   * this?" shows one flag and is answered by four names — art on those options would be
+   * each country's own flag, and one of them would match the prompt exactly. "What does
+   * Belgium's flag look like?" names the country and is answered by four flag VALUES —
+   * art on those options is the four flags themselves, which is not a hint about the
+   * answer, it is the question finally being asked in the medium it is about.
+   *
+   * ## It stays screen-reader safe, which is why no second template was needed
+   *
+   * `label` is unchanged and still carries the written description, so a reader
+   * announces "tre lodräta band — svart, gult, rött" exactly as before. The picture is
+   * additive and visual; the words are the accessible name. A template that had to drop
+   * its labels to show art would need an `equivalentTemplate` and a parity pair, like
+   * `tpl.flag-to-country.mc4` does — this one does not, because it loses nothing.
+   *
+   * Indexed by the template's ATTRIBUTE like every other asset lookup in this file, so
+   * a wildlife pack answering "which of these is a lion's track?" gets the same
+   * behaviour with no engine change and this package still knows nothing about flags.
+   */
+  readonly asset?: string
 }
 
 /** A question, ready to render. Contains no logic and no React. */
