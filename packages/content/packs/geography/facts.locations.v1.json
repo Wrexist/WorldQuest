@@ -1,6 +1,6 @@
 {
   "$schema": "../../schema/pack.schema.json",
-  "$comment": "Where each country is, as a fact rather than a field. Derived MECHANICALLY from `subregion` in entities.countries.v1.json — this file invents no geography, it restates what the entity pack already declares so the composer can quiz it. Regenerate with `pnpm build:locations` whenever a country is added; hand-editing one row would let a country's location fact disagree with its own entity, which is a wrong fact of the worst kind: quietly wrong, and only on one screen. The GROUPING is this app's own, not UN M49 — M49 places Cuba and Mexico in 'Latin America and the Caribbean' while this pack groups them under North America, which is true continentally and is what a ten-year-old is taught. Citing M49 would therefore be a false citation, and so would citing the entities pack: a fact whose source is another file in this repository has no external provenance at all, and the validator now refuses one. So each row names the classification as WHAT IT IS — an editorial choice, made here — and cites the seven-continent model it rests on. The derivation is mechanical; the classification being derived is a judgement, and the citation describes the judgement rather than the copy step. Every fact here is `stable` by construction — the value is which subregion a country sits in, and a continent does not move. Grading them per row would be grading the projection rather than its source, which is why `volatilityReviewed` is set below.",
+  "$comment": "Which CONTINENT each country is on, as a fact rather than a field. Derived MECHANICALLY from `region` in entities.countries.v1.json — this file invents no geography, it restates what the entity pack already declares so the composer can quiz it. Regenerate with `pnpm build:locations` whenever a country is added; hand-editing one row would let a country's location fact disagree with its own entity, which is a wrong fact of the worst kind: quietly wrong, and only on one screen. The GROUPING is this app's own, not UN M49 — M49 places Cuba and Mexico in 'Latin America and the Caribbean' while this pack groups them under North America, which is true continentally and is what a ten-year-old is taught. Citing M49 would therefore be a false citation, and so would citing the entities pack: a fact whose source is another file in this repository has no external provenance at all, and the validator now refuses one. So each row names the classification as WHAT IT IS — an editorial choice, made here — and cites the seven-continent model it rests on. The derivation is mechanical; the classification being derived is a judgement, and the citation describes the judgement rather than the copy step. It restated `subregion` until it was first loaded by the app, at which point the preview showed why that could not work: Europe, Asia and Africa split into subregions and the Americas and Oceania do not, so nineteen of sixty-five countries got a question whose only option at the right scale was the right one (\"Where in the world is Argentina? Western Europe / Northern Europe / Southern Europe / South America\"). One scale per question; the subregion is now a tag. Every fact here is `stable` by construction — the value is which continent a country sits in, and a continent does not move. Grading them per row would be grading the projection rather than its source, which is why `volatilityReviewed` is set below.",
   "volatilityReviewed": true,
   "packId": "geography.locations",
   "version": "1.0.0",
@@ -28,6 +28,7 @@
       "tags": [
         "location",
         "south-america",
+        "south-america",
         "core"
       ],
       "source": {
@@ -42,15 +43,16 @@
       "entity": "AT",
       "attribute": "location",
       "value": {
-        "id": "western-europe",
+        "id": "europe",
         "names": {
-          "en": "Western Europe",
-          "sv": "Västeuropa"
+          "en": "Europe",
+          "sv": "Europa"
         }
       },
       "difficulty": 2,
       "tags": [
         "location",
+        "europe",
         "western-europe",
         "core"
       ],
@@ -76,6 +78,7 @@
       "tags": [
         "location",
         "oceania",
+        "oceania",
         "core"
       ],
       "source": {
@@ -90,15 +93,16 @@
       "entity": "BD",
       "attribute": "location",
       "value": {
-        "id": "south-asia",
+        "id": "asia",
         "names": {
-          "en": "South Asia",
-          "sv": "Sydasien"
+          "en": "Asia",
+          "sv": "Asien"
         }
       },
       "difficulty": 3,
       "tags": [
         "location",
+        "asia",
         "south-asia",
         "core"
       ],
@@ -114,15 +118,16 @@
       "entity": "BE",
       "attribute": "location",
       "value": {
-        "id": "western-europe",
+        "id": "europe",
         "names": {
-          "en": "Western Europe",
-          "sv": "Västeuropa"
+          "en": "Europe",
+          "sv": "Europa"
         }
       },
       "difficulty": 2,
       "tags": [
         "location",
+        "europe",
         "western-europe",
         "core"
       ],
@@ -148,6 +153,7 @@
       "tags": [
         "location",
         "south-america",
+        "south-america",
         "core"
       ],
       "source": {
@@ -162,15 +168,16 @@
       "entity": "BW",
       "attribute": "location",
       "value": {
-        "id": "southern-africa",
+        "id": "africa",
         "names": {
-          "en": "Southern Africa",
-          "sv": "Södra Afrika"
+          "en": "Africa",
+          "sv": "Afrika"
         }
       },
       "difficulty": 5,
       "tags": [
         "location",
+        "africa",
         "southern-africa",
         "core"
       ],
@@ -196,6 +203,7 @@
       "tags": [
         "location",
         "north-america",
+        "north-america",
         "core"
       ],
       "source": {
@@ -210,15 +218,16 @@
       "entity": "CH",
       "attribute": "location",
       "value": {
-        "id": "western-europe",
+        "id": "europe",
         "names": {
-          "en": "Western Europe",
-          "sv": "Västeuropa"
+          "en": "Europe",
+          "sv": "Europa"
         }
       },
       "difficulty": 2,
       "tags": [
         "location",
+        "europe",
         "western-europe",
         "core"
       ],
@@ -244,6 +253,7 @@
       "tags": [
         "location",
         "south-america",
+        "south-america",
         "core"
       ],
       "source": {
@@ -258,15 +268,16 @@
       "entity": "CN",
       "attribute": "location",
       "value": {
-        "id": "east-asia",
+        "id": "asia",
         "names": {
-          "en": "East Asia",
-          "sv": "Östasien"
+          "en": "Asia",
+          "sv": "Asien"
         }
       },
       "difficulty": 2,
       "tags": [
         "location",
+        "asia",
         "east-asia",
         "core"
       ],
@@ -292,6 +303,7 @@
       "tags": [
         "location",
         "south-america",
+        "south-america",
         "core"
       ],
       "source": {
@@ -315,6 +327,7 @@
       "difficulty": 4,
       "tags": [
         "location",
+        "north-america",
         "north-america",
         "core"
       ],
@@ -340,6 +353,7 @@
       "tags": [
         "location",
         "north-america",
+        "north-america",
         "core"
       ],
       "source": {
@@ -354,15 +368,16 @@
       "entity": "CZ",
       "attribute": "location",
       "value": {
-        "id": "eastern-europe",
+        "id": "europe",
         "names": {
-          "en": "Eastern Europe",
-          "sv": "Östeuropa"
+          "en": "Europe",
+          "sv": "Europa"
         }
       },
       "difficulty": 3,
       "tags": [
         "location",
+        "europe",
         "eastern-europe",
         "core"
       ],
@@ -378,15 +393,16 @@
       "entity": "DE",
       "attribute": "location",
       "value": {
-        "id": "western-europe",
+        "id": "europe",
         "names": {
-          "en": "Western Europe",
-          "sv": "Västeuropa"
+          "en": "Europe",
+          "sv": "Europa"
         }
       },
       "difficulty": 1,
       "tags": [
         "location",
+        "europe",
         "western-europe",
         "core"
       ],
@@ -402,15 +418,16 @@
       "entity": "DK",
       "attribute": "location",
       "value": {
-        "id": "northern-europe",
+        "id": "europe",
         "names": {
-          "en": "Northern Europe",
-          "sv": "Nordeuropa"
+          "en": "Europe",
+          "sv": "Europa"
         }
       },
       "difficulty": 3,
       "tags": [
         "location",
+        "europe",
         "northern-europe",
         "core"
       ],
@@ -426,15 +443,16 @@
       "entity": "DZ",
       "attribute": "location",
       "value": {
-        "id": "northern-africa",
+        "id": "africa",
         "names": {
-          "en": "North Africa",
-          "sv": "Nordafrika"
+          "en": "Africa",
+          "sv": "Afrika"
         }
       },
       "difficulty": 3,
       "tags": [
         "location",
+        "africa",
         "northern-africa",
         "core"
       ],
@@ -450,15 +468,16 @@
       "entity": "EG",
       "attribute": "location",
       "value": {
-        "id": "northern-africa",
+        "id": "africa",
         "names": {
-          "en": "North Africa",
-          "sv": "Nordafrika"
+          "en": "Africa",
+          "sv": "Afrika"
         }
       },
       "difficulty": 3,
       "tags": [
         "location",
+        "africa",
         "northern-africa",
         "core"
       ],
@@ -474,15 +493,16 @@
       "entity": "ES",
       "attribute": "location",
       "value": {
-        "id": "southern-europe",
+        "id": "europe",
         "names": {
-          "en": "Southern Europe",
-          "sv": "Sydeuropa"
+          "en": "Europe",
+          "sv": "Europa"
         }
       },
       "difficulty": 1,
       "tags": [
         "location",
+        "europe",
         "southern-europe",
         "core"
       ],
@@ -498,15 +518,16 @@
       "entity": "ET",
       "attribute": "location",
       "value": {
-        "id": "eastern-africa",
+        "id": "africa",
         "names": {
-          "en": "East Africa",
-          "sv": "Östafrika"
+          "en": "Africa",
+          "sv": "Afrika"
         }
       },
       "difficulty": 3,
       "tags": [
         "location",
+        "africa",
         "eastern-africa",
         "core"
       ],
@@ -522,15 +543,16 @@
       "entity": "FI",
       "attribute": "location",
       "value": {
-        "id": "northern-europe",
+        "id": "europe",
         "names": {
-          "en": "Northern Europe",
-          "sv": "Nordeuropa"
+          "en": "Europe",
+          "sv": "Europa"
         }
       },
       "difficulty": 2,
       "tags": [
         "location",
+        "europe",
         "northern-europe",
         "core"
       ],
@@ -556,6 +578,7 @@
       "tags": [
         "location",
         "oceania",
+        "oceania",
         "core"
       ],
       "source": {
@@ -570,15 +593,16 @@
       "entity": "FR",
       "attribute": "location",
       "value": {
-        "id": "western-europe",
+        "id": "europe",
         "names": {
-          "en": "Western Europe",
-          "sv": "Västeuropa"
+          "en": "Europe",
+          "sv": "Europa"
         }
       },
       "difficulty": 1,
       "tags": [
         "location",
+        "europe",
         "western-europe",
         "core"
       ],
@@ -594,15 +618,16 @@
       "entity": "GH",
       "attribute": "location",
       "value": {
-        "id": "western-africa",
+        "id": "africa",
         "names": {
-          "en": "West Africa",
-          "sv": "Västafrika"
+          "en": "Africa",
+          "sv": "Afrika"
         }
       },
       "difficulty": 4,
       "tags": [
         "location",
+        "africa",
         "western-africa",
         "core"
       ],
@@ -618,15 +643,16 @@
       "entity": "GR",
       "attribute": "location",
       "value": {
-        "id": "southern-europe",
+        "id": "europe",
         "names": {
-          "en": "Southern Europe",
-          "sv": "Sydeuropa"
+          "en": "Europe",
+          "sv": "Europa"
         }
       },
       "difficulty": 2,
       "tags": [
         "location",
+        "europe",
         "southern-europe",
         "core"
       ],
@@ -652,6 +678,7 @@
       "tags": [
         "location",
         "north-america",
+        "north-america",
         "core"
       ],
       "source": {
@@ -666,15 +693,16 @@
       "entity": "HU",
       "attribute": "location",
       "value": {
-        "id": "eastern-europe",
+        "id": "europe",
         "names": {
-          "en": "Eastern Europe",
-          "sv": "Östeuropa"
+          "en": "Europe",
+          "sv": "Europa"
         }
       },
       "difficulty": 3,
       "tags": [
         "location",
+        "europe",
         "eastern-europe",
         "core"
       ],
@@ -690,15 +718,16 @@
       "entity": "ID",
       "attribute": "location",
       "value": {
-        "id": "south-east-asia",
+        "id": "asia",
         "names": {
-          "en": "South-East Asia",
-          "sv": "Sydostasien"
+          "en": "Asia",
+          "sv": "Asien"
         }
       },
       "difficulty": 3,
       "tags": [
         "location",
+        "asia",
         "south-east-asia",
         "core"
       ],
@@ -714,15 +743,16 @@
       "entity": "IN",
       "attribute": "location",
       "value": {
-        "id": "south-asia",
+        "id": "asia",
         "names": {
-          "en": "South Asia",
-          "sv": "Sydasien"
+          "en": "Asia",
+          "sv": "Asien"
         }
       },
       "difficulty": 2,
       "tags": [
         "location",
+        "asia",
         "south-asia",
         "core"
       ],
@@ -738,15 +768,16 @@
       "entity": "IT",
       "attribute": "location",
       "value": {
-        "id": "southern-europe",
+        "id": "europe",
         "names": {
-          "en": "Southern Europe",
-          "sv": "Sydeuropa"
+          "en": "Europe",
+          "sv": "Europa"
         }
       },
       "difficulty": 1,
       "tags": [
         "location",
+        "europe",
         "southern-europe",
         "core"
       ],
@@ -762,15 +793,16 @@
       "entity": "JP",
       "attribute": "location",
       "value": {
-        "id": "east-asia",
+        "id": "asia",
         "names": {
-          "en": "East Asia",
-          "sv": "Östasien"
+          "en": "Asia",
+          "sv": "Asien"
         }
       },
       "difficulty": 1,
       "tags": [
         "location",
+        "asia",
         "east-asia",
         "core"
       ],
@@ -786,15 +818,16 @@
       "entity": "KE",
       "attribute": "location",
       "value": {
-        "id": "eastern-africa",
+        "id": "africa",
         "names": {
-          "en": "East Africa",
-          "sv": "Östafrika"
+          "en": "Africa",
+          "sv": "Afrika"
         }
       },
       "difficulty": 3,
       "tags": [
         "location",
+        "africa",
         "eastern-africa",
         "core"
       ],
@@ -810,15 +843,16 @@
       "entity": "KP",
       "attribute": "location",
       "value": {
-        "id": "east-asia",
+        "id": "asia",
         "names": {
-          "en": "East Asia",
-          "sv": "Östasien"
+          "en": "Asia",
+          "sv": "Asien"
         }
       },
       "difficulty": 4,
       "tags": [
         "location",
+        "asia",
         "east-asia",
         "core"
       ],
@@ -834,15 +868,16 @@
       "entity": "KR",
       "attribute": "location",
       "value": {
-        "id": "east-asia",
+        "id": "asia",
         "names": {
-          "en": "East Asia",
-          "sv": "Östasien"
+          "en": "Asia",
+          "sv": "Asien"
         }
       },
       "difficulty": 2,
       "tags": [
         "location",
+        "asia",
         "east-asia",
         "core"
       ],
@@ -858,15 +893,16 @@
       "entity": "MA",
       "attribute": "location",
       "value": {
-        "id": "northern-africa",
+        "id": "africa",
         "names": {
-          "en": "North Africa",
-          "sv": "Nordafrika"
+          "en": "Africa",
+          "sv": "Afrika"
         }
       },
       "difficulty": 3,
       "tags": [
         "location",
+        "africa",
         "northern-africa",
         "core"
       ],
@@ -882,15 +918,16 @@
       "entity": "ML",
       "attribute": "location",
       "value": {
-        "id": "western-africa",
+        "id": "africa",
         "names": {
-          "en": "West Africa",
-          "sv": "Västafrika"
+          "en": "Africa",
+          "sv": "Afrika"
         }
       },
       "difficulty": 4,
       "tags": [
         "location",
+        "africa",
         "western-africa",
         "core"
       ],
@@ -906,15 +943,16 @@
       "entity": "MN",
       "attribute": "location",
       "value": {
-        "id": "east-asia",
+        "id": "asia",
         "names": {
-          "en": "East Asia",
-          "sv": "Östasien"
+          "en": "Asia",
+          "sv": "Asien"
         }
       },
       "difficulty": 4,
       "tags": [
         "location",
+        "asia",
         "east-asia",
         "core"
       ],
@@ -940,6 +978,7 @@
       "tags": [
         "location",
         "north-america",
+        "north-america",
         "core"
       ],
       "source": {
@@ -954,15 +993,16 @@
       "entity": "MY",
       "attribute": "location",
       "value": {
-        "id": "south-east-asia",
+        "id": "asia",
         "names": {
-          "en": "South-East Asia",
-          "sv": "Sydostasien"
+          "en": "Asia",
+          "sv": "Asien"
         }
       },
       "difficulty": 3,
       "tags": [
         "location",
+        "asia",
         "south-east-asia",
         "core"
       ],
@@ -978,15 +1018,16 @@
       "entity": "NA",
       "attribute": "location",
       "value": {
-        "id": "southern-africa",
+        "id": "africa",
         "names": {
-          "en": "Southern Africa",
-          "sv": "Södra Afrika"
+          "en": "Africa",
+          "sv": "Afrika"
         }
       },
       "difficulty": 4,
       "tags": [
         "location",
+        "africa",
         "southern-africa",
         "core"
       ],
@@ -1002,15 +1043,16 @@
       "entity": "NG",
       "attribute": "location",
       "value": {
-        "id": "western-africa",
+        "id": "africa",
         "names": {
-          "en": "West Africa",
-          "sv": "Västafrika"
+          "en": "Africa",
+          "sv": "Afrika"
         }
       },
       "difficulty": 3,
       "tags": [
         "location",
+        "africa",
         "western-africa",
         "core"
       ],
@@ -1026,15 +1068,16 @@
       "entity": "NL",
       "attribute": "location",
       "value": {
-        "id": "western-europe",
+        "id": "europe",
         "names": {
-          "en": "Western Europe",
-          "sv": "Västeuropa"
+          "en": "Europe",
+          "sv": "Europa"
         }
       },
       "difficulty": 2,
       "tags": [
         "location",
+        "europe",
         "western-europe",
         "core"
       ],
@@ -1050,15 +1093,16 @@
       "entity": "NO",
       "attribute": "location",
       "value": {
-        "id": "northern-europe",
+        "id": "europe",
         "names": {
-          "en": "Northern Europe",
-          "sv": "Nordeuropa"
+          "en": "Europe",
+          "sv": "Europa"
         }
       },
       "difficulty": 3,
       "tags": [
         "location",
+        "europe",
         "northern-europe",
         "core"
       ],
@@ -1074,15 +1118,16 @@
       "entity": "NP",
       "attribute": "location",
       "value": {
-        "id": "south-asia",
+        "id": "asia",
         "names": {
-          "en": "South Asia",
-          "sv": "Sydasien"
+          "en": "Asia",
+          "sv": "Asien"
         }
       },
       "difficulty": 3,
       "tags": [
         "location",
+        "asia",
         "south-asia",
         "core"
       ],
@@ -1108,6 +1153,7 @@
       "tags": [
         "location",
         "oceania",
+        "oceania",
         "core"
       ],
       "source": {
@@ -1131,6 +1177,7 @@
       "difficulty": 4,
       "tags": [
         "location",
+        "north-america",
         "north-america",
         "core"
       ],
@@ -1156,6 +1203,7 @@
       "tags": [
         "location",
         "south-america",
+        "south-america",
         "core"
       ],
       "source": {
@@ -1180,6 +1228,7 @@
       "tags": [
         "location",
         "oceania",
+        "oceania",
         "core"
       ],
       "source": {
@@ -1194,15 +1243,16 @@
       "entity": "PH",
       "attribute": "location",
       "value": {
-        "id": "south-east-asia",
+        "id": "asia",
         "names": {
-          "en": "South-East Asia",
-          "sv": "Sydostasien"
+          "en": "Asia",
+          "sv": "Asien"
         }
       },
       "difficulty": 3,
       "tags": [
         "location",
+        "asia",
         "south-east-asia",
         "core"
       ],
@@ -1218,15 +1268,16 @@
       "entity": "PK",
       "attribute": "location",
       "value": {
-        "id": "south-asia",
+        "id": "asia",
         "names": {
-          "en": "South Asia",
-          "sv": "Sydasien"
+          "en": "Asia",
+          "sv": "Asien"
         }
       },
       "difficulty": 3,
       "tags": [
         "location",
+        "asia",
         "south-asia",
         "core"
       ],
@@ -1242,15 +1293,16 @@
       "entity": "PL",
       "attribute": "location",
       "value": {
-        "id": "eastern-europe",
+        "id": "europe",
         "names": {
-          "en": "Eastern Europe",
-          "sv": "Östeuropa"
+          "en": "Europe",
+          "sv": "Europa"
         }
       },
       "difficulty": 3,
       "tags": [
         "location",
+        "europe",
         "eastern-europe",
         "core"
       ],
@@ -1266,15 +1318,16 @@
       "entity": "PT",
       "attribute": "location",
       "value": {
-        "id": "southern-europe",
+        "id": "europe",
         "names": {
-          "en": "Southern Europe",
-          "sv": "Sydeuropa"
+          "en": "Europe",
+          "sv": "Europa"
         }
       },
       "difficulty": 2,
       "tags": [
         "location",
+        "europe",
         "southern-europe",
         "core"
       ],
@@ -1290,15 +1343,16 @@
       "entity": "RO",
       "attribute": "location",
       "value": {
-        "id": "eastern-europe",
+        "id": "europe",
         "names": {
-          "en": "Eastern Europe",
-          "sv": "Östeuropa"
+          "en": "Europe",
+          "sv": "Europa"
         }
       },
       "difficulty": 4,
       "tags": [
         "location",
+        "europe",
         "eastern-europe",
         "core"
       ],
@@ -1314,15 +1368,16 @@
       "entity": "SE",
       "attribute": "location",
       "value": {
-        "id": "northern-europe",
+        "id": "europe",
         "names": {
-          "en": "Northern Europe",
-          "sv": "Nordeuropa"
+          "en": "Europe",
+          "sv": "Europa"
         }
       },
       "difficulty": 2,
       "tags": [
         "location",
+        "europe",
         "northern-europe",
         "core"
       ],
@@ -1338,15 +1393,16 @@
       "entity": "SN",
       "attribute": "location",
       "value": {
-        "id": "western-africa",
+        "id": "africa",
         "names": {
-          "en": "West Africa",
-          "sv": "Västafrika"
+          "en": "Africa",
+          "sv": "Afrika"
         }
       },
       "difficulty": 4,
       "tags": [
         "location",
+        "africa",
         "western-africa",
         "core"
       ],
@@ -1362,15 +1418,16 @@
       "entity": "TH",
       "attribute": "location",
       "value": {
-        "id": "south-east-asia",
+        "id": "asia",
         "names": {
-          "en": "South-East Asia",
-          "sv": "Sydostasien"
+          "en": "Asia",
+          "sv": "Asien"
         }
       },
       "difficulty": 2,
       "tags": [
         "location",
+        "asia",
         "south-east-asia",
         "core"
       ],
@@ -1386,15 +1443,16 @@
       "entity": "TN",
       "attribute": "location",
       "value": {
-        "id": "northern-africa",
+        "id": "africa",
         "names": {
-          "en": "North Africa",
-          "sv": "Nordafrika"
+          "en": "Africa",
+          "sv": "Afrika"
         }
       },
       "difficulty": 3,
       "tags": [
         "location",
+        "africa",
         "northern-africa",
         "core"
       ],
@@ -1410,15 +1468,16 @@
       "entity": "TZ",
       "attribute": "location",
       "value": {
-        "id": "eastern-africa",
+        "id": "africa",
         "names": {
-          "en": "East Africa",
-          "sv": "Östafrika"
+          "en": "Africa",
+          "sv": "Afrika"
         }
       },
       "difficulty": 4,
       "tags": [
         "location",
+        "africa",
         "eastern-africa",
         "core"
       ],
@@ -1434,15 +1493,16 @@
       "entity": "UA",
       "attribute": "location",
       "value": {
-        "id": "eastern-europe",
+        "id": "europe",
         "names": {
-          "en": "Eastern Europe",
-          "sv": "Östeuropa"
+          "en": "Europe",
+          "sv": "Europa"
         }
       },
       "difficulty": 2,
       "tags": [
         "location",
+        "europe",
         "eastern-europe",
         "core"
       ],
@@ -1458,15 +1518,16 @@
       "entity": "UG",
       "attribute": "location",
       "value": {
-        "id": "eastern-africa",
+        "id": "africa",
         "names": {
-          "en": "East Africa",
-          "sv": "Östafrika"
+          "en": "Africa",
+          "sv": "Afrika"
         }
       },
       "difficulty": 4,
       "tags": [
         "location",
+        "africa",
         "eastern-africa",
         "core"
       ],
@@ -1492,6 +1553,7 @@
       "tags": [
         "location",
         "north-america",
+        "north-america",
         "core"
       ],
       "source": {
@@ -1506,40 +1568,17 @@
       "entity": "VN",
       "attribute": "location",
       "value": {
-        "id": "south-east-asia",
+        "id": "asia",
         "names": {
-          "en": "South-East Asia",
-          "sv": "Sydostasien"
+          "en": "Asia",
+          "sv": "Asien"
         }
       },
       "difficulty": 3,
       "tags": [
         "location",
+        "asia",
         "south-east-asia",
-        "core"
-      ],
-      "source": {
-        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
-        "url": "https://www.britannica.com/science/continent",
-        "verifiedAt": "2026-08-05"
-      },
-      "volatility": "stable"
-    },
-    {
-      "id": "geo.ZA.location",
-      "entity": "ZA",
-      "attribute": "location",
-      "value": {
-        "id": "southern-africa",
-        "names": {
-          "en": "Southern Africa",
-          "sv": "Södra Afrika"
-        }
-      },
-      "difficulty": 2,
-      "tags": [
-        "location",
-        "southern-africa",
         "core"
       ],
       "source": {
@@ -1554,15 +1593,16 @@
       "entity": "ZW",
       "attribute": "location",
       "value": {
-        "id": "southern-africa",
+        "id": "africa",
         "names": {
-          "en": "Southern Africa",
-          "sv": "Södra Afrika"
+          "en": "Africa",
+          "sv": "Afrika"
         }
       },
       "difficulty": 4,
       "tags": [
         "location",
+        "africa",
         "southern-africa",
         "core"
       ],

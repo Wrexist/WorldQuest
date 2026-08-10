@@ -26,6 +26,20 @@ import entitiesPack from '../../../../packages/content/packs/geography/entities.
 import capitalsPack from '../../../../packages/content/packs/geography/facts.capitals.v1.json'
 import currenciesPack from '../../../../packages/content/packs/geography/facts.currencies.v1.json'
 import flagsPack from '../../../../packages/content/packs/geography/facts.flags.v1.json'
+/**
+ * The fourth fact per country, and it had never been loaded.
+ *
+ * 65 location facts, two question templates, `scripts/build-locations.cjs`, the map
+ * artwork and the `'map'` entry in PRESENTABLE below all shipped — and this import did
+ * not, so `tpl.country-to-map.mc4` and `tpl.location-of.mc4` had no facts to attach to
+ * and produced nothing. The comment on PRESENTABLE describes them as "back in the
+ * rotation"; they had never been in it.
+ *
+ * `pnpm content:validate` reads the packs DIRECTORY and reported 260 facts the whole
+ * time. This list is hand-written, so the app loaded 193 and no gate compared the two
+ * numbers. `content.test.ts` compares them now.
+ */
+import locationsPack from '../../../../packages/content/packs/geography/facts.locations.v1.json'
 import templatesPack from '../../../../packages/content/packs/geography/templates.v1.json'
 
 export type LoadedContent = {
@@ -80,6 +94,7 @@ export function useContent() {
           ...(capitalsPack.items as unknown as Fact[]),
           ...(flagsPack.items as unknown as Fact[]),
           ...(currenciesPack.items as unknown as Fact[]),
+          ...(locationsPack.items as unknown as Fact[]),
         ],
         templates: templatesPack.items as unknown as Template[],
       })

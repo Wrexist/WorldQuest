@@ -25,8 +25,23 @@ import { describe, expect, it } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { readdirSync } from 'node:fs'
 import { useContent } from './content.js'
 import { flagSource } from './flags.js'
+import { mapSource } from './maps.js'
+
+const PACK_DIR = join(import.meta.dirname, '../../../../packages/content/packs/geography')
+
+/**
+ * Fact packs the app deliberately does not load.
+ *
+ * One entry, and it is a policy decision rather than an oversight: the sensitive
+ * examples are the worked cases `docs/systems/content-pipeline.md` refers to — South
+ * Africa's three capitals, Zimbabwe's currency — carried as `quizzable: false` until a
+ * human decides how to present them. They exist to be read by an author, not asked of a
+ * user.
+ */
+const EXCLUDED_PACKS = ['facts.sensitive-examples.v1.json']
 
 describe('the lesson this app composes', () => {
   it('never asks a question it has no way to present', () => {
@@ -35,10 +50,29 @@ describe('the lesson this app composes', () => {
 
     expect(questions.length).toBeGreaterThan(0)
     for (const question of questions) {
-      // Modality is a promise about presentation. Text we can always draw; an image
-      // only if the bundle really holds that file. `map` and `audio` we cannot draw at
-      // all, and a template using either must not reach a user until it can be.
-      expect(['text', 'image'], question.item.templateId).toContain(question.modality)
+      // Modality is a promise about presentation. Text we can always draw; an image or
+      // a map only if the bundle really holds that file. `audio` we cannot draw at all,
+      // and a template using it must not reach a user until it can be.
+      //
+      // `map` was on the forbidden side of this line until the location FACTS were
+      // wired. That read as a deliberate narrowing and was not: `LessonScreen` has drawn
+      // a map-modality prompt at full width, labelled, with a screen-reader sibling swap
+      // for as long as `PRESENTABLE` has listed `'map'`. What was missing was
+      // `facts.locations.v1.json`, which nothing imported — so no map question could be
+      // composed, this assertion never met one, and it went on claiming a renderer that
+      // existed did not.
+      expect(['text', 'image', 'map'], question.item.templateId).toContain(question.modality)
+
+      if (question.modality === 'map') {
+        // The same assertion as the flag one below, for the same reason: a prompt that
+        // says "which country is this?" over a map that resolves to nothing is a
+        // question with no question in it.
+        expect(question.locator, question.item.templateId).toBeDefined()
+        expect(
+          mapSource(question.locator!.path),
+          `${question.item.templateId} → ${question.locator!.path}`,
+        ).toBeDefined()
+      }
 
       if (question.modality === 'image') {
         // The exact failure this file was written for, in its current form. A prompt
@@ -96,6 +130,31 @@ describe('the lesson this app composes', () => {
       .filter((item) => flagSource(item.assets!.flag!.path) === undefined)
       .map((item) => `${item.id} → ${item.assets!.flag!.path}`)
     expect(missing).toEqual([])
+  })
+
+  it('loads every fact pack the packs directory ships', () => {
+    // The bug this closes cost the app a quarter of its content, silently, for months.
+    //
+    // `pnpm content:validate` walks the packs DIRECTORY and reported 260 facts. The app
+    // builds its index from a HAND-WRITTEN list of imports in `content.ts`, and that
+    // list was missing `facts.locations.v1.json` — so the app loaded 195 facts, both
+    // location templates had nothing to attach to, and no gate compared the two numbers
+    // because no gate knew there were two.
+    //
+    // Asserted against the filesystem rather than a list, so a pack added tomorrow is
+    // covered by this test on the day it lands rather than on the day someone remembers.
+    const shipped = readdirSync(PACK_DIR).filter(
+      (file) => file.startsWith('facts.') && file.endsWith('.json'),
+    )
+    const source = readFileSync(join(import.meta.dirname, 'content.ts'), 'utf8')
+
+    const missing = shipped.filter(
+      (file) => !EXCLUDED_PACKS.includes(file) && !source.includes(file),
+    )
+    expect(missing, 'fact packs that ship but are never imported').toEqual([])
+    // And the exclusions are real files, so a rename cannot leave a stale waiver behind
+    // that quietly excuses a pack nobody meant to exclude.
+    expect(EXCLUDED_PACKS.filter((file) => !shipped.includes(file))).toEqual([])
   })
 
   it('asks in the user’s language, not in English', () => {

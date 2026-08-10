@@ -13,11 +13,26 @@
  * Facts already learned are shown in full, because at that point the page is a
  * reference rather than an answer key.
  *
- * ## Sources are visible
+ * ## Sources are NOT on this screen, and that is the same rule again
  *
- * Every fact carries where it came from and when it was last checked, and this screen
- * shows both. A learning app that cannot say where a fact came from is asking to be
- * trusted on nothing — and a wrong fact here is the worst bug this product can have.
+ * This screen used to list every fact's citation under a heading reading "Where this
+ * comes from". It defeated the rule directly above. The list printed
+ *
+ *   English Wikipedia, “Stockholm”
+ *   Swedish Act on the National Flag (SFS 1982:269)
+ *   English Wikipedia, “Swedish krona”
+ *
+ * six inches under three rows that each said "Learn it first". The spoiler guard hid
+ * the answers and the citations gave all three away, on the same screen, to a user who
+ * had learned none of them — and for the two Wikipedia ones the answer is the title of
+ * the article. A free look at an item the scheduler is about to score.
+ *
+ * The DATA is untouched: every fact still carries `source` and `verifiedAt`, the content
+ * pipeline still requires them, and `pnpm content:validate` still fails a fact without
+ * one. What changed is that the citation is no longer rendered beside a hidden answer.
+ * If sourcing should be user-visible somewhere — and there is a real argument that it
+ * should — it belongs where it cannot leak: on a fact the user has already learned, or
+ * on a page of its own that is not the quiz.
  *
  * The flag image is the real artwork, from the content pack's own asset path — flags
  * are SOURCED, never generated, because a drawn-from-memory flag with the wrong number
@@ -44,13 +59,29 @@ import {
   text,
 } from '@worldquest/design'
 import type { EntityProgress, Mastery } from '@worldquest/engines'
-import { formatDate, useT, currentLocale, type TranslationKey } from '../../lib/i18n.js'
+import { useT, type TranslationKey } from '../../lib/i18n.js'
 import type { RegionCode } from './ExploreScreen.js'
 import { Icon } from '../../components/Icon.js'
 
+/**
+ * Every attribute the packs can carry, and `location` was missing from it.
+ *
+ * A fact whose attribute is absent here falls through to `fact.attribute` — the raw
+ * string — so the row would have read "location" in lower case beside "Capital" and
+ * "Currency". It never showed, because `facts.locations.v1.json` was never imported
+ * (see `src/lib/content.ts`); the day it was, this gap would have shipped with it.
+ *
+ * "Continent" rather than "Location", because that is what the pack actually answers
+ * with: the seven-continent model, per `scripts/build-locations.cjs`. A label naming
+ * the field rather than the answer is how a user ends up expecting a city.
+ *
+ * `population` and `language` have no facts behind them yet and stay listed: they are
+ * named in the country-page catalogue and cost nothing to keep ready.
+ */
 const ATTRIBUTE_LABEL: Record<string, TranslationKey> = {
   capital: 'country:attribute.capital',
   flag: 'country:attribute.flag',
+  location: 'country:attribute.location',
   population: 'country:attribute.population',
   currency: 'country:attribute.currency',
   language: 'country:attribute.language',
@@ -122,7 +153,6 @@ export function CountryScreen({
   onToggleFavourite,
 }: CountryScreenProps) {
   const t = useT()
-  const locale = currentLocale()
 
   // A deep link can name a country the shipped packs do not have. Saying so beats an
   // empty page that reads as a crash.
@@ -136,10 +166,6 @@ export function CountryScreen({
       </View>
     )
   }
-
-  const sources = facts
-    .map((fact) => fact.source)
-    .filter((source): source is NonNullable<CountryFact['source']> => source !== undefined)
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
@@ -227,26 +253,6 @@ export function CountryScreen({
         </Card>
       </View>
 
-      {sources.length > 0 && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle} role="heading">
-            {t('country:source.title')}
-          </Text>
-          <Card style={styles.list}>
-            {sources.map((source, index) => (
-              <View key={`${source.name}-${index}`} style={styles.sourceRow}>
-                <Text style={styles.sourceName}>{source.name}</Text>
-                <Text style={styles.body}>
-                  {t('country:source.verified', {
-                    date: formatDate(Date.parse(source.verifiedAt), locale),
-                  })}
-                </Text>
-              </View>
-            ))}
-          </Card>
-        </View>
-      )}
-
       <Button label={t('country:practice')} onPress={onPractise} />
     </ScrollView>
   )
@@ -313,6 +319,4 @@ const styles = StyleSheet.create({
   factHidden: { color: colors.text.tertiary },
   due: { ...text('caption', { weight: '600' }), color: colors.reward.xp },
 
-  sourceRow: { gap: space[1] },
-  sourceName: { ...text('caption', { weight: '600' }), color: colors.text.primary },
 })

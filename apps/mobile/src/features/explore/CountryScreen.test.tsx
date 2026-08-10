@@ -8,9 +8,16 @@ const capital: CountryFact = {
   value: 'Stockholm',
   mastery: 'unseen',
   due: false,
+  // The REAL source string from `facts.capitals.v1.json`, and the answer is in it.
+  //
+  // The fixture used to say "UN Statistics Division, M49 standard" — a citation that
+  // happens not to name the city — which is exactly why the provenance test that used
+  // to live here could sit beside the no-spoiler tests above without either noticing
+  // the contradiction. The shipped pack cites the Wikipedia ARTICLE, whose title is the
+  // answer.
   source: {
-    name: 'UN Statistics Division, M49 standard',
-    url: 'https://unstats.un.org/unsd/methodology/m49/',
+    name: 'English Wikipedia, “Stockholm”',
+    url: 'https://en.wikipedia.org/wiki/Stockholm',
     verifiedAt: '2026-07-31',
   },
 }
@@ -76,18 +83,36 @@ describe('Country — the no-spoiler rule', () => {
   })
 })
 
-describe('Country — provenance', () => {
-  it('shows where a fact came from and when it was checked', () => {
-    // A learning app that cannot say where a fact came from is asking to be trusted
-    // on nothing, and a wrong fact here is the worst bug available.
-    renderCountry()
-    expect(screen.getByText('UN Statistics Division, M49 standard')).toBeTruthy()
-    expect(screen.getByText(/Checked/)).toBeTruthy()
+describe('Country — provenance stays out of the quiz', () => {
+  it('never renders a fact\u2019s source', () => {
+    // This block used to assert the OPPOSITE — that a "Where this comes from" list was
+    // on screen — and it sat directly below three tests asserting that Stockholm is
+    // not. Both passed, because the fixture's citation was a UN methodology page that
+    // does not name the city while the shipped pack cites the Wikipedia article, whose
+    // title IS the city.
+    //
+    // On a device that meant three rows reading "Learn it first" above a list reading
+    // "English Wikipedia, “Stockholm”" / "Swedish krona". The spoiler guard hid the
+    // answers and the citations handed all of them over, on the same screen, to a user
+    // who had learned none of them.
+    //
+    // The DATA still carries `source` and `verifiedAt` and `pnpm content:validate`
+    // still fails a fact without them. This asserts only that the citation is not drawn
+    // next to a hidden answer.
+    const { container } = renderCountry()
+
+    expect(container.textContent).not.toContain('Wikipedia')
+    expect(container.textContent).not.toContain('Stockholm')
+    expect(screen.queryByText(/Where this comes from/)).toBeNull()
+    expect(screen.queryByText(/Checked/)).toBeNull()
   })
 
-  it('omits the section entirely when nothing carries a source', () => {
-    renderCountry([flag])
-    expect(screen.queryByText('Where this comes from')).toBeNull()
+  it('keeps the source on the data, so nothing here is an excuse to drop it', () => {
+    // The prop is still part of `CountryFact` and the route still passes it. Removing
+    // it from the type would make "we know where this came from" unenforceable at the
+    // seam where a future reference view would need it.
+    renderCountry()
+    expect(capital.source?.verifiedAt).toBe('2026-07-31')
   })
 })
 
