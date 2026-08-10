@@ -175,6 +175,50 @@ columns carrying less than ~0.5 % coverage before taking the box — then re-run
 
 ---
 
+## Audit 7 — what only a device could show
+
+Added after a second batch of TestFlight screenshots. Every finding here was invisible to
+all eight gates, and two of them are the worst bugs in this document.
+
+**D1 · P0 — every plural in the app rendered as its own ICU source.** On device, users
+read:
+
+```
+{count, plural, one {# land att upptäcka} other {# länder att upptäcka}}
+```
+
+on the Explore continent tiles, the lesson summary headline, all three daily-goal options
+in Settings, and the pending-sync line in More. Not a translation bug and not a Swedish
+one — **Hermes implements no `Intl.PluralRules`**. `intl-messageformat` throws
+`Intl.PluralRules is not available in this environment` at construction, and `icu.ts`
+does the only safe thing left: it returns the raw pattern rather than crash a screen. The
+`console.error` beside it goes to a log nobody reads on a phone.
+
+Hermes has `Intl.Collator`, `Intl.DateTimeFormat`, `Intl.NumberFormat` and
+`Intl.getCanonicalLocales`, which is why numbers and dates were always right and only
+plurals were wrong.
+
+*Why nothing caught it, structurally:* every check that renders a string runs somewhere
+with a complete `Intl` — the unit tests in Node, the component tests in jsdom,
+`design:shots` and `e2e` in Chromium. The only engine in the pipeline that lacks the API
+is the one the app ships on. Four harnesses agreed, and the app was wrong on every device.
+
+**D2 · P0 — answer options were truncated mid-word.** `AnswerOption` capped its label at
+two lines under a comment reading *"never truncate a country name — let it wrap and
+grow"*. Country names fit; flag descriptions do not. On "Hur ser Japans flagga ut?" two of
+the four options rendered as `…med en gul halvmåne och stjärna på en bl…` and
+`…saffransgult, vitt, grönt — med ett mörkblått hj…`. An option you cannot read is an
+option you cannot choose, and a wrong guess costs a heart.
+
+**D3 · P1 — the feedback sheet hid the answer it was giving feedback on.** The sheet is a
+sibling below the scroll view, so when it appears the viewport shrinks by its height and
+the options scroll under it. On the Japan currency question the correct answer — *japansk
+yen*, freshly marked — sat behind the card that had just said "Perfekt!". A learning app
+that hides which one was right at the moment it says whether you were right has failed at
+the only thing the screen is for.
+
+---
+
 ## Audit 5 — cross-screen craft
 
 Read off the rendered bundle at 390 unless noted.
@@ -339,4 +383,25 @@ wants a decision rather than a patch), N12, M1, M2, C3, C5, and O1, which needs 
 **Bundle budget.** `pnpm bundle:native` was **already failing on `main`** before this
 branch: iOS measured 4.10 MB against a 4.1 MB budget, verified by stashing the branch. It
 had gone unnoticed because that check lives in `verify:full`, which runs in CI, and not in
-`verify`, which runs locally. Raised to 4.2 with the measurement recorded in the script.
+`verify`, which runs locally. Now 4.3, with every measurement recorded in the script.
+
+### Second pass — the device-only findings
+
+11. **`Intl.PluralRules` polyfill** — `@formatjs/intl-pluralrules` with `en` and `sv` rule
+    data, force-installed. **`polyfill-force`, not `polyfill`**, and that is the whole
+    lesson of D1: the conditional spelling would leave Node, jsdom and Chromium formatting
+    plurals through their own native `Intl` while the device formats them through
+    FormatJS — two implementations, and the one under test never the one that ships.
+    Costs 0.09 MB. FormatJS also recommends `intl-getcanonicallocales` and `intl-locale`;
+    those measured **0.30 MB** and the plural path never calls them, verified by deleting
+    both globals before the import. *(D1)*
+12. **`AnswerOption` no longer truncates.** The cap is gone, not raised — a long answer
+    costs space and the lesson screen scrolls; a truncated one costs the answer. *(D2)*
+13. **The feedback sheet scrolls the options back into view.** Measured `onLayout`, not a
+    guess at the offset, and above every early return — the first attempt sat next to the
+    JSX it affects, which is below `if (!question) return`, and a conditional hook is a
+    crash rather than a lint note. *(D3)*
+
+The guard for D1 is in `i18n.test.ts`: it asserts `Intl.PluralRules.polyfilled === true`,
+so if anyone reverts to the conditional import, the suite says that the tests have stopped
+covering the device rather than silently going back to testing the wrong engine.

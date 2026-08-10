@@ -11,6 +11,7 @@
     "pseudo": "tsx scripts/pseudo.ts"
   },
   "dependencies": {
+    "@formatjs/intl-pluralrules": "^6.3.13",
     "i18next": "^23.16.8",
     "intl-messageformat": "^10.7.0"
   },

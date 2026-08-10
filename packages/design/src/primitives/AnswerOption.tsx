@@ -147,13 +147,24 @@ export function AnswerOption({
           { backgroundColor: skin.face, borderColor: skin.edge, transform: [{ translateY }] },
         ]}
       >
-        <Text
-          style={[styles.label, { color: skin.label }]}
-          // Never truncate a country name — let it wrap and grow.
-          numberOfLines={2}
-        >
-          {label}
-        </Text>
+        {/* NO `numberOfLines`. The line above it used to read "never truncate a
+            country name — let it wrap and grow" and then capped it at two, which is
+            long enough for every country name and is not what the answers are made of.
+
+            Flag questions are answered with descriptions, and on a device the four
+            options for "Hur ser Japans flagga ut?" rendered as
+
+              "fjorton röda och vita ränder, med en gul halvmåne och stjärna på en bl…"
+              "tre vågräta band — saffransgult, vitt, grönt — med ett mörkblått hj…"
+
+            Two of the four cut off mid-word. An option you cannot read is an option you
+            cannot choose, so a question with two of them is not a question — and the
+            user is charged a heart for guessing at it.
+
+            An uncapped label can grow, and growing is the correct failure: the lesson
+            screen scrolls (`pnpm scrollable` proves it), so a long answer costs space.
+            A truncated one costs the answer. */}
+        <Text style={[styles.label, { color: skin.label }]}>{label}</Text>
 
         {(mark ?? GLYPHS[state]) !== null && (
           <View

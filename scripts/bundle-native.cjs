@@ -134,8 +134,30 @@ const MOBILE = join(process.cwd(), 'apps', 'mobile')
  * this budget was set, and neither figure moved because of a design change. Nothing here
  * is trimmable by this pass — the growth is application code and one previously-unused
  * dependency that a visible defect required.
+ *
+ * ── 2026-08-10 · 4.2 → 4.3 ──────────────────────────────────────────────────────────
+ *
+ * `@formatjs/intl-pluralrules`, plus `en` and `sv` rule data: **4.10 → 4.19 MB**.
+ *
+ * Bought for the worst bug this branch found. Hermes implements no `Intl.PluralRules`,
+ * so `intl-messageformat` threw on every plural in the catalogue and the ICU layer did
+ * the only safe thing left — it rendered the raw pattern. Real users read
+ * `{count, plural, one {# land att upptäcka} other {# länder att upptäcka}}` on the
+ * Explore tiles, the lesson summary headline, all three daily-goal options in Settings
+ * and the pending-sync line. Every test and both browser harnesses formatted it
+ * correctly, because Node and Chromium have the API the phone does not.
+ *
+ * 0.09 MB is the trimmed figure, and the trimming is worth recording. FormatJS's React
+ * Native guide also recommends `@formatjs/intl-getcanonicallocales` and
+ * `@formatjs/intl-locale`; with those the same fix measured **4.50 MB**, a 0.30 MB
+ * increase for two packages the plural path never calls. See the note in
+ * `packages/i18n/src/intl-polyfill.ts` for how that was verified rather than assumed.
+ *
+ * At 4.2 the measured 4.19 left 0.01 MB of headroom, which is not headroom — the next
+ * lockfile churn fails the gate for no reason anyone could act on. 4.3 is the same
+ * ~0.1 MB margin every previous note in this file has asked for.
  */
-const BUDGET_MB = 4.2
+const BUDGET_MB = 4.3
 
 /** Warn from 90 % of the budget, so the wall is visible before it is hit. */
 const WARN_AT = BUDGET_MB * 0.9

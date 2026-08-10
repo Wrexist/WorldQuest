@@ -220,6 +220,27 @@ export function LessonScreen({
   const [rewardsWrapped, setRewardsWrapped] = useState(false)
   const chipHeight = useRef(0)
   const rowHeight = useRef(0)
+
+  /**
+   * Bringing the answer back into view when the feedback sheet arrives.
+   *
+   * The sheet is a sibling below the scroll view, not an overlay — so when it appears it
+   * takes real height and the scroll viewport shrinks by that much. On a phone the
+   * question, its map and four options already overflow, so the options the user was
+   * just looking at get pushed under the sheet: read off a device, "japansk yen" — the
+   * CORRECT answer, freshly marked — was behind the card that had just said "Perfekt!".
+   *
+   * A learning app that hides which one was right at the exact moment it says whether
+   * you were right has failed at the only thing the screen is for. Scrolling the options
+   * block to the top of what is left is the cheapest correct answer: after answering, the
+   * prompt and the illustration have done their job and the options are the content.
+   *
+   * Not `scrollToEnd`, which was the first attempt — it pins the LAST option to the
+   * bottom, so with four options and a short viewport the first two go off the top, and
+   * the correct one is hidden again whenever it happens to be first.
+   */
+  const scroller = useRef<ScrollView>(null)
+  const optionsTop = useRef(0)
   // Called from BOTH `onLayout`s rather than only the row's, because their order is not
   // guaranteed — on web these come from a ResizeObserver, and a row that measured before
   // its chip would compare against a height of zero and conclude, permanently, that
@@ -346,6 +367,32 @@ export function LessonScreen({
   const lesson = useLesson({ questions, memory, timeLimitMs, onComplete: handleComplete })
 
   /**
+   * On the transition into feedback, put the options back on screen. See `scroller`.
+   *
+   * Keyed on `answered` alone rather than on the answer, so it runs once per question at
+   * the moment the sheet mounts and not again while the user reads it. `animated`, and
+   * deliberately not gated on reduced motion: this is not decoration — it is the screen
+   * showing the user the thing they asked to be shown, and the alternative under reduced
+   * motion is the same movement without the tween, which `scrollTo` gives us anyway on a
+   * platform that honours the setting.
+   *
+   * ABOVE every early return, and that is not a style preference. It first sat next to
+   * the JSX it affects, which is below `if (!question) return <LoadingState />` — so the
+   * hook count changed between the loading render and the question render and React threw
+   * "Rendered more hooks than during the previous render" on all fourteen lesson tests.
+   * A conditional hook is a crash, not a lint note.
+   */
+  const revealOptions = useCallback(() => {
+    // A hair above the block, so the first option is not flush against the header.
+    scroller.current?.scrollTo({ y: Math.max(0, optionsTop.current - space[3]), animated: true })
+  }, [])
+
+  useEffect(() => {
+    if (lesson.state.phase !== 'answered') return
+    revealOptions()
+  }, [lesson.state.phase, revealOptions])
+
+  /**
    * Watch this number. If it is high the mechanic is too punishing — which is the
    * whole reason the balance table caps hearts per lesson rather than per day.
    *
@@ -420,6 +467,7 @@ export function LessonScreen({
   if (!question) return <LoadingState />
 
   const answered = lesson.state.phase === 'answered'
+
   const lastAnswer = lesson.state.answers[lesson.state.answers.length - 1]
   /**
    * What that answer was actually worth.
@@ -473,7 +521,7 @@ export function LessonScreen({
         )}
       </View>
 
-      <ScrollView contentContainerStyle={[styles.body, compact && styles.bodyShort]}>
+      <ScrollView ref={scroller} contentContainerStyle={[styles.body, compact && styles.bodyShort]}>
         {/* Centred by spacers, not by `justifyContent` — see `Spacer`. A two-option
             question should not cling to the top of a tall phone, and at 320×568 the
             prompt plus a map plus four options overflow, which is where centring with
@@ -550,7 +598,21 @@ export function LessonScreen({
           </View>
         )}
 
-        <View style={styles.options}>
+        <View
+          style={styles.options}
+          // Measured rather than assumed: the prompt is one or two lines, the
+          // illustration is present or not, and both move this by tens of points.
+          onLayout={(event) => {
+            optionsTop.current = event.nativeEvent.layout.y
+            // Scrolled from HERE as well as from the effect, and this is the call that
+            // actually lands. The sheet is a sibling, so mounting it shrinks the scroll
+            // viewport and the two Spacers inside the content redistribute — which moves
+            // this block. The effect fires on the phase change, before that relayout, so
+            // on its own it scrolls to where the options USED to be and leaves the first
+            // one clipped under the header. This fires after the new position is known.
+            if (answered) revealOptions()
+          }}
+        >
           {question.options.map((option) => {
             const state = optionState(
               option.isCorrect,
