@@ -78,11 +78,17 @@ export const CONTINENT_ART: Record<RegionCode, ArtName> = {
 /**
  * How much of the tile the landmass takes.
  *
- * Measured off the reference rather than picked: its shape occupies a little under half
- * the card's width, which is what leaves the count and the due line a readable column
- * without the two fighting for the middle.
+ * Bigger than it looks, because it is anchored into the BOTTOM-TRAILING CORNER and
+ * clipped by the card — most of the extra falls off the edge, which is what gives the
+ * shape somewhere to be without needing a column of its own.
+ *
+ * The first version reserved a column instead, insetting the copy by 30 % so the two sat
+ * side by side. On a 390 phone that left the text about 95pt and "19 countries to meet"
+ * wrapped to two lines in Europe and not in Asia — so the row came out crooked, which is
+ * a worse crime than an overlap. A watermark under the words, dimmed and cornered, gives
+ * the copy the whole card back and still reads as a map of somewhere.
  */
-const SILHOUETTE_OF_TILE = 0.42
+const SILHOUETTE_OF_TILE = 0.62
 
 export const CONTINENT_SILHOUETTE: Partial<Record<RegionCode, ArtName>> = {
   EU: 'continents-silhouette/EU',
@@ -189,7 +195,10 @@ export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection
           </Text>
           <Text style={styles.subtitle}>{t('explore:subtitle')}</Text>
         </View>
-        <Art name="atlas/thinking" size={HEADER_ART} />
+        {/* `explorer`, not `thinking`: he is standing on a rock looking out, which is
+            what the reference has in this corner and what the screen is about. `thinking`
+            is the mascot for a question and belongs on the ones that ask you something. */}
+        <Art name="atlas/explorer" size={HEADER_ART} />
       </View>
 
       <Card style={styles.worldCard} accessibilityLabel={t('explore:world.label')}>
@@ -418,14 +427,35 @@ function ContinentTile({
                 total: progress.factsTotal,
               })}
             </Tally>
-            <ProgressBar
-              current={progress.factsLearned}
-              total={Math.max(1, progress.factsTotal)}
-              showCount={false}
-              // Reward tone where there is something to review — the same gold the streak
-              // uses, so "come back to this" reads consistently.
-              tone={progress.factsDue > 0 ? 'reward' : 'progress'}
-            />
+            {/* The bar, and the number it is drawing.
+   
+                A bar alone conveys progress by fill LENGTH, which is unreadable at the
+                left-hand end — every untouched continent looked identical, and six of the
+                seven are untouched on a new account. The percentage is the same fact in a
+                form you can compare across cards without measuring pixels, and it is
+                already computed for the tile's accessible name. */}
+            <View style={styles.regionBarRow}>
+              <ProgressBar
+                current={progress.factsLearned}
+                total={Math.max(1, progress.factsTotal)}
+                showCount={false}
+                // Reward tone where there is something to review — the same gold the
+                // streak uses, so "come back to this" reads consistently.
+                tone={progress.factsDue > 0 ? 'reward' : 'progress'}
+                height={8}
+                style={styles.regionBar}
+              />
+              {/* Hidden from the reader: `aria-label` on the tile already ends with this
+                  exact percentage, and hearing it twice per card across seven cards is
+                  the definition of noise. */}
+              <Text
+                style={styles.regionPercent}
+                importantForAccessibility="no-hide-descendants"
+                aria-hidden
+              >
+                {percent}
+              </Text>
+            </View>
             <Tally style={styles.regionDue} numberStyle={styles.regionMetaNumber}>
               {/* Zero due means "nothing is waiting for you", which is only true once
                   something has been learned. On a continent at 0 of 56 the same branch
@@ -510,10 +540,31 @@ const styles = StyleSheet.create({
   tileArt: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
   // `end`, not `right`: the text column is the leading half and it mirrors in RTL, so a
   // shape pinned to a physical edge would sit on the copy in Arabic.
+  /**
+   * Bottom-trailing, and quiet.
+   *
+   * `end` rather than `right`: the copy is the leading column and it mirrors in RTL, so
+   * a shape pinned to a physical edge would sit on the text in Arabic. The offsets push
+   * it past the corner so the landmass bleeds off two edges instead of floating in the
+   * middle of the card with air all round it.
+   *
+   * 0.55 opacity is the number that lets `text.primary` keep its 4.5:1 over the brightest
+   * of the six — Africa's gold — with `ArtScrim` already weighted downward underneath it.
+   * At full strength the map won and the count was unreadable on three of the seven.
+   */
+  regionBarRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  regionBar: { flex: 1 },
+  // Tabular, so seven cards' worth of percentages line up down the grid instead of
+  // jittering as they pass 9 % and 99 %.
+  regionPercent: {
+    ...text('caption', { weight: '700', numeric: true }),
+    color: colors.text.secondary,
+  },
   tileShape: {
     ...StyleSheet.absoluteFillObject,
     alignItems: 'flex-end',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
+    opacity: 0.55,
   },
   // The cell owns the grid width; the tile fills the cell. Split when the tiles gained a
   // staggered entrance — the transform has to sit on a wrapper, because animating the
@@ -521,21 +572,14 @@ const styles = StyleSheet.create({
   tileCell: { width: '48%' },
   tile: {
     width: '100%',
-    minHeight: 132,
     gap: space[2],
     padding: space[3],
     /**
-     * The text column stops before the landmass starts.
-     *
-     * Without this the shape is behind the copy rather than beside it, and it showed:
-     * Africa's outline ran straight through "0 of 46 learned" and North America's
-     * through "7 countries to meet". A silhouette is atmosphere and the count is the
-     * content, so the count wins the space and the shape takes what is left.
-     *
-     * A percentage rather than a number, because the tile's width is a measured column
-     * that changes with the viewport — see `continentArtSize`.
+     * A FLOOR on the height, so a two-line count cannot make one card taller than the
+     * one beside it. Read off a device, "19 countries to meet" wrapped in Europe and not
+     * in Asia, and the row came out visibly crooked.
      */
-    paddingEnd: '30%',
+    minHeight: 148,
     borderRadius: radius.lg,
     ...squircle,
     borderWidth: 1,

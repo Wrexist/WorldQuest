@@ -67,6 +67,15 @@ export type HomeProgress = {
  */
 const QUEST_ART = 132
 
+/**
+ * The globe on Home's world card.
+ *
+ * Smaller than Explore's 72: that card is the whole point of the Explore tab and this
+ * one is the third block down a scrolling home screen, so it gets a mark rather than a
+ * hero.
+ */
+const WORLD_GLOBE = 56
+
 export type HomeScreenProps = {
   readonly progress: HomeProgress | null
   readonly loading: boolean
@@ -290,6 +299,15 @@ export function HomeScreen({
             lives on the device. */}
         {world !== undefined && world.factsTotal > 0 && (
           <Card style={styles.worldCard} accessibilityLabel={t('home:world.label')}>
+            {/* The same globe Explore's world card carries. Two screens showing the same
+                two numbers under the same heading looked like two different features
+                because one had a picture and the other did not. Decorative — the heading
+                and both counts already say what it is. */}
+            <Art name="rewards/globe" size={WORLD_GLOBE} />
+            {/* Everything else stays a COLUMN. The card is a row now, so without this
+                wrapper the heading, the bar and the link would each become a column of
+                their own beside the globe. */}
+            <View style={styles.worldBody}>
             <View style={styles.worldHead}>
               <Text style={styles.cardTitle}>{t('home:world.title')}</Text>
               <Tally style={styles.worldCountries} numberStyle={styles.worldCountriesNumber}>
@@ -354,6 +372,7 @@ export function HomeScreen({
                 <Icon name="chevron" size={18} color={colors.text.tertiary} />
               </Card>
             )}
+            </View>
           </Card>
         )}
 
@@ -479,7 +498,9 @@ const styles = StyleSheet.create({
   tile: { flex: 1, gap: space[1] },
   leagueTier: { ...text('h3', { weight: '700' }), color: colors.reward.xp },
 
-  worldCard: { gap: space[3] },
+  // A row now, so the globe sits beside the counts rather than above them.
+  worldCard: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  worldBody: { flex: 1, gap: space[3] },
   worldHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
   // The words plain, the digits emphasised — the whole line was bold-secondary, which
   // is a caption shouting rather than a count reading as one.
