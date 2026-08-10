@@ -42,9 +42,26 @@
  * Audio is unavailable on web without a user gesture, on a simulator, and on any
  * device where the media session is busy. Every call is fire-and-forget with the
  * rejection swallowed: a lesson must never fail because a phone could not beep.
+ *
+ * ## expo-audio, not expo-av (2026-08-10)
+ *
+ * `expo-av` was removed in Expo SDK 54 and replaced by `expo-audio`. The move was
+ * forced rather than chosen: Apple now refuses any upload not built with the iOS 26
+ * SDK, that needs Xcode 26, and SDK 52 does not compile under it — so the SDK had to
+ * go to 54, and expo-av does not exist there.
+ *
+ * The API is imperative rather than promise-based: a player is created once and
+ * `play()`/`seekTo()` are called on it, instead of `createAsync` returning a handle
+ * whose every method is awaited. Two behaviours from §9 are preserved deliberately
+ * and are the reason this is a rewrite rather than a rename:
+ *
+ *   - `playsInSilentMode: false` (was `playsInSilentModeIOS`) — the silent switch is
+ *     the user telling us not to make noise, and we honour it.
+ *   - `seekTo(0)` before every `play()` — a second correct answer inside 300 ms must
+ *     retrigger from the start rather than be swallowed.
  */
 
-import { Audio } from 'expo-av'
+import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio'
 import { readJson } from './storage.js'
 
 export type SoundName = 'correct' | 'wrong' | 'unlock' | 'levelup' | 'streak' | 'tap'
@@ -80,22 +97,23 @@ const enabled = (): boolean => readJson<{ sound?: boolean }>(PREFERENCES_KEY)?.s
 
 /** Loaded once each, on first play. Six short files; unloading and reloading per tap
  *  costs more than keeping them. */
-const cache = new Map<SoundName, Audio.Sound>()
+const cache = new Map<SoundName, AudioPlayer>()
 
 let configured = false
 
 async function configure(): Promise<void> {
   if (configured) return
   configured = true
-  await Audio.setAudioModeAsync({
+  await setAudioModeAsync({
     // The silent switch is the user telling us directly, and §9 says never play when
     // the device is silenced. iOS only honours that when this is false — the default
     // is to play through silent, which is what a music app wants and a game does not.
-    playsInSilentModeIOS: false,
+    playsInSilentMode: false,
     // Never interrupt whatever the user was already listening to. Someone doing a
-    // lesson with a podcast on should keep the podcast.
-    shouldDuckAndroid: true,
-    staysActiveInBackground: false,
+    // lesson with a podcast on should keep the podcast. `duckOthers` is the
+    // cross-platform successor to expo-av's Android-only `shouldDuckAndroid`.
+    interruptionMode: 'duckOthers',
+    shouldPlayInBackground: false,
   })
 }
 
@@ -105,14 +123,14 @@ export function play(name: SoundName): void {
     await configure()
     let sound = cache.get(name)
     if (sound === undefined) {
-      const created = await Audio.Sound.createAsync(FILES[name], { volume: 0.8 })
-      sound = created.sound
+      sound = createAudioPlayer(FILES[name])
+      sound.volume = 0.8
       cache.set(name, sound)
     }
     // From the start every time. A second correct answer inside 300 ms must retrigger
-    // rather than be swallowed, which is what happens if you only call `playAsync`.
-    await sound.setPositionAsync(0)
-    await sound.playAsync()
+    // rather than be swallowed, which is what happens if you only call `play()`.
+    await sound.seekTo(0)
+    sound.play()
   })().catch(() => {
     // Swallowed on purpose — see the header.
   })

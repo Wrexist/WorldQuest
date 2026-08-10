@@ -68,12 +68,24 @@ describe('sound — the setting', () => {
   it('honours the silent switch rather than playing through it', () => {
     // iOS defaults to playing through the silent switch, which is what a music app
     // wants and a game does not. §9: never play when the device is silenced.
-    expect(source).toMatch(/playsInSilentModeIOS:\s*false/)
+    //
+    // `playsInSilentMode`, not expo-av's `playsInSilentModeIOS`: SDK 54 removed
+    // expo-av and expo-audio renamed the flag. The rule it encodes is unchanged, and
+    // asserting the new name is what stops the migration from quietly dropping it —
+    // the old key on the new API is simply ignored, so a rename that lost this would
+    // have compiled, shipped, and started playing through a silenced phone.
+    expect(source).toMatch(/playsInSilentMode:\s*false/)
+    expect(source).not.toMatch(/^\s*playsInSilentModeIOS:/m)
   })
 
   it('ducks rather than interrupts', () => {
     // Someone doing a lesson with a podcast on should keep the podcast.
-    expect(source).toMatch(/shouldDuckAndroid:\s*true/)
+    //
+    // expo-audio's `interruptionMode: 'duckOthers'` is the cross-platform successor
+    // to expo-av's Android-only `shouldDuckAndroid: true` — same intent, and now it
+    // applies on iOS too, which is a straight improvement rather than a compromise.
+    expect(source).toMatch(/interruptionMode:\s*'duckOthers'/)
+    expect(source).not.toMatch(/^\s*shouldDuckAndroid:/m)
   })
 })
 
