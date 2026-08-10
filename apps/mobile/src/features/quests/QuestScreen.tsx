@@ -30,46 +30,12 @@ import {
   type DailyQuest,
   type PerformGoal,
   type QuestTask,
-  type Slot,
 } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { SPEED_SECONDS } from '../lesson/modes.js'
 import { Art } from '../../components/Art.js'
 import { Icon } from '../../components/Icon.js'
-
-const SLOT_TITLE: Record<Slot, TranslationKey> = {
-  locate: 'quests:slot.locate',
-  recognise: 'quests:slot.recognise',
-  recall: 'quests:slot.recall',
-  discover: 'quests:slot.discover',
-  perform: 'quests:slot.perform',
-}
-
-/**
- * What each task is ABOUT, as one glyph.
- *
- * This was the flattest list in the app: five navy rectangles told apart by a number
- * in a ring, on the tab whose whole job is to make today's work look worth doing. The
- * Explore grid solves the identical problem — seven cards that are the same shape —
- * with a coloured mark and a tinted icon per tile, and it is the reason that screen
- * reads as seven places rather than one list.
- *
- * Literal, every one of them: "Find it on the map" gets a map, "Know the flag" a flag,
- * "Name the capital" a pin (a capital IS a pin on a map), "Learn something new" a star,
- * "Finish strong" a trophy. An icon that needs explaining is worse than no icon.
- *
- * Not a colour per slot, deliberately. `palette.continent` exists because continents
- * are a fixed, named set someone decided the colours for; quest slots have no such
- * palette, and inventing five would be five tokens nobody asked for. One accent, five
- * shapes — which is also what makes them survive a theme change.
- */
-const SLOT_ICON: Record<Slot, 'map' | 'flag' | 'pin' | 'star' | 'trophy'> = {
-  locate: 'map',
-  recognise: 'flag',
-  recall: 'pin',
-  discover: 'star',
-  perform: 'trophy',
-}
+import { SLOT_ICON, SLOT_TITLE } from './slots.js'
 
 const GOAL_BODY: Record<PerformGoal, TranslationKey> = {
   perfect_lesson: 'quests:goal.perfect_lesson',

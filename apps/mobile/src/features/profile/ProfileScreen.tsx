@@ -192,20 +192,28 @@ export function ProfileScreen({
             title: t((wornTitleKey ?? progress.titleKey) as TranslationKey),
           })}
         </Text>
+        {/* No label. The card reads "Level 1 · Wanderer" directly above and "102 XP to
+            level 2" directly below, and the bar was printing "Level 1" between them —
+            the level number three times in a card four lines tall, and the one line of
+            the three that said nothing about what the bar measures.
+
+            The same defect Home's quest card and Explore's world card each had: a bar
+            labelled with a quantity it does not measure. This one measures XP inside the
+            band, which is what the line under it already says in words, so the bar takes
+            its accessible name from that instead of adding a fourth voice. */}
         <ProgressBar
           current={progress.earnedInLevel}
           total={Math.max(1, progress.levelSpan)}
           showCount={false}
-          label={t('profile:level', { level: progress.level })}
+          label={
+            progress.remaining === null
+              ? t('profile:level.max')
+              : t('profile:level.next', {
+                  remaining: progress.remaining,
+                  level: progress.level + 1,
+                })
+          }
         />
-        <Text style={styles.levelNext}>
-          {progress.remaining === null
-            ? t('profile:level.max')
-            : t('profile:level.next', {
-                remaining: progress.remaining,
-                level: progress.level + 1,
-              })}
-        </Text>
       </Card>
 
       {week !== undefined && <WeeklyActivity week={week} />}
@@ -423,7 +431,29 @@ const styles = StyleSheet.create({
   levelTitle: { ...text('h3'), color: colors.text.primary, marginBottom: space[2] },
   week: { flexDirection: 'row', justifyContent: 'space-between', gap: space[2], height: 96 },
   weekDay: { flex: 1, alignItems: 'center', gap: space[1] },
-  weekTrack: { flex: 1, width: '100%', justifyContent: 'flex-end' },
+  /**
+   * The track is DRAWN, not just reserved.
+   *
+   * It had no background, so a day with no lessons rendered nothing at all — and the
+   * rendered week came out as a single green rectangle floating beside six invisible
+   * columns. This component's own header says a chart of "days with activity" would
+   * "flatter the user by lying about the shape of their week", and without a visible
+   * empty column that is exactly what it drew: the seven slots were there in the layout
+   * and only one of them was there on screen.
+   *
+   * `progressTrack` rather than a surface, and that is the point of using it: it is the
+   * same unfilled channel `ProgressBar` draws everywhere else in the app, so an empty day
+   * here reads as the same "nothing yet" an empty bar does on Explore.
+   */
+  weekTrack: {
+    flex: 1,
+    width: '100%',
+    justifyContent: 'flex-end',
+    borderRadius: radius.sm,
+    ...squircle,
+    backgroundColor: colors.status.progressTrack,
+    overflow: 'hidden',
+  },
   weekBar: { width: '100%', borderRadius: radius.sm, backgroundColor: colors.status.progress, ...squircle },
   weekLabel: { ...text('overline'), color: colors.text.tertiary },
   weekEmpty: { ...text('body'), color: colors.text.secondary },
@@ -442,7 +472,6 @@ const styles = StyleSheet.create({
   },
 
   levelCard: { gap: space[2] },
-  levelNext: { ...text('caption'), color: colors.text.secondary },
 
   section: { gap: space[2] },
   sectionTitle: { ...text('overline'), color: colors.text.tertiary },

@@ -492,3 +492,75 @@ routes after a full lesson, and it reported two things on its first run:
   filling gets six times longer. **Not fixed here** — item pace feeds lesson sizing and
   the economy simulation, so it belongs to the learning engine and a balance run, not to a
   styling pass. Logged as P1.
+
+### Fourth pass — the two the third pass logged, and what fixing them uncovered
+
+**P1.12, the daily goal's moving denominator.** Fixed by pinning the target, not by
+retuning the engine. `lessonsPerDay()` divides the goal minutes by the measured median
+answer time, and that median changes the instant a lesson ends — so finishing work could
+make the day's target bigger and the bar the user was filling longer. A target is a
+promise about *today*, so `useDailyGoal` decides it once per local day and holds it; pace
+measured today shapes tomorrow's. Lesson SIZE still adapts on every lesson, because a
+lesson has no finish line to move. Re-deciding does happen when the user changes the
+Settings slider, since that is them asking for a different day.
+
+**The unphotographable screens were not a harness gap.** They were a product bug, and a
+bad one. XP, coins and streaks are read from the server and nowhere else, while lessons
+are queued locally — so **finishing a lesson offline earned you nothing you could see.**
+Profile said "Nothing to show yet" and Streak said "No days yet" to somebody who had just
+done one. The work was safe in the queue and the app showed no sign of it.
+
+ADR 0006 says *the client may render optimistically; it may never decide*, and only the
+second half had ever been built: `reconcile()` has always existed to correct a prediction
+and nothing produced one. `packages/engines/src/sync/optimistic.ts` produces it now, from
+the `GradeResult` the lesson runner already computes — the same number the summary card
+renders as "+14 XP", which simply was not carried anywhere afterwards.
+
+Four judgements inside it, each one a bug avoided:
+
+- **Coins stay the server's.** XP and a streak are records; a wallet is not. Predicting a
+  balance upward offers a purchase the server is about to refuse. `coins` is spendable and
+  authoritative, `coinsIncludingPending` is the prediction, and both are named so a caller
+  has to choose. Home and Profile report; the Shop and the freeze button spend.
+- **The streak moves by at most one, and never down.** It is a day count, so two lessons
+  today add one day and a lesson on a day already counted adds nothing. A gap between
+  `lastActiveDate` and today could mean broken, reduced, or covered by a freeze — three
+  outcomes this cannot tell apart, so it predicts only the increment and the error stays
+  one-directional.
+- **`lastActiveDate` moves with the streak.** Without it the first attempt made things
+  *worse*: `currentStreak()` re-derives whether a run is alive from that date and returns 0
+  for a null one, so Profile said "1 day streak" while Streak said "No days yet".
+- **An award settles when the totals catch up, not when the mutation is acknowledged.**
+  Dropping it at acknowledgement shows the old number and then jumps.
+
+### What rendering those screens for the first time then showed
+
+Four defects that had never been visible, on a screen nobody had ever seen with data in
+it:
+
+19. **Profile's week chart had no track.** A day with no lessons drew nothing at all, so a
+    real week rendered as one green rectangle floating beside six invisible columns. The
+    component's own header says a chart of "days with activity" would "flatter the user by
+    lying about the shape of their week" — without a visible empty column that is what it
+    drew. Now `status.progressTrack`, the same unfilled channel `ProgressBar` uses.
+20. **"Day streak 1" beside "Best streak 0".** Not a lag — an impossibility. A current run
+    of N is proof the best run is at least N, so the record takes the larger of the two.
+21. **The level card printed the level three times** in a card four lines tall: the title,
+    the bar's label, and the line under it. The bar's label was the one of the three
+    saying nothing about what the bar measures, so it now takes its name from the "102 XP
+    to level 2" line instead of adding a fourth voice. Same defect Home's quest card and
+    Explore's world card each had.
+22. **Home told everyone to "Start your first lesson", for ever.** `questTitle` was a prop
+    on `HomeProgress` that **nothing ever passed**, so the app's default screen greeted a
+    user with a 40-day streak by telling them to start their first. Exactly what the same
+    card's comment records for the Daily Challenge one card over — "the shell was built,
+    ticked as done, and never checked for a producer" — except this one had a producer all
+    along in `useDailyQuest()`. It now names the next unfinished task, and keeps the old
+    sentence for the genuine first launch, where it is true.
+
+And one that is not visual at all: **`isoDay` used `toISOString()`**, which is UTC, so for
+everyone west of Greenwich the activity log's day boundary sat in the middle of their
+afternoon. In California a lesson finished at 5pm was recorded against tomorrow — the
+daily-goal line reset while the user was still in the app, and Monday evening's work
+landed on Tuesday's bar. `useWeekActivity` walks back seven days with `setDate`, which is
+local, and then formatted each one through this, which was not.

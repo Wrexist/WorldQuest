@@ -41,7 +41,8 @@ import { recordQuestEvent } from '../quests/questProgress.js'
 import { useContent } from '../../lib/content.js'
 import { currentLocale, tContent, useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
-import { recordLessonCompleted } from '../profile/useWeekActivity.js'
+import { localDay, recordLessonCompleted } from '../profile/useWeekActivity.js'
+import { recordPredictedAward } from '../../lib/awards.js'
 import { enqueueLesson } from '../../lib/sync.js'
 import { Icon } from '../../components/Icon.js'
 import { Stat } from '../../components/Stat.js'
@@ -319,6 +320,26 @@ export function LessonScreen({
     // must be right the moment the lesson ends — waiting for the server round trip
     // would show an empty week to anyone who finishes a lesson offline.
     recordLessonCompleted()
+    /**
+     * The same argument as the line above, for the numbers rather than the chart.
+     *
+     * `optimistic` is the full local grade — the figures the summary card is about to
+     * render as "+14 XP" — and until now it went no further than this screen. XP, coins
+     * and the streak all came from the server and nowhere else, so a lesson finished on
+     * a plane moved nothing anywhere: Profile said "Nothing to show yet" to somebody who
+     * had just done one.
+     *
+     * `may render optimistically; may never decide` (ADR 0006) is the rule, and this is
+     * the half that had never been built — `reconcile()` has always existed to correct a
+     * prediction and nothing produced one. The server still decides; this is what the
+     * user looks at while it does.
+     */
+    recordPredictedAward({
+      lessonId: state.lessonId,
+      xp: optimistic.xpAwarded,
+      coins: optimistic.coinsAwarded,
+      localDay: localDay(new Date()),
+    })
     hapticCelebrate()
     soundLevelUp()
     // The user's pace, from the answers just given. Sizes every later lesson.

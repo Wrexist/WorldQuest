@@ -11,11 +11,12 @@ import { useRouter } from 'expo-router'
 import { HomeScreen, type HomeProgress } from '../../src/features/home/HomeScreen.js'
 import { useContent } from '../../src/lib/content.js'
 import { useOnline } from '../../src/lib/connectivity.js'
-import { useProgress } from '../../src/features/home/useProgress.js'
-import { lessonsToday } from '../../src/features/profile/useWeekActivity.js'
-import { useItemPace } from '../../src/features/lesson/usePace.js'
-import { usePreferences } from '../../src/features/settings/usePreferences.js'
-import { lessonsPerDay, worldProgress } from '@worldquest/engines'
+import { useOptimisticProgress } from '../../src/features/home/useOptimisticProgress.js'
+import { useDailyGoal } from '../../src/features/home/useDailyGoal.js'
+import { useDailyQuest } from '../../src/features/quests/useDailyQuest.js'
+import { SLOT_TITLE } from '../../src/features/quests/slots.js'
+import { useT } from '../../src/lib/i18n.js'
+import { worldProgress } from '@worldquest/engines'
 
 /**
  * Zeroed rather than invented. A first launch shows the real empty state — and a
@@ -29,7 +30,7 @@ const COLD_START: HomeProgress = {
 
 export default function HomeRoute() {
   const router = useRouter()
-  const { data, status, refreshFailed } = useProgress()
+  const { shown, status, refreshFailed } = useOptimisticProgress()
   const online = useOnline()
 
   // The SAME call Explore makes, rather than a second count assembled here. Two
@@ -46,18 +47,55 @@ export default function HomeRoute() {
   // The daily goal, finally connected to something. It was asked for in onboarding,
   // stored, shown in Settings, and read by nothing — `lessonsPerDay()` sat unused in
   // the engine, so choosing 5 minutes or 20 minutes changed precisely nothing.
-  const { preferences } = usePreferences()
-  const itemMs = useItemPace()
-  const goal = {
-    done: lessonsToday(),
-    target: lessonsPerDay(preferences.dailyGoalMinutes, itemMs),
-  }
+  //
+  // Behind a hook now rather than computed here, because the target has to HOLD for the
+  // day: recomputed inline it moved every time the measured pace did, so finishing a
+  // lesson could make the day's target bigger and the bar the user was filling longer.
+  // See `useDailyGoal` for the whole story.
+  const goal = useDailyGoal()
 
-  const progress: HomeProgress = data
+  /**
+   * What the quest card actually says.
+   *
+   * `questTitle` was a prop on `HomeProgress` that nothing ever passed, so the card fell
+   * through to `home:quest.empty` — "Start your first lesson" — on every render for every
+   * user for ever. The app's default screen told somebody with a 40-day streak to start
+   * their first lesson.
+   *
+   * The producer existed the whole time: `useDailyQuest()` composes today's five tasks on
+   * the device and already drives the Quests tab and the lesson runner. The next
+   * unfinished one is the answer to "what am I about to do", which is the question a card
+   * with a Continue button under it is asking.
+   *
+   * The old sentence survives as the genuine first-launch case — no quest at all, or
+   * nothing done anywhere yet — where it is true and is a warmer greeting than a task
+   * name.
+   */
+  const t = useT()
+  const { quest } = useDailyQuest()
+  const started = (shown?.xpTotal ?? 0) > 0 || goal.done > 0
+  const nextTask = quest?.tasks.find((task) => !task.complete)
+  const questTitle =
+    quest === null || !started
+      ? undefined
+      : nextTask === undefined
+        ? t('quests:complete.title')
+        : t(SLOT_TITLE[nextTask.slot])
+
+  // `shown`, not the raw server row: it is the server's figures plus any lesson the
+  // queue has not delivered yet. Before this, a lesson finished offline moved nothing on
+  // this screen — the XP the summary card had just celebrated was invisible the second
+  // the user tapped through to Home. See `useOptimisticProgress`.
+  const progress: HomeProgress = shown
     ? {
-        xpTotal: data.xpTotal,
-        coins: data.coins,
-        streak: data.streak,
+        xpTotal: shown.xpTotal,
+        // The prediction, not the spendable balance. Nothing on Home takes coins — the
+        // Shop and the freeze button do, and both read `coins` — so this is a record,
+        // and a record that ignored the lesson just finished disagreed with Profile,
+        // which shows the same wallet one tab away.
+        coins: shown.coinsIncludingPending,
+        streak: shown.streak,
+        ...(questTitle !== undefined ? { questTitle } : {}),
       }
     : COLD_START
 

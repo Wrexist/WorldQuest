@@ -79,8 +79,12 @@ describe('Profile — the level curve', () => {
   it('shows the distance to the next level from the real curve', () => {
     // The mockup shows `12,850 / 15,000 XP`, which corresponds to no coherent
     // progression. This uses `50·n^1.9`.
-    render(<ProfileScreen stats={stats} world={world} loading={false} />)
-    expect(screen.getByText(/XP to level 12/)).toBeTruthy()
+    // `textContent`, not `getByText`: this line is the level bar's own label now — it
+    // used to be a third `Text` under a bar labelled "Level 11", which printed the level
+    // number three times in a card four lines tall — and a label with digits in it goes
+    // through `Tally`, so "12" is its own node.
+    const { container } = render(<ProfileScreen stats={stats} world={world} loading={false} />)
+    expect(container.textContent).toMatch(/XP to level 12/)
   })
 })
 
