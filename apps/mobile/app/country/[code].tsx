@@ -94,7 +94,11 @@ export default function CountryRoute() {
         mapContextPath={view.mapContextPath}
         facts={view.facts}
         progress={view.progress}
-        onPractise={() => router.push('/lesson')}
+        // The country. This button has said "Practise this country" since it was built
+        // and pushed a plain `/lesson` — a generic mixed lesson about all sixty-five,
+        // with no relationship to the page it was on. The engine could always narrow
+        // (`topicFilter`); nothing had ever asked it to.
+        onPractise={() => router.push(`/lesson?entity=${encodeURIComponent(code ?? '')}`)}
         {...(starrable
           ? { favourite: isFavourite(code), onToggleFavourite: () => toggle(code) }
           : {})}

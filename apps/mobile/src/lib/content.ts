@@ -13,11 +13,13 @@ import { currentLocale } from './i18n.js'
 import {
   buildIndex,
   composeLesson,
+  focusFilter,
   seededRng,
   type ContentIndex,
   type Entity,
   type Fact,
   type MemoryState,
+  type LessonFocus,
   type Question,
   type Template,
 } from '@worldquest/engines'
@@ -44,7 +46,15 @@ import templatesPack from '../../../../packages/content/packs/geography/template
 
 export type LoadedContent = {
   index: ContentIndex
-  compose: (opts: { count?: number }) => readonly Question[]
+  /**
+   * `focus` narrows what the lesson may ask about — see `LessonFocus` in the engines.
+   *
+   * Optional, and absent means the mixed lesson this always composed. `focusFilter`
+   * returns `undefined` for an empty focus, so an unfiltered lesson takes exactly the
+   * path it took before the picker existed rather than running a predicate that always
+   * says yes.
+   */
+  compose: (opts: { count?: number; focus?: LessonFocus }) => readonly Question[]
 }
 
 /**
@@ -100,8 +110,9 @@ export function useContent() {
       })
       return {
         index: built,
-        compose: ({ count = 10 }) =>
-          composeLesson({
+        compose: ({ count = 10, focus }) => {
+          const topicFilter = focus ? focusFilter(built, focus) : undefined
+          return composeLesson({
             index: built,
             memory: [...memory.values()],
             now: Date.now(),
@@ -119,7 +130,12 @@ export function useContent() {
             // shown. accessibility.md §8. See `PRESENTABLE` above for why the two had
             // to land together.
             screenReaderOnly: screenReaderOn,
-          }),
+            // Spread rather than passed as `undefined`: `exactOptionalPropertyTypes`
+            // distinguishes an absent property from one set to undefined, and the
+            // composer's own spread of it does the same.
+            ...(topicFilter ? { topicFilter } : {}),
+          })
+        },
       }
     } catch {
       setStatus('error')

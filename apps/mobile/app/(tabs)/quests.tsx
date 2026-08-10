@@ -27,6 +27,7 @@ export default function QuestsRoute() {
         quest={quest}
         loading={loading}
         onStartSpeedRound={() => router.push('/lesson?mode=speed')}
+        onChoosePractice={() => router.push('/practise')}
         onStart={() => router.push('/lesson')}
       />
     </ContentGate>

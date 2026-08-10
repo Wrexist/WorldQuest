@@ -23,6 +23,7 @@ import {
   text,
 } from '@worldquest/design'
 import { deriveRating, lessonLength } from '@worldquest/engines'
+import type { LessonFocus } from '@worldquest/engines'
 import type { ContentIndex, GradeResult, LessonState, Question } from '@worldquest/engines'
 import { Art } from '../../components/Art.js'
 import { Flag } from '../../components/Flag.js'
@@ -216,6 +217,8 @@ export function LessonScreen({
   mode = 'normal',
   coins = 0,
   isTaster = false,
+  focus,
+  length,
 }: {
   onExit: (summary: LessonExit) => void
   /** `speed` runs the same items against a clock. Scoring is unchanged. */
@@ -238,6 +241,23 @@ export function LessonScreen({
    * reinstalls are worse than no activation numbers.
    */
   isTaster?: boolean
+  /**
+   * What the user chose to practise, from the picker. Absent means the mixed lesson.
+   *
+   * The runner does nothing with it beyond handing it to the composer — the same items,
+   * the same scheduler, the same scoring, drawn from a smaller pool. A focused lesson is
+   * not a different mode; it is the same lesson about less.
+   */
+  focus?: LessonFocus | undefined
+  /**
+   * How many questions, when the user asked for a number.
+   *
+   * Absent keeps the measured default: `lessonLength(itemMs)` sizes a lesson to about two
+   * minutes for THIS user, which is what makes "five minutes a day" a real promise. A
+   * chosen length overrides that on purpose — someone with four minutes on a bus has told
+   * us something the pace estimate cannot know.
+   */
+  length?: number | undefined
 }) {
   const t = useT()
   const { index, memory, status, reload, isOffline } = useContent()
@@ -303,8 +323,11 @@ export function LessonScreen({
   const itemMs = useItemPace()
   const questions = useMemo<readonly Question[]>(() => {
     if (status !== 'ready' || !index) return []
-    return index.compose({ count: lessonLength(itemMs) })
-  }, [status, index, itemMs])
+    return index.compose({
+      count: length ?? lessonLength(itemMs),
+      ...(focus ? { focus } : {}),
+    })
+  }, [status, index, itemMs, focus, length])
 
   const handleComplete = useCallback((state: LessonState, optimistic: GradeResult) => {
     // Enqueue, never await. A lesson finishing must not depend on the network —
