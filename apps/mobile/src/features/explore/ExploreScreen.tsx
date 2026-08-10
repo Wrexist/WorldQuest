@@ -456,7 +456,18 @@ function ContinentTile({
                 {percent}
               </Text>
             </View>
-            <Tally style={styles.regionDue} numberStyle={styles.regionMetaNumber}>
+            {/* A pin, in the continent's own colour.
+   
+                ONE glyph tinted six ways, not six pictures. `Icon` renders Lucide's
+                `map-pin` as a white-on-transparent alpha mask and recolours it at the
+                call site, so the same 4 KB file serves every continent and follows the
+                token if a tint ever changes — which six baked PNGs could not do, at any
+                size, in any theme.
+   
+                Decorative: the line beside it says "19 countries to meet" in words. */}
+            <View style={styles.regionDueRow}>
+              <Icon name="pin" size={14} color={tint} />
+              <Tally style={styles.regionDue} numberStyle={styles.regionMetaNumber}>
               {/* Zero due means "nothing is waiting for you", which is only true once
                   something has been learned. On a continent at 0 of 56 the same branch
                   rendered "Up to date" — an invitation turned into a claim that the user
@@ -471,6 +482,7 @@ function ContinentTile({
                 ? t('explore:region.size', { count: progress.entitiesTotal })
                 : t('explore:region.due', { count: progress.factsDue })}
             </Tally>
+            </View>
           </>
         )}
       </Pressable>
@@ -553,6 +565,8 @@ const styles = StyleSheet.create({
    * At full strength the map won and the count was unreadable on three of the seven.
    */
   regionBarRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  // `space[1]` is the icon↔label step — the one place the 4pt rung is for.
+  regionDueRow: { flexDirection: 'row', alignItems: 'center', gap: space[1] },
   regionBar: { flex: 1 },
   // Tabular, so seven cards' worth of percentages line up down the grid instead of
   // jittering as they pass 9 % and 99 %.

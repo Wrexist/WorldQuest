@@ -98,6 +98,7 @@ const ICONS = {
   // ── content and collections ──────────────────────────────────────────────
   globe: 'globe', //         🌍
   map: 'map', //             🗺
+  pin: 'map-pin', //         where a place IS — the continent cards' "countries to meet"
   flag: 'flag', //           ⚑
   star: 'star', //           ★ ☆ — one shape; filled state is a tint, not a glyph
   lock: 'lock', //           locked achievements and collection tiles
