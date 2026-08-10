@@ -6,7 +6,6 @@ const RETURNING: HomeProgress = {
   xpTotal: 4820,
   coins: 430,
   streak: 12,
-  questTitle: 'Europe II',
   questDone: 7,
   questTotal: 10,
   challengeIn: '14:22:18',
@@ -26,7 +25,10 @@ describe('Home — the five states', () => {
     render(
       <HomeScreen progress={RETURNING} loading={false} isOffline={false} onStartLesson={() => {}} />,
     )
-    expect(screen.getByText('Europe II')).toBeTruthy()
+    // The card names the QUEST now, not whichever task came next. `questTitle` was a
+    // prop nothing ever passed, so this used to assert a fixture value that only ever
+    // appeared in this file.
+    expect(screen.getByText('Five things, about ten minutes')).toBeTruthy()
     expect(screen.getByText('Gold I')).toBeTruthy()
   })
 
@@ -60,12 +62,16 @@ describe('Home — the five states', () => {
     const { container } = render(
       <HomeScreen progress={null} loading isOffline={false} onStartLesson={() => {}} />,
     )
-    expect(screen.queryByText('Europe II')).toBeNull()
+    expect(screen.queryByText('Five things, about ten minutes')).toBeNull()
     expect(container.querySelector('[aria-label="Loading"]')).toBeTruthy()
   })
 
   it('shows the empty state on a first launch rather than zeros everywhere', () => {
     render(<HomeScreen progress={COLD} loading={false} isOffline={false} onStartLesson={() => {}} />)
+    // A first launch keeps the warmer line. It is genuinely a different moment from a
+    // Tuesday — and the one the whole funnel turns on — so "Five things, about ten
+    // minutes", which is right for somebody who already knows what the quest is, is the
+    // wrong first sentence in the product.
     expect(screen.getByText('Start your first lesson')).toBeTruthy()
     // No streak badge at zero: "0 day streak" is a worse first impression than none.
     expect(screen.queryByText('Day streak')).toBeNull()
@@ -132,56 +138,83 @@ describe('Home — behaviour', () => {
   })
 })
 
-describe('Home — the daily goal', () => {
-  it('shows the goal in lessons, the unit the user experiences', () => {
+describe('Home — today’s quest', () => {
+  const withQuest = (
+    quest: { done: number; total: number; complete: boolean },
+    offerMore = true,
+  ) =>
+    render(
+      <HomeScreen
+        progress={RETURNING}
+        loading={false}
+        isOffline={false}
+        onStartLesson={() => {}}
+        quest={quest}
+        offerMore={offerMore}
+      />,
+    )
+
+  it('says how much of the quest is left, in tasks', () => {
+    // Tasks, not lessons and not facts. "Five things, about ten minutes" is the promise
+    // the Quests tab makes, and this card used to count a different quantity — lessons
+    // against a target derived from the user's measured pace, which MOVED when the pace
+    // estimate did. One card, one number.
+    //
     // `textContent`, not `getByText`: the bar's label styles its digits apart from its
     // words, so the line is several nodes. What is asserted is what the user reads.
-    const { container } = render(
-      <HomeScreen
-        progress={RETURNING}
-        loading={false}
-        isOffline={false}
-        onStartLesson={() => {}}
-        goal={{ done: 1, target: 3 }}
-      />,
-    )
-    expect(container.textContent).toContain('1 of 3 lessons today')
+    const { container } = withQuest({ done: 2, total: 5, complete: false })
+    expect(container.textContent).toContain('2 of 5 done')
   })
 
-  it('congratulates on reaching it without telling the user to stop', () => {
-    // Passing the goal is a good thing, not an end. Nothing here may read as
-    // "you're done, go away".
-    const { container } = render(
-      <HomeScreen
-        progress={RETURNING}
-        loading={false}
-        isOffline={false}
-        onStartLesson={() => {}}
-        goal={{ done: 3, target: 3 }}
-      />,
-    )
-    expect(screen.getByText(/goal met/i)).toBeTruthy()
-    expect(container.textContent).not.toMatch(/come back tomorrow|that'?s enough|stop now|finished for today/i)
+  it('invites in the title and counts in the bar, rather than doing either twice', () => {
+    // Three lines, three jobs: the label says what this is ("Today's Quest"), the title
+    // says what to do, the bar says how far. The first attempt made the title "Today's
+    // quest" as well, which printed the card's own name twice six pixels apart — the
+    // defect this repo has now fixed on four separate cards.
+    const { container } = withQuest({ done: 0, total: 5, complete: false })
+    expect(container.textContent).toContain('Five things, about ten minutes')
+    expect(container.textContent).toContain('0 of 5 done')
   })
 
-  it('never frames an unmet goal as failure', () => {
-    const { container } = render(
-      <HomeScreen
-        progress={RETURNING}
-        loading={false}
-        isOffline={false}
-        onStartLesson={() => {}}
-        goal={{ done: 0, target: 3 }}
-      />,
-    )
-    expect(container.textContent).not.toMatch(/behind|missed|failed|you haven'?t|at risk/i)
+  it('says the day is discharged, and that more is optional', () => {
+    // The finish has to mean something. A primary green CONTINUE still shouting at
+    // somebody who has finished would make finishing meaningless — so the copy says the
+    // streak is safe and what is left is a secondary offer.
+    const { container } = withQuest({ done: 5, total: 5, complete: true })
+    expect(container.textContent).toContain('Your streak is safe')
+    expect(screen.getByRole('button', { name: 'Practise anyway' })).toBeTruthy()
+    expect(screen.queryByRole('button', { name: 'Continue' })).toBeNull()
   })
 
-  it('says nothing when there is no goal to show', () => {
+  it('offers nothing further to somebody who has already hit their own goal', () => {
+    // The one job the daily-goal setting still has. Five minutes a day, quest finished,
+    // goal met — handing that person another button turns a completed day back into an
+    // unfinished one, which is the exact thing this card was rebuilt to stop.
+    withQuest({ done: 5, total: 5, complete: true }, false)
+    expect(screen.queryByRole('button', { name: 'Practise anyway' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Continue' })).toBeNull()
+  })
+
+  it('never frames an unfinished quest as failure', () => {
+    // The rule from quests-and-liveops.md §1: a missed quest is never mentioned again,
+    // and an unfinished one is not a reprimand.
+    const { container } = withQuest({ done: 0, total: 5, complete: false })
+    expect(container.textContent).not.toMatch(/behind|missed|failed|you haven'?t|at risk|only/i)
+  })
+
+  it('shows the bar at zero rather than hiding it', () => {
+    // An empty bar says "there is a shape to fill", and the user it scaffolds for is
+    // exactly the one on their first launch. This was gated on `!isNewUser`, which hid
+    // it from the only person who needed it.
+    const { container } = withQuest({ done: 0, total: 5, complete: false })
+    expect(container.querySelector('[role="progressbar"]')).toBeTruthy()
+  })
+
+  it('says nothing about a quest when there is none yet', () => {
     const { container } = render(
       <HomeScreen progress={RETURNING} loading={false} isOffline={false} onStartLesson={() => {}} />,
     )
-    expect(container.textContent).not.toMatch(/lessons today/)
+    expect(container.textContent).not.toMatch(/of 5 done/)
   })
 })
 

@@ -1,6 +1,17 @@
 /**
  * A lesson focus, to and from a query string.
  *
+ * ## Who sends one
+ *
+ * The country page ("Practise this country"), the continent page ("Start"), and the
+ * daily quest. All three are STRUCTURED entry points: each has a subject and sends it.
+ *
+ * A practice picker used to send one too, and was removed — a configuration screen in
+ * front of the one action this app wants repeated makes the habit harder, and it made the
+ * session different every day when a ritual is a thing that is the same every day. See
+ * `docs/product/daily-quest-research.md §1`. The machinery survives because the three
+ * callers above are not configuration; they are a place with a name.
+ *
  * ## Why a URL rather than a store
  *
  * `/lesson` is already deep-linkable on purpose — the daily reminder opens it directly —
@@ -31,6 +42,8 @@ const MIN_LENGTH = 5
 const MAX_LENGTH = 20
 
 export type ParsedFocus = {
+  /** Exact facts, from the daily quest. */
+  readonly factIds: readonly string[]
   readonly attributes: readonly string[]
   /** Entity ids named directly — `/lesson?entity=SE` from the country page. */
   readonly entities: readonly string[]
@@ -46,6 +59,11 @@ export type ParsedFocus = {
  */
 export function focusToParams(focus: LessonFocus, length: number | undefined): string {
   const params = new URLSearchParams()
+  // The daily quest's facts. Long — five tasks is up to about fifteen ids — and that is
+  // acceptable for an in-app route: this URL is never typed, shared or stored, and the
+  // alternative is a store the runner reads back, which is the coupling the whole
+  // params module exists to avoid.
+  if (focus.factIds && focus.factIds.length > 0) params.set('facts', focus.factIds.join(','))
   if (focus.attributes && focus.attributes.length > 0) params.set('attr', focus.attributes.join(','))
   if (focus.entities && focus.entities.length > 0) params.set('entity', focus.entities.join(','))
   if (focus.difficulty?.min !== undefined) params.set('min', String(focus.difficulty.min))
@@ -70,6 +88,7 @@ const bounded = (value: string | undefined, lo: number, hi: number): number | un
 }
 
 export function parseFocusParams(params: {
+  facts?: string | undefined
   attr?: string | undefined
   entity?: string | undefined
   region?: string | undefined
@@ -81,6 +100,7 @@ export function parseFocusParams(params: {
   const max = bounded(params.max, 1, 5)
 
   return {
+    factIds: list(params.facts),
     attributes: list(params.attr),
     entities: list(params.entity),
     // Not validated against the region list here: this file does not know what regions

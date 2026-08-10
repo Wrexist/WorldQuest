@@ -82,7 +82,6 @@ const DEFAULT_ROUTES = [
   // than the screens somebody remembered.
   '/region/EU',
   '/achievements',
-  '/practise',
   '/streak',
   // `?source=settings` so it opens on the plans page. From onboarding it opens on
   // "you just learned N countries", which is the right screen there and an empty one

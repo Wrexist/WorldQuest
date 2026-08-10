@@ -40,6 +40,21 @@ import type { FactId } from '../learning/types.js'
 
 export type LessonFocus = {
   /**
+   * Exact facts to keep. The most specific narrowing there is, and the one the daily
+   * quest needs.
+   *
+   * Every `QuestTask` already carries `factIds` — the precise facts that task wants
+   * answered — so a quest has always been an exact specification of a session. Nothing
+   * ever played it: Home started a generic lesson and the quest advanced only as a side
+   * effect, if the shuffle happened to serve a fact a task happened to want. This field
+   * is what closes that gap, and it is why "play today's quest" is a filter rather than a
+   * feature.
+   *
+   * Generic despite the motivation: a fact id is not a geography concept, so this stays
+   * true to the rule at the top of the file.
+   */
+  readonly factIds?: readonly string[]
+  /**
    * Fact attributes to keep — `['capital']`, `['flag', 'currency']`.
    *
    * The one dimension a user is most likely to want, and the one the content pack is
@@ -91,12 +106,19 @@ export function focusFilter(
   index: ContentIndex,
   focus: LessonFocus,
 ): ((factId: FactId) => boolean) | undefined {
+  const factIds = focus.factIds === undefined ? null : new Set(focus.factIds)
   const attributes = focus.attributes === undefined ? null : new Set(focus.attributes)
   const entities = focus.entities === undefined ? null : new Set(focus.entities)
   const min = focus.difficulty?.min
   const max = focus.difficulty?.max
 
-  if (attributes === null && entities === null && min === undefined && max === undefined) {
+  if (
+    factIds === null &&
+    attributes === null &&
+    entities === null &&
+    min === undefined &&
+    max === undefined
+  ) {
     return undefined
   }
 
@@ -106,6 +128,7 @@ export function focusFilter(
     // true would let an unknown id through the one gate that exists to narrow the pool.
     if (fact === undefined) return false
 
+    if (factIds !== null && !factIds.has(factId)) return false
     if (attributes !== null && !attributes.has(fact.attribute)) return false
     if (entities !== null && !entities.has(fact.entity)) return false
     if (min !== undefined && fact.difficulty < min) return false
@@ -130,17 +153,3 @@ export function entitiesInGroup(
   return [...index.entities.values()].filter((e) => e[field] === value).map((e) => e.id)
 }
 
-/**
- * How many facts a focus would actually leave, so a picker can say so before committing.
- *
- * A chooser that offers "Currencies · Oceania" and then produces a three-question lesson
- * has wasted the choice; one that shows the count next to each option lets the user see
- * that before tapping. Counted over the quizzable facts — the keys of `itemsByFact` —
- * rather than over every fact in the index, because a fact no template can present is not
- * something this lesson could have asked either way.
- */
-export function factsMatching(index: ContentIndex, focus: LessonFocus): number {
-  const filter = focusFilter(index, focus)
-  const quizzable = [...index.itemsByFact.keys()]
-  return filter === undefined ? quizzable.length : quizzable.filter(filter).length
-}

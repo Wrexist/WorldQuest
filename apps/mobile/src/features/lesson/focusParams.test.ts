@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { focusToParams, parseFocusParams } from './params.js'
+import { focusToParams, parseFocusParams } from './focusParams.js'
 
 describe('focusToParams', () => {
   it('writes nothing for an unfocused lesson', () => {

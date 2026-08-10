@@ -13,14 +13,15 @@ import { LessonScreen } from '../src/features/lesson/LessonScreen.js'
 import { useProgress } from '../src/features/home/useProgress.js'
 import { useEntitlement } from '../src/features/paywall/useEntitlement.js'
 import { useContent } from '../src/lib/content.js'
-import { parseFocusParams } from '../src/features/practise/params.js'
+import { parseFocusParams } from '../src/features/lesson/focusParams.js'
 
 export default function LessonRoute() {
   // `/lesson?mode=speed`. A query param rather than a second route: it is the same
   // runner, the same items and the same scoring — only the clock differs.
-  const { mode, taster, attr, entity, region, min, max, len } = useLocalSearchParams<{
+  const { mode, taster, facts, attr, entity, region, min, max, len } = useLocalSearchParams<{
     mode?: string
     taster?: string
+    facts?: string
     attr?: string
     entity?: string
     region?: string
@@ -38,7 +39,7 @@ export default function LessonRoute() {
    * every existing caller and every existing notification.
    */
   const { index } = useContent()
-  const parsed = parseFocusParams({ attr, entity, region, min, max, len })
+  const parsed = parseFocusParams({ facts, attr, entity, region, min, max, len })
   const focus = useMemo<LessonFocus | undefined>(() => {
     if (index === null) return undefined
     // A region code becomes entity ids HERE, where the index is. The engine has no idea
@@ -48,6 +49,7 @@ export default function LessonRoute() {
     const entities = [...new Set([...parsed.entities, ...fromRegion])]
 
     const built: LessonFocus = {
+      ...(parsed.factIds.length > 0 ? { factIds: parsed.factIds } : {}),
       ...(parsed.attributes.length > 0 ? { attributes: parsed.attributes } : {}),
       ...(entities.length > 0 ? { entities } : {}),
       ...(parsed.difficulty ? { difficulty: parsed.difficulty } : {}),
@@ -58,7 +60,7 @@ export default function LessonRoute() {
     // The raw param STRINGS, not `parsed`. `parseFocusParams` returns a fresh object on
     // every render, so depending on it would defeat the memo entirely — and the memo is
     // what stops a new `focus` identity from recomposing the lesson mid-question.
-  }, [index, attr, entity, region, min, max])
+  }, [index, facts, attr, entity, region, min, max])
   // Fetched here rather than in the screen: server state belongs to the route, and
   // the runner should stay mountable without a QueryClientProvider.
   const { data } = useProgress()

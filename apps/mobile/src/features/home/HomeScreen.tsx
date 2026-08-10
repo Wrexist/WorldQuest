@@ -45,7 +45,6 @@ export type HomeProgress = {
    * it wires it up and ships the 10. Coverage now comes from `world`, which is computed
    * by the engine from the content index.
    */
-  readonly questTitle?: string
   readonly questDone?: number
   readonly questTotal?: number
   readonly challengeIn?: string
@@ -84,14 +83,34 @@ export type HomeScreenProps = {
   /** Optional so the screenshot renderer and component tests mount without a router. */
   readonly onOpenStreak?: (() => void) | undefined
   /**
-   * Today's daily goal, as lessons done and lessons targeted.
+   * Today's quest, as tasks done out of tasks set.
    *
-   * The goal was asked for during onboarding, stored, and shown in Settings — and
-   * read by nothing. `lessonsPerDay()` existed in the engine and was never called,
-   * so picking 5 minutes or 20 minutes changed precisely nothing. This is where the
-   * user finally sees the answer to the question they were asked.
+   * This replaced a `goal` of lessons-done against a target derived from the user's
+   * measured pace. Two problems with that, and the second is the reason this card
+   * exists: the target MOVED when the pace estimate moved, so finishing work could
+   * lengthen the bar; and it counted a different quantity from the thing the card is
+   * about. One card, one number.
+   *
+   * Tasks rather than facts, because "five things, about ten minutes" is the promise on
+   * screen. Absent while the content index is still building, which is the only moment
+   * there is no quest to describe.
    */
-  readonly goal?: { readonly done: number; readonly target: number } | undefined
+  readonly quest?:
+    | { readonly done: number; readonly total: number; readonly complete: boolean }
+    | undefined
+  /**
+   * Whether to offer another lesson once the quest is finished.
+   *
+   * The user's own daily goal, reduced to a yes/no before it reaches this screen. Someone
+   * who asked for five minutes a day and finished the quest has done what they set out to
+   * do, and putting "Practise anyway" in front of them turns a completed day into an
+   * unfinished one — which is the whole thing the quest card was rebuilt to stop.
+   * Someone who asked for twenty wants the offer.
+   *
+   * A boolean rather than the goal itself: this screen has no business knowing what a
+   * daily goal is, and passing minutes would invite it to render them.
+   */
+  readonly offerMore?: boolean | undefined
   /**
    * How much of the world this user has actually covered.
    *
@@ -132,7 +151,8 @@ export function HomeScreen({
   isOffline,
   onStartLesson,
   onOpenStreak,
-  goal,
+  quest,
+  offerMore = false,
   world,
   onOpenWorld,
 }: HomeScreenProps) {
@@ -212,13 +232,28 @@ export function HomeScreen({
           </View>
         </View>
 
-        {/* Today's Quest — the one primary action. */}
+        {/* Today's quest — the one primary action, and now the one SESSION.
+   
+            This card used to name whichever task came next ("Find it on the map") above a
+            bar counting lessons, and its button started a generic lesson that advanced the
+            quest only by coincidence. The card is the quest now: it says how much of the
+            quest is left, and its button plays the quest's own facts. See
+            `docs/product/daily-quest-research.md`. */}
         <Card level={2} style={styles.questCard}>
           <View style={styles.questBody}>
             <View style={styles.questText}>
               <Text style={styles.cardLabel}>{t('home:quest.today')}</Text>
               <Text style={styles.questTitle}>
-                {progress?.questTitle ?? t('home:quest.empty')}
+                {/* Three moments, three lines. A first launch is genuinely different
+                    from a Tuesday and is the one the whole funnel turns on, so it keeps
+                    the warmer copy — "Five things, about ten minutes" is the right thing
+                    to say to somebody who already knows what the quest is, and the wrong
+                    first sentence in the product. */}
+                {quest?.complete === true
+                  ? t('home:quest.done')
+                  : isNewUser
+                    ? t('home:quest.empty')
+                    : t('home:quest.play')}
               </Text>
             </View>
             {/* Atlas as a SCENE, not a thumbnail.
@@ -260,25 +295,49 @@ export function HomeScreen({
               it scaffolds for. Someone on their first launch got a sentence and a
               button; someone who had already worked out how the app fits together got
               the diagram. An empty bar says "there is a shape to fill". */}
-          {goal !== undefined && (
+          {/* The bar measures the QUEST, and the sentence above it measures the quest,
+              so the bar carries no label of its own.
+   
+              It used to measure "lessons today" against a target derived from the user's
+              pace — a second quantity on a card about a quest, and one that moved when
+              the pace estimate moved. One card, one number: five tasks, this many done.
+   
+              Shown at zero deliberately. An empty bar says "there is a shape to fill",
+              and the user it scaffolds for is exactly the one on their first launch. */}
+          {quest !== undefined && (
             <ProgressBar
-              current={goal.done}
-              total={Math.max(1, goal.target)}
+              current={quest.done}
+              total={Math.max(1, quest.total)}
               tone="reward"
-              // The sentence IS the count, so the bar's own counter is off. `label`
-              // renders visibly and as the accessible name, which is why the goal line
-              // is no longer a separate `Text` above it — passing the same words to
-              // both put "1 of 3 lessons today" on screen twice, six pixels apart.
+              // The sentence IS the label, not a `Text` above the bar. `label` renders
+              // visibly and doubles as the accessible name, so writing it in both places
+              // would put the same words on screen twice six pixels apart — which is
+              // exactly what the goal line used to do here.
               showCount={false}
               label={
-                goal.done >= goal.target
-                  ? t('home:goal.met', { count: goal.done })
-                  : t('home:goal.progress', { done: goal.done, target: goal.target })
+                quest.complete
+                  ? t('home:quest.doneBody')
+                  : t('quests:progress', { done: quest.done, total: quest.total })
               }
             />
           )}
 
-          <Button label={t('common:continue')} onPress={onStartLesson} />
+          {/* One button, and after the quest is done it stops being primary.
+   
+              Finishing the quest is the day's ritual, so the screen has to say plainly
+              that the obligation is discharged — a primary green button still shouting
+              CONTINUE at somebody who has finished would make the finish meaningless.
+              What is left is an offer, in the secondary style, for the people who want
+              more. */}
+          {quest?.complete !== true ? (
+            <Button label={t('common:continue')} onPress={onStartLesson} />
+          ) : offerMore ? (
+            <Button
+              label={t('home:quest.more')}
+              variant="secondary"
+              onPress={onStartLesson}
+            />
+          ) : null}
         </Card>
 
         {/* The Daily Challenge card is deliberately not here — see

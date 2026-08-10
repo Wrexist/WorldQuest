@@ -1,6 +1,19 @@
 /**
  * Today's goal: how many lessons, and how many of them are done.
  *
+ * ## What reads this now
+ *
+ * One thing, and it renders no number: Home asks whether to offer another lesson AFTER
+ * the daily quest is finished. The quest replaced this as the card's subject — five
+ * tasks, about ten minutes, the same for everybody — and two answers to "how much per
+ * day" on one screen was the duplication the whole rebuild removed.
+ *
+ * It is kept rather than deleted because deleting it would orphan the setting: the goal
+ * is asked for in onboarding and shown in Settings, and a preference read by nothing is
+ * the precise bug this file was written to fix in the first place. Reduced to one
+ * decision it stays honest — somebody who asked for five minutes a day and finished the
+ * quest is done; somebody who asked for twenty wants the offer.
+ *
  * ## The bug this exists to close
  *
  * The target was recomputed on every render from `lessonsPerDay(goalMinutes, itemPace)`,

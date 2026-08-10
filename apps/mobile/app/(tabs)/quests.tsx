@@ -14,6 +14,8 @@ import { router } from 'expo-router'
 import { ContentGate } from '../../src/components/ContentGate.js'
 import { QuestScreen } from '../../src/features/quests/QuestScreen.js'
 import { useDailyQuest } from '../../src/features/quests/useDailyQuest.js'
+import { questFocus } from '@worldquest/engines'
+import { focusToParams } from '../../src/features/lesson/focusParams.js'
 
 export default function QuestsRoute() {
   const { quest, loading, status, reload } = useDailyQuest()
@@ -27,8 +29,14 @@ export default function QuestsRoute() {
         quest={quest}
         loading={loading}
         onStartSpeedRound={() => router.push('/lesson?mode=speed')}
-        onChoosePractice={() => router.push('/practise')}
-        onStart={() => router.push('/lesson')}
+        // The quest's own facts. This button said "Continue" above five named tasks and
+        // started a generic lesson, so the five rows were a report on a lesson chosen by
+        // something else. Now the rows ARE the lesson.
+        onStart={() => {
+          const focus = quest === null ? undefined : questFocus(quest)
+          const query = focus === undefined ? '' : `?${focusToParams(focus, undefined)}`
+          router.push(`/lesson${query}`)
+        }}
       />
     </ContentGate>
   )

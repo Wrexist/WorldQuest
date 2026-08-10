@@ -14,8 +14,8 @@ import { useOnline } from '../../src/lib/connectivity.js'
 import { useOptimisticProgress } from '../../src/features/home/useOptimisticProgress.js'
 import { useDailyGoal } from '../../src/features/home/useDailyGoal.js'
 import { useDailyQuest } from '../../src/features/quests/useDailyQuest.js'
-import { SLOT_TITLE } from '../../src/features/quests/slots.js'
-import { useT } from '../../src/lib/i18n.js'
+import { questFocus, questStanding } from '@worldquest/engines'
+import { focusToParams } from '../../src/features/lesson/focusParams.js'
 import { worldProgress } from '@worldquest/engines'
 
 /**
@@ -52,35 +52,28 @@ export default function HomeRoute() {
   // day: recomputed inline it moved every time the measured pace did, so finishing a
   // lesson could make the day's target bigger and the bar the user was filling longer.
   // See `useDailyGoal` for the whole story.
-  const goal = useDailyGoal()
-
   /**
-   * What the quest card actually says.
+   * Today's quest — the card's subject, and the session it starts.
    *
-   * `questTitle` was a prop on `HomeProgress` that nothing ever passed, so the card fell
-   * through to `home:quest.empty` — "Start your first lesson" — on every render for every
-   * user for ever. The app's default screen told somebody with a 40-day streak to start
-   * their first lesson.
-   *
-   * The producer existed the whole time: `useDailyQuest()` composes today's five tasks on
-   * the device and already drives the Quests tab and the lesson runner. The next
-   * unfinished one is the answer to "what am I about to do", which is the question a card
-   * with a Continue button under it is asking.
-   *
-   * The old sentence survives as the genuine first-launch case — no quest at all, or
-   * nothing done anywhere yet — where it is true and is a warmer greeting than a task
-   * name.
+   * `useDailyQuest()` has composed five tasks a day since the quest engine landed, and
+   * every task carries the exact `factIds` it wants answered. Home started a GENERIC
+   * lesson and the quest advanced only as a side effect, so a user watched a bar move for
+   * reasons they could not see. `questFocus` turns the quest back into the lesson it
+   * always described — see `docs/product/daily-quest-research.md`.
    */
-  const t = useT()
+  /**
+   * The daily goal, reduced to one decision: offer another lesson after the quest, or not.
+   *
+   * It stopped driving the card when the quest replaced it — but a setting asked for in
+   * onboarding, shown in Settings and read by NOTHING is the exact bug this app already
+   * had once and documented at length. So it keeps the one job it can honestly still do:
+   * somebody who asked for five minutes a day and finished the quest is done, and should
+   * not be handed another button; somebody who asked for twenty wants it.
+   */
+  const goal = useDailyGoal()
   const { quest } = useDailyQuest()
-  const started = (shown?.xpTotal ?? 0) > 0 || goal.done > 0
-  const nextTask = quest?.tasks.find((task) => !task.complete)
-  const questTitle =
-    quest === null || !started
-      ? undefined
-      : nextTask === undefined
-        ? t('quests:complete.title')
-        : t(SLOT_TITLE[nextTask.slot])
+  const standing = quest === null ? undefined : questStanding(quest)
+  const focus = quest === null ? undefined : questFocus(quest)
 
   // `shown`, not the raw server row: it is the server's figures plus any lesson the
   // queue has not delivered yet. Before this, a lesson finished offline moved nothing on
@@ -95,7 +88,6 @@ export default function HomeRoute() {
         // which shows the same wallet one tab away.
         coins: shown.coinsIncludingPending,
         streak: shown.streak,
-        ...(questTitle !== undefined ? { questTitle } : {}),
       }
     : COLD_START
 
@@ -114,8 +106,15 @@ export default function HomeRoute() {
       // two screens can no longer disagree about whether the device is connected.
       isOffline={!online || refreshFailed || status === 'error'}
       onOpenStreak={() => router.push('/streak')}
-      onStartLesson={() => router.push('/lesson')}
-      goal={goal}
+      // The quest's own facts, not a shuffle. `focus` is undefined once the quest is
+      // finished, which is exactly when the button stops being primary and becomes
+      // "practise anyway" — an ordinary lesson, correctly.
+      onStartLesson={() => {
+        const query = focus === undefined ? '' : `?${focusToParams(focus, undefined)}`
+        router.push(`/lesson${query}`)
+      }}
+      {...(standing !== undefined ? { quest: standing } : {})}
+      offerMore={goal.done < goal.target}
       world={world}
       onOpenWorld={() => router.push('/explore')}
     />

@@ -28,5 +28,9 @@
   "home:world.countries": "{complete} av {total} länder",
   "home:world.facts": "{learned} av {total} fakta",
   "home:world.due": "{count, plural, one {# fakta redo att repetera} other {# fakta redo att repetera}}",
-  "home:world.open": "Utforska världen"
+  "home:world.open": "Utforska världen",
+  "home:quest.play": "Fem saker, ungefär tio minuter",
+  "home:quest.done": "Uppdraget klart",
+  "home:quest.doneBody": "Din svit är säkrad. Fortsätt gärna om du vill.",
+  "home:quest.more": "Öva ändå"
 }

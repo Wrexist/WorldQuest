@@ -52,15 +52,6 @@ export type QuestScreenProps = {
    * like every other callback here.
    */
   readonly onStartSpeedRound?: (() => void) | undefined
-  /**
-   * Opens the practice picker. Optional like every other callback here, and absent
-   * hides the row rather than drawing a dead control.
-   *
-   * On this tab rather than on Home for the same reason the speed round is: Home has one
-   * primary action and a second way in beside it splits it. This is the tab a user opens
-   * when they have already decided to practise and are choosing how.
-   */
-  readonly onChoosePractice?: (() => void) | undefined
 }
 
 /**
@@ -79,7 +70,6 @@ export function QuestScreen({
   loading,
   onStart,
   onStartSpeedRound,
-  onChoosePractice,
 }: QuestScreenProps) {
   const t = useT()
 
@@ -159,28 +149,6 @@ export function QuestScreen({
           screen the user leaves. */}
       {!quest.complete && <Button label={t('common:continue')} onPress={onStart} />}
     
-      {/* A nav row, the same shape Explore uses for Flags and Countries: tinted icon,
-          name, chevron. It opens a form rather than starting anything, and a chevron is
-          how iOS says "this goes somewhere" — a Button here would promise a lesson.
-
-          Both of the rows below live on this tab rather than on Home for the reason the
-          speed round already carried: Home has one primary action, and a second way in
-          beside it splits it. This is the tab somebody opens having already decided to
-          practise, and is choosing how. */}
-      {onChoosePractice !== undefined && (
-        <Card
-          level={2}
-          role="button"
-          accessibilityLabel={t('lesson:practise.cta')}
-          onPress={onChoosePractice}
-          style={styles.choose}
-        >
-          <Icon name="quests" size={22} color={colors.action.primary} />
-          <Text style={styles.chooseLabel}>{t('lesson:practise.cta')}</Text>
-          <Icon name="chevron" size={14} color={colors.text.tertiary} />
-        </Card>
-      )}
-
       {/* The speed round: the same items against a clock, for someone already in a
           practising frame of mind. */}
       {onStartSpeedRound !== undefined && (
@@ -309,15 +277,6 @@ function QuestSkeleton() {
 }
 
 const styles = StyleSheet.create({
-  choose: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space[3],
-    paddingVertical: space[3],
-    paddingHorizontal: space[3],
-    marginTop: space[3],
-  },
-  chooseLabel: { ...text('bodyStrong'), color: colors.text.primary, flex: 1 },
   speed: { padding: space[4], gap: space[2], marginTop: space[3] },
   speedTitle: { ...text('h3'), color: colors.text.primary },
   screen: { flex: 1 },

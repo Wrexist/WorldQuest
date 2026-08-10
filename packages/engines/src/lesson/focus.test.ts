@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { buildIndex } from '../content/index.js'
 import { seededRng } from '../shared/index.js'
 import { composeLesson } from './compose.js'
-import { entitiesInGroup, factsMatching, focusFilter } from './focus.js'
+import { entitiesInGroup, focusFilter } from './focus.js'
 import type { Entity, Fact, Template } from '../content/types.js'
 
 /**
@@ -83,7 +83,6 @@ describe('focusFilter', () => {
     const keep = focusFilter(index, { entities: [] })
     expect(keep).toBeDefined()
     expect(ids.filter(keep!)).toEqual([])
-    expect(factsMatching(index, { entities: [] })).toBe(0)
   })
 
   it('keeps only the attributes asked for', () => {
@@ -148,19 +147,6 @@ describe('entitiesInGroup', () => {
   })
 })
 
-describe('factsMatching', () => {
-  it('counts what a picker would be promising', () => {
-    // A chooser offering "Currencies · G2" and then producing a three-question lesson has
-    // wasted the choice. This is the number that goes beside the option.
-    expect(factsMatching(index, {})).toBe(ids.length)
-    expect(factsMatching(index, { attributes: ['capital'] })).toBe(8)
-    expect(factsMatching(index, { attributes: ['capital'], entities: entitiesInGroup(index, 'region', 'G2') })).toBe(4)
-  })
-
-  it('counts zero when a combination has nothing in it', () => {
-    expect(factsMatching(index, { attributes: ['flag'] })).toBe(0)
-  })
-})
 
 describe('a focused lesson', () => {
   const compose = (focus: Parameters<typeof focusFilter>[1], count = 6) => {
