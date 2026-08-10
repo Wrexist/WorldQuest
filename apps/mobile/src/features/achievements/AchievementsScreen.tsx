@@ -241,6 +241,7 @@ function AchievementCard({ row, index }: { row: AchievementRow; index: number })
             current={Math.round(fraction * 100)}
             total={100}
             showCount={false}
+              showPercent
             tone={progress.tier === null ? 'progress' : 'reward'}
           />
           <Text style={styles.remaining}>{t('achievements:next', { remaining })}</Text>

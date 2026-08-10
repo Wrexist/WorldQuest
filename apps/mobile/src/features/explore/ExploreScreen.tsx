@@ -427,35 +427,19 @@ function ContinentTile({
                 total: progress.factsTotal,
               })}
             </Tally>
-            {/* The bar, and the number it is drawing.
-   
-                A bar alone conveys progress by fill LENGTH, which is unreadable at the
-                left-hand end — every untouched continent looked identical, and six of the
-                seven are untouched on a new account. The percentage is the same fact in a
-                form you can compare across cards without measuring pixels, and it is
-                already computed for the tile's accessible name. */}
-            <View style={styles.regionBarRow}>
-              <ProgressBar
-                current={progress.factsLearned}
-                total={Math.max(1, progress.factsTotal)}
-                showCount={false}
-                // Reward tone where there is something to review — the same gold the
-                // streak uses, so "come back to this" reads consistently.
-                tone={progress.factsDue > 0 ? 'reward' : 'progress'}
-                height={8}
-                style={styles.regionBar}
-              />
-              {/* Hidden from the reader: `aria-label` on the tile already ends with this
-                  exact percentage, and hearing it twice per card across seven cards is
-                  the definition of noise. */}
-              <Text
-                style={styles.regionPercent}
-                importantForAccessibility="no-hide-descendants"
-                aria-hidden
-              >
-                {percent}
-              </Text>
-            </View>
+            {/* `showPercent` rather than a row built here. It started as a local one and
+                moved into the primitive the moment Quests and Achievements turned out to
+                have the same unreadable-at-zero bar — see `ProgressBar`. */}
+            <ProgressBar
+              current={progress.factsLearned}
+              total={Math.max(1, progress.factsTotal)}
+              showCount={false}
+              showPercent
+              // Reward tone where there is something to review — the same gold the
+              // streak uses, so "come back to this" reads consistently.
+              tone={progress.factsDue > 0 ? 'reward' : 'progress'}
+              height={8}
+            />
             {/* A pin, in the continent's own colour.
    
                 ONE glyph tinted six ways, not six pictures. `Icon` renders Lucide's
