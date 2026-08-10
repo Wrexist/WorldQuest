@@ -64,6 +64,25 @@ type ScreenState = 'loading' | 'error' | 'empty' | 'ready'
  * mascot and the way onward. Big enough to read the design, small enough not to push
  * the Continue button off a 320.
  */
+/**
+ * The rail down the leading edge of the answers.
+ *
+ * Four, because every multiple-choice template in the pack is two or four options and
+ * `BADGES[index]` is undefined past the end — which `AnswerOption` reads as "no badge"
+ * rather than as an empty circle. A five-option template would get four badges and one
+ * bare row, which is visibly wrong in a screenshot and is the right way for it to fail:
+ * loudly, in the place someone is looking, rather than by crashing a lesson.
+ */
+const BADGES = ['A', 'B', 'C', 'D'] as const
+
+/**
+ * How many right in a row before the feedback is allowed to call it a roll.
+ *
+ * Three, because two is a coincidence. Below this the praise says something true and
+ * unremarkable instead — see the copy note on `lesson:feedback.correct.streak`.
+ */
+const STREAK_PRAISE = 3
+
 const REVEAL_WIDTH = 96
 
 const FLAG_PROMPT_WIDTH = 200
@@ -147,7 +166,20 @@ const SHORT_SCREEN = 700
  * full size it is the picture that gives way. Never zero: "where in the world is this"
  * is half of what the screen teaches.
  */
-const LOCATOR_WIDTH = 200
+/**
+ * 280, up from 200, on a tall screen.
+ *
+ * The reference draws the locator nearly the full content width and it is the single
+ * biggest reason its question screen reads as a modern product rather than a form: the
+ * map stops being a stamp beside the prompt and becomes the thing you look at while you
+ * think. At 200 on a 390-wide phone it was 51 % of the content column with a third of
+ * the screen empty above it.
+ *
+ * The SHORT variant does not move. The 320×568 budget has not changed — prompt, map and
+ * four options need about 690pt there — and this is exactly the number that measurement
+ * exists to protect.
+ */
+const LOCATOR_WIDTH = 280
 const LOCATOR_WIDTH_SHORT = 132
 
 /**
@@ -161,7 +193,8 @@ const LOCATOR_WIDTH_SHORT = 132
  * map IS the question. 180 is the floor at which telling Norway from Sweden is still a
  * question about a coastline rather than about eyesight.
  */
-const MAP_PROMPT_WIDTH = 240
+// A map question's map IS the prompt, so it stays the larger of the two.
+const MAP_PROMPT_WIDTH = 300
 const MAP_PROMPT_WIDTH_SHORT = 180
 
 /**
@@ -478,6 +511,22 @@ export function LessonScreen({
 
   const answered = lesson.state.phase === 'answered'
 
+  /**
+   * How many the user has just got right in a row, counting back from the last answer.
+   *
+   * Only used to decide whether the praise under "Perfect!" is allowed to mention a
+   * streak. Computed rather than tracked because the answer log is already the truth
+   * and a second counter beside it is a second thing that can disagree with it.
+   */
+  const correctRun = (() => {
+    let run = 0
+    for (let i = lesson.state.answers.length - 1; i >= 0; i--) {
+      if (lesson.state.answers[i]?.wasCorrect !== true) break
+      run++
+    }
+    return run
+  })()
+
   const lastAnswer = lesson.state.answers[lesson.state.answers.length - 1]
   /**
    * What that answer was actually worth.
@@ -623,7 +672,7 @@ export function LessonScreen({
             if (answered) revealOptions()
           }}
         >
-          {question.options.map((option) => {
+          {question.options.map((option, index) => {
             const state = optionState(
               option.isCorrect,
               option.id,
@@ -635,6 +684,11 @@ export function LessonScreen({
               key={option.id}
               label={option.label}
               state={state}
+              // A, B, C, D. From the RENDER order, not from the option's identity —
+              // `buildQuestion` shuffles with the injected rng precisely so that
+              // position never becomes the answer, and a badge derived from anything
+              // stable would hand that back.
+              badge={BADGES[index]}
               // The state, spoken. `AnswerOption` documents this prop with the example
               // "Japan, correct answer" and nothing had ever passed it — so the mark
               // was `aria-hidden` artwork, the surface colour did the rest, and a
@@ -802,13 +856,35 @@ export function LessonScreen({
               <View
                 style={
                   lastAnswer?.wasCorrect === true && !rewardsWrapped
-                    ? [styles.sheetText, { paddingStart: mascot - space[3] }]
-                    : [styles.sheetText, { paddingEnd: mascot - space[3] }]
+                    ? [styles.sheetText, { paddingStart: mascot }]
+                    : [styles.sheetText, { paddingEnd: mascot }]
                 }
               >
                 {lastAnswer?.wasCorrect ? (
             <>
               <Text style={styles.feedbackTitleOk}>{t('lesson:feedback.correct.title')}</Text>
+              {/* One warm line under the headline, and it tells the truth.
+   
+                  `feedback.correct.body` — "You found {entityName} 🎉" — has been in the
+                  catalogue since the first week, with a translator note saying "shown
+                  under the celebration headline", and NOTHING HAS EVER RENDERED IT. The
+                  correct branch was a single word and a reward chip, which is why the
+                  reference's version of this sheet reads warmer than ours: it has the
+                  sentence we already wrote.
+   
+                  The reference also says "Great job! You're on a roll." after every
+                  correct answer, including the first of the lesson. That is flattery,
+                  and the voice spec is explicit that we state the truth — so the roll
+                  line is a SECOND key, shown only once `correctRun` says there is
+                  actually a roll. Below three in a row, the honest sentence names what
+                  the user just learned instead, which is the better praise anyway. */}
+              <Text style={styles.feedbackBody}>
+                {correctRun >= STREAK_PRAISE
+                  ? t('lesson:feedback.correct.streak')
+                  : t('lesson:feedback.correct.body', {
+                      entityName: question.options.find((o) => o.isCorrect)?.label ?? '',
+                    })}
+              </Text>
               <View
                 style={styles.rewards}
                 onLayout={(e) => {

@@ -4,6 +4,7 @@
   "lesson:prompt.locate": "Var ligger {entityName}?",
   "lesson:feedback.correct.title": "Perfekt!",
   "lesson:feedback.correct.body": "Du hittade {entityName} 🎉",
+  "lesson:feedback.correct.streak": "Du är på gång.",
   "lesson:feedback.wrong.title": "Det är {chosen}.",
   "lesson:feedback.wrong.body": "{correct} är {hint}.",
   "lesson:leave.confirm": "Lämna lektionen? Dina framsteg sparas.",

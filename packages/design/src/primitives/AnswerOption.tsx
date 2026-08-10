@@ -1,10 +1,34 @@
 /**
  * AnswerOption — the most-tapped component in the product.
  *
- * Drawn as a face on an edge and sinks when pressed, like every other solid control
- * here (`press3d.tsx`). That matters more on this component than on any other: a
- * question is four of these in a column, and if they read as flat list rows the user
- * is reading a form. If they read as buttons, they tap.
+ * ## Flat with a lit edge, not a slab on a slab
+ *
+ * This used to be drawn as a face sitting on a solid edge that sank when pressed, on
+ * the reasoning that "if they read as flat list rows the user is reading a form; if
+ * they read as buttons, they tap". The concern is right and the answer was not: four
+ * stacked 3D slabs is the loudest thing on a screen whose actual subject is a question
+ * and a map, and on a dark ground the edge under each one reads as a shadow the layout
+ * did not ask for.
+ *
+ * What replaces it does the same job with light instead of geometry — a real border on
+ * a near-black card, and a coloured ring plus an outward GLOW on the states that mean
+ * something. A lit edge reads as interactive on a dark screen the way a raised edge
+ * reads as interactive on a light one; it is the same signal in the medium the app
+ * actually has. The reference this was rebuilt against does exactly that, and it is why
+ * its option list looks like a modern product rather than a stack of toy bricks.
+ *
+ * The Button keeps its face and edge. That is not an inconsistency left behind: a
+ * primary action is ONE object that should feel pressable, and four of them in a column
+ * is the case this component is. The reference agrees — its Continue button is raised
+ * and its options are flat.
+ *
+ * ## The letter badge
+ *
+ * A, B, C, D down the leading edge. Three things at once, which is why it earns the
+ * space: it gives the eye a fixed rail to scan down instead of four ragged text
+ * starts, it makes "the third one" sayable out loud, and it gives the correct/wrong
+ * state a second non-colour carrier — the badge fills in on the answer, so the signal
+ * survives being read by someone who cannot separate the green ring from the red one.
  *
  * Every rule below comes from the voice and accessibility specs:
  *
@@ -17,19 +41,10 @@
  *    double-tap protection.
  */
 
-import {
-  Animated,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native'
-import { colors, depth, radius, space } from '../tokens.js'
+import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native'
+import { colors, radius, space } from '../tokens.js'
 import { squircle } from '../shape.js'
 import { text } from '../typography.js'
-import { press3d, useFacePress } from './press3d.js'
 
 export type AnswerState = 'idle' | 'selected' | 'correct' | 'wrong' | 'disabled'
 
@@ -56,35 +71,65 @@ export type AnswerOptionProps = {
    * GLYPHS below for why that fallback is tolerable and still not preferred.
    */
   mark?: React.ReactNode
+  /**
+   * The letter on the badge — "A", "B", "C", "D".
+   *
+   * Optional, and absent means no badge at all rather than an empty circle: a two-option
+   * question reads fine without a rail, and a caller that has not decided should get
+   * nothing instead of decoration.
+   *
+   * Hidden from the screen reader by the caller's `accessibilityLabel`, which already
+   * names the option and its state. "A, Rome, correct answer" is one letter of noise in
+   * front of every option; the badge is a visual rail, not information.
+   */
+  badge?: string | undefined
   style?: StyleProp<ViewStyle>
   testID?: string
 }
 
-type Skin = { face: string; edge: string; label: string }
+type Skin = {
+  face: string
+  edge: string
+  label: string
+  /**
+   * The colour thrown OUTWARD by a state that means something.
+   *
+   * Only the three states that are answers to something — chosen, right, wrong. An idle
+   * option glows at nothing, and a screen where every row glows has no glow, just haze.
+   */
+  glow?: string
+  /** Filled badge, for the same reason the mark exists: colour must never be alone. */
+  badgeFill?: string
+}
 
 const SKINS: Record<AnswerState, Skin> = {
   idle: {
     face: colors.option.idle,
-    edge: colors.option.idleEdge,
+    edge: colors.border.subtle,
     label: colors.text.primary,
   },
   selected: {
     face: colors.option.selected,
     edge: colors.option.selectedEdge,
     label: colors.text.primary,
+    glow: colors.option.selectedEdge,
+    badgeFill: colors.option.selectedEdge,
   },
   correct: {
     face: colors.option.correct,
-    edge: colors.option.correctEdge,
+    edge: colors.feedback.correct,
     label: colors.text.primary,
+    glow: colors.feedback.correct,
+    badgeFill: colors.feedback.correct,
   },
   wrong: {
     face: colors.option.wrong,
-    edge: colors.option.wrongEdge,
+    edge: colors.status.hearts,
     label: colors.text.primary,
+    glow: colors.status.hearts,
   },
   disabled: {
-    face: colors.bg.surface,
+    face: colors.option.idle,
     edge: colors.border.subtle,
     label: colors.text.tertiary,
   },
@@ -115,11 +160,11 @@ export function AnswerOption({
   onPress,
   accessibilityLabel,
   mark,
+  badge,
   style,
   testID,
 }: AnswerOptionProps) {
   const isInert = state === 'disabled' || state === 'correct' || state === 'wrong'
-  const { translateY, onPressIn, onPressOut } = useFacePress(depth.card, isInert)
   const skin = SKINS[state]
 
   return (
@@ -131,82 +176,126 @@ export function AnswerOption({
       aria-disabled={isInert}
       disabled={isInert}
       onPress={onPress}
-      onPressIn={onPressIn}
-      onPressOut={onPressOut}
       testID={testID}
-      style={[press3d.socket, styles.socket, style]}
+      // A style FUNCTION, so the press is the platform's own pressed state rather than
+      // an animation this component has to own and this package has to police. Nothing
+      // here reaches for `Animated`, which is why the reduced-motion guards in
+      // tokens.test.ts and motion.test.ts no longer apply to this file: opacity is not
+      // motion, and a user who has asked for less movement gets the same feedback.
+      style={({ pressed }) => [
+        styles.card,
+        { backgroundColor: skin.face, borderColor: skin.edge },
+        // The glow, and the reason it is a shadow rather than a second view: a flat
+        // shape at low opacity has an EDGE, and an edge is the one thing a glow does
+        // not have. Same lesson as the primary button's bloom.
+        skin.glow !== undefined && {
+          shadowColor: skin.glow,
+          shadowOpacity: 0.45,
+          shadowRadius: space[3],
+          shadowOffset: { width: 0, height: 0 },
+          // Android cannot colour an elevation, so it gets a neutral lift instead — the
+          // platform's own idiom for the same idea. `tokens.test.ts` requires the pair.
+          elevation: space[1],
+        },
+        pressed && styles.pressed,
+        style,
+      ]}
     >
-      <View
-        style={[press3d.edge, styles.edge, { top: depth.card, backgroundColor: skin.edge }]}
-      />
-
-      <Animated.View
-        style={[
-          press3d.face,
-          styles.face,
-          { backgroundColor: skin.face, borderColor: skin.edge, transform: [{ translateY }] },
-        ]}
-      >
-        {/* NO `numberOfLines`. The line above it used to read "never truncate a
-            country name — let it wrap and grow" and then capped it at two, which is
-            long enough for every country name and is not what the answers are made of.
-
-            Flag questions are answered with descriptions, and on a device the four
-            options for "Hur ser Japans flagga ut?" rendered as
-
-              "fjorton röda och vita ränder, med en gul halvmåne och stjärna på en bl…"
-              "tre vågräta band — saffransgult, vitt, grönt — med ett mörkblått hj…"
-
-            Two of the four cut off mid-word. An option you cannot read is an option you
-            cannot choose, so a question with two of them is not a question — and the
-            user is charged a heart for guessing at it.
-
-            An uncapped label can grow, and growing is the correct failure: the lesson
-            screen scrolls (`pnpm scrollable` proves it), so a long answer costs space.
-            A truncated one costs the answer. */}
-        <Text style={[styles.label, { color: skin.label }]}>{label}</Text>
-
-        {(mark ?? GLYPHS[state]) !== null && (
-          <View
-            style={styles.glyphWrap}
-            importantForAccessibility="no-hide-descendants"
-            aria-hidden
+      {badge !== undefined && (
+        <View
+          style={[
+            styles.badge,
+            skin.badgeFill !== undefined && { backgroundColor: skin.badgeFill, borderColor: skin.badgeFill },
+          ]}
+          // The rail is visual. `accessibilityLabel` already says "A, Rome, correct
+          // answer" or better, and a reader announcing the letter twice is noise.
+          importantForAccessibility="no-hide-descendants"
+          aria-hidden
+        >
+          <Text
+            style={[styles.badgeText, skin.badgeFill !== undefined && styles.badgeTextOn]}
           >
-            {mark ?? <Text style={styles.glyph}>{GLYPHS[state]}</Text>}
-          </View>
-        )}
-      </Animated.View>
+            {badge}
+          </Text>
+        </View>
+      )}
+
+      {/* NO `numberOfLines`. The line above it used to read "never truncate a
+          country name — let it wrap and grow" and then capped it at two, which is
+          long enough for every country name and is not what the answers are made of.
+
+          Flag questions are answered with descriptions, and on a device the four
+          options for "Hur ser Japans flagga ut?" rendered as
+
+            "fjorton röda och vita ränder, med en gul halvmåne och stjärna på en bl…"
+            "tre vågräta band — saffransgult, vitt, grönt — med ett mörkblått hj…"
+
+          Two of the four cut off mid-word. An option you cannot read is an option you
+          cannot choose, so a question with two of them is not a question — and the
+          user is charged a heart for guessing at it.
+
+          An uncapped label can grow, and growing is the correct failure: the lesson
+          screen scrolls (`pnpm scrollable` proves it), so a long answer costs space.
+          A truncated one costs the answer. */}
+      <Text style={[styles.label, badge === undefined && styles.labelCentre, { color: skin.label }]}>
+        {label}
+      </Text>
+
+      {(mark ?? GLYPHS[state]) !== null && (
+        <View style={styles.glyphWrap} importantForAccessibility="no-hide-descendants" aria-hidden>
+          {mark ?? <Text style={[styles.glyph, { color: skin.edge }]}>{GLYPHS[state]}</Text>}
+        </View>
+      )}
     </Pressable>
   )
 }
 
 const styles = StyleSheet.create({
-  socket: { minHeight: FACE_HEIGHT + depth.card, alignSelf: 'stretch' },
-  edge: { borderRadius: radius.lg, ...squircle },
-  face: {
+  card: {
     minHeight: FACE_HEIGHT,
+    alignSelf: 'stretch',
     borderRadius: radius.lg,
     ...squircle,
     // Two pixels, all the way round. The ring is what separates one option from the
     // next at a glance; without it four dark rectangles on a dark screen become one
     // shape and the eye has to do the work of finding the boundaries.
     borderWidth: 2,
-    paddingHorizontal: space[5],
+    paddingHorizontal: space[4],
     paddingVertical: space[3],
     flexDirection: 'row',
     alignItems: 'center',
+    gap: space[3],
+  },
+  // The whole card dips, which is what a flat control does instead of travelling. Kept
+  // shallow on purpose: this fires on every answer in every lesson, and the tenth one
+  // should feel like nothing at all.
+  pressed: { opacity: 0.7 },
+  badge: {
+    width: 30,
+    height: 30,
+    borderRadius: radius.full,
+    borderWidth: 2,
+    borderColor: colors.border.subtle,
+    backgroundColor: colors.bg.canvas,
+    alignItems: 'center',
     justifyContent: 'center',
-    gap: space[2],
   },
-  label: {
-    ...text('bodyStrong'),
-    flexShrink: 1,
-    textAlign: 'center',
-  },
-  // `end`, not `right`. The whole row mirrors in RTL and the correctness glyph has to
-  // travel with the text it belongs to, not stay pinned to a physical edge.
-  glyphWrap: { position: 'absolute', end: space[4] },
-  // A tick or an arrow, not type — it comes from the system emoji/symbol font, so
-  // there is no custom family to pick a weight from.
-  glyph: { fontSize: 20, color: colors.text.primary },
+  badgeText: { ...text('caption', { weight: '800' }), color: colors.text.tertiary },
+  badgeTextOn: { color: colors.text.onAccent },
+  /**
+   * Alignment is stated only for the BADGELESS case, and that is an RTL decision.
+   *
+   * With a badge the text should hang off the rail, which means the writing direction's
+   * own start edge — and React Native has no `textAlign: 'start'` (its union is
+   * auto/left/right/center/justify, which `pnpm lint:a11y` rightly refuses to let a
+   * component pick from). `auto` IS the start edge: it follows the writing direction, so
+   * it sits left in English and right in Arabic with nothing to remember.
+   *
+   * So the default does the RTL-correct thing and only the centred case is declared.
+   */
+  label: { ...text('bodyStrong'), color: colors.text.primary, flex: 1 },
+  // No rail to hang off, so a bare label centres in the card.
+  labelCentre: { textAlign: 'center' },
+  glyphWrap: { alignItems: 'center', justifyContent: 'center', minWidth: space[5] },
+  glyph: { ...text('h3') },
 })
