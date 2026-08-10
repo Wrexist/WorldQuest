@@ -242,7 +242,7 @@ export const ART_GEOMETRY = {
   'continents-silhouette/AF': { aspect: 1, x: 0.0951, y: 0.0651, w: 0.7799, h: 0.8555 },
   'continents-silhouette/AS': { aspect: 1.5, x: 0.1354, y: 0.0625, w: 0.7591, h: 0.8672 },
   'continents-silhouette/EU': { aspect: 1.5, x: 0.1719, y: 0.0566, w: 0.6589, h: 0.8926 },
-  'continents-silhouette/NA': { aspect: 0.6667, x: 0, y: 0, w: 1, h: 1 },
+  'continents-silhouette/NA': { aspect: 0.8398, x: 0, y: 0, w: 1, h: 1 },
   'continents-silhouette/OC': { aspect: 1.5, x: 0.1419, y: 0.0625, w: 0.7578, h: 0.8535 },
   'continents-silhouette/SA': { aspect: 1, x: 0.2094, y: 0.05, w: 0.6438, h: 0.8891 },
   'levels/cartographer': { aspect: 1, x: 0.3451, y: 0.3268, w: 0.3242, h: 0.3229 },

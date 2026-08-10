@@ -94,6 +94,17 @@ const ILLUSTRATION = { budget: 120 * 1024, format: 'image/webp', fit: 'contain' 
 const ILLUSTRATION_WIDTH = 768
 
 /**
+ * Masters delivered on an opaque plate that should ship as cutouts.
+ *
+ * Named rather than detected, for the same reason `ALLOWANCE` is: the continent skies
+ * are deliberately opaque and a knockout deciding for itself would dissolve them. See
+ * the transform in `render` for how it works and why luminance is the right key.
+ */
+const KNOCKOUT = new Set([
+  'continents-silhouette/NA',
+])
+
+/**
  * Assets allowed past the budget, each with the reason and its own ceiling.
  *
  * Same shape as the contrast waivers and the escape-hatch allowlist: an exception is
@@ -291,7 +302,7 @@ async function render(page, sourceBytes, spec) {
   const height = spec.height ?? spec.size ?? null
 
   return page.evaluate(
-    async ({ dataUrl, width, height: requested, fit, opaque, inset, canvasColor, format, quality, bannerAspect }) => {
+    async ({ dataUrl, width, height: requested, fit, opaque, inset, canvasColor, format, quality, bannerAspect, knockout }) => {
       let height = requested
       const img = new Image()
       img.src = dataUrl
@@ -415,6 +426,41 @@ async function render(page, sourceBytes, spec) {
       // Only the outer eighth is touched, as an alpha ramp rather than a vignette: a
       // radial fade would dim the middle of a 3:2 composition, and the subject of
       // every one of these is in the middle.
+      /**
+       * Turn a pure-black plate into transparency, for a master delivered on one.
+       *
+       * `continents-silhouette/NA` arrives as a terrain render on black — measured, the
+       * corners are exactly (0,0,0) and the darkest land sits near luminance 33. Its five
+       * siblings are cutouts, so dropped in as delivered it would be the one continent
+       * drawn as an opaque rectangle: `Art` measures a full-frame plate as a PANEL, gives
+       * it a hairline border and its own aspect, and the card gets a black box in the
+       * corner instead of a landmass bleeding into the sky.
+       *
+       * Alpha FROM LUMINANCE rather than a flood fill or a threshold, and for this kind of
+       * image it is not a compromise — it is the right transform. The art is a lit subject
+       * on black, so brightness already IS coverage: the land comes out opaque, the black
+       * comes out gone, and the glow around the coastline keeps its soft edge for free
+       * instead of being cut to a hard alpha step. A threshold would have hardened that
+       * edge; a flood fill would have preserved it but needed a rule about how dark an
+       * interior lake is allowed to be before it becomes a hole in the continent.
+       *
+       * Opt-in per asset, never automatic. The seven continent SKIES are deliberately
+       * opaque full-bleed plates, and a knockout that ran on its own judgement would
+       * quietly dissolve them.
+       */
+      if (knockout) {
+        const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height)
+        const data = pixels.data
+        for (let i = 0; i < data.length; i += 4) {
+          const lum = 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2]
+          // Scaled so anything at or above a quarter brightness is fully opaque; below
+          // that it ramps, which is where the glow and the coastline antialiasing live.
+          const alpha = Math.min(255, Math.round((lum / 64) * 255))
+          data[i + 3] = Math.min(data[i + 3], alpha)
+        }
+        ctx.putImageData(pixels, 0, 0)
+      }
+
       if (!opaque) {
         const probe = ctx.getImageData(0, 0, Math.max(1, Math.round(width * 0.06)), 1).data
         let solid = 0
@@ -755,6 +801,7 @@ ${geometryEntries.join('\n')}
           ...rung,
           fit: 'cover',
           opaque: isBackground(name),
+          knockout: KNOCKOUT.has(name),
           bannerAspect: BANNER_ASPECT,
         }),
       )
