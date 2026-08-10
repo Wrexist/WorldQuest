@@ -188,17 +188,16 @@ console.warn = (...args: unknown[]) => {
  * sound was heard, because a passing "a function was called" test would be equally
  * happy with a buzzer. `sound.test.ts` asserts the rules against the source instead.
  */
-vi.mock('expo-av', () => ({
-  Audio: {
-    setAudioModeAsync: async () => {},
-    Sound: {
-      createAsync: async () => ({
-        sound: {
-          setPositionAsync: async () => {},
-          playAsync: async () => {},
-          unloadAsync: async () => {},
-        },
-      }),
-    },
-  },
+vi.mock('expo-audio', () => ({
+  setAudioModeAsync: async () => {},
+  // expo-audio is imperative where expo-av was promise-based: one player object per
+  // sound, created once, with play()/seekTo() called on it. The shape below mirrors
+  // exactly what sound.ts touches — a narrower mock would pass while the real call
+  // signature drifted.
+  createAudioPlayer: () => ({
+    volume: 1,
+    play: () => {},
+    seekTo: async () => {},
+    remove: () => {},
+  }),
 }))
