@@ -8,6 +8,7 @@
 import atlasBrokenCompass from '../../assets/art/atlas/broken-compass.webp'
 import atlasCelebrate from '../../assets/art/atlas/celebrate.webp'
 import atlasEncouraging from '../../assets/art/atlas/encouraging.webp'
+import atlasExplorer from '../../assets/art/atlas/explorer.webp'
 import atlasResting from '../../assets/art/atlas/resting.webp'
 import atlasThinking from '../../assets/art/atlas/thinking.webp'
 import atlasWavingBack from '../../assets/art/atlas/waving-back.webp'
@@ -60,6 +61,12 @@ import continentsEU from '../../assets/art/continents/EU.webp'
 import continentsNA from '../../assets/art/continents/NA.webp'
 import continentsOC from '../../assets/art/continents/OC.webp'
 import continentsSA from '../../assets/art/continents/SA.webp'
+import continentsSilhouetteAF from '../../assets/art/continents-silhouette/AF.webp'
+import continentsSilhouetteAS from '../../assets/art/continents-silhouette/AS.webp'
+import continentsSilhouetteEU from '../../assets/art/continents-silhouette/EU.webp'
+import continentsSilhouetteNA from '../../assets/art/continents-silhouette/NA.webp'
+import continentsSilhouetteOC from '../../assets/art/continents-silhouette/OC.webp'
+import continentsSilhouetteSA from '../../assets/art/continents-silhouette/SA.webp'
 import levelsCartographer from '../../assets/art/levels/cartographer.webp'
 import levelsCircumnavigator from '../../assets/art/levels/circumnavigator.webp'
 import levelsGlobetrotter from '../../assets/art/levels/globetrotter.webp'
@@ -82,6 +89,7 @@ export const ART_BY_NAME = {
   'atlas/broken-compass': atlasBrokenCompass,
   'atlas/celebrate': atlasCelebrate,
   'atlas/encouraging': atlasEncouraging,
+  'atlas/explorer': atlasExplorer,
   'atlas/resting': atlasResting,
   'atlas/thinking': atlasThinking,
   'atlas/waving-back': atlasWavingBack,
@@ -134,6 +142,12 @@ export const ART_BY_NAME = {
   'continents/NA': continentsNA,
   'continents/OC': continentsOC,
   'continents/SA': continentsSA,
+  'continents-silhouette/AF': continentsSilhouetteAF,
+  'continents-silhouette/AS': continentsSilhouetteAS,
+  'continents-silhouette/EU': continentsSilhouetteEU,
+  'continents-silhouette/NA': continentsSilhouetteNA,
+  'continents-silhouette/OC': continentsSilhouetteOC,
+  'continents-silhouette/SA': continentsSilhouetteSA,
   'levels/cartographer': levelsCartographer,
   'levels/circumnavigator': levelsCircumnavigator,
   'levels/globetrotter': levelsGlobetrotter,
@@ -172,6 +186,7 @@ export const ART_GEOMETRY = {
   'atlas/broken-compass': { aspect: 1.5, x: 0.3411, y: 0.0996, w: 0.3763, h: 0.6797 },
   'atlas/celebrate': { aspect: 1.5, x: 0.2461, y: 0.1367, w: 0.5313, h: 0.6738 },
   'atlas/encouraging': { aspect: 1.5, x: 0.3203, y: 0.0742, w: 0.3398, h: 0.6582 },
+  'atlas/explorer': { aspect: 1.5, x: 0.1706, y: 0.1211, w: 0.6602, h: 0.877 },
   'atlas/resting': { aspect: 1, x: 0, y: 0, w: 1, h: 1 },
   'atlas/thinking': { aspect: 1.5, x: 0.3724, y: 0.1074, w: 0.3021, h: 0.5957 },
   'atlas/waving-back': { aspect: 1.5, x: 0.3229, y: 0.1035, w: 0.4245, h: 0.5684 },
@@ -224,6 +239,12 @@ export const ART_GEOMETRY = {
   'continents/NA': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
   'continents/OC': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
   'continents/SA': { aspect: 1.5, x: 0, y: 0, w: 1, h: 1 },
+  'continents-silhouette/AF': { aspect: 1, x: 0.0951, y: 0.0651, w: 0.7799, h: 0.8555 },
+  'continents-silhouette/AS': { aspect: 1.5, x: 0.1354, y: 0.0625, w: 0.7591, h: 0.8672 },
+  'continents-silhouette/EU': { aspect: 1.5, x: 0.1719, y: 0.0566, w: 0.6589, h: 0.8926 },
+  'continents-silhouette/NA': { aspect: 0.6667, x: 0, y: 0, w: 1, h: 1 },
+  'continents-silhouette/OC': { aspect: 1.5, x: 0.1419, y: 0.0625, w: 0.7578, h: 0.8535 },
+  'continents-silhouette/SA': { aspect: 1, x: 0.2094, y: 0.05, w: 0.6438, h: 0.8891 },
   'levels/cartographer': { aspect: 1, x: 0.3451, y: 0.3268, w: 0.3242, h: 0.3229 },
   'levels/circumnavigator': { aspect: 1.5, x: 0.3411, y: 0.2754, w: 0.3346, h: 0.4316 },
   'levels/globetrotter': { aspect: 1.5, x: 0.3424, y: 0.2188, w: 0.3294, h: 0.4883 },
@@ -234,7 +255,7 @@ export const ART_GEOMETRY = {
   'levels/voyager': { aspect: 1, x: 0.3477, y: 0.332, w: 0.3672, h: 0.3229 },
   'levels/wanderer': { aspect: 1, x: 0.3529, y: 0.2982, w: 0.2539, h: 0.401 },
   'levels/worldkeeper': { aspect: 1, x: 0.3333, y: 0.3294, w: 0.3529, h: 0.3164 },
-  'rewards/globe': { aspect: 1, x: 0.1862, y: 0.1198, w: 0.6289, h: 0.7852 },
+  'rewards/globe': { aspect: 1.5, x: 0.1927, y: 0.0469, w: 0.6185, h: 0.9023 },
   'rewards/streak-flame': { aspect: 1, x: 0.2865, y: 0.1693, w: 0.4518, h: 0.6784 },
   'rewards/streak-freeze': { aspect: 1, x: 0.1497, y: 0.1875, w: 0.6758, h: 0.6628 },
 } as const satisfies Readonly<Record<ArtName, ArtGeometry>>

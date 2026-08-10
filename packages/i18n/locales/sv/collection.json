@@ -1,6 +1,8 @@
 {
   "collection:flags.title": "Flaggor",
+  "collection:flags.subtitle": "Lär dig flaggorna",
   "collection:countries.title": "Länder",
+  "collection:countries.subtitle": "Lär dig länderna",
   "collection:progress": "{collected} av {total}",
   "collection:progress.label": "Framsteg",
   "collection:locked": "Inte samlad än",

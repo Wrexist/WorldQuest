@@ -211,6 +211,20 @@ const ART_DIRS = [
   'achievements',
   'avatars',
   'continents',
+  /**
+   * The continent shapes that sit on the Explore cards.
+   *
+   * A separate set from `continents/`, which is the seven photographic SKIES that fill a
+   * tile edge to edge. These are cutout landmasses on transparency, drawn to be tinted
+   * and laid over a card — different art, different handling (`isBackground` matches
+   * `continents/` and not this, which is what keeps them apart), so they get their own
+   * directory rather than a naming convention inside one.
+   *
+   * The folder already existed carrying six PNGs of a MOUNTAIN RANGE under continent
+   * names — delivered against the wrong brief, never built, and never noticed because
+   * nothing here listed the directory. The real shapes replace them.
+   */
+  'continents-silhouette',
   'leagues',
   'levels',
   'rewards',
@@ -336,9 +350,34 @@ async function render(page, sourceBytes, spec) {
         }
       }
 
+      /**
+       * The rung's number caps the LONGEST side, not the width.
+       *
+       * `ILLUSTRATION_WIDTH` is documented as "the @3x of a 256pt slot, which is the
+       * largest any of these is drawn at" — a statement about the biggest dimension on
+       * screen, which for a portrait master is its height. Applied as a width it means
+       * something else entirely: `continents-silhouette/NA` is the one master delivered
+       * 1024×1536, so at "width 768" it came out 768×1152 — 2.2× the pixels of every
+       * landscape asset at the same rung, and the only asset in the set that ran off the
+       * end of the ladder still 31 KB over budget.
+       *
+       * It could have been waived through `ALLOWANCE`, and that would have recorded a
+       * portrait image as an exception to a budget it was never actually breaking. The
+       * budget is about bytes, bytes follow area, and this is the line that was reading
+       * one dimension and charging for two.
+       */
+      // `== null` catches both spellings deliberately: `render` resolves an absent height
+      // to `null` ("whatever the master's aspect gives") while the destructure defaults to
+      // `undefined`, and a check for one of the two silently never fires. It didn't.
       const canvas = document.createElement('canvas')
-      canvas.width = width
-      canvas.height = height ?? Math.round((width * sh) / sw)
+      if (height == null && sh > sw) {
+        canvas.height = width
+        canvas.width = Math.round((width * sw) / sh)
+      } else {
+        canvas.width = width
+        canvas.height = height ?? Math.round((width * sh) / sw)
+      }
+      width = canvas.width
       height = canvas.height
       const ctx = canvas.getContext('2d')
 
