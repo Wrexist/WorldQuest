@@ -24,6 +24,7 @@ import { currentUser, isConfigured, supabase } from './supabase.js'
 import { isOnline, onConnectivityChange } from './connectivity.js'
 import { invalidateProgress } from './query.js'
 import { readJson, writeJson } from './storage.js'
+import { markAwardDelivered } from './awards.js'
 import { recordServerOutcome } from '../features/achievements/progress.js'
 import { track } from './analytics.js'
 
@@ -252,6 +253,18 @@ async function send(mutation: QueuedMutation): Promise<void> {
     answers: submission.answers,
     heartsLost: submission.heartsLost,
   })
+
+  /**
+   * The prediction stops being a prediction — but it does NOT stop counting here.
+   *
+   * `invalidateProgress()` below only asks for a refetch; the authoritative totals are
+   * still the pre-lesson ones for as long as that takes. Dropping the local award at
+   * this line would show the old number and then jump to the new one, which is a worse
+   * artefact than the lag it was trying to remove. So the award is stamped with WHEN the
+   * server accepted it and retires itself once totals fetched after that instant arrive —
+   * see `optimisticProgress`.
+   */
+  markAwardDelivered(submission.lessonId, Date.now())
 
   reconcile(result)
 }

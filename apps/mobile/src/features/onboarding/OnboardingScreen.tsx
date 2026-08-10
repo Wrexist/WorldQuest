@@ -27,23 +27,62 @@
  *
  * Purely presentational — what the user chose goes out through `onFinish`. The route
  * writes it to storage.
+ *
+ * ## What the August 2026 iOS pass changed, and why
+ *
+ * Five screenshots of this flow off TestFlight are what started that work, so most of
+ * the findings in `docs/design/ios-native-audit.md` are findings about this file:
+ *
+ * · The carousel **did not swipe** (N6). Three slides, page dots underneath, and the
+ *   only way forward was to tap. On iOS a page-dotted carousel that ignores a swipe is
+ *   a broken carousel, and this is the first screen a new user ever sees.
+ * · The **hero moved between slides** (O7), because two flex spacers redistributed
+ *   around a one-line versus a two-line title. Invisible on a tapped carousel and
+ *   unmissable on a swiped one — the picture would slide sideways and jump vertically
+ *   at the same time. The art block is now a fixed height and the text hangs below it.
+ * · The **age step overflowed at 320** (O5). See `WheelPicker`.
+ * · **Two progress indicators disagreed** (O4): the four-step bar read `1 / 4` on both
+ *   of the first two slides while the dot moved underneath it. The bar is now a 4 pt
+ *   rule with no numeral — the dots count the slides, the bar counts the flow, and only
+ *   one of them is loud.
+ * · The **title ran to the frame edge** (O8) because only `body` carried horizontal
+ *   padding.
+ * · The goal step's three cards are now **one inset group** with hairline separators and
+ *   a checkmark (N7, N8) — an iOS list rather than three floating rectangles.
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import {
+  Animated,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+  type LayoutChangeEvent,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+} from 'react-native'
 import {
   Button,
   Card,
   ProgressBar,
+  Spacer,
   colors,
+  layout,
   radius,
   space,
+  squircle,
   text,
+  useAnimatedTo,
 } from '@worldquest/design'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
+import { hapticSelect } from '../../lib/haptics.js'
 import { DAILY_GOALS, type DailyGoal } from '../settings/usePreferences.js'
 import { Art } from '../../components/Art.js'
+import { WheelPicker, type WheelOption } from '../../components/WheelPicker.js'
 import type { ArtName } from '../../lib/art.generated.js'
 
 /** The age at which the child branch applies. COPPA; GDPR-K varies by country and is stricter in places. */
@@ -68,73 +107,72 @@ const STEPS: readonly Step[] = ['slides', 'age', 'goal', 'taster']
 /**
  * Atlas on a step where the user is choosing something.
  *
- * Deliberately smaller than the 200 the slides and the taster use. Those screens are
- * the picture plus a sentence; this one is three cards the user has to read and pick
- * between, and an illustration the same size as theirs would be arguing with them.
+ * Deliberately smaller than the slides' hero. Those screens are the picture plus a
+ * sentence; this one is a list the user has to read and pick from, and an illustration
+ * the same size as theirs would be arguing with them.
  */
-const DECISION_ART = 120
+const DECISION_ART = 104
 
 /**
- * The slides as literal key pairs rather than a number and string interpolation.
+ * The height the hero block occupies on every slide, whatever is drawn in it.
  *
- * `t()` is typed per key — each one carries its own parameter type — so a computed
- * key erases exactly the checking the typed catalogue exists to provide. Written out,
- * a renamed or deleted string is a compile error here instead of a raw key on the
- * first screen a new user ever sees.
+ * Fixed, not intrinsic, and that is the whole point (O7): on a swiped carousel the
+ * picture must not move vertically as the page moves horizontally. The three
+ * illustrations have different subject boxes, so an intrinsic height would step between
+ * them by 20-odd points and the eye reads that as the page snapping crookedly.
  */
+const HERO = 220
+
 /**
  * The three value slides, each with the illustration briefed for it.
  *
  * The art is a property of the slide rather than a lookup beside it, so a fourth slide
  * cannot be added without deciding what it shows — the failure mode of the parallel
- * array next door, where `SLIDE_TINT` has to be indexed defensively because nothing
- * guarantees the two are the same length.
+ * array that used to live next door, where `SLIDE_TINT` had to be indexed defensively
+ * because nothing guaranteed the two were the same length.
+ *
+ * Written out as literal key pairs rather than a number and string interpolation:
+ * `t()` is typed per key — each one carries its own parameter type — so a computed key
+ * erases exactly the checking the typed catalogue exists to provide. Written out, a
+ * renamed or deleted string is a compile error here instead of a raw key on the first
+ * screen a new user ever sees.
  */
 const SLIDES = [
   { title: 'onboarding:slide.1.title', body: 'onboarding:slide.1.body', art: 'onboarding/explore' },
   { title: 'onboarding:slide.2.title', body: 'onboarding:slide.2.body', art: 'onboarding/learn' },
   { title: 'onboarding:slide.3.title', body: 'onboarding:slide.3.body', art: 'onboarding/conquer' },
 ] as const satisfies readonly { title: TranslationKey; body: TranslationKey; art: ArtName }[]
+
 const GOAL_LABEL = {
   5: 'onboarding:goal.casual',
   10: 'onboarding:goal.regular',
   20: 'onboarding:goal.serious',
 } as const
 
-// `SLIDE_TINT` lived here — one colour per slide, "so the three feel like a sequence
-// rather than one screen repeated". The art does that job now, and better: three
-// different illustrations are a sequence in a way three tints of the same placeholder
-// never were. It was also a parallel array, indexed defensively because nothing tied
-// its length to `SLIDES`; the art is a field on the slide instead.
-
 export function OnboardingScreen({ currentYear, onFinish, onSignIn }: OnboardingScreenProps) {
   const t = useT()
   const [step, setStep] = useState<Step>('slides')
   const [slide, setSlide] = useState(0)
   const [birthYear, setBirthYear] = useState<number | null>(null)
-  /**
-   * Decade first, then year — never one grid of ninety chips.
-   *
-   * Ninety targets is not a picker, it is a phone book: nothing is glanceable, the
-   * hit areas fight each other, and the whole screen becomes a wall the user has to
-   * read. Two rows of at most ten reduce it to two easy taps, and the second row only
-   * ever holds the ten years that can follow the first.
-   *
-   * Nothing is pre-selected. Defaulting the decade would quietly bias the answer
-   * toward whichever one we guessed, and the answer decides whether a child gets the
-   * child experience — the one number on this screen we must not nudge.
-   */
-  const [decade, setDecade] = useState<number | null>(null)
-  /**
-   * The decade list collapses to the chosen one once picked.
-   *
-   * Eleven decades plus ten years is more than a phone screen holds, and the eleven
-   * stop being useful the moment one is chosen. Collapsing keeps the whole question
-   * — hero, decade, years, Continue — visible without scrolling. Tapping the
-   * remaining chip brings them all back, so nothing is behind a hidden gesture.
-   */
-  const [pickingDecade, setPickingDecade] = useState(true)
   const [goal, setGoal] = useState<DailyGoal>(10)
+
+  /**
+   * The page width, measured rather than assumed.
+   *
+   * The router caps every screen at `layout.maxContentWidth` and centres it, so on a
+   * tablet the window is wider than this screen is. A carousel paged at the window's
+   * width would advance by more than one page and land between slides. The window is
+   * only the seed, for the frame before layout reports — and in jsdom, where it never
+   * does.
+   */
+  const window = useWindowDimensions()
+  const [page, setPage] = useState(Math.min(window.width, layout.maxContentWidth))
+  const onFrameLayout = (event: LayoutChangeEvent): void => {
+    const width = event.nativeEvent.layout.width
+    if (width > 0 && Math.abs(width - page) > 1) setPage(width)
+  }
+
+  const pager = useRef<ScrollView>(null)
 
   /**
    * Onboarding instrumentation.
@@ -169,9 +207,54 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
     [],
   )
 
-  const decades = useMemo(() => decadesFor(currentYear), [currentYear])
   const isChild = birthYear !== null && currentYear - birthYear < CHILD_AGE
   const stepIndex = STEPS.indexOf(step) + 1
+
+  /**
+   * The step change, given a direction.
+   *
+   * `setStep` used to swap the subtree and the screen changed in a single frame with no
+   * indication that anything had moved (M3). A four-step flow whose steps do not
+   * *arrive* reads as four unrelated screens. `useAnimatedTo` collapses to an instant
+   * set under reduced motion, which is the correct behaviour rather than a compromise —
+   * the movement here is decoration, not feedback.
+   */
+  const entrance = useAnimatedTo(stepIndex, 'base')
+  const stepStyle = {
+    opacity: entrance.interpolate({
+      inputRange: [stepIndex - 1, stepIndex],
+      outputRange: [0, 1],
+      extrapolate: 'clamp' as const,
+    }),
+    transform: [
+      {
+        translateX: entrance.interpolate({
+          inputRange: [stepIndex - 1, stepIndex],
+          outputRange: [space[6], 0],
+          extrapolate: 'clamp' as const,
+        }),
+      },
+    ],
+  }
+
+  /** The wheel's rows: the empty one, then this year backwards. See `WheelPicker`. */
+  const years = useMemo<readonly WheelOption<number>[]>(
+    () => [
+      { value: null, label: t('onboarding:age.none') },
+      ...yearsFor(currentYear).map((year) => ({ value: year, label: String(year) })),
+    ],
+    [currentYear, t],
+  )
+
+  const goToSlide = (index: number): void => {
+    setSlide(index)
+    pager.current?.scrollTo({ x: index * page, animated: true })
+  }
+
+  const onPagerSettled = (event: NativeSyntheticEvent<NativeScrollEvent>): void => {
+    const index = Math.round(event.nativeEvent.contentOffset.x / Math.max(1, page))
+    if (index !== slide && index >= 0 && index < SLIDES.length) setSlide(index)
+  }
 
   const finish = (): void => {
     // `birthYear` cannot be null here — the age step is the only way past it — but the
@@ -182,49 +265,64 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
   }
 
   return (
-    <View style={styles.root}>
+    <View style={styles.root} onLayout={onFrameLayout}>
+      {/* 4 pt and no numeral. This used to be a 16 pt bar with an accent-green `1 / 4`
+          beside it, which is a game HUD; iOS's own progress view is 4 (N5). The count is
+          gone because the dots below already count, and the two disagreed — both of the
+          first two slides read `1 / 4` while the dot moved (O4). The bar still carries
+          the full step count for a screen reader, which is where a number belongs when
+          the picture cannot hold one. */}
       <View
         style={styles.progress}
         accessibilityLabel={t('onboarding:progress', { step: stepIndex, total: STEPS.length })}
       >
-        <ProgressBar current={stepIndex} total={STEPS.length} />
+        <ProgressBar current={stepIndex} total={STEPS.length} height={4} showCount={false} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Two growing spacers, so a short step sits in the middle of its screen instead
-            of hanging from the top of it.
-
-            Measured before touching anything, at 320 / 390 / 768: the taster left 47 % /
-            59 % / 66 % of the viewport empty between the last word and the button, the
-            three slides 23 % / 36 % / 54 %. That is the flow's first impression and its
-            handover into the first lesson, and a block of content pinned to the top of a
-            mostly-empty screen reads as a page that has not finished loading.
-
-            Spacers rather than `justifyContent: 'center'` on the container, deliberately.
-            On native, centring a scroll view's content when that content overflows puts
-            its first child above scroll position zero, where no gesture reaches it — and
-            the age step at 200 % text is exactly that case: 1044pt of chips in a 684pt
-            view. A spacer with `flexBasis: 0` grows only into free space, so when there
-            is none it contributes nothing and the layout is the top-aligned one it is
-            today. Every step gains and no step can break.
-
-            Not something this repo's harness can police, and that is why it is written
-            down here: Chromium extended the scrollable overflow region to include
-            centred leading overflow, so the browser scrolls back to content that a
-            phone would strand. A check was written, watched to pass against a
-            deliberately centred container, and deleted rather than kept as reassurance
-            it could not give. */}
-        <View style={styles.spacer} />
-
+      <Animated.View style={[styles.stepFill, stepStyle]}>
         {step === 'slides' && (
           <>
-            <Art name={SLIDES[slide]!.art} size={200} />
-            <Text style={styles.title}>{t(SLIDES[slide]!.title)}</Text>
-            <Text style={styles.body}>{t(SLIDES[slide]!.body)}</Text>
+            <ScrollView
+              ref={pager}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onMomentumScrollEnd={onPagerSettled}
+              style={styles.pager}
+            >
+              {SLIDES.map((s) => (
+                <View key={s.title} style={[styles.slide, { width: page }]}>
+                  {/* Full bleed, and `bleed` rather than `auto`.
+
+                      `auto` gives whole-frame art a PANEL: the file's own 3:2 box, a
+                      hairline border and a 28 pt radius, which is right for a portrait
+                      dropped into a list and wrong for the hero of an onboarding slide.
+                      `onboarding/explore` is genuinely a full-frame composition — Atlas
+                      under a parachute at the top, the curve of the earth across the
+                      bottom — so it is correctly measured as a panel and was still
+                      rendering as a 200 pt bordered rectangle with the parachute clipped
+                      at the top edge and the horizon at the bottom. It read as a
+                      screenshot pasted into the layout, which is exactly the placeholder
+                      look this flow already had (O2).
+
+                      At the page's own width the box stops being a frame around the art
+                      and becomes the art, which is what a value slide's hero is for. The
+                      other two are cutouts and fill the same band with their subject, so
+                      the three read as one sequence at one scale. */}
+                  <Art name={s.art} size={page} height={HERO} frame="bleed" />
+                  <View style={styles.slideText}>
+                    <Text style={styles.title}>{t(s.title)}</Text>
+                    <Text style={styles.body}>{t(s.body)}</Text>
+                  </View>
+                </View>
+              ))}
+            </ScrollView>
 
             {/* Position, and a target — a carousel whose dots cannot be tapped is a
-                carousel that traps anyone who overshoots. */}
-            <View style={styles.dots}>
+                carousel that traps anyone who overshoots. Now that the pages swipe, the
+                dots are the second way in rather than the only one, which is why they
+                keep their radio-ish semantics and their 44 pt slop. */}
+            <View style={styles.dots} role="tablist">
               {SLIDES.map((s, i) => (
                 <Pressable
                   key={s.title}
@@ -238,7 +336,7 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
                   // Pressable, not a View with onTouchEnd — see TabBar. onTouchEnd
                   // responds to a finger and to nothing else: no mouse, no keyboard,
                   // no screen-reader activation.
-                  onPress={() => setSlide(i)}
+                  onPress={() => goToSlide(i)}
                   // The dot is 8pt of paint; the target has to be 44.
                   hitSlop={18}
                   style={[styles.dot, i === slide && styles.dotOn]}
@@ -249,66 +347,30 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
         )}
 
         {step === 'age' && (
-          <>
+          <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
+            {/* Two growing spacers, so a short step sits in the middle of its screen
+                rather than hanging from the top of it — and `Spacer` rather than
+                `justifyContent: 'center'`, because centring a scroll view's content puts
+                its first child above scroll position zero when that content overflows,
+                where no gesture on a phone can reach it. `pnpm scrollable` fails the
+                other spelling and points at Spacer.tsx. */}
+            <Spacer />
+
+            {/* One heading, not three. This step used to run h1 → body → `Choose a
+                year` (h2) → `DECADE` (overline) → chips, which is four levels of
+                hierarchy for a single question (O6). The wheel is self-evident and the
+                answer is legible in it, so the ladder is gone. */}
             <Text style={styles.title}>{t('onboarding:age.title')}</Text>
             <Text style={styles.body}>{t('onboarding:age.body')}</Text>
 
-            {/* The answer, large, so the one thing that matters is the one thing you
-                see. Everything below it is machinery for changing it. */}
-            <Text style={birthYear === null ? styles.yearHeroEmpty : styles.yearHero}>
-              {birthYear ?? t('onboarding:age.none')}
-            </Text>
-
-            <Text style={styles.label}>{t('onboarding:age.decade')}</Text>
-            {/* Wrapped, not a horizontal scroller. Eleven decades in a side-scrolling
-                row hides most of them behind a gesture with no affordance — the user
-                cannot see that 1950s exists, and neither could the E2E, which is how
-                this got noticed. Three tidy rows show every option at once. */}
-            <View style={styles.decades}>
-              {(pickingDecade ? decades : decades.filter((start) => start === decade)).map(
-                (start) => (
-                  <Chip
-                    key={start}
-                    label={t('onboarding:age.decadeLabel', { decade: start })}
-                    selected={decade === start}
-                    // Collapsed, the chip is the way back to the full list. Open, it
-                    // is the choice itself.
-                    hint={pickingDecade ? undefined : t('onboarding:age.changeDecade')}
-                    onPress={() => {
-                      if (!pickingDecade) {
-                        setPickingDecade(true)
-                        return
-                      }
-                      setDecade(start)
-                      setPickingDecade(false)
-                      // The years about to appear belong to a different decade, so a
-                      // year chosen from the old one is no longer the user's answer.
-                      if (birthYear !== null && Math.floor(birthYear / 10) * 10 !== start) {
-                        setBirthYear(null)
-                      }
-                    }}
-                    span="third"
-                  />
-                ),
-              )}
+            <View style={styles.wheelWrap}>
+              <WheelPicker
+                options={years}
+                value={birthYear}
+                onChange={setBirthYear}
+                label={t('onboarding:age.year')}
+              />
             </View>
-
-            <Text style={styles.label}>{t('onboarding:age.year')}</Text>
-            {decade === null ? (
-              <Text style={styles.hint}>{t('onboarding:age.pickDecade')}</Text>
-            ) : (
-              <View style={styles.years}>
-                {yearsIn(decade, currentYear).map((year) => (
-                  <Chip
-                    key={year}
-                    label={String(year)}
-                    selected={birthYear === year}
-                    onPress={() => setBirthYear(year)}
-                    span="quarter"
-                  />
-                ))}
-              </View>
-            )}
 
             {isChild && (
               <Card level={2} style={styles.childNote}>
@@ -316,62 +378,91 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
                 <Text style={styles.body}>{t('onboarding:age.child.body')}</Text>
               </Card>
             )}
-          </>
+
+            <Spacer />
+          </ScrollView>
         )}
 
         {step === 'goal' && (
-          <>
-            {/* The flow warmed up, went cold, then warmed up again: slides one and two
-                and the taster all carry a 200pt illustration, and the two decision steps
-                between them carried none — with 350pt of empty screen under the options
-                on the one being decorated here.
+          <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
+            <Spacer />
 
-                Smaller than the slides' 200, and above the choice rather than beside it.
-                These three cards are the content of the step and the picture is not
-                allowed to compete with them; the age step gets nothing at all for the
-                same reason, since its eleven decade chips already reach the CTA at 320.
-                `thinking`, because a question is being asked. */}
+            {/* The flow warmed up, went cold, then warmed up again: the slides and the
+                taster all carry a hero and the two decision steps between them carried
+                none. Smaller than the slides', and above the choice rather than beside
+                it — these rows are the content of the step and the picture is not
+                allowed to compete with them. `thinking`, because a question is being
+                asked. */}
             <Art name="atlas/thinking" size={DECISION_ART} />
             <Text style={styles.title}>{t('onboarding:goal.title')}</Text>
             <Text style={styles.body}>{t('onboarding:goal.body')}</Text>
-            <View style={styles.goals}>
-              {DAILY_GOALS.map((minutes) => (
-                <Card
-                  key={minutes}
-                  level={goal === minutes ? 3 : 2}
-                  role="radio"
-                  aria-checked={goal === minutes}
-                  accessibilityLabel={t('onboarding:goal.minutes', { minutes })}
-                  onPress={() => setGoal(minutes)}
-                  style={[styles.goal, goal === minutes && styles.goalOn]}
-                >
-                  <Text style={styles.goalMinutes}>{t('onboarding:goal.minutes', { minutes })}</Text>
-                  <Text style={styles.goalLabel}>{t(GOAL_LABEL[minutes])}</Text>
-                </Card>
-              ))}
+
+            {/* ONE inset group, hairline separators, a checkmark on the chosen row
+                (N7, N8). It was three cards with 12 pt between them and a green ring
+                around the selected one, which is how a web framework draws a radio
+                group and is not how iOS draws anything. The container owns the corners
+                so the rows do not each need their own. */}
+            <View style={styles.group} role="radiogroup" aria-label={t('onboarding:goal.title')}>
+              {DAILY_GOALS.map((minutes, index) => {
+                const chosen = goal === minutes
+                return (
+                  <Pressable
+                    key={minutes}
+                    role="radio"
+                    aria-checked={chosen}
+                    aria-label={t('onboarding:goal.minutes', { minutes })}
+                    onPress={() => {
+                      if (!chosen) hapticSelect()
+                      setGoal(minutes)
+                    }}
+                    style={[styles.groupRow, index > 0 && styles.groupRowDivided]}
+                  >
+                    <Text style={styles.goalMinutes}>{t('onboarding:goal.minutes', { minutes })}</Text>
+                    <Text style={styles.goalLabel}>{t(GOAL_LABEL[minutes])}</Text>
+                    {/* The tick is the selection. Rendered always and hidden when it is
+                        not the answer, so choosing one never changes the row's layout —
+                        the same rule the old bordered version kept with a transparent
+                        2 px border. */}
+                    <Text
+                      style={[styles.tick, !chosen && styles.tickOff]}
+                      aria-hidden
+                      importantForAccessibility="no-hide-descendants"
+                    >
+                      ✓
+                    </Text>
+                  </Pressable>
+                )
+              })}
             </View>
-          </>
+
+            <Spacer />
+          </ScrollView>
         )}
 
         {step === 'taster' && (
-          <>
+          <View style={styles.centred}>
             {/* Atlas waving from a globe. The taster is the handover into the first
-                lesson, and this is the one frame briefed as "confident and inviting". */}
-            <Art name="atlas/welcome" size={200} />
+                lesson, and this is the one frame briefed as "confident and inviting".
+                It photographed as a small robot in an empty bordered box, because the
+                build had measured this asset as a whole-frame panel — see
+                `scripts/build-art.cjs` and Audit 4. */}
+            <View style={styles.hero}>
+              <Art name="atlas/welcome" size={HERO} />
+            </View>
             <Text style={styles.title}>{t('onboarding:taster.title')}</Text>
             <Text style={styles.body}>{t('onboarding:taster.body')}</Text>
-          </>
+          </View>
         )}
-
-        <View style={styles.spacer} />
-      </ScrollView>
+      </Animated.View>
 
       <View style={styles.actions}>
         {step === 'slides' && (
           <>
             <Button
               label={slide < SLIDES.length - 1 ? t('onboarding:cta.next') : t('onboarding:cta.start')}
-              onPress={() => (slide < SLIDES.length - 1 ? setSlide(slide + 1) : setStep('age'))}
+              onPress={() =>
+                slide < SLIDES.length - 1 ? goToSlide(slide + 1) : setStep('age')
+              }
             />
             <Button variant="ghost" label={t('onboarding:cta.skip')} onPress={() => setStep('age')} />
           </>
@@ -381,7 +472,7 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
           <Button
             label={t('onboarding:age.continue')}
             // Disabled rather than hidden: a button that appears when you finally
-            // scroll to the right year is a button nobody knew they were looking for.
+            // reach the right year is a button nobody knew they were looking for.
             disabled={birthYear === null}
             onPress={() => setStep('goal')}
           />
@@ -391,7 +482,7 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
           <Button
             label={t('onboarding:age.continue')}
             onPress={() => {
-              // On leaving the step, not on each chip tap: what matters is the goal
+              // On leaving the step, not on each row tap: what matters is the goal
               // they settled on, and firing per tap would record every one they tried.
               track('onboarding_goal_selected', { minutes: goal })
               setStep('taster')
@@ -419,149 +510,126 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
 }
 
 /**
- * The oldest birth year we offer, and the decades that reach it.
+ * The birth years we offer, newest first.
  *
  * A hundred years rather than ninety: the oldest verified people alive are past 115,
  * and a picker that cannot express a real user's age is a picker that makes them lie.
+ *
+ * Newest first because a wheel is read downward from where it opens, and the empty row
+ * sits at the top. The distance from "Choose a year" to a plausible answer is then
+ * proportional to age, which is the right way round — the median user is closer to the
+ * top than the bottom.
  */
 const OLDEST = 100
 
-function decadesFor(currentYear: number): readonly number[] {
-  const newest = Math.floor(currentYear / 10) * 10
-  const oldest = Math.floor((currentYear - OLDEST) / 10) * 10
+function yearsFor(currentYear: number): readonly number[] {
   const out: number[] = []
-  for (let start = newest; start >= oldest; start -= 10) out.push(start)
+  for (let year = currentYear; year >= currentYear - OLDEST; year--) out.push(year)
   return out
-}
-
-/** The years inside one decade, clamped so we never offer a year in the future. */
-function yearsIn(decade: number, currentYear: number): readonly number[] {
-  const out: number[] = []
-  for (let year = decade; year <= Math.min(decade + 9, currentYear); year++) out.push(year)
-  return out
-}
-
-function Chip({
-  label,
-  selected,
-  onPress,
-  span,
-  hint,
-}: {
-  readonly label: string
-  readonly selected: boolean
-  readonly onPress: () => void
-  /** How many fit per row. Decades read "2020s" and need more room than "2020". */
-  readonly span?: 'third' | 'quarter'
-  /** Appended to the accessible name when pressing does something other than select. */
-  readonly hint?: string | undefined
-}) {
-  return (
-    <Card
-      level={selected ? 3 : 1}
-      role="radio"
-      aria-checked={selected}
-      accessibilityLabel={hint === undefined ? label : `${label}, ${hint}`}
-      onPress={onPress}
-      style={[
-        styles.chip,
-        span === 'third' && styles.chipThird,
-        span === 'quarter' && styles.chipQuarter,
-        selected && styles.chipOn,
-      ]}
-    >
-      <Text style={selected ? styles.chipTextOn : styles.chipText} numberOfLines={1}>
-        {label}
-      </Text>
-    </Card>
-  )
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
   progress: { paddingHorizontal: space[4], paddingTop: space[2] },
-  // The scroll container. Separate from `body`, which is a TEXT style — handing a
-  // text style to a ScrollView carried its font and padding onto the layout and
-  // squeezed the year grid down to two columns.
-  // `flexGrow: 1` so the container is at least as tall as the viewport and the two
-  // spacers inside it have free space to divide. Without it the container is exactly as
-  // tall as its content, there is no free space, and the spacers do nothing.
-  content: { alignItems: 'center', paddingBottom: space[5], flexGrow: 1 },
-  // `flexBasis: 0` is what makes this safe: it takes free space and never demands any,
-  // so an overflowing step collapses both spacers and keeps its first child reachable.
-  spacer: { flexGrow: 1, flexShrink: 1, flexBasis: 0 },
-  body: {
-    ...text('body'),
-    color: colors.text.secondary,
-    textAlign: 'center',
+  // The step owns everything between the bar and the buttons, and it is `flex: 1` so a
+  // short step centres inside it rather than hanging from the top of the screen.
+  stepFill: { flex: 1 },
+  pager: { flex: 1 },
+  /**
+   * One page.
+   *
+   * `justifyContent: 'center'` is safe HERE and nowhere else in this file: a horizontal
+   * pager's pages never overflow vertically — the hero is a fixed height and the copy is
+   * two or three lines — so there is no leading overflow to strand above scroll position
+   * zero. The vertical steps use a ScrollView with padding instead, for exactly the
+   * reason `Spacer` exists.
+   */
+  slide: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // The padding lives on the TEXT, not on the page: the hero is full-bleed and a page
+  // with side padding would inset it.
+  slideText: { alignSelf: 'stretch', alignItems: 'center', paddingHorizontal: space[5] },
+  // Fixed, so the picture does not move as the pages do. See HERO.
+  hero: { height: HERO, alignItems: 'center', justifyContent: 'center' },
+  centred: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: space[5] },
+  /**
+   * The vertical steps, sized for the SHORT phone rather than the design target.
+   *
+   * At 390×844 there is room for anything; the constraint is 320×568, where a two-line
+   * heading, three lines of body, a 220 pt wheel and a 90 pt action bar come to within
+   * about thirty points of the viewport. The first version of this spent `space[6]` on
+   * top padding and another `space[5]` above the heading, which pushed the bottom of the
+   * wheel under the Continue button — so the step opened on a control cut in half, which
+   * is the same defect the chip grid had (O5) wearing different clothes.
+   *
+   * It still scrolls, and the wheel scrolls inside it. This is about what the user sees
+   * in the first frame, which is the only frame most of them judge it on.
+   */
+  form: {
+    alignItems: 'center',
     paddingHorizontal: space[5],
+    paddingBottom: space[4],
+    paddingTop: space[3],
+    gap: space[2],
+    // Required by the spacers above: without it the container is exactly as tall as its
+    // content, there is no free space, and they divide nothing.
+    flexGrow: 1,
   },
   title: {
     ...text('h1'),
     color: colors.text.primary,
     textAlign: 'center',
-    marginTop: space[5],
+    marginTop: space[4],
     marginBottom: space[2],
+    // O8: only `body` carried this, so at 390 the Swedish slide-1 title reached both
+    // margins while the sentence under it did not.
+    paddingHorizontal: space[3],
   },
-  label: { ...text('overline'), color: colors.text.tertiary, marginTop: space[5], textAlign: 'center' },
-  dots: { flexDirection: 'row', gap: space[2], marginTop: space[6] },
+  body: {
+    ...text('body'),
+    color: colors.text.secondary,
+    textAlign: 'center',
+    paddingHorizontal: space[3],
+  },
+  dots: { flexDirection: 'row', gap: space[2], alignSelf: 'center', paddingVertical: space[5] },
   dot: { width: 8, height: 8, borderRadius: radius.full, backgroundColor: colors.bg.surfaceRaised },
   dotOn: { backgroundColor: colors.action.primary, width: 24 },
-  yearHero: { ...text('display', { numeric: true }), color: colors.text.primary, marginTop: space[5], textAlign: 'center' },
-  yearHeroEmpty: { ...text('h2'), color: colors.text.tertiary, marginTop: space[5], textAlign: 'center' },
-  hint: { ...text('body'), color: colors.text.tertiary, marginTop: space[3], textAlign: 'center' },
-  decades: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: space[2],
-    justifyContent: 'center',
-    marginTop: space[3],
-    paddingHorizontal: space[4],
-    alignSelf: 'stretch',
-  },
-  years: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: space[2],
-    justifyContent: 'center',
-    marginTop: space[3],
-    paddingHorizontal: space[4],
-    alignSelf: 'stretch',
-  },
-  chip: {
-    paddingVertical: space[3],
-    paddingHorizontal: space[4],
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 48,
-    // The border is ALWAYS 2px, transparent until selected. Adding it on selection
-    // shrinks the content box by 4px at the exact moment the user taps, which was
-    // enough to wrap "1996" onto two lines and nudge every neighbouring chip.
-    // Selection must change colour, never layout.
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  // Three across for decades ("2020s" is five characters), four for years. Getting
-  // this wrong truncates the label to "20…", which is not a choice anyone can make.
-  chipThird: { width: '31%', paddingHorizontal: space[1] },
-  chipQuarter: { width: '23%', paddingHorizontal: space[0] },
-  chipOn: { borderColor: colors.action.primary },
-  chipText: { ...text('body', { numeric: true }), color: colors.text.secondary },
-  chipTextOn: { ...text('body', { weight: '700', numeric: true }), color: colors.text.primary },
+  wheelWrap: { alignSelf: 'stretch', marginTop: space[4] },
   childNote: { marginTop: space[5], padding: space[4], alignItems: 'center' },
   childTitle: { ...text('h3'), color: colors.text.primary, marginBottom: space[2] },
-  goals: { gap: space[3], marginTop: space[5], alignSelf: 'stretch' },
-  goal: {
-    padding: space[4],
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    // Reserved, as above — selection changes colour, not layout.
-    borderWidth: 2,
-    borderColor: 'transparent',
+  // The inset group: one surface, one radius, one border. Rows draw their own hairline
+  // on top and the first one does not, which is what makes a group read as a group.
+  group: {
+    alignSelf: 'stretch',
+    marginTop: space[5],
+    backgroundColor: colors.bg.surface,
+    borderRadius: radius.lg,
+    ...squircle,
+    borderWidth: 1,
+    borderColor: colors.border.subtle,
+    overflow: 'hidden',
   },
-  goalOn: { borderColor: colors.action.primary },
-  goalMinutes: { ...text('h2'), color: colors.text.primary },
-  goalLabel: { ...text('body'), color: colors.text.secondary },
+  groupRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space[3],
+    paddingVertical: space[4],
+    paddingHorizontal: space[4],
+    // 44 is the floor; this lands well above it, and stating it means a translation that
+    // shortens the label cannot drop the row below the line.
+    minHeight: 44,
+  },
+  groupRowDivided: { borderTopWidth: 1, borderTopColor: colors.border.subtle },
+  goalMinutes: { ...text('h3', { numeric: true }), color: colors.text.primary },
+  // Takes the slack, so the tick sits hard against the trailing edge whatever the label
+  // is — `flex: 1` on the middle child rather than `space-between` on the row, because
+  // the row has three children and `space-between` would centre the second one.
+  goalLabel: { ...text('body'), color: colors.text.secondary, flex: 1 },
+  tick: { ...text('h3'), color: colors.action.primary },
+  // Reserved rather than removed — selection changes colour, never layout.
+  tickOff: { opacity: 0 },
   actions: { padding: space[4], gap: space[2] },
 })

@@ -82,6 +82,24 @@ const step = (name, ok, detail = '') => {
   console.log(`  ${ok ? '✓' : '✗'} ${name}${detail ? '  — ' + detail : ''}`)
 }
 
+/**
+ * A check that could not run, reported as itself rather than as a pass.
+ *
+ * The flag-artwork block used to call `step(..., true, 'not reached in this lesson')`
+ * when it never met an image question, which printed a tick. Wiring the location facts
+ * changed the composed lesson, that branch started firing, and the run went from 68
+ * steps to 66 with every one of them green — a check that stopped happening and said
+ * nothing, which is the exact failure mode this file's own comments keep correcting.
+ *
+ * Skipped steps do not fail the run, because whether a given lesson contains a given
+ * template is a property of the content shuffle and not a defect. They are counted in
+ * the summary, so a check that quietly stops running is visible in one line.
+ */
+const skip = (name, why) => {
+  steps.push({ name, ok: true, skipped: true })
+  console.log(`  ⊘ ${name}  — skipped: ${why}`)
+}
+
 ;(async () => {
   fs.mkdirSync(SHOTS, { recursive: true })
   await new Promise((resolve) => server.listen(PORT, resolve))
@@ -373,10 +391,16 @@ const step = (name, ok, detail = '') => {
   //
   // Not a duplicate of the KEY_SCREENS pass below: onboarding is a gate this harness
   // walks through on its way to everything else, so by the time that loop runs it can
-  // never be on screen again by URL. It had no 200 % coverage at all, and it is the
-  // app's tallest screen — eleven decade chips and ten year chips, which already reach
-  // the CTA at 320 before anything is scaled, and 1044pt of content in a 684pt view
-  // once it is.
+  // never be on screen again by URL. It had no 200 % coverage at all, and it used to be
+  // the app's tallest screen — eleven decade chips and ten year chips, which reached the
+  // CTA at 320 before anything was scaled and became 1044pt of content in a 684pt view
+  // once it was.
+  //
+  // The chips are a wheel now, whose height is five rows whatever the text scale and
+  // however many years it holds, so the overflow this was written for cannot recur in
+  // that form. The pass stays: 200 % text is still where a heading, a body paragraph and
+  // a fixed-height control fall out with each other, and this is still the only place
+  // the harness can catch onboarding at all.
   //
   // The check that was written FIRST for this spot asserted reachability — that a
   // centred scroll view had not pushed its own first child above scroll position zero,
@@ -396,11 +420,13 @@ const step = (name, ok, detail = '') => {
   await page.waitForTimeout(1500)
   await toAgeStep()
 
-  // An adult year, so the flow continues past the child branch. Decade first — the
-  // picker is deliberately two taps rather than one wall of ninety chips.
+  // An adult year, so the flow continues past the child branch.
+  //
+  // One tap. The picker was deliberately two — a decade chip, then a year chip — because
+  // a grid cannot hold a hundred options; it is a wheel now, and every row of the wheel
+  // is a real radio so that a driver, a keyboard and VoiceOver all reach it without a
+  // scroll gesture. That is the same property this line depends on.
   const adultYear = new Date().getFullYear() - 30
-  await page.getByRole('radio', { name: `${Math.floor(adultYear / 10) * 10}s` }).click()
-  await page.waitForTimeout(300)
   await page.getByRole('radio', { name: String(adultYear) }).click()
   await page.waitForTimeout(300)
   await page.getByText('Continue', { exact: true }).first().click()
@@ -544,7 +570,11 @@ const step = (name, ok, detail = '') => {
     }
 
     let flag = null
-    for (let i = 0; i < 12 && flag === null; i++) {
+    // The whole lesson, not twelve of it. A lesson is sized from the user's measured
+    // pace and tops out at MAX_LESSON_ITEMS = 20; looking at twelve meant an image
+    // question in the back third was simply never seen. Two extra laps for the feedback
+    // cards this advances through on the way.
+    for (let i = 0; i < 24 && flag === null; i++) {
       // The block above already answered, so this arrives on the feedback card with
       // every option disabled. Advance FIRST, and on every later lap too — an option
       // that is present but disabled is exactly what Playwright waits thirty seconds
@@ -583,7 +613,11 @@ const step = (name, ok, detail = '') => {
     }
 
     if (flag === null) {
-      step('flag question renders its artwork', true, 'not reached in this lesson')
+      // Not a tick. `content.test.ts` asserts `tpl.flag-to-country.mc4` is selectable at
+      // all — that is the invariant, and it belongs in a unit test where it is
+      // deterministic. This block checks how the artwork DRAWS, which needs a real
+      // browser and a lesson that happens to contain one.
+      skip('flag question renders its artwork', 'no image question in this lesson')
     } else {
       step(
         'flag question renders its artwork',
@@ -1127,7 +1161,11 @@ const step = (name, ok, detail = '') => {
   for (const error of unique.slice(0, 10)) console.log('      ' + error.slice(0, 240))
 
   const failed = steps.filter((s) => !s.ok).length
-  console.log(`\n${steps.length - failed}/${steps.length} steps passed`)
+  const skipped = steps.filter((s) => s.skipped).length
+  console.log(
+    `\n${steps.length - failed}/${steps.length} steps passed` +
+      (skipped > 0 ? ` (${skipped} skipped — see ⊘ above)` : ''),
+  )
   console.log(`screenshots → ${SHOTS}\n`)
 
   await browser.close()

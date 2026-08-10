@@ -185,9 +185,11 @@ const finding = (route, kind, detail) => findings.push({ route, kind, detail })
     }
     await page.getByText('Get started', { exact: true }).first().click()
     await page.waitForTimeout(500)
+    // One click — the age gate is a wheel now, not a decade chip then a year chip. That
+    // this line still works at all is the property the wheel was built around: its rows
+    // are real radios, so the accessibility tree this script exists to read has a hundred
+    // named, checkable options in it rather than one unlabelled scroll container.
     const adultYear = new Date().getFullYear() - 30
-    await page.getByRole('radio', { name: `${Math.floor(adultYear / 10) * 10}s` }).click()
-    await page.waitForTimeout(250)
     await page.getByRole('radio', { name: String(adultYear) }).click()
     await page.waitForTimeout(250)
     await page.getByText('Continue', { exact: true }).first().click()

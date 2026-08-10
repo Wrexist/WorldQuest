@@ -8,12 +8,12 @@
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
-    "backgroundColor": "#0B1730",
+    "backgroundColor": "#070D1B",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "cover",
-      "backgroundColor": "#0B1730"
+      "backgroundColor": "#070D1B"
     },
     "ios": {
       "bundleIdentifier": "com.wrexist.worldquest",
@@ -43,7 +43,7 @@
       "package": "com.wrexist.worldquest",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0B1730"
+        "backgroundColor": "#070D1B"
       },
       "versionCode": 1,
       "permissions": [],

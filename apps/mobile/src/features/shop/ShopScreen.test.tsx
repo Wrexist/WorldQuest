@@ -56,8 +56,12 @@ describe('Shop — the rules the economy depends on', () => {
   })
 
   it('states the gap as a fact, once, with no nag', () => {
-    shop({ coins: PRICE - 200 })
-    expect(screen.getAllByText(/200 coins to go/i).length).toBeGreaterThan(0)
+    // `textContent`, not `getAllByText`: the line goes through `Tally`, so "200" is its
+    // own node and a text matcher spanning the digits and the words stops matching.
+    // How many nodes it takes to paint the sentence is the component's business — this
+    // test is about the sentence being on screen, which is what this asks.
+    const { container } = shop({ coins: PRICE - 200 })
+    expect(container.textContent?.toLowerCase()).toContain('200 coins to go')
     expect(screen.getAllByRole('button', { name: 'Buy' })).toHaveLength(2)
   })
 

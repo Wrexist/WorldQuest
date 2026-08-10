@@ -29,6 +29,30 @@ export type ProgressBarProps = {
   tone?: ProgressTone
   /** Renders "172 / 195" beside the bar. Strongly preferred. */
   showCount?: boolean
+  /**
+   * Renders "38 %" at the trailing end of the TRACK.
+   *
+   * A different job from `showCount`, which sits in the header and says how many. This
+   * says how far, and it exists because a bar conveys progress by fill LENGTH — which is
+   * unreadable at the left-hand end, exactly where a new user's every bar sits. Six of
+   * the seven continent cards are at zero on a fresh account and looked identical.
+   *
+   * Started life as a local row on the Explore tile and moved here so a second screen
+   * would not re-implement it, which is how two conventions begin.
+   *
+   * OFF by default, and that is the whole discipline of it. Turned on everywhere it
+   * looked consistent, it was mostly duplication: a quest task shows "0 / 4" an inch to
+   * the right of its bar, Home's world card shows "0 of 192 facts", and a percentage
+   * beside either says the same thing twice. Five rows reading "0 %" down a column is
+   * clutter wearing a design system's clothes.
+   *
+   * So the rule is: show it where the text beside the bar is NOT already a fraction of
+   * the same quantity. Explore's tiles qualify — a count of facts and a share of a
+   * continent are different questions, and the share is what makes seven cards
+   * comparable. Achievements qualifies — "5 to go" is a remainder, not a fraction.
+   * Quests, Home and the region banner do not, and they were turned back off.
+   */
+  showPercent?: boolean
   label?: string
   /**
    * What a screen reader announces as the value — a localised "172 of 195".
@@ -62,6 +86,7 @@ export function ProgressBar({
   total,
   tone = 'progress',
   showCount = true,
+  showPercent = false,
   label,
   valueText,
   height = 16,
@@ -110,7 +135,8 @@ export function ProgressBar({
           )}
         </View>
       )}
-      <View style={[styles.track, { height }]}>
+      <View style={showPercent ? styles.trackRow : undefined}>
+      <View style={[styles.track, { height }, showPercent && styles.trackFlex]}>
         {pct > 0 && (
           <View style={[styles.fill, { width: `${pct}%`, backgroundColor: fill }]}>
             {/* Inset by a hair so the sheen follows the fill's rounded ends instead
@@ -123,6 +149,19 @@ export function ProgressBar({
           </View>
         )}
       </View>
+      {showPercent && (
+        // Hidden from the reader: the track above is a `progressbar` carrying
+        // `aria-valuetext`, so the figure is already announced. Saying it twice per bar
+        // is noise, and a screen with seven bars would say it fourteen times.
+        <Text
+          style={styles.percent}
+          importantForAccessibility="no-hide-descendants"
+          aria-hidden
+        >
+          {`${Math.round(pct)}%`}
+        </Text>
+      )}
+      </View>
     </View>
   )
 }
@@ -134,6 +173,14 @@ const styles = StyleSheet.create({
   labelNumber: { ...text('caption', { weight: '700', numeric: true }), color: colors.text.primary },
   // Tabular: `9 / 10` must not shift width when it becomes `10 / 10`.
   count: { ...text('caption', { weight: '800', numeric: true }) },
+  trackRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  trackFlex: { flex: 1 },
+  // Tabular, so a column of bars keeps its percentages aligned instead of jittering as
+  // they pass 9 % and 99 %.
+  percent: {
+    ...text('caption', { weight: '700', numeric: true }),
+    color: colors.text.secondary,
+  },
   track: {
     backgroundColor: colors.status.progressTrack,
     borderRadius: radius.full,

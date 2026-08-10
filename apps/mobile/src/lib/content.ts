@@ -13,11 +13,13 @@ import { currentLocale } from './i18n.js'
 import {
   buildIndex,
   composeLesson,
+  focusFilter,
   seededRng,
   type ContentIndex,
   type Entity,
   type Fact,
   type MemoryState,
+  type LessonFocus,
   type Question,
   type Template,
 } from '@worldquest/engines'
@@ -26,11 +28,33 @@ import entitiesPack from '../../../../packages/content/packs/geography/entities.
 import capitalsPack from '../../../../packages/content/packs/geography/facts.capitals.v1.json'
 import currenciesPack from '../../../../packages/content/packs/geography/facts.currencies.v1.json'
 import flagsPack from '../../../../packages/content/packs/geography/facts.flags.v1.json'
+/**
+ * The fourth fact per country, and it had never been loaded.
+ *
+ * 65 location facts, two question templates, `scripts/build-locations.cjs`, the map
+ * artwork and the `'map'` entry in PRESENTABLE below all shipped — and this import did
+ * not, so `tpl.country-to-map.mc4` and `tpl.location-of.mc4` had no facts to attach to
+ * and produced nothing. The comment on PRESENTABLE describes them as "back in the
+ * rotation"; they had never been in it.
+ *
+ * `pnpm content:validate` reads the packs DIRECTORY and reported 260 facts the whole
+ * time. This list is hand-written, so the app loaded 193 and no gate compared the two
+ * numbers. `content.test.ts` compares them now.
+ */
+import locationsPack from '../../../../packages/content/packs/geography/facts.locations.v1.json'
 import templatesPack from '../../../../packages/content/packs/geography/templates.v1.json'
 
 export type LoadedContent = {
   index: ContentIndex
-  compose: (opts: { count?: number }) => readonly Question[]
+  /**
+   * `focus` narrows what the lesson may ask about — see `LessonFocus` in the engines.
+   *
+   * Optional, and absent means the mixed lesson this always composed. `focusFilter`
+   * returns `undefined` for an empty focus, so an unfiltered lesson takes exactly the
+   * path it took before the picker existed rather than running a predicate that always
+   * says yes.
+   */
+  compose: (opts: { count?: number; focus?: LessonFocus }) => readonly Question[]
 }
 
 /**
@@ -80,13 +104,15 @@ export function useContent() {
           ...(capitalsPack.items as unknown as Fact[]),
           ...(flagsPack.items as unknown as Fact[]),
           ...(currenciesPack.items as unknown as Fact[]),
+          ...(locationsPack.items as unknown as Fact[]),
         ],
         templates: templatesPack.items as unknown as Template[],
       })
       return {
         index: built,
-        compose: ({ count = 10 }) =>
-          composeLesson({
+        compose: ({ count = 10, focus }) => {
+          const topicFilter = focus ? focusFilter(built, focus) : undefined
+          return composeLesson({
             index: built,
             memory: [...memory.values()],
             now: Date.now(),
@@ -104,7 +130,12 @@ export function useContent() {
             // shown. accessibility.md §8. See `PRESENTABLE` above for why the two had
             // to land together.
             screenReaderOnly: screenReaderOn,
-          }),
+            // Spread rather than passed as `undefined`: `exactOptionalPropertyTypes`
+            // distinguishes an absent property from one set to undefined, and the
+            // composer's own spread of it does the same.
+            ...(topicFilter ? { topicFilter } : {}),
+          })
+        },
       }
     } catch {
       setStatus('error')

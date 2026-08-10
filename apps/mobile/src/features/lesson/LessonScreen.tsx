@@ -12,16 +12,18 @@ import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } fr
 import {
   AnswerOption,
   Button,
-  ProgressBar,
-  Skeleton,
-  Spacer,
   colors,
   layout,
+  ProgressBar,
   radius,
+  Skeleton,
   space,
+  Spacer,
+  squircle,
   text,
 } from '@worldquest/design'
 import { deriveRating, lessonLength } from '@worldquest/engines'
+import type { LessonFocus } from '@worldquest/engines'
 import type { ContentIndex, GradeResult, LessonState, Question } from '@worldquest/engines'
 import { Art } from '../../components/Art.js'
 import { Flag } from '../../components/Flag.js'
@@ -40,7 +42,8 @@ import { recordQuestEvent } from '../quests/questProgress.js'
 import { useContent } from '../../lib/content.js'
 import { currentLocale, tContent, useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
-import { recordLessonCompleted } from '../profile/useWeekActivity.js'
+import { localDay, recordLessonCompleted } from '../profile/useWeekActivity.js'
+import { recordPredictedAward } from '../../lib/awards.js'
 import { enqueueLesson } from '../../lib/sync.js'
 import { Icon } from '../../components/Icon.js'
 import { Stat } from '../../components/Stat.js'
@@ -55,6 +58,35 @@ type ScreenState = 'loading' | 'error' | 'empty' | 'ready'
  * from Italy is a question about the coat of arms, and at tile size that is a smudge —
  * and small enough that the four answers below it stay on screen at 320pt.
  */
+/**
+ * The revealed flag on the feedback sheet.
+ *
+ * Smaller than `FLAG_PROMPT_WIDTH`: as a prompt the flag is the question and gets the
+ * room to be studied, and here it shares a sheet with a verdict, two reward chips, a
+ * mascot and the way onward. Big enough to read the design, small enough not to push
+ * the Continue button off a 320.
+ */
+/**
+ * The rail down the leading edge of the answers.
+ *
+ * Four, because every multiple-choice template in the pack is two or four options and
+ * `BADGES[index]` is undefined past the end — which `AnswerOption` reads as "no badge"
+ * rather than as an empty circle. A five-option template would get four badges and one
+ * bare row, which is visibly wrong in a screenshot and is the right way for it to fail:
+ * loudly, in the place someone is looking, rather than by crashing a lesson.
+ */
+const BADGES = ['A', 'B', 'C', 'D'] as const
+
+/**
+ * How many right in a row before the feedback is allowed to call it a roll.
+ *
+ * Three, because two is a coincidence. Below this the praise says something true and
+ * unremarkable instead — see the copy note on `lesson:feedback.correct.streak`.
+ */
+const STREAK_PRAISE = 3
+
+const REVEAL_WIDTH = 96
+
 const FLAG_PROMPT_WIDTH = 200
 
 /**
@@ -136,7 +168,20 @@ const SHORT_SCREEN = 700
  * full size it is the picture that gives way. Never zero: "where in the world is this"
  * is half of what the screen teaches.
  */
-const LOCATOR_WIDTH = 200
+/**
+ * 280, up from 200, on a tall screen.
+ *
+ * The reference draws the locator nearly the full content width and it is the single
+ * biggest reason its question screen reads as a modern product rather than a form: the
+ * map stops being a stamp beside the prompt and becomes the thing you look at while you
+ * think. At 200 on a 390-wide phone it was 51 % of the content column with a third of
+ * the screen empty above it.
+ *
+ * The SHORT variant does not move. The 320×568 budget has not changed — prompt, map and
+ * four options need about 690pt there — and this is exactly the number that measurement
+ * exists to protect.
+ */
+const LOCATOR_WIDTH = 280
 const LOCATOR_WIDTH_SHORT = 132
 
 /**
@@ -150,7 +195,8 @@ const LOCATOR_WIDTH_SHORT = 132
  * map IS the question. 180 is the floor at which telling Norway from Sweden is still a
  * question about a coastline rather than about eyesight.
  */
-const MAP_PROMPT_WIDTH = 240
+// A map question's map IS the prompt, so it stays the larger of the two.
+const MAP_PROMPT_WIDTH = 300
 const MAP_PROMPT_WIDTH_SHORT = 180
 
 /**
@@ -171,6 +217,8 @@ export function LessonScreen({
   mode = 'normal',
   coins = 0,
   isTaster = false,
+  focus,
+  length,
 }: {
   onExit: (summary: LessonExit) => void
   /** `speed` runs the same items against a clock. Scoring is unchanged. */
@@ -193,6 +241,23 @@ export function LessonScreen({
    * reinstalls are worse than no activation numbers.
    */
   isTaster?: boolean
+  /**
+   * What the user chose to practise, from the picker. Absent means the mixed lesson.
+   *
+   * The runner does nothing with it beyond handing it to the composer — the same items,
+   * the same scheduler, the same scoring, drawn from a smaller pool. A focused lesson is
+   * not a different mode; it is the same lesson about less.
+   */
+  focus?: LessonFocus | undefined
+  /**
+   * How many questions, when the user asked for a number.
+   *
+   * Absent keeps the measured default: `lessonLength(itemMs)` sizes a lesson to about two
+   * minutes for THIS user, which is what makes "five minutes a day" a real promise. A
+   * chosen length overrides that on purpose — someone with four minutes on a bus has told
+   * us something the pace estimate cannot know.
+   */
+  length?: number | undefined
 }) {
   const t = useT()
   const { index, memory, status, reload, isOffline } = useContent()
@@ -219,6 +284,27 @@ export function LessonScreen({
   const [rewardsWrapped, setRewardsWrapped] = useState(false)
   const chipHeight = useRef(0)
   const rowHeight = useRef(0)
+
+  /**
+   * Bringing the answer back into view when the feedback sheet arrives.
+   *
+   * The sheet is a sibling below the scroll view, not an overlay — so when it appears it
+   * takes real height and the scroll viewport shrinks by that much. On a phone the
+   * question, its map and four options already overflow, so the options the user was
+   * just looking at get pushed under the sheet: read off a device, "japansk yen" — the
+   * CORRECT answer, freshly marked — was behind the card that had just said "Perfekt!".
+   *
+   * A learning app that hides which one was right at the exact moment it says whether
+   * you were right has failed at the only thing the screen is for. Scrolling the options
+   * block to the top of what is left is the cheapest correct answer: after answering, the
+   * prompt and the illustration have done their job and the options are the content.
+   *
+   * Not `scrollToEnd`, which was the first attempt — it pins the LAST option to the
+   * bottom, so with four options and a short viewport the first two go off the top, and
+   * the correct one is hidden again whenever it happens to be first.
+   */
+  const scroller = useRef<ScrollView>(null)
+  const optionsTop = useRef(0)
   // Called from BOTH `onLayout`s rather than only the row's, because their order is not
   // guaranteed — on web these come from a ResizeObserver, and a row that measured before
   // its chip would compare against a height of zero and conclude, permanently, that
@@ -237,8 +323,11 @@ export function LessonScreen({
   const itemMs = useItemPace()
   const questions = useMemo<readonly Question[]>(() => {
     if (status !== 'ready' || !index) return []
-    return index.compose({ count: lessonLength(itemMs) })
-  }, [status, index, itemMs])
+    return index.compose({
+      count: length ?? lessonLength(itemMs),
+      ...(focus ? { focus } : {}),
+    })
+  }, [status, index, itemMs, focus, length])
 
   const handleComplete = useCallback((state: LessonState, optimistic: GradeResult) => {
     // Enqueue, never await. A lesson finishing must not depend on the network —
@@ -254,6 +343,26 @@ export function LessonScreen({
     // must be right the moment the lesson ends — waiting for the server round trip
     // would show an empty week to anyone who finishes a lesson offline.
     recordLessonCompleted()
+    /**
+     * The same argument as the line above, for the numbers rather than the chart.
+     *
+     * `optimistic` is the full local grade — the figures the summary card is about to
+     * render as "+14 XP" — and until now it went no further than this screen. XP, coins
+     * and the streak all came from the server and nowhere else, so a lesson finished on
+     * a plane moved nothing anywhere: Profile said "Nothing to show yet" to somebody who
+     * had just done one.
+     *
+     * `may render optimistically; may never decide` (ADR 0006) is the rule, and this is
+     * the half that had never been built — `reconcile()` has always existed to correct a
+     * prediction and nothing produced one. The server still decides; this is what the
+     * user looks at while it does.
+     */
+    recordPredictedAward({
+      lessonId: state.lessonId,
+      xp: optimistic.xpAwarded,
+      coins: optimistic.coinsAwarded,
+      localDay: localDay(new Date()),
+    })
     hapticCelebrate()
     soundLevelUp()
     // The user's pace, from the answers just given. Sizes every later lesson.
@@ -345,6 +454,32 @@ export function LessonScreen({
   const lesson = useLesson({ questions, memory, timeLimitMs, onComplete: handleComplete })
 
   /**
+   * On the transition into feedback, put the options back on screen. See `scroller`.
+   *
+   * Keyed on `answered` alone rather than on the answer, so it runs once per question at
+   * the moment the sheet mounts and not again while the user reads it. `animated`, and
+   * deliberately not gated on reduced motion: this is not decoration — it is the screen
+   * showing the user the thing they asked to be shown, and the alternative under reduced
+   * motion is the same movement without the tween, which `scrollTo` gives us anyway on a
+   * platform that honours the setting.
+   *
+   * ABOVE every early return, and that is not a style preference. It first sat next to
+   * the JSX it affects, which is below `if (!question) return <LoadingState />` — so the
+   * hook count changed between the loading render and the question render and React threw
+   * "Rendered more hooks than during the previous render" on all fourteen lesson tests.
+   * A conditional hook is a crash, not a lint note.
+   */
+  const revealOptions = useCallback(() => {
+    // A hair above the block, so the first option is not flush against the header.
+    scroller.current?.scrollTo({ y: Math.max(0, optionsTop.current - space[3]), animated: true })
+  }, [])
+
+  useEffect(() => {
+    if (lesson.state.phase !== 'answered') return
+    revealOptions()
+  }, [lesson.state.phase, revealOptions])
+
+  /**
    * Watch this number. If it is high the mechanic is too punishing — which is the
    * whole reason the balance table caps hearts per lesson rather than per day.
    *
@@ -419,6 +554,23 @@ export function LessonScreen({
   if (!question) return <LoadingState />
 
   const answered = lesson.state.phase === 'answered'
+
+  /**
+   * How many the user has just got right in a row, counting back from the last answer.
+   *
+   * Only used to decide whether the praise under "Perfect!" is allowed to mention a
+   * streak. Computed rather than tracked because the answer log is already the truth
+   * and a second counter beside it is a second thing that can disagree with it.
+   */
+  const correctRun = (() => {
+    let run = 0
+    for (let i = lesson.state.answers.length - 1; i >= 0; i--) {
+      if (lesson.state.answers[i]?.wasCorrect !== true) break
+      run++
+    }
+    return run
+  })()
+
   const lastAnswer = lesson.state.answers[lesson.state.answers.length - 1]
   /**
    * What that answer was actually worth.
@@ -472,7 +624,7 @@ export function LessonScreen({
         )}
       </View>
 
-      <ScrollView contentContainerStyle={[styles.body, compact && styles.bodyShort]}>
+      <ScrollView ref={scroller} contentContainerStyle={[styles.body, compact && styles.bodyShort]}>
         {/* Centred by spacers, not by `justifyContent` — see `Spacer`. A two-option
             question should not cling to the top of a tall phone, and at 320×568 the
             prompt plus a map plus four options overflow, which is where centring with
@@ -549,8 +701,22 @@ export function LessonScreen({
           </View>
         )}
 
-        <View style={styles.options}>
-          {question.options.map((option) => {
+        <View
+          style={styles.options}
+          // Measured rather than assumed: the prompt is one or two lines, the
+          // illustration is present or not, and both move this by tens of points.
+          onLayout={(event) => {
+            optionsTop.current = event.nativeEvent.layout.y
+            // Scrolled from HERE as well as from the effect, and this is the call that
+            // actually lands. The sheet is a sibling, so mounting it shrinks the scroll
+            // viewport and the two Spacers inside the content redistribute — which moves
+            // this block. The effect fires on the phase change, before that relayout, so
+            // on its own it scrolls to where the options USED to be and leaves the first
+            // one clipped under the header. This fires after the new position is known.
+            if (answered) revealOptions()
+          }}
+        >
+          {question.options.map((option, index) => {
             const state = optionState(
               option.isCorrect,
               option.id,
@@ -562,6 +728,11 @@ export function LessonScreen({
               key={option.id}
               label={option.label}
               state={state}
+              // A, B, C, D. From the RENDER order, not from the option's identity —
+              // `buildQuestion` shuffles with the injected rng precisely so that
+              // position never becomes the answer, and a badge derived from anything
+              // stable would hand that back.
+              badge={BADGES[index]}
               // The state, spoken. `AnswerOption` documents this prop with the example
               // "Japan, correct answer" and nothing had ever passed it — so the mark
               // was `aria-hidden` artwork, the surface colour did the rest, and a
@@ -668,6 +839,34 @@ export function LessonScreen({
                it, so the praise and the way onward were two objects with a gap between
                them. One sheet is the mechanic worth taking. */
             <View style={styles.sheet}>
+              {/* The thing the question was ABOUT, now that it can be shown.
+   
+                  "Hur ser Japans flagga ut?" is asked in words and answered in words,
+                  so before this the flag never appeared at all: four sentences, a
+                  locator map for context, and a user who finishes a flag question
+                  without ever seeing the flag. In an app whose first promise is "flags,
+                  capitals and landmarks", that is the fact not being taught.
+   
+                  It cannot go beside the prompt — drawing the flag next to "what does
+                  Japan's flag look like?" hands the answer to anyone who can see it,
+                  silently and only to sighted users. After grading there is nothing
+                  left to give away: the correct option is already marked, and the
+                  engine only sets `revealAsset` when the picture is not already on
+                  screen (see Question.revealAsset).
+   
+                  Labelled, like the flag prompt and unlike every decorative flag in the
+                  app: here the picture is the answer being taught, so a reader that
+                  skipped it would be skipping the lesson. */}
+              {question.revealAsset !== undefined && (
+                <View style={styles.reveal} testID="reveal-asset">
+                  <Flag
+                    path={question.revealAsset}
+                    width={REVEAL_WIDTH}
+                    label={tContent(question.promptKey, question.promptParams)}
+                  />
+                </View>
+              )}
+
               {/* Behind the button because it is drawn BEFORE it and positioned to
                   overlap — later siblings paint on top, so the occlusion is the layout
                   rather than a mask. Decorative: the sheet already says what happened
@@ -701,13 +900,35 @@ export function LessonScreen({
               <View
                 style={
                   lastAnswer?.wasCorrect === true && !rewardsWrapped
-                    ? [styles.sheetText, { paddingStart: mascot - space[3] }]
-                    : [styles.sheetText, { paddingEnd: mascot - space[3] }]
+                    ? [styles.sheetText, { paddingStart: mascot }]
+                    : [styles.sheetText, { paddingEnd: mascot }]
                 }
               >
                 {lastAnswer?.wasCorrect ? (
             <>
               <Text style={styles.feedbackTitleOk}>{t('lesson:feedback.correct.title')}</Text>
+              {/* One warm line under the headline, and it tells the truth.
+   
+                  `feedback.correct.body` — "You found {entityName} 🎉" — has been in the
+                  catalogue since the first week, with a translator note saying "shown
+                  under the celebration headline", and NOTHING HAS EVER RENDERED IT. The
+                  correct branch was a single word and a reward chip, which is why the
+                  reference's version of this sheet reads warmer than ours: it has the
+                  sentence we already wrote.
+   
+                  The reference also says "Great job! You're on a roll." after every
+                  correct answer, including the first of the lesson. That is flattery,
+                  and the voice spec is explicit that we state the truth — so the roll
+                  line is a SECOND key, shown only once `correctRun` says there is
+                  actually a roll. Below three in a row, the honest sentence names what
+                  the user just learned instead, which is the better praise anyway. */}
+              <Text style={styles.feedbackBody}>
+                {correctRun >= STREAK_PRAISE
+                  ? t('lesson:feedback.correct.streak')
+                  : t('lesson:feedback.correct.body', {
+                      entityName: question.options.find((o) => o.isCorrect)?.label ?? '',
+                    })}
+              </Text>
               <View
                 style={styles.rewards}
                 onLayout={(e) => {
@@ -969,6 +1190,7 @@ const styles = StyleSheet.create({
     // reference, whose panel is a quarter of the screen tall where ours was a fifth.
     paddingTop: space[5],
     borderRadius: radius.lg,
+    ...squircle,
     backgroundColor: colors.bg.surfaceRaised,
   },
   // Anchored so the feet land INSIDE the button's band rather than on the sheet's floor.
@@ -991,6 +1213,9 @@ const styles = StyleSheet.create({
   // bounding box, because a mascot's box is wider than its shoulders — so this leans on
   // the same slack rather than adding the full width.
   sheetText: { gap: space[2] },
+  // Start-aligned with the sheet's text column rather than centred: the mascot owns one
+  // side of this sheet, and a centred picture would sit under him.
+  reveal: { alignItems: 'flex-start' },
   feedbackTitle: { ...text('h3'), color: colors.text.primary },
   feedbackTitleOk: { ...text('h2'), color: colors.feedback.correct },
   // Start-aligned, not centred. It was centred when this lived in a centred card; the
@@ -1011,6 +1236,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bg.surfaceRaised,
     padding: space[3],
     borderRadius: radius.md,
+    ...squircle,
   },
   offlineText: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
 })

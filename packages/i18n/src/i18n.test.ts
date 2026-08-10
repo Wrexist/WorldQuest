@@ -16,6 +16,7 @@ import {
   setLocale,
   t,
 } from './index.js'
+import { hasPluralRules, pluralRulesArePolyfilled } from './intl-polyfill.js'
 import { NAMESPACES } from './keys.js'
 import { generateKeys } from '../scripts/keys.js'
 import { pseudo } from './pseudo.js'
@@ -164,6 +165,74 @@ describe('ICU plurals', () => {
     expect(one).toContain('1')
     expect(many).toContain('12')
     expect(one).not.toContain('{')
+  })
+})
+
+/**
+ * The suite that would have caught the bug the four other harnesses could not.
+ *
+ * Every plural in the shipped app rendered as its own ICU source on device, for one
+ * reason: **Hermes implements no `Intl.PluralRules`**. `intl-messageformat` throws at
+ * construction, `icu.ts` returns the raw pattern rather than crash a screen, and users
+ * read `{count, plural, one {# land att upptäcka} other {# länder att upptäcka}}` on
+ * the Explore tiles.
+ *
+ * It survived every check in the repo because every check runs somewhere with a
+ * complete `Intl` — Node here, jsdom in the component tests, Chromium in `design:shots`
+ * and `e2e`. Four green harnesses, all of them structurally unable to see it.
+ *
+ * The polyfill is the fix; this is what keeps it. Deleting `Intl.PluralRules` from a
+ * Node process is the closest this can get to standing where Hermes stands, and it is
+ * close enough: it is the exact API the formatter reaches for and does not find.
+ */
+/**
+ * The suite that covers what the four other harnesses structurally cannot.
+ *
+ * Every plural in the shipped app rendered as its own ICU source on device, for one
+ * reason: **Hermes implements no `Intl.PluralRules`**. `intl-messageformat` throws at
+ * construction, `icu.ts` returns the raw pattern rather than crash a screen, and users
+ * read `{count, plural, one {# land att upptäcka} other {# länder att upptäcka}}` on
+ * the Explore tiles, the lesson summary and all three Settings goal options.
+ *
+ * It survived every check in the repo because every check runs somewhere with a
+ * complete `Intl` — Node here, jsdom in the component tests, Chromium in `design:shots`
+ * and `e2e`. Four green harnesses, none of them able to see it.
+ *
+ * Deleting `Intl.PluralRules` at runtime does NOT reproduce it, and that was the first
+ * attempt: the polyfill decides what to install when the module loads, so by the time a
+ * test deletes the global there is nothing left to stand in for it. The reproduction is
+ * real and the test built on it was measuring the wrong thing.
+ *
+ * What closes the gap instead is `polyfill-force` — the app now runs FormatJS's
+ * implementation in every environment, so the branch this test picks is chosen by the
+ * same code that will choose it on a phone. These assertions guard that property.
+ */
+describe('plural rules come from the same implementation the device uses', () => {
+  it('runs FormatJS here, not the engine', () => {
+    // If this ever reads false, the import in intl-polyfill.ts went back to the
+    // conditional `polyfill` and this suite has quietly stopped covering the device.
+    expect(pluralRulesArePolyfilled()).toBe(true)
+    expect(hasPluralRules()).toBe(true)
+  })
+
+  it('picks Swedish branches through it', async () => {
+    await setLocale('sv')
+    // Keys the suite above does not touch: formatters are cached per (locale, key,
+    // value), so a pattern compiled earlier would pass without formatting anything.
+    const one = t('explore:region.size', { count: 1 })
+    const many = t('explore:region.size', { count: 19 })
+    expect(one).not.toContain('{')
+    expect(many).not.toContain('{')
+    expect(one).not.toBe(many)
+    expect(many).toContain('19')
+    await setLocale('en')
+  })
+
+  it('picks English branches through it', () => {
+    const one = t('explore:region.size', { count: 1 })
+    const many = t('explore:region.size', { count: 19 })
+    expect(one).toBe('1 country to meet')
+    expect(many).toBe('19 countries to meet')
   })
 })
 

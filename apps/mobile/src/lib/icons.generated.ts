@@ -26,6 +26,7 @@ import heart from '../../assets/icons/heart.png'
 import trophy from '../../assets/icons/trophy.png'
 import globe from '../../assets/icons/globe.png'
 import map from '../../assets/icons/map.png'
+import pin from '../../assets/icons/pin.png'
 import flag from '../../assets/icons/flag.png'
 import star from '../../assets/icons/star.png'
 import lock from '../../assets/icons/lock.png'
@@ -57,6 +58,7 @@ export type IconName =
   | 'trophy'
   | 'globe'
   | 'map'
+  | 'pin'
   | 'flag'
   | 'star'
   | 'lock'
@@ -85,6 +87,7 @@ export const ICON_BY_NAME: Readonly<Record<IconName, IconAsset>> = {
   'trophy': trophy,
   'globe': globe,
   'map': map,
+  'pin': pin,
   'flag': flag,
   'star': star,
   'lock': lock,

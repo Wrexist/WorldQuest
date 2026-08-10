@@ -96,7 +96,11 @@ export default function RegionRoute() {
         countries={countries}
         progress={progress}
         onSelectCountry={(id) => router.push(`/country/${id}`)}
-        onStartLesson={() => router.push('/lesson')}
+        // The continent. "Start" on the Europe page starting a lesson about all
+        // sixty-five countries is the same defect the country page's Practise button
+        // had: the CTA belongs to the page it is on. `region=` is expanded to entity
+        // ids by the lesson route, which is where the index lives.
+        onStartLesson={() => router.push(`/lesson?region=${encodeURIComponent(code ?? '')}`)}
       />
     </ContentGate>
   )

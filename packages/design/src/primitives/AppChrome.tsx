@@ -11,6 +11,7 @@
 
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native'
 import { colors, radius, space } from '../tokens.js'
+import { squircle } from '../shape.js'
 import { fontFamily, text } from '../typography.js'
 
 // ── avatar ──────────────────────────────────────────────────────────────────
@@ -291,6 +292,7 @@ const styles = StyleSheet.create({
 
   art: {
     borderRadius: radius.md,
+    ...squircle,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -313,6 +315,7 @@ const styles = StyleSheet.create({
     width: 52,
     height: 40,
     borderRadius: radius.lg,
+    ...squircle,
     alignItems: 'center',
     justifyContent: 'center',
   },

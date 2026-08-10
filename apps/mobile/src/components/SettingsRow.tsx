@@ -13,17 +13,44 @@
  */
 
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native'
-import { colors, layout, radius, space, text } from '@worldquest/design'
+import {
+  colors,
+  layout,
+  radius,
+  space,
+  squircle,
+  text,
+} from '@worldquest/design'
 import { Icon } from './Icon.js'
 
 // ── section ─────────────────────────────────────────────────────────────────
 
-export function Section({ title, children }: { title: string; children: React.ReactNode }) {
+/**
+ * An inset group, with an optional header above it.
+ *
+ * `title` is optional because a group of rows that already label themselves does not need
+ * one, and iOS draws plenty of headerless groups. The practice picker is the case: one
+ * `ChoiceRow` per topic, each with its own heading, so a section title above each would
+ * print the same word twice six pixels apart — the defect Home's quest card, Explore's
+ * world card and Profile's level card each had in turn.
+ *
+ * Settings keeps its titles and should: there the header names a CATEGORY holding several
+ * differently-labelled rows, which is what a section header is for.
+ */
+export function Section({
+  title,
+  children,
+}: {
+  title?: string | undefined
+  children: React.ReactNode
+}) {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle} role="heading">
-        {title}
-      </Text>
+      {title !== undefined && (
+        <Text style={styles.sectionTitle} role="heading">
+          {title}
+        </Text>
+      )}
       <View style={styles.card}>{children}</View>
     </View>
   )
@@ -215,6 +242,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.bg.surface,
     borderRadius: radius.lg,
+    ...squircle,
     overflow: 'hidden',
   },
 
@@ -247,6 +275,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border.subtle,
     minHeight: layout.minTouchTarget,
+    // And the same floor on the OTHER axis. The height was pinned and the width was left
+    // to the padding, which is fine for a word and fails for a character: the practice
+    // picker's lesson-length options are "5", "10", "20", and "5" measured 42×44 at every
+    // viewport — under the floor on the one screen whose controls are all chips.
+    //
+    // A floor rather than a fixed size, so a long option in a longer language still grows.
+    minWidth: layout.minTouchTarget,
+    alignItems: 'center',
     justifyContent: 'center',
   },
   choiceSelected: {

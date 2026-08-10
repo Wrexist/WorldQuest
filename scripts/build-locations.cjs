@@ -65,30 +65,63 @@ const OUT = join(PACKS, 'facts.locations.v1.json')
 const FAMILIARITY = ['facts.capitals.v1.json', 'facts.flags.v1.json', 'facts.currencies.v1.json']
 
 /**
- * Display names per subregion key, en + sv.
+ * Display names per CONTINENT, en + sv.
+ *
+ * ## Why this replaced the subregion table
+ *
+ * The fact used to restate `subregion`, and that produced a question a child could answer
+ * knowing nothing. Europe, Asia and Africa are split into four, three and four subregions;
+ * North America, South America and Oceania are one apiece. So `same-region` distractors
+ * were impossible for those three, the `other-values` fallback pulled from the whole value
+ * set, and the shipped question was:
+ *
+ *     Where in the world is Argentina?
+ *       Western Europe / Northern Europe / Southern Europe / [South America]
+ *
+ * Three European subregions against one continent. The answer is the only option at the
+ * right scale, so it is free — and it was free for every country in the Americas and
+ * Oceania, which is nineteen of sixty-five. That is worse than no question: it teaches a
+ * ten-year-old that guessing the odd one out works.
+ *
+ * The mixing was the bug, not the fallback. A four-option question has to offer four
+ * options at ONE scale, and the scale this file already claimed in its own citation is the
+ * seven-continent model. So the value is the continent now, the citation is true rather
+ * than aspirational, and the country screen's label reads "Continent" because that is what
+ * the answer is.
+ *
+ * The finer question — "which part of Asia is Japan in?" — is worth having and is NOT this
+ * file. It needs its own attribute, and it needs the prompt to NAME the continent, or the
+ * same free-answer bug comes straight back: Asia has three subregions, so a four-option
+ * question there must borrow a fourth from somewhere, and "Western Europe" among Japan's
+ * options is the odd-one-out giveaway again. Naming the continent in the prompt is a
+ * template-parameter change, so it is a separate piece of work rather than a line here.
  *
  * In the PACK rather than in i18n, because a fact value is content: `packages/i18n`
  * holds the app's chrome, and a fact's answer is translated where the fact lives. Same
  * rule as a country name.
  */
-const SUBREGIONS = {
-  'east-asia': { en: 'East Asia', sv: 'Östasien' },
-  'eastern-africa': { en: 'East Africa', sv: 'Östafrika' },
-  'eastern-europe': { en: 'Eastern Europe', sv: 'Östeuropa' },
-  'north-america': { en: 'North America', sv: 'Nordamerika' },
-  'northern-africa': { en: 'North Africa', sv: 'Nordafrika' },
-  'northern-europe': { en: 'Northern Europe', sv: 'Nordeuropa' },
-  oceania: { en: 'Oceania', sv: 'Oceanien' },
-  'south-america': { en: 'South America', sv: 'Sydamerika' },
-  'south-asia': { en: 'South Asia', sv: 'Sydasien' },
-  'south-east-asia': { en: 'South-East Asia', sv: 'Sydostasien' },
-  'southern-africa': { en: 'Southern Africa', sv: 'Södra Afrika' },
-  'southern-europe': { en: 'Southern Europe', sv: 'Sydeuropa' },
-  'western-africa': { en: 'West Africa', sv: 'Västafrika' },
-  'western-europe': { en: 'Western Europe', sv: 'Västeuropa' },
+const CONTINENTS = {
+  AF: { id: 'africa', en: 'Africa', sv: 'Afrika' },
+  AN: { id: 'antarctica', en: 'Antarctica', sv: 'Antarktis' },
+  AS: { id: 'asia', en: 'Asia', sv: 'Asien' },
+  EU: { id: 'europe', en: 'Europe', sv: 'Europa' },
+  NA: { id: 'north-america', en: 'North America', sv: 'Nordamerika' },
+  OC: { id: 'oceania', en: 'Oceania', sv: 'Oceanien' },
+  SA: { id: 'south-america', en: 'South America', sv: 'Sydamerika' },
 }
 
-/** Four options need four members. A thinner subregion cannot fill a question. */
+/**
+ * Four options need four members. Enforced at the bottom of this file, with an exit.
+ *
+ * It decides whether a value can fill a question at all: a group holding three countries
+ * cannot supply four distinct answer options, and the composer would drop those questions
+ * silently rather than loudly.
+ *
+ * It never fired on the subregion values because none of them was thin — every subregion
+ * has at least four members. That is why this guard passed while the questions were still
+ * broken: the count was never the problem, the mixed SCALE was, and a member-count check
+ * cannot see the difference between four subregions and four continents.
+ */
 const MIN_MEMBERS = 4
 
 const entities = JSON.parse(readFileSync(ENTITIES, 'utf8')).items
@@ -114,29 +147,70 @@ const difficultyFor = (id) => {
   return ds[Math.floor(ds.length / 2)]
 }
 
-// A subregion with no display name would ship a raw key like "south-east-asia" as an
-// answer option. Loudly, rather than as a slug in front of a child.
-const unnamed = [...new Set(entities.map((e) => e.subregion))].filter((s) => !(s in SUBREGIONS))
+// A continent with no display name would ship a raw code like "OC" as an answer option.
+// Loudly, rather than as a slug in front of a child.
+const unnamed = [...new Set(entities.map((e) => e.region))].filter((r) => !(r in CONTINENTS))
 if (unnamed.length > 0) {
   console.error(
     `✗ no display name for: ${unnamed.join(', ')}\n` +
-      '  Add them to SUBREGIONS above, in en AND sv. A missing name ships the key.',
+      '  Add them to CONTINENTS above, in en AND sv. A missing name ships the key.',
   )
   process.exit(1)
 }
 
-const counts = {}
-for (const e of entities) counts[e.subregion] = (counts[e.subregion] ?? 0) + 1
+/**
+ * Countries whose own NAME contains their continent, which cannot be asked this.
+ *
+ * "Where in the world is South Africa?" answers itself, in English and in Swedish
+ * ("Sydafrika" / "Afrika"). `isSelfAnswering` in the composer catches it and refuses to
+ * build the question — correctly — and that refusal is what makes the fact unshippable
+ * rather than merely imperfect: `tpl.country-to-map.mc4` hangs on this same attribute and
+ * has no such problem, so keeping the fact gives a sighted user a location question for
+ * South Africa and a screen-reader user none. That is the exact parity failure
+ * `thesis.test.ts` exists to refuse, and it has no waiver, because a silent one is how the
+ * gap it was written for stayed open for thirty countries.
+ *
+ * So the fact is not generated at all. South Africa loses its location question and its
+ * map question together, which is two of five hundred and seventy-nine and is the honest
+ * price: the alternative is a question a child answers by reading it.
+ *
+ * Checked against every shipped locale, and accent-insensitively, because the next pack to
+ * hit this will not be an English one.
+ */
+const strip = (value) =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
 
-const items = [...entities]
+const namesItself = (e) =>
+  ['en', 'sv'].some((loc) => {
+    const name = e.names[loc]
+    const continent = CONTINENTS[e.region][loc]
+    return name !== undefined && strip(name).includes(strip(continent))
+  })
+
+const selfAnswering = entities.filter(namesItself)
+const askable = entities.filter((e) => !namesItself(e))
+
+const counts = {}
+for (const e of askable) counts[e.region] = (counts[e.region] ?? 0) + 1
+
+
+const items = [...askable]
   .sort((a, b) => a.id.localeCompare(b.id))
   .map((e) => ({
     id: `geo.${e.id}.location`,
     entity: e.id,
     attribute: 'location',
-    value: { id: e.subregion, names: SUBREGIONS[e.subregion] },
+    value: {
+      id: CONTINENTS[e.region].id,
+      names: { en: CONTINENTS[e.region].en, sv: CONTINENTS[e.region].sv },
+    },
     difficulty: difficultyFor(e.id),
-    tags: ['location', e.subregion, 'core'],
+    // The subregion stays as a TAG. It is still true, it is still useful for selecting
+    // and reporting, and it is no longer the answer to a four-option question.
+    tags: ['location', CONTINENTS[e.region].id, e.subregion, 'core'],
     source: {
       name:
         'WorldQuest editorial classification, on the seven-continent model ' +
@@ -153,8 +227,9 @@ writeFileSync(
     {
       $schema: '../../schema/pack.schema.json',
       $comment:
-        'Where each country is, as a fact rather than a field. Derived MECHANICALLY from ' +
-        '`subregion` in entities.countries.v1.json — this file invents no geography, it ' +
+        'Which CONTINENT each country is on, as a fact rather than a field. Derived ' +
+        'MECHANICALLY from `region` in entities.countries.v1.json — this file invents no ' +
+        'geography, it ' +
         'restates what the entity pack already declares so the composer can quiz it. ' +
         'Regenerate with `pnpm build:locations` whenever a country is added; hand-editing one ' +
         "row would let a country's location fact disagree with its own entity, which is a " +
@@ -168,7 +243,13 @@ writeFileSync(
         'choice, made here — and cites the seven-continent model it rests on. The derivation ' +
         'is mechanical; the classification being derived is a judgement, and the citation ' +
         'describes the judgement rather than the copy step. ' +
-        'Every fact here is `stable` by construction — the value is which subregion a ' +
+        'It restated `subregion` until it was first loaded by the app, at which point the ' +
+        'preview showed why that could not work: Europe, Asia and Africa split into ' +
+        'subregions and the Americas and Oceania do not, so nineteen of sixty-five ' +
+        'countries got a question whose only option at the right scale was the right one ' +
+        '("Where in the world is Argentina? Western Europe / Northern Europe / Southern ' +
+        'Europe / South America"). One scale per question; the subregion is now a tag. ' +
+        'Every fact here is `stable` by construction — the value is which continent a ' +
         'country sits in, and a continent does not move. Grading them per row would be ' +
         'grading the projection rather than its source, which is why `volatilityReviewed` ' +
         'is set below.',
@@ -200,14 +281,18 @@ writeFileSync(
 
 const thin = Object.entries(counts).filter(([, n]) => n < MIN_MEMBERS)
 
-console.log(`Locations → ${items.length} facts across ${Object.keys(counts).length} subregions\n`)
-for (const [sub, n] of Object.entries(counts).sort()) {
-  console.log(`  ${sub.padEnd(18)} ${n}${n < MIN_MEMBERS ? '  ← too thin for a 4-option question' : ''}`)
+console.log(`Locations → ${items.length} facts across ${Object.keys(counts).length} continents\n`)
+for (const e of selfAnswering) {
+  console.log(`  skipped ${e.id.padEnd(3)} ${e.names.en} — the name contains its own continent`)
+}
+if (selfAnswering.length > 0) console.log('')
+for (const [region, n] of Object.entries(counts).sort()) {
+  console.log(`  ${region.padEnd(18)} ${n}${n < MIN_MEMBERS ? '  ← too thin for a 4-option question' : ''}`)
 }
 if (thin.length > 0) {
   console.error(
-    `\n✗ ${thin.length} subregion(s) have fewer than ${MIN_MEMBERS} members.\n` +
-      '  "Where is X?" cannot fill four options from a subregion nobody else is in, and the\n' +
+    `\n✗ ${thin.length} continent(s) have fewer than ${MIN_MEMBERS} members.\n` +
+      '  "Where is X?" cannot fill four options from a continent nobody else is on, and the\n' +
       '  composer would drop those questions silently. Add countries, or the facts are inert.',
   )
   process.exit(1)

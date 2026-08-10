@@ -24,6 +24,7 @@
 import type { ReactNode } from 'react'
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native'
 import { colors, depth, gradient, radius, space } from '../tokens.js'
+import { squircle } from '../shape.js'
 
 export type CardProps = {
   children: ReactNode
@@ -239,7 +240,7 @@ const LEVELS = StyleSheet.create({
 })
 
 const styles = StyleSheet.create({
-  base: { borderRadius: radius.xl, padding: space[4] },
+  base: { borderRadius: radius.xl, padding: space[4], ...squircle },
   pressable: { borderBottomWidth: depth.button, borderBottomColor: colors.border.strong },
   // Keeps the gradient inside the corner radius. Nothing else needs it.
   clip: { overflow: 'hidden' },

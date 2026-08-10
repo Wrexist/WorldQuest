@@ -27,7 +27,7 @@
  */
 
 import { Image, StyleSheet, View } from 'react-native'
-import { ArtSlot, colors, radius } from '@worldquest/design'
+import { ArtSlot, colors, radius, squircle } from '@worldquest/design'
 import { Icon } from './Icon.js'
 import { mapHeight, mapSource } from '../lib/maps.js'
 
@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     backgroundColor: colors.bg.surface,
     borderRadius: radius.lg,
+    ...squircle,
     overflow: 'hidden',
   },
   // Absolute so the two masks share an origin. `contain` on both, at identical box

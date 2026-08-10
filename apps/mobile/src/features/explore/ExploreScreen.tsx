@@ -19,12 +19,13 @@ import { Animated, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimen
 import {
   ArtScrim,
   Card,
-  ProgressBar,
-  Skeleton,
   colors,
   palette,
+  ProgressBar,
   radius,
+  Skeleton,
   space,
+  squircle,
   staggerStyle,
   Tally,
   text,
@@ -58,6 +59,44 @@ export const CONTINENT_ART: Record<RegionCode, ArtName> = {
   SA: 'continents/SA',
   OC: 'continents/OC',
   AN: 'continents/AN',
+}
+
+/**
+ * The continent's own landmass, laid over its sky.
+ *
+ * The sky above is atmosphere and says so in `asset-prompts.md` §8 — deliberately no
+ * coastline, because a generated coastline is a wrong fact and a generated border is a
+ * political claim. That left the Explore grid as seven coloured moods: correct, and not
+ * a map of anywhere. These are the shapes, delivered as art rather than derived, and
+ * they are what makes a card read as a place you can go.
+ *
+ * `Partial`, and Antarctica is the reason. `REGIONS` has seven entries and the delivery
+ * has six; a record typed as total would need a lie for AN, and the tile renders without
+ * a silhouette instead. Typing the gap is what makes the missing one visible here rather
+ * than at runtime.
+ */
+/**
+ * How much of the tile the landmass takes.
+ *
+ * Bigger than it looks, because it is anchored into the BOTTOM-TRAILING CORNER and
+ * clipped by the card — most of the extra falls off the edge, which is what gives the
+ * shape somewhere to be without needing a column of its own.
+ *
+ * The first version reserved a column instead, insetting the copy by 30 % so the two sat
+ * side by side. On a 390 phone that left the text about 95pt and "19 countries to meet"
+ * wrapped to two lines in Europe and not in Asia — so the row came out crooked, which is
+ * a worse crime than an overlap. A watermark under the words, dimmed and cornered, gives
+ * the copy the whole card back and still reads as a map of somewhere.
+ */
+const SILHOUETTE_OF_TILE = 0.62
+
+export const CONTINENT_SILHOUETTE: Partial<Record<RegionCode, ArtName>> = {
+  EU: 'continents-silhouette/EU',
+  AS: 'continents-silhouette/AS',
+  AF: 'continents-silhouette/AF',
+  NA: 'continents-silhouette/NA',
+  SA: 'continents-silhouette/SA',
+  OC: 'continents-silhouette/OC',
 }
 
 /**
@@ -107,6 +146,15 @@ export type ExploreScreenProps = {
  */
 const HEADER_ART = 84
 
+/**
+ * The globe on the world card.
+ *
+ * Big enough to read as a planet and not as an icon — below about 60 the continents on
+ * it turn to noise — and small enough that the two progress bars beside it keep a
+ * readable column at 320.
+ */
+const WORLD_GLOBE = 72
+
 type TileSize = { readonly width: number; readonly height: number }
 
 /** `width: '48%'` of the grid, which is the screen inside its own padding. */
@@ -147,7 +195,10 @@ export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection
           </Text>
           <Text style={styles.subtitle}>{t('explore:subtitle')}</Text>
         </View>
-        <Art name="atlas/thinking" size={HEADER_ART} />
+        {/* `explorer`, not `thinking`: he is standing on a rock looking out, which is
+            what the reference has in this corner and what the screen is about. `thinking`
+            is the mascot for a question and belongs on the ones that ask you something. */}
+        <Art name="atlas/explorer" size={HEADER_ART} />
       </View>
 
       <Card style={styles.worldCard} accessibilityLabel={t('explore:world.label')}>
@@ -159,22 +210,36 @@ export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection
             Home's world card already does this correctly: a title, then a bar labelled
             with the facts phrase, then the countries line. The same data was presented
             two different ways on two screens, and this was the wrong one. */}
-        <Text style={styles.worldTitle}>{t('explore:world.label')}</Text>
-        <ProgressBar
-          current={world.factsLearned}
-          total={Math.max(1, world.factsTotal)}
-          showCount={false}
-          label={t('explore:region.facts', {
-            learned: world.factsLearned,
-            total: world.factsTotal,
-          })}
-        />
-        <Tally style={styles.worldCount} numberStyle={styles.worldCountNumber}>
-          {t('explore:world.countries', {
-            complete: world.entitiesComplete,
-            total: world.entitiesTotal,
-          })}
-        </Tally>
+        {/* The globe, at last. `rewards/globe` was a delivered master that `build:art`
+            had never rasterised — the third asset found in that state on this branch —
+            and it is the one picture that says what this card is. Decorative: the
+            heading and both counts already say it in words. */}
+        <Art name="rewards/globe" size={WORLD_GLOBE} />
+        <View style={styles.worldStats}>
+          <Text style={styles.worldTitle}>{t('explore:world.label')}</Text>
+          {/* Two counts, two bars. The facts line had a bar and the countries line did
+              not, so the card answered "how far along am I?" for one of its two numbers
+              and left the other as a sentence — which reads as the second one mattering
+              less rather than as a layout choice. */}
+          <ProgressBar
+            current={world.factsLearned}
+            total={Math.max(1, world.factsTotal)}
+            showCount={false}
+            label={t('explore:region.facts', {
+              learned: world.factsLearned,
+              total: world.factsTotal,
+            })}
+          />
+          <ProgressBar
+            current={world.entitiesComplete}
+            total={Math.max(1, world.entitiesTotal)}
+            showCount={false}
+            label={t('explore:world.countries', {
+              complete: world.entitiesComplete,
+              total: world.entitiesTotal,
+            })}
+          />
+        </View>
       </Card>
 
       {/* Collections sit ABOVE the continent grid deliberately. The grid is
@@ -189,8 +254,18 @@ export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection
             onPress={() => onOpenCollection('flags')}
             style={styles.collection}
           >
-            <Icon name="flag" size={26} color={colors.action.primary} />
-            <Text style={styles.collectionName}>{t('collection:flags.title')}</Text>
+            <Icon name="flag" size={22} color={colors.action.primary} />
+            <View style={styles.collectionText}>
+              <Text style={styles.collectionName}>{t('collection:flags.title')}</Text>
+              <Text style={styles.collectionHint} numberOfLines={2}>
+                {t('collection:flags.subtitle')}
+              </Text>
+            </View>
+            {/* The affordance the tile was missing. Two cards that open a screen looked
+                identical to the seven below them that also open a screen, and neither
+                said so; a chevron is how iOS says "this goes somewhere". Decorative —
+                the card's own role and label already announce it as a button. */}
+            <Icon name="chevron" size={14} color={colors.text.tertiary} />
           </Card>
           <Card
             level={2}
@@ -199,8 +274,20 @@ export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection
             onPress={() => onOpenCollection('countries')}
             style={styles.collection}
           >
-            <Icon name="explore" size={26} color={colors.action.primary} />
-            <Text style={styles.collectionName}>{t('collection:countries.title')}</Text>
+            <Icon name="explore" size={22} color={colors.action.primary} />
+            <View style={styles.collectionText}>
+              {/* Room, rather than a cap. Two tiles share 390pt with an icon and a
+                  chevron each, and "Countries" broke as "Countrie / s" — a word split
+                  mid-syllable, which is the one wrapping failure that reads as a bug.
+                  `numberOfLines={1}` with `adjustsFontSizeToFit` was tried and is worse:
+                  the prop is a no-op on react-native-web, so it ellipsised to
+                  "Countri…" instead. The icon and chevron gave the space back. */}
+              <Text style={styles.collectionName}>{t('collection:countries.title')}</Text>
+              <Text style={styles.collectionHint} numberOfLines={2}>
+                {t('collection:countries.subtitle')}
+              </Text>
+            </View>
+            <Icon name="chevron" size={14} color={colors.text.tertiary} />
           </Card>
         </View>
       )}
@@ -298,6 +385,23 @@ function ContinentTile({
               the top of the sky alone. */}
           <ArtScrim />
         </View>
+
+        {/* The landmass, over the sky and under the words.
+   
+            Trailing edge and vertically centred, at a bit under half the tile, which is
+            where the reference puts it: the text column keeps the leading half and the
+            shape fills the space the copy does not use instead of sitting behind it.
+            `pointerEvents` none on the wrapper above covers this too.
+   
+            Decorative. The tile's `aria-label` already names the continent and its
+            progress, and a reader announcing "map of Africa" after "Africa, 0 %" is the
+            same fact twice. */}
+        {CONTINENT_SILHOUETTE[region] !== undefined && (
+          <View style={styles.tileShape} pointerEvents="none">
+            <Art name={CONTINENT_SILHOUETTE[region]} size={art * SILHOUETTE_OF_TILE} />
+          </View>
+        )}
+
         <View style={[styles.swatch, { backgroundColor: tint }]} />
         <Text style={styles.regionName}>{t(REGION_NAME[region])}</Text>
 
@@ -323,15 +427,31 @@ function ContinentTile({
                 total: progress.factsTotal,
               })}
             </Tally>
+            {/* `showPercent` rather than a row built here. It started as a local one and
+                moved into the primitive the moment Quests and Achievements turned out to
+                have the same unreadable-at-zero bar — see `ProgressBar`. */}
             <ProgressBar
               current={progress.factsLearned}
               total={Math.max(1, progress.factsTotal)}
               showCount={false}
-              // Reward tone where there is something to review — the same gold the streak
-              // uses, so "come back to this" reads consistently.
+              showPercent
+              // Reward tone where there is something to review — the same gold the
+              // streak uses, so "come back to this" reads consistently.
               tone={progress.factsDue > 0 ? 'reward' : 'progress'}
+              height={8}
             />
-            <Tally style={styles.regionDue} numberStyle={styles.regionMetaNumber}>
+            {/* A pin, in the continent's own colour.
+   
+                ONE glyph tinted six ways, not six pictures. `Icon` renders Lucide's
+                `map-pin` as a white-on-transparent alpha mask and recolours it at the
+                call site, so the same 4 KB file serves every continent and follows the
+                token if a tint ever changes — which six baked PNGs could not do, at any
+                size, in any theme.
+   
+                Decorative: the line beside it says "19 countries to meet" in words. */}
+            <View style={styles.regionDueRow}>
+              <Icon name="pin" size={14} color={tint} />
+              <Tally style={styles.regionDue} numberStyle={styles.regionMetaNumber}>
               {/* Zero due means "nothing is waiting for you", which is only true once
                   something has been learned. On a continent at 0 of 56 the same branch
                   rendered "Up to date" — an invitation turned into a claim that the user
@@ -346,6 +466,7 @@ function ContinentTile({
                 ? t('explore:region.size', { count: progress.entitiesTotal })
                 : t('explore:region.due', { count: progress.factsDue })}
             </Tally>
+            </View>
           </>
         )}
       </Pressable>
@@ -372,9 +493,22 @@ function ExploreSkeleton() {
 
 const styles = StyleSheet.create({
   collections: { flexDirection: 'row', gap: space[2], paddingHorizontal: space[4], marginBottom: space[3] },
-  collection: { flex: 1, padding: space[3], alignItems: 'center', gap: space[1] },
-  collectionGlyph: { ...text('h1'), color: colors.text.primary },
-  collectionName: { ...text('caption', { weight: '700' }), color: colors.text.secondary },
+  // A ROW, not a centred stack. The icon leads, the words explain, the chevron points
+  // out — which is the shape of every navigation row iOS has ever drawn, and it fits a
+  // subtitle without growing the tile.
+  collection: {
+    flex: 1,
+    paddingVertical: space[3],
+    paddingHorizontal: space[3],
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space[2],
+  },
+  collectionText: { flex: 1, gap: space[0] },
+  // Up a step from `caption`: it is a destination's name now, with its own line of
+  // explanation under it, rather than a label under an icon.
+  collectionName: { ...text('bodyStrong'), color: colors.text.primary },
+  collectionHint: { ...text('caption'), color: colors.text.tertiary },
   screen: { flex: 1 },
   content: { padding: space[4], gap: space[4] },
   // A row now, with the mascot on the end. `space[1]` still separates the two lines of
@@ -384,28 +518,54 @@ const styles = StyleSheet.create({
   title: { ...text('h1'), color: colors.text.primary },
   subtitle: { ...text('body'), color: colors.text.secondary },
 
-  worldCard: { gap: space[2] },
+  // A row now: globe, then the column of counts. `alignItems: 'center'` so the globe
+  // sits against the middle of the stats rather than the top of the card.
+  worldCard: { flexDirection: 'row', alignItems: 'center', gap: space[4] },
+  worldStats: { flex: 1, gap: space[2] },
   worldTitle: { ...text('h3'), color: colors.text.primary },
-  worldCount: { ...text('caption'), color: colors.text.secondary },
-  worldCountNumber: {
-    ...text('caption', { weight: '700', numeric: true }),
-    color: colors.text.primary,
-  },
 
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: space[3] },
   // Clipped, so the oversized background stops at the card edge, and positioned so
   // the swatch, name and progress stack on top of it.
   tileArt: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
+  // `end`, not `right`: the text column is the leading half and it mirrors in RTL, so a
+  // shape pinned to a physical edge would sit on the copy in Arabic.
+  /**
+   * Bottom-trailing, and quiet.
+   *
+   * `end` rather than `right`: the copy is the leading column and it mirrors in RTL, so
+   * a shape pinned to a physical edge would sit on the text in Arabic. The offsets push
+   * it past the corner so the landmass bleeds off two edges instead of floating in the
+   * middle of the card with air all round it.
+   *
+   * 0.55 opacity is the number that lets `text.primary` keep its 4.5:1 over the brightest
+   * of the six — Africa's gold — with `ArtScrim` already weighted downward underneath it.
+   * At full strength the map won and the count was unreadable on three of the seven.
+   */
+  // `space[1]` is the icon↔label step — the one place the 4pt rung is for.
+  regionDueRow: { flexDirection: 'row', alignItems: 'center', gap: space[1] },
+  tileShape: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    opacity: 0.55,
+  },
   // The cell owns the grid width; the tile fills the cell. Split when the tiles gained a
   // staggered entrance — the transform has to sit on a wrapper, because animating the
   // Pressable itself would fight `press3d` for the same transform property.
   tileCell: { width: '48%' },
   tile: {
     width: '100%',
-    minHeight: 132,
     gap: space[2],
     padding: space[3],
+    /**
+     * A FLOOR on the height, so a two-line count cannot make one card taller than the
+     * one beside it. Read off a device, "19 countries to meet" wrapped in Europe and not
+     * in Asia, and the row came out visibly crooked.
+     */
+    minHeight: 148,
     borderRadius: radius.lg,
+    ...squircle,
     borderWidth: 1,
     // Clips the oversized continent background to the card.
     overflow: 'hidden',

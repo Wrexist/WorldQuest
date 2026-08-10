@@ -94,6 +94,17 @@ const ILLUSTRATION = { budget: 120 * 1024, format: 'image/webp', fit: 'contain' 
 const ILLUSTRATION_WIDTH = 768
 
 /**
+ * Masters delivered on an opaque plate that should ship as cutouts.
+ *
+ * Named rather than detected, for the same reason `ALLOWANCE` is: the continent skies
+ * are deliberately opaque and a knockout deciding for itself would dissolve them. See
+ * the transform in `render` for how it works and why luminance is the right key.
+ */
+const KNOCKOUT = new Set([
+  'continents-silhouette/NA',
+])
+
+/**
  * Assets allowed past the budget, each with the reason and its own ceiling.
  *
  * Same shape as the contrast waivers and the escape-hatch allowlist: an exception is
@@ -211,6 +222,20 @@ const ART_DIRS = [
   'achievements',
   'avatars',
   'continents',
+  /**
+   * The continent shapes that sit on the Explore cards.
+   *
+   * A separate set from `continents/`, which is the seven photographic SKIES that fill a
+   * tile edge to edge. These are cutout landmasses on transparency, drawn to be tinted
+   * and laid over a card — different art, different handling (`isBackground` matches
+   * `continents/` and not this, which is what keeps them apart), so they get their own
+   * directory rather than a naming convention inside one.
+   *
+   * The folder already existed carrying six PNGs of a MOUNTAIN RANGE under continent
+   * names — delivered against the wrong brief, never built, and never noticed because
+   * nothing here listed the directory. The real shapes replace them.
+   */
+  'continents-silhouette',
   'leagues',
   'levels',
   'rewards',
@@ -277,7 +302,7 @@ async function render(page, sourceBytes, spec) {
   const height = spec.height ?? spec.size ?? null
 
   return page.evaluate(
-    async ({ dataUrl, width, height: requested, fit, opaque, inset, canvasColor, format, quality, bannerAspect }) => {
+    async ({ dataUrl, width, height: requested, fit, opaque, inset, canvasColor, format, quality, bannerAspect, knockout }) => {
       let height = requested
       const img = new Image()
       img.src = dataUrl
@@ -336,9 +361,34 @@ async function render(page, sourceBytes, spec) {
         }
       }
 
+      /**
+       * The rung's number caps the LONGEST side, not the width.
+       *
+       * `ILLUSTRATION_WIDTH` is documented as "the @3x of a 256pt slot, which is the
+       * largest any of these is drawn at" — a statement about the biggest dimension on
+       * screen, which for a portrait master is its height. Applied as a width it means
+       * something else entirely: `continents-silhouette/NA` is the one master delivered
+       * 1024×1536, so at "width 768" it came out 768×1152 — 2.2× the pixels of every
+       * landscape asset at the same rung, and the only asset in the set that ran off the
+       * end of the ladder still 31 KB over budget.
+       *
+       * It could have been waived through `ALLOWANCE`, and that would have recorded a
+       * portrait image as an exception to a budget it was never actually breaking. The
+       * budget is about bytes, bytes follow area, and this is the line that was reading
+       * one dimension and charging for two.
+       */
+      // `== null` catches both spellings deliberately: `render` resolves an absent height
+      // to `null` ("whatever the master's aspect gives") while the destructure defaults to
+      // `undefined`, and a check for one of the two silently never fires. It didn't.
       const canvas = document.createElement('canvas')
-      canvas.width = width
-      canvas.height = height ?? Math.round((width * sh) / sw)
+      if (height == null && sh > sw) {
+        canvas.height = width
+        canvas.width = Math.round((width * sw) / sh)
+      } else {
+        canvas.width = width
+        canvas.height = height ?? Math.round((width * sh) / sw)
+      }
+      width = canvas.width
       height = canvas.height
       const ctx = canvas.getContext('2d')
 
@@ -376,6 +426,41 @@ async function render(page, sourceBytes, spec) {
       // Only the outer eighth is touched, as an alpha ramp rather than a vignette: a
       // radial fade would dim the middle of a 3:2 composition, and the subject of
       // every one of these is in the middle.
+      /**
+       * Turn a pure-black plate into transparency, for a master delivered on one.
+       *
+       * `continents-silhouette/NA` arrives as a terrain render on black — measured, the
+       * corners are exactly (0,0,0) and the darkest land sits near luminance 33. Its five
+       * siblings are cutouts, so dropped in as delivered it would be the one continent
+       * drawn as an opaque rectangle: `Art` measures a full-frame plate as a PANEL, gives
+       * it a hairline border and its own aspect, and the card gets a black box in the
+       * corner instead of a landmass bleeding into the sky.
+       *
+       * Alpha FROM LUMINANCE rather than a flood fill or a threshold, and for this kind of
+       * image it is not a compromise — it is the right transform. The art is a lit subject
+       * on black, so brightness already IS coverage: the land comes out opaque, the black
+       * comes out gone, and the glow around the coastline keeps its soft edge for free
+       * instead of being cut to a hard alpha step. A threshold would have hardened that
+       * edge; a flood fill would have preserved it but needed a rule about how dark an
+       * interior lake is allowed to be before it becomes a hole in the continent.
+       *
+       * Opt-in per asset, never automatic. The seven continent SKIES are deliberately
+       * opaque full-bleed plates, and a knockout that ran on its own judgement would
+       * quietly dissolve them.
+       */
+      if (knockout) {
+        const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height)
+        const data = pixels.data
+        for (let i = 0; i < data.length; i += 4) {
+          const lum = 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2]
+          // Scaled so anything at or above a quarter brightness is fully opaque; below
+          // that it ramps, which is where the glow and the coastline antialiasing live.
+          const alpha = Math.min(255, Math.round((lum / 64) * 255))
+          data[i + 3] = Math.min(data[i + 3], alpha)
+        }
+        ctx.putImageData(pixels, 0, 0)
+      }
+
       if (!opaque) {
         const probe = ctx.getImageData(0, 0, Math.max(1, Math.round(width * 0.06)), 1).data
         let solid = 0
@@ -455,49 +540,108 @@ async function measure(page, webpBytes) {
     ctx.drawImage(img, 0, 0)
     const pixels = ctx.getImageData(0, 0, img.width, img.height).data
 
-    // 24, not 0: WebP is lossy, so a transparent margin comes back with a scatter of
-    // alpha-1..8 noise in it. At 0 the "subject" of every asset is the whole frame and
-    // this measures nothing.
-    let x0 = img.width
-    let y0 = img.height
-    let x1 = -1
-    let y1 = -1
-    for (let y = 0; y < img.height; y++) {
-      for (let x = 0; x < img.width; x++) {
-        if (pixels[(y * img.width + x) * 4 + 3] > 24) {
-          if (x < x0) x0 = x
-          if (x > x1) x1 = x
-          if (y < y0) y0 = y
-          if (y > y1) y1 = y
+    // WHERE THE INK IS, not where the outermost surviving pixel is.
+    //
+    // This used to be a plain bounding box of every pixel over alpha 24 — "24, not 0,
+    // because WebP is lossy and a transparent margin comes back with a scatter of
+    // alpha-1..8 noise in it". Raising the floor above the noise was right and it was
+    // not enough: an extremal box is decided by its most extreme pixel, so ONE surviving
+    // speck of dust in a corner reports the whole frame as the subject. The comment below
+    // claimed the two populations were 92–100 % and 36–73 % with "nothing in the set
+    // between"; measured across all 68 shipped assets they overlap continuously
+    // (`onboarding/conquer` 0.81×0.72, `avatar-08…12` 0.82–0.84, `celebration/burst`
+    // 0.73×0.88), and five assets landed on the wrong side of the line:
+    //
+    //   atlas/welcome      0.92×0.92 -> 0.41×0.82     the onboarding taster's hero
+    //   onboarding/learn   0.87×0.86 -> 0.39×0.48     onboarding slide 2
+    //   states/error-generic 1.00×0.87 -> 0.95×0.52
+    //   states/offline     1.00×0.99 -> 0.99×0.63
+    //   avatars/avatar-07  0.91×0.99 -> 0.85×0.95     the odd one out of twelve
+    //
+    // Each was drawn as a whole-frame PANEL: a hairline border, the file's own 3:2 box,
+    // and the subject left at the size it happens to be in the file. Two of them are the
+    // first and fourth screens a new user sees, and both photographed as an empty
+    // rounded rectangle with a small robot in it — which is the exact "placeholder frame"
+    // look this geometry exists to remove, arriving from the other end.
+    //
+    // So the box is taken by alpha MASS instead: accumulate per column and per row, then
+    // trim the faintest 0.5 % from each end of each axis. A solid plate spreads its mass
+    // evenly and loses half a percent of its width, so a panel still measures as a panel
+    // (`continents/*` 0.99, `empty-profile` 0.95×0.93, `atlas/resting` 0.93×0.93 — the
+    // three the feather above was written for, all still on the panel side). A subject
+    // sitting in a starfield carries almost all of the mass, so the stars trim away and
+    // the subject is what gets measured.
+    const width = img.width
+    const height = img.height
+    const columns = new Float64Array(width)
+    const rows = new Float64Array(height)
+    let total = 0
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const alpha = pixels[(y * width + x) * 4 + 3]
+        if (alpha > 24) {
+          columns[x] += alpha
+          rows[y] += alpha
+          total += alpha
         }
       }
     }
 
-    // A fully opaque asset — a continent card — has no margin to find, and a fully
-    // transparent one would be a bug elsewhere. Both come back as the whole frame, which
-    // is the behaviour the app had before this existed.
-    const whole = { aspect: img.width / img.height, x: 0, y: 0, w: 1, h: 1 }
-    if (x1 < x0 || y1 < y0) return whole
+    // A fully transparent asset would be a bug elsewhere; a fully opaque one — a
+    // continent card — has no margin to find. Both come back as the whole frame, which is
+    // the behaviour the app had before this existed.
+    const whole = { aspect: width / height, x: 0, y: 0, w: 1, h: 1 }
+    if (total === 0) return whole
 
-    const w = (x1 - x0 + 1) / img.width
-    const h = (y1 - y0 + 1) / img.height
+    /** The span of `axis` holding all but `TRIM` of its mass at each end. */
+    const TRIM = 0.005
+    const span = (axis) => {
+      const cut = total * TRIM
+      let low = 0
+      let high = axis.length - 1
+      let seen = 0
+      for (; low < axis.length; low++) {
+        seen += axis[low]
+        if (seen > cut) break
+      }
+      seen = 0
+      for (; high >= 0; high--) {
+        seen += axis[high]
+        if (seen > cut) break
+      }
+      return [low, high]
+    }
+
+    const [x0, x1] = span(columns)
+    const [y0, y1] = span(rows)
+
+    const w = (x1 - x0 + 1) / width
+    const h = (y1 - y0 + 1) / height
 
     // A picture that already fills its frame is reported as filling its frame, exactly.
     //
     // Not a rounding nicety — this is the difference between the feather working and not.
-    // `states/empty-profile`, `states/empty-no-friends`, `atlas/resting` and
-    // `atlas/welcome` carry a baked ground, and the build ramps their outer eighth to
-    // transparent so the edge does not read as a rectangle pasted onto the canvas. That
-    // ramp measures as margin here: the box came back at ~95 %, the app scaled the image
-    // up by the missing 5 % to make the "subject" fit, and the frame clipped the ramp
-    // clean off — a hard-edged dark rectangle, which is the exact bug the feather exists
-    // to prevent, reintroduced from the other end.
+    // `states/empty-profile`, `states/empty-no-friends` and `atlas/resting` carry a baked
+    // ground, and the build ramps their outer eighth to transparent so the edge does not
+    // read as a rectangle pasted onto the canvas. That ramp measures as margin here: the
+    // box comes back a little under 1, the app would scale the image up by the difference
+    // to make the "subject" fit, and the frame would clip the ramp clean off — a
+    // hard-edged dark rectangle, which is the exact bug the feather exists to prevent,
+    // reintroduced from the other end.
     //
-    // 85 % separates the two populations with room to spare: a baked ground measures 92–100 %
-    // and a cutout measures 36–73 %. Nothing in the set sits between.
+    // 85 % is where those three sit comfortably above and everything else sits
+    // comfortably below, on the mass measurement above: they come back 0.93–0.99, the
+    // seven opaque continent tiles come back 0.99, and the next asset down is
+    // `avatars/avatar-07` at 0.85×0.95 — which belongs with its eleven siblings on the
+    // cutout side and now lands there.
+    //
+    // Deliberately NOT stated as "the populations do not overlap". They do, on the
+    // extremal box this used to take: `onboarding/conquer` measured 0.81×0.72 and
+    // `avatars/avatar-08…12` 0.82–0.84 against baked grounds at 0.92–1.00, which is a
+    // gap of eight points and no room at all. The mass measurement is what opens it.
     if (w >= 0.85 && h >= 0.85) return whole
 
-    return { aspect: img.width / img.height, x: x0 / img.width, y: y0 / img.height, w, h }
+    return { aspect: width / height, x: x0 / width, y: y0 / height, w, h }
   }, `data:image/webp;base64,${webpBytes.toString('base64')}`)
 }
 
@@ -657,6 +801,7 @@ ${geometryEntries.join('\n')}
           ...rung,
           fit: 'cover',
           opaque: isBackground(name),
+          knockout: KNOCKOUT.has(name),
           bannerAspect: BANNER_ASPECT,
         }),
       )

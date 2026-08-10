@@ -18,12 +18,28 @@
 
 import { useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { ArtScrim, Button, ProgressBar, Tally, colors, palette, radius, space, text } from '@worldquest/design'
+import {
+  ArtScrim,
+  Button,
+  colors,
+  palette,
+  ProgressBar,
+  radius,
+  space,
+  squircle,
+  Tally,
+  text,
+} from '@worldquest/design'
 import type { EntityProgress, Mastery, RegionProgress } from '@worldquest/engines'
 import { collator, currentLocale, useT, type TranslationKey } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 import { Flag } from '../../components/Flag.js'
-import { CONTINENT_ART, continentArtSize, type RegionCode } from './ExploreScreen.js'
+import {
+  CONTINENT_ART,
+  CONTINENT_SILHOUETTE,
+  continentArtSize,
+  type RegionCode,
+} from './ExploreScreen.js'
 
 const MASTERY_LABEL: Record<Mastery, TranslationKey> = {
   unseen: 'explore:mastery.unseen',
@@ -90,6 +106,16 @@ export type RegionScreenProps = {
   readonly onStartLesson: () => void
 }
 
+/**
+ * How much of the banner the landmass takes.
+ *
+ * Smaller than it first looked right at. The banner is short and carries a heading, a
+ * bar and two counts, so a landmass sized like the tile's ran straight under "0 of 19
+ * countries finished" at full brightness. Clipped into the corner and dimmer than the
+ * tile's, because there is more text here competing for the same rectangle.
+ */
+const BANNER_SILHOUETTE = 0.5
+
 export function RegionScreen({
   region,
   regionNameKey,
@@ -149,6 +175,25 @@ export function RegionScreen({
           />
           <ArtScrim />
         </View>
+
+        {/* The continent's own shape, on the continent's own screen.
+   
+            The Explore grid carries these as watermarks and this is where one of them
+            gets to be the picture: the banner is 100 % about this one place, so the
+            landmass belongs here at least as much as it does on a tile. Same treatment —
+            bottom-trailing, dimmed, clipped by the banner — so arriving from a tile feels
+            like the same object getting larger rather than a different screen.
+   
+            Decorative: the heading names the continent one line below it. */}
+        {CONTINENT_SILHOUETTE[region] !== undefined && (
+          <View style={styles.bannerShape} pointerEvents="none">
+            <Art
+              name={CONTINENT_SILHOUETTE[region]}
+              size={continentArtSize(banner.width, banner.height) * BANNER_SILHOUETTE}
+            />
+          </View>
+        )}
+
         <View style={styles.header}>
           <View style={[styles.swatch, { backgroundColor: palette.continent[region] }]} />
           <Text style={styles.title} role="heading">
@@ -232,9 +277,17 @@ const styles = StyleSheet.create({
 
   // The banner holds the sky and everything that sits on it. `overflow: hidden` so the
   // oversized art stops at the rounded corner rather than at the screen edge.
+  // Bottom-trailing and dimmed, exactly as the Explore tile does it — see `tileShape`.
+  bannerShape: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    opacity: 0.4,
+  },
   banner: {
     overflow: 'hidden',
     borderRadius: radius.lg,
+    ...squircle,
     padding: space[4],
     gap: space[2],
   },
@@ -250,7 +303,7 @@ const styles = StyleSheet.create({
   // sky went behind it; the sky only made it measurable. Over Africa's it read 4.0:1.
   totals: { ...text('caption'), color: colors.text.secondary },
   totalsNumber: { ...text('caption', { weight: '700', numeric: true }), color: colors.text.primary },
-  list: { backgroundColor: colors.bg.surface, borderRadius: radius.lg, overflow: 'hidden' },
+  list: { backgroundColor: colors.bg.surface, borderRadius: radius.lg, overflow: 'hidden', ...squircle },
   row: {
     flexDirection: 'row',
     alignItems: 'center',

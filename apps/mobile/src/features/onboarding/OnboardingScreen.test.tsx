@@ -9,9 +9,17 @@ const advanceToAgeStep = (): void => {
   fireEvent.click(screen.getByRole('button', { name: 'Skip' }))
 }
 
-/** Decade, then year — the picker is two taps by design, not one grid of ninety. */
+/**
+ * One tap, on the year itself.
+ *
+ * This used to be two — a decade chip, then a year chip — because a grid cannot show a
+ * hundred options and the step was built out of chips. It is a wheel now (see
+ * `WheelPicker`), and every row of a wheel is a real radio precisely so that this stays
+ * a click rather than a simulated fling: jsdom has no momentum, so
+ * `onMomentumScrollEnd` never fires here and a test that drove the gesture would be
+ * testing nothing at all.
+ */
 const pickYear = (year: number): void => {
-  fireEvent.click(screen.getByRole('radio', { name: `${Math.floor(year / 10) * 10}s` }))
   fireEvent.click(screen.getByRole('radio', { name: String(year) }))
 }
 
@@ -103,69 +111,83 @@ describe('OnboardingScreen', () => {
     expect(onFinish.mock.calls[0]![0].dailyGoalMinutes).toBe(10)
   })
 
-  it('shows no years until a decade narrows them down', () => {
-    // Ninety targets at once is not a picker, it is a wall. The second row only ever
-    // holds the ten years that can follow the first.
+  it('reaches every year in one gesture, with no second step in the way', () => {
+    // The chip grid needed a decade before it would show a year, because twenty-one
+    // buttons was already more than a 320 pt screen could hold — and at 320 the oldest
+    // two decades rendered behind the Continue button anyway. A wheel has no such
+    // ceiling: every row exists from the moment the step opens.
     render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
     advanceToAgeStep()
-    expect(screen.queryByRole('radio', { name: '1996' })).toBeNull()
-    fireEvent.click(screen.getByRole('radio', { name: '1990s' }))
-    expect(screen.getByRole('radio', { name: '1996' })).toBeTruthy()
-    expect(screen.queryByRole('radio', { name: '1985' })).toBeNull()
+    for (const year of [YEAR, 1996, 1985, YEAR - 100]) {
+      expect(screen.getByRole('radio', { name: String(year) })).toBeTruthy()
+    }
   })
 
-  it('pre-selects no decade, because that would nudge the one answer that must not be', () => {
-    // The birth year decides whether a child gets the child experience.
+  it('pre-selects no year, because that would nudge the one answer that must not be', () => {
+    // The birth year decides whether a child gets the child experience. A wheel always
+    // shows SOMETHING, so the row it opens on is an explicit empty one rather than a
+    // plausible year the user never chose.
     render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
     advanceToAgeStep()
-    for (const decade of ['2020s', '2010s', '1990s']) {
-      expect(screen.getByRole('radio', { name: decade }).getAttribute('aria-checked')).toBe('false')
+    expect(screen.getByRole('radio', { name: 'Choose a year' }).getAttribute('aria-checked')).toBe(
+      'true',
+    )
+    for (const year of [YEAR, 1996, 1985]) {
+      expect(screen.getByRole('radio', { name: String(year) }).getAttribute('aria-checked')).toBe(
+        'false',
+      )
     }
   })
 
   it('never offers a year in the future', () => {
     render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
     advanceToAgeStep()
-    fireEvent.click(screen.getByRole('radio', { name: '2020s' }))
     expect(screen.getByRole('radio', { name: String(YEAR) })).toBeTruthy()
     expect(screen.queryByRole('radio', { name: String(YEAR + 1) })).toBeNull()
   })
 
   it('reaches back far enough for a real person to answer honestly', () => {
-    // A picker that cannot express a user's age is a picker that makes them lie.
+    // A picker that cannot express a user's age is a picker that makes them lie. The
+    // oldest verified people alive are past 115.
     render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
     advanceToAgeStep()
-    expect(screen.getByRole('radio', { name: '1930s' })).toBeTruthy()
+    expect(screen.getByRole('radio', { name: String(YEAR - 100) })).toBeTruthy()
+    expect(screen.queryByRole('radio', { name: String(YEAR - 101) })).toBeNull()
   })
 
-  it('collapses the decade list once one is chosen, and reopens on tap', () => {
-    // Eleven decades plus ten years does not fit a phone screen, and the eleven stop
-    // being useful the moment one is picked.
+  it('lets the answer be taken back without stranding Continue on a stale year', () => {
+    // The chip version had to drop a chosen year when the decade changed underneath it,
+    // or Continue stayed enabled carrying a year the user could no longer see. The
+    // wheel cannot get into that state — but returning to the empty row must still
+    // disable Continue, which is the same invariant from the other side.
     render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
-    advanceToAgeStep()
-    fireEvent.click(screen.getByRole('radio', { name: '1990s' }))
-    expect(screen.queryByRole('radio', { name: '1980s' })).toBeNull()
-
-    // Nothing is behind a hidden gesture — the remaining chip is the way back.
-    fireEvent.click(screen.getByRole('radio', { name: /1990s, Change decade/i }))
-    expect(screen.getByRole('radio', { name: '1980s' })).toBeTruthy()
-  })
-
-  it('drops a chosen year when the decade changes underneath it', () => {
-    // Otherwise Continue stays enabled carrying a year the user can no longer see,
-    // and the age gate silently reports an answer nobody gave.
-    const onFinish = vi.fn()
-    render(<OnboardingScreen currentYear={YEAR} onFinish={onFinish} />)
     advanceToAgeStep()
     pickYear(1996)
     // Absent, not "false" — an enabled control simply carries no aria-disabled.
     expect(screen.getByRole('button', { name: 'Continue' }).getAttribute('aria-disabled')).toBeNull()
 
-    fireEvent.click(screen.getByRole('radio', { name: /1990s, Change decade/i }))
-    fireEvent.click(screen.getByRole('radio', { name: '1980s' }))
+    fireEvent.click(screen.getByRole('radio', { name: 'Choose a year' }))
     expect(screen.getByRole('button', { name: 'Continue' }).getAttribute('aria-disabled')).toBe(
       'true',
     )
+  })
+
+  it('names the wheel, so it does not announce as "radiogroup"', () => {
+    render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    advanceToAgeStep()
+    expect(screen.getByRole('radiogroup', { name: 'Year' })).toBeTruthy()
+  })
+
+  it('keeps every slide reachable by swipe as well as by tap', () => {
+    // The carousel used to advance only on a tap: three slides, page dots underneath,
+    // and no gesture at all. All three pages are mounted in the pager, which is what
+    // makes a swipe possible — and is why this asserts on presence rather than on
+    // visibility, since jsdom has no viewport to be outside of.
+    render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    expect(screen.getByText(/five minutes a day/i)).toBeTruthy()
+    expect(screen.getByText(/Remembers what you forget/i)).toBeTruthy()
+    expect(screen.getByText(/Collect the whole world/i)).toBeTruthy()
+    expect(screen.getAllByRole('tab')).toHaveLength(3)
   })
 
   it('leaves no raw key or unformatted placeholder on screen', () => {

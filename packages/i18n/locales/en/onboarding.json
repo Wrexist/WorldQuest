@@ -24,7 +24,7 @@
   "onboarding:age.body": "This sets up the right experience for you. We don't share it with anyone.",
   "onboarding:age.body__note": "Explains why we ask. Must be true: the value stays on device until an account exists.",
   "onboarding:age.year": "Year",
-  "onboarding:age.year__note": "Label for the birth-year picker.",
+  "onboarding:age.year__note": "Names the birth-year wheel for a screen reader — announced as the radiogroup label, not drawn on screen.",
   "onboarding:age.continue": "Continue",
   "onboarding:age.continue__note": "Confirms the birth year and moves to the goal picker.",
   "onboarding:age.child.title": "We'll keep things simple",
@@ -53,16 +53,6 @@
   "onboarding:progress__note": "Accessibility label for the onboarding progress BAR, which counts the four steps of the whole flow. Read aloud by screen readers.",
   "onboarding:slide.position": "Slide {index} of {total}",
   "onboarding:slide.position__note": "Accessibility label for one dot in the intro carousel, which counts the three slides INSIDE step one. It used the bar's string, so a reader heard 'Step 2 of 4' from the bar and 'Step 1 of 3' from the dot beneath it — two answers to the same question. Different word for a different thing.",
-  "onboarding:age.decade": "Decade",
-  "onboarding:age.decade__note": "Label for the decade row in the birth-year picker.",
-  "onboarding:age.decadeLabel": "{decade}s",
-  "onboarding:age.decadeLabel__note": "A decade chip — 1990 renders as '1990s'. Adapt for languages that do not form decades this way.",
-  "onboarding:age.pickDecade": "Pick a decade to see the years",
-  "onboarding:age.pickDecade__note": "Hint shown in the year area before a decade is chosen. Never phrased as an error.",
-  "onboarding:age.selected": "Born in {year}",
-  "onboarding:age.selected__note": "Confirms the chosen year in the large display.",
   "onboarding:age.none": "Choose a year",
-  "onboarding:age.none__note": "Placeholder in the large display before a year is chosen.",
-  "onboarding:age.changeDecade": "Change decade",
-  "onboarding:age.changeDecade__note": "Accessibility hint on the collapsed decade chip — tapping it reopens the decade list."
+  "onboarding:age.none__note": "The wheel's first row, and where it opens. Nothing is pre-selected here on purpose: this answer decides whether a child gets the child experience, so it must never be nudged. Phrase it as an invitation, never as an error or a missing value."
 }

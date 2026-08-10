@@ -15,13 +15,13 @@ import { useShop } from '../../src/features/shop/useShop.js'
 import { useWeekActivity } from '../../src/features/profile/useWeekActivity.js'
 import { usePreferences } from '../../src/features/settings/usePreferences.js'
 import { ProfileScreen } from '../../src/features/profile/ProfileScreen.js'
-import { useProgress } from '../../src/features/home/useProgress.js'
+import { useOptimisticProgress } from '../../src/features/home/useOptimisticProgress.js'
 import { ContentGate } from '../../src/components/ContentGate.js'
 import { useContent } from '../../src/lib/content.js'
 
 export default function ProfileRoute() {
   const { preferences } = usePreferences()
-  const { data, status } = useProgress()
+  const { data, shown, status } = useOptimisticProgress()
   // Renamed: `useProgress` already owns `status` on this screen, and two different
   // meanings behind one name is how the wrong one gets read.
   const { index, memory, status: contentStatus, reload, isOffline } = useContent()
@@ -59,15 +59,33 @@ export default function ProfileRoute() {
   return (
     <ContentGate status={contentStatus} onRetry={reload} isOffline={isOffline}>
       <ProfileScreen
+        // XP, coins and the streak come from `shown` — the server's figures plus any
+        // lesson still in the queue. This screen took the empty branch for anyone who had
+        // only ever played offline, so it told a user who had just finished a lesson that
+        // there was nothing to show. `factsMastered` stays server-only: a mastery count is
+        // not something one queued lesson can be predicted to move, and guessing at it
+        // would be inventing a number.
         stats={
-          data === null
+          shown === null
             ? null
             : {
-                xpTotal: data.xpTotal,
-                coins: data.coins,
-                streak: data.streak,
-                longestStreak: data.longestStreak,
-                factsMastered: data.factsMastered,
+                xpTotal: shown.xpTotal,
+                // The prediction, not the spendable balance. This screen is a RECORD —
+                // there is nothing to buy on it — and "85 XP earned, 0 coins" for a user
+                // who just finished a lesson is the same "it didn't count" the whole
+                // optimistic layer exists to stop. The Shop and the freeze button use
+                // `coins`, which stays the server's, so nothing here can offer a purchase
+                // the server would refuse.
+                coins: shown.coinsIncludingPending,
+                streak: shown.streak,
+                // Never below the streak beside it. `longestStreak` is server-only —
+                // a record is not something one queued lesson can be predicted to set —
+                // but leaving it raw put "Day streak 1" next to "Best streak 0" on the
+                // rendered screen, which is not a lag, it is an impossibility. Taking the
+                // larger of the two is derived rather than invented: a current run of N
+                // is proof the best run is at least N.
+                longestStreak: Math.max(data?.longestStreak ?? 0, shown.streak),
+                factsMastered: data?.factsMastered ?? 0,
               }
         }
         week={week}

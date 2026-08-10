@@ -128,15 +128,29 @@ describe('Lesson', () => {
     expect(container.textContent).not.toMatch(/wrong!|incorrect|oops|failed/i)
   })
 
-  it('labels every answer with the country it names', () => {
+  it('labels every answer with the country it names, and never with its badge letter', () => {
     // The prompt supplies the context, so the button announces "Finland, button" —
     // not "Answer: Finland", which a reader would repeat four times in a row.
+    //
+    // The A/B/C/D badge is a VISUAL rail: it gives the eye a fixed column to scan and
+    // gives the answer state a second non-colour carrier, and it is `aria-hidden`
+    // because "A, Rome" is a letter of noise in front of every option. jsdom's
+    // `textContent` does not honour aria-hidden, so the badge shows up here even though
+    // no reader will ever say it — which is why this compares against the label with a
+    // single leading badge letter stripped rather than against the raw text.
+    //
+    // Stated as a strip rather than a `toContain`, deliberately: `toContain` would pass
+    // for "Answer: Finland" too, and the whole point of the original assertion was that
+    // the accessible name is EXACTLY what is on screen and nothing more.
     render(<LessonScreen onExit={() => {}} />)
     const options = answerButtons()
     expect(options.length).toBeGreaterThanOrEqual(4)
     for (const option of options) {
-      expect(option.getAttribute('aria-label')).toBe(option.textContent)
+      const visible = (option.textContent ?? '').replace(/^[ABCD]/, '')
+      expect(option.getAttribute('aria-label')).toBe(visible)
       expect(option.getAttribute('aria-label')).toBeTruthy()
+      // And the badge really is decorative — a reader must not receive the letter.
+      expect(option.getAttribute('aria-label')).not.toMatch(/^[ABCD][A-Z]/)
     }
   })
 })

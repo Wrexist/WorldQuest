@@ -38,12 +38,13 @@ import { Flag } from '../../components/Flag.js'
 import {
   Button,
   Card,
-  ProgressBar,
-  Skeleton,
   colors,
   layout,
+  ProgressBar,
   radius,
+  Skeleton,
   space,
+  squircle,
   staggerStyle,
   text,
   useStagger,
@@ -375,6 +376,7 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     backgroundColor: colors.bg.surface,
     borderRadius: radius.md,
+    ...squircle,
     paddingHorizontal: space[3],
     // 44pt floor for a touch target, and a text field is a touch target.
     height: 48,

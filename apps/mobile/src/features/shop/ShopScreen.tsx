@@ -32,7 +32,16 @@
  */
 
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import { Button, Card, colors, radius, space, text } from '@worldquest/design'
+import {
+  Button,
+  Card,
+  colors,
+  radius,
+  space,
+  squircle,
+  Tally,
+  text,
+} from '@worldquest/design'
 import { coinsShort, purchase, type ShopItem } from '@worldquest/engines'
 import { Icon } from '../../components/Icon.js'
 import { Art } from '../../components/Art.js'
@@ -226,9 +235,30 @@ function TitleRow({
       <View style={styles.rowText}>
         <Text style={styles.rowName}>{name}</Text>
         {help !== undefined && <Text style={styles.rowHelp}>{help}</Text>}
-        {!owned && price !== undefined && <Text style={styles.rowPrice}>{price}</Text>}
+        {/* A coin beside the price, in the coin's own tint.
+
+            Seven gold numbers ran down this screen with no unit on any of them but the
+            word "coins", and the one place a child is asked to spend something is the
+            worst place to make them read to find out what. It is the same icon↔label pair
+            Explore puts on its "countries to meet" line and the tab bar puts on the
+            balance — `space[1]`, the 4pt rung that exists for exactly this.
+
+            `aria-hidden`: the line says "1,000 coins" in words, and the row's own text is
+            what a reader gets. */}
+        {!owned && price !== undefined && (
+          <View style={styles.rowPriceLine}>
+            <Icon name="coins" size={13} color={colors.reward.coin} />
+            <Tally style={styles.rowPrice} numberStyle={styles.rowPriceNumber}>
+              {price}
+            </Tally>
+          </View>
+        )}
         {/* Stated once, and never followed by a way to spend money on coins. */}
-        {short !== undefined && <Text style={styles.rowShort}>{short}</Text>}
+        {short !== undefined && (
+          <Tally style={styles.rowShort} numberStyle={styles.rowShortNumber}>
+            {short}
+          </Tally>
+        )}
       </View>
 
       {/* The action sits centred on its own axis. Without the wrapper the Button
@@ -282,6 +312,7 @@ const styles = StyleSheet.create({
     gap: space[2],
     padding: space[3],
     borderRadius: radius.md,
+    ...squircle,
     backgroundColor: colors.bg.surface,
   },
   offlineText: { ...text('caption'), color: colors.text.secondary, flex: 1 },
@@ -291,13 +322,16 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   rowOn: { borderColor: colors.status.progress },
   rowSkeleton: { minHeight: 64 },
-  skeletonBar: { height: 16, flex: 1, borderRadius: radius.sm, backgroundColor: colors.bg.surfaceRaised },
+  skeletonBar: { height: 16, flex: 1, borderRadius: radius.sm, backgroundColor: colors.bg.surfaceRaised, ...squircle },
   insignia: { width: INSIGNIA_SIZE, alignItems: 'center' },
   rowText: { flex: 1, gap: space[1] },
   rowName: { ...text('bodyStrong'), color: colors.text.primary },
   rowHelp: { ...text('caption'), color: colors.text.secondary },
-  rowPrice: { ...text('caption', { numeric: true }), color: colors.reward.coin },
-  rowShort: { ...text('caption', { numeric: true }), color: colors.text.secondary },
+  rowPriceLine: { flexDirection: 'row', alignItems: 'center', gap: space[1] },
+  rowPrice: { ...text('caption'), color: colors.reward.coin },
+  rowPriceNumber: { ...text('caption', { weight: '700', numeric: true }) },
+  rowShort: { ...text('caption'), color: colors.text.secondary },
+  rowShortNumber: { ...text('caption', { weight: '700', numeric: true }) },
 
   action: { alignSelf: 'center' },
   badge: { flexDirection: 'row', alignItems: 'center', gap: space[1] },

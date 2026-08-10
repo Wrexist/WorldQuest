@@ -24,13 +24,17 @@ import { currentStreak, repairAvailability, type RecoveryState } from '@worldque
 import { buyStreakFreeze } from '@worldquest/api'
 import { StreakScreen } from '../src/features/streak/StreakScreen.js'
 import { ContentGate } from '../src/components/ContentGate.js'
-import { useProgress } from '../src/features/home/useProgress.js'
+import { useOptimisticProgress } from '../src/features/home/useOptimisticProgress.js'
 import { useOnline } from '../src/lib/connectivity.js'
 import { invalidateProgress } from '../src/lib/query.js'
 import { isConfigured, supabase } from '../src/lib/supabase.js'
 
 export default function StreakRoute() {
-  const { data, status, refetch } = useProgress()
+  // `shown` carries the streak the server would compute once it sees the lessons still
+  // in the queue, so a user who did today's lesson offline is not told "No days yet".
+  // Everything else on this screen — the record, the freezes, the break date — stays
+  // server-only, because none of it is derivable from a queued lesson.
+  const { data, shown, status, refetch } = useOptimisticProgress()
   const online = useOnline()
   const now = Date.now()
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -47,7 +51,7 @@ export default function StreakRoute() {
    */
   const state = useMemo<RecoveryState>(
     () => ({
-      current: data?.streak ?? 0,
+      current: shown?.streak ?? 0,
       longest: data?.longestStreak ?? 0,
       // `null`, not `''`. The engine's type is `IsoDate | null` and null already means
       // "never active"; the blank-string form was a second spelling of the same thing
@@ -58,12 +62,19 @@ export default function StreakRoute() {
       // handling its no-content state, which turned an accurate waiver stale. Second
       // time prose in a scanned file has fooled a script here; the scripts are right to
       // be broad, so the prose gives way.
-      lastActiveDate: data?.lastActiveDate ?? null,
+      // Optimistic too, and it has to be: `currentStreak` below reads THIS to decide
+      // whether the run is alive, and returns 0 for a null date however high `current`
+      // is. Feeding it the server's stale date beside an optimistic count zeroed the
+      // whole screen back out.
+      lastActiveDate: shown?.lastActiveDate ?? null,
       freezesHeld: data?.freezesHeld ?? 0,
       brokenOn: data?.brokenOn ?? null,
       lastRepairAt: data?.lastRepairAt ?? null,
     }),
-    [data],
+    // `shown` as well as `data`. It was `[data]` alone, so the two optimistic fields
+    // above never recomputed — the memo held the values from the render where the queue
+    // was still empty.
+    [data, shown],
   )
 
   const [buyingFreeze, setBuyingFreeze] = useState(false)

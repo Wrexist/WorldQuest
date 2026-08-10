@@ -622,6 +622,38 @@ describe('presentation', () => {
     expect(q.promptAsset).toBeUndefined()
   })
 
+  it('hands a described-flag question the flag to reveal AFTER it is answered', () => {
+    // The gap this closes: "What does Sweden's flag look like?" is asked in words and
+    // answered in words, so before `revealAsset` the flag never appeared at all — a
+    // user could finish a flag question having never seen the flag. It cannot be the
+    // prompt, because drawing it beside the question hands the answer to anyone who can
+    // see it; after grading there is nothing left to give away.
+    const textItem = index.itemsByFact
+      .get('geo.SE.flag')!
+      .find((i) => i.templateId === 'tpl.flag-describe.mc4')!
+    const q = buildQuestion(index, textItem, 'en', seededRng(3))!
+    expect(q.revealAsset).toBe(index.entities.get('SE')!.assets!['flag']!.path)
+  })
+
+  it('does not re-reveal a picture the prompt is already showing', () => {
+    // An image template has had the flag on screen since before the user answered, so a
+    // second copy on the feedback sheet is a duplicate of something that never left.
+    // The image template already in this block's scope — "which country's flag is
+    // this?", answered by name, with the flag as the prompt.
+    const q = buildQuestion(index, imageItem, 'en', seededRng(3))!
+    expect(q.promptAsset).toBeDefined()
+    expect(q.revealAsset).toBeUndefined()
+  })
+
+  it('reveals nothing for an attribute that has no artwork', () => {
+    // Indexed by the template's ATTRIBUTE, so this knows nothing about flags: a capital
+    // question looks for `assets.capital`, finds none, and reveals nothing. The same
+    // line is what would reveal `assets.photo` for a wildlife pack.
+    const capitalItem = index.itemsByFact.get('geo.SE.capital')![0]!
+    const q = buildQuestion(index, capitalItem, 'en', seededRng(3))!
+    expect(q.revealAsset).toBeUndefined()
+  })
+
   it('will not pick a template whose modality the host cannot present', () => {
     // The bug this guards: a host with no flag images still served "Which country's
     // flag is this?" above four country names, and a wrong answer on an unanswerable

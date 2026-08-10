@@ -18,7 +18,29 @@ const KEY = 'activity.byDay.v1'
 
 export type WeekDay = { readonly day: string; readonly count: number }
 
-const isoDay = (at: Date): string => at.toISOString().slice(0, 10)
+/**
+ * `YYYY-MM-DD` in the user's OWN day, not in UTC.
+ *
+ * It was `at.toISOString().slice(0, 10)`, and `toISOString` converts to UTC first — so
+ * for everyone west of Greenwich the log's day boundary sat in the middle of their
+ * afternoon. In California a lesson finished at 5pm was recorded against tomorrow: the
+ * daily-goal line on Home reset while the user was still using the app, and Profile's
+ * week chart put Monday evening's work on Tuesday's bar. `useWeekActivity` made it
+ * visible by mixing the two — it walks back seven days with `setDate`, which is local,
+ * and then formatted each one through this, which was not.
+ *
+ * Built from the local getters rather than `toLocaleDateString`, which needs a locale
+ * whose calendar is Gregorian and whose digits are ASCII to produce this shape at all.
+ *
+ * Existing logs are not migrated. The values are the same shape and this is an activity
+ * chart rather than a ledger, so the worst case is one historical bar sitting a day off
+ * for a user who has already been counted wrong all along.
+ */
+const isoDay = (at: Date): string =>
+  `${at.getFullYear()}-${String(at.getMonth() + 1).padStart(2, '0')}-${String(at.getDate()).padStart(2, '0')}`
+
+/** The same day key, for anything else that needs to ask "is this today?". */
+export const localDay = isoDay
 
 export function useWeekActivity(): readonly WeekDay[] {
   return useMemo(() => {

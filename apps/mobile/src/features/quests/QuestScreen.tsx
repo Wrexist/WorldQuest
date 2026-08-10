@@ -14,11 +14,13 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   Button,
   Card,
-  ProgressBar,
-  Skeleton,
   colors,
+  ProgressBar,
   radius,
+  Skeleton,
   space,
+  squircle,
+  Tally,
   text,
 } from '@worldquest/design'
 import {
@@ -28,20 +30,12 @@ import {
   type DailyQuest,
   type PerformGoal,
   type QuestTask,
-  type Slot,
 } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { SPEED_SECONDS } from '../lesson/modes.js'
 import { Art } from '../../components/Art.js'
 import { Icon } from '../../components/Icon.js'
-
-const SLOT_TITLE: Record<Slot, TranslationKey> = {
-  locate: 'quests:slot.locate',
-  recognise: 'quests:slot.recognise',
-  recall: 'quests:slot.recall',
-  discover: 'quests:slot.discover',
-  perform: 'quests:slot.perform',
-}
+import { SLOT_ICON, SLOT_TITLE } from './slots.js'
 
 const GOAL_BODY: Record<PerformGoal, TranslationKey> = {
   perfect_lesson: 'quests:goal.perfect_lesson',
@@ -71,7 +65,12 @@ export type QuestScreenProps = {
  */
 const HEADER_ART = 84
 
-export function QuestScreen({ quest, loading, onStart, onStartSpeedRound }: QuestScreenProps) {
+export function QuestScreen({
+  quest,
+  loading,
+  onStart,
+  onStartSpeedRound,
+}: QuestScreenProps) {
   const t = useT()
 
   if (loading) return <QuestSkeleton />
@@ -150,9 +149,8 @@ export function QuestScreen({ quest, loading, onStart, onStartSpeedRound }: Ques
           screen the user leaves. */}
       {!quest.complete && <Button label={t('common:continue')} onPress={onStart} />}
     
-      {/* The speed round lives here rather than on Home: it is a variation for
-          someone already in a practising frame of mind, and putting a second CTA
-          beside "Continue" on Home would split the one primary action. */}
+      {/* The speed round: the same items against a clock, for someone already in a
+          practising frame of mind. */}
       {onStartSpeedRound !== undefined && (
         <Card level={2} style={styles.speed}>
           <Text style={styles.speedTitle}>{t('lesson:speed.title')}</Text>
@@ -196,6 +194,12 @@ function TaskRow({ task, step }: { task: QuestTask; step: number }) {
       <View
         style={[styles.step, task.complete && styles.stepDone]}
         aria-hidden
+        // A seam, so the test for "a done step draws an icon rather than a `✓`
+        // character" can ask the STEP what it drew. It used to count every image inside
+        // the task list, which was true when the rows had no other artwork and stopped
+        // being true the moment each task got its subject glyph — the same way it had
+        // already broken once when the header grew an Atlas.
+        testID="quest-step"
       >
         {task.complete ? (
           <Icon name="check" size={16} color={colors.text.onAccent} />
@@ -205,7 +209,26 @@ function TaskRow({ task, step }: { task: QuestTask; step: number }) {
       </View>
 
       <View style={styles.taskText}>
-        <Text style={[styles.taskTitle, task.complete && styles.taskTitleDone]}>{title}</Text>
+        {/* Icon then title, `space[1]` apart — the icon↔label rung, and the same pair
+            Explore draws with its pin. Decorative: the row's `aria-label` already says
+            "Know the flag, 2 of 4", and a reader announcing "flag" in front of it is
+            the noun twice. */}
+        <View style={styles.taskHead}>
+          {/* Anchored to the FIRST line, not to the middle of the block. At 320 "Find it
+              on the map" wraps to two lines, and a centred icon then sat in the gap
+              between them pointing at nothing. `bodyStrong` has a 24 line height and the
+              glyph is 16, so half the difference — `space[1]`, on the scale — drops it
+              onto the first line's optical centre and it stays there however many lines
+              the title takes. */}
+          <View style={styles.taskHeadIcon}>
+            <Icon
+              name={SLOT_ICON[task.slot]}
+              size={16}
+              color={task.complete ? colors.text.tertiary : colors.action.primary}
+            />
+          </View>
+          <Text style={[styles.taskTitle, task.complete && styles.taskTitleDone]}>{title}</Text>
+        </View>
         {task.goal !== undefined && (
           <Text style={styles.taskBody}>{t(GOAL_BODY[task.goal])}</Text>
         )}
@@ -218,12 +241,21 @@ function TaskRow({ task, step }: { task: QuestTask; step: number }) {
             the lesson summary told with a 35 % accuracy and the streak screen told with
             "0 of 2 held". A standalone caption in the success colour is a claim; here it
             claimed five times over that nothing was something. */}
-        <Text style={task.progress > 0 || task.complete ? styles.taskCount : styles.taskCountNone}>
+        <Tally
+          style={task.progress > 0 || task.complete ? styles.taskCount : styles.taskCountNone}
+          numberStyle={styles.taskCountNumber}
+        >
           {task.complete
             ? t('quests:task.done')
             : t('quests:task.count', { progress: task.progress, target: task.target })}
-        </Text>
-        <Text style={styles.taskXp}>{t('quests:reward.task', { xp: TASK_XP })}</Text>
+        </Tally>
+        {/* The bolt is the same one the tab bar and the lesson summary use for XP, at
+            the reward tint the figure beside it already carries. A gold number on its own
+            was the only unlabelled quantity on the screen. */}
+        <View style={styles.taskXpRow}>
+          <Icon name="xp" size={12} color={colors.reward.xp} />
+          <Text style={styles.taskXp}>{t('quests:reward.task', { xp: TASK_XP })}</Text>
+        </View>
       </View>
     </View>
   )
@@ -268,6 +300,7 @@ const styles = StyleSheet.create({
     gap: space[3],
     padding: space[3],
     borderRadius: radius.lg,
+    ...squircle,
     backgroundColor: colors.bg.surface,
   },
   // Done tasks recede rather than disappear — the list keeps its shape all day, so
@@ -294,14 +327,19 @@ const styles = StyleSheet.create({
   // contrast checker cares about.
   stepTextDone: { color: colors.text.onAccent },
   taskText: { flex: 1, gap: space[2] },
-  taskTitle: { ...text('bodyStrong'), color: colors.text.primary },
+  // `flex: 1` on the title so a long slot name wraps inside the row rather than pushing
+  // the icon off it.
+  taskHead: { flexDirection: 'row', alignItems: 'flex-start', gap: space[1] },
+  taskHeadIcon: { paddingTop: space[1] },
+  taskTitle: { ...text('bodyStrong'), color: colors.text.primary, flex: 1 },
   taskTitleDone: { color: colors.text.secondary },
   taskBody: { ...text('caption'), color: colors.text.secondary },
   taskMeta: { alignItems: 'flex-end', gap: space[1] },
-  taskCount: { ...text('caption', { weight: '700', numeric: true }), color: colors.status.progress },
-  taskCountNone: {
-    ...text('caption', { weight: '700', numeric: true }),
-    color: colors.text.secondary,
-  },
+  // The WORDS, now that `Tally` splits the line. "done" keeps the state colour and the
+  // digits get the weight — same division as every other count in the app.
+  taskCount: { ...text('caption'), color: colors.status.progress },
+  taskCountNone: { ...text('caption'), color: colors.text.secondary },
+  taskCountNumber: { ...text('caption', { weight: '700', numeric: true }) },
+  taskXpRow: { flexDirection: 'row', alignItems: 'center', gap: space[1] },
   taskXp: { ...text('caption'), color: colors.reward.xp },
 })

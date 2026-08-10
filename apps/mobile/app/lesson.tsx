@@ -6,15 +6,61 @@
  * that costs a tap for no reason.
  */
 
+import { useMemo } from 'react'
 import { router, useLocalSearchParams } from 'expo-router'
+import { entitiesInGroup, type LessonFocus } from '@worldquest/engines'
 import { LessonScreen } from '../src/features/lesson/LessonScreen.js'
 import { useProgress } from '../src/features/home/useProgress.js'
 import { useEntitlement } from '../src/features/paywall/useEntitlement.js'
+import { useContent } from '../src/lib/content.js'
+import { parseFocusParams } from '../src/features/lesson/focusParams.js'
 
 export default function LessonRoute() {
   // `/lesson?mode=speed`. A query param rather than a second route: it is the same
   // runner, the same items and the same scoring — only the clock differs.
-  const { mode, taster } = useLocalSearchParams<{ mode?: string; taster?: string }>()
+  const { mode, taster, facts, attr, entity, region, min, max, len } = useLocalSearchParams<{
+    mode?: string
+    taster?: string
+    facts?: string
+    attr?: string
+    entity?: string
+    region?: string
+    min?: string
+    max?: string
+    len?: string
+  }>()
+
+  /**
+   * What this lesson is allowed to ask about.
+   *
+   * Read from the URL so a focused lesson is a LINK: `/practise` builds one, the country
+   * page sends `?entity=SE`, the region page sends `?region=EU`, and none of them has to
+   * write to a store the runner reads back. Absent params mean the mixed lesson, which is
+   * every existing caller and every existing notification.
+   */
+  const { index } = useContent()
+  const parsed = parseFocusParams({ facts, attr, entity, region, min, max, len })
+  const focus = useMemo<LessonFocus | undefined>(() => {
+    if (index === null) return undefined
+    // A region code becomes entity ids HERE, where the index is. The engine has no idea
+    // what a continent is and the params module has none either — both by design.
+    const fromRegion =
+      parsed.region === undefined ? [] : entitiesInGroup(index.index, 'region', parsed.region)
+    const entities = [...new Set([...parsed.entities, ...fromRegion])]
+
+    const built: LessonFocus = {
+      ...(parsed.factIds.length > 0 ? { factIds: parsed.factIds } : {}),
+      ...(parsed.attributes.length > 0 ? { attributes: parsed.attributes } : {}),
+      ...(entities.length > 0 ? { entities } : {}),
+      ...(parsed.difficulty ? { difficulty: parsed.difficulty } : {}),
+    }
+    // `undefined` rather than an empty object, so the runner's `focus ? …` spread keeps
+    // an unfocused lesson on exactly the path it took before this existed.
+    return Object.keys(built).length > 0 ? built : undefined
+    // The raw param STRINGS, not `parsed`. `parseFocusParams` returns a fresh object on
+    // every render, so depending on it would defeat the memo entirely — and the memo is
+    // what stops a new `focus` identity from recomposing the lesson mid-question.
+  }, [index, facts, attr, entity, region, min, max])
   // Fetched here rather than in the screen: server state belongs to the route, and
   // the runner should stay mountable without a QueryClientProvider.
   const { data } = useProgress()
@@ -26,6 +72,8 @@ export default function LessonRoute() {
   return (
     <LessonScreen
       mode={mode === 'speed' ? 'speed' : 'normal'}
+      {...(focus ? { focus } : {})}
+      {...(parsed.length !== undefined ? { length: parsed.length } : {})}
       // Set only by the onboarding hand-off. Finishing this one lesson is the single
       // biggest predictor of a user coming back, so it gets its own event rather than
       // being inferred later from "first lesson_completed", which is wrong for anyone

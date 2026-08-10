@@ -8,6 +8,8 @@
   "lesson:feedback.correct.title__note": "Celebration headline after a correct answer. One word, one exclamation mark maximum.",
   "lesson:feedback.correct.body": "You found {entityName} 🎉",
   "lesson:feedback.correct.body__note": "Shown under the celebration headline. {entityName} is a localised name.",
+  "lesson:feedback.correct.streak": "You're on a roll.",
+  "lesson:feedback.correct.streak__note": "Replaces feedback.correct.body once the user has answered three or more in a row correctly. Only ever shown when that is actually true — claiming a roll after one right answer is flattery, and this app states the truth.",
   "lesson:feedback.wrong.title": "That's {chosen}.",
   "lesson:feedback.wrong.title__note": "NEVER 'Wrong!' or 'Oops!'. State the truth plainly — no exclamation mark, no sad emoji. See docs/design/voice-and-tone.md.",
   "lesson:feedback.wrong.body": "{correct} is {hint}.",
@@ -115,4 +117,5 @@
   "lesson:answer.correct__note": "Accessibility label for the option that IS the answer, once feedback is showing. The tick beside it is `aria-hidden` artwork, so without this a screen-reader user hears only the option text and has no way to tell which one was right — colour and an unlabelled icon are the whole signal on screen.",
   "lesson:answer.wrong": "{answer}, not the answer",
   "lesson:answer.wrong__note": "Accessibility label for the option the user chose when it was wrong. Deliberately NOT 'incorrect' or 'wrong answer' shouted at the user — it states which option is not the answer, in the same register as the visible copy 'That's Berlin. The answer is Paris.' See docs/design/voice-and-tone.md."
+
 }

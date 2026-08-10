@@ -24,7 +24,7 @@
  */
 
 import { Image, StyleSheet, View } from 'react-native'
-import { ArtSlot, colors, radius } from '@worldquest/design'
+import { ArtSlot, colors, radius, squircle } from '@worldquest/design'
 import { Icon } from './Icon.js'
 import { flagHeight, flagSource } from '../lib/flags.js'
 
@@ -102,6 +102,7 @@ const styles = StyleSheet.create({
   // otherwise meet with nothing between them.
   frame: {
     borderRadius: radius.sm,
+    ...squircle,
     overflow: 'hidden',
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.border.subtle,

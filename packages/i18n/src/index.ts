@@ -15,6 +15,12 @@
  * Spec: docs/engineering/localization.md · docs/adr/0009-localization.md
  */
 
+// FIRST, and for its side effect. Hermes ships no `Intl.PluralRules`, so without this
+// every plural in the app formats to its own ICU source on a real device while
+// formatting perfectly in Node, jsdom and Chromium — which is every environment that
+// tests it. See intl-polyfill.ts for the whole story; it must be evaluated before the
+// `i18next.init` below builds its first formatter.
+import { hasPluralRules } from './intl-polyfill.js'
 import i18next, { type i18n as I18nInstance } from 'i18next'
 import { IcuFormat } from './icu.js'
 import { pseudo } from './pseudo.js'
@@ -190,6 +196,17 @@ i18n
       onError: (error, key, value) => {
         if (isDev()) {
           console.error(`[i18n] ICU parse failed for "${key}": ${error.message}\n  ${value}`)
+          // The one cause worth naming rather than leaving to be re-diagnosed. Every
+          // plural in the app failed this way on device for as long as the engine had
+          // no `Intl.PluralRules`, and the message above — "Intl.PluralRules is not
+          // available in this environment" — is the only trace it left, in a console
+          // nobody reads on a phone.
+          if (!hasPluralRules()) {
+            console.error(
+              '[i18n] Intl.PluralRules is missing and the polyfill did not take. ' +
+                'Every plural string will render as raw ICU. See src/intl-polyfill.ts.',
+            )
+          }
         }
         return value
       },

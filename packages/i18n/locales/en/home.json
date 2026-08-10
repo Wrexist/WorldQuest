@@ -57,5 +57,13 @@
   "home:world.due": "{count, plural, one {# fact ready to review} other {# facts ready to review}}",
   "home:world.due__note": "Shown only when at least one fact is due. ICU plural. \"Ready to review\" rather than \"overdue\" or \"waiting\" — a spaced-repetition prompt must never read as a debt the user has fallen behind on.",
   "home:world.open": "Explore the world",
-  "home:world.open__note": "The row at the foot of the Home world card, opening the continents grid. It was \"Explore\" while it was a small button squeezed into the card's padding; as a full-width row there is space to say what it opens, and a row labelled with one word next to a chevron makes the reader guess. Max 22 characters."
+  "home:world.open__note": "The row at the foot of the Home world card, opening the continents grid. It was \"Explore\" while it was a small button squeezed into the card's padding; as a full-width row there is space to say what it opens, and a row labelled with one word next to a chevron makes the reader guess. Max 22 characters.",
+  "home:quest.play": "Five things, about ten minutes",
+  "home:quest.play__note": "Title on Home's quest card while the quest is unfinished. The card LABEL above it already says \"Today's Quest\", so this says what to do rather than repeating the name. Max 34 characters.",
+  "home:quest.done": "Quest complete",
+  "home:quest.done__note": "Replaces the title once all five tasks are finished. A statement, not a celebration — the lesson summary already celebrated. Max 20 characters.",
+  "home:quest.doneBody": "Your streak is safe. Keep going if you want more.",
+  "home:quest.doneBody__note": "The bar's label once the quest is done. Says the day's obligation is discharged AND that more is optional — finishing has to be enough. Max 60 characters.",
+  "home:quest.more": "Practise anyway",
+  "home:quest.more__note": "Secondary button shown only after the quest is complete, for someone who wants another lesson. Deliberately not a second primary action. Max 20 characters."
 }

@@ -1,8 +1,12 @@
 {
   "collection:flags.title": "Flags",
   "collection:flags.title__note": "Screen title for the flag collection.",
+  "collection:flags.subtitle": "Learn the flags",
+  "collection:flags.subtitle__note": "One-line description under the Flags tile on Explore. Verb first — it says what you will do, not what the screen contains.",
   "collection:countries.title": "Countries",
   "collection:countries.title__note": "Screen title for the country collection.",
+  "collection:countries.subtitle": "Learn the countries",
+  "collection:countries.subtitle__note": "One-line description under the Countries tile on Explore. Mirrors flags.subtitle in shape.",
   "collection:progress": "{collected} of {total}",
   "collection:progress__note": "Collection progress. Reads as a count, never a percentage — a percentage hides how close the next one is.",
   "collection:progress.label": "Progress",
