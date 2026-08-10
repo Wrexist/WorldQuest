@@ -8,6 +8,7 @@
 
 export * from './tokens.js'
 export * from './typography.js'
+export * from './shape.js'
 export * from './motion.js'
 export * from './primitives/index.js'
 export * from './tally.js'

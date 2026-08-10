@@ -14,11 +14,12 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   Button,
   Card,
-  ProgressBar,
-  Skeleton,
   colors,
+  ProgressBar,
   radius,
+  Skeleton,
   space,
+  squircle,
   text,
 } from '@worldquest/design'
 import {
@@ -268,6 +269,7 @@ const styles = StyleSheet.create({
     gap: space[3],
     padding: space[3],
     borderRadius: radius.lg,
+    ...squircle,
     backgroundColor: colors.bg.surface,
   },
   // Done tasks recede rather than disappear — the list keeps its shape all day, so

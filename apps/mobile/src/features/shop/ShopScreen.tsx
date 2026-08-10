@@ -32,7 +32,15 @@
  */
 
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import { Button, Card, colors, radius, space, text } from '@worldquest/design'
+import {
+  Button,
+  Card,
+  colors,
+  radius,
+  space,
+  squircle,
+  text,
+} from '@worldquest/design'
 import { coinsShort, purchase, type ShopItem } from '@worldquest/engines'
 import { Icon } from '../../components/Icon.js'
 import { Art } from '../../components/Art.js'
@@ -282,6 +290,7 @@ const styles = StyleSheet.create({
     gap: space[2],
     padding: space[3],
     borderRadius: radius.md,
+    ...squircle,
     backgroundColor: colors.bg.surface,
   },
   offlineText: { ...text('caption'), color: colors.text.secondary, flex: 1 },
@@ -291,7 +300,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   rowOn: { borderColor: colors.status.progress },
   rowSkeleton: { minHeight: 64 },
-  skeletonBar: { height: 16, flex: 1, borderRadius: radius.sm, backgroundColor: colors.bg.surfaceRaised },
+  skeletonBar: { height: 16, flex: 1, borderRadius: radius.sm, backgroundColor: colors.bg.surfaceRaised, ...squircle },
   insignia: { width: INSIGNIA_SIZE, alignItems: 'center' },
   rowText: { flex: 1, gap: space[1] },
   rowName: { ...text('bodyStrong'), color: colors.text.primary },

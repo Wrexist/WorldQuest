@@ -107,8 +107,35 @@ const MOBILE = join(process.cwd(), 'apps', 'mobile')
  * If a legitimate change needs more: raise this number in the same commit, and say in
  * the message what bought the weight. The number is not sacred. Crossing it silently
  * is the thing being prevented.
+ *
+ * ── 2026-08-10 · 4.1 → 4.2 ──────────────────────────────────────────────────────────
+ *
+ * Raised during the iOS-native pass, and the first thing to record is that **the gate
+ * was already red before that pass touched anything**. Measured on the parent commit,
+ * with the branch stashed:
+ *
+ *     ✗ ios      4.10 MB — over the 4.1 MB budget by 0.00 MB
+ *     ⚠ android  4.10 MB — within 0.00 MB of the 4.1 MB budget
+ *
+ * iOS had crossed the line on `main` and nothing had said so, because `bundle:native`
+ * lives in `verify:full` rather than `verify` — so it runs in CI and not on the machine
+ * where the weight is added. The 0.1 MiB of headroom the note above set aside "so the
+ * gate does not fail on the next dependency-lockfile churn" had been spent, by ordinary
+ * feature work, some commits ago.
+ *
+ * What this branch then added, on top of that: `react-native-safe-area-context`, which
+ * has been a declared dependency since the shell was built and had never been imported
+ * by anything (`grep -r useSafeAreaInsets apps/mobile` returned nothing). Importing it
+ * is the fix for the hard seam under the status bar — see `app/_layout.tsx` — and it
+ * moved Android from "within 0.00" to "over by 0.00", i.e. single-digit kilobytes.
+ *
+ * 4.2 restores roughly the headroom the previous note intended, and the honest reading
+ * of the number is: 4.10 is what the app weighs today, ~4.07 was what it weighed when
+ * this budget was set, and neither figure moved because of a design change. Nothing here
+ * is trimmable by this pass — the growth is application code and one previously-unused
+ * dependency that a visible defect required.
  */
-const BUDGET_MB = 4.1
+const BUDGET_MB = 4.2
 
 /** Warn from 90 % of the budget, so the wall is visible before it is hit. */
 const WARN_AT = BUDGET_MB * 0.9

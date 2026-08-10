@@ -13,7 +13,14 @@
  */
 
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native'
-import { colors, layout, radius, space, text } from '@worldquest/design'
+import {
+  colors,
+  layout,
+  radius,
+  space,
+  squircle,
+  text,
+} from '@worldquest/design'
 import { Icon } from './Icon.js'
 
 // ── section ─────────────────────────────────────────────────────────────────
@@ -215,6 +222,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.bg.surface,
     borderRadius: radius.lg,
+    ...squircle,
     overflow: 'hidden',
   },
 

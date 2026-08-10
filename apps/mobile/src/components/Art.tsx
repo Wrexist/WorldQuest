@@ -87,8 +87,9 @@
  * exceptions are the ones that had to say so.
  */
 
+import { useState } from 'react'
 import { Image, StyleSheet, View } from 'react-native'
-import { colors, radius } from '@worldquest/design'
+import { colors, radius, squircle } from '@worldquest/design'
 import { ART_BY_NAME, ART_GEOMETRY, type ArtName } from '../lib/art.generated.js'
 
 export type ArtProps = {
@@ -123,6 +124,23 @@ export type ArtProps = {
 const WHOLE_FRAME = 0.85
 
 export function Art({ name, size, height, label, frame = 'auto' }: ArtProps) {
+  /**
+   * A decode that fails leaves a HOLE, and a hole is worse than an absence.
+   *
+   * Onboarding's first slide came back off TestFlight as an empty hairline rectangle
+   * where the parachuting Atlas should have been — the frame drew, the picture did not.
+   * It renders correctly in the web harness at all three viewports, so the cause is not
+   * proven and may not be this component's at all (docs/design/ios-native-audit.md, O1).
+   *
+   * What IS this component's business is the shape of the failure. An `<Image>` that
+   * cannot decode renders nothing and says nothing, so a bordered empty box is exactly
+   * what a user sees, and it looks like a deliberate placeholder rather than a fault —
+   * which is why nobody found it until a screenshot arrived. Dropping the frame instead
+   * costs a picture and reads as a layout that never had one, which is the honest
+   * degradation: these illustrations are decorative by definition here (see the note
+   * above about `label`), so nothing a user needs is behind them.
+   */
+  const [failed, setFailed] = useState(false)
   const asset = ART_BY_NAME[name]
   // Metro gives a number, Vite a URL string — see types/assets.d.ts.
   const source = typeof asset === 'string' ? { uri: asset } : asset
@@ -150,6 +168,9 @@ export function Art({ name, size, height, label, frame = 'auto' }: ArtProps) {
     { translateX: imageWidth * (0.5 - (geometry.x + geometry.w / 2)) },
     { translateY: imageHeight * (0.5 - (geometry.y + geometry.h / 2)) },
   ]
+
+  // Nothing at all, rather than a framed hole. See `failed` above.
+  if (failed) return null
 
   return (
     <View
@@ -188,6 +209,7 @@ export function Art({ name, size, height, label, frame = 'auto' }: ArtProps) {
         // against a rounding disagreement. Never `cover`: the build deliberately does
         // not crop these, and cropping them now would undo that.
         resizeMode="contain"
+        onError={() => setFailed(true)}
         accessibilityLabel={label}
         alt={label ?? ''}
       />
@@ -205,6 +227,7 @@ const styles = StyleSheet.create({
   // what lets the image be drawn larger than the box it is being fitted into.
   frame: {
     borderRadius: radius.lg,
+    ...squircle,
     overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',

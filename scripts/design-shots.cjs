@@ -221,9 +221,11 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
     await shot('onboarding-age')
 
     // An adult year, so the flow continues past the child branch.
+    //
+    // One click, not two: the age gate was a decade chip followed by a year chip and is
+    // a wheel now, whose every row is a real radio for exactly this reason — a scroll
+    // gesture is invisible to a driver as well as to a screen reader.
     const adultYear = new Date().getFullYear() - 30
-    await page.getByRole('radio', { name: `${Math.floor(adultYear / 10) * 10}s` }).click()
-    await page.waitForTimeout(250)
     await page.getByRole('radio', { name: String(adultYear) }).click()
     await page.waitForTimeout(250)
     await page.getByText('Continue', { exact: true }).first().click()

@@ -19,12 +19,13 @@ import { Animated, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimen
 import {
   ArtScrim,
   Card,
-  ProgressBar,
-  Skeleton,
   colors,
   palette,
+  ProgressBar,
   radius,
+  Skeleton,
   space,
+  squircle,
   staggerStyle,
   Tally,
   text,
@@ -406,6 +407,7 @@ const styles = StyleSheet.create({
     gap: space[2],
     padding: space[3],
     borderRadius: radius.lg,
+    ...squircle,
     borderWidth: 1,
     // Clips the oversized continent background to the card.
     overflow: 'hidden',

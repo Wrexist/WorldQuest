@@ -27,6 +27,7 @@ import {
   type ViewStyle,
 } from 'react-native'
 import { colors, depth, radius, space } from '../tokens.js'
+import { squircle } from '../shape.js'
 import { text } from '../typography.js'
 import { press3d, useFacePress } from './press3d.js'
 
@@ -170,10 +171,11 @@ export function AnswerOption({
 
 const styles = StyleSheet.create({
   socket: { minHeight: FACE_HEIGHT + depth.card, alignSelf: 'stretch' },
-  edge: { borderRadius: radius.lg },
+  edge: { borderRadius: radius.lg, ...squircle },
   face: {
     minHeight: FACE_HEIGHT,
     borderRadius: radius.lg,
+    ...squircle,
     // Two pixels, all the way round. The ring is what separates one option from the
     // next at a glance; without it four dark rectangles on a dark screen become one
     // shape and the eye has to do the work of finding the boundaries.

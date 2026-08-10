@@ -22,6 +22,7 @@ import {
   type ViewStyle,
 } from 'react-native'
 import { colors, depth, radius, space } from '../tokens.js'
+import { squircle } from '../shape.js'
 import { text } from '../typography.js'
 import { press3d, useFacePress } from './press3d.js'
 
@@ -190,10 +191,19 @@ export function Button({
           // rather than a green bloom — which is not a downgrade so much as the
           // platform's own idiom for the same idea, a primary action sitting above the
           // surface.
+          //
+          // TURNED DOWN in the iOS pass, not turned off. At 0.55 over `space[3]` this
+          // was a visible green halo on a navy screen — read back from a device it is
+          // the second-loudest non-native object on the onboarding slides, after the
+          // uppercase label (docs/design/ios-native-audit.md, N11). Removing it outright
+          // would have put `action.primaryGlow` back in the state this comment was
+          // written to get it out of: a token nothing reads. At 0.22 over `space[2]` it
+          // is an ambient lift rather than a bloom — the primary still sits above the
+          // canvas, and you have to look for the colour to find it.
           skin.glow !== undefined && !isInert && {
             shadowColor: skin.glow,
-            shadowOpacity: 0.55,
-            shadowRadius: space[3],
+            shadowOpacity: 0.22,
+            shadowRadius: space[2],
             shadowOffset: { width: 0, height: space[1] },
             elevation: space[1],
           },
@@ -211,7 +221,12 @@ export function Button({
             // cut. Three would mean the button has swallowed a sentence, which is a
             // copy problem rather than a layout one.
             numberOfLines={2}
-            style={[styles.label, size === 'sm' && styles.labelSm, { color: labelColor }]}
+            style={[
+              styles.label,
+              size === 'sm' && styles.labelSm,
+              flat && styles.labelGhost,
+              { color: labelColor },
+            ]}
           >
             {label}
           </Text>
@@ -223,9 +238,10 @@ export function Button({
 
 const styles = StyleSheet.create({
   fullWidth: { alignSelf: 'stretch' },
-  edge: { borderRadius: radius.lg },
+  edge: { borderRadius: radius.lg, ...squircle },
   face: {
     borderRadius: radius.lg,
+    ...squircle,
     paddingVertical: space[2],
     alignItems: 'center',
     justifyContent: 'center',
@@ -233,10 +249,22 @@ const styles = StyleSheet.create({
     gap: space[2],
     paddingHorizontal: space[5],
   },
-  // The `button` step is uppercase with open tracking — the shape of a label you are
-  // meant to hit rather than read.
+  // The `button` step: 17/800, sentence case, no tracking — iOS's own button label.
+  // It used to be uppercase with +0.6 tracking, which is the reference product's shape
+  // and is the loudest non-native thing an iOS user meets in this app. See the note on
+  // the step itself in tokens.json.
   label: { ...text('button'), textAlign: 'center' },
   // A whole step down, not just a smaller size — dropping fontSize alone leaves the
   // line height and tracking of the larger step behind.
   labelSm: text('overline'),
+  /**
+   * The ghost variant reads as an offer, not as a second command.
+   *
+   * `ghost` is for "skip", "not now", "log out" — the actions we must present without
+   * inviting — and it was set in the same 17/800 as the primary beside it. On the first
+   * onboarding slide that put SKIP at exactly the weight of NEXT, so the screen asked
+   * two equally loud questions (docs/design/ios-native-audit.md, O9). A whole step down,
+   * for the same reason `labelSm` is a step rather than a smaller size.
+   */
+  labelGhost: text('bodyStrong'),
 })

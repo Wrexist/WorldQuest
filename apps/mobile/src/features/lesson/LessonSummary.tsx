@@ -28,10 +28,11 @@ import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   Button,
   Card,
-  Spacer,
   colors,
   radius,
   space,
+  Spacer,
+  squircle,
   text,
   useCelebration,
   useCountUp,
@@ -394,6 +395,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bg.surfaceRaised,
     padding: space[3],
     borderRadius: radius.md,
+    ...squircle,
   },
   offlineText: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
 })

@@ -127,6 +127,22 @@ const WAIVED: Record<string, Partial<Record<State, string>>> = {
     offline: 'everything it shows is local; it is correct with no connection at all',
   },
   'onboarding/OnboardingScreen': {
+    // NEW in the iOS pass, and worth saying why it appeared rather than just adding it.
+    //
+    // This screen used to satisfy `empty` by accident. The age gate was a two-step chip
+    // grid, so before a decade was picked the year area had nothing to show and rendered
+    // `onboarding:age.pickDecade` — a hint that read to this script as an empty state,
+    // and genuinely was one. Replacing the grid with a wheel deleted the condition along
+    // with the string: the wheel is generated from the current year and always has 101
+    // rows, the first of which is the explicit "Choose a year" row it opens on.
+    //
+    // So there is no longer a list here that can arrive empty. Nothing on any of the
+    // four steps is fetched, counted or filtered — the slides, the years and the three
+    // goals are all constants in the binary.
+    empty:
+      'nothing here is a collection that can arrive empty — the slides and the goals are ' +
+      'constants and the year wheel is generated from the current year, so its 101 rows ' +
+      'exist before the step does',
     loading: 'nothing is fetched — every step is local until the taster lesson starts',
     error:
       'the same reason as loading: the slides are static and the copy ships in the ' +

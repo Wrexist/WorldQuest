@@ -12,13 +12,14 @@ import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } fr
 import {
   AnswerOption,
   Button,
-  ProgressBar,
-  Skeleton,
-  Spacer,
   colors,
   layout,
+  ProgressBar,
   radius,
+  Skeleton,
   space,
+  Spacer,
+  squircle,
   text,
 } from '@worldquest/design'
 import { deriveRating, lessonLength } from '@worldquest/engines'
@@ -969,6 +970,7 @@ const styles = StyleSheet.create({
     // reference, whose panel is a quarter of the screen tall where ours was a fifth.
     paddingTop: space[5],
     borderRadius: radius.lg,
+    ...squircle,
     backgroundColor: colors.bg.surfaceRaised,
   },
   // Anchored so the feet land INSIDE the button's band rather than on the sheet's floor.
@@ -1011,6 +1013,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bg.surfaceRaised,
     padding: space[3],
     borderRadius: radius.md,
+    ...squircle,
   },
   offlineText: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
 })

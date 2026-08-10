@@ -455,49 +455,108 @@ async function measure(page, webpBytes) {
     ctx.drawImage(img, 0, 0)
     const pixels = ctx.getImageData(0, 0, img.width, img.height).data
 
-    // 24, not 0: WebP is lossy, so a transparent margin comes back with a scatter of
-    // alpha-1..8 noise in it. At 0 the "subject" of every asset is the whole frame and
-    // this measures nothing.
-    let x0 = img.width
-    let y0 = img.height
-    let x1 = -1
-    let y1 = -1
-    for (let y = 0; y < img.height; y++) {
-      for (let x = 0; x < img.width; x++) {
-        if (pixels[(y * img.width + x) * 4 + 3] > 24) {
-          if (x < x0) x0 = x
-          if (x > x1) x1 = x
-          if (y < y0) y0 = y
-          if (y > y1) y1 = y
+    // WHERE THE INK IS, not where the outermost surviving pixel is.
+    //
+    // This used to be a plain bounding box of every pixel over alpha 24 — "24, not 0,
+    // because WebP is lossy and a transparent margin comes back with a scatter of
+    // alpha-1..8 noise in it". Raising the floor above the noise was right and it was
+    // not enough: an extremal box is decided by its most extreme pixel, so ONE surviving
+    // speck of dust in a corner reports the whole frame as the subject. The comment below
+    // claimed the two populations were 92–100 % and 36–73 % with "nothing in the set
+    // between"; measured across all 68 shipped assets they overlap continuously
+    // (`onboarding/conquer` 0.81×0.72, `avatar-08…12` 0.82–0.84, `celebration/burst`
+    // 0.73×0.88), and five assets landed on the wrong side of the line:
+    //
+    //   atlas/welcome      0.92×0.92 -> 0.41×0.82     the onboarding taster's hero
+    //   onboarding/learn   0.87×0.86 -> 0.39×0.48     onboarding slide 2
+    //   states/error-generic 1.00×0.87 -> 0.95×0.52
+    //   states/offline     1.00×0.99 -> 0.99×0.63
+    //   avatars/avatar-07  0.91×0.99 -> 0.85×0.95     the odd one out of twelve
+    //
+    // Each was drawn as a whole-frame PANEL: a hairline border, the file's own 3:2 box,
+    // and the subject left at the size it happens to be in the file. Two of them are the
+    // first and fourth screens a new user sees, and both photographed as an empty
+    // rounded rectangle with a small robot in it — which is the exact "placeholder frame"
+    // look this geometry exists to remove, arriving from the other end.
+    //
+    // So the box is taken by alpha MASS instead: accumulate per column and per row, then
+    // trim the faintest 0.5 % from each end of each axis. A solid plate spreads its mass
+    // evenly and loses half a percent of its width, so a panel still measures as a panel
+    // (`continents/*` 0.99, `empty-profile` 0.95×0.93, `atlas/resting` 0.93×0.93 — the
+    // three the feather above was written for, all still on the panel side). A subject
+    // sitting in a starfield carries almost all of the mass, so the stars trim away and
+    // the subject is what gets measured.
+    const width = img.width
+    const height = img.height
+    const columns = new Float64Array(width)
+    const rows = new Float64Array(height)
+    let total = 0
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const alpha = pixels[(y * width + x) * 4 + 3]
+        if (alpha > 24) {
+          columns[x] += alpha
+          rows[y] += alpha
+          total += alpha
         }
       }
     }
 
-    // A fully opaque asset — a continent card — has no margin to find, and a fully
-    // transparent one would be a bug elsewhere. Both come back as the whole frame, which
-    // is the behaviour the app had before this existed.
-    const whole = { aspect: img.width / img.height, x: 0, y: 0, w: 1, h: 1 }
-    if (x1 < x0 || y1 < y0) return whole
+    // A fully transparent asset would be a bug elsewhere; a fully opaque one — a
+    // continent card — has no margin to find. Both come back as the whole frame, which is
+    // the behaviour the app had before this existed.
+    const whole = { aspect: width / height, x: 0, y: 0, w: 1, h: 1 }
+    if (total === 0) return whole
 
-    const w = (x1 - x0 + 1) / img.width
-    const h = (y1 - y0 + 1) / img.height
+    /** The span of `axis` holding all but `TRIM` of its mass at each end. */
+    const TRIM = 0.005
+    const span = (axis) => {
+      const cut = total * TRIM
+      let low = 0
+      let high = axis.length - 1
+      let seen = 0
+      for (; low < axis.length; low++) {
+        seen += axis[low]
+        if (seen > cut) break
+      }
+      seen = 0
+      for (; high >= 0; high--) {
+        seen += axis[high]
+        if (seen > cut) break
+      }
+      return [low, high]
+    }
+
+    const [x0, x1] = span(columns)
+    const [y0, y1] = span(rows)
+
+    const w = (x1 - x0 + 1) / width
+    const h = (y1 - y0 + 1) / height
 
     // A picture that already fills its frame is reported as filling its frame, exactly.
     //
     // Not a rounding nicety — this is the difference between the feather working and not.
-    // `states/empty-profile`, `states/empty-no-friends`, `atlas/resting` and
-    // `atlas/welcome` carry a baked ground, and the build ramps their outer eighth to
-    // transparent so the edge does not read as a rectangle pasted onto the canvas. That
-    // ramp measures as margin here: the box came back at ~95 %, the app scaled the image
-    // up by the missing 5 % to make the "subject" fit, and the frame clipped the ramp
-    // clean off — a hard-edged dark rectangle, which is the exact bug the feather exists
-    // to prevent, reintroduced from the other end.
+    // `states/empty-profile`, `states/empty-no-friends` and `atlas/resting` carry a baked
+    // ground, and the build ramps their outer eighth to transparent so the edge does not
+    // read as a rectangle pasted onto the canvas. That ramp measures as margin here: the
+    // box comes back a little under 1, the app would scale the image up by the difference
+    // to make the "subject" fit, and the frame would clip the ramp clean off — a
+    // hard-edged dark rectangle, which is the exact bug the feather exists to prevent,
+    // reintroduced from the other end.
     //
-    // 85 % separates the two populations with room to spare: a baked ground measures 92–100 %
-    // and a cutout measures 36–73 %. Nothing in the set sits between.
+    // 85 % is where those three sit comfortably above and everything else sits
+    // comfortably below, on the mass measurement above: they come back 0.93–0.99, the
+    // seven opaque continent tiles come back 0.99, and the next asset down is
+    // `avatars/avatar-07` at 0.85×0.95 — which belongs with its eleven siblings on the
+    // cutout side and now lands there.
+    //
+    // Deliberately NOT stated as "the populations do not overlap". They do, on the
+    // extremal box this used to take: `onboarding/conquer` measured 0.81×0.72 and
+    // `avatars/avatar-08…12` 0.82–0.84 against baked grounds at 0.92–1.00, which is a
+    // gap of eight points and no room at all. The mass measurement is what opens it.
     if (w >= 0.85 && h >= 0.85) return whole
 
-    return { aspect: img.width / img.height, x: x0 / img.width, y: y0 / img.height, w, h }
+    return { aspect: width / height, x: x0 / width, y: y0 / height, w, h }
   }, `data:image/webp;base64,${webpBytes.toString('base64')}`)
 }
 

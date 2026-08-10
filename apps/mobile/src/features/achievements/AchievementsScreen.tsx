@@ -19,13 +19,14 @@ import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   Button,
   Card,
-  ProgressBar,
   colors,
   palette,
+  ProgressBar,
   radius,
   space,
-  Tally,
+  squircle,
   staggerStyle,
+  Tally,
   text,
   useStagger,
 } from '@worldquest/design'
@@ -260,7 +261,7 @@ const styles = StyleSheet.create({
   countNumber: { ...text('caption', { weight: '700', numeric: true }), color: colors.text.primary },
   body: { ...text('caption'), color: colors.text.secondary },
 
-  card: { gap: space[2], borderRadius: radius.lg },
+  card: { gap: space[2], borderRadius: radius.lg, ...squircle },
   cardHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: space[3] },
   cardText: { flex: 1, gap: space[1] },
   name: { ...text('bodyStrong'), color: colors.text.primary },

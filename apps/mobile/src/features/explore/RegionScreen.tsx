@@ -18,7 +18,18 @@
 
 import { useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { ArtScrim, Button, ProgressBar, Tally, colors, palette, radius, space, text } from '@worldquest/design'
+import {
+  ArtScrim,
+  Button,
+  colors,
+  palette,
+  ProgressBar,
+  radius,
+  space,
+  squircle,
+  Tally,
+  text,
+} from '@worldquest/design'
 import type { EntityProgress, Mastery, RegionProgress } from '@worldquest/engines'
 import { collator, currentLocale, useT, type TranslationKey } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
@@ -235,6 +246,7 @@ const styles = StyleSheet.create({
   banner: {
     overflow: 'hidden',
     borderRadius: radius.lg,
+    ...squircle,
     padding: space[4],
     gap: space[2],
   },
@@ -250,7 +262,7 @@ const styles = StyleSheet.create({
   // sky went behind it; the sky only made it measurable. Over Africa's it read 4.0:1.
   totals: { ...text('caption'), color: colors.text.secondary },
   totalsNumber: { ...text('caption', { weight: '700', numeric: true }), color: colors.text.primary },
-  list: { backgroundColor: colors.bg.surface, borderRadius: radius.lg, overflow: 'hidden' },
+  list: { backgroundColor: colors.bg.surface, borderRadius: radius.lg, overflow: 'hidden', ...squircle },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
