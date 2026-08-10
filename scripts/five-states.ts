@@ -141,7 +141,7 @@ const WAIVED: Record<string, Partial<Record<State, string>>> = {
     // goals are all constants in the binary.
     empty:
       'nothing here is a collection that can arrive empty — the slides and the goals are ' +
-      'constants and the year wheel is generated from the current year, so its 101 rows ' +
+      'constants and the year wheel is generated from the current year, so its 102 rows ' +
       'exist before the step does',
     loading: 'nothing is fetched — every step is local until the taster lesson starts',
     error:

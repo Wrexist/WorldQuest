@@ -42,7 +42,8 @@ import { recordQuestEvent } from '../quests/questProgress.js'
 import { useContent } from '../../lib/content.js'
 import { currentLocale, tContent, useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
-import { localDay, recordLessonCompleted } from '../profile/useWeekActivity.js'
+import { recordLessonCompleted } from '../profile/useWeekActivity.js'
+import { localDay } from '../../lib/day.js'
 import { recordPredictedAward } from '../../lib/awards.js'
 import { enqueueLesson } from '../../lib/sync.js'
 import { Icon } from '../../components/Icon.js'
@@ -50,22 +51,6 @@ import { Stat } from '../../components/Stat.js'
 
 type ScreenState = 'loading' | 'error' | 'empty' | 'ready'
 
-/**
- * How wide the flag in an image question is drawn.
- *
- * 200pt, and the asset is rasterised at exactly 3x of it (`scripts/build-flags.cjs`)
- * so it is never upscaled. Big enough that the question is a fair one — telling Mexico
- * from Italy is a question about the coat of arms, and at tile size that is a smudge —
- * and small enough that the four answers below it stay on screen at 320pt.
- */
-/**
- * The revealed flag on the feedback sheet.
- *
- * Smaller than `FLAG_PROMPT_WIDTH`: as a prompt the flag is the question and gets the
- * room to be studied, and here it shares a sheet with a verdict, two reward chips, a
- * mascot and the way onward. Big enough to read the design, small enough not to push
- * the Continue button off a 320.
- */
 /**
  * The rail down the leading edge of the answers.
  *
@@ -85,8 +70,24 @@ const BADGES = ['A', 'B', 'C', 'D'] as const
  */
 const STREAK_PRAISE = 3
 
+/**
+ * The revealed flag on the feedback sheet.
+ *
+ * Smaller than `FLAG_PROMPT_WIDTH`: as a prompt the flag is the question and gets the
+ * room to be studied, and here it shares a sheet with a verdict, two reward chips, a
+ * mascot and the way onward. Big enough to read the design, small enough not to push
+ * the Continue button off a 320.
+ */
 const REVEAL_WIDTH = 96
 
+/**
+ * How wide the flag in an image question is drawn.
+ *
+ * 200pt, and the asset is rasterised at exactly 3x of it (`scripts/build-flags.cjs`)
+ * so it is never upscaled. Big enough that the question is a fair one — telling Mexico
+ * from Italy is a question about the coat of arms, and at tile size that is a smudge —
+ * and small enough that the four answers below it stay on screen at 320pt.
+ */
 const FLAG_PROMPT_WIDTH = 200
 
 /**
@@ -858,7 +859,21 @@ export function LessonScreen({
                   app: here the picture is the answer being taught, so a reader that
                   skipped it would be skipping the lesson. */}
               {question.revealAsset !== undefined && (
-                <View style={styles.reveal} testID="reveal-asset">
+                // Cleared of the mascot exactly like `sheetText` below, and for a
+                // sharper reason. The mascot is bottom-anchored and painted after this
+                // block, so on a correct answer he stands on the START edge — the same
+                // edge `styles.reveal` aligns the flag to — and on a short sheet he
+                // covers it. The one picture in this app that is not decorative, hidden
+                // by the one that is.
+                <View
+                  style={[
+                    styles.reveal,
+                    lastAnswer?.wasCorrect === true && !rewardsWrapped
+                      ? { paddingStart: mascot }
+                      : { paddingEnd: mascot },
+                  ]}
+                  testID="reveal-asset"
+                >
                   <Flag
                     path={question.revealAsset}
                     width={REVEAL_WIDTH}

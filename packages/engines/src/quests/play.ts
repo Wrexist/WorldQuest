@@ -36,7 +36,25 @@
  */
 
 import type { DailyQuest } from './index.js'
-import type { LessonFocus } from '../lesson/focus.js'
+
+/**
+ * The facts a quest wants, in the shape a lesson focus takes.
+ *
+ * Declared here rather than imported as `LessonFocus` from `../lesson/focus.js`, which
+ * is what this file did first. Rule 6 in `packages/engines/CLAUDE.md` is that engines
+ * never import each other except through `shared` — and a type-only import breaks it as
+ * surely as a value one does, because the coupling a rule about imports is protecting is
+ * the coupling between the two engines' contracts, not between their bundles. The quest
+ * engine deciding "which facts are outstanding" must not be a thing that stops compiling
+ * because the lesson engine added a field.
+ *
+ * It stays assignable to `LessonFocus` structurally, which is all the host needs: the app
+ * hands this straight to `focusFilter`, and TypeScript checks the fit at that call site
+ * without either engine having to know the other exists.
+ */
+export type QuestFocus = {
+  readonly factIds: readonly string[]
+}
 
 /**
  * The facts today's quest still needs, as a lesson focus.
@@ -48,7 +66,7 @@ import type { LessonFocus } from '../lesson/focus.js'
  * ordinary lesson. That distinction is the same one `focusFilter` draws, and getting it
  * backwards here would hand somebody a zero-question lesson for finishing their quest.
  */
-export function questFocus(quest: DailyQuest): LessonFocus | undefined {
+export function questFocus(quest: DailyQuest): QuestFocus | undefined {
   const outstanding = quest.tasks
     .filter((task) => !task.complete)
     .flatMap((task) => task.factIds)

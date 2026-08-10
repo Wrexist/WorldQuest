@@ -170,7 +170,20 @@ export function Art({ name, size, height, label, frame = 'auto' }: ArtProps) {
   ]
 
   // Nothing at all, rather than a framed hole. See `failed` above.
-  if (failed) return null
+  //
+  // Only when the art is DECORATIVE, which today is every caller. A labelled `Art` is
+  // one whose picture carries meaning — that is what passing `label` asserts — so
+  // returning null for it would delete content rather than degrade it, and delete it
+  // most completely for the users who were relying on the label rather than the pixels.
+  // The box keeps its space and its name and loses its frame: silent for a sighted user,
+  // unchanged for a screen reader.
+  if (failed) {
+    if (label === undefined) return null
+    // `role="img"` — the ARIA spelling, which is the only one `pnpm lint:a11y` allows
+    // and the only one react-native-web carries to the DOM. RN maps it to the native
+    // image trait, so one prop reaches both platforms.
+    return <View style={box} accessible role="img" aria-label={label} accessibilityLabel={label} />
+  }
 
   return (
     <View

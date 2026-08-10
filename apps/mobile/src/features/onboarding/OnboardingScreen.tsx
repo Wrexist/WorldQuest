@@ -272,11 +272,24 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
           first two slides read `1 / 4` while the dot moved (O4). The bar still carries
           the full step count for a screen reader, which is where a number belongs when
           the picture cannot hold one. */}
-      <View
-        style={styles.progress}
-        accessibilityLabel={t('onboarding:progress', { step: stepIndex, total: STEPS.length })}
-      >
-        <ProgressBar current={stepIndex} total={STEPS.length} height={4} showCount={false} />
+      {/* The label belongs ON the bar, not on a plain wrapper around it.
+
+          A `View` carrying only `accessibilityLabel` is not an accessibility element —
+          iOS never focuses it, so the step count was written, reviewed, and announced to
+          nobody. `ProgressBar` is already `accessible` with `role="progressbar"`, so the
+          same string reaches VoiceOver as the bar's name and value with no extra node,
+          and the fourth platform-a11y prop in this repo to no-op silently gets to be the
+          last. */}
+      <View style={styles.progress}>
+        <ProgressBar
+          current={stepIndex}
+          total={STEPS.length}
+          height={4}
+          showCount={false}
+          // As the VALUE, not the `label` — `label` renders visibly, and a written step
+          // count beside the dots is the exact duplication finding O4 removed.
+          valueText={t('onboarding:progress', { step: stepIndex, total: STEPS.length })}
+        />
       </View>
 
       <Animated.View style={[styles.stepFill, stepStyle]}>
@@ -410,7 +423,15 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
                     key={minutes}
                     role="radio"
                     aria-checked={chosen}
-                    aria-label={t('onboarding:goal.minutes', { minutes })}
+                    // No `aria-label`, deliberately. It read "5 minutes" — the same words
+                    // as the first line of the row — and an explicit label REPLACES the
+                    // children rather than adding to them, so the second line, which is
+                    // the part that says what five minutes a day actually means, was
+                    // announced to nobody. Left off, the row composes its own name from
+                    // what is on it, in the order it is written: "5 minutes, Casual".
+                    //
+                    // A single key carrying both would be the other fix; it would also be
+                    // a fourth copy of numbers that already exist, kept in step by hand.
                     onPress={() => {
                       if (!chosen) hapticSelect()
                       setGoal(minutes)
@@ -543,6 +564,24 @@ const styles = StyleSheet.create({
    * two or three lines — so there is no leading overflow to strand above scroll position
    * zero. The vertical steps use a ScrollView with padding instead, for exactly the
    * reason `Spacer` exists.
+   *
+   * ## `flex: 1` is load-bearing here, and it looks like it should not be
+   *
+   * It reads like a mistake — `flex` is a MAIN-axis instruction, the main axis of a
+   * horizontal pager is horizontal, and the width is already set inline from the
+   * measured viewport (`{ width: page }`) because that is what `pagingEnabled` snaps to.
+   * A reviewer flagged it as exactly that. It is not: in this container the explicit
+   * width wins the main axis outright, and `flex: 1` is what gives the page the pager's
+   * HEIGHT — without which `justifyContent: 'center'` has nothing to centre inside.
+   *
+   * Both alternatives were built and photographed. Removing it, and replacing it with
+   * `alignSelf: 'stretch'`, produce the identical wrong picture: the slide collapses to
+   * its content and the hero and copy ride at the top of the screen with a third of the
+   * page empty beneath them. The pager's content container is auto-height, so there is
+   * nothing for the cross axis to stretch against.
+   *
+   * Left as it is, with the reasoning written down, because this is the third time a
+   * plausible-looking simplification has been proposed for it.
    */
   slide: {
     flex: 1,

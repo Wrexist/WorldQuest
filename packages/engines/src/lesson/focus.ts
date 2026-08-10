@@ -140,10 +140,18 @@ export function focusFilter(
 /**
  * Every entity whose `field` equals `value` — `entitiesInGroup(index, 'region', 'EU')`.
  *
- * The field is a STRING the caller names, not a known one, which is the whole point: this
+ * The field is NAMED by the caller rather than known here, which is the point: this
  * package stays ignorant of what "region" means while still saving every host from
- * writing the same three-line scan. A pack grouping by `constellation` or `phylum` gets
- * the same helper with no change here.
+ * writing the same three-line scan. `region` and `subregion` are taxonomy words, not
+ * geography words — an astronomy pack puts constellations in `region` and nothing in
+ * this file changes.
+ *
+ * The union is deliberately the set of grouping fields `Entity` actually declares, not
+ * an open `string`. An earlier draft of this comment promised a pack could group by
+ * `constellation` or `phylum`; it could not, because those are not fields on `Entity`,
+ * and a doc comment that oversells a signature is how a caller finds out at the type
+ * error instead of at the design. Widening this means widening `Entity` first — which is
+ * a content-model decision, and belongs there rather than being smuggled in with a cast.
  */
 export function entitiesInGroup(
   index: ContentIndex,

@@ -127,6 +127,11 @@ const SKINS: Record<AnswerState, Skin> = {
     edge: colors.status.hearts,
     label: colors.text.primary,
     glow: colors.status.hearts,
+    // The one state that most needs the non-colour signal was the one state missing it.
+    // `selected` and `correct` both fill their badge; `wrong` drew its arrow on the bare
+    // track, so the strongest thing distinguishing the option a user got wrong from an
+    // idle one was hue — exactly what `badgeFill`'s own comment says may never happen.
+    badgeFill: colors.status.hearts,
   },
   disabled: {
     face: colors.option.idle,

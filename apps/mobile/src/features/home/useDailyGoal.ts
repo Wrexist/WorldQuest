@@ -47,10 +47,11 @@
  * was computed from, and disagreeing with the current preference re-decides it.
  */
 
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { lessonsPerDay } from '@worldquest/engines'
 import { readJson, writeJson } from '../../lib/storage.js'
-import { lessonsToday, localDay } from '../profile/useWeekActivity.js'
+import { lessonsToday } from '../profile/useWeekActivity.js'
+import { localDay } from '../../lib/day.js'
 import { useItemPace } from '../lesson/usePace.js'
 import { usePreferences } from '../settings/usePreferences.js'
 
@@ -70,19 +71,32 @@ export type DailyGoal = {
 }
 
 /**
- * The target for `day`, deciding and storing it if it has not been decided yet.
+ * The target already decided for `day`, or `null` when today has not been decided.
+ *
+ * Split out from `goalTargetFor` so that reading and writing are separable: the read
+ * happens during render, the write happens in an effect, and nothing has to do both.
+ */
+function storedTargetFor(day: string, minutes: number): number | null {
+  const stored = readJson<StoredGoal>(KEY)
+  if (stored === null || stored.day !== day || stored.minutes !== minutes) return null
+  return stored.target
+}
+
+/**
+ * The target for `day` — the stored one if today has been decided, a fresh one if not.
  *
  * Exported and parameterised so it is testable without a clock or a React tree — the
  * date and the pace both come in, which is the same discipline `packages/engines` is
  * held to even though this file may touch storage.
+ *
+ * **Reads storage; never writes it.** It used to persist the decision inline, which made
+ * it a side effect in the middle of a `useMemo` — work React is explicitly allowed to
+ * throw away and re-run, so under StrictMode or a discarded concurrent render the day's
+ * target could be written from a render that never committed. Persisting is now
+ * `useDailyGoal`'s job, in an effect, after the render it belongs to has actually landed.
  */
 export function goalTargetFor(day: string, minutes: number, itemMs: number): number {
-  const stored = readJson<StoredGoal>(KEY)
-  if (stored !== null && stored.day === day && stored.minutes === minutes) return stored.target
-
-  const target = lessonsPerDay(minutes, itemMs)
-  writeJson(KEY, { day, minutes, target } satisfies StoredGoal)
-  return target
+  return storedTargetFor(day, minutes) ?? lessonsPerDay(minutes, itemMs)
 }
 
 export function useDailyGoal(): DailyGoal {
@@ -94,14 +108,30 @@ export function useDailyGoal(): DailyGoal {
   // lesson ends. It is the target that must hold still.
   const done = lessonsToday()
 
+  // Recomputed every render rather than memoised, and that is the point: it is the one
+  // input that changes without any prop or state changing. A phone left on Home over
+  // midnight kept yesterday's date inside the memo and therefore yesterday's target,
+  // so the first lesson of the new day counted towards a goal that had already been
+  // met — the same class of bug as the moving denominator, one day out of phase.
+  const day = localDay(new Date())
+
   const target = useMemo(
-    () => goalTargetFor(localDay(new Date()), minutes, itemMs),
+    () => goalTargetFor(day, minutes, itemMs),
     // `itemMs` is in the deps because it is read, and it is deliberately almost never
     // used: once the day is decided, `goalTargetFor` returns the stored number and the
     // pace is ignored until tomorrow. Leaving it out would be a lie about what this
     // depends on the one time per day it matters.
-    [minutes, itemMs],
+    [day, minutes, itemMs],
   )
+
+  // The write, after the render that decided it committed. Guarded so a re-render does
+  // not rewrite an identical row on every pass — and guarded on storage rather than on
+  // a ref, because the decision has to survive the component unmounting, which is the
+  // whole reason it is stored at all.
+  useEffect(() => {
+    if (storedTargetFor(day, minutes) !== null) return
+    writeJson(KEY, { day, minutes, target } satisfies StoredGoal)
+  }, [day, minutes, target])
 
   return { done, target }
 }

@@ -111,7 +111,22 @@ const KNOCKOUT = new Set([
  * allowed to exist, has to be named, and a stale one fails exactly like a violation.
  */
 const ALLOWANCE = {
-  // Empty, and it earned being empty. Three entries lived here while the illustrations
+  /**
+   * The one cutout in the set, and the only asset whose weight is its alpha.
+   *
+   * It reached the bottom of the ladder at 126 KB — 512 px on the long side, four
+   * resolution steps below every sibling — and the last 6 KB will not come out with
+   * quality, because WebP codes alpha in its own near-lossless channel and this alpha is
+   * a coastline with an archipelago in it. Only area moves it, and the next step down
+   * makes the largest illustration in the app visibly soft to save six kilobytes.
+   *
+   * Named rather than absorbed into the budget: 120 KB is the right ceiling for the
+   * other twenty-one, and raising it for all of them to fit one would be the drift the
+   * budget exists to catch. The staleness check below removes this the moment a
+   * redelivered master or a better encoder makes it untrue.
+   */
+  'continents-silhouette/NA': { max: 130 * 1024 },
+  // Otherwise empty, and it earned being empty. Three entries lived here while the illustrations
   // were being centre-cropped to square: cropping throws away the transparent margin,
   // so what remained was all subject and all detail, and three of them could not be
   // squeezed under 120 KB at any quality worth shipping. Keeping the master's aspect put
@@ -140,6 +155,18 @@ const LADDER = [
   { width: ILLUSTRATION_WIDTH, quality: 0.62 },
   { width: 640, quality: 0.7 },
   { width: 640, quality: 0.62 },
+  // Two rungs below what any asset needed until the knockout started working.
+  //
+  // A cutout costs bytes a plate does not, and the cost is not in the quality setting:
+  // WebP codes alpha in its own channel, near-losslessly, so `continents-silhouette/NA`
+  // — a coastline with islands, the most intricate alpha in the set — barely moved
+  // between q0.86 and q0.62 and sat 60 % over budget at every rung. Only area moves it.
+  //
+  // Reaching for `ALLOWANCE` instead would have recorded a waiver for the one asset that
+  // is actually big, which is what the budget is for. Adding rungs is the honest lever:
+  // nothing else falls this far, because the loop stops at the first rung under budget.
+  { width: 512, quality: 0.7 },
+  { width: 512, quality: 0.62 },
 ]
 
 /**
@@ -500,6 +527,14 @@ async function render(page, sourceBytes, spec) {
       format: spec.format ?? 'image/png',
       quality: spec.quality,
       bannerAspect: spec.bannerAspect,
+      // Forwarded explicitly, like every other field. `page.evaluate` serialises this
+      // object and nothing else — a key that exists on `spec` but not here arrives in
+      // the callback as `undefined`, silently, with no error anywhere. That is how the
+      // knockout came to be destructured at the top, branched on in the middle, and
+      // switched on per asset at the call site while never once running: the only
+      // asset that asked for it shipped as the opaque plate it was supposed to stop
+      // being. Adding a field to `render`'s spec means adding it in BOTH places.
+      knockout: spec.knockout === true,
     },
   )
 }

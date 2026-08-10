@@ -61,10 +61,12 @@ is the same every day. **The picker was a feature that made the habit harder.**
 ### Testing beats reading, which is why a quiz is the right daily unit
 
 This is the part that makes a daily quiz more than a retention trick. Repeated testing
-produces long-term retention, and the effect is large: learners who self-tested retained
-roughly **61 %** of material a week later against roughly **40 %** for
-re-reading.([Kudo](http://kudoquiz.com/?p=2494), reporting the classic testing-effect
-result) A daily quiz on spaced material is the single best-evidenced study habit there is,
+produces long-term retention, and the effect is large: in Roediger & Karpicke's
+test-enhanced learning experiments, learners who self-tested retained substantially more
+material a week later than learners who re-read it, despite re-readers predicting they
+would do better. (Roediger & Karpicke, *Test-Enhanced Learning*, Psychological Science 17
+(2006); Karpicke & Roediger, *The Critical Importance of Retrieval for Learning*, Science
+319 (2008).) A daily quiz on spaced material is the single best-evidenced study habit there is,
 which means the retention mechanic and the *learning* mechanic are the same mechanic here.
 That is a rare and valuable alignment, and it is the reason this product can chase a daily
 habit without the usual guilt about it.
@@ -78,19 +80,34 @@ habit without the usual guilt about it.
 Streak-based loss aversion is one of the most replicated findings in behavioural
 economics: losing hurts about **twice** as much as an equivalent gain
 feels good (Kahneman & Tversky).([This Is Glance](https://thisisglance.com/learning-centre/how-can-loss-aversion-psychology-transform-app-retention))
-Duolingo reports a **14 %** day-7 retention lift from streak wagers, and third parties
-attribute a large share of its retention to the streak
-generally.([Deconstructor of Fun](https://duolingo.deconstructoroffun.com/mechanics/streaks))
+Duolingo has publicly credited its streak mechanics with a material share of its retention,
+and third-party teardowns treat the streak as the centre of its retention design.
+([Deconstructor of Fun](https://duolingo.deconstructoroffun.com/mechanics/streaks))
+TODO(verify): an earlier draft put a specific **14 %** day-7 lift from streak wagers on
+this claim. The number is repeated widely in secondary write-ups and it is not in the
+linked teardown; no primary source has been found for it, so it is not stated here.
+Nothing below depends on the figure — the design conclusions rest on the direction, which
+is well attested, not on the magnitude.
 
 ### And they backfire, measurably
 
-This is the part a product spec usually leaves out. Roughly **40 % of users who break a
-60-day-plus streak abandon the product within two weeks** — the streak's own length becomes
-the reason quitting feels
-reasonable.([Marketing Monsters](https://marketingmonsters.io/blog/the-science-behind-streak-based-motivation))
+This is the part a product spec usually leaves out. A long streak that breaks is a
+well-documented churn event: the length that made the streak motivating is the same length
+that makes resuming feel pointless, so the users a streak holds hardest are the ones it
+loses most completely when it
+snaps.([Marketing Monsters](https://marketingmonsters.io/blog/the-science-behind-streak-based-motivation))
+TODO(verify): a specific "**40 %** of users who break a 60-day-plus streak abandon within
+two weeks" was cited here and is not in the linked page. It reads as plausible and it is
+unsourced, which in this repo means it does not get to be a number. Streak Repair and the
+no-shame copy below are designed for the direction of this effect, not its size.
 Breaking is a *double* loss: the behaviour you valued, plus the record. Wordle shows the
-shape plainly — about **90 %** of players reach a 3-day streak and only about **20 %**
-sustain 30 days.([Blossom](https://blossomgame.net/the-psychology-behind-daily-wordle-habits/))
+shape plainly: reaching a short streak is common and sustaining a month-long one is rare,
+so the streak curve falls away steeply in its first
+week.([Blossom](https://blossomgame.net/the-psychology-behind-daily-wordle-habits/))
+TODO(verify): "about **90 %** reach 3 days, about **20 %** sustain 30" was stated here as
+fact and is not in the linked page. The shape is the part this section actually uses — a
+steep early drop-off is why the first week gets Streak Repair rather than the sixtieth
+day — and the shape does not need the two numbers to stand up.
 There is even a literature on run-streaking as a behaviour-change technique that backfires
 once the streak ends.([medRxiv](https://www.medrxiv.org/content/10.1101/2024.12.26.24319676.full.pdf))
 

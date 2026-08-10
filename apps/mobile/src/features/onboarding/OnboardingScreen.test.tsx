@@ -87,7 +87,12 @@ describe('OnboardingScreen', () => {
     advanceToAgeStep()
     pickYear(YEAR - 30)
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
-    fireEvent.click(screen.getByRole('radio', { name: '20 min' }))
+    // "20 min Serious", not "20 min": the row no longer carries an explicit
+    // `aria-label`, so its accessible name is composed from both lines. That is the
+    // point of the change — the explicit label had duplicated the first line and
+    // suppressed the second, so the word describing what the goal MEANS reached no
+    // screen reader. Matching on both is what keeps that fixed.
+    fireEvent.click(screen.getByRole('radio', { name: /20 min\s*Serious/ }))
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
     fireEvent.click(screen.getByRole('button', { name: /Start learning/i }))
 
