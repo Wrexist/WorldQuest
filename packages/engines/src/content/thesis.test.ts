@@ -46,6 +46,8 @@ const facts = [
   ...read<Fact>('facts.flags.v1.json'),
   ...read<Fact>('facts.currencies.v1.json'),
   ...read<Fact>('facts.locations.v1.json'),
+  ...read<Fact>('facts.languages.v1.json'),
+  ...read<Fact>('facts.calling-codes.v1.json'),
 ]
 const templates = read<Template>('templates.v1.json')
 

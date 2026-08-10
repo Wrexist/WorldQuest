@@ -42,6 +42,17 @@ import flagsPack from '../../../../packages/content/packs/geography/facts.flags.
  * numbers. `content.test.ts` compares them now.
  */
 import locationsPack from '../../../../packages/content/packs/geography/facts.locations.v1.json'
+/**
+ * Two more attributes per country, from `scripts/build-country-facts.cjs`.
+ *
+ * Loaded here on the same line as they were generated, which is the whole lesson of the
+ * comment above this one: `facts.locations.v1.json` existed for weeks with artwork,
+ * templates and a generator, and produced no questions because nothing imported it.
+ * `content.test.ts` now walks the packs directory and fails when this list falls behind
+ * it, so a pack added and not imported is a red test rather than a silence.
+ */
+import languagesPack from '../../../../packages/content/packs/geography/facts.languages.v1.json'
+import callingCodesPack from '../../../../packages/content/packs/geography/facts.calling-codes.v1.json'
 import templatesPack from '../../../../packages/content/packs/geography/templates.v1.json'
 
 export type LoadedContent = {
@@ -105,6 +116,8 @@ export function useContent() {
           ...(flagsPack.items as unknown as Fact[]),
           ...(currenciesPack.items as unknown as Fact[]),
           ...(locationsPack.items as unknown as Fact[]),
+          ...(languagesPack.items as unknown as Fact[]),
+          ...(callingCodesPack.items as unknown as Fact[]),
         ],
         templates: templatesPack.items as unknown as Template[],
       })

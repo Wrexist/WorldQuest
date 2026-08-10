@@ -116,6 +116,13 @@
   "lesson:answer.correct": "{answer}, correct answer",
   "lesson:answer.correct__note": "Accessibility label for the option that IS the answer, once feedback is showing. The tick beside it is `aria-hidden` artwork, so without this a screen-reader user hears only the option text and has no way to tell which one was right — colour and an unlabelled icon are the whole signal on screen.",
   "lesson:answer.wrong": "{answer}, not the answer",
-  "lesson:answer.wrong__note": "Accessibility label for the option the user chose when it was wrong. Deliberately NOT 'incorrect' or 'wrong answer' shouted at the user — it states which option is not the answer, in the same register as the visible copy 'That's Berlin. The answer is Paris.' See docs/design/voice-and-tone.md."
-
+  "lesson:answer.wrong__note": "Accessibility label for the option the user chose when it was wrong. Deliberately NOT 'incorrect' or 'wrong answer' shouted at the user — it states which option is not the answer, in the same register as the visible copy 'That's Berlin. The answer is Paris.' See docs/design/voice-and-tone.md.",
+  "lesson:prompt.language_of": "What language do people speak in {entityName}?",
+  "lesson:prompt.language_of__note": "Language question. Deliberately \"do people speak\" rather than \"is the official language of\" — a ten-year-old reads past the second one. Only generated for countries with ONE official language, and only where the country name does not give the answer away (Austria yes, Sweden no) — see scripts/build-country-facts.cjs. {entityName} is a localised country name from the pack.",
+  "lesson:prompt.language_reverse": "Which of these countries speaks {valueName}?",
+  "lesson:prompt.language_reverse__note": "\"Which of THESE\", not \"which country\" — Spanish is spoken in twenty countries and the honest question is which of the four on screen. {valueName} is a language name like \"Portuguese\".",
+  "lesson:prompt.calling_code_of": "Which dialling code calls {entityName}?",
+  "lesson:prompt.calling_code_of__note": "Country calling code question. The answer is a string like \"+46\". {entityName} is a localised country name from the content pack.",
+  "lesson:prompt.calling_code_reverse": "Dialling {valueName} calls which country?",
+  "lesson:prompt.calling_code_reverse__note": "Reverse calling-code question. {valueName} is a code like \"+46\". Safe as a reverse question because E.164 gives each of these countries its own code."
 }

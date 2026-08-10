@@ -1,0 +1,665 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "packId": "geography.facts.languages",
+  "version": "1.0.0",
+  "subject": "geography",
+  "kind": "facts",
+  "locales": [
+    "en",
+    "sv"
+  ],
+  "license": "CC-BY-4.0",
+  "generatedAt": "2026-08-10",
+  "items": [
+    {
+      "id": "geo.AT.language",
+      "entity": "AT",
+      "attribute": "language",
+      "value": {
+        "id": "lang-de",
+        "names": {
+          "en": "German",
+          "sv": "tyska"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "language",
+        "EU",
+        "lang:de",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AU.language",
+      "entity": "AU",
+      "attribute": "language",
+      "value": {
+        "id": "lang-en",
+        "names": {
+          "en": "English",
+          "sv": "engelska"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "language",
+        "OC",
+        "lang:en",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BR.language",
+      "entity": "BR",
+      "attribute": "language",
+      "value": {
+        "id": "lang-pt",
+        "names": {
+          "en": "Portuguese",
+          "sv": "portugisiska"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "language",
+        "SA",
+        "lang:pt",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CL.language",
+      "entity": "CL",
+      "attribute": "language",
+      "value": {
+        "id": "lang-es",
+        "names": {
+          "en": "Spanish",
+          "sv": "spanska"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "language",
+        "SA",
+        "lang:es",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CO.language",
+      "entity": "CO",
+      "attribute": "language",
+      "value": {
+        "id": "lang-es",
+        "names": {
+          "en": "Spanish",
+          "sv": "spanska"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "language",
+        "SA",
+        "lang:es",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CR.language",
+      "entity": "CR",
+      "attribute": "language",
+      "value": {
+        "id": "lang-es",
+        "names": {
+          "en": "Spanish",
+          "sv": "spanska"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "language",
+        "NA",
+        "lang:es",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CU.language",
+      "entity": "CU",
+      "attribute": "language",
+      "value": {
+        "id": "lang-es",
+        "names": {
+          "en": "Spanish",
+          "sv": "spanska"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "language",
+        "NA",
+        "lang:es",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DK.language",
+      "entity": "DK",
+      "attribute": "language",
+      "value": {
+        "id": "lang-da",
+        "names": {
+          "en": "Danish",
+          "sv": "danska"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "language",
+        "EU",
+        "lang:da",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DZ.language",
+      "entity": "DZ",
+      "attribute": "language",
+      "value": {
+        "id": "lang-ar",
+        "names": {
+          "en": "Arabic",
+          "sv": "arabiska"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "language",
+        "AF",
+        "lang:ar",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.EG.language",
+      "entity": "EG",
+      "attribute": "language",
+      "value": {
+        "id": "lang-ar",
+        "names": {
+          "en": "Arabic",
+          "sv": "arabiska"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "language",
+        "AF",
+        "lang:ar",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ET.language",
+      "entity": "ET",
+      "attribute": "language",
+      "value": {
+        "id": "lang-am",
+        "names": {
+          "en": "Amharic",
+          "sv": "amhariska"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "language",
+        "AF",
+        "lang:am",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GH.language",
+      "entity": "GH",
+      "attribute": "language",
+      "value": {
+        "id": "lang-en",
+        "names": {
+          "en": "English",
+          "sv": "engelska"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "language",
+        "AF",
+        "lang:en",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GT.language",
+      "entity": "GT",
+      "attribute": "language",
+      "value": {
+        "id": "lang-es",
+        "names": {
+          "en": "Spanish",
+          "sv": "spanska"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "language",
+        "NA",
+        "lang:es",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KP.language",
+      "entity": "KP",
+      "attribute": "language",
+      "value": {
+        "id": "lang-ko",
+        "names": {
+          "en": "Korean",
+          "sv": "koreanska"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "language",
+        "AS",
+        "lang:ko",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KR.language",
+      "entity": "KR",
+      "attribute": "language",
+      "value": {
+        "id": "lang-ko",
+        "names": {
+          "en": "Korean",
+          "sv": "koreanska"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "language",
+        "AS",
+        "lang:ko",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MA.language",
+      "entity": "MA",
+      "attribute": "language",
+      "value": {
+        "id": "lang-ar",
+        "names": {
+          "en": "Arabic",
+          "sv": "arabiska"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "language",
+        "AF",
+        "lang:ar",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ML.language",
+      "entity": "ML",
+      "attribute": "language",
+      "value": {
+        "id": "lang-fr",
+        "names": {
+          "en": "French",
+          "sv": "franska"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "language",
+        "AF",
+        "lang:fr",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MX.language",
+      "entity": "MX",
+      "attribute": "language",
+      "value": {
+        "id": "lang-es",
+        "names": {
+          "en": "Spanish",
+          "sv": "spanska"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "language",
+        "NA",
+        "lang:es",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NG.language",
+      "entity": "NG",
+      "attribute": "language",
+      "value": {
+        "id": "lang-en",
+        "names": {
+          "en": "English",
+          "sv": "engelska"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "language",
+        "AF",
+        "lang:en",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PA.language",
+      "entity": "PA",
+      "attribute": "language",
+      "value": {
+        "id": "lang-es",
+        "names": {
+          "en": "Spanish",
+          "sv": "spanska"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "language",
+        "NA",
+        "lang:es",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PE.language",
+      "entity": "PE",
+      "attribute": "language",
+      "value": {
+        "id": "lang-es",
+        "names": {
+          "en": "Spanish",
+          "sv": "spanska"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "language",
+        "SA",
+        "lang:es",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PG.language",
+      "entity": "PG",
+      "attribute": "language",
+      "value": {
+        "id": "lang-en",
+        "names": {
+          "en": "English",
+          "sv": "engelska"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "language",
+        "OC",
+        "lang:en",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PL.language",
+      "entity": "PL",
+      "attribute": "language",
+      "value": {
+        "id": "lang-pl",
+        "names": {
+          "en": "Polish",
+          "sv": "polska"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "language",
+        "EU",
+        "lang:pl",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SN.language",
+      "entity": "SN",
+      "attribute": "language",
+      "value": {
+        "id": "lang-fr",
+        "names": {
+          "en": "French",
+          "sv": "franska"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "language",
+        "AF",
+        "lang:fr",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TN.language",
+      "entity": "TN",
+      "attribute": "language",
+      "value": {
+        "id": "lang-ar",
+        "names": {
+          "en": "Arabic",
+          "sv": "arabiska"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "language",
+        "AF",
+        "lang:ar",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.US.language",
+      "entity": "US",
+      "attribute": "language",
+      "value": {
+        "id": "lang-en",
+        "names": {
+          "en": "English",
+          "sv": "engelska"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "language",
+        "NA",
+        "lang:en",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ISO 639-1 principal official language; language names from CLDR via Intl.DisplayNames",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "slow"
+    }
+  ]
+}

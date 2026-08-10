@@ -134,7 +134,7 @@
         "screenReaderSafe": true
       },
       "timeLimitMs": null,
-      "difficultyModifier": 1
+      "difficultyModifier": 0
     },
     {
       "id": "tpl.currency.mc4",
@@ -234,6 +234,106 @@
       },
       "timeLimitMs": null,
       "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.language.mc4",
+      "attribute": "language",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.language_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.language-reverse.mc4",
+      "attribute": "language",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.language_reverse",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "same-subregion",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.calling-code.mc4",
+      "attribute": "calling-code",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.calling_code_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.calling-code-reverse.mc4",
+      "attribute": "calling-code",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.calling_code_reverse",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "same-subregion",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
     }
   ]
 }

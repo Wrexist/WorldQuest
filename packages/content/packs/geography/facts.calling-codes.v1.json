@@ -1,0 +1,1576 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "packId": "geography.facts.calling-codes",
+  "version": "1.0.0",
+  "subject": "geography",
+  "kind": "facts",
+  "locales": [
+    "en",
+    "sv"
+  ],
+  "license": "CC-BY-4.0",
+  "generatedAt": "2026-08-10",
+  "volatilityReviewed": true,
+  "items": [
+    {
+      "id": "geo.AR.calling-code",
+      "entity": "AR",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-54",
+        "names": {
+          "en": "+54",
+          "sv": "+54"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "SA",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AT.calling-code",
+      "entity": "AT",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-43",
+        "names": {
+          "en": "+43",
+          "sv": "+43"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "calling-code",
+        "EU",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AU.calling-code",
+      "entity": "AU",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-61",
+        "names": {
+          "en": "+61",
+          "sv": "+61"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "OC",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BD.calling-code",
+      "entity": "BD",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-880",
+        "names": {
+          "en": "+880",
+          "sv": "+880"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "AS",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BE.calling-code",
+      "entity": "BE",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-32",
+        "names": {
+          "en": "+32",
+          "sv": "+32"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "calling-code",
+        "EU",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BR.calling-code",
+      "entity": "BR",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-55",
+        "names": {
+          "en": "+55",
+          "sv": "+55"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "calling-code",
+        "SA",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BW.calling-code",
+      "entity": "BW",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-267",
+        "names": {
+          "en": "+267",
+          "sv": "+267"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "calling-code",
+        "AF",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CA.calling-code",
+      "entity": "CA",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-1",
+        "names": {
+          "en": "+1",
+          "sv": "+1"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "calling-code",
+        "NA",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CH.calling-code",
+      "entity": "CH",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-41",
+        "names": {
+          "en": "+41",
+          "sv": "+41"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "calling-code",
+        "EU",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CL.calling-code",
+      "entity": "CL",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-56",
+        "names": {
+          "en": "+56",
+          "sv": "+56"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "SA",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CN.calling-code",
+      "entity": "CN",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-86",
+        "names": {
+          "en": "+86",
+          "sv": "+86"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "calling-code",
+        "AS",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CO.calling-code",
+      "entity": "CO",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-57",
+        "names": {
+          "en": "+57",
+          "sv": "+57"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "SA",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CR.calling-code",
+      "entity": "CR",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-506",
+        "names": {
+          "en": "+506",
+          "sv": "+506"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "calling-code",
+        "NA",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CU.calling-code",
+      "entity": "CU",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-53",
+        "names": {
+          "en": "+53",
+          "sv": "+53"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "NA",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CZ.calling-code",
+      "entity": "CZ",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-420",
+        "names": {
+          "en": "+420",
+          "sv": "+420"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "EU",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DE.calling-code",
+      "entity": "DE",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-49",
+        "names": {
+          "en": "+49",
+          "sv": "+49"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "calling-code",
+        "EU",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DK.calling-code",
+      "entity": "DK",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-45",
+        "names": {
+          "en": "+45",
+          "sv": "+45"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "EU",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DZ.calling-code",
+      "entity": "DZ",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-213",
+        "names": {
+          "en": "+213",
+          "sv": "+213"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "AF",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.EG.calling-code",
+      "entity": "EG",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-20",
+        "names": {
+          "en": "+20",
+          "sv": "+20"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "AF",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ES.calling-code",
+      "entity": "ES",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-34",
+        "names": {
+          "en": "+34",
+          "sv": "+34"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "calling-code",
+        "EU",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ET.calling-code",
+      "entity": "ET",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-251",
+        "names": {
+          "en": "+251",
+          "sv": "+251"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "AF",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FI.calling-code",
+      "entity": "FI",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-358",
+        "names": {
+          "en": "+358",
+          "sv": "+358"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "calling-code",
+        "EU",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FJ.calling-code",
+      "entity": "FJ",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-679",
+        "names": {
+          "en": "+679",
+          "sv": "+679"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "calling-code",
+        "OC",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FR.calling-code",
+      "entity": "FR",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-33",
+        "names": {
+          "en": "+33",
+          "sv": "+33"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "calling-code",
+        "EU",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GH.calling-code",
+      "entity": "GH",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-233",
+        "names": {
+          "en": "+233",
+          "sv": "+233"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "calling-code",
+        "AF",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GR.calling-code",
+      "entity": "GR",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-30",
+        "names": {
+          "en": "+30",
+          "sv": "+30"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "calling-code",
+        "EU",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GT.calling-code",
+      "entity": "GT",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-502",
+        "names": {
+          "en": "+502",
+          "sv": "+502"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "calling-code",
+        "NA",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HU.calling-code",
+      "entity": "HU",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-36",
+        "names": {
+          "en": "+36",
+          "sv": "+36"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "EU",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ID.calling-code",
+      "entity": "ID",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-62",
+        "names": {
+          "en": "+62",
+          "sv": "+62"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "AS",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IN.calling-code",
+      "entity": "IN",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-91",
+        "names": {
+          "en": "+91",
+          "sv": "+91"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "calling-code",
+        "AS",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IT.calling-code",
+      "entity": "IT",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-39",
+        "names": {
+          "en": "+39",
+          "sv": "+39"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "calling-code",
+        "EU",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JP.calling-code",
+      "entity": "JP",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-81",
+        "names": {
+          "en": "+81",
+          "sv": "+81"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "calling-code",
+        "AS",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KE.calling-code",
+      "entity": "KE",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-254",
+        "names": {
+          "en": "+254",
+          "sv": "+254"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "AF",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KP.calling-code",
+      "entity": "KP",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-850",
+        "names": {
+          "en": "+850",
+          "sv": "+850"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "calling-code",
+        "AS",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KR.calling-code",
+      "entity": "KR",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-82",
+        "names": {
+          "en": "+82",
+          "sv": "+82"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "calling-code",
+        "AS",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MA.calling-code",
+      "entity": "MA",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-212",
+        "names": {
+          "en": "+212",
+          "sv": "+212"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "AF",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ML.calling-code",
+      "entity": "ML",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-223",
+        "names": {
+          "en": "+223",
+          "sv": "+223"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "calling-code",
+        "AF",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MN.calling-code",
+      "entity": "MN",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-976",
+        "names": {
+          "en": "+976",
+          "sv": "+976"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "calling-code",
+        "AS",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MX.calling-code",
+      "entity": "MX",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-52",
+        "names": {
+          "en": "+52",
+          "sv": "+52"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "calling-code",
+        "NA",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MY.calling-code",
+      "entity": "MY",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-60",
+        "names": {
+          "en": "+60",
+          "sv": "+60"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "AS",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NA.calling-code",
+      "entity": "NA",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-264",
+        "names": {
+          "en": "+264",
+          "sv": "+264"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "calling-code",
+        "AF",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NG.calling-code",
+      "entity": "NG",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-234",
+        "names": {
+          "en": "+234",
+          "sv": "+234"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "AF",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NL.calling-code",
+      "entity": "NL",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-31",
+        "names": {
+          "en": "+31",
+          "sv": "+31"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "calling-code",
+        "EU",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NO.calling-code",
+      "entity": "NO",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-47",
+        "names": {
+          "en": "+47",
+          "sv": "+47"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "EU",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NP.calling-code",
+      "entity": "NP",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-977",
+        "names": {
+          "en": "+977",
+          "sv": "+977"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "AS",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NZ.calling-code",
+      "entity": "NZ",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-64",
+        "names": {
+          "en": "+64",
+          "sv": "+64"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "OC",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PA.calling-code",
+      "entity": "PA",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-507",
+        "names": {
+          "en": "+507",
+          "sv": "+507"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "calling-code",
+        "NA",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PE.calling-code",
+      "entity": "PE",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-51",
+        "names": {
+          "en": "+51",
+          "sv": "+51"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "SA",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PG.calling-code",
+      "entity": "PG",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-675",
+        "names": {
+          "en": "+675",
+          "sv": "+675"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "calling-code",
+        "OC",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PH.calling-code",
+      "entity": "PH",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-63",
+        "names": {
+          "en": "+63",
+          "sv": "+63"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "AS",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PK.calling-code",
+      "entity": "PK",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-92",
+        "names": {
+          "en": "+92",
+          "sv": "+92"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "AS",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PL.calling-code",
+      "entity": "PL",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-48",
+        "names": {
+          "en": "+48",
+          "sv": "+48"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "EU",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PT.calling-code",
+      "entity": "PT",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-351",
+        "names": {
+          "en": "+351",
+          "sv": "+351"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "calling-code",
+        "EU",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RO.calling-code",
+      "entity": "RO",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-40",
+        "names": {
+          "en": "+40",
+          "sv": "+40"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "calling-code",
+        "EU",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SE.calling-code",
+      "entity": "SE",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-46",
+        "names": {
+          "en": "+46",
+          "sv": "+46"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "calling-code",
+        "EU",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SN.calling-code",
+      "entity": "SN",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-221",
+        "names": {
+          "en": "+221",
+          "sv": "+221"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "calling-code",
+        "AF",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TH.calling-code",
+      "entity": "TH",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-66",
+        "names": {
+          "en": "+66",
+          "sv": "+66"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "calling-code",
+        "AS",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TN.calling-code",
+      "entity": "TN",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-216",
+        "names": {
+          "en": "+216",
+          "sv": "+216"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "AF",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TZ.calling-code",
+      "entity": "TZ",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-255",
+        "names": {
+          "en": "+255",
+          "sv": "+255"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "calling-code",
+        "AF",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UA.calling-code",
+      "entity": "UA",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-380",
+        "names": {
+          "en": "+380",
+          "sv": "+380"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "calling-code",
+        "EU",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UG.calling-code",
+      "entity": "UG",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-256",
+        "names": {
+          "en": "+256",
+          "sv": "+256"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "calling-code",
+        "AF",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.US.calling-code",
+      "entity": "US",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-1",
+        "names": {
+          "en": "+1",
+          "sv": "+1"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "calling-code",
+        "NA",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VN.calling-code",
+      "entity": "VN",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-84",
+        "names": {
+          "en": "+84",
+          "sv": "+84"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "calling-code",
+        "AS",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZA.calling-code",
+      "entity": "ZA",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-27",
+        "names": {
+          "en": "+27",
+          "sv": "+27"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "calling-code",
+        "AF",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZW.calling-code",
+      "entity": "ZW",
+      "attribute": "calling-code",
+      "value": {
+        "id": "dial-263",
+        "names": {
+          "en": "+263",
+          "sv": "+263"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "calling-code",
+        "AF",
+        "core"
+      ],
+      "source": {
+        "name": "countries-list v3.4.1 (MIT), ITU-T Recommendation E.164 country calling code",
+        "url": "https://www.itu.int/rec/T-REC-E.164/en",
+        "verifiedAt": "2026-08-10"
+      },
+      "volatility": "stable"
+    }
+  ]
+}
