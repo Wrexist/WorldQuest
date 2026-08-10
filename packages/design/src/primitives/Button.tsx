@@ -254,9 +254,25 @@ const styles = StyleSheet.create({
   // and is the loudest non-native thing an iOS user meets in this app. See the note on
   // the step itself in tokens.json.
   label: { ...text('button'), textAlign: 'center' },
-  // A whole step down, not just a smaller size — dropping fontSize alone leaves the
-  // line height and tracking of the larger step behind.
-  labelSm: text('overline'),
+  /**
+   * A whole step down, not just a smaller size — dropping fontSize alone leaves the
+   * line height of the larger step behind.
+   *
+   * It was `text('overline')`, which is 12/800 UPPERCASE with a point of tracking, and
+   * that carried the case along with the size: the Shop shipped a column of buttons
+   * reading BUY / BUY / BUY / WEAR beside a `button` step that had just had its
+   * uppercase removed for being the loudest non-native thing in the app
+   * (docs/design/ios-native-audit.md, N11). Half the fix is not a fix — a small button
+   * is still a button, and iOS has never uppercased one at any size.
+   *
+   * `overline` keeps its casing and earns it: it is the grouped-list section header,
+   * which is exactly how iOS sets those. Borrowing that step for a label the user taps
+   * borrowed a decision that was made about something else.
+   *
+   * So: `caption` at the button weight — 13/800, no tracking, sentence case. The same
+   * shape as the primary label, one rung down the scale.
+   */
+  labelSm: text('caption', { weight: '800' }),
   /**
    * The ghost variant reads as an offer, not as a second command.
    *

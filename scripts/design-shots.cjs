@@ -138,6 +138,35 @@ const SHOOT_FLOWS = process.env.WQ_NO_FLOWS === undefined
 const OFFLINE_ROUTES = ['/', '/shop', '/streak', '/more', '/paywall?source=settings']
 
 /**
+ * The routes re-photographed AFTER a lesson has been played.
+ *
+ * Every route shot in the main pass is of a five-minute-old account, so the screens
+ * whose whole subject is accumulated state were only ever photographed showing none of
+ * it. Profile is the extreme case — the main pass captures its empty state and nothing
+ * else, so its level card, week chart, stat grid and region bars had never appeared in a
+ * design review — but Streak, Home and Quests all hide something at zero.
+ *
+ * Four, not fourteen: these are the ones where the difference is the screen rather than
+ * a digit. Explore and Shop look the same either way.
+ *
+ * ## What the first run of this showed, which is worse than the gap it closed
+ *
+ * Quests and Home change. **Profile and Streak do not** — after a full lesson they are
+ * pixel-identical to their brand-new-account shots, because XP, coins and streak days
+ * are server-authoritative (ADR 0006) and this harness runs the exported bundle with no
+ * Supabase behind it. `stats.xpTotal === 0` takes Profile's empty branch; `current === 0`
+ * takes Streak's.
+ *
+ * So the level card, the week chart, the six stat tiles and the seven region bars are
+ * still unphotographed, and so is a burning streak. That is not a defect in this pass:
+ * it is the honest report that two of the app's screens cannot be reviewed by looking at
+ * them without a database, and the shots are kept precisely so the claim is checkable
+ * rather than asserted. Seeding local state to fake it would photograph a lie about what
+ * the client is allowed to decide.
+ */
+const PLAYED_ROUTES = ['/profile', '/streak', '/', '/quests']
+
+/**
  * The routes worth photographing with every string inflated by ~40 %.
  *
  * Chosen for where long copy actually lands rather than for coverage: the screens with
@@ -536,6 +565,30 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
         report.flowGaps ??= {}
         report.flowGaps[viewport.name] = `lesson feedback: correct=${phases.gotCorrect} wrong=${phases.gotWrong}`
       }
+
+      /**
+       * The same routes again, now that there is something to show.
+       *
+       * `DEFAULT_ROUTES` runs immediately after onboarding, so every one of those shots
+       * is of a brand-new account — which for Profile means its EMPTY state, and the
+       * screen behind it (level card, week chart, six stat tiles, seven region bars) had
+       * never been photographed at all. Streak, Home and Quests are the same story with
+       * less of it hidden.
+       *
+       * This is the identical blind spot the flow pass was written for: a screen that is
+       * a state rather than a route is invisible to a tool that only visits routes. One
+       * lesson is not much data, but "1" and "0" render differently, and it is the
+       * difference between reviewing the screen and reviewing its placeholder.
+       */
+      for (const route of PLAYED_ROUTES) {
+        // `'/'` slugs to the empty string everywhere else in this file too, which is why
+        // it is spelled out here rather than shared: the first run of this loop wrote
+        // `played-@390.png`.
+        const slug = route === '/' ? 'home' : route.replace(/^\//, '').replace(/\//g, '-')
+        await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'networkidle' })
+        await page.waitForTimeout(1100)
+        await shot(`played-${slug}`)
+      }
       report.flowShots ??= {}
       report.flowShots[viewport.name] = taken
     }
@@ -623,7 +676,7 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
   if (SHOOT_FLOWS) {
     const flowShots = Object.values(report.flowShots ?? {}).reduce((a, b) => a + b, 0)
     console.log(
-      `\n  + ${flowShots} flow shots (onboarding-*, lesson-*, offline-*) — screens that are ` +
+      `\n  + ${flowShots} flow shots (onboarding-*, lesson-*, offline-*, played-*) — screens that are ` +
         `states rather than routes, or the same route with the radio pulled out, and were ` +
         `invisible to this tool until they were not`,
     )

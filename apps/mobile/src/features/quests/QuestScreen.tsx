@@ -20,6 +20,7 @@ import {
   Skeleton,
   space,
   squircle,
+  Tally,
   text,
 } from '@worldquest/design'
 import {
@@ -42,6 +43,32 @@ const SLOT_TITLE: Record<Slot, TranslationKey> = {
   recall: 'quests:slot.recall',
   discover: 'quests:slot.discover',
   perform: 'quests:slot.perform',
+}
+
+/**
+ * What each task is ABOUT, as one glyph.
+ *
+ * This was the flattest list in the app: five navy rectangles told apart by a number
+ * in a ring, on the tab whose whole job is to make today's work look worth doing. The
+ * Explore grid solves the identical problem — seven cards that are the same shape —
+ * with a coloured mark and a tinted icon per tile, and it is the reason that screen
+ * reads as seven places rather than one list.
+ *
+ * Literal, every one of them: "Find it on the map" gets a map, "Know the flag" a flag,
+ * "Name the capital" a pin (a capital IS a pin on a map), "Learn something new" a star,
+ * "Finish strong" a trophy. An icon that needs explaining is worse than no icon.
+ *
+ * Not a colour per slot, deliberately. `palette.continent` exists because continents
+ * are a fixed, named set someone decided the colours for; quest slots have no such
+ * palette, and inventing five would be five tokens nobody asked for. One accent, five
+ * shapes — which is also what makes them survive a theme change.
+ */
+const SLOT_ICON: Record<Slot, 'map' | 'flag' | 'pin' | 'star' | 'trophy'> = {
+  locate: 'map',
+  recognise: 'flag',
+  recall: 'pin',
+  discover: 'star',
+  perform: 'trophy',
 }
 
 const GOAL_BODY: Record<PerformGoal, TranslationKey> = {
@@ -197,6 +224,12 @@ function TaskRow({ task, step }: { task: QuestTask; step: number }) {
       <View
         style={[styles.step, task.complete && styles.stepDone]}
         aria-hidden
+        // A seam, so the test for "a done step draws an icon rather than a `✓`
+        // character" can ask the STEP what it drew. It used to count every image inside
+        // the task list, which was true when the rows had no other artwork and stopped
+        // being true the moment each task got its subject glyph — the same way it had
+        // already broken once when the header grew an Atlas.
+        testID="quest-step"
       >
         {task.complete ? (
           <Icon name="check" size={16} color={colors.text.onAccent} />
@@ -206,7 +239,26 @@ function TaskRow({ task, step }: { task: QuestTask; step: number }) {
       </View>
 
       <View style={styles.taskText}>
-        <Text style={[styles.taskTitle, task.complete && styles.taskTitleDone]}>{title}</Text>
+        {/* Icon then title, `space[1]` apart — the icon↔label rung, and the same pair
+            Explore draws with its pin. Decorative: the row's `aria-label` already says
+            "Know the flag, 2 of 4", and a reader announcing "flag" in front of it is
+            the noun twice. */}
+        <View style={styles.taskHead}>
+          {/* Anchored to the FIRST line, not to the middle of the block. At 320 "Find it
+              on the map" wraps to two lines, and a centred icon then sat in the gap
+              between them pointing at nothing. `bodyStrong` has a 24 line height and the
+              glyph is 16, so half the difference — `space[1]`, on the scale — drops it
+              onto the first line's optical centre and it stays there however many lines
+              the title takes. */}
+          <View style={styles.taskHeadIcon}>
+            <Icon
+              name={SLOT_ICON[task.slot]}
+              size={16}
+              color={task.complete ? colors.text.tertiary : colors.action.primary}
+            />
+          </View>
+          <Text style={[styles.taskTitle, task.complete && styles.taskTitleDone]}>{title}</Text>
+        </View>
         {task.goal !== undefined && (
           <Text style={styles.taskBody}>{t(GOAL_BODY[task.goal])}</Text>
         )}
@@ -219,12 +271,21 @@ function TaskRow({ task, step }: { task: QuestTask; step: number }) {
             the lesson summary told with a 35 % accuracy and the streak screen told with
             "0 of 2 held". A standalone caption in the success colour is a claim; here it
             claimed five times over that nothing was something. */}
-        <Text style={task.progress > 0 || task.complete ? styles.taskCount : styles.taskCountNone}>
+        <Tally
+          style={task.progress > 0 || task.complete ? styles.taskCount : styles.taskCountNone}
+          numberStyle={styles.taskCountNumber}
+        >
           {task.complete
             ? t('quests:task.done')
             : t('quests:task.count', { progress: task.progress, target: task.target })}
-        </Text>
-        <Text style={styles.taskXp}>{t('quests:reward.task', { xp: TASK_XP })}</Text>
+        </Tally>
+        {/* The bolt is the same one the tab bar and the lesson summary use for XP, at
+            the reward tint the figure beside it already carries. A gold number on its own
+            was the only unlabelled quantity on the screen. */}
+        <View style={styles.taskXpRow}>
+          <Icon name="xp" size={12} color={colors.reward.xp} />
+          <Text style={styles.taskXp}>{t('quests:reward.task', { xp: TASK_XP })}</Text>
+        </View>
       </View>
     </View>
   )
@@ -296,14 +357,19 @@ const styles = StyleSheet.create({
   // contrast checker cares about.
   stepTextDone: { color: colors.text.onAccent },
   taskText: { flex: 1, gap: space[2] },
-  taskTitle: { ...text('bodyStrong'), color: colors.text.primary },
+  // `flex: 1` on the title so a long slot name wraps inside the row rather than pushing
+  // the icon off it.
+  taskHead: { flexDirection: 'row', alignItems: 'flex-start', gap: space[1] },
+  taskHeadIcon: { paddingTop: space[1] },
+  taskTitle: { ...text('bodyStrong'), color: colors.text.primary, flex: 1 },
   taskTitleDone: { color: colors.text.secondary },
   taskBody: { ...text('caption'), color: colors.text.secondary },
   taskMeta: { alignItems: 'flex-end', gap: space[1] },
-  taskCount: { ...text('caption', { weight: '700', numeric: true }), color: colors.status.progress },
-  taskCountNone: {
-    ...text('caption', { weight: '700', numeric: true }),
-    color: colors.text.secondary,
-  },
+  // The WORDS, now that `Tally` splits the line. "done" keeps the state colour and the
+  // digits get the weight — same division as every other count in the app.
+  taskCount: { ...text('caption'), color: colors.status.progress },
+  taskCountNone: { ...text('caption'), color: colors.text.secondary },
+  taskCountNumber: { ...text('caption', { weight: '700', numeric: true }) },
+  taskXpRow: { flexDirection: 'row', alignItems: 'center', gap: space[1] },
   taskXp: { ...text('caption'), color: colors.reward.xp },
 })

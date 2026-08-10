@@ -49,10 +49,15 @@ describe('Quests — the five states', () => {
     // text — which is the point: `✓` was a glyph whose presence depended on the
     // system font having it.
     expect(steps).toEqual(['1', '3', '4', '5'])
-    // Scoped to the task list. It counted images across the whole screen until the
-    // header grew an Atlas, at which point a test about how a DONE STEP is drawn
-    // started failing because of an illustration three elements away.
-    expect(container.querySelectorAll('[data-testid="quest-tasks"] img')).toHaveLength(1)
+    // Scoped to the STEPS, not to the task list. It counted images across the whole
+    // screen until the header grew an Atlas, then across the task list until each task
+    // grew a subject glyph and an XP bolt — twice over, a test about how a done step is
+    // drawn failed because of a picture somewhere else in the row. Asking the step
+    // itself is the assertion that was always meant, and it cannot rot that way again.
+    const drawn = Array.from(container.querySelectorAll('[data-testid="quest-step"]')).filter(
+      (step) => step.querySelector('img') !== null,
+    )
+    expect(drawn).toHaveLength(1)
   })
 
   it('keeps the step number out of the screen reader', () => {

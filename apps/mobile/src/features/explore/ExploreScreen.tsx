@@ -505,7 +505,6 @@ const styles = StyleSheet.create({
     gap: space[2],
   },
   collectionText: { flex: 1, gap: space[0] },
-  collectionGlyph: { ...text('h1'), color: colors.text.primary },
   // Up a step from `caption`: it is a destination's name now, with its own line of
   // explanation under it, rather than a label under an icon.
   collectionName: { ...text('bodyStrong'), color: colors.text.primary },
@@ -524,11 +523,6 @@ const styles = StyleSheet.create({
   worldCard: { flexDirection: 'row', alignItems: 'center', gap: space[4] },
   worldStats: { flex: 1, gap: space[2] },
   worldTitle: { ...text('h3'), color: colors.text.primary },
-  worldCount: { ...text('caption'), color: colors.text.secondary },
-  worldCountNumber: {
-    ...text('caption', { weight: '700', numeric: true }),
-    color: colors.text.primary,
-  },
 
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: space[3] },
   // Clipped, so the oversized background stops at the card edge, and positioned so
@@ -548,16 +542,8 @@ const styles = StyleSheet.create({
    * of the six — Africa's gold — with `ArtScrim` already weighted downward underneath it.
    * At full strength the map won and the count was unreadable on three of the seven.
    */
-  regionBarRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
   // `space[1]` is the icon↔label step — the one place the 4pt rung is for.
   regionDueRow: { flexDirection: 'row', alignItems: 'center', gap: space[1] },
-  regionBar: { flex: 1 },
-  // Tabular, so seven cards' worth of percentages line up down the grid instead of
-  // jittering as they pass 9 % and 99 %.
-  regionPercent: {
-    ...text('caption', { weight: '700', numeric: true }),
-    color: colors.text.secondary,
-  },
   tileShape: {
     ...StyleSheet.absoluteFillObject,
     alignItems: 'flex-end',

@@ -321,6 +321,13 @@ Ordered by what it buys per unit of risk. Files are where the change lands.
     drops to `body` weight so Skip stops shouting. *(N11, O9)*
 11. **Shop rows align with or without art** — reserve the gutter, or drop it when the
     item has no insignia. *(C1)*
+12. **The daily goal's denominator moves under the user.** `lessonsPerDay()` divides the
+    goal minutes by the measured median answer time, so a fast lesson makes tomorrow's —
+    and today's — target larger: Home went "0 of 5 lessons today" → "1 of 30" inside one
+    session in the harness. Finishing work should not make the bar longer. Belongs to the
+    learning engine (smooth or floor the pace, or fix the target for the day once it is
+    set) and needs `pnpm engines:simulate` afterwards, so it is **not** in the styling
+    pass that found it. *(third pass)*
 
 ### P2 — craft
 
@@ -422,3 +429,66 @@ had gone unnoticed because that check lives in `verify:full`, which runs in CI, 
 The guard for D1 is in `i18n.test.ts`: it asserts `Intl.PluralRules.polyfilled === true`,
 so if anyone reverts to the conditional import, the suite says that the tests have stopped
 covering the device rather than silently going back to testing the wrong engine.
+
+### Third pass — carrying Explore's style across the app
+
+The brief was "make the rest of the app more like the Explore tab". Explore reads as
+designed and the others read as lists, and the difference turned out to be four
+transferable things rather than one:
+
+14. **`ProgressBar` can show its own percentage** (`showPercent`). Explore drew "42 %"
+    beside its region bars with a local row and three local styles; every other screen
+    with a bar drew nothing. Moved into the primitive — trailing, `aria-hidden` because
+    the bar's `accessibilityValue` already speaks the figure, tabular so it does not
+    jitter as it counts.
+
+    **Applied to two screens, not to all seven, and that is the finding.** Tried on
+    Quests, Region and Home and reverted on all three: those rows already read "0 / 4" an
+    inch away, so the percentage is the same quantity said twice. The rule is in the
+    prop's doc comment — *show it where the text beside the bar is not already a fraction
+    of the same quantity.*
+
+15. **A subject glyph per quest task** — map, flag, pin, star, trophy. This was the
+    flattest list in the app, five navy rectangles told apart by a number in a ring, and
+    it is the identical problem the Explore grid solves with a coloured mark per tile. One
+    accent and five shapes, deliberately not five new colour tokens: `palette.continent`
+    exists because continents are a named set someone chose colours for, and quest slots
+    are not.
+
+16. **Counts go through `Tally` everywhere they are counts** — the quest task meter, the
+    Profile world summary, the Shop price and shortfall. Digits brighter and heavier than
+    the words around them, which was already true on Explore and on nothing else.
+
+17. **Tinted icon↔label pairs**, at the `space[1]` rung that exists for exactly that: a
+    coin beside every Shop price (seven gold numbers with the unit spelled out in words
+    and nothing else), a bolt beside every quest XP figure, and a unit glyph on each of
+    Profile's six stat tiles, which were six identical navy squares.
+
+18. **`Button`'s `sm` label was still uppercase.** It was `text('overline')`, which is
+    12/800 UPPERCASE with a point of tracking, so the Shop shipped a column of BUY / BUY /
+    WEAR beside a `button` step whose uppercase had just been removed for being the
+    loudest non-native thing in the app (N11). Half a fix is not a fix. `overline` earns
+    its casing — it is the grouped-list section header, which is how iOS sets those — and
+    borrowing that step for a label the user taps borrowed a decision made about something
+    else. Now `caption` at the button weight: 13/800, no tracking, sentence case.
+
+### What the third pass found by accident
+
+`pnpm design:shots` visits its routes **immediately after onboarding**, so every one of
+those pictures is of a five-minute-old account. A `played-*` pass now re-photographs four
+routes after a full lesson, and it reported two things on its first run:
+
+- **Profile and Streak are pixel-identical before and after.** XP, coins and streak days
+  are server-authoritative (ADR 0006) and the harness runs the exported bundle with no
+  Supabase behind it, so `stats.xpTotal === 0` takes Profile's empty branch every time.
+  The level card, the week chart, the six stat tiles and the seven region bars **have
+  never been photographed**, on any branch. Seeding local state to fake it would
+  photograph a lie about what the client is allowed to decide, so the pass records the
+  gap instead. Reviewing those two screens needs `pnpm db:start`.
+- **Home's daily goal moved from "0 of 5 lessons today" to "1 of 30" inside one session.**
+  `lessonsPerDay()` divides the goal by the user's measured median answer time, and the
+  harness answers every question in about half a second, so the denominator collapsed. On
+  a device this is milder and still real: finish a lesson quickly and the bar you were
+  filling gets six times longer. **Not fixed here** — item pace feeds lesson sizing and
+  the economy simulation, so it belongs to the learning engine and a balance run, not to a
+  styling pass. Logged as P1.

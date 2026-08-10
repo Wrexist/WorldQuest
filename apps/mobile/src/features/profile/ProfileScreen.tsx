@@ -26,6 +26,7 @@ import {
   Skeleton,
   space,
   squircle,
+  Tally,
   text,
 } from '@worldquest/design'
 import { levelProgress, type WorldProgress } from '@worldquest/engines'
@@ -35,6 +36,7 @@ import { Art } from '../../components/Art.js'
 import { avatarArt } from '../settings/AvatarPicker.js'
 import { INSIGNIA_SIZE, insigniaFor } from '../../lib/insignia.js'
 import { Icon } from '../../components/Icon.js'
+import type { IconName } from '../../lib/icons.generated.js'
 
 const REGION_NAME: Record<RegionCode, TranslationKey> = {
   EU: 'explore:region.EU',
@@ -210,12 +212,43 @@ export function ProfileScreen({
 
       <Section title={t('profile:stats.title')}>
         <View style={styles.statGrid}>
-          <Stat label={t('profile:stats.xp')} value={formatCompact(stats.xpTotal, locale)} />
-          <Stat label={t('profile:stats.coins')} value={formatCompact(stats.coins, locale)} />
-          <Stat label={t('profile:stats.streak')} value={String(stats.streak)} />
-          <Stat label={t('profile:stats.longest')} value={String(stats.longestStreak)} />
-          <Stat label={t('profile:stats.mastered')} value={String(stats.factsMastered)} />
           <Stat
+            icon="xp"
+            tint={colors.reward.xp}
+            label={t('profile:stats.xp')}
+            value={formatCompact(stats.xpTotal, locale)}
+          />
+          <Stat
+            icon="coins"
+            tint={colors.reward.coin}
+            label={t('profile:stats.coins')}
+            value={formatCompact(stats.coins, locale)}
+          />
+          <Stat
+            icon="streak"
+            tint={colors.status.streak}
+            label={t('profile:stats.streak')}
+            value={String(stats.streak)}
+          />
+          {/* The same flame for the same quantity, and `text.tertiary` because this one
+              is the RECORD rather than the live streak. Two identical gold flames would
+              say the two numbers are the same kind of thing; they are the same unit, and
+              only one of them is burning. */}
+          <Stat
+            icon="streak"
+            tint={colors.text.tertiary}
+            label={t('profile:stats.longest')}
+            value={String(stats.longestStreak)}
+          />
+          <Stat
+            icon="star"
+            tint={colors.status.progress}
+            label={t('profile:stats.mastered')}
+            value={String(stats.factsMastered)}
+          />
+          <Stat
+            icon="globe"
+            tint={colors.action.primary}
             label={t('profile:stats.countries')}
             value={String(world?.entitiesComplete ?? 0)}
           />
@@ -225,12 +258,15 @@ export function ProfileScreen({
       {world !== null && (
         <Section title={t('profile:world.title')}>
           <Card style={styles.worldCard}>
-            <Text style={styles.subtitle}>
+            {/* The digits carry the emphasis, like every other count in the app. This
+                one summarises the seven bars under it and was drawn as a flat caption —
+                the same thing Explore's tiles did before `Tally`. */}
+            <Tally style={styles.subtitle} numberStyle={styles.subtitleNumber}>
               {t('profile:world.summary', {
                 learned: world.factsLearned,
                 total: world.factsTotal,
               })}
-            </Text>
+            </Tally>
             {REGIONS.map((region) => {
               const progress = world.regions.find((r) => r.region === region)
               // Continents with no content yet are omitted here rather than dimmed:
@@ -289,10 +325,34 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   )
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+/**
+ * One number, its name, and a tinted mark saying which one it is.
+ *
+ * The mark is the Explore grid's trick, and it is here for the same reason: six tiles of
+ * identical size, colour and shape are one block of texture until something distinguishes
+ * them, and the eye finds a shape long before it reads a 13pt label. Explore uses a
+ * coloured swatch because a continent HAS a colour; these have units, so they get the
+ * unit's own glyph in the unit's own tint — the bolt the lesson summary pays XP with,
+ * the coin the shop takes, the flame the streak screen burns.
+ *
+ * Decorative, in every case. The tile is already one accessible element announcing
+ * "Total XP, 12.9K", and a reader saying "lightning" first is a word with no referent.
+ */
+function Stat({
+  label,
+  value,
+  icon,
+  tint,
+}: {
+  label: string
+  value: string
+  readonly icon: IconName
+  readonly tint: string
+}) {
   return (
     // One element: a reader says "Total XP, 12.9K" rather than two disconnected nodes.
     <View accessible aria-label={`${label}, ${value}`} style={styles.stat}>
+      <Icon name={icon} size={16} color={tint} />
       <Text style={styles.statValue}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
     </View>
@@ -376,6 +436,10 @@ const styles = StyleSheet.create({
   name: { ...text('h1'), color: colors.text.primary },
   title: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
   subtitle: { ...text('caption'), color: colors.text.secondary },
+  subtitleNumber: {
+    ...text('caption', { weight: '700', numeric: true }),
+    color: colors.text.primary,
+  },
 
   levelCard: { gap: space[2] },
   levelNext: { ...text('caption'), color: colors.text.secondary },
