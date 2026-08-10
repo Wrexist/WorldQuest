@@ -24,7 +24,7 @@
     "@worldquest/engines": "workspace:*",
     "@worldquest/i18n": "workspace:*",
     "expo": "~52.0.0",
-    "expo-av": "^16.0.8",
+    "expo-av": "~15.0.2",
     "expo-constants": "~17.0.0",
     "expo-font": "~13.0.0",
     "expo-haptics": "~14.0.0",
@@ -44,6 +44,7 @@
   "$comment": "Phase 1 is deliberately ugly. Design lands in weeks 3-6 — see docs/plan/build-order.md.",
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
+    "@worldquest/content": "workspace:*",
     "@testing-library/react": "^16.1.0",
     "jsdom": "^25.0.1",
     "react-native-web": "^0.19.13",
