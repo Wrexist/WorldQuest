@@ -127,22 +127,20 @@ const WAIVED: Record<string, Partial<Record<State, string>>> = {
     offline: 'everything it shows is local; it is correct with no connection at all',
   },
   'onboarding/OnboardingScreen': {
-    // NEW in the iOS pass, and worth saying why it appeared rather than just adding it.
+    // `empty` is NOT waived here, and its history is the argument for this script.
     //
-    // This screen used to satisfy `empty` by accident. The age gate was a two-step chip
-    // grid, so before a decade was picked the year area had nothing to show and rendered
-    // `onboarding:age.pickDecade` — a hint that read to this script as an empty state,
-    // and genuinely was one. Replacing the grid with a wheel deleted the condition along
-    // with the string: the wheel is generated from the current year and always has 101
-    // rows, the first of which is the explicit "Choose a year" row it opens on.
+    // It was waived twice and for opposite reasons. First it passed by accident: the age
+    // gate was a chip grid that rendered a "pick a decade" hint before anything was
+    // chosen, which read as an empty state and genuinely was one. The wheel deleted that
+    // branch, so the waiver went in — correctly, at the time, because nothing left on the
+    // flow was a list that could arrive empty.
     //
-    // So there is no longer a list here that can arrive empty. Nothing on any of the
-    // four steps is fetched, counted or filtered — the slides, the years and the three
-    // goals are all constants in the binary.
-    empty:
-      'nothing here is a collection that can arrive empty — the slides and the goals are ' +
-      'constants and the year wheel is generated from the current year, so its 102 rows ' +
-      'exist before the step does',
+    // Then the continent step landed, which IS a list, filtered from the content index.
+    // The waiver became untrue the moment that shipped, and the staleness check said so
+    // in the same run rather than leaving a false claim sitting in a script.
+    //
+    // Nothing else here is fetched, counted or filtered: the slides, the languages, the
+    // years and the three levels are all constants in the binary.
     loading: 'nothing is fetched — every step is local until the taster lesson starts',
     error:
       'the same reason as loading: the slides are static and the copy ships in the ' +

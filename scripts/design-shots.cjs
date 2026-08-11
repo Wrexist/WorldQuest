@@ -235,7 +235,12 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
   const completeOnboarding = async (page, shot) => {
     await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' })
     await page.waitForTimeout(1200)
-    if (!/Get started|Next/i.test(await page.evaluate(() => document.body.innerText))) return
+    if (!/Choose your language|Get started|Next/i.test(await page.evaluate(() => document.body.innerText))) return
+
+    // The language step, which is now the first screen anybody ever sees.
+    await shot('onboarding-language')
+    await page.getByText('Continue', { exact: true }).first().click()
+    await page.waitForTimeout(400)
 
     // Each slide, on the way past. Free: the clicks were happening anyway, and the
     // three intro slides are three different screens sharing one route.
@@ -262,6 +267,16 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
     await shot('onboarding-goal')
     await page.getByText('Continue', { exact: true }).first().click()
     await page.waitForTimeout(500)
+
+    // The two content questions. Photographed on their defaults — "anywhere" and "I know
+    // some" — because that is what most users will see and what the flow opens on.
+    await shot('onboarding-region')
+    await page.getByText('Continue', { exact: true }).first().click()
+    await page.waitForTimeout(400)
+    await shot('onboarding-level')
+    await page.getByText('Continue', { exact: true }).first().click()
+    await page.waitForTimeout(400)
+
     await shot('onboarding-taster')
     await page.getByText('Start learning', { exact: true }).first().click()
     await page.waitForTimeout(1200)

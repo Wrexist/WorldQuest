@@ -5,8 +5,23 @@ import { CHILD_AGE, OnboardingScreen } from './OnboardingScreen.js'
 /** 2026 keeps the arithmetic obvious; the component never reads a clock itself. */
 const YEAR = 2026
 
+/**
+ * Past the language picker and the carousel, to the first question with a wrong answer.
+ *
+ * The language step is first now and it is not skippable — it has one button and every
+ * option is already valid, so there is nothing to skip past. Most of this file is about
+ * the age gate, so getting there is one helper rather than two lines in twelve tests.
+ */
 const advanceToAgeStep = (): void => {
-  fireEvent.click(screen.getByRole('button', { name: 'Skip' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // language → slides
+  fireEvent.click(screen.getByRole('button', { name: 'Skip' })) // slides → age
+}
+
+/** Age → goal → region → level → taster, accepting every default on the way. */
+const advanceToTaster = (): void => {
+  for (let i = 0; i < 4; i++) {
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+  }
 }
 
 /**
@@ -26,13 +41,17 @@ const pickYear = (year: number): void => {
 describe('OnboardingScreen', () => {
   it('opens on the value slides, not on a sign-up wall', () => {
     // The conversion decision the whole flow is built around: teach first, ask later.
-    render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
+    // The language step comes first, and it is still not a wall: one tap, already
+    // answered, no account anywhere in sight.
+    expect(screen.getByText(/Choose your language/i)).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
     expect(screen.getByText(/five minutes a day/i)).toBeTruthy()
     expect(screen.queryByText(/sign up|create account/i)).toBeNull()
   })
 
   it('lets a user skip the carousel rather than trapping them in it', () => {
-    render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
     advanceToAgeStep()
     expect(screen.getByText(/When were you born/i)).toBeTruthy()
   })
@@ -40,20 +59,20 @@ describe('OnboardingScreen', () => {
   it('asks for a birth year and never asks whether the user is over 13', () => {
     // A yes/no gate teaches a ten-year-old that lying gets them in. It is useless as
     // compliance and a bad first thing to teach a child.
-    const { container } = render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    const { container } = render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
     advanceToAgeStep()
     expect(container.textContent).not.toMatch(/over 13|13\+|are you over/i)
   })
 
   it('cannot continue past the age gate without an answer', () => {
-    render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
     advanceToAgeStep()
     const next = screen.getByRole('button', { name: 'Continue' })
     expect(next.getAttribute('aria-disabled')).toBe('true')
   })
 
   it('explains the child experience as something we do for them', () => {
-    const { container } = render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    const { container } = render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
     advanceToAgeStep()
     pickYear(YEAR - (CHILD_AGE - 3)) // comfortably a child
     expect(screen.getByText(/keep things simple/i)).toBeTruthy()
@@ -64,26 +83,24 @@ describe('OnboardingScreen', () => {
   it('does not offer sign-in to a child', () => {
     // There is no account for them to already have, and offering one offers a flow
     // we would have to refuse.
-    render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} onSignIn={vi.fn()} />)
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} onSignIn={vi.fn()} />)
     advanceToAgeStep()
     pickYear(YEAR - (CHILD_AGE - 3))
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // → goal
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // → taster
+    advanceToTaster()
     expect(screen.queryByRole('button', { name: /already have an account/i })).toBeNull()
   })
 
   it('offers sign-in to an adult', () => {
-    render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} onSignIn={vi.fn()} />)
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} onSignIn={vi.fn()} />)
     advanceToAgeStep()
     pickYear(YEAR - 30)
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    advanceToTaster()
     expect(screen.getByRole('button', { name: /already have an account/i })).toBeTruthy()
   })
 
   it('reports the birth year, the child flag and the goal exactly once', () => {
     const onFinish = vi.fn()
-    render(<OnboardingScreen currentYear={YEAR} onFinish={onFinish} />)
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={onFinish} />)
     advanceToAgeStep()
     pickYear(YEAR - 30)
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
@@ -93,7 +110,9 @@ describe('OnboardingScreen', () => {
     // suppressed the second, so the word describing what the goal MEANS reached no
     // screen reader. Matching on both is what keeps that fixed.
     fireEvent.click(screen.getByRole('radio', { name: /20 min\s*Serious/ }))
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // → region
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // → level
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // → taster
     fireEvent.click(screen.getByRole('button', { name: /Start learning/i }))
 
     expect(onFinish).toHaveBeenCalledTimes(1)
@@ -101,17 +120,21 @@ describe('OnboardingScreen', () => {
       birthYear: YEAR - 30,
       isChild: false,
       dailyGoalMinutes: 20,
+      language: 'en',
+      // Both content answers default to "no opinion", which is what the two steps open
+      // on. A defaulted answer still has to arrive — the route stores it either way.
+      startRegion: null,
+      level: 'some',
     })
   })
 
   it('defaults the goal rather than demanding a choice', () => {
     // A required choice this early is a wall. Ten minutes is the documented default.
     const onFinish = vi.fn()
-    render(<OnboardingScreen currentYear={YEAR} onFinish={onFinish} />)
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={onFinish} />)
     advanceToAgeStep()
     pickYear(YEAR - 30)
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    advanceToTaster()
     fireEvent.click(screen.getByRole('button', { name: /Start learning/i }))
     expect(onFinish.mock.calls[0]![0].dailyGoalMinutes).toBe(10)
   })
@@ -121,7 +144,7 @@ describe('OnboardingScreen', () => {
     // buttons was already more than a 320 pt screen could hold — and at 320 the oldest
     // two decades rendered behind the Continue button anyway. A wheel has no such
     // ceiling: every row exists from the moment the step opens.
-    render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
     advanceToAgeStep()
     for (const year of [YEAR, 1996, 1985, YEAR - 100]) {
       expect(screen.getByRole('radio', { name: String(year) })).toBeTruthy()
@@ -132,7 +155,7 @@ describe('OnboardingScreen', () => {
     // The birth year decides whether a child gets the child experience. A wheel always
     // shows SOMETHING, so the row it opens on is an explicit empty one rather than a
     // plausible year the user never chose.
-    render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
     advanceToAgeStep()
     expect(screen.getByRole('radio', { name: 'Choose a year' }).getAttribute('aria-checked')).toBe(
       'true',
@@ -145,7 +168,7 @@ describe('OnboardingScreen', () => {
   })
 
   it('never offers a year in the future', () => {
-    render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
     advanceToAgeStep()
     expect(screen.getByRole('radio', { name: String(YEAR) })).toBeTruthy()
     expect(screen.queryByRole('radio', { name: String(YEAR + 1) })).toBeNull()
@@ -154,7 +177,7 @@ describe('OnboardingScreen', () => {
   it('reaches back far enough for a real person to answer honestly', () => {
     // A picker that cannot express a user's age is a picker that makes them lie. The
     // oldest verified people alive are past 115.
-    render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
     advanceToAgeStep()
     expect(screen.getByRole('radio', { name: String(YEAR - 100) })).toBeTruthy()
     expect(screen.queryByRole('radio', { name: String(YEAR - 101) })).toBeNull()
@@ -165,7 +188,7 @@ describe('OnboardingScreen', () => {
     // or Continue stayed enabled carrying a year the user could no longer see. The
     // wheel cannot get into that state — but returning to the empty row must still
     // disable Continue, which is the same invariant from the other side.
-    render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
     advanceToAgeStep()
     pickYear(1996)
     // Absent, not "false" — an enabled control simply carries no aria-disabled.
@@ -178,7 +201,7 @@ describe('OnboardingScreen', () => {
   })
 
   it('names the wheel, so it does not announce as "radiogroup"', () => {
-    render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
     advanceToAgeStep()
     expect(screen.getByRole('radiogroup', { name: 'Year' })).toBeTruthy()
   })
@@ -188,7 +211,9 @@ describe('OnboardingScreen', () => {
     // and no gesture at all. All three pages are mounted in the pager, which is what
     // makes a swipe possible — and is why this asserts on presence rather than on
     // visibility, since jsdom has no viewport to be outside of.
-    render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
+    // Past the language step, which is now what the flow opens on.
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
     expect(screen.getByText(/five minutes a day/i)).toBeTruthy()
     expect(screen.getByText(/Remembers what you forget/i)).toBeTruthy()
     expect(screen.getByText(/Collect the whole world/i)).toBeTruthy()
@@ -196,7 +221,7 @@ describe('OnboardingScreen', () => {
   })
 
   it('leaves no raw key or unformatted placeholder on screen', () => {
-    const { container } = render(<OnboardingScreen currentYear={YEAR} onFinish={vi.fn()} />)
+    const { container } = render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
     expect(container.textContent).not.toMatch(/\bonboarding:[a-z]/)
     expect(container.textContent).not.toMatch(/\{[a-zA-Z_]+[,}]/)
   })

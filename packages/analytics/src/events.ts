@@ -25,6 +25,19 @@ export const EVENTS = {
     description: 'Daily goal chosen during onboarding',
     properties: { minutes: 'number' },
   },
+  onboarding_region_selected: {
+    description:
+      'The continent the first lessons will stay in, chosen during onboarding. ' +
+      '"any" when the user picked "anywhere in the world", which is a real answer.',
+    properties: { region: 'string' },
+  },
+  onboarding_level_selected: {
+    description:
+      'Self-assessed starting level from onboarding. Worth watching against measured ' +
+      'first-session accuracy: a population that consistently under- or over-claims is ' +
+      'telling us the three labels are wrong, not that the users are.',
+    properties: { level: 'string' },
+  },
   taster_lesson_completed: {
     description: 'The pre-account taster lesson was finished. The #1 activation step.',
     properties: { accuracy: 'number', duration_ms: 'number' },

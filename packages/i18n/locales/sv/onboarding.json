@@ -26,5 +26,19 @@
   "onboarding:taster.start": "Börja lära",
   "onboarding:progress": "Steg {step} av {total}",
   "onboarding:slide.position": "Bild {index} av {total}",
-  "onboarding:age.none": "Välj ett år"
+  "onboarding:age.none": "Välj ett år",
+  "onboarding:language.title": "Välj ditt språk",
+  "onboarding:language.body": "Du kan ändra det när som helst i Inställningar.",
+  "onboarding:language.system": "Samma som min telefon",
+  "onboarding:region.title": "Var vill du börja?",
+  "onboarding:region.body": "Dina första lektioner stannar här. Resten av världen är öppen direkt.",
+  "onboarding:region.anywhere": "Var som helst i världen",
+  "onboarding:level.title": "Hur väl kan du världen?",
+  "onboarding:level.body": "Det här sätter bara var du börjar. Vi justerar när vi ser hur det går.",
+  "onboarding:level.new": "Precis börjat",
+  "onboarding:level.newBody": "De stora först — Frankrike, Japan, Brasilien.",
+  "onboarding:level.some": "Jag kan en del",
+  "onboarding:level.someBody": "En blandning, från kända till kluriga.",
+  "onboarding:level.confident": "Kör på",
+  "onboarding:level.confidentBody": "Rakt på dem folk svarar fel på."
 }

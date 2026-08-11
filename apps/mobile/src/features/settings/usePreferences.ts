@@ -44,6 +44,16 @@ export type Preferences = {
    * was built around and stay available.
    */
   readonly avatar: string | null
+  /**
+   * The continent onboarding said to start in, or null for the whole world.
+   *
+   * A starting preference, not a filter the user is stuck behind — `onboarding:region.body`
+   * promises the rest of the world is open straight away, and it is: this narrows what
+   * the app OFFERS first, and every continent stays reachable from Explore.
+   */
+  readonly startRegion: string | null
+  /** The self-assessed level from onboarding — a difficulty band for the first lessons. */
+  readonly startLevel: 'new' | 'some' | 'confident'
 }
 
 /**
@@ -68,6 +78,10 @@ export const DEFAULTS: Preferences = {
   // No face until the user picks one. Assigning one at random would be the app
   // deciding what somebody looks like.
   avatar: null,
+  // Null and 'some' are the answers onboarding starts on, so an install that predates
+  // those steps behaves exactly like a user who accepted the defaults.
+  startRegion: null,
+  startLevel: 'some',
 }
 
 function load(): Preferences {

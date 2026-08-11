@@ -116,7 +116,13 @@ export const CONTINENT_SILHOUETTE: Partial<Record<RegionCode, ArtName>> = {
  */
 export const continentArtSize = (width: number, height: number) => Math.ceil(Math.max(width, height * 1.5))
 
-const REGION_NAME: Record<RegionCode, TranslationKey> = {
+/**
+ * Exported because onboarding's continent picker needs the same seven names.
+ *
+ * There is a third copy in `app/region/[code].tsx`; this is one fewer than there was,
+ * and the right end state is one map that all three import.
+ */
+export const REGION_NAME: Record<RegionCode, TranslationKey> = {
   EU: 'explore:region.EU',
   AS: 'explore:region.AS',
   AF: 'explore:region.AF',
