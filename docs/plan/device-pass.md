@@ -11,6 +11,25 @@ see it.
 
 ## Before you start
 
+**There are two ways to get this app onto a phone, and they are not the same route.**
+Worth being explicit, because the checklist below does not care which one you take and
+the prerequisites differ sharply.
+
+**`preview` — internal distribution.** The commands below. An `.apk` you sideload and
+an `.ipa` installed from a link. No store, no review, no App Store distribution
+certificate; iOS internal distribution signs ad hoc, which means every test device's
+UDID has to be registered with Apple first. This is the shortest path to walking this
+checklist and it is what the four Definition of Done boxes need.
+
+**`production` — TestFlight.** A store build, and a different set of prerequisites:
+distribution certificate, App Store provisioning profile, build numbering that survives
+CI. Those are in [`testflight-readiness.md`](testflight-readiness.md), ordered so the
+cheap checks come before the expensive runner. TestFlight is a perfectly good way to run
+this checklist on an iPhone — but it is the longer road, and none of it is required for
+`preview`.
+
+Either way, this document starts once the app is on the device.
+
 ```bash
 npx eas login
 npx eas build --profile preview --platform android   # .apk, sideload it
@@ -123,12 +142,21 @@ zero**. The a11y skill is explicit that this is the part that matters.
 Not a flagship. The budget is about a mid-tier Android — a device three or four years
 old, which is what a ten-year-old is most likely to be handed.
 
-One input to this is already measured: `pnpm bundle:native` fails if the Hermes bundle
-passes 6.0 MB per platform (**5.75 MB** today), and reports the assets shipped beside
-it (**2.90 MB** — 2.09 MB fonts, 0.71 MB flags, 0.17 MB sounds). Hermes reads every
-byte of the *bundle* before the first frame; the assets are loaded on demand and are
-download weight rather than startup work. If cold start comes in over 3 s below, bundle
-size is the one cause you can rule out on the way in.
+One input to this is already measured. `pnpm bundle:native` fails if the Hermes bundle
+passes **4.3 MB** per platform; the measurement on 2026-08-11 was **4.26 MB** for both
+iOS and Android, plus **9.70 MB across 345 assets** (5.34 MB webp, 2.33 MB png, 2.09 MB
+fonts, 0.17 MB sounds) shipped beside the bundle. Hermes reads every byte of the
+*bundle* before the first frame; the assets load on demand and are download weight
+rather than startup work. If cold start comes in over 3 s below, bundle size is the one
+cause you can rule out on the way in.
+
+Two notes on those numbers, both of which cost something to rediscover. **0.04 MB of
+headroom is not headroom** — the next dependency is the one that fails the gate.
+And this paragraph read "6.0 MB budget, 5.75 MB today" until 2026-08-11, which was the
+pre-Sentry-removal measurement against the pre-Sentry-removal gate: two figures, both
+stale, sitting in a checklist that reads as current. Re-measure rather than copy, here
+and in [`testflight-readiness.md`](testflight-readiness.md), which now carries the same
+dated figure.
 
 - [ ] Cold start under 3 s.
 - [ ] Scroll the 65-tile collection. No visible jank. **This is a real test now** —

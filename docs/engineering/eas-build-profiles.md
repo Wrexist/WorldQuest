@@ -169,8 +169,17 @@ the committed file. Both TestFlight workflows write them into `eas.json` at runt
 from GitHub secrets and delete the key afterwards, so no credential is ever
 committed.
 
-`appleTeamId` is still unset. EAS resolves it from the authenticated session, and it
-is not a secret — fill it in if a build ever fails to work it out.
+`appleTeamId` is set to `S3U8B8HH96`. It sits under `submit.production.ios`, so it is
+**EAS Submit's** Apple Developer team — the one the upload is attributed to. It does
+not choose EAS Build's signing credentials; those come from the credential store, per
+the signing section above. It is not a secret, and EAS can usually resolve it from the
+authenticated session; pinning it makes the upload target explicit rather than
+inferred, which matters if the Apple ID ever belongs to two teams.
+
+(This paragraph said "still unset" until 2026-08-11, after the value had been
+committed. Filed under the same lesson as everything else here: a config note that
+describes a previous state of the file is worse than no note, because it is read as
+current.)
 
 ## The workflows that read this file
 
