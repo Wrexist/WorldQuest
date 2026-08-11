@@ -35,6 +35,7 @@
  */
 
 const { chromium } = require('playwright')
+const { walkOnboarding } = require('./lib/onboarding-walk.cjs')
 const { launchOptions } = require('./chromium.cjs')
 const http = require('node:http')
 const fs = require('node:fs')
@@ -232,54 +233,20 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
    * the one the E2E already proves works, and a storage shape is an implementation
    * detail that would rot the day the onboarding key changes.
    */
+  /**
+   * Onboarding, photographed on the way past.
+   *
+   * The walk itself is `scripts/lib/onboarding-walk.cjs`, shared with the a11y audit,
+   * the store shots and the e2e run — four copies that drifted, one of them into
+   * clicking a control that no longer existed. What is local here is only the pause:
+   * `at` fires with each step's name before it is answered, and the names are the
+   * module's contract, so these PNGs are named by the flow rather than by this file's
+   * idea of it.
+   */
   const completeOnboarding = async (page, shot) => {
     await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' })
     await page.waitForTimeout(1200)
-    if (!/Choose your language|Get started|Next/i.test(await page.evaluate(() => document.body.innerText))) return
-
-    // The language step, which is now the first screen anybody ever sees.
-    await shot('onboarding-language')
-    await page.getByText('Continue', { exact: true }).first().click()
-    await page.waitForTimeout(400)
-
-    // Each slide, on the way past. Free: the clicks were happening anyway, and the
-    // three intro slides are three different screens sharing one route.
-    for (let i = 0; i < 2; i++) {
-      await shot(`onboarding-slide-${i + 1}`)
-      await page.getByText('Next', { exact: true }).first().click()
-      await page.waitForTimeout(350)
-    }
-    await shot('onboarding-slide-3')
-    await page.getByText('Get started', { exact: true }).first().click()
-    await page.waitForTimeout(500)
-    await shot('onboarding-age')
-
-    // An adult year, so the flow continues past the child branch.
-    //
-    // One click, not two: the age gate was a decade chip followed by a year chip and is
-    // a wheel now, whose every row is a real radio for exactly this reason — a scroll
-    // gesture is invisible to a driver as well as to a screen reader.
-    const adultYear = new Date().getFullYear() - 30
-    await page.getByRole('radio', { name: String(adultYear) }).click()
-    await page.waitForTimeout(250)
-    await page.getByText('Continue', { exact: true }).first().click()
-    await page.waitForTimeout(500)
-    await shot('onboarding-goal')
-    await page.getByText('Continue', { exact: true }).first().click()
-    await page.waitForTimeout(500)
-
-    // The two content questions. Photographed on their defaults — "anywhere" and "I know
-    // some" — because that is what most users will see and what the flow opens on.
-    await shot('onboarding-region')
-    await page.getByText('Continue', { exact: true }).first().click()
-    await page.waitForTimeout(400)
-    await shot('onboarding-level')
-    await page.getByText('Continue', { exact: true }).first().click()
-    await page.waitForTimeout(400)
-
-    await shot('onboarding-taster')
-    await page.getByText('Start learning', { exact: true }).first().click()
-    await page.waitForTimeout(1200)
+    await walkOnboarding(page, (step) => shot(`onboarding-${step}`))
   }
 
   /**

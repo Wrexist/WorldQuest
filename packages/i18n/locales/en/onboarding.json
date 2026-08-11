@@ -51,6 +51,8 @@
   "onboarding:taster.start__note": "Begins the taster lesson.",
   "onboarding:progress": "Step {step} of {total}",
   "onboarding:progress__note": "Accessibility label for the onboarding progress BAR, which counts the four steps of the whole flow. Read aloud by screen readers.",
+  "onboarding:back": "Back",
+  "onboarding:back__note": "Accessibility label for the chevron that steps ONE question back in onboarding. Never rendered visibly — the control is a single ‹ glyph — so this string exists only for screen readers and should be the plain word the platform uses for going back, not a sentence.",
   "onboarding:slide.position": "Slide {index} of {total}",
   "onboarding:slide.position__note": "Accessibility label for one dot in the intro carousel, which counts the three slides INSIDE step one. It used the bar's string, so a reader heard 'Step 2 of 4' from the bar and 'Step 1 of 3' from the dot beneath it — two answers to the same question. Different word for a different thing.",
   "onboarding:age.none": "Choose a year",

@@ -376,12 +376,14 @@ const skip = (name, why) => {
 
   /** Slide one to the age step. A function because the 200 % check below rewinds. */
   const toAgeStep = async () => {
-    // The language step is first now, and it has one button. Every option on it is
-    // already a valid answer, so there is nothing to choose before continuing.
-    const language = page.getByText('Continue', { exact: true }).first()
+    // The language step has no button any more: answering IS the navigation, so the
+    // row is what moves the flow on. This drives it the way a user does rather than
+    // through the shared walker, because the checks below rewind to this point and
+    // assert between steps — see the note on `scripts/lib/onboarding-walk.cjs`.
+    const language = page.getByRole('radio', { name: 'English' }).first()
     if ((await language.count()) > 0) {
       await language.click()
-      await page.waitForTimeout(400)
+      await page.waitForTimeout(700)
     }
     for (let i = 0; i < 2; i++) {
       await page.getByText('Next', { exact: true }).first().click()
@@ -444,8 +446,17 @@ const skip = (name, why) => {
   step('daily goal picker appears', /How much a day|min/i.test(await body()))
   await page.screenshot({ path: path.join(SHOTS, 'onboarding-goal.png') })
 
+  // Back works, and it works on a step whose answer commits on tap — which is the pair
+  // that makes auto-advance safe rather than a trap. Asserted here rather than in a unit
+  // test as well, because this is the only place the real transition runs.
+  await page.getByRole('button', { name: 'Back' }).first().click()
+  await page.waitForTimeout(700)
+  step('back returns to the previous question', /When were you born/i.test(await body()))
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(600)
+
+  await page.getByRole('radio', { name: /10 min/ }).first().click()
+  await page.waitForTimeout(700)
 
   // The two content questions — which continent, and how well do you know the world.
   // Both are checked rather than clicked through blind: they are the steps whose answers
@@ -453,12 +464,12 @@ const skip = (name, why) => {
   // show up here only as a timeout four lines later.
   step('continent picker appears', /Where do you want to start/i.test(await body()))
   await page.screenshot({ path: path.join(SHOTS, 'onboarding-region.png') })
-  await page.getByText('Continue', { exact: true }).first().click()
-  await page.waitForTimeout(500)
+  await page.getByRole('radio', { name: 'Europe' }).first().click()
+  await page.waitForTimeout(700)
 
   step('starting level appears', /How well do you know the world/i.test(await body()))
-  await page.getByText('Continue', { exact: true }).first().click()
-  await page.waitForTimeout(500)
+  await page.getByRole('radio', { name: /I know some/ }).first().click()
+  await page.waitForTimeout(700)
 
   step('taster promises a lesson with no account', /no account needed/i.test(await body()))
 

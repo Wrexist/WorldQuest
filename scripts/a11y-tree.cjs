@@ -37,6 +37,7 @@
  */
 
 const { chromium } = require('playwright')
+const { walkOnboarding } = require('./lib/onboarding-walk.cjs')
 const { launchOptions } = require('./chromium.cjs')
 const http = require('node:http')
 const fs = require('node:fs')
@@ -175,49 +176,13 @@ const finding = (route, kind, detail) => findings.push({ route, kind, detail })
 
   // Same reason as design-shots: without this the whole tool audits the onboarding
   // screen ten times and reports one confident, uniform, wrong answer.
-  const completeOnboarding = async () => {
-    await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' })
-    await page.waitForTimeout(1200)
-    if (
-      !/Choose your language|Get started|Next/i.test(
-        await page.evaluate(() => document.body.innerText),
-      )
-    ) {
-      return
-    }
-    // The language step, which the flow now opens on. One button, and every option on it
-    // is already a valid answer.
-    const language = page.getByText('Continue', { exact: true }).first()
-    if ((await language.count()) > 0) {
-      await language.click()
-      await page.waitForTimeout(400)
-    }
-    for (let i = 0; i < 2; i++) {
-      await page.getByText('Next', { exact: true }).first().click()
-      await page.waitForTimeout(350)
-    }
-    await page.getByText('Get started', { exact: true }).first().click()
-    await page.waitForTimeout(500)
-    // One click — the age gate is a wheel now, not a decade chip then a year chip. That
-    // this line still works at all is the property the wheel was built around: its rows
-    // are real radios, so the accessibility tree this script exists to read has a hundred
-    // named, checkable options in it rather than one unlabelled scroll container.
-    const adultYear = new Date().getFullYear() - 30
-    await page.getByRole('radio', { name: String(adultYear) }).click()
-    await page.waitForTimeout(250)
-    // goal → region → level → taster. Four now, where it used to be two: the flow gained
-    // the two content questions, and a walker that stops early audits the onboarding
-    // screen ten times and reports one confident, uniform, wrong answer — which is the
-    // exact failure the comment above this function describes.
-    for (let i = 0; i < 4; i++) {
-      await page.getByText('Continue', { exact: true }).first().click()
-      await page.waitForTimeout(450)
-    }
-    await page.getByText('Start learning', { exact: true }).first().click()
-    await page.waitForTimeout(1200)
-  }
-
-  await completeOnboarding()
+  // The walk lives in `scripts/lib/onboarding-walk.cjs`, shared with design-shots,
+  // build-store-shots and the e2e run. It was four copies and they drifted; this audit
+  // in particular fails SILENTLY when the walk stops early, because it then reports the
+  // onboarding screen ten times over as though it were ten routes.
+  await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' })
+  await page.waitForTimeout(1200)
+  await walkOnboarding(page)
 
   console.log('Accessibility tree — what a reader receives\n')
 

@@ -38,6 +38,7 @@
  */
 
 const { chromium } = require('playwright')
+const { walkOnboarding } = require('./lib/onboarding-walk.cjs')
 const { launchOptions } = require('./chromium.cjs')
 const { token } = require('./tokens.cjs')
 const { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } = require('node:fs')
@@ -126,28 +127,18 @@ const serve = () =>
   })
 
 /** Past the onboarding gate, once per browser context — the same walk `design-shots` does. */
+/**
+ * Get past onboarding so the listing shots can photograph the app behind it.
+ *
+ * This function used to be its own copy of the walk, and it is the reason the walk is
+ * now shared: it was still clicking a DECADE CHIP, a control the wheel picker replaced
+ * two passes ago, and it had never learned about the language step. Store screenshots
+ * were being taken by a harness that could not get through the front door.
+ */
 async function completeOnboarding(page) {
   await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(1200)
-  if (!/Get started|Next/i.test(await page.evaluate(() => document.body.innerText))) return
-
-  for (let i = 0; i < 2; i++) {
-    await page.getByText('Next', { exact: true }).first().click()
-    await page.waitForTimeout(350)
-  }
-  await page.getByText('Get started', { exact: true }).first().click()
-  await page.waitForTimeout(500)
-  const adultYear = new Date().getFullYear() - 30
-  await page.getByRole('radio', { name: `${Math.floor(adultYear / 10) * 10}s` }).click()
-  await page.waitForTimeout(250)
-  await page.getByRole('radio', { name: String(adultYear) }).click()
-  await page.waitForTimeout(250)
-  await page.getByText('Continue', { exact: true }).first().click()
-  await page.waitForTimeout(500)
-  await page.getByText('Continue', { exact: true }).first().click()
-  await page.waitForTimeout(500)
-  await page.getByText('Start learning', { exact: true }).first().click()
-  await page.waitForTimeout(1500)
+  await walkOnboarding(page)
 }
 
 /**

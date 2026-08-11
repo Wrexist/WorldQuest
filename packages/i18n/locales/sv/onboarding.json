@@ -25,6 +25,7 @@
   "onboarding:taster.body": "En kort lektion. Inget konto behövs.",
   "onboarding:taster.start": "Börja lära",
   "onboarding:progress": "Steg {step} av {total}",
+  "onboarding:back": "Tillbaka",
   "onboarding:slide.position": "Bild {index} av {total}",
   "onboarding:age.none": "Välj ett år",
   "onboarding:language.title": "Välj ditt språk",

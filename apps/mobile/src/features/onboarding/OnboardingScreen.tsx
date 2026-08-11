@@ -1,8 +1,8 @@
 /**
  * Onboarding — mockup screen 2.
  *
- * Three value slides → age gate → daily goal → taster lesson. The order is the
- * product decision, not a layout one: **the user completes a real lesson before we
+ * Language → three value slides → age gate → daily goal → continent → level → taster
+ * lesson. The order is the product decision, not a layout one: **the user completes a real lesson before we
  * ask for an account**, which is the single highest-leverage conversion choice in the
  * app (screen-catalog.md 2). Ask first and most people leave; teach first and the
  * account is worth having.
@@ -24,6 +24,21 @@
  * Back should step within onboarding, not out of it, and a five-route stack makes
  * "back" ambiguous at every boundary. A single screen with an explicit step keeps the
  * whole flow reviewable in one file and testable without a router.
+ *
+ * That argument was made here long before the control existed: there was no back at all
+ * for seven questions, each one final the moment it was answered. The reasoning was
+ * written down and the feature was forgotten, which is a failure mode worth naming
+ * because a comment describing a behaviour reads exactly like one implementing it.
+ *
+ * ## How a question is asked and answered
+ *
+ * Atlas asks it, out of a `SpeechBubble`, and a single-select answer IS the navigation —
+ * no Continue underneath agreeing with a choice already made. `age` keeps a button
+ * because a wheel is a scroll, `slides` because a carousel is not a question, and
+ * `taster` because starting a lesson is a different kind of act.
+ *
+ * The rationale, the measurements and what was deliberately NOT taken from the donor are
+ * in `docs/design/onboarding-transplant.md`.
  *
  * Purely presentational — what the user chose goes out through `onFinish`. The route
  * writes it to storage.
@@ -75,6 +90,7 @@ import {
   space,
   squircle,
   text,
+  SpeechBubble,
   useAnimatedTo,
 } from '@worldquest/design'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
@@ -161,6 +177,56 @@ type Step = 'language' | 'slides' | 'age' | 'goal' | 'region' | 'level' | 'taste
  */
 const STEPS: readonly Step[] = ['language', 'slides', 'age', 'goal', 'region', 'level', 'taster']
 
+/**
+ * The steps that still end in a button, and therefore still need a footer.
+ *
+ * `slides` has next/skip because a carousel is not a question. `age` has Continue
+ * because a wheel is a scroll and a scroll that navigated on settling would advance
+ * while the user was still looking for their year. `taster` has one because starting a
+ * lesson is a different kind of act from answering a question.
+ *
+ * Everything else answers by being tapped.
+ */
+const HAS_ACTION = new Set<Step>(['slides', 'age', 'taster'])
+
+/**
+ * Atlas's pose and his line, per question step.
+ *
+ * `voice-and-tone.md` says Atlas appears at first launch and that his range is
+ * *excited → interested → encouraging*. He was already on three of these steps and
+ * doing none of that: a picture above a heading is a mascot in the room, not a mascot
+ * asking. Moving the question INTO his mouth is the whole graft — the same words in a
+ * bubble beside a character are somebody asking you something, and on a heading they
+ * are an app labelling a form.
+ *
+ * The poses are chosen for what the step is FOR, not for variety: `welcome` on the
+ * first thing anybody sees, `thinking` where he is asking you to decide something,
+ * `explorer` where the question is about the world, `encouraging` where the honest
+ * answer might be "I don't know much" and nobody should feel graded for saying so.
+ *
+ * There is no line for `slides` or `taster`: the carousel has its own copy per page and
+ * the taster hands off to a lesson, and Atlas talking over either would be a second
+ * voice on a screen that already has one.
+ */
+const ASK = {
+  language: { art: 'atlas/welcome', line: 'onboarding:language.title' },
+  age: { art: 'atlas/thinking', line: 'onboarding:age.title' },
+  goal: { art: 'atlas/thinking', line: 'onboarding:goal.title' },
+  region: { art: 'atlas/explorer', line: 'onboarding:region.title' },
+  level: { art: 'atlas/encouraging', line: 'onboarding:level.title' },
+} as const satisfies Partial<Record<Step, { art: ArtName; line: TranslationKey }>>
+
+/**
+ * How long an answer is allowed to land before the next question arrives.
+ *
+ * Not decoration and therefore not collapsed under reduced motion: this is the beat in
+ * which the tick appears and the haptic fires, and cutting it would mean the screen
+ * changed at the instant of the tap with no confirmation that the tap did anything.
+ * `motion.base` is the same 260 ms the step transition itself uses, so the answer
+ * registers and the step begins to leave as one movement rather than two.
+ */
+const ANSWER_BEAT_MS = 260
+
 const LEVEL_COPY = {
   new: { label: 'onboarding:level.new', body: 'onboarding:level.newBody' },
   some: { label: 'onboarding:level.some', body: 'onboarding:level.someBody' },
@@ -168,13 +234,37 @@ const LEVEL_COPY = {
 } as const satisfies Record<LevelChoice, { label: TranslationKey; body: TranslationKey }>
 
 /**
- * Atlas on a step where the user is choosing something.
+ * Atlas beside his own speech bubble, on a step where he is asking something.
  *
- * Deliberately smaller than the slides' hero. Those screens are the picture plus a
- * sentence; this one is a list the user has to read and pick from, and an illustration
- * the same size as theirs would be arguing with them.
+ * Smaller than the 104 it was when he sat above a heading, and smaller again than the
+ * slides' hero. Those screens are a picture plus a sentence; these are a question the
+ * user has to read and a list they have to pick from, and the speaker has to fit
+ * BESIDE the words rather than above them — at 104 the bubble had about 190 pt of
+ * width left on a 320 pt screen, which is four words a line.
+ *
+ * 72 is the largest that leaves the bubble a readable measure at 320. Verified in
+ * `pnpm design:shots`, not chosen by eye.
  */
-const DECISION_ART = 104
+const ASK_ART = 72
+
+/**
+ * The same row on a phone too short to afford it.
+ *
+ * The age step is the one that pays: its wheel is a fixed 220 pt of control, and on a
+ * 320×568 screen adding an 84 pt ask row above it clipped the wheel to a row and a half
+ * — a picker showing one option is not a picker. Photographed, not predicted; the 390
+ * shot of the same step has room to spare, which is exactly why this is a height
+ * question and not a width one.
+ *
+ * Shrinking the SPEAKER rather than dropping him keeps the question in his mouth on
+ * every step. A flow where six questions are asked by a character and the seventh is a
+ * bare heading reads as the seventh being broken.
+ *
+ * `SHORT_SCREEN` is `LessonScreen`'s number and is deliberately the same one: 700, from
+ * the same measurement of what a 320-wide phone actually gives you.
+ */
+const ASK_ART_SHORT = 52
+const SHORT_SCREEN = 700
 
 /**
  * A continent's picture on the region step.
@@ -250,6 +340,7 @@ export function OnboardingScreen({
    * does.
    */
   const window = useWindowDimensions()
+  const askArt = window.height < SHORT_SCREEN ? ASK_ART_SHORT : ASK_ART
   const [page, setPage] = useState(Math.min(window.width, layout.maxContentWidth))
   const onFrameLayout = (event: LayoutChangeEvent): void => {
     const width = event.nativeEvent.layout.width
@@ -303,6 +394,69 @@ export function OnboardingScreen({
    * set under reduced motion, which is the correct behaviour rather than a compromise —
    * the movement here is decoration, not feedback.
    */
+  /**
+   * Which way the flow is travelling, so a step arrives from the side it came from.
+   *
+   * The entrance below interpolates on `stepIndex`, which is direction-blind: going
+   * back animated the new step in from the right exactly as going forward does, so
+   * "back" looked like "forward" and the one control whose entire job is to feel like
+   * a reversal felt like another step deeper. A ref rather than state — it is read
+   * during the render that the step change causes, and storing it in state would need
+   * a second render to apply.
+   */
+  const direction = useRef<1 | -1>(1)
+
+  const go = (next: Step): void => {
+    direction.current = STEPS.indexOf(next) > STEPS.indexOf(step) ? 1 : -1
+    setStep(next)
+  }
+
+  /**
+   * One step back, and nothing to press on the first step.
+   *
+   * There was no back at all. Seven questions, each one final the moment it was
+   * answered — and this file's own header argued about back SEMANTICS ("back should
+   * step within onboarding, not out of it") as a reason for the single-screen design,
+   * while no back control was ever built. The argument was won and the control was
+   * never added, which is how a design decision becomes a missing feature.
+   *
+   * It matters more now than it did: every single-select step advances on tap, so an
+   * answer commits without a confirming press. Auto-advance without a back is a trap;
+   * the two ship together or neither does.
+   */
+  /**
+   * Answer, feel it land, move on — the mechanic this whole pass is for.
+   *
+   * Every single-select step used to cost two taps: one on the answer, one on a
+   * Continue that could not do anything except agree with the answer already given.
+   * Four of the seven steps worked that way, so a user who changed nothing still paid
+   * four presses to say "yes, that" — and the button sat at the bottom of the screen,
+   * a thumb-length from the row they had just touched.
+   *
+   * The wheel step keeps its Continue and is not a bug in this rule: a wheel is a
+   * scroll, and a scroll that navigates the moment it settles would advance while the
+   * user is still looking for their year.
+   */
+  const advancing = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  useEffect(() => () => clearTimeout(advancing.current), [])
+
+  const answer = (next: Step, apply: () => void): void => {
+    apply()
+    hapticSelect()
+    // Cleared first, so a fast double-tap on two different rows lands on the LAST one
+    // rather than firing two transitions.
+    clearTimeout(advancing.current)
+    advancing.current = setTimeout(() => go(next), ANSWER_BEAT_MS)
+  }
+
+  const canGoBack = stepIndex > 1
+  const back = (): void => {
+    const previous = STEPS[STEPS.indexOf(step) - 1]
+    if (previous === undefined) return
+    hapticSelect()
+    go(previous)
+  }
+
   const entrance = useAnimatedTo(stepIndex, 'base')
   const stepStyle = {
     opacity: entrance.interpolate({
@@ -314,7 +468,7 @@ export function OnboardingScreen({
       {
         translateX: entrance.interpolate({
           inputRange: [stepIndex - 1, stepIndex],
-          outputRange: [space[6], 0],
+          outputRange: [space[6] * direction.current, 0],
           extrapolate: 'clamp' as const,
         }),
       },
@@ -364,16 +518,49 @@ export function OnboardingScreen({
           same string reaches VoiceOver as the bar's name and value with no extra node,
           and the fourth platform-a11y prop in this repo to no-op silently gets to be the
           last. */}
+      {/* Back and progress on ONE row, which is the arrangement every flow the user has
+          already met uses — theirs is a chevron at the left of a bar, and putting the
+          bar alone here made this the only multi-step flow on the phone with no way
+          out of a step.
+
+          The chevron holds its space when it is disabled rather than unmounting, so the
+          bar does not grow by 44 pt between step one and step two — a progress bar that
+          changes LENGTH as you advance is reporting two things at once and neither
+          legibly. */}
       <View style={styles.progress}>
-        <ProgressBar
-          current={stepIndex}
-          total={STEPS.length}
-          height={4}
-          showCount={false}
-          // As the VALUE, not the `label` — `label` renders visibly, and a written step
-          // count beside the dots is the exact duplication finding O4 removed.
-          valueText={t('onboarding:progress', { step: stepIndex, total: STEPS.length })}
-        />
+        <Pressable
+          onPress={back}
+          disabled={!canGoBack}
+          aria-label={t('onboarding:back')}
+          aria-disabled={!canGoBack}
+          role="button"
+          hitSlop={12}
+          style={styles.back}
+        >
+          {/* A glyph, not an icon font: this is one character in a repo with no icon
+              set, and the alternative is a third-party dependency for a chevron. Hidden
+              from the reader because the Pressable is already named — otherwise the
+              control announces its own arrowhead. */}
+          <Text
+            style={[styles.backGlyph, !canGoBack && styles.backGlyphOff]}
+            aria-hidden
+            importantForAccessibility="no-hide-descendants"
+          >
+            ‹
+          </Text>
+        </Pressable>
+
+        <View style={styles.progressBar}>
+          <ProgressBar
+            current={stepIndex}
+            total={STEPS.length}
+            height={4}
+            showCount={false}
+            // As the VALUE, not the `label` — `label` renders visibly, and a written step
+            // count beside the dots is the exact duplication finding O4 removed.
+            valueText={t('onboarding:progress', { step: stepIndex, total: STEPS.length })}
+          />
+        </View>
       </View>
 
       <Animated.View style={[styles.stepFill, stepStyle]}>
@@ -457,7 +644,14 @@ export function OnboardingScreen({
                 year` (h2) → `DECADE` (overline) → chips, which is four levels of
                 hierarchy for a single question (O6). The wheel is self-evident and the
                 answer is legible in it, so the ladder is gone. */}
-            <Text style={styles.title}>{t('onboarding:age.title')}</Text>
+            {/* Atlas asks this one too. It is the most sensitive question in the flow —
+                it decides whether a child gets the child experience — and a bare heading
+                reading "When were you born?" is a form demanding an identity document,
+                where the same words from a character are somebody asking. */}
+            <View style={styles.ask}>
+              <Art name={ASK.age.art} size={askArt} />
+              <SpeechBubble style={styles.askBubble}>{t(ASK.age.line)}</SpeechBubble>
+            </View>
             <Text style={styles.body}>{t('onboarding:age.body')}</Text>
 
             <View style={styles.wheelWrap}>
@@ -490,8 +684,10 @@ export function OnboardingScreen({
                 it — these rows are the content of the step and the picture is not
                 allowed to compete with them. `thinking`, because a question is being
                 asked. */}
-            <Art name="atlas/thinking" size={DECISION_ART} />
-            <Text style={styles.title}>{t('onboarding:goal.title')}</Text>
+            <View style={styles.ask}>
+              <Art name={ASK.goal.art} size={askArt} />
+              <SpeechBubble style={styles.askBubble}>{t(ASK.goal.line)}</SpeechBubble>
+            </View>
             <Text style={styles.body}>{t('onboarding:goal.body')}</Text>
 
             {/* ONE inset group, hairline separators, a checkmark on the chosen row
@@ -516,10 +712,17 @@ export function OnboardingScreen({
                     //
                     // A single key carrying both would be the other fix; it would also be
                     // a fourth copy of numbers that already exist, kept in step by hand.
-                    onPress={() => {
-                      if (!chosen) hapticSelect()
-                      setGoal(minutes)
-                    }}
+                    // Tracked HERE rather than on a Continue press. The event used to
+                    // fire on leaving the step, which was right when leaving was a
+                    // separate act: it recorded where they settled instead of every row
+                    // they tried. Now the tap IS the settling, so the two are the same
+                    // moment and there is nothing left to debounce.
+                    onPress={() =>
+                      answer('region', () => {
+                        setGoal(minutes)
+                        track('onboarding_goal_selected', { minutes })
+                      })
+                    }
                     style={[styles.groupRow, index > 0 && styles.groupRowDivided]}
                   >
                     <Text style={styles.goalMinutes}>{t('onboarding:goal.minutes', { minutes })}</Text>
@@ -548,8 +751,10 @@ export function OnboardingScreen({
           <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
             <Spacer />
             {/* `welcome`, and it is the first thing anybody ever sees of this app. */}
-            <Art name="atlas/welcome" size={DECISION_ART} />
-            <Text style={styles.title}>{t('onboarding:language.title')}</Text>
+            <View style={styles.ask}>
+              <Art name={ASK.language.art} size={askArt} />
+              <SpeechBubble style={styles.askBubble}>{t(ASK.language.line)}</SpeechBubble>
+            </View>
             <Text style={styles.body}>{t('onboarding:language.body')}</Text>
 
             <View style={styles.group} role="radiogroup" aria-label={t('onboarding:language.title')}>
@@ -560,14 +765,13 @@ export function OnboardingScreen({
                     key={choice}
                     role="radio"
                     aria-checked={chosen}
-                    onPress={() => {
-                      if (!chosen) hapticSelect()
-                      // Applied on tap, not on Continue. The rest of this row, the
-                      // heading above it and the button below all redraw in the chosen
-                      // language before the finger lifts, which is the only proof a
-                      // language picker can offer that it worked.
-                      onLanguage(choice)
-                    }}
+                    // Applied on tap, and the step is left on the same tap.
+                    //
+                    // The redraw is not lost by advancing — it is better seen. The whole
+                    // screen changes language during the beat, and then the NEXT
+                    // question arrives already in it, which demonstrates the setting
+                    // reaches the rest of the app rather than just this list.
+                    onPress={() => answer('slides', () => onLanguage(choice))}
                     style={[styles.groupRow, index > 0 && styles.groupRowDivided]}
                   >
                     {/* The endonym, never a translation — see `LOCALE_ENDONYM`. The
@@ -597,7 +801,10 @@ export function OnboardingScreen({
 
         {step === 'region' && (
           <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
-            <Text style={styles.title}>{t('onboarding:region.title')}</Text>
+            <View style={styles.ask}>
+              <Art name={ASK.region.art} size={askArt} />
+              <SpeechBubble style={styles.askBubble}>{t(ASK.region.line)}</SpeechBubble>
+            </View>
             <Text style={styles.body}>{t('onboarding:region.body')}</Text>
 
             {/* The continent artwork, at the one moment it is the subject rather than a
@@ -624,10 +831,12 @@ export function OnboardingScreen({
                       role="radio"
                       aria-checked={chosen}
                       aria-label={t(REGION_NAME[code])}
-                      onPress={() => {
-                        if (!chosen) hapticSelect()
-                        setStartRegion(code)
-                      }}
+                      onPress={() =>
+                        answer('level', () => {
+                          setStartRegion(code)
+                          track('onboarding_region_selected', { region: code })
+                        })
+                      }
                       style={[styles.regionCell, chosen && styles.regionCellOn]}
                     >
                       {/* Sky, then landmass, the same two layers the Explore tiles use.
@@ -659,10 +868,12 @@ export function OnboardingScreen({
               <Pressable
                 role="radio"
                 aria-checked={startRegion === null}
-                onPress={() => {
-                  if (startRegion !== null) hapticSelect()
-                  setStartRegion(null)
-                }}
+                onPress={() =>
+                  answer('level', () => {
+                    setStartRegion(null)
+                    track('onboarding_region_selected', { region: 'world' })
+                  })
+                }
                 style={[styles.anywhere, startRegion === null && styles.anywhereOn]}
               >
                 <Text style={styles.goalMinutes}>{t('onboarding:region.anywhere')}</Text>
@@ -684,8 +895,10 @@ export function OnboardingScreen({
         {step === 'level' && (
           <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
             <Spacer />
-            <Art name="atlas/thinking" size={DECISION_ART} />
-            <Text style={styles.title}>{t('onboarding:level.title')}</Text>
+            <View style={styles.ask}>
+              <Art name={ASK.level.art} size={askArt} />
+              <SpeechBubble style={styles.askBubble}>{t(ASK.level.line)}</SpeechBubble>
+            </View>
             <Text style={styles.body}>{t('onboarding:level.body')}</Text>
 
             <View style={styles.group} role="radiogroup" aria-label={t('onboarding:level.title')}>
@@ -696,10 +909,12 @@ export function OnboardingScreen({
                     key={choice}
                     role="radio"
                     aria-checked={chosen}
-                    onPress={() => {
-                      if (!chosen) hapticSelect()
-                      setLevel(choice)
-                    }}
+                    onPress={() =>
+                      answer('taster', () => {
+                        setLevel(choice)
+                        track('onboarding_level_selected', { level: choice })
+                      })
+                    }
                     style={[styles.groupRow, index > 0 && styles.groupRowDivided]}
                   >
                     <View style={styles.flex}>
@@ -738,20 +953,22 @@ export function OnboardingScreen({
         )}
       </Animated.View>
 
-      <View style={styles.actions}>
-        {step === 'language' && (
-          <Button label={t('onboarding:age.continue')} onPress={() => setStep('slides')} />
-        )}
-
+      {/* Rendered only when the step HAS a button.
+          Four of the seven steps lost theirs when answering became the navigation, and
+          an empty padded container is still 32 pt of reserved floor — a strip of nothing
+          under the answers, exactly where the thumb has learned to expect a control.
+          Photographed at 320 before this line existed: the list sat high with a void
+          beneath it and read as a screen still loading its button. */}
+      {HAS_ACTION.has(step) && <View style={styles.actions}>
         {step === 'slides' && (
           <>
             <Button
               label={slide < SLIDES.length - 1 ? t('onboarding:cta.next') : t('onboarding:cta.start')}
               onPress={() =>
-                slide < SLIDES.length - 1 ? goToSlide(slide + 1) : setStep('age')
+                slide < SLIDES.length - 1 ? goToSlide(slide + 1) : go('age')
               }
             />
-            <Button variant="ghost" label={t('onboarding:cta.skip')} onPress={() => setStep('age')} />
+            <Button variant="ghost" label={t('onboarding:cta.skip')} onPress={() => go('age')} />
           </>
         )}
 
@@ -761,43 +978,17 @@ export function OnboardingScreen({
             // Disabled rather than hidden: a button that appears when you finally
             // reach the right year is a button nobody knew they were looking for.
             disabled={birthYear === null}
-            onPress={() => setStep('goal')}
+            onPress={() => go('goal')}
           />
         )}
 
-        {step === 'goal' && (
-          <Button
-            label={t('onboarding:age.continue')}
-            onPress={() => {
-              // On leaving the step, not on each row tap: what matters is the goal
-              // they settled on, and firing per tap would record every one they tried.
-              track('onboarding_goal_selected', { minutes: goal })
-              setStep('region')
-            }}
-          />
-        )}
-
-        {step === 'region' && (
-          <Button
-            label={t('onboarding:age.continue')}
-            onPress={() => {
-              // On leaving, like the goal step: what matters is where they settled, not
-              // every continent they touched on the way there.
-              track('onboarding_region_selected', { region: startRegion ?? 'world' })
-              setStep('level')
-            }}
-          />
-        )}
-
-        {step === 'level' && (
-          <Button
-            label={t('onboarding:age.continue')}
-            onPress={() => {
-              track('onboarding_level_selected', { level })
-              setStep('taster')
-            }}
-          />
-        )}
+        {/* No Continue on `language`, `goal`, `region` or `level`.
+            Each of those is one question with one answer, and the tap on the answer is
+            the whole interaction — a button underneath could only ever agree with a
+            choice already made, at the cost of a second press and a thumb journey to
+            the bottom of the screen. `age` keeps its button because a wheel is a
+            scroll, and `taster` keeps its because starting a lesson is a different
+            kind of act from answering a question. */}
 
         {step === 'taster' && (
           <>
@@ -813,7 +1004,7 @@ export function OnboardingScreen({
             )}
           </>
         )}
-      </View>
+      </View>}
     </View>
   )
 }
@@ -839,7 +1030,41 @@ function yearsFor(currentYear: number): readonly number[] {
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  progress: { paddingHorizontal: space[4], paddingTop: space[2] },
+  /**
+   * Atlas and his bubble, side by side.
+   *
+   * `alignItems: 'flex-start'` so a two-line question grows DOWNWARD past him rather
+   * than re-centring him against it — the tail is pinned near the top of the bubble and
+   * has to stay pointing at his head whatever the question's length.
+   */
+  ask: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    alignSelf: 'stretch',
+    gap: space[3],
+    marginBottom: space[3],
+  },
+  askBubble: { flex: 1, marginTop: space[2] },
+  progress: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space[2],
+    paddingHorizontal: space[4],
+    paddingTop: space[2],
+  },
+  // 44 square, because it is a real target and the glyph inside it is 8 pt of paint.
+  back: {
+    width: layout.minTouchTarget,
+    height: layout.minTouchTarget,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginStart: -space[3],
+  },
+  backGlyph: { ...text('h1'), color: colors.text.secondary, lineHeight: undefined },
+  // Dimmed, not gone. On step one there is nowhere back TO, and a control that
+  // disappears and reappears teaches the user it might not be there next time.
+  backGlyphOff: { color: colors.text.tertiary, opacity: 0.4 },
+  progressBar: { flex: 1 },
   // The step owns everything between the bar and the buttons, and it is `flex: 1` so a
   // short step centres inside it rather than hanging from the top of the screen.
   stepFill: { flex: 1 },

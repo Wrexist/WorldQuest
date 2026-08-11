@@ -44,7 +44,14 @@
  */
 
 import { useEffect, useRef } from 'react'
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native'
 import { colors, radius, space, squircle, text } from '@worldquest/design'
 import { hapticSelect } from '../lib/haptics.js'
 
@@ -73,7 +80,23 @@ const ROW = 44
 /** Five rows: the selection, two of context each way. Seven is a slot machine. */
 const VISIBLE = 5
 
-const PAD = ((VISIBLE - 1) / 2) * ROW
+/**
+ * Three rows on a phone too short for five.
+ *
+ * 5 × 44 is 220 pt of control, which is 39 % of a 320×568 screen's height before any
+ * question, any explanation or any button. `docs/design/ios-native-audit.md` already
+ * recorded this step overflowing at 320 (O5) and the wheel was the fix for a DIFFERENT
+ * overflow — it replaced a chip grid whose oldest two decades rendered behind the
+ * Continue button — so it inherited the problem rather than solving it.
+ *
+ * Three is still a wheel: the selection with one of context each way is what makes the
+ * control legible as a scrolling list rather than a button. Two would not be.
+ *
+ * The threshold is `LessonScreen`'s 700 and deliberately the same number, from the same
+ * measurement of what a 320-wide phone actually gives you.
+ */
+const VISIBLE_SHORT = 3
+const SHORT_SCREEN = 700
 
 export function WheelPicker<T extends string | number>({
   options,
@@ -83,6 +106,11 @@ export function WheelPicker<T extends string | number>({
   testID,
 }: WheelPickerProps<T>) {
   const scroller = useRef<ScrollView>(null)
+  // Measured, not assumed: the same wheel is 220 pt tall on a phone that can afford it
+  // and 132 on one that cannot, and nothing else about it changes.
+  const { height } = useWindowDimensions()
+  const visible = height < SHORT_SCREEN ? VISIBLE_SHORT : VISIBLE
+  const pad = ((visible - 1) / 2) * ROW
   const selected = Math.max(
     0,
     options.findIndex((option) => option.value === value),
@@ -111,12 +139,12 @@ export function WheelPicker<T extends string | number>({
       // The group, named. Individual rows carry their own label and checked state.
       role="radiogroup"
       aria-label={label}
-      style={styles.frame}
+      style={[styles.frame, { height: visible * ROW }]}
       testID={testID}
     >
       {/* The band the selection sits in. Behind the rows and deaf to touches, so a tap
           lands on the row it looks like it landed on. */}
-      <View style={styles.band} pointerEvents="none" aria-hidden />
+      <View style={[styles.band, { top: pad }]} pointerEvents="none" aria-hidden />
 
       <ScrollView
         ref={scroller}
@@ -125,7 +153,7 @@ export function WheelPicker<T extends string | number>({
         // stops a fling from coasting past twenty rows before it settles.
         snapToInterval={ROW}
         decelerationRate="fast"
-        contentContainerStyle={styles.content}
+        contentContainerStyle={{ paddingVertical: pad }}
         onMomentumScrollEnd={(event) => {
           const index = Math.round(event.nativeEvent.contentOffset.y / ROW)
           pick(Math.min(options.length - 1, Math.max(0, index)))
@@ -176,7 +204,7 @@ const styles = StyleSheet.create({
    * selection band lifted out of it.
    */
   frame: {
-    height: VISIBLE * ROW,
+    // Height comes from `visible` at the call site below — it is measured, not fixed.
     alignSelf: 'stretch',
     justifyContent: 'center',
     backgroundColor: colors.bg.surface,
@@ -191,7 +219,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     start: space[2],
     end: space[2],
-    top: PAD,
     height: ROW,
     borderRadius: radius.md,
     ...squircle,
@@ -199,7 +226,6 @@ const styles = StyleSheet.create({
   },
   // The padding is what lets the FIRST and LAST rows reach the centre band. Without it
   // the wheel can scroll to neither end of its own list.
-  content: { paddingVertical: PAD },
   row: { height: ROW, alignItems: 'center', justifyContent: 'center', paddingHorizontal: space[4] },
   label: { ...text('h3', { numeric: true }), color: colors.text.secondary },
   labelOn: { ...text('h2', { numeric: true }), color: colors.text.primary },
