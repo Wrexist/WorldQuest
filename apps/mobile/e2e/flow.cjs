@@ -520,19 +520,16 @@ const skip = (name, why) => {
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(600)
 
-  // The two closing steps: the plan read back, then the premium step.
+  // The closing step: the answers read back, then straight to the taster.
+  //
+  // There is no premium step here. One was built and removed: `/paywall` already makes
+  // that case AFTER the taster lesson, personalised with the countries the user just
+  // learned, and a flat perk list before the first lesson was a worse version of it in
+  // a worse place.
   step('the plan reads the answers back', /Here is your plan/i.test(await body()))
+  step('onboarding asks for no money before the first lesson',
+       !/Premium|per month|billed yearly|Try it free/i.test(await body()))
   await page.screenshot({ path: path.join(SHOTS, 'onboarding-plan.png') })
-  await page.getByText('Continue', { exact: true }).first().click()
-  await page.waitForTimeout(600)
-
-  text = await body()
-  // Leads with free and carries no urgency. Both are rule 7, and both are the kind of
-  // thing a growth experiment quietly removes.
-  step('the premium step leads with what is free', /Every lesson is free/i.test(text))
-  step('the premium step has no countdown or scarcity',
-       !/hurry|limited time|expires in|only today|\d+:\d\d left/i.test(text))
-  await page.screenshot({ path: path.join(SHOTS, 'onboarding-offer.png') })
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(600)
 

@@ -42,12 +42,7 @@ const advanceToTaster = (): void => {
   fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // goal → region
   answer('Europe') // region → level
   fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → plan
-  fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // plan → offer (or taster, if a child)
-  // The premium step is skipped entirely for a child, so this press may already be on
-  // the taster. Both are the same button, and pressing Continue once more from the
-  // taster would start the lesson — hence the guard.
-  const next = screen.queryAllByRole('button', { name: 'Continue' })
-  if (next.length > 0) fireEvent.click(next[0]!) // offer → taster
+  fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // plan → taster
 }
 
 /**
@@ -161,8 +156,7 @@ describe('OnboardingScreen', () => {
     // which drives a real pointer across a real layout and asserts the value changed.
     // `Slider`'s own test covers the index arithmetic.
     fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → plan
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // plan → offer
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // offer → taster
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // plan → taster
     fireEvent.click(screen.getByRole('button', { name: /Start learning/i }))
 
     expect(onFinish).toHaveBeenCalledTimes(1)
@@ -204,8 +198,7 @@ describe('OnboardingScreen', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // the no-opinion path
     answer('Europe')
     fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → plan
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // plan → offer
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // offer → taster
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // plan → taster
     fireEvent.click(screen.getByRole('button', { name: /Start learning/i }))
     expect(onFinish.mock.calls[0]![0].dailyGoalMinutes).toBe(10)
   })
@@ -334,49 +327,6 @@ describe('OnboardingScreen', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Back' })) // slides → language
     expect(screen.getByText(/Choose your language/i)).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Back' }).getAttribute('aria-disabled')).toBe('true')
-  })
-
-  it('never shows a child the premium step', () => {
-    // The one hard rule this step has to obey. PROJECT.md rule 7: nothing that would be
-    // creepy for a ten-year-old, and a purchase pitch on the screen before a child's
-    // first lesson is exactly that. Skipped, not softened.
-    const { container } = render(
-      <OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />,
-    )
-    advanceToAgeStep()
-    pickYear(YEAR - (CHILD_AGE - 3))
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // age → goal
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // goal → region
-    answer('Europe') // region → level
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → plan
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // plan → straight past
-
-    expect(container.textContent).not.toMatch(/Premium/i)
-    expect(screen.getByText(/no account needed/i)).toBeTruthy()
-  })
-
-  it('shows an adult the premium step, leading with what is free', () => {
-    const { container } = render(
-      <OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />,
-    )
-    advanceToAgeStep()
-    pickYear(YEAR - 30)
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // age → goal
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // goal → region
-    answer('Europe')
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → plan
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // plan → offer
-
-    expect(screen.getByText(/Every lesson is free/i)).toBeTruthy()
-    // No urgency, no price, no countdown. Rule 7, and the kind of thing a growth
-    // experiment removes quietly.
-    //
-    // Matched on the urgency PHRASES rather than on the word "expires", because the copy
-    // deliberately contains "Nothing expires" — which is the opposite of the thing being
-    // guarded against, and a naive keyword match failed on it.
-    expect(container.textContent).not.toMatch(
-      /hurry|limited time|expires in|expires soon|only today|ends in|\d+:\d\d left/i,
-    )
   })
 
   it('leaves no raw key or unformatted placeholder on screen', () => {

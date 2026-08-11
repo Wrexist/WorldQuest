@@ -111,14 +111,9 @@ async function walkOnboarding(page, at = async () => {}) {
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(500)
 
-  // ── the two closing steps ─────────────────────────────────────────────────
-  // `plan` reads the answers back; `offer` is the premium step, which a CHILD never
-  // reaches — the walk uses an adult birth year, so it does.
+  // ── plan ──────────────────────────────────────────────────────────────────
+  // The answers read back, before the taster.
   await at('plan')
-  await page.getByText('Continue', { exact: true }).first().click()
-  await page.waitForTimeout(500)
-
-  await at('offer')
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(500)
 

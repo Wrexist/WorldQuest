@@ -110,7 +110,6 @@ import {
 import { Art } from '../../components/Art.js'
 import { WheelPicker, type WheelOption } from '../../components/WheelPicker.js'
 import type { LevelChoice } from './levels.js'
-import { PERKS } from './perks.js'
 import type { ArtName } from '../../lib/art.generated.js'
 
 /** The age at which the child branch applies. COPPA; GDPR-K varies by country and is stricter in places. */
@@ -160,7 +159,6 @@ type Step =
   | 'region'
   | 'level'
   | 'plan'
-  | 'offer'
   | 'taster'
 
 /**
@@ -194,7 +192,6 @@ const STEPS: readonly Step[] = [
   'region',
   'level',
   'plan',
-  'offer',
   'taster',
 ]
 
@@ -208,7 +205,7 @@ const STEPS: readonly Step[] = [
  *
  * Everything else answers by being tapped.
  */
-const HAS_ACTION = new Set<Step>(['slides', 'age', 'goal', 'level', 'plan', 'offer', 'taster'])
+const HAS_ACTION = new Set<Step>(['slides', 'age', 'goal', 'level', 'plan', 'taster'])
 
 /**
  * The levels in scale order, which is the order the slider lays them out in.
@@ -248,7 +245,6 @@ const ASK = {
   // `celebrate`, because the questions are over and this is the payoff for answering
   // them — the one step that tells rather than asks.
   plan: { art: 'atlas/celebrate', line: 'onboarding:plan.title' },
-  offer: { art: 'atlas/resting', line: 'onboarding:offer.title' },
 } as const satisfies Partial<Record<Step, { art: ArtName; line: TranslationKey }>>
 
 /**
@@ -1053,34 +1049,6 @@ export function OnboardingScreen({
           </ScrollView>
         )}
 
-        {step === 'offer' && (
-          <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
-            <Spacer />
-            <Ask step="offer" />
-
-            {/* Leads with what is FREE, because that is both true and the most important
-                thing on the screen. `paywall.json`'s own line is "Every lesson stays free.
-                Always." — this step reuses that copy rather than inventing a pitch, and
-                reuses the four perks rather than inventing features.
-
-                No countdown, no "limited time", no price. The primary button below is
-                Continue, so the free lesson is one tap away from here; PROJECT.md rule 7
-                is the reason, and a child never reaches this step at all. */}
-            <Text style={styles.body}>{t('onboarding:offer.body')}</Text>
-
-            <View style={styles.group}>
-              {PERKS.map((perk, index) => (
-                <View key={perk} style={[styles.groupRow, index > 0 && styles.groupRowDivided]}>
-                  <Text style={styles.goalMinutes}>{t(perk)}</Text>
-                </View>
-              ))}
-            </View>
-
-            <Text style={styles.planWeek}>{t('onboarding:offer.later')}</Text>
-            <Spacer />
-          </ScrollView>
-        )}
-
         {step === 'taster' && (
           <View style={styles.centred}>
             {/* Atlas waving from a globe. The taster is the handover into the first
@@ -1156,10 +1124,6 @@ export function OnboardingScreen({
             answering a question. */}
 
         {step === 'plan' && (
-          <Button label={t('onboarding:age.continue')} onPress={() => go(isChild ? 'taster' : 'offer')} />
-        )}
-
-        {step === 'offer' && (
           <Button label={t('onboarding:age.continue')} onPress={() => go('taster')} />
         )}
 
