@@ -297,15 +297,42 @@ const skip = (name, why) => {
         const rect = node.getBoundingClientRect()
         for (let p = node.parentElement; p !== null; p = p.parentElement) {
           const style = getComputedStyle(p)
-          const scrolls = /^(auto|scroll)$/.test(style.overflowY) || /^(auto|scroll)$/.test(style.overflowX)
-          if (!scrolls) continue
+          // `hidden` as well as `auto|scroll`, and the two for the same reason.
+          //
+          // This walked scrollable ancestors only, which left a blind spot the size of
+          // every clipping container in the app: `WheelPicker` draws its rows inside a
+          // fixed-height well with `overflow: hidden`, and react-native-web's ScrollView
+          // inside it does not constrain its own height — so a row scrolled out of the
+          // well had no scrollable ancestor to be cropped against and reported the
+          // coordinates it WOULD have had. The onboarding age step failed this check
+          // with "2025 overlaps Continue" while the screenshot showed a clipped wheel
+          // and a button with clear air above it.
+          //
+          // The comment on `visibleRect` above already says it "crops at the nearest
+          // hidden one" — this is the same rule, finally applied in both places.
+          const clips =
+            /^(auto|scroll|hidden)$/.test(style.overflowY) ||
+            /^(auto|scroll|hidden)$/.test(style.overflowX)
+          if (!clips) continue
           const box = p.getBoundingClientRect()
-          return (
+          const inside =
             rect.bottom > box.top + 1 &&
             rect.top < box.bottom - 1 &&
             rect.right > box.left + 1 &&
             rect.left < box.right - 1
-          )
+          // EVERY clipping ancestor, not just the nearest — an element is on screen only
+          // if it survives all of them, and clippers nest.
+          //
+          // Returning on the first one produced a false alarm nobody could act on:
+          // `WheelPicker` puts its rows in a 220 pt well, and at 200 % text that well
+          // hangs below the bottom of the step's own scroller. A row can therefore be
+          // perfectly visible INSIDE the well while the well itself is off screen — and
+          // the check stopped at the well, decided the row was painted, and reported it
+          // overlapping the Continue button underneath. Measured rather than guessed:
+          // the row sat at 766–800 inside a well at 585–803 inside a scroller ending at
+          // 754. Two of those three boxes agreed it was there and the one that mattered
+          // never got asked.
+          if (!inside) return false
         }
         return true
       }
@@ -376,12 +403,14 @@ const skip = (name, why) => {
 
   /** Slide one to the age step. A function because the 200 % check below rewinds. */
   const toAgeStep = async () => {
-    // The language step is first now, and it has one button. Every option on it is
-    // already a valid answer, so there is nothing to choose before continuing.
-    const language = page.getByText('Continue', { exact: true }).first()
+    // The language step has no button any more: answering IS the navigation, so the
+    // row is what moves the flow on. This drives it the way a user does rather than
+    // through the shared walker, because the checks below rewind to this point and
+    // assert between steps — see the note on `scripts/lib/onboarding-walk.cjs`.
+    const language = page.getByRole('radio', { name: 'English' }).first()
     if ((await language.count()) > 0) {
       await language.click()
-      await page.waitForTimeout(400)
+      await page.waitForTimeout(700)
     }
     for (let i = 0; i < 2; i++) {
       await page.getByText('Next', { exact: true }).first().click()
@@ -444,6 +473,23 @@ const skip = (name, why) => {
   step('daily goal picker appears', /How much a day|min/i.test(await body()))
   await page.screenshot({ path: path.join(SHOTS, 'onboarding-goal.png') })
 
+  // Back works, and it works on a step whose answer commits on tap — which is the pair
+  // that makes auto-advance safe rather than a trap. Asserted here rather than in a unit
+  // test as well, because this is the only place the real transition runs.
+  await page.getByRole('button', { name: 'Back' }).first().click()
+  await page.waitForTimeout(700)
+  step('back returns to the previous question', /When were you born/i.test(await body()))
+  await page.getByText('Continue', { exact: true }).first().click()
+  await page.waitForTimeout(600)
+
+  // A slider now, like the level step: it does not advance on being answered, because a
+  // drag passes through every value on its way to one. Its default is ten minutes.
+  const goalTrack = await page.getByRole('slider').first().boundingBox()
+  if (goalTrack !== null) {
+    await page.mouse.click(goalTrack.x + goalTrack.width - 4, goalTrack.y + goalTrack.height / 2)
+    await page.waitForTimeout(300)
+  }
+  step('the goal slider answers to a tap on its track', /20 min/i.test(await body()))
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(600)
 
@@ -453,12 +499,39 @@ const skip = (name, why) => {
   // show up here only as a timeout four lines later.
   step('continent picker appears', /Where do you want to start/i.test(await body()))
   await page.screenshot({ path: path.join(SHOTS, 'onboarding-region.png') })
-  await page.getByText('Continue', { exact: true }).first().click()
-  await page.waitForTimeout(500)
+  await page.getByRole('radio', { name: 'Europe' }).first().click()
+  await page.waitForTimeout(700)
 
   step('starting level appears', /How well do you know the world/i.test(await body()))
+  // The difficulty answer is a real slider. Driven by an actual drag rather than by
+  // tapping its legend, because the drag is the interaction that was added and a test
+  // that only clicked a label would leave the gesture — and the PanResponder wiring
+  // behind it — completely unexercised.
+  const track = await page.getByRole('slider').first().boundingBox()
+  if (track !== null) {
+    await page.mouse.move(track.x + track.width / 2, track.y + track.height / 2)
+    await page.mouse.down()
+    await page.mouse.move(track.x + track.width - 4, track.y + track.height / 2, { steps: 8 })
+    await page.mouse.up()
+    await page.waitForTimeout(300)
+  }
+  step('the difficulty slider answers to a drag', /Bring it on/i.test(await body()))
+  await page.screenshot({ path: path.join(SHOTS, 'onboarding-level.png') })
   await page.getByText('Continue', { exact: true }).first().click()
-  await page.waitForTimeout(500)
+  await page.waitForTimeout(600)
+
+  // The closing step: the answers read back, then straight to the taster.
+  //
+  // There is no premium step here. One was built and removed: `/paywall` already makes
+  // that case AFTER the taster lesson, personalised with the countries the user just
+  // learned, and a flat perk list before the first lesson was a worse version of it in
+  // a worse place.
+  step('the plan reads the answers back', /Here is your plan/i.test(await body()))
+  step('onboarding asks for no money before the first lesson',
+       !/Premium|per month|billed yearly|Try it free/i.test(await body()))
+  await page.screenshot({ path: path.join(SHOTS, 'onboarding-plan.png') })
+  await page.getByText('Continue', { exact: true }).first().click()
+  await page.waitForTimeout(600)
 
   step('taster promises a lesson with no account', /no account needed/i.test(await body()))
 

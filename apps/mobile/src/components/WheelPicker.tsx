@@ -44,7 +44,14 @@
  */
 
 import { useEffect, useRef } from 'react'
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native'
 import { colors, radius, space, squircle, text } from '@worldquest/design'
 import { hapticSelect } from '../lib/haptics.js'
 
@@ -61,6 +68,21 @@ export type WheelPickerProps<T> = {
   /** Names the radiogroup. Required — a picker with no name announces as "radiogroup". */
   readonly label: string
   readonly testID?: string
+  /**
+   * Where the wheel OPENS when nothing is chosen yet — a scroll position, not a value.
+   *
+   * The distinction is the entire point. The birth-year wheel used to open at the top,
+   * which is the current year, so anybody born in the nineties had to spin past three
+   * decades before reaching a plausible answer. Opening near the middle of the real
+   * distribution fixes that.
+   *
+   * It does NOT select. `value` stays null, the Continue above stays disabled, and the
+   * empty row is still what is checked — because the birth year decides whether a child
+   * gets the child experience, and a pre-selected adult year would hand that decision to
+   * whoever taps through without scrolling. That is the one answer in this app that must
+   * never be nudged, and `OnboardingScreen.test.tsx` says so in a test.
+   */
+  readonly restingIndex?: number
 }
 
 /**
@@ -73,7 +95,45 @@ const ROW = 44
 /** Five rows: the selection, two of context each way. Seven is a slot machine. */
 const VISIBLE = 5
 
-const PAD = ((VISIBLE - 1) / 2) * ROW
+/**
+ * Three rows on a phone too short for five.
+ *
+ * 5 × 44 is 220 pt of control, which is 39 % of a 320×568 screen's height before any
+ * question, any explanation or any button. `docs/design/ios-native-audit.md` already
+ * recorded this step overflowing at 320 (O5) and the wheel was the fix for a DIFFERENT
+ * overflow — it replaced a chip grid whose oldest two decades rendered behind the
+ * Continue button — so it inherited the problem rather than solving it.
+ *
+ * Three is still a wheel: the selection with one of context each way is what makes the
+ * control legible as a scrolling list rather than a button. Two would not be.
+ *
+ * The threshold is `LessonScreen`'s 700 and deliberately the same number, from the same
+ * measurement of what a 320-wide phone actually gives you.
+ */
+const VISIBLE_SHORT = 3
+const SHORT_SCREEN = 700
+
+/**
+ * How far a row's label may grow. The second cap in the app, and `AppChrome`'s comment
+ * on the first one demands this be justified rather than copied: *"the moment a second
+ * component wants a cap, the right move is to ask why its layout cannot hold its own
+ * text."*
+ *
+ * The answer here is that `ROW` is not a layout choice. It is 44 because that is the
+ * touch-target floor, and it is simultaneously `snapToInterval` — the pitch the wheel
+ * snaps on. A row that grew with the text would either break the snap arithmetic or stop
+ * being a reachable target, and iOS's own picker does not grow its rows with Dynamic Type
+ * either; it scales the text inside a bounded cell.
+ *
+ * 1.4, not 1.2: `h3` is 18, so this stops at 25 in a 44 pt row, which still leaves room
+ * for the descenders. The label keeps scaling — refusing to scale at all is what the
+ * accessibility spec forbids and is the lazy version of this fix.
+ *
+ * Found by `pnpm e2e`, which photographed "2026" painted over the Continue button at
+ * 200 % text. The wheel had been at its limit and a taller question above it was what
+ * pushed it over.
+ */
+const ROW_MAX_SCALE = 1.4
 
 export function WheelPicker<T extends string | number>({
   options,
@@ -81,8 +141,14 @@ export function WheelPicker<T extends string | number>({
   onChange,
   label,
   testID,
+  restingIndex = 0,
 }: WheelPickerProps<T>) {
   const scroller = useRef<ScrollView>(null)
+  // Measured, not assumed: the same wheel is 220 pt tall on a phone that can afford it
+  // and 132 on one that cannot, and nothing else about it changes.
+  const { height } = useWindowDimensions()
+  const visible = height < SHORT_SCREEN ? VISIBLE_SHORT : VISIBLE
+  const pad = ((visible - 1) / 2) * ROW
   const selected = Math.max(
     0,
     options.findIndex((option) => option.value === value),
@@ -94,6 +160,16 @@ export function WheelPicker<T extends string | number>({
   useEffect(() => {
     scroller.current?.scrollTo({ y: selected * ROW, animated: true })
   }, [selected])
+
+  // The opening position, once, and only while nothing is chosen. Not animated: this is
+  // where the wheel STARTS, and a wheel that scrolls itself on arrival looks like it is
+  // rejecting the answer that was already there.
+  const opened = useRef(false)
+  useEffect(() => {
+    if (opened.current || value !== null || restingIndex <= 0) return
+    opened.current = true
+    scroller.current?.scrollTo({ y: restingIndex * ROW, animated: false })
+  }, [restingIndex, value])
 
   const pick = (index: number): void => {
     const option = options[index]
@@ -111,21 +187,30 @@ export function WheelPicker<T extends string | number>({
       // The group, named. Individual rows carry their own label and checked state.
       role="radiogroup"
       aria-label={label}
-      style={styles.frame}
+      style={[styles.frame, { height: visible * ROW }]}
       testID={testID}
     >
       {/* The band the selection sits in. Behind the rows and deaf to touches, so a tap
           lands on the row it looks like it landed on. */}
-      <View style={styles.band} pointerEvents="none" aria-hidden />
+      <View style={[styles.band, { top: pad }]} pointerEvents="none" aria-hidden />
 
       <ScrollView
         ref={scroller}
+        // Bounded to the well, explicitly.
+        //
+        // Without a height the scroller is sized by its CONTENT — a hundred rows — and
+        // only the frame's `overflow: hidden` stopped it being visible. Its box still
+        // extended hundreds of points down the screen, which is invisible until
+        // something measures it: the 200 %-text check reported "2025 overlaps Continue"
+        // for a row that was clipped out of sight, because the row really was inside its
+        // scroller's rect and the scroller really did reach the button.
+        style={{ height: visible * ROW }}
         showsVerticalScrollIndicator={false}
         // The two properties that make this a wheel rather than a list. `fast` is what
         // stops a fling from coasting past twenty rows before it settles.
         snapToInterval={ROW}
         decelerationRate="fast"
-        contentContainerStyle={styles.content}
+        contentContainerStyle={{ paddingVertical: pad }}
         onMomentumScrollEnd={(event) => {
           const index = Math.round(event.nativeEvent.contentOffset.y / ROW)
           pick(Math.min(options.length - 1, Math.max(0, index)))
@@ -145,6 +230,8 @@ export function WheelPicker<T extends string | number>({
               style={styles.row}
             >
               <Text
+                maxFontSizeMultiplier={ROW_MAX_SCALE}
+                dataSet={{ maxScale: String(ROW_MAX_SCALE) }}
                 numberOfLines={1}
                 style={[
                   styles.label,
@@ -176,7 +263,7 @@ const styles = StyleSheet.create({
    * selection band lifted out of it.
    */
   frame: {
-    height: VISIBLE * ROW,
+    // Height comes from `visible` at the call site below — it is measured, not fixed.
     alignSelf: 'stretch',
     justifyContent: 'center',
     backgroundColor: colors.bg.surface,
@@ -191,7 +278,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     start: space[2],
     end: space[2],
-    top: PAD,
     height: ROW,
     borderRadius: radius.md,
     ...squircle,
@@ -199,7 +285,6 @@ const styles = StyleSheet.create({
   },
   // The padding is what lets the FIRST and LAST rows reach the centre band. Without it
   // the wheel can scroll to neither end of its own list.
-  content: { paddingVertical: PAD },
   row: { height: ROW, alignItems: 'center', justifyContent: 'center', paddingHorizontal: space[4] },
   label: { ...text('h3', { numeric: true }), color: colors.text.secondary },
   labelOn: { ...text('h2', { numeric: true }), color: colors.text.primary },

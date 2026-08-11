@@ -1,27 +1,48 @@
-import { describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { CHILD_AGE, OnboardingScreen } from './OnboardingScreen.js'
 
 /** 2026 keeps the arithmetic obvious; the component never reads a clock itself. */
 const YEAR = 2026
 
 /**
+ * Answering a question now navigates, after a beat.
+ *
+ * Every single-select step advances on the tap rather than on a Continue, which means
+ * the tests have to let that beat elapse — `ANSWER_BEAT_MS` is a real `setTimeout` and
+ * without fake timers these helpers would assert against the step they just left.
+ */
+const answer = (name: string | RegExp): void => {
+  fireEvent.click(screen.getByRole('radio', { name }))
+  act(() => {
+    vi.advanceTimersByTime(400)
+  })
+}
+
+/**
  * Past the language picker and the carousel, to the first question with a wrong answer.
  *
- * The language step is first now and it is not skippable — it has one button and every
- * option is already valid, so there is nothing to skip past. Most of this file is about
- * the age gate, so getting there is one helper rather than two lines in twelve tests.
+ * Most of this file is about the age gate, so getting there is one helper rather than
+ * three lines in twelve tests.
  */
 const advanceToAgeStep = (): void => {
-  fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // language → slides
+  answer('English') // language → slides
   fireEvent.click(screen.getByRole('button', { name: 'Skip' })) // slides → age
 }
 
-/** Age → goal → region → level → taster, accepting every default on the way. */
+/**
+ * Age → goal → region → level → taster, accepting the default on every slider.
+ *
+ * The two slider steps — goal and level — are left where they open. jsdom lays nothing
+ * out, so a track measures zero wide and every position on it is the same position; the
+ * drag is exercised in `pnpm e2e` against a real layout instead.
+ */
 const advanceToTaster = (): void => {
-  for (let i = 0; i < 4; i++) {
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
-  }
+  fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // age → goal
+  fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // goal → region
+  answer('Europe') // region → level
+  fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → plan
+  fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // plan → taster
 }
 
 /**
@@ -39,13 +60,20 @@ const pickYear = (year: number): void => {
 }
 
 describe('OnboardingScreen', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('opens on the value slides, not on a sign-up wall', () => {
     // The conversion decision the whole flow is built around: teach first, ask later.
     render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
     // The language step comes first, and it is still not a wall: one tap, already
     // answered, no account anywhere in sight.
     expect(screen.getByText(/Choose your language/i)).toBeTruthy()
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    answer('English')
     expect(screen.getByText(/five minutes a day/i)).toBeTruthy()
     expect(screen.queryByText(/sign up|create account/i)).toBeNull()
   })
@@ -116,38 +144,61 @@ describe('OnboardingScreen', () => {
     render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={onFinish} />)
     advanceToAgeStep()
     pickYear(YEAR - 30)
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
-    // "20 min Serious", not "20 min": the row no longer carries an explicit
-    // `aria-label`, so its accessible name is composed from both lines. That is the
-    // point of the change — the explicit label had duplicated the first line and
-    // suppressed the second, so the word describing what the goal MEANS reached no
-    // screen reader. Matching on both is what keeps that fixed.
-    fireEvent.click(screen.getByRole('radio', { name: /20 min\s*Serious/ }))
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // → region
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // → level
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // → taster
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // age → goal
+    // The goal slider announces its value as words, not as an index — the whole reason
+    // `Slider` takes labelled stops. Asserted here because this is the step where a
+    // number reaching a screen reader instead of "10 min" would be least noticeable.
+    expect(screen.getByRole('slider').getAttribute('aria-valuetext')).toMatch(/10 min/)
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // goal → region
+    answer('Europe') // region → level
+    // Left on the slider's default. Moving it means a drag across a track whose width
+    // jsdom reports as zero, so the honest place to exercise the gesture is the e2e run,
+    // which drives a real pointer across a real layout and asserts the value changed.
+    // `Slider`'s own test covers the index arithmetic.
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → plan
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // plan → taster
     fireEvent.click(screen.getByRole('button', { name: /Start learning/i }))
 
     expect(onFinish).toHaveBeenCalledTimes(1)
     expect(onFinish).toHaveBeenCalledWith({
       birthYear: YEAR - 30,
       isChild: false,
-      dailyGoalMinutes: 20,
+      // Both sliders left where they open, for the reason in `advanceToTaster`.
+      dailyGoalMinutes: 10,
       language: 'en',
-      // Both content answers default to "no opinion", which is what the two steps open
-      // on. A defaulted answer still has to arrive — the route stores it either way.
-      startRegion: null,
+      // Answered rather than defaulted, because there is no longer a way past these two
+      // steps WITHOUT answering: the tap on the answer is the navigation. That is the
+      // point of the change — a defaulted region used to mean "they pressed Continue",
+      // which is not an opinion about anything.
+      startRegion: 'EU',
       level: 'some',
     })
   })
 
-  it('defaults the goal rather than demanding a choice', () => {
-    // A required choice this early is a wall. Ten minutes is the documented default.
+  it('offers the default already chosen, so agreeing costs one tap and no thought', () => {
+    // The rule this protects is "a required choice this early is a wall", and the shape
+    // of the protection had to change with the flow. There is no Continue on this step
+    // any more, so the old spelling — reach the end without expressing a preference —
+    // is not available to anybody.
+    //
+    // It is still not a wall, and the press count is the argument. Agreeing used to cost
+    // one press (Continue) and now costs one press (the row that is already ticked).
+    // Disagreeing used to cost two and now costs one. Nobody pays more than before, and
+    // the pre-selected tick is what still says "ten is fine if you have no opinion"
+    // without making anybody form one.
     const onFinish = vi.fn()
     render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={onFinish} />)
     advanceToAgeStep()
     pickYear(YEAR - 30)
-    advanceToTaster()
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // age → goal
+
+    // Where the track OPENS is the documented default, and it is already the answer.
+    expect(screen.getByRole('slider').getAttribute('aria-valuetext')).toMatch(/10 min/)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // the no-opinion path
+    answer('Europe')
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → plan
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // plan → taster
     fireEvent.click(screen.getByRole('button', { name: /Start learning/i }))
     expect(onFinish.mock.calls[0]![0].dailyGoalMinutes).toBe(10)
   })
@@ -226,11 +277,56 @@ describe('OnboardingScreen', () => {
     // visibility, since jsdom has no viewport to be outside of.
     render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
     // Past the language step, which is now what the flow opens on.
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    answer('English')
     expect(screen.getByText(/five minutes a day/i)).toBeTruthy()
     expect(screen.getByText(/Remembers what you forget/i)).toBeTruthy()
     expect(screen.getByText(/Collect the whole world/i)).toBeTruthy()
     expect(screen.getAllByRole('tab')).toHaveLength(3)
+  })
+
+  it('can take back an answer that navigated away on its own', () => {
+    // The pair that makes auto-advance safe. An answer now commits on the tap that
+    // leaves the step, so without a way back the flow is seven irreversible decisions —
+    // and the one thing a user does after a mis-tap is look for the way back.
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
+    advanceToAgeStep()
+    pickYear(YEAR - 30)
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // age → goal
+    expect(screen.getByRole('slider')).toBeTruthy()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Back' })) // goal → age
+    expect(screen.getByRole('radiogroup', { name: 'Year' })).toBeTruthy()
+    // And the year is still the one they picked, not reset by the round trip.
+    expect(screen.getByRole('radio', { name: String(YEAR - 30) }).getAttribute('aria-checked')).toBe(
+      'true',
+    )
+  })
+
+  it('has nothing to go back to on the first step, and says so rather than hiding it', () => {
+    // Disabled, not absent. A control that appears on step two teaches the user it
+    // might vanish again; one that is visibly dimmed on step one teaches them where it
+    // lives before they need it.
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
+    const back = screen.getByRole('button', { name: 'Back' })
+    expect(back.getAttribute('aria-disabled')).toBe('true')
+
+    answer('English') // → slides
+    expect(screen.getByRole('button', { name: 'Back' }).getAttribute('aria-disabled')).toBeNull()
+  })
+
+  it('walks all the way back to the first question', () => {
+    // One step per press, never out of the flow — the semantics this file's header
+    // argued for and never built.
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
+    advanceToAgeStep()
+    expect(screen.getByText(/When were you born/i)).toBeTruthy()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Back' })) // age → slides
+    expect(screen.getByText(/five minutes a day/i)).toBeTruthy()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Back' })) // slides → language
+    expect(screen.getByText(/Choose your language/i)).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Back' }).getAttribute('aria-disabled')).toBe('true')
   })
 
   it('leaves no raw key or unformatted placeholder on screen', () => {
