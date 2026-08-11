@@ -297,15 +297,42 @@ const skip = (name, why) => {
         const rect = node.getBoundingClientRect()
         for (let p = node.parentElement; p !== null; p = p.parentElement) {
           const style = getComputedStyle(p)
-          const scrolls = /^(auto|scroll)$/.test(style.overflowY) || /^(auto|scroll)$/.test(style.overflowX)
-          if (!scrolls) continue
+          // `hidden` as well as `auto|scroll`, and the two for the same reason.
+          //
+          // This walked scrollable ancestors only, which left a blind spot the size of
+          // every clipping container in the app: `WheelPicker` draws its rows inside a
+          // fixed-height well with `overflow: hidden`, and react-native-web's ScrollView
+          // inside it does not constrain its own height — so a row scrolled out of the
+          // well had no scrollable ancestor to be cropped against and reported the
+          // coordinates it WOULD have had. The onboarding age step failed this check
+          // with "2025 overlaps Continue" while the screenshot showed a clipped wheel
+          // and a button with clear air above it.
+          //
+          // The comment on `visibleRect` above already says it "crops at the nearest
+          // hidden one" — this is the same rule, finally applied in both places.
+          const clips =
+            /^(auto|scroll|hidden)$/.test(style.overflowY) ||
+            /^(auto|scroll|hidden)$/.test(style.overflowX)
+          if (!clips) continue
           const box = p.getBoundingClientRect()
-          return (
+          const inside =
             rect.bottom > box.top + 1 &&
             rect.top < box.bottom - 1 &&
             rect.right > box.left + 1 &&
             rect.left < box.right - 1
-          )
+          // EVERY clipping ancestor, not just the nearest — an element is on screen only
+          // if it survives all of them, and clippers nest.
+          //
+          // Returning on the first one produced a false alarm nobody could act on:
+          // `WheelPicker` puts its rows in a 220 pt well, and at 200 % text that well
+          // hangs below the bottom of the step's own scroller. A row can therefore be
+          // perfectly visible INSIDE the well while the well itself is off screen — and
+          // the check stopped at the well, decided the row was painted, and reported it
+          // overlapping the Continue button underneath. Measured rather than guessed:
+          // the row sat at 766–800 inside a well at 585–803 inside a scroller ending at
+          // 754. Two of those three boxes agreed it was there and the one that mattered
+          // never got asked.
+          if (!inside) return false
         }
         return true
       }
@@ -468,8 +495,22 @@ const skip = (name, why) => {
   await page.waitForTimeout(700)
 
   step('starting level appears', /How well do you know the world/i.test(await body()))
-  await page.getByRole('radio', { name: /I know some/ }).first().click()
-  await page.waitForTimeout(700)
+  // The difficulty answer is a real slider. Driven by an actual drag rather than by
+  // tapping its legend, because the drag is the interaction that was added and a test
+  // that only clicked a label would leave the gesture — and the PanResponder wiring
+  // behind it — completely unexercised.
+  const track = await page.getByRole('slider').first().boundingBox()
+  if (track !== null) {
+    await page.mouse.move(track.x + track.width / 2, track.y + track.height / 2)
+    await page.mouse.down()
+    await page.mouse.move(track.x + track.width - 4, track.y + track.height / 2, { steps: 8 })
+    await page.mouse.up()
+    await page.waitForTimeout(300)
+  }
+  step('the difficulty slider answers to a drag', /Bring it on/i.test(await body()))
+  await page.screenshot({ path: path.join(SHOTS, 'onboarding-level.png') })
+  await page.getByText('Continue', { exact: true }).first().click()
+  await page.waitForTimeout(600)
 
   step('taster promises a lesson with no account', /no account needed/i.test(await body()))
 

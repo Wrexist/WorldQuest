@@ -35,7 +35,10 @@ const advanceToTaster = (): void => {
   fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // age → goal
   answer(/5 min/) // goal → region
   answer('Europe') // region → level
-  answer(/Just starting/) // level → taster
+  // The level step is a slider, so it does not advance on being answered — a drag
+  // passes through every value on its way to one. Its default is 'some' and Continue
+  // is how you leave.
+  fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → taster
 }
 
 /**
@@ -145,7 +148,11 @@ describe('OnboardingScreen', () => {
     // screen reader. Matching on both is what keeps that fixed.
     answer(/20 min\s*Serious/) // goal → region
     answer('Europe') // region → level
-    answer(/Just starting/) // level → taster
+    // Left on the slider's default. Moving it means a drag across a track whose width
+    // jsdom reports as zero, so the honest place to exercise the gesture is the e2e run,
+    // which drives a real pointer across a real layout and asserts the value changed.
+    // `Slider`'s own test covers the index arithmetic.
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → taster
     fireEvent.click(screen.getByRole('button', { name: /Start learning/i }))
 
     expect(onFinish).toHaveBeenCalledTimes(1)
@@ -159,7 +166,7 @@ describe('OnboardingScreen', () => {
       // point of the change — a defaulted region used to mean "they pressed Continue",
       // which is not an opinion about anything.
       startRegion: 'EU',
-      level: 'new',
+      level: 'some',
     })
   })
 
@@ -185,7 +192,7 @@ describe('OnboardingScreen', () => {
 
     answer(/10 min/) // the no-opinion path: agree with what is already there
     answer('Europe')
-    answer(/Just starting/)
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → taster
     fireEvent.click(screen.getByRole('button', { name: /Start learning/i }))
     expect(onFinish.mock.calls[0]![0].dailyGoalMinutes).toBe(10)
   })

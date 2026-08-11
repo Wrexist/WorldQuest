@@ -103,9 +103,12 @@ async function walkOnboarding(page, at = async () => {}) {
   await page.getByRole('radio', { name: 'Europe' }).first().click()
   await page.waitForTimeout(AFTER_ANSWER)
 
+  // The level step is a SLIDER, so it does not advance on being answered — a drag passes
+  // through every value on its way to one. Left on its default ('I know some', the middle
+  // stop) and continued, which is what a user with no strong view does.
   await at('level')
-  await page.getByRole('radio', { name: /I know some/ }).first().click()
-  await page.waitForTimeout(AFTER_ANSWER)
+  await page.getByText('Continue', { exact: true }).first().click()
+  await page.waitForTimeout(500)
 
   // ── taster ────────────────────────────────────────────────────────────────
   await at('taster')

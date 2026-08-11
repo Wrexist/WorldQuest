@@ -44,11 +44,18 @@ export type SpeechBubbleProps = {
   /**
    * Which edge the tail hangs off, i.e. where the speaker is.
    *
-   * `start` points at a mascot beside the bubble; `bottom` at one underneath it. Named
-   * for the SPEAKER rather than for a direction so RTL needs no second thought —
-   * `start` is left in English and right in Arabic, which is where the mascot will be.
+   * `start` points at a mascot beside the bubble, `top` at one above it, `bottom` at one
+   * underneath. Named for the SPEAKER rather than for a direction so RTL needs no second
+   * thought — `start` is left in English and right in Arabic, which is where the mascot
+   * will be.
+   *
+   * `top` is what onboarding uses, and the reason is width: a mascot BESIDE the bubble
+   * splits a 320 pt screen between them and neither gets enough, so the speaker was
+   * capped at 72 pt to leave the question a readable measure. Stacked, both get the full
+   * width — which is what lets Atlas be twice the size and the question still break
+   * where a sentence should.
    */
-  from?: 'start' | 'bottom'
+  from?: 'start' | 'top' | 'bottom'
   style?: StyleProp<ViewStyle>
 }
 
@@ -58,7 +65,7 @@ export function SpeechBubble({ children, from = 'start', style }: SpeechBubblePr
   return (
     <View style={[styles.wrap, style]}>
       <View
-        style={[styles.tail, from === 'start' ? styles.tailStart : styles.tailBottom]}
+        style={[styles.tail, TAIL_AT[from]]}
         aria-hidden
         importantForAccessibility="no-hide-descendants"
         pointerEvents="none"
@@ -101,5 +108,16 @@ const styles = StyleSheet.create({
   // Half the square sits outside the body; the body's own fill hides the inner half,
   // which is why the two borders never show a seam across the mouth of the tail.
   tailStart: { start: -TAIL / 2, top: space[5] },
+  tailTop: { top: -TAIL / 2, alignSelf: 'center' },
   tailBottom: { bottom: -TAIL / 2, alignSelf: 'center' },
 })
+
+/**
+ * Looked up rather than nested ternaries, so a fourth direction is one line here and
+ * one line in the union above — and neither is a place a reader has to unpick.
+ */
+const TAIL_AT = {
+  start: styles.tailStart,
+  top: styles.tailTop,
+  bottom: styles.tailBottom,
+} as const

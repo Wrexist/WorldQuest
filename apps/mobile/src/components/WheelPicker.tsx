@@ -98,6 +98,28 @@ const VISIBLE = 5
 const VISIBLE_SHORT = 3
 const SHORT_SCREEN = 700
 
+/**
+ * How far a row's label may grow. The second cap in the app, and `AppChrome`'s comment
+ * on the first one demands this be justified rather than copied: *"the moment a second
+ * component wants a cap, the right move is to ask why its layout cannot hold its own
+ * text."*
+ *
+ * The answer here is that `ROW` is not a layout choice. It is 44 because that is the
+ * touch-target floor, and it is simultaneously `snapToInterval` — the pitch the wheel
+ * snaps on. A row that grew with the text would either break the snap arithmetic or stop
+ * being a reachable target, and iOS's own picker does not grow its rows with Dynamic Type
+ * either; it scales the text inside a bounded cell.
+ *
+ * 1.4, not 1.2: `h3` is 18, so this stops at 25 in a 44 pt row, which still leaves room
+ * for the descenders. The label keeps scaling — refusing to scale at all is what the
+ * accessibility spec forbids and is the lazy version of this fix.
+ *
+ * Found by `pnpm e2e`, which photographed "2026" painted over the Continue button at
+ * 200 % text. The wheel had been at its limit and a taller question above it was what
+ * pushed it over.
+ */
+const ROW_MAX_SCALE = 1.4
+
 export function WheelPicker<T extends string | number>({
   options,
   value,
@@ -148,6 +170,15 @@ export function WheelPicker<T extends string | number>({
 
       <ScrollView
         ref={scroller}
+        // Bounded to the well, explicitly.
+        //
+        // Without a height the scroller is sized by its CONTENT — a hundred rows — and
+        // only the frame's `overflow: hidden` stopped it being visible. Its box still
+        // extended hundreds of points down the screen, which is invisible until
+        // something measures it: the 200 %-text check reported "2025 overlaps Continue"
+        // for a row that was clipped out of sight, because the row really was inside its
+        // scroller's rect and the scroller really did reach the button.
+        style={{ height: visible * ROW }}
         showsVerticalScrollIndicator={false}
         // The two properties that make this a wheel rather than a list. `fast` is what
         // stops a fling from coasting past twenty rows before it settles.
@@ -173,6 +204,8 @@ export function WheelPicker<T extends string | number>({
               style={styles.row}
             >
               <Text
+                maxFontSizeMultiplier={ROW_MAX_SCALE}
+                dataSet={{ maxScale: String(ROW_MAX_SCALE) }}
                 numberOfLines={1}
                 style={[
                   styles.label,
