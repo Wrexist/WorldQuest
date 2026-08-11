@@ -118,7 +118,7 @@
   "lesson:answer.wrong": "{answer}, not the answer",
   "lesson:answer.wrong__note": "Accessibility label for the option the user chose when it was wrong. Deliberately NOT 'incorrect' or 'wrong answer' shouted at the user — it states which option is not the answer, in the same register as the visible copy 'That's Berlin. The answer is Paris.' See docs/design/voice-and-tone.md.",
   "lesson:prompt.language_of": "What language do people speak in {entityName}?",
-  "lesson:prompt.language_of__note": "Language question. Deliberately \"do people speak\" rather than \"is the official language of\" — a ten-year-old reads past the second one. Only generated for countries with ONE official language, and only where the country name does not give the answer away (Austria yes, Sweden no) — see scripts/build-country-facts.cjs. {entityName} is a localised country name from the pack.",
+  "lesson:prompt.language_of__note": "Language question. Deliberately \"do people speak\" rather than \"is the official language of\" — a ten-year-old reads past the second one. Only generated for countries the dataset lists ONE language for, and only where the country name does not give the answer away (Austria yes, Sweden no) — see scripts/build-country-facts.cjs. {entityName} is a localised country name from the pack.",
   "lesson:prompt.language_reverse": "Which of these countries speaks {valueName}?",
   "lesson:prompt.language_reverse__note": "\"Which of THESE\", not \"which country\" — Spanish is spoken in twenty countries and the honest question is which of the four on screen. {valueName} is a language name like \"Portuguese\".",
   "lesson:prompt.calling_code_of": "Which dialling code calls {entityName}?",

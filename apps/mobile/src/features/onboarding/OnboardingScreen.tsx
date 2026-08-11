@@ -92,6 +92,7 @@ import {
 } from '../explore/ExploreScreen.js'
 import { Art } from '../../components/Art.js'
 import { WheelPicker, type WheelOption } from '../../components/WheelPicker.js'
+import { LEVELS, type LevelChoice } from './levels.js'
 import type { ArtName } from '../../lib/art.generated.js'
 
 /** The age at which the child branch applies. COPPA; GDPR-K varies by country and is stricter in places. */
@@ -159,26 +160,6 @@ type Step = 'language' | 'slides' | 'age' | 'goal' | 'region' | 'level' | 'taste
  * answer goes nowhere is a form, not an onboarding.
  */
 const STEPS: readonly Step[] = ['language', 'slides', 'age', 'goal', 'region', 'level', 'taster']
-
-/**
- * Self-assessed starting level, and the authored difficulty band each one asks for.
- *
- * `Fact.difficulty` is a 1-5 prior about how hard a thing is to know in general — see
- * `docs/systems/question-difficulty.md`. Filtering on it is exactly what somebody
- * choosing "just starting" is asking for, and the bands overlap on purpose: a hard edge
- * at 3 would make the middle option a different app from the easy one rather than a
- * wider version of it.
- *
- * The band applies to the FIRST lessons only. FSRS infers a per-learner difficulty from
- * real answers within a session or two and that number is better than any self-report,
- * which is what `onboarding:level.body` promises out loud.
- */
-export const LEVELS = {
-  new: { min: 1, max: 3 },
-  some: { min: 1, max: 4 },
-  confident: { min: 3, max: 5 },
-} as const
-export type LevelChoice = keyof typeof LEVELS
 
 const LEVEL_COPY = {
   new: { label: 'onboarding:level.new', body: 'onboarding:level.newBody' },
@@ -623,66 +604,78 @@ export function OnboardingScreen({
                 tile background. Seven pictures of the world is the most premium this
                 flow gets to look, and it costs nothing new: the same masters the Explore
                 tab already ships. */}
-            <View style={styles.regionGrid} role="radiogroup" aria-label={t('onboarding:region.title')}>
-              {REGIONS.map((code) => {
-                const chosen = startRegion === code
-                return (
-                  <Pressable
-                    key={code}
-                    role="radio"
-                    aria-checked={chosen}
-                    aria-label={t(REGION_NAME[code])}
-                    onPress={() => {
-                      if (!chosen) hapticSelect()
-                      setStartRegion(code)
-                    }}
-                    style={[styles.regionCell, chosen && styles.regionCellOn]}
-                  >
-                    {/* Sky, then landmass, the same two layers the Explore tiles use.
-                        The sky alone is seven coloured gradients — correct as atmosphere
-                        and a map of nowhere, which is the exact gap the silhouettes were
-                        delivered to close. Antarctica has no silhouette in the delivery
-                        and renders as sky, which is what `CONTINENT_SILHOUETTE` being
-                        `Partial` is for. */}
-                    <View style={styles.regionArt}>
-                      <Art name={CONTINENT_ART[code]} size={REGION_ART} frame="bleed" />
-                      {CONTINENT_SILHOUETTE[code] !== undefined && (
-                        <View style={styles.regionShape} pointerEvents="none">
-                          <Art
-                            name={CONTINENT_SILHOUETTE[code]}
-                            size={Math.round(REGION_ART * 0.78)}
-                            frame="bleed"
-                          />
-                        </View>
-                      )}
-                    </View>
-                    <Text style={styles.regionLabel} numberOfLines={1}>
-                      {t(REGION_NAME[code])}
-                    </Text>
-                  </Pressable>
-                )
-              })}
-            </View>
-
-            <Pressable
-              role="radio"
-              aria-checked={startRegion === null}
-              onPress={() => {
-                if (startRegion !== null) hapticSelect()
-                setStartRegion(null)
-              }}
-              style={[styles.anywhere, startRegion === null && styles.anywhereOn]}
+            {/* One radiogroup around ALL eight options, grid and "anywhere" alike.
+                "Anywhere" used to sit outside it. It is the same question, and it is the
+                mutually exclusive answer that makes the other seven a choice rather than
+                a toggle — but a screen reader announced it as a lone radio belonging to
+                nothing: "radio, not checked", with no group name and no "8 of 8" to
+                place it among the continents it competes with. */}
+            <View
+              style={styles.regionGroup}
+              role="radiogroup"
+              aria-label={t('onboarding:region.title')}
             >
-              <Text style={styles.goalMinutes}>{t('onboarding:region.anywhere')}</Text>
-              <View style={styles.flex} />
-              <Text
-                style={[styles.tick, startRegion !== null && styles.tickOff]}
-                aria-hidden
-                importantForAccessibility="no-hide-descendants"
+              <View style={styles.regionGrid}>
+                {REGIONS.map((code) => {
+                  const chosen = startRegion === code
+                  return (
+                    <Pressable
+                      key={code}
+                      role="radio"
+                      aria-checked={chosen}
+                      aria-label={t(REGION_NAME[code])}
+                      onPress={() => {
+                        if (!chosen) hapticSelect()
+                        setStartRegion(code)
+                      }}
+                      style={[styles.regionCell, chosen && styles.regionCellOn]}
+                    >
+                      {/* Sky, then landmass, the same two layers the Explore tiles use.
+                          The sky alone is seven coloured gradients — correct as atmosphere
+                          and a map of nowhere, which is the exact gap the silhouettes were
+                          delivered to close. Antarctica has no silhouette in the delivery
+                          and renders as sky, which is what `CONTINENT_SILHOUETTE` being
+                          `Partial` is for. */}
+                      <View style={styles.regionArt}>
+                        <Art name={CONTINENT_ART[code]} size={REGION_ART} frame="bleed" />
+                        {CONTINENT_SILHOUETTE[code] !== undefined && (
+                          <View style={styles.regionShape} pointerEvents="none">
+                            <Art
+                              name={CONTINENT_SILHOUETTE[code]}
+                              size={Math.round(REGION_ART * 0.78)}
+                              frame="bleed"
+                            />
+                          </View>
+                        )}
+                      </View>
+                      <Text style={styles.regionLabel} numberOfLines={1}>
+                        {t(REGION_NAME[code])}
+                      </Text>
+                    </Pressable>
+                  )
+                })}
+              </View>
+
+              <Pressable
+                role="radio"
+                aria-checked={startRegion === null}
+                onPress={() => {
+                  if (startRegion !== null) hapticSelect()
+                  setStartRegion(null)
+                }}
+                style={[styles.anywhere, startRegion === null && styles.anywhereOn]}
               >
-                ✓
-              </Text>
-            </Pressable>
+                <Text style={styles.goalMinutes}>{t('onboarding:region.anywhere')}</Text>
+                <View style={styles.flex} />
+                <Text
+                  style={[styles.tick, startRegion !== null && styles.tickOff]}
+                  aria-hidden
+                  importantForAccessibility="no-hide-descendants"
+                >
+                  ✓
+                </Text>
+              </Pressable>
+            </View>
 
             <Spacer />
           </ScrollView>
@@ -790,7 +783,7 @@ export function OnboardingScreen({
             onPress={() => {
               // On leaving, like the goal step: what matters is where they settled, not
               // every continent they touched on the way there.
-              track('onboarding_region_selected', { region: startRegion ?? 'any' })
+              track('onboarding_region_selected', { region: startRegion ?? 'world' })
               setStep('level')
             }}
           />
@@ -940,6 +933,15 @@ const styles = StyleSheet.create({
    * same reason the lesson's answer grid does it: a percentage plus a gap overflows the
    * row by the gap.
    */
+  /**
+   * Carries what the grid and the "anywhere" row used to get from `form` directly.
+   *
+   * Wrapping them in one radiogroup made them a single child of a centred container
+   * with a `gap`, so without these two lines the group shrinks to its content width and
+   * loses the space between its two halves. The a11y grouping is free; the layout it
+   * would quietly have cost is not.
+   */
+  regionGroup: { alignSelf: 'stretch', gap: space[2] },
   regionGrid: {
     alignSelf: 'stretch',
     flexDirection: 'row',

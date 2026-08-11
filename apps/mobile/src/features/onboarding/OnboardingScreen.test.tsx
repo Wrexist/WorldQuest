@@ -50,6 +50,19 @@ describe('OnboardingScreen', () => {
     expect(screen.queryByText(/sign up|create account/i)).toBeNull()
   })
 
+  it('applies a language on tap, not on Continue', () => {
+    // The step's whole claim is that the app changes language while you are looking at
+    // it — `onLanguage` is wired to `set('language', …)`, which calls `setLocale`. Every
+    // other test in this file passed `onLanguage={vi.fn()}` and none of them ever tapped
+    // a row, so the one behaviour the step exists for was the one thing unasserted.
+    const onLanguage = vi.fn()
+    render(
+      <OnboardingScreen currentYear={YEAR} language="en" onLanguage={onLanguage} onFinish={vi.fn()} />,
+    )
+    fireEvent.click(screen.getByRole('radio', { name: 'Svenska' }))
+    expect(onLanguage).toHaveBeenCalledWith('sv')
+  })
+
   it('lets a user skip the carousel rather than trapping them in it', () => {
     render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
     advanceToAgeStep()

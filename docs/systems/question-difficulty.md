@@ -1,4 +1,4 @@
-# Question difficulty — what the 1–5 means, and what the modifier means
+# Question difficulty — what the fact's 1–5 means, and what the modifier means
 
 Two numbers decide how hard a question is, and they answer different questions.
 
@@ -7,9 +7,16 @@ Two numbers decide how hard a question is, and they answer different questions.
 | `Fact.difficulty` | the fact, 1–5 | how hard is this **thing to know**? |
 | `Template.difficultyModifier` | the template | how much harder does this **way of asking** make it? |
 
-An item's difficulty is the sum. Keeping them apart is what lets "the capital of France"
-be easy while "Paris is the capital of which country?" is a step harder without anybody
-writing the same fact down twice.
+An item's difficulty is the sum, and **the sum is not on the 1–5 scale.** Only
+`Fact.difficulty` is; adding a modifier of up to 2 puts an item anywhere in 1–7. Nothing
+reads the sum as if it were a fact difficulty — `startLevel` filters on `Fact.difficulty`
+alone (`apps/mobile/src/features/onboarding/levels.ts`) — and this line says so because
+"1–5" in the title of a page whose central arithmetic produces 7 is exactly the kind of
+half-true that gets copied into the next thing somebody writes.
+
+Keeping the two apart is what lets "the capital of France" be easy while "Paris is the
+capital of which country?" is a step harder, without anybody writing the same fact down
+twice.
 
 ---
 
@@ -25,7 +32,11 @@ discriminates best.
 
 **Item response theory** replaces that with a *b* parameter: the ability level at which a
 learner has a 50 % chance of answering correctly, on a scale where 0 is average and ±2 is
-hard or easy. It is the better model and it is not free — calibrating one item takes
+hard or easy. The 50 % reading is the one- and two-parameter models'; a 3PL adds a
+guessing parameter *c*, and there *b* is the ability at which the probability is halfway
+between *c* and 1 — for four-option multiple choice, about 0.625 again. Worth stating
+because four options is what this app asks in, so the 3PL is the family it would actually
+calibrate against. It is the better model and it is not free — calibrating one item takes
 roughly 100–1000 responses, which is why IRT is a standardised-testing technique rather
 than a classroom-quiz one.
 

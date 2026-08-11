@@ -19,7 +19,7 @@
  *
  * ## The questions this deliberately does NOT generate
  *
- * **Countries with more than one official language.** Belgium speaks Dutch, French and
+ * **Countries with more than one principal language.** Belgium speaks Dutch, French and
  * German, and a four-option question with three right answers is not a hard question, it
  * is a broken one. The engine's `isAmbiguous` only guards reverse questions, so this is
  * the layer that has to care. Forty-six of the sixty-five qualify.
@@ -66,9 +66,16 @@ const VERIFIED_AT = '2026-08-10'
  */
 const SOURCES = {
   language: {
+    // "Principal language", not "official language". The dataset's `languages` field is
+    // a list of ISO 639-1 codes in principal-first order, and several countries in it
+    // have no official language in law at all — the United States and Australia both
+    // have English by universal use rather than by statute. Calling the first code
+    // "the official language" would state a legal fact this pack cannot support, which
+    // in a learning app is the expensive kind of wrong. The prompt users read has
+    // always said "what language do people speak", and this now says the same thing.
     name:
-      'countries-list v3.4.1 (MIT), ISO 639-1 principal official language; ' +
-      'language names from CLDR via Intl.DisplayNames',
+      'countries-list v3.4.1 (MIT), ISO 639-1 principal language (first listed, ' +
+      'de jure or de facto); language names from CLDR via Intl.DisplayNames',
     url: 'https://github.com/annexare/Countries',
     verifiedAt: VERIFIED_AT,
   },
@@ -212,9 +219,10 @@ for (const entity of [...entities].sort((a, b) => a.id.localeCompare(b.id))) {
     difficulty: difficultyFor(entity.id),
     tags: ['language', entity.region, `lang:${code}`, 'core'],
     source: SOURCES.language,
-    // `slow`, like a currency and unlike a flag. An official language is a legal status
-    // a parliament can change — and several have this decade — so a two-year
-    // re-verification window is the wrong promise to make about this column.
+    // `slow`, like a currency and unlike a flag. Which language a country's people
+    // principally speak shifts with migration and with the odd act of parliament — not
+    // fast, but not never — so a two-year re-verification window is the wrong promise
+    // to make about this column.
     volatility: 'slow',
   })
 }
@@ -260,7 +268,7 @@ console.log(`\nCountry facts from countries-list\n`)
 console.log(`  languages      ${String(languageFacts.length).padStart(3)} facts`)
 console.log(`  calling codes  ${String(callingFacts.length).padStart(3)} facts`)
 console.log(`\n  not asked, and why:`)
-console.log(`    ${String(skipped.multilingual.length).padStart(3)} more than one official language`)
+console.log(`    ${String(skipped.multilingual.length).padStart(3)} more than one language listed`)
 console.log(`    ${String(skipped.selfAnswering.length).padStart(3)} the country's name gives the language away`)
 if (skipped.unknownLanguage.length > 0) {
   console.log(`    ${String(skipped.unknownLanguage.length).padStart(3)} no CLDR name: ${skipped.unknownLanguage.join(', ')}`)

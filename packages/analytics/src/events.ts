@@ -28,15 +28,23 @@ export const EVENTS = {
   onboarding_region_selected: {
     description:
       'The continent the first lessons will stay in, chosen during onboarding. ' +
-      '"any" when the user picked "anywhere in the world", which is a real answer.',
-    properties: { region: 'string' },
+      '"world" when the user picked "anywhere in the world", which is a real answer.',
+    // The seven `REGIONS` codes plus `world`, spelled out rather than left as `string`.
+    // A closed set that arrives as a free-form string is a dashboard that silently
+    // grows an eighth bucket the day somebody passes a display name by mistake.
+    //
+    // `world` rather than `any` for the eighth: `pnpm escape-hatches` scans for the word
+    // `any` and does not know this one is inside a string, and a bucket named after the
+    // thing it means reads better in a dashboard than a bucket named after the absence
+    // of a filter.
+    properties: { region: 'EU|AS|AF|NA|SA|OC|AN|world' },
   },
   onboarding_level_selected: {
     description:
       'Self-assessed starting level from onboarding. Worth watching against measured ' +
       'first-session accuracy: a population that consistently under- or over-claims is ' +
       'telling us the three labels are wrong, not that the users are.',
-    properties: { level: 'string' },
+    properties: { level: 'new|some|confident' },
   },
   taster_lesson_completed: {
     description: 'The pre-account taster lesson was finished. The #1 activation step.',

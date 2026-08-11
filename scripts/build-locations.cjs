@@ -219,6 +219,24 @@ const items = [...askable]
      * So the id says what this fact asserts and the attribute says what shape of question
      * it is. The schema documents the third segment as a slug rather than as the
      * attribute for this reason.
+     *
+     * ## What happens to the `geo.<CC>.location` rows
+     *
+     * Nothing, and that is the whole plan, because the app has not launched: there are no
+     * `review_log` or `user_facts` rows carrying the old id anywhere but on a developer's
+     * simulator, and a migration written to move zero rows is a migration nobody can test.
+     *
+     * The behaviour if a row does exist is still defined rather than accidental. Both
+     * tables are keyed by fact id and neither has a foreign key into the packs — the packs
+     * ship in the binary, so there is nothing for the database to reference — so an
+     * orphaned row is simply a memory of a fact no template can now produce. It is never
+     * scheduled, never shown, and never counted, because item selection walks the content
+     * index and the index has no such fact. It is dead weight, not a wrong answer.
+     *
+     * Should this happen again AFTER launch, the answer is different and is not a rename:
+     * write a forward-only migration that DELETES the old rows rather than repointing
+     * them, for the reason above — the answer changed, so the old memory is about a
+     * question the learner was never asked.
      */
     id: `geo.${e.id}.continent`,
     entity: e.id,

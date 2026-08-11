@@ -6,16 +6,12 @@
  * that costs a tap for no reason.
  */
 
-import { useMemo } from 'react'
 import { router, useLocalSearchParams } from 'expo-router'
-import { entitiesInGroup, type LessonFocus } from '@worldquest/engines'
 import { LessonScreen } from '../src/features/lesson/LessonScreen.js'
 import { useProgress } from '../src/features/home/useProgress.js'
 import { useEntitlement } from '../src/features/paywall/useEntitlement.js'
-import { useContent } from '../src/lib/content.js'
 import { parseFocusParams } from '../src/features/lesson/focusParams.js'
-import { usePreferences } from '../src/features/settings/usePreferences.js'
-import { LEVELS } from '../src/features/onboarding/OnboardingScreen.js'
+import { useLessonFocus } from '../src/features/lesson/useLessonFocus.js'
 
 export default function LessonRoute() {
   // `/lesson?mode=speed`. A query param rather than a second route: it is the same
@@ -39,70 +35,14 @@ export default function LessonRoute() {
    * page sends `?entity=SE`, the region page sends `?region=EU`, and none of them has to
    * write to a store the runner reads back. Absent params mean the mixed lesson, which is
    * every existing caller and every existing notification.
+   *
+   * Which of those answers wins, and when onboarding's stored answers get to fill a gap,
+   * is policy and lives in `useLessonFocus`. This route hands it the params.
    */
-  const { index } = useContent()
-  const parsed = parseFocusParams({ facts, attr, entity, region, min, max, len })
-  const { preferences } = usePreferences()
-
-  /**
-   * What onboarding asked for, used only where the URL asked for nothing.
-   *
-   * The two content questions in onboarding — which continent, and how well do you know
-   * the world — have to change a lesson or they are a survey, and this is the one place
-   * every unfocused lesson passes through, including `?taster=1`. The taster is the
-   * first lesson anybody ever plays, which is exactly when "just starting" and "bring it
-   * on" should mean different things.
-   *
-   * **The URL always wins.** Tapping Sweden on the country page, or a continent on the
-   * region page, is a specific request made just now; a preference set once during
-   * onboarding must not quietly narrow it further. So this fills gaps and never
-   * overrides — and it drops out entirely for the daily quest, which arrives with exact
-   * `factIds` and has already decided what today is about.
-   *
-   * It fades on its own, which is the point of a STARTING preference. FSRS infers a real
-   * per-learner difficulty within a session or two and the scheduler's own ordering takes
-   * over; this only has to make the first few lessons feel like they were meant for you.
-   */
-  const focus = useMemo<LessonFocus | undefined>(() => {
-    if (index === null) return undefined
-    // A region code becomes entity ids HERE, where the index is. The engine has no idea
-    // what a continent is and the params module has none either — both by design.
-    const fromRegion =
-      parsed.region === undefined ? [] : entitiesInGroup(index.index, 'region', parsed.region)
-    const entities = [...new Set([...parsed.entities, ...fromRegion])]
-
-    // Only when the URL named no facts, no entities and no region — see above. A quest
-    // lesson carries `factIds` and is left completely alone.
-    const unfocused =
-      parsed.factIds.length === 0 && entities.length === 0 && parsed.region === undefined
-    const startEntities =
-      unfocused && preferences.startRegion !== null
-        ? entitiesInGroup(index.index, 'region', preferences.startRegion)
-        : []
-    const startBand = unfocused && parsed.difficulty === undefined
-      ? LEVELS[preferences.startLevel]
-      : undefined
-
-    const built: LessonFocus = {
-      ...(parsed.factIds.length > 0 ? { factIds: parsed.factIds } : {}),
-      ...(parsed.attributes.length > 0 ? { attributes: parsed.attributes } : {}),
-      // An empty list would mean "these entities, of which there are none" and compose a
-      // lesson of nothing — see `focusFilter`. A start region nobody is in fails OPEN,
-      // which is the right direction for a preference the user cannot see.
-      ...(entities.length > 0
-        ? { entities }
-        : startEntities.length > 0
-          ? { entities: startEntities }
-          : {}),
-      ...(parsed.difficulty ? { difficulty: parsed.difficulty } : startBand ? { difficulty: startBand } : {}),
-    }
-    // `undefined` rather than an empty object, so the runner's `focus ? …` spread keeps
-    // an unfocused lesson on exactly the path it took before this existed.
-    return Object.keys(built).length > 0 ? built : undefined
-    // The raw param STRINGS, not `parsed`. `parseFocusParams` returns a fresh object on
-    // every render, so depending on it would defeat the memo entirely — and the memo is
-    // what stops a new `focus` identity from recomposing the lesson mid-question.
-  }, [index, facts, attr, entity, region, min, max, preferences.startRegion, preferences.startLevel])
+  const focus = useLessonFocus({ facts, attr, entity, region, min, max, len })
+  // `length` is not focus and not policy — it is one URL param read straight through to
+  // the runner, so it stays here rather than riding along in the hook's return.
+  const { length } = parseFocusParams({ len })
   // Fetched here rather than in the screen: server state belongs to the route, and
   // the runner should stay mountable without a QueryClientProvider.
   const { data } = useProgress()
@@ -115,7 +55,7 @@ export default function LessonRoute() {
     <LessonScreen
       mode={mode === 'speed' ? 'speed' : 'normal'}
       {...(focus ? { focus } : {})}
-      {...(parsed.length !== undefined ? { length: parsed.length } : {})}
+      {...(length !== undefined ? { length } : {})}
       // Set only by the onboarding hand-off. Finishing this one lesson is the single
       // biggest predictor of a user coming back, so it gets its own event rather than
       // being inferred later from "first lesson_completed", which is wrong for anyone

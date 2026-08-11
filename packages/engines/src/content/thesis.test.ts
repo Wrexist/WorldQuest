@@ -361,6 +361,42 @@ describe('question construction', () => {
     expect(isAmbiguous(built, item, 'en')).toBe(false)
   })
 
+  it('never ships a reverse question the packs themselves make unanswerable', () => {
+    // The three tests above prove the rule on a fixture. This one proves it on the
+    // content that actually ships, because a fixture cannot tell you whether the packs
+    // contain a value twenty-one countries share — and they do.
+    //
+    // Stated as an invariant over every reverse template rather than by naming the two
+    // that motivated it: a pack author adding a third gets checked for free, which is
+    // the whole reason the guard lives in the engine and not in a script.
+    let dropped = 0
+    for (const template of templates) {
+      if (template.answer.from !== 'entity.names') continue
+      if (template.modality === 'map') continue // the map IS the prompt — see below
+      for (const item of index.items.filter((i) => i.templateId === template.id)) {
+        const fact = index.facts.get(item.factId)!
+        const value = fact.value.names?.['en']
+        const sharedWith = [...index.facts.values()].filter(
+          (other) =>
+            other.attribute === fact.attribute &&
+            other.entity !== fact.entity &&
+            index.entities.has(other.entity) &&
+            other.value.names?.['en'] === value,
+        )
+        const question = buildQuestion(index, item, 'en', seededRng(7))
+        if (sharedWith.length > 0) {
+          expect(question, `${template.id} on ${fact.id} — ${sharedWith.length} others say "${value}"`).toBeNull()
+          dropped++
+        }
+      }
+    }
+    // Not vacuous: the shipped packs really do contain shared values — eight countries
+    // answer "Spanish", five "English", and the US and Canada both dial +1 — so this
+    // loop has to have refused something. Without this line the test would still pass
+    // on the day someone deleted every ambiguous fact AND the guard along with it.
+    expect(dropped).toBeGreaterThan(0)
+  })
+
   it('refuses a question whose prompt contains its own answer', () => {
     // "Guatemala City is the capital of which country?" is a free point. So is Panama
     // City, and Mexico City, and Kuwait, and Luxembourg, and Djibouti, and Singapore.

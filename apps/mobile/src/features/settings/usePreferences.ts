@@ -12,7 +12,7 @@
  * it at whatever the phone said the day they tapped it.
  */
 
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { SUPPORTED_LOCALES, setLocale, type Locale } from '@worldquest/i18n'
 import { readJson, writeJson } from '../../lib/storage.js'
 import { deviceLocale } from '../../lib/locale.js'
@@ -99,9 +99,26 @@ export type UsePreferences = {
 export function usePreferences(): UsePreferences {
   const [preferences, setPreferences] = useState<Preferences>(load)
 
+  /**
+   * The latest preferences, readable synchronously between renders.
+   *
+   * `set` used to build each write from the `preferences` of the render that created
+   * it. That is correct for a settings screen, where every write is a separate tap a
+   * render apart — and wrong the moment two writes happen in one handler. Onboarding
+   * stores three answers in its `finish`, and all three read the same stale snapshot:
+   * the last one wins and the first two are lost, so the two new onboarding questions
+   * changed no lesson at all.
+   *
+   * A ref rather than a functional `setPreferences` updater because the write to
+   * device storage has to happen exactly once per call. An updater is allowed to run
+   * twice, and under StrictMode it does.
+   */
+  const latest = useRef(preferences)
+
   const set = useCallback(
     <K extends keyof Preferences>(key: K, value: Preferences[K]): void => {
-      const next = { ...preferences, [key]: value }
+      const next = { ...latest.current, [key]: value }
+      latest.current = next
       writeJson(KEY, next)
       setPreferences(next)
 
@@ -116,7 +133,9 @@ export function usePreferences(): UsePreferences {
         void setLocale(choice === 'system' ? deviceLocale() : choice)
       }
     },
-    [preferences],
+    // Stable for the life of the hook: everything it reads comes from the ref, so
+    // there is nothing here for a dependency to track.
+    [],
   )
 
   return { preferences, set }
