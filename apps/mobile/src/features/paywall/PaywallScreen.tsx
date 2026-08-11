@@ -125,6 +125,23 @@ const STATE_ART = 88
 /** Same as the lesson summary's, so the two screens read as one moment. */
 const FLAG_WIDTH = 56
 
+/**
+ * Atlas on the parental gate.
+ *
+ * `voice-and-tone.md` keeps him out of paywalls, and the gate is not one: there is no
+ * price on it, nothing to buy and nothing being asked for. It is a child being told that
+ * what they already have is theirs, which is the encouraging register he exists for.
+ * Without him the screen was three centred paragraphs of system text — which is what a
+ * refusal looks like, and the screen is not a refusal.
+ */
+const GATE_ART = 148
+
+/**
+ * What Premium includes, listed on the page that has the price on it.
+ *
+ * The same four strings page 2 shows. One list rather than two, so the pages cannot come
+ * to disagree about what somebody is buying.
+ */
 const PERKS = [
   'paywall:perk.hearts',
   'paywall:perk.offline',
@@ -342,6 +359,16 @@ export function PaywallScreen({
                 label={t('paywall:plan.annual')}
                 perMonth={t('paywall:plan.perMonth', { price: annual.pricePerMonth })}
                 total={t('paywall:plan.billedYearly', { price: annual.price })}
+                // Two badges, and both are FACTS rather than persuasion. The saving is
+                // computed from the store's own `amountMicros`; "Best value" is true of
+                // whichever plan costs less per month. Deliberately not "Most popular" —
+                // this app has no purchase data and inventing some is the line between
+                // a sell and a lie.
+                // ONE badge, and the concrete one. A "Best value" ribbon was tried above
+                // the card and was clipped by its own corner radius — and it was saying a
+                // vaguer version of what the saving already says. "Save 46%" is computed
+                // from the store's `amountMicros`; it is a fact, and it is the fact that
+                // moves somebody to the yearly plan.
                 badge={saving === null ? undefined : t('paywall:plan.save', { percent: saving })}
                 selected={selected === 'annual'}
                 onSelect={() => setSelected('annual')}
@@ -355,6 +382,23 @@ export function PaywallScreen({
                 onSelect={() => setSelected('monthly')}
               />
             )}
+
+            {/* What the price BUYS, next to the price.
+                The four perks lived on page 2 and the plans page was pure typography, so
+                the one screen where a person decides had the number and none of the
+                value on it. Nothing new is claimed: the same `paywall:perk.*` strings,
+                moved to where the decision happens. */}
+            <Text style={styles.includesTitle}>{t('paywall:plans.includes')}</Text>
+            <View style={styles.includes}>
+              {PERKS.map((perk) => (
+                <View key={perk} style={styles.includesRow}>
+                  <Text style={styles.includesTick} aria-hidden importantForAccessibility="no-hide-descendants">
+                    ✓
+                  </Text>
+                  <Text style={styles.includesText}>{t(perk)}</Text>
+                </View>
+              ))}
+            </View>
 
             {/* Terms above the button, in words, not behind a link. Both stores require
                 the price and the renewal to be legible before the tap; so does anyone
@@ -454,6 +498,13 @@ function ParentalGate({ onContinue }: { onContinue: () => void }) {
 
   return (
     <View style={[styles.screen, styles.centred]}>
+      {/* Atlas, on the one paywall page he is allowed on.
+          `voice-and-tone.md` keeps him out of paywalls, and this is not one: there is no
+          price on it, nothing to buy, and nothing being asked for. It is a child being
+          told that what they already have is theirs — which is exactly the encouraging
+          register he exists for. Without him this was three centred paragraphs of system
+          text, which is what a refusal looks like. */}
+      <Art name="atlas/encouraging" size={GATE_ART} />
       <Text style={styles.title} role="heading" aria-level={1}>
         {t('paywall:adult.title')}
       </Text>
@@ -475,6 +526,7 @@ function PlanCard({
   perMonth: string
   total?: string | undefined
   badge?: string | undefined
+  /** Marks the cheaper-per-month plan. A fact about the prices, not a popularity claim. */
   selected: boolean
   onSelect: () => void
 }) {
@@ -513,6 +565,12 @@ function PlanCard({
 
 const styles = StyleSheet.create({
   screen: { flex: 1, padding: space[4], gap: space[4] },
+  includesTitle: { ...text('overline'), color: colors.text.tertiary, textAlign: 'center' },
+  includes: { alignSelf: 'center', gap: space[2] },
+  includesRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  includesTick: { ...text('body', { weight: '700' }), color: colors.action.primary },
+  includesText: { ...text('body'), color: colors.text.secondary },
+
   centred: { alignItems: 'center', justifyContent: 'center' },
   scroll: { flex: 1 },
   body: { flexGrow: 1, gap: space[4] },
@@ -542,7 +600,23 @@ const styles = StyleSheet.create({
   planOn: { borderColor: colors.action.primary },
   planTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   planLabel: { ...text('bodyStrong'), color: colors.text.primary },
-  badge: { ...text('caption'), color: colors.status.progress },
+  /**
+   * A filled pill, not green text.
+   *
+   * The saving is the single most persuasive thing on this screen and it was rendering
+   * as one more line of coloured type among four. A pill gives it a shape the eye finds
+   * before it reads anything, which is the whole job of a badge — and it is the only
+   * emphasis on the page that is not also a claim.
+   */
+  badge: {
+    ...text('caption', { weight: '700' }),
+    color: colors.text.onAccent,
+    backgroundColor: colors.action.primary,
+    paddingHorizontal: space[2],
+    paddingVertical: space[1],
+    borderRadius: radius.full,
+    overflow: 'hidden',
+  },
   planPrice: { ...text('h2', { numeric: true }), color: colors.text.primary },
   planTotal: { ...text('caption'), color: colors.text.secondary },
 

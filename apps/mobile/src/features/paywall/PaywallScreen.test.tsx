@@ -54,7 +54,10 @@ describe('Paywall — the rules that cost money to break', () => {
     // Apple requires commerce behind a parental gate for under-13s, and a ten-year-old
     // has no card anyway — a paywall aimed at them earns nothing and costs the listing.
     const { container } = paywall({ isChild: true })
-    expect(screen.getByRole('heading').textContent).toBe('Ask a grown-up')
+    // "One quick step", not "Ask a grown-up". The gate stays — Apple requires it before a
+    // purchase CTA aimed at a child, and rule 7 wants it too — but it now leads with what
+    // the child already has rather than with what they must go and ask for.
+    expect(screen.getByRole('heading').textContent).toBe('One quick step')
     expect(container.textContent).not.toMatch(/€|\$|month|year|trial/i)
     expect(screen.queryByTestId('paywall-buy')).toBeNull()
   })
@@ -63,7 +66,7 @@ describe('Paywall — the rules that cost money to break', () => {
     // The honest message and the required one are the same message here: every lesson
     // is free, so pressing this costs them nothing.
     const { onDismiss } = paywall({ isChild: true })
-    fireEvent.click(screen.getByRole('button', { name: 'Keep learning' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Back to learning' }))
     expect(onDismiss).toHaveBeenCalledOnce()
   })
 
@@ -89,7 +92,11 @@ describe('Paywall — the rules that cost money to break', () => {
     const { container } = paywall()
     toPlans()
     expect(container.textContent).not.toMatch(
-      /hurry|limited|expires|only \d+ (left|spots)|last chance|ends (soon|in)/i,
+      // Word boundaries, and they are load-bearing. Without them this fired on
+      // "**Un**limited hearts" — a PERK, and one of the four now listed beside the price.
+      // A guard that cannot tell "limited time" from "unlimited" fails on the screen
+      // getting better, which is how a good check gets deleted.
+      /\bhurry\b|\blimited\b|\bexpires\b|only \d+ (left|spots)|last chance|ends (soon|in)/i,
     )
   })
 })

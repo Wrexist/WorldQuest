@@ -28,7 +28,6 @@
   "paywall:plan.save__note": "Shown on the yearly plan. {percent} is computed from the two real prices — never a fixed marketing number.",
   "paywall:title.buy": "Everything Premium adds.",
   "paywall:title.buy__note": "Page 3 headline when no trial is on offer — the user has spent theirs, or the store returned no prices. Must not promise a trial that will not appear at the till.",
-
   "paywall:plans.loading": "Checking prices with the store…",
   "paywall:plans.loading__note": "Shown while the store is being asked for prices. Prices are never guessed or hardcoded — they come from the store for the account actually being charged.",
   "paywall:plans.offline": "Prices come from the App Store, so they need a connection. Everything you've learned works offline as usual.",
@@ -37,7 +36,6 @@
   "paywall:plans.failed__note": "Shown when the store could not be reached. The second sentence matters more than the first: the immediate fear is being charged for nothing.",
   "paywall:plans.none": "There's nothing to buy here yet. Every lesson is free in the meantime.",
   "paywall:plans.none__note": "Shown when the store answers with no products — a configuration problem on our side, never the user's. Says so without alarming anyone.",
-
   "paywall:cta.trial": "Start my free week",
   "paywall:cta.trial__note": "Primary button when a trial is available. First person, because the user is choosing rather than being sold to. Max 22 characters.",
   "paywall:cta.buy": "Get Premium",
@@ -48,12 +46,12 @@
   "paywall:dismiss__note": "Dismisses the paywall. Always visible, never delayed, never a faint X in a corner. Max 12 characters.",
   "paywall:restore": "Restore purchases",
   "paywall:restore__note": "Required by both stores. Reachable from the paywall and from Settings.",
-  "paywall:adult.title": "Ask a grown-up",
-  "paywall:adult.title__note": "Parental gate headline, shown instead of the paywall on an under-13 account. Warm, not a barrier — the child has done nothing wrong.",
-  "paywall:adult.body": "Buying things needs a grown-up. Show them this screen and they can take it from here.",
-  "paywall:adult.body__note": "Parental gate body. Addressed TO THE CHILD, in their words, explaining rather than refusing. Never implies they are missing out.",
-  "paywall:adult.continue": "Keep learning",
-  "paywall:adult.continue__note": "Dismisses the parental gate straight back to the app. The child loses nothing by pressing it. Max 16 characters.",
+  "paywall:adult.title": "One quick step",
+  "paywall:adult.title__note": "Heading of the parental gate — the purchase screen a child sees instead of prices. Framed as a small step, never as a refusal. Never \"you can't\", never \"not allowed\", never anything a ten-year-old would read as being told off. The game itself is all ages and fully unlocked; only the checkout differs.",
+  "paywall:adult.body": "Everything here is already yours to play — Premium is just extras. If you want them, show this screen to a grown-up and they can sort it out.",
+  "paywall:adult.body__note": "Leads with what the child ALREADY has, because that is the true and reassuring part, and only then explains the step. Must keep the first clause: without it the screen reads as a locked door.",
+  "paywall:adult.continue": "Back to learning",
+  "paywall:adult.continue__note": "The button out of the parental gate. Points at the thing they came to do, not at the thing they cannot do. Max 3 words.",
   "paywall:billing.title": "Your payment didn't go through",
   "paywall:billing.title__note": "Shown when the store reports a failed renewal. States the fact without blame — the usual cause is an expired card, not the user. NEVER 'Your subscription has been cancelled'; it has not.",
   "paywall:billing.body": "Your card was declined, so Premium's extras are paused. Everything you've learned is safe — updating your payment brings the extras straight back.",
@@ -61,5 +59,7 @@
   "paywall:billing.fix": "Update payment",
   "paywall:billing.fix__note": "Opens the store's payment settings. Max 18 characters.",
   "paywall:error.failed": "That didn't go through. Nothing was charged.",
-  "paywall:error.failed__note": "Purchase failure. The second sentence matters more than the first — the immediate fear is being charged for nothing."
+  "paywall:error.failed__note": "Purchase failure. The second sentence matters more than the first — the immediate fear is being charged for nothing.",
+  "paywall:plans.includes": "Every plan includes",
+  "paywall:plans.includes__note": "Small heading above the four Premium perks on the plans page, so the price has the value beside it instead of three pages away."
 }

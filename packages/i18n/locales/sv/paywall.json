@@ -14,22 +14,21 @@
   "paywall:plan.billedYearly": "{price} debiteras årsvis",
   "paywall:plan.save": "Spara {percent} %",
   "paywall:title.buy": "Allt som Premium lägger till.",
-
   "paywall:plans.loading": "Hämtar priser från butiken …",
   "paywall:plans.offline": "Priserna kommer från App Store och behöver internet. Allt du har lärt dig fungerar offline som vanligt.",
   "paywall:plans.failed": "Vi nådde inte butiken just nu. Inget har dragits.",
   "paywall:plans.none": "Det finns inget att köpa här än. Alla lektioner är gratis så länge.",
-
   "paywall:cta.trial": "Starta min gratisvecka",
   "paywall:cta.buy": "Skaffa Premium",
   "paywall:terms.trial": "Gratis i 7 dagar, sedan {price}. Avsluta när du vill i Inställningar — vi påminner dig två dagar innan.",
   "paywall:dismiss": "Inte nu",
   "paywall:restore": "Återställ köp",
-  "paywall:adult.title": "Fråga en vuxen",
-  "paywall:adult.body": "Att köpa saker behöver en vuxen. Visa den här skärmen så tar de över härifrån.",
-  "paywall:adult.continue": "Fortsätt lära",
+  "paywall:adult.title": "Ett litet steg",
+  "paywall:adult.body": "Allt här är redan ditt att spela — Premium är bara extra. Vill du ha det, visa den här skärmen för en vuxen så fixar de det.",
+  "paywall:adult.continue": "Tillbaka till lärandet",
   "paywall:billing.title": "Din betalning gick inte igenom",
   "paywall:billing.body": "Ditt kort nekades, så Premiums extrafunktioner är pausade. Allt du har lärt dig är kvar — uppdatera betalningen så kommer de tillbaka direkt.",
   "paywall:billing.fix": "Uppdatera betalning",
-  "paywall:error.failed": "Det gick inte igenom. Inget drogs."
+  "paywall:error.failed": "Det gick inte igenom. Inget drogs.",
+  "paywall:plans.includes": "Alla planer innehåller"
 }
