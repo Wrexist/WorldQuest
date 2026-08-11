@@ -200,7 +200,27 @@ for (const e of askable) counts[e.region] = (counts[e.region] ?? 0) + 1
 const items = [...askable]
   .sort((a, b) => a.id.localeCompare(b.id))
   .map((e) => ({
-    id: `geo.${e.id}.location`,
+    /**
+     * `continent`, not `location` — and the attribute below stays `location`.
+     *
+     * A fact id ships in save data: `review_log` and `user_facts` are keyed by it, and
+     * FSRS remembers what a learner knows about `geo.SE.location`. That fact used to
+     * answer "Northern Europe" and now answers "Europe", so keeping the id would tell
+     * the scheduler somebody had mastered an answer they have never once been shown.
+     * A changed answer under an old id is worse than a rename; it is a rename pretending
+     * not to be one. New id, fresh memory, honest.
+     *
+     * The ATTRIBUTE is deliberately not renamed with it. Templates are attribute-shaped
+     * and never geography-shaped — the note at the top of the templates pack is emphatic
+     * about it — and `location` is the generic concept ("where is this entity") that an
+     * astronomy pack answers with a galaxy arm. `continent` is geography, and putting it
+     * in the template layer is exactly the leak that rule exists to stop.
+     *
+     * So the id says what this fact asserts and the attribute says what shape of question
+     * it is. The schema documents the third segment as a slug rather than as the
+     * attribute for this reason.
+     */
+    id: `geo.${e.id}.continent`,
     entity: e.id,
     attribute: 'location',
     value: {

@@ -537,7 +537,7 @@ for (const [rel, perRegion] of difficultyByRegion) {
         errors.push({
           file: rel,
           message:
-            `${item.id}: tagged ${wrong.join(', ')} but geo.${item.entity}.location says ` +
+            `${item.id}: tagged ${wrong.join(', ')} but geo.${item.entity}.continent says ` +
             `${expected} — a region tag is a copy of the region fact, and this copy disagrees`,
         })
       }

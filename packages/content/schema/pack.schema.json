@@ -192,7 +192,7 @@
         "id": {
           "type": "string",
           "pattern": "^[a-z0-9]+\\.[A-Z0-9-]+\\.[a-z0-9-]+$",
-          "description": "<subject>.<entity>.<attribute>"
+          "description": "<subject>.<entity>.<slug> — the slug is usually the attribute, and is allowed to differ where the attribute is the generic question shape and the slug is what the fact actually asserts (geo.SE.continent, attribute \"location\"). The id ships in save data; the attribute does not."
         },
         "entity": {
           "type": "string"
