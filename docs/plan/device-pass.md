@@ -11,6 +11,12 @@ see it.
 
 ## Before you start
 
+Getting a build into your hands is its own list — signing credentials, backend
+configuration, build numbers. It is in
+[`testflight-readiness.md`](testflight-readiness.md), ordered so the cheap checks come
+before the expensive runner. Do that first; this document starts once the app is
+installed.
+
 ```bash
 npx eas login
 npx eas build --profile preview --platform android   # .apk, sideload it

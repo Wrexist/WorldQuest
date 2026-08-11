@@ -29,11 +29,14 @@ name: iOS TestFlight
 #                                      text pasted directly — same tolerant handling as
 #                                      the Capacitor workflow's key-install step.)
 #
-# None of these exist yet as of 2026-08-09 — there is no Apple Developer Program
-# membership, no App Store Connect app record, and no Expo access token on file. This
-# workflow is the destination those setup steps are aimed at, not a claim that a
-# TestFlight build has gone out. See docs/plan/device-pass.md and
-# docs/engineering/release-checklist.md for what's still open.
+# As of 2026-08-11 all four secrets are present and proven — run #2 on 2026-08-09
+# authenticated against Expo and came back with a live App Store Connect build-number
+# lookup — and the app record exists (ascAppId 6799761965). What is still missing is
+# the Apple distribution certificate and App Store provisioning profile, which
+# `eas build --non-interactive` will not create; the "Check iOS signing credentials"
+# step below is the cheap answer to that. This workflow has still never produced a
+# build. See docs/plan/testflight-readiness.md for the ordered list of what remains,
+# and docs/plan/device-pass.md for what to do once a build lands on a phone.
 
 on:
   workflow_dispatch:
