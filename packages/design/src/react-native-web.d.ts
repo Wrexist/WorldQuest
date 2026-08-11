@@ -11,10 +11,21 @@
  * that ARE typed. This turns one genuinely-untyped prop into a typed one and leaves
  * everything else exactly as strict as before.
  *
- * Only one component uses it — the tab bar mirrors its `maxFontSizeMultiplier` into
+ * One component uses it — the tab bar mirrors its `maxFontSizeMultiplier` into
  * the DOM so the 200 %-text check in `e2e/flow.cjs` can honour the same ceiling the
- * native runtime does. If a second caller appears, ask first whether it is really
+ * native runtime does. If a third caller appears, ask first whether it is really
  * reaching for a web-only escape hatch.
+ *
+ * `onKeyDown` is the same shape of gap for the same reason. React Native has no
+ * keyboard events on a `View`, because most platforms it targets have no keyboard;
+ * react-native-web forwards the DOM handler straight through. `Slider` needs it so the
+ * control answers to arrow keys on the one platform where `pnpm e2e` asserts the
+ * primary task is completable without a pointer. On native the prop is simply absent
+ * from the rendered view and `accessibilityActions` carries the same two moves.
+ *
+ * Typed against the two fields actually used rather than the full DOM
+ * `KeyboardEvent`: this augmentation should describe what we depend on, not import a
+ * renderer's entire event model into a package that must also compile for native.
  */
 
 declare module 'react-native' {
@@ -23,6 +34,7 @@ declare module 'react-native' {
   }
   interface ViewProps {
     readonly dataSet?: Readonly<Record<string, string>>
+    readonly onKeyDown?: (event: { readonly key: string; preventDefault: () => void }) => void
   }
 }
 

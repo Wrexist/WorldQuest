@@ -16,9 +16,9 @@ behaved like a form.
 
 *Being shown around by somebody who is pleased you came — not filling in a signup.*
 
-## 2. The donor, and the three mechanics
+## 2. The donor, and the four mechanics
 
-Duolingo. Not "make it like Duolingo" — these three, each of which a person could
+Duolingo. Not "make it like Duolingo" — these four, each of which a person could
 implement:
 
 | # | Mechanic | Why it produces the feel |
@@ -54,7 +54,7 @@ Recording this is the point of step 5. Without it the next person re-litigates i
 |---|---|
 | **The reference implementation's code** ([Appllama/top-welcome-screens](https://github.com/Appllama/top-welcome-screens)) | GPL-3.0, and its own README says it is educational reference only with no licence grant for the third-party IP it reproduces. This repo has no `LICENSE` and ships proprietary. Read for mechanics, measured, implemented independently — which is what the transplant method prescribes anyway. |
 | Duolingo's **"How did you hear about us?"** | Nothing in this app would consume the answer. `OnboardingScreen`'s own header already rejected it on that ground and the rule stands: a question whose answer goes nowhere is a form, not an onboarding. |
-| Duolingo's **38-screen flow** | Ours is seven and one of them is a real lesson. Length is not the mechanic. |
+| Duolingo's **38-screen flow** | Ours is eight and one of them is a real lesson. Length is not the mechanic. |
 | **Commitment framing** on the daily goal ("I'll commit to 10 minutes") | Manufacturing a promise so it can be invoked later is the guilt setting. `voice-and-tone.md`: Atlas has no guilt setting. |
 | **Removing the goal default** so the user must choose | Auto-advance made this tempting — a pre-ticked row looks like a wasted opportunity to collect an opinion. It is not: the tick is what says "ten is fine if you have no view", and the press count shows nobody pays more than before. Agreeing was one press (Continue) and is one press (the ticked row); disagreeing was two and is one. |
 
@@ -102,7 +102,7 @@ is the kind that survives review:
   was ever built. The argument was won and the feature was forgotten.
 - **Atlas was decoration.** `voice-and-tone.md` says he appears at first launch. He did:
   as a picture above a heading, on three of seven steps, in two of his eight poses.
-- **Four of seven steps cost two taps** to answer one question.
+- **Four of eight steps cost two taps** to answer one question.
 - **Four harnesses each had their own copy** of the walk through this flow, and one of
   them — `build-store-shots.cjs` — was still clicking a decade chip the wheel deleted
   two passes ago. Store screenshots were being taken by a harness that could not get

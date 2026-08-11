@@ -20,7 +20,7 @@
  */
 
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { Slider } from '@worldquest/design'
 
 const STOPS = [{ label: 'Just starting' }, { label: 'I know some' }, { label: 'Bring it on' }]
@@ -71,5 +71,52 @@ describe('Slider', () => {
     rerender(<Slider stops={STOPS} value={2} onChange={vi.fn()} label="Level" />)
     expect(screen.getByRole('slider').getAttribute('aria-valuenow')).toBe('2')
     expect(screen.getByRole('slider').getAttribute('aria-valuetext')).toBe('Bring it on')
+  })
+
+  /**
+   * The keyboard, which is the web target's version of `accessibilityActions`.
+   *
+   * This is the one interaction jsdom CAN drive — a key press needs no layout, where the
+   * drag needs a track with a width. It also covers the failure this control shipped
+   * with: `clampTo`'s comment claimed to be "shared by the responder and the keyboard
+   * path" while no keyboard path existed at all.
+   */
+  describe('keyboard', () => {
+    it.each([
+      ['ArrowRight', 1, 2],
+      ['ArrowUp', 1, 2],
+      ['ArrowLeft', 1, 0],
+      ['ArrowDown', 1, 0],
+    ])('moves one stop on %s', (key, from, expected) => {
+      const onChange = vi.fn()
+      render(<Slider stops={STOPS} value={from} onChange={onChange} label="Level" />)
+      fireEvent.keyDown(screen.getByRole('slider'), { key })
+      expect(onChange).toHaveBeenCalledWith(expected)
+    })
+
+    it('stops at the ends rather than wrapping round', () => {
+      const onChange = vi.fn()
+      const { rerender } = render(<Slider stops={STOPS} value={0} onChange={onChange} label="Level" />)
+      fireEvent.keyDown(screen.getByRole('slider'), { key: 'ArrowLeft' })
+      expect(onChange).toHaveBeenCalledWith(0)
+
+      rerender(<Slider stops={STOPS} value={2} onChange={onChange} label="Level" />)
+      fireEvent.keyDown(screen.getByRole('slider'), { key: 'ArrowRight' })
+      expect(onChange).toHaveBeenLastCalledWith(2)
+    })
+
+    it('ignores keys that are not arrows, so typing does not move the value', () => {
+      const onChange = vi.fn()
+      render(<Slider stops={STOPS} value={1} onChange={onChange} label="Level" />)
+      for (const key of ['a', 'Enter', 'Tab', ' ']) {
+        fireEvent.keyDown(screen.getByRole('slider'), { key })
+      }
+      expect(onChange).not.toHaveBeenCalled()
+    })
+
+    it('is reachable by Tab — a slider nobody can focus has no keyboard path at all', () => {
+      render(<Slider stops={STOPS} value={1} onChange={vi.fn()} label="Level" />)
+      expect(screen.getByRole('slider').getAttribute('tabindex')).toBe('0')
+    })
   })
 })

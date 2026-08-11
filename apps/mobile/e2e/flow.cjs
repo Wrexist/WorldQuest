@@ -484,12 +484,21 @@ const skip = (name, why) => {
 
   // A slider now, like the level step: it does not advance on being answered, because a
   // drag passes through every value on its way to one. Its default is ten minutes.
-  const goalTrack = await page.getByRole('slider').first().boundingBox()
-  if (goalTrack !== null) {
-    await page.mouse.click(goalTrack.x + goalTrack.width - 4, goalTrack.y + goalTrack.height / 2)
-    await page.waitForTimeout(300)
-  }
-  step('the goal slider answers to a tap on its track', /20 min/i.test(await body()))
+  // The assertion is on the slider's OWN `aria-valuetext`, not on the page text, and the
+  // missing bounding box is a failure rather than a skip. Both for the same reason: the
+  // legend under the slider prints every stop, "20 min" among them, so a body-text match
+  // was true before the interaction and stayed true if the interaction never happened.
+  // The test could not fail — which for a gesture added in this very pass is the whole
+  // thing it was written to catch.
+  const goal = page.getByRole('slider').first()
+  const goalTrack = await goal.boundingBox()
+  if (goalTrack === null) throw new Error('the goal slider has no bounding box to tap')
+  await page.mouse.click(goalTrack.x + goalTrack.width - 4, goalTrack.y + goalTrack.height / 2)
+  await page.waitForTimeout(300)
+  step(
+    'the goal slider answers to a tap on its track',
+    /20 min/i.test((await goal.getAttribute('aria-valuetext')) ?? ''),
+  )
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(600)
 
@@ -507,15 +516,20 @@ const skip = (name, why) => {
   // tapping its legend, because the drag is the interaction that was added and a test
   // that only clicked a label would leave the gesture — and the PanResponder wiring
   // behind it — completely unexercised.
-  const track = await page.getByRole('slider').first().boundingBox()
-  if (track !== null) {
-    await page.mouse.move(track.x + track.width / 2, track.y + track.height / 2)
-    await page.mouse.down()
-    await page.mouse.move(track.x + track.width - 4, track.y + track.height / 2, { steps: 8 })
-    await page.mouse.up()
-    await page.waitForTimeout(300)
-  }
-  step('the difficulty slider answers to a drag', /Bring it on/i.test(await body()))
+  const level = page.getByRole('slider').first()
+  const track = await level.boundingBox()
+  // Same as the goal slider above: a failure, not a skip, and asserted on the control's
+  // own value rather than on the legend that prints all three stops regardless.
+  if (track === null) throw new Error('the difficulty slider has no bounding box to drag')
+  await page.mouse.move(track.x + track.width / 2, track.y + track.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(track.x + track.width - 4, track.y + track.height / 2, { steps: 8 })
+  await page.mouse.up()
+  await page.waitForTimeout(300)
+  step(
+    'the difficulty slider answers to a drag',
+    /Bring it on/i.test((await level.getAttribute('aria-valuetext')) ?? ''),
+  )
   await page.screenshot({ path: path.join(SHOTS, 'onboarding-level.png') })
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(600)

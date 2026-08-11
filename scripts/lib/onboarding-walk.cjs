@@ -48,7 +48,13 @@ const AFTER_TAP = 400
  */
 async function onOnboarding(page) {
   const text = await page.evaluate(() => document.body.innerText)
-  return /Choose your language|five minutes a day|Get started|Next/i.test(text)
+  // Onboarding-SPECIFIC strings only. This used to accept `Get started` and `Next`,
+  // which are generic enough that any screen with a forward button could claim to be
+  // onboarding — and the cost of a false yes is not a wrong answer, it is a timeout:
+  // the walk goes on to wait for the language step's `English` radio, which on a
+  // completed profile never arrives. The two kept here appear on the first step and
+  // nowhere else in the app.
+  return /Choose your language|five minutes a day/i.test(text)
 }
 
 /**

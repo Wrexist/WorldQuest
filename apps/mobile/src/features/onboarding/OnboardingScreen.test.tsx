@@ -302,6 +302,29 @@ describe('OnboardingScreen', () => {
     )
   })
 
+  it('does not push the user forward again after they tap back inside the answer beat', () => {
+    // An answer schedules the next step for 260 ms later, and that timer used to be
+    // cleared only by the NEXT answer or by unmount. Back navigates through neither, so
+    // tapping an answer and then tapping back within the beat moved the user back and
+    // then shoved them forward again — the one control whose entire job is to undo,
+    // undone by the thing it was undoing.
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
+    advanceToAgeStep()
+    pickYear(YEAR - 30)
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // age → goal
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // goal → region
+
+    // Answer, then change your mind before the beat is over.
+    fireEvent.click(screen.getByRole('radio', { name: 'Europe' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Back' })) // region → goal, immediately
+    act(() => {
+      vi.advanceTimersByTime(2000)
+    })
+
+    // Still on the goal step. The stale timer must not have fired.
+    expect(screen.getByRole('slider', { name: 'How much a day?' })).toBeTruthy()
+  })
+
   it('has nothing to go back to on the first step, and says so rather than hiding it', () => {
     // Disabled, not absent. A control that appears on step two teaches the user it
     // might vanish again; one that is visibly dimmed on step one teaches them where it

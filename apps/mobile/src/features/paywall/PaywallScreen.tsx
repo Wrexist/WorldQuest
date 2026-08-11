@@ -359,11 +359,6 @@ export function PaywallScreen({
                 label={t('paywall:plan.annual')}
                 perMonth={t('paywall:plan.perMonth', { price: annual.pricePerMonth })}
                 total={t('paywall:plan.billedYearly', { price: annual.price })}
-                // Two badges, and both are FACTS rather than persuasion. The saving is
-                // computed from the store's own `amountMicros`; "Best value" is true of
-                // whichever plan costs less per month. Deliberately not "Most popular" —
-                // this app has no purchase data and inventing some is the line between
-                // a sell and a lie.
                 // ONE badge, and the concrete one. A "Best value" ribbon was tried above
                 // the card and was clipped by its own corner radius — and it was saying a
                 // vaguer version of what the saving already says. "Save 46%" is computed
@@ -525,8 +520,12 @@ function PlanCard({
   label: string
   perMonth: string
   total?: string | undefined
+  /**
+   * The saving, computed from the store's own `amountMicros` — a fact about the prices,
+   * not a popularity claim. Only the annual plan carries one.
+   */
   badge?: string | undefined
-  /** Marks the cheaper-per-month plan. A fact about the prices, not a popularity claim. */
+  /** Which plan the USER has chosen. Not a claim about which is better value. */
   selected: boolean
   onSelect: () => void
 }) {
@@ -538,7 +537,15 @@ function PlanCard({
       // drops the latter, so a reader would announce no selection at all.
       role="radio"
       aria-checked={selected}
-      accessibilityLabel={`${label}. ${perMonth}${total === undefined ? '' : `. ${total}`}`}
+      // The badge is in here because it is hidden from the reader below — every child of
+      // this card is `aria-hidden` so the label is the single announcement. Leaving it
+      // out meant the one persuasive fact on the screen, "Save 46%", was sighted-only:
+      // the annual card announced as a plan and a price with nothing to prefer it by.
+      accessibilityLabel={
+        `${label}. ${perMonth}` +
+        `${total === undefined ? '' : `. ${total}`}` +
+        `${badge === undefined ? '' : `. ${badge}`}`
+      }
       style={[styles.plan, selected && styles.planOn]}
     >
       <View style={styles.planTop}>

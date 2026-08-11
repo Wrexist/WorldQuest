@@ -147,6 +147,33 @@ export function Slider({ stops, value, onChange, label, style, testID }: SliderP
           if (event.nativeEvent.actionName === 'increment') onChange(clamp(value + 1))
           if (event.nativeEvent.actionName === 'decrement') onChange(clamp(value - 1))
         }}
+        /**
+         * The same two moves from a keyboard, which is the web target's version of the
+         * accessibility actions above.
+         *
+         * `clampTo`'s comment already claimed to be "shared by the responder and the
+         * keyboard path" while no keyboard path existed — a comment describing a
+         * behaviour reads exactly like one implementing it. It does now.
+         *
+         * Arrow keys only, and both axes: a slider that answers Left/Right but not
+         * Up/Down is half a control on the one platform where `pnpm e2e` asserts the
+         * primary task is completable with the keyboard alone. `focusable` and
+         * `tabIndex` are no-ops on native, where `accessibilityActions` is the path.
+         */
+        focusable
+        tabIndex={0}
+        onKeyDown={(event) => {
+          const move: number | undefined = {
+            ArrowLeft: -1,
+            ArrowDown: -1,
+            ArrowRight: 1,
+            ArrowUp: 1,
+          }[event.key]
+          if (move === undefined) return
+          // Otherwise the arrow also scrolls whatever the slider is sitting in.
+          event.preventDefault()
+          onChange(clamp(value + move))
+        }}
         {...pan.panHandlers}
       >
         <View style={styles.rail} />

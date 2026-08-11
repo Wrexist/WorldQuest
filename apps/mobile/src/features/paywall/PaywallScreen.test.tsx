@@ -150,6 +150,21 @@ describe('Paywall — the offer', () => {
     expect(screen.getAllByRole('radio')[1]?.getAttribute('aria-checked')).toBe('true')
   })
 
+  it('says the saving out loud, not only in the pill', () => {
+    // Every child of a plan card is `aria-hidden` so the card makes one announcement
+    // rather than four, which means anything left out of `accessibilityLabel` is
+    // sighted-only. The badge was: the annual card announced as a plan and a price with
+    // nothing to prefer it by, while the screen's single most persuasive fact sat in a
+    // pill the reader never reached.
+    paywall()
+    toPlans()
+    const [annual, monthly] = screen.getAllByRole('radio')
+    expect(annual?.getAttribute('aria-label')).toMatch(/Save \d+%/)
+    // And not on monthly, which has no saving to state. A badge on both would be a
+    // claim rather than arithmetic.
+    expect(monthly?.getAttribute('aria-label')).not.toMatch(/Save/)
+  })
+
   it('states the trial terms in words, above the button, not behind a link', () => {
     paywall()
     toPlans()

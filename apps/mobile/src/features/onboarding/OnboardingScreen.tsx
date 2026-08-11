@@ -86,6 +86,7 @@ import {
   Spacer,
   colors,
   layout,
+  motion,
   radius,
   space,
   squircle,
@@ -151,16 +152,6 @@ export type OnboardingScreenProps = {
   readonly onSignIn?: (() => void) | undefined
 }
 
-type Step =
-  | 'language'
-  | 'slides'
-  | 'age'
-  | 'goal'
-  | 'region'
-  | 'level'
-  | 'plan'
-  | 'taster'
-
 /**
  * The order, and why each step is where it is.
  *
@@ -184,7 +175,7 @@ type Step =
  * time: nothing in this app would consume either answer today, and a question whose
  * answer goes nowhere is a form, not an onboarding.
  */
-const STEPS: readonly Step[] = [
+const STEPS = [
   'language',
   'slides',
   'age',
@@ -193,7 +184,18 @@ const STEPS: readonly Step[] = [
   'level',
   'plan',
   'taster',
-]
+] as const
+
+/**
+ * The order IS the type.
+ *
+ * `Step` was a hand-written union and `STEPS` was annotated `readonly Step[]`, which
+ * accepts a list that omits a member — so a ninth step could be added to the union and
+ * not to the array, and nothing would say so. The failure is quiet rather than loud:
+ * `STEPS.indexOf(step)` returns `-1`, the progress bar reports step 0, and `back()`
+ * reads `STEPS[-1]` and does nothing at all. Derived, the two cannot drift.
+ */
+type Step = (typeof STEPS)[number]
 
 /**
  * The steps that still end in a button, and therefore still need a footer.
@@ -253,10 +255,14 @@ const ASK = {
  * Not decoration and therefore not collapsed under reduced motion: this is the beat in
  * which the tick appears and the haptic fires, and cutting it would mean the screen
  * changed at the instant of the tap with no confirmation that the tap did anything.
- * `motion.base` is the same 260 ms the step transition itself uses, so the answer
- * registers and the step begins to leave as one movement rather than two.
+ * `motion.base` is the same duration the step transition itself uses, so the answer
+ * registers and the step begins to leave as one movement rather than two. Read from the
+ * token rather than copied as a number: it was written as a literal `260` beside a
+ * comment naming `motion.base`, which is true until somebody edits `tokens.json` and
+ * then is silently a lie — the beat would stop matching the transition it is tuned
+ * against, and nothing would fail.
  */
-const ANSWER_BEAT_MS = 260
+const ANSWER_BEAT_MS = motion.base.duration
 
 /**
  * The year the birth-year wheel opens on — a scroll position, not an answer.
@@ -286,16 +292,17 @@ const LEVEL_COPY = {
 } as const satisfies Record<LevelChoice, { label: TranslationKey; body: TranslationKey }>
 
 /**
- * Atlas beside his own speech bubble, on a step where he is asking something.
+ * Atlas above his own speech bubble, on a step where he is asking something.
  *
- * Smaller than the 104 it was when he sat above a heading, and smaller again than the
- * slides' hero. Those screens are a picture plus a sentence; these are a question the
- * user has to read and a list they have to pick from, and the speaker has to fit
- * BESIDE the words rather than above them — at 104 the bubble had about 190 pt of
- * width left on a 320 pt screen, which is four words a line.
+ * Larger than the 104 he was as a picture over a heading, because the arrangement
+ * changed and the size followed it. The first attempt put him BESIDE the bubble, which
+ * forced him down to 72: a 320 pt screen split between a speaker and a question leaves
+ * the question about 190 pt, which is four words a line. Stacked, the two stop
+ * competing for width — he gets the full 320 and so does the sentence.
  *
- * 72 is the largest that leaves the bubble a readable measure at 320. Verified in
- * `pnpm design:shots`, not chosen by eye.
+ * 148 is the largest that still leaves the question, the answers and the footer on a
+ * 568 pt screen. Above 700 pt of height there is room for it; below, `ASK_ART_SHORT`
+ * takes over. Verified in `pnpm design:shots`, not chosen by eye.
  */
 const ASK_ART = 148
 
@@ -472,24 +479,34 @@ export function OnboardingScreen({
    */
   const direction = useRef<1 | -1>(1)
 
+  /**
+   * The pending auto-advance, declared before `go` because `go` has to be able to cancel
+   * it. See `answer` below for what schedules it.
+   */
+  const advancing = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  useEffect(() => () => clearTimeout(advancing.current), [])
+
   const go = (next: Step): void => {
+    /**
+     * ANY navigation cancels a pending advance — not just the next answer.
+     *
+     * The timer used to be cleared in two places only: the next `answer()` call, and
+     * unmount. `back()` navigates through here without going near either, so a user who
+     * tapped an answer and then tapped back inside the 260 ms beat was moved back and
+     * then shoved forward again by the timer their answer had started. The one control
+     * whose entire job is to undo was undone.
+     *
+     * `reacting` resets here for the same reason. It is cleared by the timer's own
+     * callback, so cancelling the timer without clearing the flag would leave Atlas
+     * holding a celebration pose on the step the user had just returned to.
+     */
+    clearTimeout(advancing.current)
+    advancing.current = undefined
+    setReacting(false)
     direction.current = STEPS.indexOf(next) > STEPS.indexOf(step) ? 1 : -1
     setStep(next)
   }
 
-  /**
-   * One step back, and nothing to press on the first step.
-   *
-   * There was no back at all. Seven questions, each one final the moment it was
-   * answered — and this file's own header argued about back SEMANTICS ("back should
-   * step within onboarding, not out of it") as a reason for the single-screen design,
-   * while no back control was ever built. The argument was won and the control was
-   * never added, which is how a design decision becomes a missing feature.
-   *
-   * It matters more now than it did: every single-select step advances on tap, so an
-   * answer commits without a confirming press. Auto-advance without a back is a trap;
-   * the two ship together or neither does.
-   */
   /**
    * Answer, feel it land, move on — the mechanic this whole pass is for.
    *
@@ -503,9 +520,6 @@ export function OnboardingScreen({
    * scroll, and a scroll that navigates the moment it settles would advance while the
    * user is still looking for their year.
    */
-  const advancing = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-  useEffect(() => () => clearTimeout(advancing.current), [])
-
   const answer = (next: Step, apply: () => void): void => {
     apply()
     hapticSelect()
@@ -514,18 +528,12 @@ export function OnboardingScreen({
     // rather than firing two transitions.
     clearTimeout(advancing.current)
     advancing.current = setTimeout(() => {
-      setReacting(false)
+      // `go` clears `reacting` itself; setting it here as well would be a second source
+      // of truth for the same flag.
       go(next)
     }, ANSWER_BEAT_MS)
   }
 
-  /**
-   * Atlas, and the question he is asking, stacked.
-   *
-   * Written once and used on all five question steps. It was five copies of the same
-   * three lines, which is how the region step ended up without the mascot the other
-   * four had — the arrangement has to live in one place or it drifts.
-   */
   /**
    * Atlas arriving, once, on the first thing anybody ever sees.
    *
@@ -558,7 +566,23 @@ export function OnboardingScreen({
     ],
   }
 
-  const Ask = ({ step: at }: { step: keyof typeof ASK }) => (
+  /**
+   * Atlas, and the question he is asking, stacked.
+   *
+   * Written once and used on all six question steps. It was five copies of the same
+   * three lines, which is how the region step ended up without the mascot the other
+   * four had — the arrangement has to live in one place or it drifts.
+   *
+   * **A function that returns elements, NOT a component**, and the distinction is not
+   * style. Declared here as `const Ask = (props) => …` and used as a JSX element,
+   * it is a NEW component type on every render, so React cannot match it to the previous
+   * tree and unmounts and remounts everything under it. Every `setReacting`, every
+   * `setPage`, every drag of a slider tore down Atlas and his bubble and built them
+   * again — which resets `Art`'s internal `failed` state and recreates the
+   * `Animated.View` in the middle of the arrival it is running. Called as `ask('age')`,
+   * the elements are just elements and the subtree keeps its identity.
+   */
+  const ask = (at: keyof typeof ASK) => (
     <View style={styles.ask}>
       {/* The arrival plays on the FIRST step only. Every later step already enters
           through `stepStyle`, and two entrances stacked on one element read as a
@@ -572,6 +596,19 @@ export function OnboardingScreen({
     </View>
   )
 
+  /**
+   * One step back, and nothing to press on the first step.
+   *
+   * There was no back at all. Seven questions, each one final the moment it was
+   * answered — and this file's own header argued about back SEMANTICS ("back should
+   * step within onboarding, not out of it") as a reason for the single-screen design,
+   * while no back control was ever built. The argument was won and the control was
+   * never added, which is how a design decision becomes a missing feature.
+   *
+   * It matters more now than it did: every single-select step advances on tap, so an
+   * answer commits without a confirming press. Auto-advance without a back is a trap;
+   * the two ship together or neither does.
+   */
   const canGoBack = stepIndex > 1
   const back = (): void => {
     const previous = STEPS[STEPS.indexOf(step) - 1]
@@ -616,6 +653,25 @@ export function OnboardingScreen({
     const index = Math.round(event.nativeEvent.contentOffset.x / Math.max(1, page))
     if (index !== slide && index >= 0 && index < SLIDES.length) setSlide(index)
   }
+
+  /**
+   * Put the carousel back where the user left it.
+   *
+   * The pager only renders while `step === 'slides'`, so leaving the step unmounts the
+   * `ScrollView` and returning to it mounts a fresh one at offset 0 — while `slide` is
+   * still state and still says 3. The result was a back button that showed slide 1 with
+   * the third dot lit: the two indicators of the same thing disagreeing, which is the
+   * exact bug (O4) this flow's header already records fixing once.
+   *
+   * `animated: false` deliberately. This is where the carousel STARTS on arrival, not a
+   * move the user made, and animating it would look like the app scrolling itself.
+   */
+  useEffect(() => {
+    if (step !== 'slides') return
+    pager.current?.scrollTo({ x: slide * page, animated: false })
+    // On arrival at the step only. `slide` is deliberately not a dependency — a swipe
+    // inside the step already moved the pager, and re-applying it would fight the user.
+  }, [step, page])
 
   const finish = (): void => {
     // `birthYear` cannot be null here — the age step is the only way past it — but the
@@ -771,7 +827,7 @@ export function OnboardingScreen({
                 it decides whether a child gets the child experience — and a bare heading
                 reading "When were you born?" is a form demanding an identity document,
                 where the same words from a character are somebody asking. */}
-            <Ask step="age" />
+            {ask('age')}
             <Text style={styles.body}>{t('onboarding:age.body')}</Text>
 
             <View style={styles.wheelWrap}>
@@ -800,7 +856,7 @@ export function OnboardingScreen({
           <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
             <Spacer />
 
-            <Ask step="goal" />
+            {ask('goal')}
             <Text style={styles.body}>{t('onboarding:goal.body')}</Text>
 
             {/* A track, like the level step and for the same reason: five, ten and twenty
@@ -839,7 +895,7 @@ export function OnboardingScreen({
           <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
             <Spacer />
             {/* `welcome`, and it is the first thing anybody ever sees of this app. */}
-            <Ask step="language" />
+            {ask('language')}
             <Text style={styles.body}>{t('onboarding:language.body')}</Text>
 
             <View style={styles.group} role="radiogroup" aria-label={t('onboarding:language.title')}>
@@ -886,7 +942,7 @@ export function OnboardingScreen({
 
         {step === 'region' && (
           <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
-            <Ask step="region" />
+            {ask('region')}
             <Text style={styles.body}>{t('onboarding:region.body')}</Text>
 
             {/* The continent artwork, at the one moment it is the subject rather than a
@@ -977,7 +1033,7 @@ export function OnboardingScreen({
         {step === 'level' && (
           <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
             <Spacer />
-            <Ask step="level" />
+            {ask('level')}
             <Text style={styles.body}>{t('onboarding:level.body')}</Text>
 
             {/* A track, not three rows.
@@ -1015,7 +1071,7 @@ export function OnboardingScreen({
         {step === 'plan' && (
           <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
             <Spacer />
-            <Ask step="plan" />
+            {ask('plan')}
 
             {/* Their own three answers, read back.
                 Not a "performance" projection: this app has never measured what a week of
@@ -1167,13 +1223,6 @@ function yearsFor(currentYear: number): readonly number[] {
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  /**
-   * Atlas and his bubble, side by side.
-   *
-   * `alignItems: 'flex-start'` so a two-line question grows DOWNWARD past him rather
-   * than re-centring him against it — the tail is pinned near the top of the bubble and
-   * has to stay pointing at his head whatever the question's length.
-   */
   /**
    * Atlas above, his question below — a column, not a row.
    *
