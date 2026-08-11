@@ -1,6 +1,7 @@
 # What is left before a TestFlight build
 
-Written 2026-08-11, against `main` at `5e2f048`.
+Written 2026-08-11, against `main` at `5e2f048`; revised the same day after review, with
+the bundle figures re-measured on this branch.
 
 This is the list. It is deliberately *not* the release checklist — most of what
 `docs/engineering/definition-of-done.md` asks for at release is not asked for by
@@ -27,8 +28,12 @@ Review** on the first build of each version, and it is a real review: a reviewer
 the app. That adds a second list, at the bottom.
 
 Two facts about TestFlight worth holding regardless: a build expires 90 days after
-upload, and export-compliance is already declared (`ITSAppUsesNonExemptEncryption:
-false` in `app.json`), so it will not stop at the upload prompt.
+upload, and export compliance is already declared, so it will not stop at the upload
+prompt. `apps/mobile/app.json` declares it **twice, deliberately** — once as Expo's
+`ios.config.usesNonExemptEncryption: false`, which Expo maps to `Info.plist`'s
+`ITSAppUsesNonExemptEncryption`, and once as that native key directly under
+`ios.infoPlist`. Belt and braces on a declaration whose absence turns every single
+upload into a manual questionnaire.
 
 ---
 
@@ -59,16 +64,26 @@ EAS stores them against the project; every later CI build reuses them.
 — so a *pass* from it without a token proves nothing. Read its output, not its exit
 code.
 
-### 2 · The app has no backend in any build profile — ❌ ships dark
+### 2 · The app may have no backend in any build profile — ⚠️ `TODO(verify)`, and check this first
 
 `apps/mobile/src/lib/supabase.ts:31-32` reads `EXPO_PUBLIC_SUPABASE_URL` and
 `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. **Neither appears in any profile in
 `apps/mobile/eas.json`** — the `env` blocks there set only `EXPO_PUBLIC_ENV`. `.env` is
-not committed (correctly), and EAS builds from the git tree, so a build made today has
-`isConfigured() === false`.
+not committed, correctly.
 
-That is not a crash. It is worse in one specific way: it is silent. Everything gated on
-`isConfigured()` simply does nothing —
+That is where the evidence stops, and the distinction matters. `eas.json` shows the
+*committed* configuration only. EAS Build also injects variables from the EAS
+environment a profile resolves to, managed in the Expo dashboard or through
+`eas env:set`, and nothing in this repository can see whether those exist. So the honest
+statement is conditional: **`isConfigured()` returns false only if the selected EAS
+environment supplies neither variable either.** If it does supply them, this row is
+already closed and nothing needs doing.
+
+It is first on the list anyway, because it is one command to settle
+(`eas env:list --environment production`) and because of what it costs to get wrong.
+
+If it *is* wrong, the failure is not a crash. It is worse in one specific way: it is
+silent. Everything gated on `isConfigured()` simply does nothing —
 
 | Gated on `isConfigured()` | What a tester sees |
 |---|---|
@@ -81,14 +96,13 @@ Everything the repo says is server-authoritative — rule 6 — is exactly the h
 dark. A device pass on that build verifies the client and proves nothing about the
 system.
 
-**Fix:** either add the two variables to the `preview` and `production` `env` blocks (a
-publishable key is publishable — `.env.example` already commits one, and the
-service-role key is nowhere near the client), or set them as EAS environment variables
-in the Expo dashboard scoped to those environments. I cannot see the dashboard from
-here, so it is possible they are already set there; **verify before building**, because
-the failure is invisible until someone opens the app and reads a zero.
+**Fix, if the check comes back empty:** either add the two variables to the `preview`
+and `production` `env` blocks (a publishable key is publishable — `.env.example` already
+commits one, and the service-role key is nowhere near the client), or set them as EAS
+environment variables scoped to those environments. Either works; the second keeps the
+value out of the repo, the first keeps it reviewable in a diff.
 
-### 3 · The build number will collide on the second cloud build — ⚠️ `TODO(verify)`
+### 3 · The build number collides on the second cloud build — ❌ confirmed
 
 `eas.json` sets `cli.appVersionSource: "local"` and `build.production.autoIncrement:
 true`. With a *local* version source the increment is written back into `app.json` — on
@@ -101,16 +115,25 @@ the number itself with `scripts/next-build-number.mjs` (App Store Connect lookup
 epoch-seconds fallback) and stamps it into `app.json`. The **cloud** workflow,
 `eas-testflight.yml`, does not — it relies on `autoIncrement` alone.
 
-Marked `TODO(verify)` rather than asserted because `docs.expo.dev` is blocked from this
-environment and I will not state EAS's current semantics from memory. Two fixes, either
-of which is small:
+This started as `TODO(verify)` — `docs.expo.dev` is blocked from the environment this
+document was written in, and EAS's versioning semantics are not something to state from
+memory. It was settled in review against Expo's own build-versioning reference:
+with `appVersionSource: "local"` the local project stays the source of truth and EAS
+does not write versions to its servers, so nothing carries between runs. Confirmed, not
+inferred.
 
-- set `cli.appVersionSource: "remote"` so EAS keeps the counter on its servers, or
-- reuse `next-build-number.mjs` in `eas-testflight.yml` exactly as the local workflow
-  does.
+Two fixes, either of which is small:
 
-The first build will succeed either way. This is a second-build bug, which is the kind
-that gets discovered at the worst moment.
+- **`cli.appVersionSource: "remote"`**, so EAS keeps the counter. Note the migration
+  step: an app already known to App Store Connect needs `eas build:version:set` once to
+  seed the remote value, or the first remote build starts below what Apple has on file.
+- **Reuse `next-build-number.mjs`** in `eas-testflight.yml` exactly as the local
+  workflow does — no migration, and it already works in this repo.
+
+Not changed here because it is a one-line edit with an operational tail (the seeding
+step, and which of the two the project wants to live with), and this document is the
+list rather than the change. Do it before the second build, not after the first one is
+rejected.
 
 ### 4 · The device pass has never been done — ❌ and it is the point
 
@@ -137,10 +160,10 @@ Read against the file as committed. Findings beyond the two already listed above
 
 | # | Finding | Severity |
 |---|---|---|
-| 1 | No `EXPO_PUBLIC_SUPABASE_*` in any profile | ❌ blocker — §2 |
-| 2 | `appVersionSource: "local"` + `autoIncrement` on a cloud CI build | ⚠️ `TODO(verify)` — §3 |
-| 3 | `preview-simulator` has no `env` block, so it gets no `EXPO_PUBLIC_ENV` where its sibling `preview` gets `"preview"` | ⚠️ it will build; anything branching on env silently takes the default path. Add `{"EXPO_PUBLIC_ENV": "preview"}`. |
-| 4 | `development` likewise has no `env` | 🟡 defensible — a dev client reads a local `.env`. Worth a line in the profiles doc so it reads as a decision. |
+| 1 | No `EXPO_PUBLIC_SUPABASE_*` in any committed profile | ⚠️ `TODO(verify)` — §2. Conditional on what the EAS environment supplies, which is not visible from the repo. |
+| 2 | `appVersionSource: "local"` + `autoIncrement` on a cloud CI build | ❌ confirmed — §3. Breaks the *second* build, not the first. |
+| 3 | `preview-simulator` has no `env`, so it gets no `EXPO_PUBLIC_ENV` where its sibling `preview` gets `"preview"` | 🟡 **harmless, because the variable is dead.** Nothing in `apps/mobile` reads `EXPO_PUBLIC_ENV` — not a component, not a hook, not even `types/env.d.ts`, which declares the two Supabase keys and a Sentry DSN and not this one. It is set in two profiles and consumed nowhere. The asymmetry is the smaller finding; the dead variable is the real one. Delete it, or give it a reader. |
+| 4 | `development` likewise has no `env` | 🟡 moot for the same reason as row 3. A dev client reads a local `.env` regardless. |
 | 5 | No `channel` on any profile | 🟡 EAS Update is not wired. Not needed for TestFlight. It *is* worth knowing before the rollback plan's "halt a rollout in minutes" claim is tested — that currently rests on feature flags alone. |
 | 6 | `submit` has no `android` block | 🟡 not a TestFlight concern. Play internal testing will need one. |
 | 7 | `production` does not set `distribution` | ✅ correct — store is the default. Noted so nobody "fixes" it. |
@@ -162,7 +185,13 @@ Not a formality — this is the part that means the list above is short.
   escape-hatches, reachability, five-states, scrollable, economy sim, EAS config check,
   plus `bundle:native`, `e2e` (67 steps) and `a11y:tree` (10 routes). **Re-run it on the
   exact commit you build** — it is fast and it is the whole point of having it.
-- ✅ Both native platforms bundle — 4.07 MiB Hermes per platform against a 4.1 MiB gate.
+- ✅ Both native platforms bundle — **4.26 MB of Hermes bytecode each against a 4.3 MB
+  gate**, plus 9.70 MB in 345 assets shipped beside the bundle rather than parsed at
+  start. Measured by `pnpm bundle:native` on this branch, 2026-08-11, not quoted from
+  another document — the first draft of this line said "4.07 against 4.1", which was
+  true when `definition-of-done-status.md` recorded it and had been overtaken twice
+  since. **0.04 MB of headroom is not headroom**: the next dependency is the one that
+  breaks the gate, and that is worth knowing before a build rather than during one.
 - ✅ Icon, splash, adaptive icon, favicon — derived by `pnpm build:art` from delivered
   masters, square and alpha-free as App Store Connect requires at upload.
 - ✅ iOS privacy manifest: `NSPrivacyTracking: false`, empty collected-data list, one
@@ -239,16 +268,22 @@ Everything above, plus — because a human reviewer opens the app:
 
 ## The order
 
-1. `npx eas credentials` — one interactive sitting. Nothing else can start until this
-   exists. *(Only Isac can do this.)*
-2. Put `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` where the
-   build can see them, or confirm they are already EAS environment variables.
-3. Settle the build-number question (§3) — five minutes now, a blocked submit later.
+1. `eas env:list` — one command, and it decides whether §2 is a blocker or already
+   closed. Cheapest thing on the list; do it before anything else.
+2. `npx eas credentials` — one interactive sitting, and nothing on the TestFlight route
+   can start until it exists. *(Only Isac can do this.)*
+3. Fix the build number (§3) — five minutes now, a rejected submit later.
 4. `pnpm verify:full` on the commit you are about to build.
-5. `pnpm check:ios-creds` with `EXPO_TOKEN`, and *read the output*.
+5. `pnpm check:ios-creds` with `EXPO_TOKEN`, and *read the output* — it is fail-open,
+   so its exit code is not the answer.
 6. Run the **iOS TestFlight** workflow.
 7. Install it and walk [`device-pass.md`](device-pass.md) end to end. That is the
    deliverable, not the build.
 
-Steps 2, 3 and 5 are the ones that are cheap now and expensive after a macOS runner has
+Steps 1, 3 and 5 are the ones that are cheap now and expensive after a macOS runner has
 been paid for. That is the whole reason this document is ordered the way it is.
+
+**And if all you want is the device pass**, steps 2, 3 and 6 are not on your path at
+all: `--profile preview` builds an installable app with no store, no App Store
+certificate and no build numbering, needing only your test devices' UDIDs registered.
+See [`device-pass.md`](device-pass.md), which now names both routes.
