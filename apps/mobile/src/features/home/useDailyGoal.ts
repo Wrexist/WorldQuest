@@ -47,9 +47,10 @@
  * was computed from, and disagreeing with the current preference re-decides it.
  */
 
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { AppState, type AppStateStatus } from 'react-native'
 import { lessonsPerDay } from '@worldquest/engines'
-import { readJson, writeJson } from '../../lib/storage.js'
+import { peekJson, writeJson } from '../../lib/storage.js'
 import { lessonsToday } from '../profile/useWeekActivity.js'
 import { localDay } from '../../lib/day.js'
 import { useItemPace } from '../lesson/usePace.js'
@@ -77,9 +78,14 @@ export type DailyGoal = {
  * happens during render, the write happens in an effect, and nothing has to do both.
  */
 function storedTargetFor(day: string, minutes: number): number | null {
-  const stored = readJson<StoredGoal>(KEY)
-  if (stored === null || stored.day !== day || stored.minutes !== minutes) return null
-  return stored.target
+  // `peekJson`, not `readJson`: this runs inside a `useMemo`, and `readJson` DELETES an
+  // entry it cannot parse. A corrupt `goal.today.v1` therefore mutated storage from the
+  // render path — the one thing the split below exists to prevent. A corrupt entry now
+  // reads as "today is not decided", and the effect's write repairs it by overwriting,
+  // which is a repair that happens after the render has committed.
+  const { value } = peekJson<StoredGoal>(KEY)
+  if (value === null || value.day !== day || value.minutes !== minutes) return null
+  return value.target
 }
 
 /**
@@ -108,12 +114,41 @@ export function useDailyGoal(): DailyGoal {
   // lesson ends. It is the target that must hold still.
   const done = lessonsToday()
 
-  // Recomputed every render rather than memoised, and that is the point: it is the one
-  // input that changes without any prop or state changing. A phone left on Home over
-  // midnight kept yesterday's date inside the memo and therefore yesterday's target,
-  // so the first lesson of the new day counted towards a goal that had already been
-  // met — the same class of bug as the moving denominator, one day out of phase.
-  const day = localDay(new Date())
+  // State with two triggers, not a value computed on render.
+  //
+  // Computing it on render fixed the first half of this: the date no longer hid inside a
+  // memo, so any re-render picked up the new day. It did nothing for the second half —
+  // a phone left on Home over midnight does not re-render, so `done` and `target` both
+  // stayed on yesterday until something unrelated happened to touch the screen. The
+  // first lesson of the new day then counted towards a goal that had already been met.
+  //
+  // Both triggers are needed and neither covers the other. The timer handles the phone
+  // that is awake and on this screen at midnight; `AppState` handles the far commoner
+  // case of a phone that was asleep through midnight and is picked up at breakfast,
+  // where the timer may never have fired at all.
+  const [day, setDay] = useState(() => localDay(new Date()))
+
+  useEffect(() => {
+    const tick = (): void => setDay(localDay(new Date()))
+
+    // Re-armed on every `day` change rather than set once: an interval would drift, and
+    // one timeout to the NEXT local midnight is exact. The extra second keeps it on the
+    // right side of the boundary — firing at 23:59:59.999 would read yesterday's date
+    // and re-arm for a millisecond later.
+    const now = new Date()
+    const midnight = new Date(now)
+    midnight.setHours(24, 0, 1, 0)
+    const timer = setTimeout(tick, midnight.getTime() - now.getTime())
+
+    const subscription = AppState.addEventListener('change', (next: AppStateStatus) => {
+      if (next === 'active') tick()
+    })
+
+    return () => {
+      clearTimeout(timer)
+      subscription.remove()
+    }
+  }, [day])
 
   const target = useMemo(
     () => goalTargetFor(day, minutes, itemMs),

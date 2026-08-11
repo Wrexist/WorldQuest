@@ -24,21 +24,37 @@ twice.
 
 The field's standard answers both exist and neither is available to a pre-launch app.
 
-**Classical item difficulty** is the *p*-value: the proportion of learners who answer
-correctly, where a higher value means an easier item. For a four-option multiple choice
-the target is not 0.5 — a learner who knows nothing still scores 0.25 by guessing, so the
-midpoint between chance and certainty is about 0.625, and that is where an item
-discriminates best.
+**Classical item difficulty** is the *p*-value: the proportion of a given group of
+learners who answered correctly, where a higher value means an easier item. It is a
+statistic about that sample, not a property of the item — the same question has a
+different *p* in a class of ten-year-olds and a class of geography teachers, which is
+exactly why it needs users before it can exist.
 
-**Item response theory** replaces that with a *b* parameter: the ability level at which a
-learner has a 50 % chance of answering correctly, on a scale where 0 is average and ±2 is
-hard or easy. The 50 % reading is the one- and two-parameter models'; a 3PL adds a
-guessing parameter *c*, and there *b* is the ability at which the probability is halfway
-between *c* and 1 — for four-option multiple choice, about 0.625 again. Worth stating
-because four options is what this app asks in, so the 3PL is the family it would actually
-calibrate against. It is the better model and it is not free — calibrating one item takes
-roughly 100–1000 responses, which is why IRT is a standardised-testing technique rather
-than a classroom-quiz one.
+A common rule of thumb for a four-option multiple choice puts the useful target above
+0.5: a learner who knows nothing still scores 0.25 by guessing, so the midpoint between
+chance and certainty is 0.625. Treat that as a rule of thumb and not as a law — where an
+item discriminates best depends on the ability distribution it is asked of, and 0.625 is
+the midpoint under the assumption that guessing is exactly 1-in-4.
+
+**Item response theory** replaces the sample-bound *p* with a *b* parameter on an ability
+scale, where 0 is average and ±2 is hard or easy. What *b* means depends on which model
+is being fitted, and that is worth stating because this document previously did not:
+
+- In a **1PL or 2PL** model, *b* is the ability at which the learner has a 50 % chance of
+  answering correctly.
+- In a **3PL** model, a guessing parameter *c* is added and *b* is the inflection point,
+  where the probability is halfway between *c* and 1. With *c* = 0.25 that is 0.625 — the
+  same number as the rule of thumb above, and only because *c* was assumed to be 0.25.
+
+Four options does not by itself make 3PL the right model: it costs a third parameter and
+correspondingly more data, and frequently lands close to 2PL. Which model to fit is a
+decision for whoever has the response data, and nobody here has it yet.
+
+TODO(verify): an earlier draft of this page said calibrating one IRT item takes "roughly
+100–1000 responses". The linked Assessment Systems page is about classical *p*-values and
+does not carry that range, and no source has been read for it, so it is not stated. The
+point it was making survives without a number: IRT needs far more responses per item than
+a pre-launch app has, which is why it is a standardised-testing technique.
 
 WorldQuest has `review_log`, which is exactly the table those numbers come out of. Until
 it has users, both fields are **authored priors**, and `pnpm content:validate` already
@@ -51,7 +67,10 @@ and the fix is observed p(correct), not better guessing.
 
 **Facts** get the median of that country's other facts, and 3 when it has none
 (`build-locations.cjs`, `build-country-facts.cjs`). Median rather than mean, because
-difficulty is ordinal and averaging ordinals invents values nobody judged. The assumption
+difficulty is ordinal and averaging ordinals invents values nobody judged — and for an
+even count both builders take the UPPER middle value (`ds[Math.floor(ds.length / 2)]`)
+rather than averaging the two, for the same reason: the result is a difficulty somebody
+actually authored. The assumption
 is the defensible one: familiarity is a property of the *country* more than of the
 attribute — somebody who knows where Brazil is probably knows its flag.
 
@@ -90,7 +109,7 @@ question made it a recognition task, which is where the modifier now says it sit
 ## Sources
 
 - [Classical item difficulty (p-value) and the IRT b parameter](https://www.cogn-iq.org/learn/theory/item-difficulty/) — Cogn-IQ
-- [What is Classical Item Difficulty (P Value)?](https://assess.com/classical-item-difficulty-p-value/) — Assessment Systems, on sample sizes for IRT calibration
-- [Item Analysis Report – Item Difficulty Index](https://www.questionmark.com/item-analysis-report-item-difficulty-index/) — Questionmark
+- [What is Classical Item Difficulty (P Value)?](https://assess.com/classical-item-difficulty-p-value/) — Assessment Systems, on the classical p-value. It is NOT a source for IRT calibration sample sizes; it was cited as one here and the claim it was carrying has been withdrawn above.
+- [Models Used in the NAEP Analyses: 3PL](https://nces.ed.gov/nationsreportcard/tdw/analysis/scaling_models_3pl.aspx) — NCES, on the three-parameter model and what *b* means in it
 - [Item Response Theory](https://www.publichealth.columbia.edu/research/population-health-methods/item-response-theory) — Columbia Mailman School of Public Health
 - [The Hardest Geography Quizzes, Ranked](https://geographyworlds.com/blog/hardest-geography-quizzes/) — an aggregate-play study; the flags-versus-capitals gap above comes from here and is third-party, not ours

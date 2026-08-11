@@ -60,6 +60,28 @@ export const readJson = <T>(key: string): T | null => {
   }
 }
 
+/**
+ * Reads without repairing — for callers that read during a React render.
+ *
+ * `readJson` deletes an entry it cannot parse, which is right on a normal code path and
+ * wrong inside a render: React is explicitly allowed to throw a render away and run it
+ * again, so a delete from in there is a side effect nobody asked for and StrictMode will
+ * perform twice. `useDailyGoal` reads its stored target during render by design, and was
+ * therefore mutating storage on the one input it cannot control — a corrupt entry.
+ *
+ * `corrupt` is reported rather than swallowed so the caller can repair it where repairs
+ * belong: in an effect, after the render has committed.
+ */
+export const peekJson = <T>(key: string): { value: T | null; corrupt: boolean } => {
+  const raw = appStore().getString(key)
+  if (raw === undefined) return { value: null, corrupt: false }
+  try {
+    return { value: JSON.parse(raw) as T, corrupt: false }
+  } catch {
+    return { value: null, corrupt: true }
+  }
+}
+
 export const writeJson = (key: string, value: unknown): void =>
   appStore().set(key, JSON.stringify(value))
 
