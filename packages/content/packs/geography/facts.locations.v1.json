@@ -14,7 +14,7 @@
   "generatedAt": "2026-08-03",
   "items": [
     {
-      "id": "geo.AR.location",
+      "id": "geo.AR.continent",
       "entity": "AR",
       "attribute": "location",
       "value": {
@@ -39,7 +39,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.AT.location",
+      "id": "geo.AT.continent",
       "entity": "AT",
       "attribute": "location",
       "value": {
@@ -64,7 +64,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.AU.location",
+      "id": "geo.AU.continent",
       "entity": "AU",
       "attribute": "location",
       "value": {
@@ -89,7 +89,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.BD.location",
+      "id": "geo.BD.continent",
       "entity": "BD",
       "attribute": "location",
       "value": {
@@ -114,7 +114,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.BE.location",
+      "id": "geo.BE.continent",
       "entity": "BE",
       "attribute": "location",
       "value": {
@@ -139,7 +139,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.BR.location",
+      "id": "geo.BR.continent",
       "entity": "BR",
       "attribute": "location",
       "value": {
@@ -164,7 +164,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.BW.location",
+      "id": "geo.BW.continent",
       "entity": "BW",
       "attribute": "location",
       "value": {
@@ -189,7 +189,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.CA.location",
+      "id": "geo.CA.continent",
       "entity": "CA",
       "attribute": "location",
       "value": {
@@ -214,7 +214,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.CH.location",
+      "id": "geo.CH.continent",
       "entity": "CH",
       "attribute": "location",
       "value": {
@@ -239,7 +239,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.CL.location",
+      "id": "geo.CL.continent",
       "entity": "CL",
       "attribute": "location",
       "value": {
@@ -264,7 +264,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.CN.location",
+      "id": "geo.CN.continent",
       "entity": "CN",
       "attribute": "location",
       "value": {
@@ -289,7 +289,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.CO.location",
+      "id": "geo.CO.continent",
       "entity": "CO",
       "attribute": "location",
       "value": {
@@ -314,7 +314,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.CR.location",
+      "id": "geo.CR.continent",
       "entity": "CR",
       "attribute": "location",
       "value": {
@@ -339,7 +339,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.CU.location",
+      "id": "geo.CU.continent",
       "entity": "CU",
       "attribute": "location",
       "value": {
@@ -364,7 +364,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.CZ.location",
+      "id": "geo.CZ.continent",
       "entity": "CZ",
       "attribute": "location",
       "value": {
@@ -389,7 +389,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.DE.location",
+      "id": "geo.DE.continent",
       "entity": "DE",
       "attribute": "location",
       "value": {
@@ -414,7 +414,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.DK.location",
+      "id": "geo.DK.continent",
       "entity": "DK",
       "attribute": "location",
       "value": {
@@ -439,7 +439,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.DZ.location",
+      "id": "geo.DZ.continent",
       "entity": "DZ",
       "attribute": "location",
       "value": {
@@ -464,7 +464,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.EG.location",
+      "id": "geo.EG.continent",
       "entity": "EG",
       "attribute": "location",
       "value": {
@@ -489,7 +489,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.ES.location",
+      "id": "geo.ES.continent",
       "entity": "ES",
       "attribute": "location",
       "value": {
@@ -514,7 +514,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.ET.location",
+      "id": "geo.ET.continent",
       "entity": "ET",
       "attribute": "location",
       "value": {
@@ -539,7 +539,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.FI.location",
+      "id": "geo.FI.continent",
       "entity": "FI",
       "attribute": "location",
       "value": {
@@ -564,7 +564,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.FJ.location",
+      "id": "geo.FJ.continent",
       "entity": "FJ",
       "attribute": "location",
       "value": {
@@ -589,7 +589,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.FR.location",
+      "id": "geo.FR.continent",
       "entity": "FR",
       "attribute": "location",
       "value": {
@@ -614,7 +614,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.GH.location",
+      "id": "geo.GH.continent",
       "entity": "GH",
       "attribute": "location",
       "value": {
@@ -639,7 +639,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.GR.location",
+      "id": "geo.GR.continent",
       "entity": "GR",
       "attribute": "location",
       "value": {
@@ -664,7 +664,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.GT.location",
+      "id": "geo.GT.continent",
       "entity": "GT",
       "attribute": "location",
       "value": {
@@ -689,7 +689,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.HU.location",
+      "id": "geo.HU.continent",
       "entity": "HU",
       "attribute": "location",
       "value": {
@@ -714,7 +714,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.ID.location",
+      "id": "geo.ID.continent",
       "entity": "ID",
       "attribute": "location",
       "value": {
@@ -739,7 +739,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.IN.location",
+      "id": "geo.IN.continent",
       "entity": "IN",
       "attribute": "location",
       "value": {
@@ -764,7 +764,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.IT.location",
+      "id": "geo.IT.continent",
       "entity": "IT",
       "attribute": "location",
       "value": {
@@ -789,7 +789,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.JP.location",
+      "id": "geo.JP.continent",
       "entity": "JP",
       "attribute": "location",
       "value": {
@@ -814,7 +814,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.KE.location",
+      "id": "geo.KE.continent",
       "entity": "KE",
       "attribute": "location",
       "value": {
@@ -839,7 +839,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.KP.location",
+      "id": "geo.KP.continent",
       "entity": "KP",
       "attribute": "location",
       "value": {
@@ -864,7 +864,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.KR.location",
+      "id": "geo.KR.continent",
       "entity": "KR",
       "attribute": "location",
       "value": {
@@ -889,7 +889,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.MA.location",
+      "id": "geo.MA.continent",
       "entity": "MA",
       "attribute": "location",
       "value": {
@@ -914,7 +914,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.ML.location",
+      "id": "geo.ML.continent",
       "entity": "ML",
       "attribute": "location",
       "value": {
@@ -939,7 +939,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.MN.location",
+      "id": "geo.MN.continent",
       "entity": "MN",
       "attribute": "location",
       "value": {
@@ -964,7 +964,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.MX.location",
+      "id": "geo.MX.continent",
       "entity": "MX",
       "attribute": "location",
       "value": {
@@ -989,7 +989,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.MY.location",
+      "id": "geo.MY.continent",
       "entity": "MY",
       "attribute": "location",
       "value": {
@@ -1014,7 +1014,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.NA.location",
+      "id": "geo.NA.continent",
       "entity": "NA",
       "attribute": "location",
       "value": {
@@ -1039,7 +1039,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.NG.location",
+      "id": "geo.NG.continent",
       "entity": "NG",
       "attribute": "location",
       "value": {
@@ -1064,7 +1064,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.NL.location",
+      "id": "geo.NL.continent",
       "entity": "NL",
       "attribute": "location",
       "value": {
@@ -1089,7 +1089,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.NO.location",
+      "id": "geo.NO.continent",
       "entity": "NO",
       "attribute": "location",
       "value": {
@@ -1114,7 +1114,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.NP.location",
+      "id": "geo.NP.continent",
       "entity": "NP",
       "attribute": "location",
       "value": {
@@ -1139,7 +1139,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.NZ.location",
+      "id": "geo.NZ.continent",
       "entity": "NZ",
       "attribute": "location",
       "value": {
@@ -1164,7 +1164,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.PA.location",
+      "id": "geo.PA.continent",
       "entity": "PA",
       "attribute": "location",
       "value": {
@@ -1189,7 +1189,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.PE.location",
+      "id": "geo.PE.continent",
       "entity": "PE",
       "attribute": "location",
       "value": {
@@ -1214,7 +1214,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.PG.location",
+      "id": "geo.PG.continent",
       "entity": "PG",
       "attribute": "location",
       "value": {
@@ -1239,7 +1239,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.PH.location",
+      "id": "geo.PH.continent",
       "entity": "PH",
       "attribute": "location",
       "value": {
@@ -1264,7 +1264,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.PK.location",
+      "id": "geo.PK.continent",
       "entity": "PK",
       "attribute": "location",
       "value": {
@@ -1289,7 +1289,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.PL.location",
+      "id": "geo.PL.continent",
       "entity": "PL",
       "attribute": "location",
       "value": {
@@ -1314,7 +1314,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.PT.location",
+      "id": "geo.PT.continent",
       "entity": "PT",
       "attribute": "location",
       "value": {
@@ -1339,7 +1339,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.RO.location",
+      "id": "geo.RO.continent",
       "entity": "RO",
       "attribute": "location",
       "value": {
@@ -1364,7 +1364,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.SE.location",
+      "id": "geo.SE.continent",
       "entity": "SE",
       "attribute": "location",
       "value": {
@@ -1389,7 +1389,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.SN.location",
+      "id": "geo.SN.continent",
       "entity": "SN",
       "attribute": "location",
       "value": {
@@ -1414,7 +1414,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.TH.location",
+      "id": "geo.TH.continent",
       "entity": "TH",
       "attribute": "location",
       "value": {
@@ -1439,7 +1439,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.TN.location",
+      "id": "geo.TN.continent",
       "entity": "TN",
       "attribute": "location",
       "value": {
@@ -1464,7 +1464,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.TZ.location",
+      "id": "geo.TZ.continent",
       "entity": "TZ",
       "attribute": "location",
       "value": {
@@ -1489,7 +1489,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.UA.location",
+      "id": "geo.UA.continent",
       "entity": "UA",
       "attribute": "location",
       "value": {
@@ -1514,7 +1514,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.UG.location",
+      "id": "geo.UG.continent",
       "entity": "UG",
       "attribute": "location",
       "value": {
@@ -1539,7 +1539,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.US.location",
+      "id": "geo.US.continent",
       "entity": "US",
       "attribute": "location",
       "value": {
@@ -1564,7 +1564,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.VN.location",
+      "id": "geo.VN.continent",
       "entity": "VN",
       "attribute": "location",
       "value": {
@@ -1589,7 +1589,7 @@
       "volatility": "stable"
     },
     {
-      "id": "geo.ZW.location",
+      "id": "geo.ZW.continent",
       "entity": "ZW",
       "attribute": "location",
       "value": {

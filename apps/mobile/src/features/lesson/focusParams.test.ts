@@ -73,6 +73,29 @@ describe('parseFocusParams — a URL is not to be trusted', () => {
     expect(parseFocusParams({ attr: '' }).attributes).toEqual([])
   })
 
+  it('carries the daily quest\'s exact fact ids in both directions', () => {
+    // The one field with a real caller that is not a person: Home turns today's quest
+    // into `factIds` and pushes it through the URL, so if this leg is wrong the quest
+    // silently becomes an ordinary lesson and the tasks never advance. Every other field
+    // was covered and this one — the only one that ships by default — was not.
+    const ids = ['geo.SE.capital', 'geo.NO.flag', 'geo.DK.currency']
+    const params = new URLSearchParams(focusToParams({ factIds: ids }, 8))
+
+    expect(params.get('facts')).toBe(ids.join(','))
+    expect(parseFocusParams(Object.fromEntries(params))).toMatchObject({
+      factIds: ids,
+      length: 8,
+    })
+  })
+
+  it('drops an empty fact list rather than sending `facts=`', () => {
+    // `focusFilter` reads an empty list as "matches nothing", so a stray `facts=` in the
+    // URL would compose a lesson of zero questions. The writer omits the key instead,
+    // which is the widening reading, and widening is the safe direction for a link.
+    expect(new URLSearchParams(focusToParams({ factIds: [] }, 10)).has('facts')).toBe(false)
+    expect(parseFocusParams({}).factIds).toEqual([])
+  })
+
   it('passes a region code through without judging it', () => {
     // This module does not know what regions exist and must not learn — the route
     // expands the code against the index, and a code nobody is in yields no entities,

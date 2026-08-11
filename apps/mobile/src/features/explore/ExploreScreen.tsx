@@ -116,7 +116,13 @@ export const CONTINENT_SILHOUETTE: Partial<Record<RegionCode, ArtName>> = {
  */
 export const continentArtSize = (width: number, height: number) => Math.ceil(Math.max(width, height * 1.5))
 
-const REGION_NAME: Record<RegionCode, TranslationKey> = {
+/**
+ * Exported because onboarding's continent picker needs the same seven names.
+ *
+ * There is a third copy in `app/region/[code].tsx`; this is one fewer than there was,
+ * and the right end state is one map that all three import.
+ */
+export const REGION_NAME: Record<RegionCode, TranslationKey> = {
   EU: 'explore:region.EU',
   AS: 'explore:region.AS',
   AF: 'explore:region.AF',
@@ -396,9 +402,24 @@ function ContinentTile({
             Decorative. The tile's `aria-label` already names the continent and its
             progress, and a reader announcing "map of Africa" after "Africa, 0 %" is the
             same fact twice. */}
+        {/* `bleed`, said out loud rather than left to `auto`.
+
+            `auto` decides "is this a plate?" from how much of its file the subject
+            covers, and the threshold assumes a cutout leaves margin. North America does
+            not: knocked out, the landmass reaches all four edges — Alaska, Greenland,
+            Panama — so it measures as whole-frame and `auto` would give it a panel's
+            rounded border. Six continents drawn bare and one in a box.
+
+            The measurement is right and the heuristic is out of its depth, which is the
+            case `frame` exists for. A silhouette is a cutout by definition here, so all
+            six say so rather than one of them being an exception. */}
         {CONTINENT_SILHOUETTE[region] !== undefined && (
           <View style={styles.tileShape} pointerEvents="none">
-            <Art name={CONTINENT_SILHOUETTE[region]} size={art * SILHOUETTE_OF_TILE} />
+            <Art
+              name={CONTINENT_SILHOUETTE[region]}
+              size={art * SILHOUETTE_OF_TILE}
+              frame="bleed"
+            />
           </View>
         )}
 

@@ -16,7 +16,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { optimisticProgress, type OptimisticProgress } from '@worldquest/engines'
 import { useAwards, pruneSettledAwards } from '../../lib/awards.js'
 import { queryKeys } from '../../lib/query.js'
-import { localDay } from '../profile/useWeekActivity.js'
+import { localDay } from '../../lib/day.js'
 import { useProgress, type UseProgress } from './useProgress.js'
 
 export type UseOptimisticProgress = UseProgress & {

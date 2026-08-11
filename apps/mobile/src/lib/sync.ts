@@ -264,7 +264,21 @@ async function send(mutation: QueuedMutation): Promise<void> {
    * server accepted it and retires itself once totals fetched after that instant arrive —
    * see `optimisticProgress`.
    */
-  markAwardDelivered(submission.lessonId, Date.now())
+  //
+  // Wrapped for the same reason `reconcile` is, and it is the same mistake: this line
+  // runs AFTER the server accepted the lesson, but it sits inside the try whose catch
+  // calls `fail(...)`. A storage write is the one thing here that can throw — a full
+  // disk, a corrupt store — and a throw would mark work the server has already banked
+  // as failed, burning an attempt and re-processing the outcome on retry.
+  //
+  // Losing the stamp is cheap and self-correcting: the award simply keeps counting as
+  // pending until the next successful delivery stamps it or `pruneSettledAwards` ages
+  // it out. Parking an accepted lesson is corrected by nothing.
+  try {
+    markAwardDelivered(submission.lessonId, Date.now())
+  } catch {
+    // Deliberately swallowed. See above.
+  }
 
   reconcile(result)
 }

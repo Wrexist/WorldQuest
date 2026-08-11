@@ -46,6 +46,8 @@ const facts = [
   ...read<Fact>('facts.flags.v1.json'),
   ...read<Fact>('facts.currencies.v1.json'),
   ...read<Fact>('facts.locations.v1.json'),
+  ...read<Fact>('facts.languages.v1.json'),
+  ...read<Fact>('facts.calling-codes.v1.json'),
 ]
 const templates = read<Template>('templates.v1.json')
 
@@ -359,6 +361,42 @@ describe('question construction', () => {
     expect(isAmbiguous(built, item, 'en')).toBe(false)
   })
 
+  it('never ships a reverse question the packs themselves make unanswerable', () => {
+    // The three tests above prove the rule on a fixture. This one proves it on the
+    // content that actually ships, because a fixture cannot tell you whether the packs
+    // contain a value twenty-one countries share — and they do.
+    //
+    // Stated as an invariant over every reverse template rather than by naming the two
+    // that motivated it: a pack author adding a third gets checked for free, which is
+    // the whole reason the guard lives in the engine and not in a script.
+    let dropped = 0
+    for (const template of templates) {
+      if (template.answer.from !== 'entity.names') continue
+      if (template.modality === 'map') continue // the map IS the prompt — see below
+      for (const item of index.items.filter((i) => i.templateId === template.id)) {
+        const fact = index.facts.get(item.factId)!
+        const value = fact.value.names?.['en']
+        const sharedWith = [...index.facts.values()].filter(
+          (other) =>
+            other.attribute === fact.attribute &&
+            other.entity !== fact.entity &&
+            index.entities.has(other.entity) &&
+            other.value.names?.['en'] === value,
+        )
+        const question = buildQuestion(index, item, 'en', seededRng(7))
+        if (sharedWith.length > 0) {
+          expect(question, `${template.id} on ${fact.id} — ${sharedWith.length} others say "${value}"`).toBeNull()
+          dropped++
+        }
+      }
+    }
+    // Not vacuous: the shipped packs really do contain shared values — eight countries
+    // answer "Spanish", five "English", and the US and Canada both dial +1 — so this
+    // loop has to have refused something. Without this line the test would still pass
+    // on the day someone deleted every ambiguous fact AND the guard along with it.
+    expect(dropped).toBeGreaterThan(0)
+  })
+
   it('refuses a question whose prompt contains its own answer', () => {
     // "Guatemala City is the capital of which country?" is a free point. So is Panama
     // City, and Mexico City, and Kuwait, and Luxembourg, and Djibouti, and Singapore.
@@ -642,6 +680,50 @@ describe('presentation', () => {
     // this?", answered by name, with the flag as the prompt.
     const q = buildQuestion(index, imageItem, 'en', seededRng(3))!
     expect(q.promptAsset).toBeDefined()
+    expect(q.revealAsset).toBeUndefined()
+  })
+
+  it('draws the four flags as the ANSWERS when the answer is a flag', () => {
+    // The screenshot that started this: "Hur ser Belgiens flagga ut?" over four written
+    // descriptions — "tre lodräta band — svart, gult, rött" — which is a reading
+    // comprehension question in the one place the app owns a picture of the answer.
+    const item = index.itemsByFact
+      .get('geo.SE.flag')!
+      .find((i) => i.templateId === 'tpl.flag-of-country.mc4')!
+    const q = buildQuestion(index, item, 'en', seededRng(3))!
+
+    // Every option, not just the correct one. Three of four carrying art and one bare
+    // would mark the odd one out — which is the giveaway this feature has to avoid, in
+    // the most embarrassing possible form.
+    expect(q.options).toHaveLength(4)
+    for (const option of q.options) expect(option.asset).toBeDefined()
+    expect(q.options.find((o) => o.isCorrect)!.asset).toBe(
+      index.entities.get('SE')!.assets!['flag']!.path,
+    )
+
+    // And the words survive, which is why this needed no second template and no
+    // `equivalentTemplate` pairing: the label is still the description, so a screen
+    // reader announces exactly what it announced before the pictures arrived.
+    for (const option of q.options) expect(option.label.length).toBeGreaterThan(0)
+  })
+
+  it('never puts art on an option when the option is the ENTITY', () => {
+    // The rule that keeps the feature from handing over the answer. "Which country's
+    // flag is this?" shows one flag and is answered by four country NAMES — art on
+    // those options would be each country's own flag, and one of them is the prompt.
+    const q = buildQuestion(index, imageItem, 'en', seededRng(3))!
+    for (const option of q.options) expect(option.asset).toBeUndefined()
+  })
+
+  it('stops revealing a flag the options have been showing all along', () => {
+    // `revealAsset` used to fire whenever the PROMPT had no picture. The options can
+    // carry it now, so that condition alone would put the flag on the feedback sheet a
+    // second time, having never left the screen.
+    const item = index.itemsByFact
+      .get('geo.SE.flag')!
+      .find((i) => i.templateId === 'tpl.flag-of-country.mc4')!
+    const q = buildQuestion(index, item, 'en', seededRng(3))!
+    expect(q.promptAsset).toBeUndefined()
     expect(q.revealAsset).toBeUndefined()
   })
 

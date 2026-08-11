@@ -42,7 +42,8 @@ import { recordQuestEvent } from '../quests/questProgress.js'
 import { useContent } from '../../lib/content.js'
 import { currentLocale, tContent, useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
-import { localDay, recordLessonCompleted } from '../profile/useWeekActivity.js'
+import { recordLessonCompleted } from '../profile/useWeekActivity.js'
+import { localDay } from '../../lib/day.js'
 import { recordPredictedAward } from '../../lib/awards.js'
 import { enqueueLesson } from '../../lib/sync.js'
 import { Icon } from '../../components/Icon.js'
@@ -50,22 +51,6 @@ import { Stat } from '../../components/Stat.js'
 
 type ScreenState = 'loading' | 'error' | 'empty' | 'ready'
 
-/**
- * How wide the flag in an image question is drawn.
- *
- * 200pt, and the asset is rasterised at exactly 3x of it (`scripts/build-flags.cjs`)
- * so it is never upscaled. Big enough that the question is a fair one — telling Mexico
- * from Italy is a question about the coat of arms, and at tile size that is a smudge —
- * and small enough that the four answers below it stay on screen at 320pt.
- */
-/**
- * The revealed flag on the feedback sheet.
- *
- * Smaller than `FLAG_PROMPT_WIDTH`: as a prompt the flag is the question and gets the
- * room to be studied, and here it shares a sheet with a verdict, two reward chips, a
- * mascot and the way onward. Big enough to read the design, small enough not to push
- * the Continue button off a 320.
- */
 /**
  * The rail down the leading edge of the answers.
  *
@@ -85,8 +70,41 @@ const BADGES = ['A', 'B', 'C', 'D'] as const
  */
 const STREAK_PRAISE = 3
 
+/**
+ * The revealed flag on the feedback sheet.
+ *
+ * Smaller than `FLAG_PROMPT_WIDTH`: as a prompt the flag is the question and gets the
+ * room to be studied, and here it shares a sheet with a verdict, two reward chips, a
+ * mascot and the way onward. Big enough to read the design, small enough not to push
+ * the Continue button off a 320.
+ */
 const REVEAL_WIDTH = 96
 
+/**
+ * How wide a flag drawn as an ANSWER is.
+ *
+ * Smaller than the reveal and much smaller than the prompt, because there are four of
+ * them stacked and they compete with nothing: the question is already read, and what is
+ * being asked of the eye is a comparison between four pictures rather than a study of
+ * one.
+ *
+ * 64 rather than 72, because these sit two to a row now. A cell is 48 % of the content
+ * column, which at 320 wide is about 121pt once the card's own padding is taken out, and
+ * the badge and its gap claim 42 of those. 64 leaves margin at the tightest size the app
+ * supports; 72 fit only by rounding, and a flag that overflows its cell is a flag with a
+ * cropped hoist, which on a question about what a flag looks like is the answer being
+ * damaged.
+ */
+const OPTION_FLAG_WIDTH = 64
+
+/**
+ * How wide the flag in an image question is drawn.
+ *
+ * 200pt, and the asset is rasterised at exactly 3x of it (`scripts/build-flags.cjs`)
+ * so it is never upscaled. Big enough that the question is a fair one — telling Mexico
+ * from Italy is a question about the coat of arms, and at tile size that is a smudge —
+ * and small enough that the four answers below it stay on screen at 320pt.
+ */
 const FLAG_PROMPT_WIDTH = 200
 
 /**
@@ -183,6 +201,20 @@ const SHORT_SCREEN = 700
  */
 const LOCATOR_WIDTH = 280
 const LOCATOR_WIDTH_SHORT = 132
+
+/**
+ * The short-screen locator when the answers are a 2x2 grid of pictures.
+ *
+ * 132 is the number that protects the 320x568 budget — prompt, map and four FULL-WIDTH
+ * option rows need about 690pt there, so the map is what gives way. A picture-answer
+ * question does not spend its screen that way: two rows of cells instead of four rows of
+ * cards gives back the better part of two hundred points, and handing all of it to
+ * empty space while the map stays a stamp would be keeping the tax after repealing it.
+ *
+ * Still short of the 280 a tall screen gets. The grid recovers most of the height, not
+ * all of it, and the map is context here rather than the question.
+ */
+const LOCATOR_WIDTH_SHORT_GRID = 208
 
 /**
  * A map question's map — the prompt itself rather than context beside one.
@@ -556,6 +588,21 @@ export function LessonScreen({
   const answered = lesson.state.phase === 'answered'
 
   /**
+   * Whether the ANSWERS are pictures — which changes the layout of half this screen.
+   *
+   * Asked of the options rather than of the modality, because `modality` describes the
+   * PROMPT: a flag-answer question is `text` modality (its prompt is a sentence) and is
+   * the one case here that is not a list of words. `asset` is set by `buildQuestion`
+   * only for options that are fact values, so this is exactly "the answers are things
+   * you look at" and nothing else.
+   *
+   * `some`, not `every`: if the pack ever produced a mixed set the grid is still the
+   * right shape, and a picture in a full-width row next to a word in one would be the
+   * worse failure.
+   */
+  const pictureOptions = question.options.some((option) => option.asset !== undefined)
+
+  /**
    * How many the user has just got right in a row, counting back from the last answer.
    *
    * Only used to decide whether the praise under "Perfect!" is allowed to mention a
@@ -686,7 +733,9 @@ export function LessonScreen({
                     ? MAP_PROMPT_WIDTH_SHORT
                     : MAP_PROMPT_WIDTH
                   : compact
-                    ? LOCATOR_WIDTH_SHORT
+                    ? pictureOptions
+                      ? LOCATOR_WIDTH_SHORT_GRID
+                      : LOCATOR_WIDTH_SHORT
                     : LOCATOR_WIDTH
               }
               // Labelled ONLY when it is the question. Beside a capital-city question
@@ -702,7 +751,21 @@ export function LessonScreen({
         )}
 
         <View
-          style={styles.options}
+          /**
+           * A 2x2 grid when the answers are pictures, a column when they are words.
+           *
+           * Four flag rows are four full-width cards about ninety points tall, which on
+           * a 320x568 phone is most of the screen: the map got pushed above the fold and
+           * the auto-scroll to the options finished the job, so the question a user
+           * actually saw was four flags and a sliver of Mexico.
+           *
+           * Words have to stay a column — a country name is read left to right and four
+           * of them in two columns is a word search. A flag is not read, it is compared,
+           * and comparing is easier in a block than down a list. So the layout follows
+           * what the option IS, which is the same signal `AnswerOption` uses to decide
+           * between drawing art and drawing text.
+           */
+          style={[styles.options, pictureOptions && styles.optionsGrid]}
           // Measured rather than assumed: the prompt is one or two lines, the
           // illustration is present or not, and both move this by tens of points.
           onLayout={(event) => {
@@ -728,6 +791,12 @@ export function LessonScreen({
               key={option.id}
               label={option.label}
               state={state}
+              // Half the row, less the gap. `AnswerOption`'s card is `alignSelf:
+              // 'stretch'`, which is right for a column and would make every cell a full
+              // row here; the caller's style lands last in the array, so this is the
+              // documented way to override it rather than a second prop on the
+              // primitive.
+              {...(pictureOptions ? { style: styles.optionCell } : {})}
               // A, B, C, D. From the RENDER order, not from the option's identity —
               // `buildQuestion` shuffles with the injected rng precisely so that
               // position never becomes the answer, and a badge derived from anything
@@ -744,6 +813,22 @@ export function LessonScreen({
                   : state === 'wrong'
                     ? t('lesson:answer.wrong', { answer: option.label })
                     : undefined
+              }
+              // The answer as a PICTURE, when the option is one.
+              //
+              // "Hur ser Belgiens flagga ut?" used to offer four written descriptions —
+              // "tre lodräta band — svart, gult, rött" — so the one question in the app
+              // that is literally about what something looks like was answered by
+              // reading. `buildQuestion` attaches `asset` only to options that are fact
+              // VALUES, which is what keeps this from becoming the giveaway the
+              // `promptAsset` note refuses; see `AnswerOption.asset`.
+              //
+              // Undefined for every other attribute, so a capital or currency option is
+              // the same text row it has always been.
+              art={
+                option.asset !== undefined ? (
+                  <Flag path={option.asset} width={OPTION_FLAG_WIDTH} />
+                ) : undefined
               }
               // The non-colour half of the signal, as artwork rather than a character.
               // The wrong-answer mark used to be `→`, which points the same way in an
@@ -858,7 +943,21 @@ export function LessonScreen({
                   app: here the picture is the answer being taught, so a reader that
                   skipped it would be skipping the lesson. */}
               {question.revealAsset !== undefined && (
-                <View style={styles.reveal} testID="reveal-asset">
+                // Cleared of the mascot exactly like `sheetText` below, and for a
+                // sharper reason. The mascot is bottom-anchored and painted after this
+                // block, so on a correct answer he stands on the START edge — the same
+                // edge `styles.reveal` aligns the flag to — and on a short sheet he
+                // covers it. The one picture in this app that is not decorative, hidden
+                // by the one that is.
+                <View
+                  style={[
+                    styles.reveal,
+                    lastAnswer?.wasCorrect === true && !rewardsWrapped
+                      ? { paddingStart: mascot }
+                      : { paddingEnd: mascot },
+                  ]}
+                  testID="reveal-asset"
+                >
                   <Flag
                     path={question.revealAsset}
                     width={REVEAL_WIDTH}
@@ -1173,6 +1272,24 @@ const styles = StyleSheet.create({
   prompt: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
   promptArt: { alignItems: 'center' },
   options: { gap: space[2] },
+  /**
+   * The picture-answer layout: two across, wrapping to two rows.
+   *
+   * `justifyContent: 'space-between'` rather than a gap on the main axis, because the
+   * cells are sized as a PERCENTAGE and a percentage plus a gap overflows the row by the
+   * gap. The cross-axis gap below still separates the two rows.
+   */
+  optionsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' },
+  /**
+   * Half the row, less enough for the gutter between the two columns.
+   *
+   * `alignSelf: 'auto'` undoes the primitive's `stretch`, which is correct for a column
+   * of full-width rows and would make each cell claim the whole row here. Stated rather
+   * than left to the width alone: `stretch` on a wrapping row container stretches the
+   * CROSS axis, so without this the two cells in a row would also be forced to equal
+   * height by their own alignment rather than by the row's.
+   */
+  optionCell: { width: '48%', alignSelf: 'auto' },
   feedback: { gap: space[2] },
   // A positioning context for the confetti, which is drawn behind the card and is
   // deliberately allowed to overflow it — nothing here clips.

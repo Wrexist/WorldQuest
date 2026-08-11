@@ -200,7 +200,45 @@ for (const e of askable) counts[e.region] = (counts[e.region] ?? 0) + 1
 const items = [...askable]
   .sort((a, b) => a.id.localeCompare(b.id))
   .map((e) => ({
-    id: `geo.${e.id}.location`,
+    /**
+     * `continent`, not `location` — and the attribute below stays `location`.
+     *
+     * A fact id ships in save data: `review_log` and `user_facts` are keyed by it, and
+     * FSRS remembers what a learner knows about `geo.SE.location`. That fact used to
+     * answer "Northern Europe" and now answers "Europe", so keeping the id would tell
+     * the scheduler somebody had mastered an answer they have never once been shown.
+     * A changed answer under an old id is worse than a rename; it is a rename pretending
+     * not to be one. New id, fresh memory, honest.
+     *
+     * The ATTRIBUTE is deliberately not renamed with it. Templates are attribute-shaped
+     * and never geography-shaped — the note at the top of the templates pack is emphatic
+     * about it — and `location` is the generic concept ("where is this entity") that an
+     * astronomy pack answers with a galaxy arm. `continent` is geography, and putting it
+     * in the template layer is exactly the leak that rule exists to stop.
+     *
+     * So the id says what this fact asserts and the attribute says what shape of question
+     * it is. The schema documents the third segment as a slug rather than as the
+     * attribute for this reason.
+     *
+     * ## What happens to the `geo.<CC>.location` rows
+     *
+     * Nothing, and that is the whole plan, because the app has not launched: there are no
+     * `review_log` or `user_facts` rows carrying the old id anywhere but on a developer's
+     * simulator, and a migration written to move zero rows is a migration nobody can test.
+     *
+     * The behaviour if a row does exist is still defined rather than accidental. Both
+     * tables are keyed by fact id and neither has a foreign key into the packs — the packs
+     * ship in the binary, so there is nothing for the database to reference — so an
+     * orphaned row is simply a memory of a fact no template can now produce. It is never
+     * scheduled, never shown, and never counted, because item selection walks the content
+     * index and the index has no such fact. It is dead weight, not a wrong answer.
+     *
+     * Should this happen again AFTER launch, the answer is different and is not a rename:
+     * write a forward-only migration that DELETES the old rows rather than repointing
+     * them, for the reason above — the answer changed, so the old memory is about a
+     * question the learner was never asked.
+     */
+    id: `geo.${e.id}.continent`,
     entity: e.id,
     attribute: 'location',
     value: {

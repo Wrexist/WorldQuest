@@ -14,10 +14,22 @@ import { usePreferences } from '../../src/features/settings/usePreferences.js'
 
 export default function OnboardingRoute() {
   const { complete } = useOnboarding()
-  const { set } = usePreferences()
+  const { preferences, set } = usePreferences()
 
   const finish = (result: OnboardingResult): void => {
     complete(result)
+
+    /**
+     * The two content answers, stored where the lesson composer can read them.
+     *
+     * `startRegion` and `level` are the whole reason those two steps exist — an
+     * onboarding question whose answer goes nowhere is a form, not an onboarding, and
+     * this repo has spent a month finding capabilities that shipped unwired. Home reads
+     * both when it composes the first lessons; both stop mattering once the scheduler
+     * has real answers to work from.
+     */
+    set('startRegion', result.startRegion)
+    set('startLevel', result.level)
     // The goal was chosen here; Settings and the reminder scheduler read it from
     // preferences. Writing it in two places would let them disagree.
     set('dailyGoalMinutes', result.dailyGoalMinutes)
@@ -31,5 +43,14 @@ export default function OnboardingRoute() {
     router.replace('/lesson?taster=1')
   }
 
-  return <OnboardingScreen currentYear={new Date().getFullYear()} onFinish={finish} />
+  return (
+    <OnboardingScreen
+      currentYear={new Date().getFullYear()}
+      language={preferences.language}
+      // Straight through to the preference, which calls `setLocale` — so the tap
+      // redraws this screen in the chosen language before the finger lifts.
+      onLanguage={(choice) => set('language', choice)}
+      onFinish={finish}
+    />
+  )
 }

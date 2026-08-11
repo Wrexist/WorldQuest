@@ -58,6 +58,9 @@
   "lesson:prompt.which_country_map": "Vilket land är markerat?",
   "lesson:prompt.location_of": "Var i världen ligger {entityName}?",
   "lesson:answer.correct": "{answer}, rätt svar",
-  "lesson:answer.wrong": "{answer}, inte svaret"
-
+  "lesson:answer.wrong": "{answer}, inte svaret",
+  "lesson:prompt.language_of": "Vilket språk talar man i {entityName}?",
+  "lesson:prompt.language_reverse": "Vilket av de här länderna talar {valueName}?",
+  "lesson:prompt.calling_code_of": "Vilket riktnummer ringer till {entityName}?",
+  "lesson:prompt.calling_code_reverse": "Att ringa {valueName} går till vilket land?"
 }

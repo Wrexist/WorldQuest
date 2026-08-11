@@ -96,6 +96,25 @@ export const FALLBACK_LOCALE: Locale = 'en'
 /** Not in `SUPPORTED_LOCALES` — a development tool, never a shipped language. */
 export const PSEUDO_LOCALE = 'en-XA'
 
+/**
+ * Each language's name IN ITSELF, which is the only correct way to label a picker.
+ *
+ * A Swedish speaker looking for their language scans for *Svenska*, not for *Swedish*.
+ * Labelling the list in the CURRENT language is the classic mistake: it works for
+ * everybody who can already read the app and fails for exactly the person the picker
+ * exists to help — somebody who opened it because they cannot.
+ *
+ * So these are NOT translation keys and never will be. A key would have one value per
+ * locale, which is the bug; an endonym has one value, full stop.
+ *
+ * Typed as `Record<Locale, string>`, so adding a locale to `SUPPORTED_LOCALES` without
+ * naming it here is a compile error rather than a picker row reading `de`.
+ */
+export const LOCALE_ENDONYM: Record<Locale, string> = {
+  en: 'English',
+  sv: 'Svenska',
+}
+
 // ── resources ───────────────────────────────────────────────────────────────
 
 /**

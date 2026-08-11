@@ -1,6 +1,6 @@
 # iOS-native audit — August 2026
 
-Six audits of the shipped app, run against the TestFlight build (`0.1.0`, commit `81d6a0a`)
+Seven audits of the shipped app, run against the TestFlight build (`0.1.0`, commit `81d6a0a`)
 and the rendered bundle at 320 / 390 / 768. Written after five device screenshots of the
 onboarding flow came back with the note "it looks horrible".
 

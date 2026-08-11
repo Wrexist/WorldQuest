@@ -319,6 +319,17 @@ export function HomeScreen({
                   ? t('home:quest.doneBody')
                   : t('quests:progress', { done: quest.done, total: quest.total })
               }
+              // The same sentence again, as the announced VALUE rather than the name.
+              // `ProgressBar` cannot import the translator (design depends on nothing),
+              // so without this it falls back to an English "3 of 5" — which is what a
+              // Swedish user with VoiceOver heard, immediately after hearing the label
+              // in Swedish. Passing the label twice reads as one clean announcement
+              // because the bar's name and its value are spoken as one phrase.
+              valueText={
+                quest.complete
+                  ? t('home:quest.doneBody')
+                  : t('quests:progress', { done: quest.done, total: quest.total })
+              }
             />
           )}
 

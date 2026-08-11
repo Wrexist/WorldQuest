@@ -127,22 +127,26 @@ const WAIVED: Record<string, Partial<Record<State, string>>> = {
     offline: 'everything it shows is local; it is correct with no connection at all',
   },
   'onboarding/OnboardingScreen': {
-    // NEW in the iOS pass, and worth saying why it appeared rather than just adding it.
+    // The history of this one line is the argument for the whole script.
     //
-    // This screen used to satisfy `empty` by accident. The age gate was a two-step chip
-    // grid, so before a decade was picked the year area had nothing to show and rendered
-    // `onboarding:age.pickDecade` — a hint that read to this script as an empty state,
-    // and genuinely was one. Replacing the grid with a wheel deleted the condition along
-    // with the string: the wheel is generated from the current year and always has 101
-    // rows, the first of which is the explicit "Choose a year" row it opens on.
+    // It was first waived because the age gate's chip grid rendered a "pick a decade"
+    // hint, which genuinely was an empty state; the wheel deleted that branch and the
+    // waiver went in. When the continent step landed I removed the waiver again, on the
+    // grounds that a continent grid is a list that can arrive empty — and the gate went
+    // green, so I believed it.
     //
-    // So there is no longer a list here that can arrive empty. Nothing on any of the
-    // four steps is fetched, counted or filtered — the slides, the years and the three
-    // goals are all constants in the binary.
-    empty:
-      'nothing here is a collection that can arrive empty — the slides and the goals are ' +
-      'constants and the year wheel is generated from the current year, so its 101 rows ' +
-      'exist before the step does',
+    // It was green for the wrong reason. The grid maps over a seven-entry constant and
+    // can no more be empty than the three levels or the two languages can; what made the
+    // signal fire was `app/lesson.tsx`, which had started importing `LEVELS` from
+    // `OnboardingScreen.js`. The mount detection below matches a screen's NAME against
+    // route source, so that import string enrolled the lesson route as an onboarding
+    // route and lent onboarding the lesson's `questions.length === 0`.
+    //
+    // `LEVELS` now lives in `onboarding/levels.ts` and the waiver is back, stated
+    // correctly this time: every list on this flow — the slides, the languages, the
+    // years, the continents, the levels — is a constant in the binary. Nothing here is
+    // fetched, counted or filtered, so there is nothing that can arrive with no rows.
+    empty: 'every list on the flow is a constant in the binary; none can arrive empty',
     loading: 'nothing is fetched — every step is local until the taster lesson starts',
     error:
       'the same reason as loading: the slides are static and the copy ships in the ' +
@@ -188,8 +192,20 @@ for (const dir of readdirSync(FEATURES, { withFileTypes: true })) {
     if (!file.endsWith('Screen.tsx') || file.endsWith('.test.tsx')) continue
     const component = file.replace('.tsx', '')
     const own = readFileSync(join(FEATURES, dir.name, file), 'utf8')
-    // Every route that mounts this screen, so the split does not read as a gap.
-    const mounts = ROUTE_FILES.filter((r) => new RegExp(`\\b${component}\\b`).test(r.code))
+    /**
+     * Every route that mounts this screen, so the split does not read as a gap.
+     *
+     * `<Name` — actual JSX — rather than the bare word. A word match counted a route as
+     * mounting a screen it merely *mentioned*, and `app/lesson.tsx` importing a
+     * constant from `OnboardingScreen.js` was enough to hand onboarding the lesson's
+     * empty state. That is the false PASS this file's own header calls the expensive
+     * direction, arriving through the door it had not thought to close.
+     *
+     * A route that renders a screen behind an alias or a variable would now read as no
+     * mount at all — a false alarm, which is the cheap direction, and the "(no route
+     * mounts this)" note says so out loud rather than failing quietly.
+     */
+    const mounts = ROUTE_FILES.filter((r) => new RegExp(`<${component}\\b`).test(r.code))
     screens.push({
       name: `${dir.name}/${component}`,
       code: stripProse([own, ...mounts.map((m) => m.code)].join('\n')),

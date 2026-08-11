@@ -178,7 +178,20 @@ const finding = (route, kind, detail) => findings.push({ route, kind, detail })
   const completeOnboarding = async () => {
     await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' })
     await page.waitForTimeout(1200)
-    if (!/Get started|Next/i.test(await page.evaluate(() => document.body.innerText))) return
+    if (
+      !/Choose your language|Get started|Next/i.test(
+        await page.evaluate(() => document.body.innerText),
+      )
+    ) {
+      return
+    }
+    // The language step, which the flow now opens on. One button, and every option on it
+    // is already a valid answer.
+    const language = page.getByText('Continue', { exact: true }).first()
+    if ((await language.count()) > 0) {
+      await language.click()
+      await page.waitForTimeout(400)
+    }
     for (let i = 0; i < 2; i++) {
       await page.getByText('Next', { exact: true }).first().click()
       await page.waitForTimeout(350)
@@ -192,10 +205,14 @@ const finding = (route, kind, detail) => findings.push({ route, kind, detail })
     const adultYear = new Date().getFullYear() - 30
     await page.getByRole('radio', { name: String(adultYear) }).click()
     await page.waitForTimeout(250)
-    await page.getByText('Continue', { exact: true }).first().click()
-    await page.waitForTimeout(500)
-    await page.getByText('Continue', { exact: true }).first().click()
-    await page.waitForTimeout(500)
+    // goal → region → level → taster. Four now, where it used to be two: the flow gained
+    // the two content questions, and a walker that stops early audits the onboarding
+    // screen ten times and reports one confident, uniform, wrong answer — which is the
+    // exact failure the comment above this function describes.
+    for (let i = 0; i < 4; i++) {
+      await page.getByText('Continue', { exact: true }).first().click()
+      await page.waitForTimeout(450)
+    }
     await page.getByText('Start learning', { exact: true }).first().click()
     await page.waitForTimeout(1200)
   }

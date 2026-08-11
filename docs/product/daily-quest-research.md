@@ -61,11 +61,22 @@ is the same every day. **The picker was a feature that made the habit harder.**
 ### Testing beats reading, which is why a quiz is the right daily unit
 
 This is the part that makes a daily quiz more than a retention trick. Repeated testing
-produces long-term retention, and the effect is large: learners who self-tested retained
-roughly **61 %** of material a week later against roughly **40 %** for
-re-reading.([Kudo](http://kudoquiz.com/?p=2494), reporting the classic testing-effect
-result) A daily quiz on spaced material is the single best-evidenced study habit there is,
-which means the retention mechanic and the *learning* mechanic are the same mechanic here.
+produces long-term retention, and the effect is large: in Roediger & Karpicke's
+test-enhanced learning experiments, learners who self-tested retained substantially more
+material a week later than learners who re-read it, despite re-readers predicting they
+would do better. (Roediger & Karpicke, *Test-Enhanced Learning*, Psychological Science 17
+(2006); Karpicke & Roediger, *The Critical Importance of Retrieval for Learning*, Science
+319 (2008).) Retrieval practice and spacing are two of the best-evidenced study
+techniques in the literature — Dunlosky et al.'s review of ten techniques rates both
+"high utility", the only two that score it (*Improving Students' Learning With Effective
+Learning Techniques*, Psychological Science in the Public Interest 14 (2013)). A daily
+quiz on spaced material is those two techniques combined, which means the retention
+mechanic and the *learning* mechanic are the same mechanic here.
+
+("The single best-evidenced study habit there is" is what this said before. Dunlosky rates
+them joint-first among ten and compares nothing outside that ten, so "one of the two
+best-rated in the standard review" is what the citation supports and a superlative over
+all study habits is not.)
 That is a rare and valuable alignment, and it is the reason this product can chase a daily
 habit without the usual guilt about it.
 
@@ -78,19 +89,41 @@ habit without the usual guilt about it.
 Streak-based loss aversion is one of the most replicated findings in behavioural
 economics: losing hurts about **twice** as much as an equivalent gain
 feels good (Kahneman & Tversky).([This Is Glance](https://thisisglance.com/learning-centre/how-can-loss-aversion-psychology-transform-app-retention))
-Duolingo reports a **14 %** day-7 retention lift from streak wagers, and third parties
-attribute a large share of its retention to the streak
-generally.([Deconstructor of Fun](https://duolingo.deconstructoroffun.com/mechanics/streaks))
+Duolingo has publicly credited its streak mechanics with a material share of its retention,
+and third-party teardowns treat the streak as the centre of its retention design.
+([Deconstructor of Fun](https://duolingo.deconstructoroffun.com/mechanics/streaks))
+TODO(verify): an earlier draft put a specific **14 %** day-7 lift from streak wagers on
+this claim. The number is repeated widely in secondary write-ups and it is not in the
+linked teardown. Duolingo does publish its own experiment write-ups on the streak, so a
+primary source may well exist and simply has not been located and read — which is a
+different claim from "none exists", and the earlier wording here made the stronger one.
+Until somebody reads it, the figure is not stated.
+Nothing below depends on the figure — the design conclusions rest on the direction, which
+is well attested, not on the magnitude.
 
 ### And they backfire, measurably
 
-This is the part a product spec usually leaves out. Roughly **40 % of users who break a
-60-day-plus streak abandon the product within two weeks** — the streak's own length becomes
-the reason quitting feels
-reasonable.([Marketing Monsters](https://marketingmonsters.io/blog/the-science-behind-streak-based-motivation))
+This is the part a product spec usually leaves out. The mechanism is the same loss
+aversion, pointed the other way: the length that made the streak motivating is the length
+that makes resuming feel pointless, so the users a streak holds hardest have the most to
+lose when it
+snaps.([Marketing Monsters](https://marketingmonsters.io/blog/the-science-behind-streak-based-motivation))
+That is an argument, not a measurement. The sources below are a marketing blog and a
+preprint on run-streaking, and neither reports a churn rate after a break — so "a
+well-documented churn event", which is what this said, was the paragraph asserting the
+very number the three notes below refuse to state.
+TODO(verify): a specific "**40 %** of users who break a 60-day-plus streak abandon within
+two weeks" was cited here and is not in the linked page. It reads as plausible and it is
+unsourced, which in this repo means it does not get to be a number. Streak Repair and the
+no-shame copy below are designed for the direction of this effect, not its size.
 Breaking is a *double* loss: the behaviour you valued, plus the record. Wordle shows the
-shape plainly — about **90 %** of players reach a 3-day streak and only about **20 %**
-sustain 30 days.([Blossom](https://blossomgame.net/the-psychology-behind-daily-wordle-habits/))
+shape plainly: reaching a short streak is common and sustaining a month-long one is rare,
+so the streak curve falls away steeply in its first
+week.([Blossom](https://blossomgame.net/the-psychology-behind-daily-wordle-habits/))
+TODO(verify): "about **90 %** reach 3 days, about **20 %** sustain 30" was stated here as
+fact and is not in the linked page. The shape is the part this section actually uses — a
+steep early drop-off is why the first week gets Streak Repair rather than the sixtieth
+day — and the shape does not need the two numbers to stand up.
 There is even a literature on run-streaking as a behaviour-change technique that backfires
 once the streak ends.([medRxiv](https://www.medrxiv.org/content/10.1101/2024.12.26.24319676.full.pdf))
 
@@ -109,9 +142,10 @@ worth stating because it means the research changes nothing about the streak —
 what the streak is attached to. [`progression.md §5`](../systems/progression.md) already
 specifies: a cap of **2** freezes; repair within 48 h, once per 30 days; longest streak
 remembered forever; streaks hideable entirely in Settings; and *"losing a streak is stated,
-never mourned"*. That last rule is the direct countermeasure to the 40 % abandonment
-finding — the moment a streak breaks is the moment a product decides whether the user is a
-failure or a person who had a Tuesday.
+never mourned"*. That last rule is the direct countermeasure to the effect above — the
+moment a streak breaks is the moment a product decides whether the user is a failure or a
+person who had a Tuesday. It does not need the 40 % to be true; it needs only for the
+direction to be right, which is the standard the whole section is now held to.
 
 ---
 
@@ -150,7 +184,7 @@ are structured entry points with a subject; the picker was a form.
   layer needs an economy simulation run, not a UI change.
 - **Anything that adds urgency.** [`quests-and-liveops.md §7`](../systems/quests-and-liveops.md)
   bans "2 HOURS LEFT!!" outright, and §1 bans mentioning a missed quest ever again. The
-  40 % abandonment finding is what those rules were anticipating.
+  post-break drop-off is what those rules were anticipating.
 
 ---
 

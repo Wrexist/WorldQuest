@@ -80,9 +80,19 @@ import {
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
 import { hapticSelect } from '../../lib/haptics.js'
-import { DAILY_GOALS, type DailyGoal } from '../settings/usePreferences.js'
+import { DAILY_GOALS, type DailyGoal, type LanguageChoice } from '../settings/usePreferences.js'
+import { LANGUAGE_CHOICES } from '../settings/usePreferences.js'
+import { LOCALE_ENDONYM, type Locale } from '@worldquest/i18n'
+import {
+  CONTINENT_ART,
+  CONTINENT_SILHOUETTE,
+  REGION_NAME,
+  REGIONS,
+  type RegionCode,
+} from '../explore/ExploreScreen.js'
 import { Art } from '../../components/Art.js'
 import { WheelPicker, type WheelOption } from '../../components/WheelPicker.js'
+import { LEVELS, type LevelChoice } from './levels.js'
 import type { ArtName } from '../../lib/art.generated.js'
 
 /** The age at which the child branch applies. COPPA; GDPR-K varies by country and is stricter in places. */
@@ -92,17 +102,70 @@ export type OnboardingResult = {
   readonly birthYear: number
   readonly isChild: boolean
   readonly dailyGoalMinutes: DailyGoal
+  /**
+   * The language they picked. Already APPLIED by the time this arrives — the picker
+   * writes the preference on tap so the next screen is in the new language — and
+   * reported here so the route stores it alongside everything else rather than the
+   * screen owning half the persistence.
+   */
+  readonly language: LanguageChoice
+  /** The continent the first lessons stay in, or null for the whole world. */
+  readonly startRegion: string | null
+  readonly level: LevelChoice
 }
 
 export type OnboardingScreenProps = {
   /** Injected so the screen stays pure — no `new Date()` in a component. */
   readonly currentYear: number
+  /**
+   * The language in force right now, and how to change it.
+   *
+   * Props rather than `usePreferences()` inside the screen, which keeps the split this
+   * file's header describes: everything the user sees lives here, everything that
+   * persists lives in the route. It also keeps the flow mountable by a component test
+   * and by the screenshot renderer, neither of which has device storage.
+   *
+   * `onLanguage` applies IMMEDIATELY rather than at the end. A language picker whose
+   * effect arrives four screens later is a language picker nobody trusts they used.
+   */
+  readonly language: LanguageChoice
+  readonly onLanguage: (choice: LanguageChoice) => void
   readonly onFinish: (result: OnboardingResult) => void
   readonly onSignIn?: (() => void) | undefined
 }
 
-type Step = 'slides' | 'age' | 'goal' | 'taster'
-const STEPS: readonly Step[] = ['slides', 'age', 'goal', 'taster']
+type Step = 'language' | 'slides' | 'age' | 'goal' | 'region' | 'level' | 'taster'
+
+/**
+ * The order, and why each step is where it is.
+ *
+ * **Language first**, before a single word of the pitch. Every other screen in this flow
+ * assumes the user can read it; the one screen that must not is the one that fixes that.
+ * It is also the cheapest possible first interaction — a tap on your own language, with
+ * nothing to think about.
+ *
+ * **Slides before the questions.** Ask first and most people leave; show what the app is
+ * for and the questions become worth answering.
+ *
+ * **Age before anything personalising.** It is the compliance gate, and everything after
+ * it is allowed to differ for a child.
+ *
+ * **Region and level after the goal**, because both are about the CONTENT of the first
+ * lesson and the goal is about the habit. Grouping the two content questions next to the
+ * taster keeps the last thing before playing about what you are going to play.
+ *
+ * Every one of these questions changes something. That is the entry condition for being
+ * on this list, and it is why there is no "how did you hear about us" and no reminder
+ * time: nothing in this app would consume either answer today, and a question whose
+ * answer goes nowhere is a form, not an onboarding.
+ */
+const STEPS: readonly Step[] = ['language', 'slides', 'age', 'goal', 'region', 'level', 'taster']
+
+const LEVEL_COPY = {
+  new: { label: 'onboarding:level.new', body: 'onboarding:level.newBody' },
+  some: { label: 'onboarding:level.some', body: 'onboarding:level.someBody' },
+  confident: { label: 'onboarding:level.confident', body: 'onboarding:level.confidentBody' },
+} as const satisfies Record<LevelChoice, { label: TranslationKey; body: TranslationKey }>
 
 /**
  * Atlas on a step where the user is choosing something.
@@ -112,6 +175,15 @@ const STEPS: readonly Step[] = ['slides', 'age', 'goal', 'taster']
  * the same size as theirs would be arguing with them.
  */
 const DECISION_ART = 104
+
+/**
+ * A continent's picture on the region step.
+ *
+ * Sized so seven of them plus their labels fit above the fold on a 320-wide phone in a
+ * three-column grid — the whole point of showing pictures instead of a list is that the
+ * user sees all seven at once and picks the one they recognise.
+ */
+const REGION_ART = 72
 
 /**
  * The height the hero block occupies on every slide, whatever is drawn in it.
@@ -149,12 +221,24 @@ const GOAL_LABEL = {
   20: 'onboarding:goal.serious',
 } as const
 
-export function OnboardingScreen({ currentYear, onFinish, onSignIn }: OnboardingScreenProps) {
+export function OnboardingScreen({
+  currentYear,
+  language,
+  onLanguage,
+  onFinish,
+  onSignIn,
+}: OnboardingScreenProps) {
   const t = useT()
-  const [step, setStep] = useState<Step>('slides')
+  // `language`, not `slides`. Everything after this point assumes the user can read the
+  // screen; this is the one step whose job is to make that true.
+  const [step, setStep] = useState<Step>('language')
   const [slide, setSlide] = useState(0)
   const [birthYear, setBirthYear] = useState<number | null>(null)
   const [goal, setGoal] = useState<DailyGoal>(10)
+  // `null` is "anywhere", a real answer rather than a missing one — see the copy note
+  // on `onboarding:region.anywhere`.
+  const [startRegion, setStartRegion] = useState<RegionCode | null>(null)
+  const [level, setLevel] = useState<LevelChoice>('some')
 
   /**
    * The page width, measured rather than assumed.
@@ -261,7 +345,7 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
     // type says it can, and a cast would be a lie that outlives this function.
     if (birthYear === null) return
     finished.current = true
-    onFinish({ birthYear, isChild, dailyGoalMinutes: goal })
+    onFinish({ birthYear, isChild, dailyGoalMinutes: goal, language, startRegion, level })
   }
 
   return (
@@ -272,11 +356,24 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
           first two slides read `1 / 4` while the dot moved (O4). The bar still carries
           the full step count for a screen reader, which is where a number belongs when
           the picture cannot hold one. */}
-      <View
-        style={styles.progress}
-        accessibilityLabel={t('onboarding:progress', { step: stepIndex, total: STEPS.length })}
-      >
-        <ProgressBar current={stepIndex} total={STEPS.length} height={4} showCount={false} />
+      {/* The label belongs ON the bar, not on a plain wrapper around it.
+
+          A `View` carrying only `accessibilityLabel` is not an accessibility element —
+          iOS never focuses it, so the step count was written, reviewed, and announced to
+          nobody. `ProgressBar` is already `accessible` with `role="progressbar"`, so the
+          same string reaches VoiceOver as the bar's name and value with no extra node,
+          and the fourth platform-a11y prop in this repo to no-op silently gets to be the
+          last. */}
+      <View style={styles.progress}>
+        <ProgressBar
+          current={stepIndex}
+          total={STEPS.length}
+          height={4}
+          showCount={false}
+          // As the VALUE, not the `label` — `label` renders visibly, and a written step
+          // count beside the dots is the exact duplication finding O4 removed.
+          valueText={t('onboarding:progress', { step: stepIndex, total: STEPS.length })}
+        />
       </View>
 
       <Animated.View style={[styles.stepFill, stepStyle]}>
@@ -410,7 +507,15 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
                     key={minutes}
                     role="radio"
                     aria-checked={chosen}
-                    aria-label={t('onboarding:goal.minutes', { minutes })}
+                    // No `aria-label`, deliberately. It read "5 minutes" — the same words
+                    // as the first line of the row — and an explicit label REPLACES the
+                    // children rather than adding to them, so the second line, which is
+                    // the part that says what five minutes a day actually means, was
+                    // announced to nobody. Left off, the row composes its own name from
+                    // what is on it, in the order it is written: "5 minutes, Casual".
+                    //
+                    // A single key carrying both would be the other fix; it would also be
+                    // a fourth copy of numbers that already exist, kept in step by hand.
                     onPress={() => {
                       if (!chosen) hapticSelect()
                       setGoal(minutes)
@@ -423,6 +528,184 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
                         not the answer, so choosing one never changes the row's layout —
                         the same rule the old bordered version kept with a transparent
                         2 px border. */}
+                    <Text
+                      style={[styles.tick, !chosen && styles.tickOff]}
+                      aria-hidden
+                      importantForAccessibility="no-hide-descendants"
+                    >
+                      ✓
+                    </Text>
+                  </Pressable>
+                )
+              })}
+            </View>
+
+            <Spacer />
+          </ScrollView>
+        )}
+
+        {step === 'language' && (
+          <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
+            <Spacer />
+            {/* `welcome`, and it is the first thing anybody ever sees of this app. */}
+            <Art name="atlas/welcome" size={DECISION_ART} />
+            <Text style={styles.title}>{t('onboarding:language.title')}</Text>
+            <Text style={styles.body}>{t('onboarding:language.body')}</Text>
+
+            <View style={styles.group} role="radiogroup" aria-label={t('onboarding:language.title')}>
+              {LANGUAGE_CHOICES.map((choice, index) => {
+                const chosen = language === choice
+                return (
+                  <Pressable
+                    key={choice}
+                    role="radio"
+                    aria-checked={chosen}
+                    onPress={() => {
+                      if (!chosen) hapticSelect()
+                      // Applied on tap, not on Continue. The rest of this row, the
+                      // heading above it and the button below all redraw in the chosen
+                      // language before the finger lifts, which is the only proof a
+                      // language picker can offer that it worked.
+                      onLanguage(choice)
+                    }}
+                    style={[styles.groupRow, index > 0 && styles.groupRowDivided]}
+                  >
+                    {/* The endonym, never a translation — see `LOCALE_ENDONYM`. The
+                        system row is the exception and is deliberately in the current
+                        language: it names a behaviour rather than a language. */}
+                    <Text style={styles.goalMinutes}>
+                      {choice === 'system'
+                        ? t('onboarding:language.system')
+                        : LOCALE_ENDONYM[choice as Locale]}
+                    </Text>
+                    <View style={styles.flex} />
+                    <Text
+                      style={[styles.tick, !chosen && styles.tickOff]}
+                      aria-hidden
+                      importantForAccessibility="no-hide-descendants"
+                    >
+                      ✓
+                    </Text>
+                  </Pressable>
+                )
+              })}
+            </View>
+
+            <Spacer />
+          </ScrollView>
+        )}
+
+        {step === 'region' && (
+          <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
+            <Text style={styles.title}>{t('onboarding:region.title')}</Text>
+            <Text style={styles.body}>{t('onboarding:region.body')}</Text>
+
+            {/* The continent artwork, at the one moment it is the subject rather than a
+                tile background. Seven pictures of the world is the most premium this
+                flow gets to look, and it costs nothing new: the same masters the Explore
+                tab already ships. */}
+            {/* One radiogroup around ALL eight options, grid and "anywhere" alike.
+                "Anywhere" used to sit outside it. It is the same question, and it is the
+                mutually exclusive answer that makes the other seven a choice rather than
+                a toggle — but a screen reader announced it as a lone radio belonging to
+                nothing: "radio, not checked", with no group name and no "8 of 8" to
+                place it among the continents it competes with. */}
+            <View
+              style={styles.regionGroup}
+              role="radiogroup"
+              aria-label={t('onboarding:region.title')}
+            >
+              <View style={styles.regionGrid}>
+                {REGIONS.map((code) => {
+                  const chosen = startRegion === code
+                  return (
+                    <Pressable
+                      key={code}
+                      role="radio"
+                      aria-checked={chosen}
+                      aria-label={t(REGION_NAME[code])}
+                      onPress={() => {
+                        if (!chosen) hapticSelect()
+                        setStartRegion(code)
+                      }}
+                      style={[styles.regionCell, chosen && styles.regionCellOn]}
+                    >
+                      {/* Sky, then landmass, the same two layers the Explore tiles use.
+                          The sky alone is seven coloured gradients — correct as atmosphere
+                          and a map of nowhere, which is the exact gap the silhouettes were
+                          delivered to close. Antarctica has no silhouette in the delivery
+                          and renders as sky, which is what `CONTINENT_SILHOUETTE` being
+                          `Partial` is for. */}
+                      <View style={styles.regionArt}>
+                        <Art name={CONTINENT_ART[code]} size={REGION_ART} frame="bleed" />
+                        {CONTINENT_SILHOUETTE[code] !== undefined && (
+                          <View style={styles.regionShape} pointerEvents="none">
+                            <Art
+                              name={CONTINENT_SILHOUETTE[code]}
+                              size={Math.round(REGION_ART * 0.78)}
+                              frame="bleed"
+                            />
+                          </View>
+                        )}
+                      </View>
+                      <Text style={styles.regionLabel} numberOfLines={1}>
+                        {t(REGION_NAME[code])}
+                      </Text>
+                    </Pressable>
+                  )
+                })}
+              </View>
+
+              <Pressable
+                role="radio"
+                aria-checked={startRegion === null}
+                onPress={() => {
+                  if (startRegion !== null) hapticSelect()
+                  setStartRegion(null)
+                }}
+                style={[styles.anywhere, startRegion === null && styles.anywhereOn]}
+              >
+                <Text style={styles.goalMinutes}>{t('onboarding:region.anywhere')}</Text>
+                <View style={styles.flex} />
+                <Text
+                  style={[styles.tick, startRegion !== null && styles.tickOff]}
+                  aria-hidden
+                  importantForAccessibility="no-hide-descendants"
+                >
+                  ✓
+                </Text>
+              </Pressable>
+            </View>
+
+            <Spacer />
+          </ScrollView>
+        )}
+
+        {step === 'level' && (
+          <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
+            <Spacer />
+            <Art name="atlas/thinking" size={DECISION_ART} />
+            <Text style={styles.title}>{t('onboarding:level.title')}</Text>
+            <Text style={styles.body}>{t('onboarding:level.body')}</Text>
+
+            <View style={styles.group} role="radiogroup" aria-label={t('onboarding:level.title')}>
+              {(Object.keys(LEVELS) as LevelChoice[]).map((choice, index) => {
+                const chosen = level === choice
+                return (
+                  <Pressable
+                    key={choice}
+                    role="radio"
+                    aria-checked={chosen}
+                    onPress={() => {
+                      if (!chosen) hapticSelect()
+                      setLevel(choice)
+                    }}
+                    style={[styles.groupRow, index > 0 && styles.groupRowDivided]}
+                  >
+                    <View style={styles.flex}>
+                      <Text style={styles.goalMinutes}>{t(LEVEL_COPY[choice].label)}</Text>
+                      <Text style={styles.levelBody}>{t(LEVEL_COPY[choice].body)}</Text>
+                    </View>
                     <Text
                       style={[styles.tick, !chosen && styles.tickOff]}
                       aria-hidden
@@ -456,6 +739,10 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
       </Animated.View>
 
       <View style={styles.actions}>
+        {step === 'language' && (
+          <Button label={t('onboarding:age.continue')} onPress={() => setStep('slides')} />
+        )}
+
         {step === 'slides' && (
           <>
             <Button
@@ -485,6 +772,28 @@ export function OnboardingScreen({ currentYear, onFinish, onSignIn }: Onboarding
               // On leaving the step, not on each row tap: what matters is the goal
               // they settled on, and firing per tap would record every one they tried.
               track('onboarding_goal_selected', { minutes: goal })
+              setStep('region')
+            }}
+          />
+        )}
+
+        {step === 'region' && (
+          <Button
+            label={t('onboarding:age.continue')}
+            onPress={() => {
+              // On leaving, like the goal step: what matters is where they settled, not
+              // every continent they touched on the way there.
+              track('onboarding_region_selected', { region: startRegion ?? 'world' })
+              setStep('level')
+            }}
+          />
+        )}
+
+        {step === 'level' && (
+          <Button
+            label={t('onboarding:age.continue')}
+            onPress={() => {
+              track('onboarding_level_selected', { level })
               setStep('taster')
             }}
           />
@@ -543,6 +852,24 @@ const styles = StyleSheet.create({
    * two or three lines — so there is no leading overflow to strand above scroll position
    * zero. The vertical steps use a ScrollView with padding instead, for exactly the
    * reason `Spacer` exists.
+   *
+   * ## `flex: 1` is load-bearing here, and it looks like it should not be
+   *
+   * It reads like a mistake — `flex` is a MAIN-axis instruction, the main axis of a
+   * horizontal pager is horizontal, and the width is already set inline from the
+   * measured viewport (`{ width: page }`) because that is what `pagingEnabled` snaps to.
+   * A reviewer flagged it as exactly that. It is not: in this container the explicit
+   * width wins the main axis outright, and `flex: 1` is what gives the page the pager's
+   * HEIGHT — without which `justifyContent: 'center'` has nothing to centre inside.
+   *
+   * Both alternatives were built and photographed. Removing it, and replacing it with
+   * `alignSelf: 'stretch'`, produce the identical wrong picture: the slide collapses to
+   * its content and the hero and copy ride at the top of the screen with a third of the
+   * page empty beneath them. The pager's content container is auto-height, so there is
+   * nothing for the cross axis to stretch against.
+   *
+   * Left as it is, with the reasoning written down, because this is the third time a
+   * plausible-looking simplification has been proposed for it.
    */
   slide: {
     flex: 1,
@@ -598,6 +925,81 @@ const styles = StyleSheet.create({
   dot: { width: 8, height: 8, borderRadius: radius.full, backgroundColor: colors.bg.surfaceRaised },
   dotOn: { backgroundColor: colors.action.primary, width: 24 },
   wheelWrap: { alignSelf: 'stretch', marginTop: space[4] },
+  flex: { flex: 1 },
+  /**
+   * Three across, so all seven continents are visible without scrolling.
+   *
+   * `space-between` and a percentage width rather than a gap on the main axis, for the
+   * same reason the lesson's answer grid does it: a percentage plus a gap overflows the
+   * row by the gap.
+   */
+  /**
+   * Carries what the grid and the "anywhere" row used to get from `form` directly.
+   *
+   * Wrapping them in one radiogroup made them a single child of a centred container
+   * with a `gap`, so without these two lines the group shrinks to its content width and
+   * loses the space between its two halves. The a11y grouping is free; the layout it
+   * would quietly have cost is not.
+   */
+  regionGroup: { alignSelf: 'stretch', gap: space[2] },
+  regionGrid: {
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    rowGap: space[3],
+    marginTop: space[4],
+  },
+  regionCell: {
+    width: '31%',
+    alignItems: 'center',
+    gap: space[1],
+    paddingVertical: space[2],
+    borderRadius: radius.lg,
+    ...squircle,
+    // A transparent ring so choosing one never changes the layout — the same rule the
+    // goal rows kept before they became a list.
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  regionCellOn: { borderColor: colors.action.primaryEdge, backgroundColor: colors.bg.surface },
+  /**
+   * The two-layer picture, clipped to its own rounded box.
+   *
+   * 3:2, because `Art` draws a 3:2 master `size` wide — a square box would band the sky
+   * above and below it. `overflow: 'hidden'` is what lets the landmass be drawn larger
+   * than the frame and cropped by it, which is how the Explore tiles get a shape that
+   * fills its card instead of floating in the middle of one.
+   */
+  regionArt: {
+    width: REGION_ART,
+    height: Math.round(REGION_ART / 1.5),
+    borderRadius: radius.md,
+    ...squircle,
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  regionShape: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
+  regionLabel: { ...text('caption', { weight: '700' }), color: colors.text.primary },
+  anywhere: {
+    alignSelf: 'stretch',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: space[4],
+    paddingVertical: space[4],
+    paddingHorizontal: space[4],
+    minHeight: layout.minTouchTarget,
+    borderRadius: radius.lg,
+    ...squircle,
+    borderWidth: 2,
+    borderColor: colors.border.subtle,
+    backgroundColor: colors.bg.surface,
+  },
+  anywhereOn: { borderColor: colors.action.primaryEdge },
+  // Under the level's own label, so the row says what the choice MEANS rather than
+  // making the user infer it from three adjectives.
+  levelBody: { ...text('caption'), color: colors.text.secondary, marginTop: space[1] },
   childNote: { marginTop: space[5], padding: space[4], alignItems: 'center' },
   childTitle: { ...text('h3'), color: colors.text.primary, marginBottom: space[2] },
   // The inset group: one surface, one radius, one border. Rows draw their own hairline

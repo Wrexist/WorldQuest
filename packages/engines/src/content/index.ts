@@ -14,6 +14,7 @@ import type {
   ContentIndex,
   DistractorStrategy,
   Entity,
+  EntityId,
   Fact,
   Item,
   Question,
@@ -423,8 +424,33 @@ export function buildQuestion(
   if (isAmbiguous(index, item, locale)) return null
 
   const spec = template.distractors
+
+  /**
+   * The picture for an option, when the option is a VALUE that has one.
+   *
+   * Only for `fact.value.names` templates — see the long note on `AnswerOption.asset`
+   * for why that single condition is the whole difference between illustrating an
+   * answer and giving it away. An `entity.names` template gets `undefined` here and
+   * keeps the plain text options it has always had.
+   *
+   * Indexed by the template's attribute, exactly like `promptAsset` below, so this
+   * knows nothing about flags. An entity with no such asset yields `undefined` and the
+   * option renders as words — which is what every attribute except `flag` does today,
+   * and is why adding this changed no question but one.
+   */
+  const assetFor = (entityId: EntityId): string | undefined =>
+    template.answer.from === 'fact.value.names'
+      ? index.entities.get(entityId)?.assets?.[template.attribute]?.path
+      : undefined
+
+  const correctAsset = assetFor(item.entityId)
   const options: AnswerOption[] = [
-    { id: item.entityId, label: correctLabel, isCorrect: true },
+    {
+      id: item.entityId,
+      label: correctLabel,
+      isCorrect: true,
+      ...(correctAsset !== undefined ? { asset: correctAsset } : {}),
+    },
   ]
 
   if (spec) {
@@ -455,7 +481,13 @@ export function buildQuestion(
         if (spec.excludeSimilarStrings !== false && key === normalise(correctLabel)) continue
 
         taken.add(key)
-        chosen.push({ id: candidate.id, label, isCorrect: false })
+        const asset = assetFor(candidate.id)
+        chosen.push({
+          id: candidate.id,
+          label,
+          isCorrect: false,
+          ...(asset !== undefined ? { asset } : {}),
+        })
       }
       return chosen
     }
@@ -506,11 +538,20 @@ export function buildQuestion(
    * This hands the screen the picture to show once grading is done, when there is
    * nothing left to give away.
    *
-   * `promptAsset === undefined` is the whole condition. If the template already shows
-   * the asset, revealing it again is a second copy of something that never left.
+   * `promptAsset === undefined` was the whole condition, and it is no longer sufficient.
+   * The options can now carry the picture too: a flag question whose four options ARE
+   * the four flags has shown the right one since before the user answered, so revealing
+   * it on the feedback sheet is a second copy of something that never left — the exact
+   * redundancy the `promptAsset` half of this condition exists to prevent.
+   *
+   * The reveal still fires for the described-flag templates, which is where it was
+   * earning its place: those ask in words, are answered in words, and would otherwise
+   * finish without the flag ever appearing.
    */
   const revealAsset =
-    promptAsset === undefined ? entity.assets?.[template.attribute]?.path : undefined
+    promptAsset === undefined && correctAsset === undefined
+      ? entity.assets?.[template.attribute]?.path
+      : undefined
 
   /**
    * The locator map, and the one rule that makes it safe.

@@ -100,7 +100,12 @@ export default function RegionRoute() {
         // sixty-five countries is the same defect the country page's Practise button
         // had: the CTA belongs to the page it is on. `region=` is expanded to entity
         // ids by the lesson route, which is where the index lives.
-        onStartLesson={() => router.push(`/lesson?region=${encodeURIComponent(code ?? '')}`)}
+        // `region`, not `code`: the screen has already fallen back to EU for a code it
+        // does not recognise, so sending the raw param would start a lesson about a
+        // continent the page is not showing. The lesson route omits an unknown region
+        // rather than failing closed, so the result was a lesson about the whole world
+        // under a heading saying Europe — the widening `focusFilter` exists to prevent.
+        onStartLesson={() => router.push(`/lesson?region=${encodeURIComponent(region)}`)}
       />
     </ContentGate>
   )

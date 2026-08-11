@@ -368,11 +368,21 @@ const skip = (name, why) => {
   await home()
   await page.waitForTimeout(1500)
   let text = await body()
-  step('first launch opens onboarding, not Home', /five minutes a day|Get started|Next/i.test(text))
+  step(
+    'first launch opens onboarding, not Home',
+    /Choose your language|five minutes a day|Get started|Next/i.test(text),
+  )
   await page.screenshot({ path: path.join(SHOTS, 'onboarding-slide.png') })
 
   /** Slide one to the age step. A function because the 200 % check below rewinds. */
   const toAgeStep = async () => {
+    // The language step is first now, and it has one button. Every option on it is
+    // already a valid answer, so there is nothing to choose before continuing.
+    const language = page.getByText('Continue', { exact: true }).first()
+    if ((await language.count()) > 0) {
+      await language.click()
+      await page.waitForTimeout(400)
+    }
     for (let i = 0; i < 2; i++) {
       await page.getByText('Next', { exact: true }).first().click()
       await page.waitForTimeout(400)
@@ -436,6 +446,20 @@ const skip = (name, why) => {
 
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(600)
+
+  // The two content questions — which continent, and how well do you know the world.
+  // Both are checked rather than clicked through blind: they are the steps whose answers
+  // reach `app/lesson.tsx`, and a step that silently stopped rendering would otherwise
+  // show up here only as a timeout four lines later.
+  step('continent picker appears', /Where do you want to start/i.test(await body()))
+  await page.screenshot({ path: path.join(SHOTS, 'onboarding-region.png') })
+  await page.getByText('Continue', { exact: true }).first().click()
+  await page.waitForTimeout(500)
+
+  step('starting level appears', /How well do you know the world/i.test(await body()))
+  await page.getByText('Continue', { exact: true }).first().click()
+  await page.waitForTimeout(500)
+
   step('taster promises a lesson with no account', /no account needed/i.test(await body()))
 
   await page.getByText('Start learning', { exact: true }).first().click()
