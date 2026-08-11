@@ -482,8 +482,16 @@ const skip = (name, why) => {
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(600)
 
-  await page.getByRole('radio', { name: /10 min/ }).first().click()
-  await page.waitForTimeout(700)
+  // A slider now, like the level step: it does not advance on being answered, because a
+  // drag passes through every value on its way to one. Its default is ten minutes.
+  const goalTrack = await page.getByRole('slider').first().boundingBox()
+  if (goalTrack !== null) {
+    await page.mouse.click(goalTrack.x + goalTrack.width - 4, goalTrack.y + goalTrack.height / 2)
+    await page.waitForTimeout(300)
+  }
+  step('the goal slider answers to a tap on its track', /20 min/i.test(await body()))
+  await page.getByText('Continue', { exact: true }).first().click()
+  await page.waitForTimeout(600)
 
   // The two content questions — which continent, and how well do you know the world.
   // Both are checked rather than clicked through blind: they are the steps whose answers
@@ -509,6 +517,22 @@ const skip = (name, why) => {
   }
   step('the difficulty slider answers to a drag', /Bring it on/i.test(await body()))
   await page.screenshot({ path: path.join(SHOTS, 'onboarding-level.png') })
+  await page.getByText('Continue', { exact: true }).first().click()
+  await page.waitForTimeout(600)
+
+  // The two closing steps: the plan read back, then the premium step.
+  step('the plan reads the answers back', /Here is your plan/i.test(await body()))
+  await page.screenshot({ path: path.join(SHOTS, 'onboarding-plan.png') })
+  await page.getByText('Continue', { exact: true }).first().click()
+  await page.waitForTimeout(600)
+
+  text = await body()
+  // Leads with free and carries no urgency. Both are rule 7, and both are the kind of
+  // thing a growth experiment quietly removes.
+  step('the premium step leads with what is free', /Every lesson is free/i.test(text))
+  step('the premium step has no countdown or scarcity',
+       !/hurry|limited time|expires in|only today|\d+:\d\d left/i.test(text))
+  await page.screenshot({ path: path.join(SHOTS, 'onboarding-offer.png') })
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(600)
 

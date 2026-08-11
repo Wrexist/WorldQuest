@@ -30,15 +30,24 @@ const advanceToAgeStep = (): void => {
   fireEvent.click(screen.getByRole('button', { name: 'Skip' })) // slides → age
 }
 
-/** Age → goal → region → level → taster, taking the first answer on each. */
+/**
+ * Age → goal → region → level → taster, accepting the default on every slider.
+ *
+ * The two slider steps — goal and level — are left where they open. jsdom lays nothing
+ * out, so a track measures zero wide and every position on it is the same position; the
+ * drag is exercised in `pnpm e2e` against a real layout instead.
+ */
 const advanceToTaster = (): void => {
   fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // age → goal
-  answer(/5 min/) // goal → region
+  fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // goal → region
   answer('Europe') // region → level
-  // The level step is a slider, so it does not advance on being answered — a drag
-  // passes through every value on its way to one. Its default is 'some' and Continue
-  // is how you leave.
-  fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → taster
+  fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → plan
+  fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // plan → offer (or taster, if a child)
+  // The premium step is skipped entirely for a child, so this press may already be on
+  // the taster. Both are the same button, and pressing Continue once more from the
+  // taster would start the lesson — hence the guard.
+  const next = screen.queryAllByRole('button', { name: 'Continue' })
+  if (next.length > 0) fireEvent.click(next[0]!) // offer → taster
 }
 
 /**
@@ -140,26 +149,28 @@ describe('OnboardingScreen', () => {
     render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={onFinish} />)
     advanceToAgeStep()
     pickYear(YEAR - 30)
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
-    // "20 min Serious", not "20 min": the row no longer carries an explicit
-    // `aria-label`, so its accessible name is composed from both lines. That is the
-    // point of the change — the explicit label had duplicated the first line and
-    // suppressed the second, so the word describing what the goal MEANS reached no
-    // screen reader. Matching on both is what keeps that fixed.
-    answer(/20 min\s*Serious/) // goal → region
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // age → goal
+    // The goal slider announces its value as words, not as an index — the whole reason
+    // `Slider` takes labelled stops. Asserted here because this is the step where a
+    // number reaching a screen reader instead of "10 min" would be least noticeable.
+    expect(screen.getByRole('slider').getAttribute('aria-valuetext')).toMatch(/10 min/)
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // goal → region
     answer('Europe') // region → level
     // Left on the slider's default. Moving it means a drag across a track whose width
     // jsdom reports as zero, so the honest place to exercise the gesture is the e2e run,
     // which drives a real pointer across a real layout and asserts the value changed.
     // `Slider`'s own test covers the index arithmetic.
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → taster
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → plan
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // plan → offer
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // offer → taster
     fireEvent.click(screen.getByRole('button', { name: /Start learning/i }))
 
     expect(onFinish).toHaveBeenCalledTimes(1)
     expect(onFinish).toHaveBeenCalledWith({
       birthYear: YEAR - 30,
       isChild: false,
-      dailyGoalMinutes: 20,
+      // Both sliders left where they open, for the reason in `advanceToTaster`.
+      dailyGoalMinutes: 10,
       language: 'en',
       // Answered rather than defaulted, because there is no longer a way past these two
       // steps WITHOUT answering: the tap on the answer is the navigation. That is the
@@ -187,12 +198,14 @@ describe('OnboardingScreen', () => {
     pickYear(YEAR - 30)
     fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // age → goal
 
-    // Ticked before it is touched — the documented default, visible as one.
-    expect(screen.getByRole('radio', { name: /10 min/ }).getAttribute('aria-checked')).toBe('true')
+    // Where the track OPENS is the documented default, and it is already the answer.
+    expect(screen.getByRole('slider').getAttribute('aria-valuetext')).toMatch(/10 min/)
 
-    answer(/10 min/) // the no-opinion path: agree with what is already there
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // the no-opinion path
     answer('Europe')
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → taster
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → plan
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // plan → offer
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // offer → taster
     fireEvent.click(screen.getByRole('button', { name: /Start learning/i }))
     expect(onFinish.mock.calls[0]![0].dailyGoalMinutes).toBe(10)
   })
@@ -286,7 +299,7 @@ describe('OnboardingScreen', () => {
     advanceToAgeStep()
     pickYear(YEAR - 30)
     fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // age → goal
-    expect(screen.getByRole('radio', { name: /5 min/ })).toBeTruthy()
+    expect(screen.getByRole('slider')).toBeTruthy()
 
     fireEvent.click(screen.getByRole('button', { name: 'Back' })) // goal → age
     expect(screen.getByRole('radiogroup', { name: 'Year' })).toBeTruthy()
@@ -321,6 +334,49 @@ describe('OnboardingScreen', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Back' })) // slides → language
     expect(screen.getByText(/Choose your language/i)).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Back' }).getAttribute('aria-disabled')).toBe('true')
+  })
+
+  it('never shows a child the premium step', () => {
+    // The one hard rule this step has to obey. PROJECT.md rule 7: nothing that would be
+    // creepy for a ten-year-old, and a purchase pitch on the screen before a child's
+    // first lesson is exactly that. Skipped, not softened.
+    const { container } = render(
+      <OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />,
+    )
+    advanceToAgeStep()
+    pickYear(YEAR - (CHILD_AGE - 3))
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // age → goal
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // goal → region
+    answer('Europe') // region → level
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → plan
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // plan → straight past
+
+    expect(container.textContent).not.toMatch(/Premium/i)
+    expect(screen.getByText(/no account needed/i)).toBeTruthy()
+  })
+
+  it('shows an adult the premium step, leading with what is free', () => {
+    const { container } = render(
+      <OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />,
+    )
+    advanceToAgeStep()
+    pickYear(YEAR - 30)
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // age → goal
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // goal → region
+    answer('Europe')
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // level → plan
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // plan → offer
+
+    expect(screen.getByText(/Every lesson is free/i)).toBeTruthy()
+    // No urgency, no price, no countdown. Rule 7, and the kind of thing a growth
+    // experiment removes quietly.
+    //
+    // Matched on the urgency PHRASES rather than on the word "expires", because the copy
+    // deliberately contains "Nothing expires" — which is the opposite of the thing being
+    // guarded against, and a naive keyword match failed on it.
+    expect(container.textContent).not.toMatch(
+      /hurry|limited time|expires in|expires soon|only today|ends in|\d+:\d\d left/i,
+    )
   })
 
   it('leaves no raw key or unformatted placeholder on screen', () => {

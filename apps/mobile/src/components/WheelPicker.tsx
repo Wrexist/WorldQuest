@@ -68,6 +68,21 @@ export type WheelPickerProps<T> = {
   /** Names the radiogroup. Required — a picker with no name announces as "radiogroup". */
   readonly label: string
   readonly testID?: string
+  /**
+   * Where the wheel OPENS when nothing is chosen yet — a scroll position, not a value.
+   *
+   * The distinction is the entire point. The birth-year wheel used to open at the top,
+   * which is the current year, so anybody born in the nineties had to spin past three
+   * decades before reaching a plausible answer. Opening near the middle of the real
+   * distribution fixes that.
+   *
+   * It does NOT select. `value` stays null, the Continue above stays disabled, and the
+   * empty row is still what is checked — because the birth year decides whether a child
+   * gets the child experience, and a pre-selected adult year would hand that decision to
+   * whoever taps through without scrolling. That is the one answer in this app that must
+   * never be nudged, and `OnboardingScreen.test.tsx` says so in a test.
+   */
+  readonly restingIndex?: number
 }
 
 /**
@@ -126,6 +141,7 @@ export function WheelPicker<T extends string | number>({
   onChange,
   label,
   testID,
+  restingIndex = 0,
 }: WheelPickerProps<T>) {
   const scroller = useRef<ScrollView>(null)
   // Measured, not assumed: the same wheel is 220 pt tall on a phone that can afford it
@@ -144,6 +160,16 @@ export function WheelPicker<T extends string | number>({
   useEffect(() => {
     scroller.current?.scrollTo({ y: selected * ROW, animated: true })
   }, [selected])
+
+  // The opening position, once, and only while nothing is chosen. Not animated: this is
+  // where the wheel STARTS, and a wheel that scrolls itself on arrival looks like it is
+  // rejecting the answer that was already there.
+  const opened = useRef(false)
+  useEffect(() => {
+    if (opened.current || value !== null || restingIndex <= 0) return
+    opened.current = true
+    scroller.current?.scrollTo({ y: restingIndex * ROW, animated: false })
+  }, [restingIndex, value])
 
   const pick = (index: number): void => {
     const option = options[index]

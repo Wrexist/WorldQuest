@@ -110,6 +110,7 @@ import {
 import { Art } from '../../components/Art.js'
 import { WheelPicker, type WheelOption } from '../../components/WheelPicker.js'
 import type { LevelChoice } from './levels.js'
+import { PERKS } from './perks.js'
 import type { ArtName } from '../../lib/art.generated.js'
 
 /** The age at which the child branch applies. COPPA; GDPR-K varies by country and is stricter in places. */
@@ -151,7 +152,16 @@ export type OnboardingScreenProps = {
   readonly onSignIn?: (() => void) | undefined
 }
 
-type Step = 'language' | 'slides' | 'age' | 'goal' | 'region' | 'level' | 'taster'
+type Step =
+  | 'language'
+  | 'slides'
+  | 'age'
+  | 'goal'
+  | 'region'
+  | 'level'
+  | 'plan'
+  | 'offer'
+  | 'taster'
 
 /**
  * The order, and why each step is where it is.
@@ -176,7 +186,17 @@ type Step = 'language' | 'slides' | 'age' | 'goal' | 'region' | 'level' | 'taste
  * time: nothing in this app would consume either answer today, and a question whose
  * answer goes nowhere is a form, not an onboarding.
  */
-const STEPS: readonly Step[] = ['language', 'slides', 'age', 'goal', 'region', 'level', 'taster']
+const STEPS: readonly Step[] = [
+  'language',
+  'slides',
+  'age',
+  'goal',
+  'region',
+  'level',
+  'plan',
+  'offer',
+  'taster',
+]
 
 /**
  * The steps that still end in a button, and therefore still need a footer.
@@ -188,7 +208,7 @@ const STEPS: readonly Step[] = ['language', 'slides', 'age', 'goal', 'region', '
  *
  * Everything else answers by being tapped.
  */
-const HAS_ACTION = new Set<Step>(['slides', 'age', 'level', 'taster'])
+const HAS_ACTION = new Set<Step>(['slides', 'age', 'goal', 'level', 'plan', 'offer', 'taster'])
 
 /**
  * The levels in scale order, which is the order the slider lays them out in.
@@ -225,6 +245,10 @@ const ASK = {
   goal: { art: 'atlas/thinking', line: 'onboarding:goal.title' },
   region: { art: 'atlas/explorer', line: 'onboarding:region.title' },
   level: { art: 'atlas/encouraging', line: 'onboarding:level.title' },
+  // `celebrate`, because the questions are over and this is the payoff for answering
+  // them — the one step that tells rather than asks.
+  plan: { art: 'atlas/celebrate', line: 'onboarding:plan.title' },
+  offer: { art: 'atlas/resting', line: 'onboarding:offer.title' },
 } as const satisfies Partial<Record<Step, { art: ArtName; line: TranslationKey }>>
 
 /**
@@ -237,6 +261,27 @@ const ASK = {
  * registers and the step begins to leave as one movement rather than two.
  */
 const ANSWER_BEAT_MS = 260
+
+/**
+ * The year the birth-year wheel opens on — a scroll position, not an answer.
+ *
+ * It used to open at the top, which is the current year, so a user born in 1990 spun
+ * past three decades to reach themselves. 2000 is a round number near the middle of the
+ * range anybody is plausibly answering with, so the average journey is short from either
+ * direction.
+ *
+ * **Nothing is selected.** The empty "Choose a year" row is still what is checked and
+ * Continue is still disabled until a real tap. That is not fussiness: this answer decides
+ * whether a child gets the child experience — no social, no third-party analytics — and a
+ * pre-filled adult year would make tapping through the fastest way for a ten-year-old to
+ * be treated as twenty-six. `OnboardingScreen.test.tsx` asserts the empty row is what the
+ * wheel opens checked on, and that test is the guard on this distinction.
+ */
+const OPENS_AT = 2000
+
+/** Seven. Named because `goal * 7` in a template reads like a magic number. */
+const DAYS_A_WEEK = 7
+
 
 const LEVEL_COPY = {
   new: { label: 'onboarding:level.new', body: 'onboarding:level.newBody' },
@@ -739,6 +784,8 @@ export function OnboardingScreen({
                 value={birthYear}
                 onChange={setBirthYear}
                 label={t('onboarding:age.year')}
+                // Opens AT 2000, selects nothing. See `restingIndex` and `OPENS_AT`.
+                restingIndex={years.findIndex((year) => year.value === OPENS_AT)}
               />
             </View>
 
@@ -757,67 +804,36 @@ export function OnboardingScreen({
           <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
             <Spacer />
 
-            {/* The flow warmed up, went cold, then warmed up again: the slides and the
-                taster all carry a hero and the two decision steps between them carried
-                none. Smaller than the slides', and above the choice rather than beside
-                it — these rows are the content of the step and the picture is not
-                allowed to compete with them. `thinking`, because a question is being
-                asked. */}
             <Ask step="goal" />
             <Text style={styles.body}>{t('onboarding:goal.body')}</Text>
 
-            {/* ONE inset group, hairline separators, a checkmark on the chosen row
-                (N7, N8). It was three cards with 12 pt between them and a green ring
-                around the selected one, which is how a web framework draws a radio
-                group and is not how iOS draws anything. The container owns the corners
-                so the rows do not each need their own. */}
-            <View style={styles.group} role="radiogroup" aria-label={t('onboarding:goal.title')}>
-              {DAILY_GOALS.map((minutes, index) => {
-                const chosen = goal === minutes
-                return (
-                  <Pressable
-                    key={minutes}
-                    role="radio"
-                    aria-checked={chosen}
-                    // No `aria-label`, deliberately. It read "5 minutes" — the same words
-                    // as the first line of the row — and an explicit label REPLACES the
-                    // children rather than adding to them, so the second line, which is
-                    // the part that says what five minutes a day actually means, was
-                    // announced to nobody. Left off, the row composes its own name from
-                    // what is on it, in the order it is written: "5 minutes, Casual".
-                    //
-                    // A single key carrying both would be the other fix; it would also be
-                    // a fourth copy of numbers that already exist, kept in step by hand.
-                    // Tracked HERE rather than on a Continue press. The event used to
-                    // fire on leaving the step, which was right when leaving was a
-                    // separate act: it recorded where they settled instead of every row
-                    // they tried. Now the tap IS the settling, so the two are the same
-                    // moment and there is nothing left to debounce.
-                    onPress={() =>
-                      answer('region', () => {
-                        setGoal(minutes)
-                        track('onboarding_goal_selected', { minutes })
-                      })
-                    }
-                    style={[styles.groupRow, index > 0 && styles.groupRowDivided]}
-                  >
-                    <Text style={styles.goalMinutes}>{t('onboarding:goal.minutes', { minutes })}</Text>
-                    <Text style={styles.goalLabel}>{t(GOAL_LABEL[minutes])}</Text>
-                    {/* The tick is the selection. Rendered always and hidden when it is
-                        not the answer, so choosing one never changes the row's layout —
-                        the same rule the old bordered version kept with a transparent
-                        2 px border. */}
-                    <Text
-                      style={[styles.tick, !chosen && styles.tickOff]}
-                      aria-hidden
-                      importantForAccessibility="no-hide-descendants"
-                    >
-                      ✓
-                    </Text>
-                  </Pressable>
-                )
-              })}
-            </View>
+            {/* A track, like the level step and for the same reason: five, ten and twenty
+                minutes are one axis with a direction, not three unrelated options. It
+                opens on ten — the documented default — so the no-opinion path is to drag
+                nothing and press Continue.
+
+                Like `level` and unlike the tapped steps, it keeps its button: a drag
+                passes through every value on its way to one. */}
+            <Slider
+              stops={DAILY_GOALS.map((minutes) => ({
+                label: t('onboarding:goal.minutes', { minutes }),
+              }))}
+              value={DAILY_GOALS.indexOf(goal)}
+              onChange={(index) => {
+                const next = DAILY_GOALS[index]
+                if (next === undefined || next === goal) return
+                hapticSelect()
+                setGoal(next)
+              }}
+              label={t('onboarding:goal.title')}
+              style={styles.levelSlider}
+            />
+
+            {/* What the chosen pace MEANS, under the track it was chosen on — "Casual",
+                "Regular", "Serious". The row version showed all three at once, which is
+                three labels to weigh before answering; one at a time is the same
+                information at the moment it is relevant. */}
+            <Text style={styles.levelBody}>{t(GOAL_LABEL[goal])}</Text>
 
             <Spacer />
           </ScrollView>
@@ -1000,6 +1016,71 @@ export function OnboardingScreen({
           </ScrollView>
         )}
 
+        {step === 'plan' && (
+          <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
+            <Spacer />
+            <Ask step="plan" />
+
+            {/* Their own three answers, read back.
+                Not a "performance" projection: this app has never measured what a week of
+                it teaches, and PROJECT.md forbids shipping a number it cannot source. So
+                the summary states what the user just chose, and the one number under it is
+                arithmetic on their own answer rather than a claim about them. */}
+            <View style={styles.group}>
+              {(
+                [
+                  ['onboarding:plan.pace', t('onboarding:goal.minutes', { minutes: goal })],
+                  [
+                    'onboarding:plan.start',
+                    startRegion === null ? t('onboarding:plan.world') : t(REGION_NAME[startRegion]),
+                  ],
+                  ['onboarding:plan.level', t(LEVEL_COPY[level].label)],
+                ] as const
+              ).map(([label, value], index) => (
+                <View key={label} style={[styles.groupRow, index > 0 && styles.groupRowDivided]}>
+                  <Text style={styles.planLabel}>{t(label)}</Text>
+                  <View style={styles.flex} />
+                  <Text style={styles.goalMinutes}>{value}</Text>
+                </View>
+              ))}
+            </View>
+
+            <Text style={styles.planWeek}>
+              {t('onboarding:plan.week', { minutes: goal * DAYS_A_WEEK })}
+            </Text>
+            <Text style={styles.body}>{t('onboarding:plan.body')}</Text>
+            <Spacer />
+          </ScrollView>
+        )}
+
+        {step === 'offer' && (
+          <ScrollView contentContainerStyle={styles.form} showsVerticalScrollIndicator={false}>
+            <Spacer />
+            <Ask step="offer" />
+
+            {/* Leads with what is FREE, because that is both true and the most important
+                thing on the screen. `paywall.json`'s own line is "Every lesson stays free.
+                Always." — this step reuses that copy rather than inventing a pitch, and
+                reuses the four perks rather than inventing features.
+
+                No countdown, no "limited time", no price. The primary button below is
+                Continue, so the free lesson is one tap away from here; PROJECT.md rule 7
+                is the reason, and a child never reaches this step at all. */}
+            <Text style={styles.body}>{t('onboarding:offer.body')}</Text>
+
+            <View style={styles.group}>
+              {PERKS.map((perk, index) => (
+                <View key={perk} style={[styles.groupRow, index > 0 && styles.groupRowDivided]}>
+                  <Text style={styles.goalMinutes}>{t(perk)}</Text>
+                </View>
+              ))}
+            </View>
+
+            <Text style={styles.planWeek}>{t('onboarding:offer.later')}</Text>
+            <Spacer />
+          </ScrollView>
+        )}
+
         {step === 'taster' && (
           <View style={styles.centred}>
             {/* Atlas waving from a globe. The taster is the handover into the first
@@ -1045,17 +1126,27 @@ export function OnboardingScreen({
           />
         )}
 
+        {step === 'goal' && (
+          <Button
+            label={t('onboarding:age.continue')}
+            onPress={() => {
+              track('onboarding_goal_selected', { minutes: goal })
+              go('region')
+            }}
+          />
+        )}
+
         {step === 'level' && (
           <Button
             label={t('onboarding:age.continue')}
             onPress={() => {
               track('onboarding_level_selected', { level })
-              go('taster')
+              go('plan')
             }}
           />
         )}
 
-        {/* No Continue on `language`, `goal` or `region`.
+        {/* No Continue on `language` or `region`.
             Each of those is one question with one answer, and the tap on the answer is
             the whole interaction — a button underneath could only ever agree with a
             choice already made, at the cost of a second press and a thumb journey to
@@ -1063,6 +1154,14 @@ export function OnboardingScreen({
             scroll, `level` because a drag passes through every value on its way to one,
             and `taster` because starting a lesson is a different kind of act from
             answering a question. */}
+
+        {step === 'plan' && (
+          <Button label={t('onboarding:age.continue')} onPress={() => go(isChild ? 'taster' : 'offer')} />
+        )}
+
+        {step === 'offer' && (
+          <Button label={t('onboarding:age.continue')} onPress={() => go('taster')} />
+        )}
 
         {step === 'taster' && (
           <>
@@ -1124,6 +1223,8 @@ const styles = StyleSheet.create({
   // floating below his feet.
   askBubble: { marginTop: -space[2] },
   levelSlider: { marginTop: space[5], marginBottom: space[4] },
+  planLabel: { ...text('body'), color: colors.text.secondary },
+  planWeek: { ...text('body'), color: colors.text.secondary, textAlign: 'center', marginTop: space[4] },
   progress: {
     flexDirection: 'row',
     alignItems: 'center',

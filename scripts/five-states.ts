@@ -91,6 +91,7 @@ const SIGNALS: Record<State, RegExp> = {
  * · **Art names.** `<Art name="states/offline" />` is an illustration's identifier. It
  *   is a picture of a paper aeroplane; it is not connectivity handling. It appears in
  *   `SettingsScreen`'s sync section, whose offline waiver is still perfectly true.
+ *
  */
 const stripProse = (code: string): string =>
   code

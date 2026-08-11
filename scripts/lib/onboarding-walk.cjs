@@ -91,14 +91,15 @@ async function walkOnboarding(page, at = async () => {}) {
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(500)
 
-  // ── the three single-select questions ─────────────────────────────────────
-  // Answered rather than defaulted, because there is no longer a way past them without
-  // answering. Photographed on the answer the walk gives them, which is what the
-  // `design-shots` captions should say.
+  // ── goal ──────────────────────────────────────────────────────────────────
+  // A SLIDER now, like `level`, so it does not advance on being answered. Left on its
+  // default — ten minutes, where the track opens — and continued.
   await at('goal')
-  await page.getByRole('radio', { name: /10 min/ }).first().click()
-  await page.waitForTimeout(AFTER_ANSWER)
+  await page.getByText('Continue', { exact: true }).first().click()
+  await page.waitForTimeout(500)
 
+  // ── region ────────────────────────────────────────────────────────────────
+  // The one question left that IS answered by tapping, so it still advances on its own.
   await at('region')
   await page.getByRole('radio', { name: 'Europe' }).first().click()
   await page.waitForTimeout(AFTER_ANSWER)
@@ -107,6 +108,17 @@ async function walkOnboarding(page, at = async () => {}) {
   // through every value on its way to one. Left on its default ('I know some', the middle
   // stop) and continued, which is what a user with no strong view does.
   await at('level')
+  await page.getByText('Continue', { exact: true }).first().click()
+  await page.waitForTimeout(500)
+
+  // ── the two closing steps ─────────────────────────────────────────────────
+  // `plan` reads the answers back; `offer` is the premium step, which a CHILD never
+  // reaches — the walk uses an adult birth year, so it does.
+  await at('plan')
+  await page.getByText('Continue', { exact: true }).first().click()
+  await page.waitForTimeout(500)
+
+  await at('offer')
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(500)
 
