@@ -110,7 +110,7 @@ import {
 import { Art } from '../../components/Art.js'
 import { WheelPicker, type WheelOption } from '../../components/WheelPicker.js'
 import type { LevelChoice } from './levels.js'
-import type { ArtName } from '../../lib/art.generated.js'
+import { ART_GEOMETRY, type ArtName } from '../../lib/art.generated.js'
 
 /** The age at which the child branch applies. COPPA; GDPR-K varies by country and is stricter in places. */
 export const CHILD_AGE = 13
@@ -369,6 +369,42 @@ const SLIDES = [
   { title: 'onboarding:slide.3.title', body: 'onboarding:slide.3.body', art: 'onboarding/conquer' },
 ] as const satisfies readonly { title: TranslationKey; body: TranslationKey; art: ArtName }[]
 
+/**
+ * The slide hero's band: the page's own width, at the art's own aspect.
+ *
+ * It was a flat 220 against a page of 390, and the comment beside the `Art` below claimed
+ * that at the page's width "the box stops being a frame around the art and becomes the
+ * art". For two of the three slides it did. For the first one — the first picture anybody
+ * ever sees — it did the opposite: `onboarding/explore` is a whole-frame composition, so
+ * fitting it into a 390×220 box fits the FRAME, and a 3:2 frame in a 1.77:1 box is 330
+ * wide with 30 points of canvas down each side. Photographed, it is a bordered rectangle
+ * with visible vertical seams sitting on the screen — exactly the pasted-screenshot look
+ * that switching to `bleed` was meant to remove, surviving because the fix was measured on
+ * the two slides that did not have the problem.
+ *
+ * Giving the band the art's aspect makes the whole-frame slide exactly full bleed, with
+ * nothing letterboxed and nothing cropped, and gives the two cutouts a taller band to fill.
+ * Still fixed per viewport — `page` does not change between slides — so O7 holds.
+ *
+ * Derived from the art rather than typed as 1.5: all three masters are 3:2 today, and a
+ * fourth slide delivered at another aspect should move this number rather than reopen the
+ * seam. The narrowest wins, because a band sized for the widest would letterbox the rest.
+ */
+const SLIDE_ASPECT = Math.min(...SLIDES.map((slide) => ART_GEOMETRY[slide.art].aspect))
+
+/**
+ * The share of the screen the hero band takes in the frame BEFORE layout reports.
+ *
+ * A seed, exactly like `page`'s: real life measures the pager and the copy and gives the
+ * band what is left (see `band`), and this is what to draw until that arrives — and what
+ * to draw in jsdom, where `onLayout` never fires at all.
+ *
+ * 0.3 rather than the art's own aspect because the first frame should err small: a band
+ * that starts short and grows is a picture settling, and one that starts tall and shrinks
+ * pushes the copy off the bottom and pulls it back.
+ */
+const BAND_OF_SCREEN = 0.3
+
 const GOAL_LABEL = {
   5: 'onboarding:goal.casual',
   10: 'onboarding:goal.regular',
@@ -408,6 +444,64 @@ export function OnboardingScreen({
   // Set for the length of the answer beat, cleared by the step change that follows.
   const [reacting, setReacting] = useState(false)
   const [page, setPage] = useState(Math.min(window.width, layout.maxContentWidth))
+  /**
+   * How tall the pager is, and how tall the tallest slide's copy is.
+   *
+   * Both measured, because the band below is the difference between them and neither can
+   * be predicted. The copy especially: it is a paragraph, so its height is a function of
+   * how it WRAPS, and the same sentence is two lines at 390 and three at 320.
+   *
+   * The copy is a maximum across all three slides rather than each slide's own, which is
+   * O7 again — a band sized per slide would step by a line's height between a one-line
+   * and a two-line title, and on a swiped carousel that reads as the page landing
+   * crookedly. One height, taken from whichever slide needs most.
+   *
+   * Neither measurement depends on the band, so there is no loop: the pager is `flex: 1`
+   * inside the step, and the copy's height follows the page's WIDTH.
+   */
+  const [pagerHeight, setPagerHeight] = useState(0)
+  const [copyHeight, setCopyHeight] = useState(0)
+  const onPagerLayout = (event: LayoutChangeEvent): void => {
+    const height = event.nativeEvent.layout.height
+    if (height > 0 && Math.abs(height - pagerHeight) > 1) setPagerHeight(height)
+  }
+  const onCopyLayout = (event: LayoutChangeEvent): void => {
+    const height = event.nativeEvent.layout.height
+    // Only ever grows. Three slides report in some order and the tallest is the one that
+    // has to fit; taking the last would size the band to whichever laid out last.
+    if (height > copyHeight + 1) setCopyHeight(height)
+  }
+
+  /**
+   * The hero band: the page's own width at the art's aspect, or what is left after the
+   * copy, whichever is smaller.
+   *
+   * The width term is what makes the picture full bleed. The height term is what stops it
+   * eating the sentence underneath it, and on a short phone it is the one that binds: a
+   * slide's page does not scroll — `styles.slide` centres its content and clips what does
+   * not fit, silently, at both ends — so at 320×568 the old fixed 220 pt hero put the last
+   * line of slide one's sentence underneath the page dots, where no gesture on a phone can
+   * reach it. Half a sentence missing on the first screen of the app reads as a fault.
+   *
+   * The band is what gives way, because it is the element with slack: a hero cropped by a
+   * tenth is still a hero, and a sentence cut in half is not still a sentence.
+   *
+   * Measured rather than a fraction of the screen, which is what this was first: two
+   * hand-tuned constants in a row both photographed as still clipping, because what has to
+   * be cleared is a paragraph's wrapped height and there is no fraction of a viewport that
+   * knows it. A translation that runs a line longer is now free, where every fixed
+   * fraction was one line of Swedish away from being wrong again.
+   */
+  // Rounded, because a fractional height on a band whose art is clipped to it is a
+  // subpixel seam on one edge and nothing on the other.
+  const band = Math.round(
+    Math.min(
+      page / SLIDE_ASPECT,
+      pagerHeight > 0 && copyHeight > 0
+        ? Math.max(pagerHeight - copyHeight, 0)
+        : window.height * BAND_OF_SCREEN,
+    ),
+  )
   const onFrameLayout = (event: LayoutChangeEvent): void => {
     const width = event.nativeEvent.layout.width
     if (width > 0 && Math.abs(width - page) > 1) setPage(width)
@@ -689,6 +783,13 @@ export function OnboardingScreen({
       <Animated.View style={[styles.stepFill, stepStyle]}>
         {step === 'slides' && (
           <>
+            {/* The measurement wrapper the band is computed against.
+                A plain View rather than `onLayout` on the ScrollView itself: that reads
+                as equivalent and is not — the ScrollView's own layout event did not
+                arrive in the web harness, the band silently kept its pre-layout seed, and
+                the picture was identical to the one before the measurement existed. A
+                View's layout is the one thing every renderer here reports. */}
+            <View style={styles.pagerFrame} onLayout={onPagerLayout}>
             <ScrollView
               ref={pager}
               horizontal
@@ -715,15 +816,21 @@ export function OnboardingScreen({
                       At the page's own width the box stops being a frame around the art
                       and becomes the art, which is what a value slide's hero is for. The
                       other two are cutouts and fill the same band with their subject, so
-                      the three read as one sequence at one scale. */}
-                  <Art name={s.art} size={page} height={HERO} frame="bleed" />
-                  <View style={styles.slideText}>
-                    <Text style={styles.title}>{t(s.title)}</Text>
+                      the three read as one sequence at one scale.
+
+                      `fill` rather than `bleed`, because `bleed` only took the border
+                      off. It still FITS the art inside the box, so the same whole-frame
+                      slide came out 330 wide in a 390 band with canvas showing down both
+                      sides — the bordered rectangle again, minus its border. See `Art`. */}
+                  <Art name={s.art} size={page} height={band} frame="fill" />
+                  <View style={styles.slideText} onLayout={onCopyLayout}>
+                    <Text style={[styles.title, styles.slideTitle]}>{t(s.title)}</Text>
                     <Text style={styles.body}>{t(s.body)}</Text>
                   </View>
                 </View>
               ))}
             </ScrollView>
+            </View>
 
             {/* Position, and a target — a carousel whose dots cannot be tapped is a
                 carousel that traps anyone who overshoots. Now that the pages swipe, the
@@ -1212,6 +1319,8 @@ const styles = StyleSheet.create({
   // The step owns everything between the bar and the buttons, and it is `flex: 1` so a
   // short step centres inside it rather than hanging from the top of the screen.
   stepFill: { flex: 1 },
+  // Holds exactly the space the pager gets, so `band` can be that space minus the copy.
+  pagerFrame: { flex: 1 },
   pager: { flex: 1 },
   /**
    * One page.
@@ -1239,6 +1348,23 @@ const styles = StyleSheet.create({
    *
    * Left as it is, with the reasoning written down, because this is the third time a
    * plausible-looking simplification has been proposed for it.
+   *
+   * ## What "never overflow vertically" is worth
+   *
+   * The paragraph above claimed the case away — "the hero is a fixed height and the copy
+   * is two or three lines", so there is nothing to strand. At 320×568 that was already
+   * false with the old 220 pt hero: the sentence wraps to three lines at that width, and
+   * the last one sat underneath the page dots where no gesture on a phone can reach it.
+   * A page that centres and clips loses content at BOTH ends, silently, and a screenshot
+   * of it looks exactly like a page that fits.
+   *
+   * `BAND_OF_SCREEN` buys the room back by making the picture give way, which is enough
+   * for the shipped copy at the narrowest phone the DoD names, and is not a general
+   * answer: a longer translation or 200 % text overflows it again. The general answer is
+   * a scrolling page — the `form` steps below are already built that way, with `Spacer`
+   * rather than `justifyContent` for exactly this reason. It is not done here because a
+   * vertical ScrollView nested in a horizontal pager changes the gesture that carries the
+   * whole carousel, and that is a change to verify on a device rather than in Chromium.
    */
   slide: {
     flex: 1,
@@ -1247,7 +1373,31 @@ const styles = StyleSheet.create({
   },
   // The padding lives on the TEXT, not on the page: the hero is full-bleed and a page
   // with side padding would inset it.
-  slideText: { alignSelf: 'stretch', alignItems: 'center', paddingHorizontal: space[5] },
+  /**
+   * The copy under the hero — and the box whose measured height the band is taken from.
+   *
+   * The vertical spacing is PADDING and a GAP here rather than margins on the title,
+   * which is not a tidiness preference: `onLayout` reported this box 24 points shorter
+   * than it drew, which is exactly `title`'s `marginTop` plus its `marginBottom`, so the
+   * band was handed 24 points that were already spoken for and the last line of the
+   * sentence went under the page dots. The measurement was right about the box; the box
+   * was lying about its height.
+   *
+   * Anything measured has to own its own spacing. A margin belongs to the gap between two
+   * elements rather than to either of them, and a box that reports its size for someone
+   * else to divide up cannot afford that ambiguity.
+   */
+  slideText: {
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    paddingHorizontal: space[5],
+    paddingTop: space[4],
+    paddingBottom: space[2],
+    gap: space[2],
+  },
+  // `title` is shared with the taster step, which is not measured and still wants its
+  // margins. Cancelled here rather than removed there.
+  slideTitle: { marginTop: 0, marginBottom: 0 },
   // Fixed, so the picture does not move as the pages do. See HERO.
   hero: { height: HERO, alignItems: 'center', justifyContent: 'center' },
   centred: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: space[5] },

@@ -575,6 +575,19 @@ async function measure(page, webpBytes) {
     ctx.drawImage(img, 0, 0)
     const pixels = ctx.getImageData(0, 0, img.width, img.height).data
 
+    /**
+     * Where a pixel stops being a glow and starts being the picture.
+     *
+     * The mass box below is a good answer to "where is the subject" and a bad answer to
+     * "what must not be cut off", and the app uses it for both — see `grow`. This is the
+     * floor for the second question: 200 of 255 is inside the last step of the feather
+     * ramp the build applies to a baked ground (that ramp only reaches 200 about four
+     * fifths of the way in), so growing to it can never re-expose the hard rectangle the
+     * feather exists to remove, and it is far above the alpha-1..8 noise a lossy WebP
+     * leaves in a transparent margin.
+     */
+    const SOLID = 200
+
     // WHERE THE INK IS, not where the outermost surviving pixel is.
     //
     // This used to be a plain bounding box of every pixel over alpha 24 — "24, not 0,
@@ -610,6 +623,9 @@ async function measure(page, webpBytes) {
     const height = img.height
     const columns = new Float64Array(width)
     const rows = new Float64Array(height)
+    // Which lines hold SOLID ink — see `grow` below for what this is for.
+    const columnSolid = new Uint8Array(width)
+    const rowSolid = new Uint8Array(height)
     let total = 0
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
@@ -618,6 +634,10 @@ async function measure(page, webpBytes) {
           columns[x] += alpha
           rows[y] += alpha
           total += alpha
+        }
+        if (alpha > SOLID) {
+          columnSolid[x] = 1
+          rowSolid[y] = 1
         }
       }
     }
@@ -647,11 +667,47 @@ async function measure(page, webpBytes) {
       return [low, high]
     }
 
-    const [x0, x1] = span(columns)
-    const [y0, y1] = span(rows)
+    /**
+     * Back out to the edge of the ink the trim just cut through.
+     *
+     * The 0.5 % trim above answers "where is the subject" well and "what must not be cut
+     * off" badly, and `<Art>` uses the one number for both: it scales until this box
+     * fills the frame and clips what overflows, so every pixel the trim discards is a
+     * pixel the app AMPUTATES. A subject's thinnest, brightest extremity is exactly the
+     * low-mass tail the trim takes first — and that is a hat, a raised arm, a flagpole.
+     *
+     * Atlas's pith helmet is the one a TestFlight screenshot caught: the crown sits in
+     * rows 26–34 of `atlas/welcome`, the trim reported the subject as starting at row 35,
+     * and the app drew a mascot with a flat slice across the top of his hat on the first
+     * screen a new user ever sees. Measured across all 68 shipped assets it was not one
+     * asset — every illustration lost between 2 and 30 pixels on some edge, and only this
+     * one turned a curve into a straight line where anyone would notice.
+     *
+     * So the trim decides where the subject IS, and this decides where it ENDS: walk
+     * outward from the mass box while the next line still carries solid ink. Contiguity
+     * is what keeps the dust out — the speck in the corner that made an extremal box
+     * useless is not attached to anything, so growth stops long before reaching it — and
+     * it is also why the feathered assets (`atlas/resting`, `states/empty-profile`) grow
+     * by exactly zero: their ramp never reaches `SOLID` outside the box.
+     */
+    const grow = (solid, lo, hi) => {
+      while (lo > 0 && solid[lo - 1] === 1) lo--
+      while (hi < solid.length - 1 && solid[hi + 1] === 1) hi++
+      return [lo, hi]
+    }
 
-    const w = (x1 - x0 + 1) / width
-    const h = (y1 - y0 + 1) / height
+    const [cx0, cx1] = span(columns)
+    const [cy0, cy1] = span(rows)
+
+    // The PANEL decision stays on the trimmed box, deliberately.
+    //
+    // Deciding it on the grown one moves `avatars/avatar-07` across the line at 0.91×0.99
+    // and draws it as a bordered portrait plate among eleven siblings drawn as cutouts —
+    // which is the misclassification the mass measurement was written to fix, arriving
+    // back through the fix for the clipping. Whether an asset is a plate is a question
+    // about its MASS; where its edges are is a question about its ink.
+    const w = (cx1 - cx0 + 1) / width
+    const h = (cy1 - cy0 + 1) / height
 
     // A picture that already fills its frame is reported as filling its frame, exactly.
     //
@@ -676,7 +732,16 @@ async function measure(page, webpBytes) {
     // gap of eight points and no room at all. The mass measurement is what opens it.
     if (w >= 0.85 && h >= 0.85) return whole
 
-    return { aspect: width / height, x: x0 / width, y: y0 / height, w, h }
+    const [x0, x1] = grow(columnSolid, cx0, cx1)
+    const [y0, y1] = grow(rowSolid, cy0, cy1)
+
+    return {
+      aspect: width / height,
+      x: x0 / width,
+      y: y0 / height,
+      w: (x1 - x0 + 1) / width,
+      h: (y1 - y0 + 1) / height,
+    }
   }, `data:image/webp;base64,${webpBytes.toString('base64')}`)
 }
 
