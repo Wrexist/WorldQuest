@@ -109,6 +109,28 @@ const ICONS = {
   offline: 'cloud-off', //   the offline banner
   failure: 'unplug', //      ⌖ on FailureState
   shop: 'shopping-bag', //   the coin sink, when it lands
+
+  // ── what a fact IS ───────────────────────────────────────────────────────
+  //
+  // The country page listed its facts as a column of bare words. The redesign gives
+  // each attribute a glyph, which is what lets the eye find "capital" in a list
+  // without reading it — and the same glyphs name a quest and a shop title, so the
+  // three screens agree about what a flag or a capital LOOKS like.
+  capital: 'landmark', //    the capital city
+  currency: 'banknote', //   the currency
+  language: 'languages', //  the spoken language
+  callingCode: 'phone', //   the dialling code — the attribute that had no label at all
+  continent: 'earth', //     which continent a country is in
+
+  // ── the redesign's chrome ────────────────────────────────────────────────
+  settings: 'settings', //   the gear on Profile, now that More is not a tab
+  edit: 'pencil', //         rename yourself, on Profile
+  clock: 'clock', //         "new quests in 23h 15m"
+  moon: 'moon', //           Night Owl
+  sunrise: 'sunrise', //     Early Bird
+  sparkle: 'sparkles', //    the daily quiz, and anything that is a treat
+  book: 'book-open', //      "learn N countries"
+  repeat: 'repeat', //       "practise N times"
 }
 
 const require_ = createRequire(join(process.cwd(), 'index.js'))

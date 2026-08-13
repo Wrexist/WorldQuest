@@ -16,7 +16,11 @@ import { useDailyGoal } from '../../src/features/home/useDailyGoal.js'
 import { useDailyQuest } from '../../src/features/quests/useDailyQuest.js'
 import { questFocus, questStanding } from '@worldquest/engines'
 import { focusToParams } from '../../src/features/lesson/focusParams.js'
-import { worldProgress } from '@worldquest/engines'
+import { equippedTitleKey, levelProgress, worldProgress } from '@worldquest/engines'
+import { CATALOGUE } from '../../src/features/shop/catalogue.js'
+import { useShop } from '../../src/features/shop/useShop.js'
+import { useDayCountdown } from '../../src/features/quests/useDayCountdown.js'
+import { useT, type TranslationKey } from '../../src/lib/i18n.js'
 
 /**
  * Zeroed rather than invented. A first launch shows the real empty state — and a
@@ -30,8 +34,10 @@ const COLD_START: HomeProgress = {
 
 export default function HomeRoute() {
   const router = useRouter()
+  const t = useT()
   const { shown, status, refreshFailed } = useOptimisticProgress()
   const online = useOnline()
+  const shop = useShop()
 
   // The SAME call Explore makes, rather than a second count assembled here. Two
   // places counting the same thing agree until one of them changes — and these two
@@ -70,6 +76,18 @@ export default function HomeRoute() {
    * somebody who asked for five minutes a day and finished the quest is done, and should
    * not be handed another button; somebody who asked for twenty wants it.
    */
+  // Shared with the Quests tab, which counts down to the same midnight. The hook gives
+  // hours and minutes; each screen writes its own whole sentence around them.
+  const untilReset = useDayCountdown()
+
+  /** The title being worn, for the middle fact chip. Resolved the way Profile does it. */
+  const worn = equippedTitleKey(
+    levelProgress(shown?.xpTotal ?? 0).titleKey,
+    shop.equippedId,
+    CATALOGUE,
+    shop.owned,
+  )
+
   const goal = useDailyGoal()
   const { quest } = useDailyQuest()
   const standing = quest === null ? undefined : questStanding(quest)
@@ -109,7 +127,14 @@ export default function HomeRoute() {
       // The quest's own facts, not a shuffle. `focus` is undefined once the quest is
       // finished, which is exactly when the button stops being primary and becomes
       // "practise anyway" — an ordinary lesson, correctly.
+      // Through the quest's cover page rather than straight into the runner — but only
+      // while the quest is unfinished. Once it is done the same button is "practise
+      // anyway", which is an ordinary lesson and has no quest to introduce.
       onStartLesson={() => {
+        if (standing !== undefined && !standing.complete) {
+          router.push('/quest')
+          return
+        }
         const query = focus === undefined ? '' : `?${focusToParams(focus, undefined)}`
         router.push(`/lesson${query}`)
       }}
@@ -117,6 +142,10 @@ export default function HomeRoute() {
       offerMore={goal.done < goal.target}
       world={world}
       onOpenWorld={() => router.push('/explore')}
+      resetsIn={t('home:quest.resets', untilReset)}
+      titleKey={worn as TranslationKey}
+      onOpenQuests={() => router.push('/quests')}
+      onOpenInbox={() => router.push('/quests')}
     />
   )
 }

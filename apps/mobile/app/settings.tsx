@@ -1,9 +1,16 @@
 /**
- * More — Settings, and eventually everything that does not earn a tab of its own.
+ * Settings — reached from the gear on Profile.
  *
- * The tab is called "More" rather than "Settings" because that is what will be
- * behind it: settings, help, the parent area, and whatever v2 adds. Renaming a tab
- * later moves a destination users have already learned.
+ * It was the fifth TAB, called "More", on the reasoning that "settings, help, the parent
+ * area, and whatever v2 adds" would accumulate behind it and renaming a tab later moves a
+ * destination users have already learned. Two years of v2 never arrived and the tab held
+ * one screen, while the Shop — the app's only coin sink, and the thing the whole economy
+ * points at — was a route reachable from one row on Profile.
+ *
+ * The redesign swaps them, and the gear it puts on Profile is what makes that safe: a
+ * settings screen behind a gear on your own profile is where every phone already keeps
+ * one, so this is a destination moving to the place users look first rather than a
+ * destination being buried.
  */
 
 import { openURL } from 'expo-linking'
@@ -12,12 +19,12 @@ import { router } from 'expo-router'
 import {
   SettingsScreen,
   type PremiumStatus,
-} from '../../src/features/settings/SettingsScreen.js'
-import { usePreferences } from '../../src/features/settings/usePreferences.js'
-import { useSyncStatus } from '../../src/features/settings/useSyncStatus.js'
-import { useEntitlement } from '../../src/features/paywall/useEntitlement.js'
-import { usePurchases } from '../../src/features/paywall/usePurchases.js'
-import { useOnboarding } from '../../src/features/onboarding/useOnboarding.js'
+} from '../src/features/settings/SettingsScreen.js'
+import { usePreferences } from '../src/features/settings/usePreferences.js'
+import { useSyncStatus } from '../src/features/settings/useSyncStatus.js'
+import { useEntitlement } from '../src/features/paywall/useEntitlement.js'
+import { usePurchases } from '../src/features/paywall/usePurchases.js'
+import { useOnboarding } from '../src/features/onboarding/useOnboarding.js'
 
 /**
  * Real URLs, not placeholders.
@@ -34,7 +41,7 @@ const LICENCES_URL: string | undefined = undefined
 const open = (url: string | undefined) =>
   url === undefined ? undefined : () => void openURL(url)
 
-export default function MoreRoute() {
+export default function SettingsRoute() {
   const { preferences, set } = usePreferences()
   const sync = useSyncStatus()
   const entitlement = useEntitlement()

@@ -29,7 +29,11 @@ describe('Home — the five states', () => {
     // prop nothing ever passed, so this used to assert a fixture value that only ever
     // appeared in this file.
     expect(screen.getByText('Five things, about ten minutes')).toBeTruthy()
-    expect(screen.getByText('Gold I')).toBeTruthy()
+    // The three facts under the greeting: streak, rank, and today's quest. The rank is
+    // the earned TITLE and not a league position — leagues are v2.0, and the tile that
+    // used to claim one is gone with the rest of the unbuilt furniture.
+    expect(screen.getByLabelText('Day streak, 12 days')).toBeTruthy()
+    expect(screen.getByText('Wanderer')).toBeTruthy()
   })
 
   it('never renders a placeholder dash where a value belongs', () => {
@@ -37,23 +41,30 @@ describe('Home — the five states', () => {
     // user on every day, because nothing produced either value. A dash is not an empty
     // state, it is a missing one, and on the screen users open daily it read as broken.
     //
-    // The challenge card is gone (no producer — same defect the quests audit found one
-    // card over) and the league tile says plainly that it is not open yet.
+    // Both cards are gone now rather than defended: the challenge had no producer, and
+    // the Friends and League tiles were two unbuilt features occupying half the cards a
+    // new user sees. What is left has to keep the rule, and the fact row is where it
+    // could break next — its quest tile counts a quest that does not exist until the
+    // content index has built, and rendering a dash there would be the same bug wearing
+    // the redesign's clothes. It renders nothing instead.
     const { container } = render(
       <HomeScreen progress={COLD} loading={false} isOffline={false} onStartLesson={() => {}} />,
     )
     expect(container.textContent).not.toMatch(/—/)
-    expect(screen.getByText('Not open yet')).toBeTruthy()
+    expect(screen.queryByLabelText(/^Quests,/)).toBeNull()
   })
 
-  it('shows a real league standing once there is one', () => {
-    // The tile is not hardcoded to its closed state — it renders what it is given, so
-    // wiring Leagues up later is data rather than a rewrite.
+  it('counts the quest in the fact row once there is one', () => {
     render(
-      <HomeScreen progress={RETURNING} loading={false} isOffline={false} onStartLesson={() => {}} />,
+      <HomeScreen
+        progress={RETURNING}
+        loading={false}
+        isOffline={false}
+        onStartLesson={() => {}}
+        quest={{ done: 2, total: 5, complete: false }}
+      />,
     )
-    expect(screen.getByText('Top 15%')).toBeTruthy()
-    expect(screen.queryByText('Not open yet')).toBeNull()
+    expect(screen.getByLabelText('Quests, 2 / 5')).toBeTruthy()
   })
 
   it('shows a skeleton, not a spinner, while loading', () => {
@@ -73,8 +84,11 @@ describe('Home — the five states', () => {
     // minutes", which is right for somebody who already knows what the quest is, is the
     // wrong first sentence in the product.
     expect(screen.getByText('Start your first lesson')).toBeTruthy()
-    // No streak badge at zero: "0 day streak" is a worse first impression than none.
-    expect(screen.queryByText('Day streak')).toBeNull()
+    // No streak at zero: "0 day streak" is a worse first impression than none. The rule
+    // outlived the control it was written for — it was a badge in the header and is now
+    // a tile in the fact row — which is exactly why it is asserted on the LABEL rather
+    // than on any one component.
+    expect(screen.queryByLabelText(/^Day streak,/)).toBeNull()
   })
 
   it('announces offline as an alert, and says what still works', () => {
@@ -125,8 +139,10 @@ describe('Home — behaviour', () => {
       <HomeScreen progress={RETURNING} loading={false} isOffline={false} onStartLesson={() => {}} />,
     )
     // "12" alone tells a screen-reader user nothing. The label is spoken, so it is a
-    // sentence rather than a number.
-    expect(screen.getByLabelText('12 day streak')).toBeTruthy()
+    // sentence rather than a number — and it names the QUANTITY as well as the unit,
+    // because the tile's own words are split across two lines that a reader would
+    // otherwise announce as fragments.
+    expect(screen.getByLabelText('Day streak, 12 days')).toBeTruthy()
   })
 
   it('gives the avatar and the inbox real labels, not icon names', () => {

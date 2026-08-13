@@ -34,6 +34,7 @@ import {
 import type { WorldProgress } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
+import { TopBar } from '../../components/TopBar.js'
 import type { ArtName } from '../../lib/art.generated.js'
 import { Icon } from '../../components/Icon.js'
 
@@ -141,6 +142,9 @@ export type ExploreScreenProps = {
   readonly onOpenCollection?: ((kind: 'flags' | 'countries') => void) | undefined
   readonly loading: boolean
   readonly onSelectRegion: (region: RegionCode) => void
+  /** The wallet, for the bar at the top. Absent draws the bar without it. */
+  readonly coins?: number | undefined
+  readonly onOpenInbox?: (() => void) | undefined
 }
 
 /**
@@ -166,7 +170,14 @@ type TileSize = { readonly width: number; readonly height: number }
 /** `width: '48%'` of the grid, which is the screen inside its own padding. */
 const estimateTileWidth = (windowWidth: number) => (windowWidth - space[4] * 2) * 0.48
 
-export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection }: ExploreScreenProps) {
+export function ExploreScreen({
+  world,
+  loading,
+  onSelectRegion,
+  onOpenCollection,
+  coins,
+  onOpenInbox,
+}: ExploreScreenProps) {
   const t = useT()
 
   // All seven tiles are the same size, so one measurement serves them all. Seeded from
@@ -181,6 +192,11 @@ export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      <TopBar
+        initials="EX"
+        {...(coins !== undefined ? { coins } : {})}
+        {...(onOpenInbox !== undefined ? { onInbox: onOpenInbox } : {})}
+      />
       {/* Atlas at screen level, beside the title.
    
           The reference puts its mascot in the Explore header holding a magnifying
@@ -227,10 +243,18 @@ export function ExploreScreen({ world, loading, onSelectRegion, onOpenCollection
               not, so the card answered "how far along am I?" for one of its two numbers
               and left the other as a sentence — which reads as the second one mattering
               less rather than as a layout choice. */}
+          {/* `showPercent`, like the continent tiles below it.
+   
+              The card carried two bars with no figure on either, directly above six tiles
+              that each print one — so the summary of the six was the only bar on the
+              screen you had to eyeball. A percentage is also the one number that makes
+              "347 facts" mean something to somebody who does not know how many there
+              are. */}
           <ProgressBar
             current={world.factsLearned}
             total={Math.max(1, world.factsTotal)}
             showCount={false}
+            showPercent
             label={t('explore:region.facts', {
               learned: world.factsLearned,
               total: world.factsTotal,

@@ -64,6 +64,19 @@ export type ProgressBarProps = {
    * Callers that have a translator pass the localised string here.
    */
   valueText?: string
+  /**
+   * The bar's name for a screen reader, when nothing is printed beside it.
+   *
+   * `label` is both the visible caption and the accessible name, which is right almost
+   * everywhere — the words a sighted user reads are the words a reader should say. It is
+   * wrong in the one case where the surrounding card already says what the bar measures
+   * and printing it again would be the same sentence twice, six pixels apart. Profile's
+   * level card is that case: "Level 12" and "41 / 187 XP" sit directly above the bar.
+   *
+   * Passing both is a mistake rather than a merge, so `label` wins and this is ignored —
+   * a bar with two names has one of them wrong.
+   */
+  accessibilityLabel?: string
   height?: number
   style?: StyleProp<ViewStyle>
   testID?: string
@@ -89,6 +102,7 @@ export function ProgressBar({
   showPercent = false,
   label,
   valueText,
+  accessibilityLabel,
   height = 16,
   style,
   testID,
@@ -101,7 +115,7 @@ export function ProgressBar({
     <View
       accessible
       role="progressbar"
-      aria-label={label}
+      aria-label={label ?? accessibilityLabel}
       // Set explicitly as well as via `accessibilityValue`. react-native-web carries
       // that prop's numeric fields across but drops `text`, so the localised value was
       // announced on native and silently missing on web — the third time in this repo

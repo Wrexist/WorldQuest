@@ -23,5 +23,9 @@
   "profile:week.title": "Denna vecka",
   "profile:week.none": "Inga lektioner än denna vecka",
   "profile:week.day": "{day}: {count, plural, =0 {inga lektioner} one {# lektion} other {# lektioner}}",
-  "profile:shop.cta": "Butik"
+  "profile:shop.cta": "Butik",
+  "profile:level.xp": "{earned} / {span} XP",
+  "profile:rename": "Byt namn",
+  "profile:badges.title": "Senaste märken",
+  "profile:stats.longest.short": "bäst {days}"
 }

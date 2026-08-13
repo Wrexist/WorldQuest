@@ -29,7 +29,20 @@ const TABS: readonly { name: string; icon: IconName; labelKey: TranslationKey }[
   { name: 'explore', icon: 'explore', labelKey: 'nav:explore' },
   { name: 'quests', icon: 'quests', labelKey: 'nav:quests' },
   { name: 'profile', icon: 'profile', labelKey: 'nav:profile' },
-  { name: 'more', icon: 'more', labelKey: 'nav:more' },
+  /**
+   * Shop, where More used to be.
+   *
+   * Still five, and still a product decision rather than a code one — this is the ADR
+   * the header above asks for, in the place the decision lives. The fifth tab held
+   * Settings, a screen a user opens twice in a lifetime, while the Shop was one row deep
+   * on Profile. It is the only sink for a currency every single lesson pays out, and the
+   * economy simulation has a regular player earning 26,310 coins in ninety days with
+   * nowhere to look for what to do with them.
+   *
+   * Settings did not lose its place, it moved to the one every phone already uses: the
+   * gear on your own profile. `app/settings.tsx`.
+   */
+  { name: 'shop', icon: 'shop', labelKey: 'nav:shop' },
 ]
 
 /** The icon is decorative — the tab is already labelled and announces its own name. */

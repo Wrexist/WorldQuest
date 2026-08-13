@@ -75,7 +75,7 @@ const DEFAULT_ROUTES = [
   '/explore',
   '/quests',
   '/profile',
-  '/more',
+  '/settings',
   '/collection/flags',
   '/country/SE',
   // The continent detail. Absent from this list until it was noticed that it had no
@@ -89,6 +89,8 @@ const DEFAULT_ROUTES = [
   // here — the harness has no lesson behind it.
   '/paywall?source=settings',
   '/shop',
+  // The quest's cover page — the beat between the home card and the runner.
+  '/quest',
   // Reached by a gate in the root layout and by the "we miss you" push, never by a tap.
   // It went unphotographed for that reason and was rendering "It's been 0 days." to
   // anyone who followed the notification the same afternoon.
@@ -136,7 +138,7 @@ const SHOOT_FLOWS = process.env.WQ_NO_FLOWS === undefined
  * `context.setOffline` fires the browser's own `offline` event, which is the same
  * path `connectivity.ts` listens on in a real browser. Not a mock, not a test seam.
  */
-const OFFLINE_ROUTES = ['/', '/shop', '/streak', '/more', '/paywall?source=settings']
+const OFFLINE_ROUTES = ['/', '/shop', '/streak', '/settings', '/paywall?source=settings']
 
 /**
  * The routes re-photographed AFTER a lesson has been played.
@@ -175,7 +177,7 @@ const PLAYED_ROUTES = ['/profile', '/streak', '/', '/quests']
  * labels that could push them (Home, Streak), and the lesson, whose answer options are
  * the only place in the app where a wrapped string costs a tap target.
  */
-const PSEUDO_ROUTES = ['/', '/more', '/paywall?source=settings', '/streak', '/lesson', '/quests']
+const PSEUDO_ROUTES = ['/', '/settings', '/paywall?source=settings', '/streak', '/lesson', '/quests']
 
 const TYPES = {
   '.html': 'text/html',

@@ -1,11 +1,9 @@
 {
   "shop:title": "Butik",
   "shop:intro": "Använd mynten du tjänat. Inget här gör lärandet lättare — den delen är lika för alla.",
-
   "shop:section.titles": "Titlar",
   "shop:section.soon": "Mer på väg",
   "shop:soon.body": "Sällskapsdjur, avatarer och karttema ritas just nu. De dyker upp här — inget du köper nu blir sämre när de kommer.",
-
   "shop:balance": "{count, plural, one {# mynt} other {# mynt}}",
   "shop:price": "{count, plural, one {# mynt} other {# mynt}}",
   "shop:owned": "Ägs",
@@ -14,18 +12,16 @@
   "shop:remove": "Ta av",
   "shop:buy": "Köp",
   "shop:short": "{count, plural, one {# mynt kvar} other {# mynt kvar}}",
-
   "shop:levelTitle": "Din nivåtitel",
   "shop:levelTitle.help": "Förtjänas genom att gå upp i nivå, och är alltid din. Den stiger när du lär dig.",
-
   "shop:empty.title": "Inget att köpa än",
   "shop:empty.body": "Dina mynt är kvar. Kom tillbaka när det finns något här.",
   "shop:offline.body": "Du är offline, så köp är pausade. Allt du äger fungerar fortfarande.",
-
   "shop:title.flagFanatic": "Flaggfantast",
   "shop:title.capitalCollector": "Huvudstadssamlare",
   "shop:title.nightOwl": "Nattuggla",
   "shop:title.earlyBird": "Morgonpigg",
   "shop:title.islandHopper": "Öhoppare",
-  "shop:title.mapNerd": "Kartnörd"
+  "shop:title.mapNerd": "Kartnörd",
+  "shop:balance.label": "Dina mynt"
 }

@@ -108,6 +108,10 @@ const ALLOWED: Record<string, string> = {
 
   // ── consumed by another engine rather than by a screen
   evaluate: 'the single-definition form; the client calls evaluateAll',
+  xpForLevel:
+    'the curve itself; every screen asks levelProgress instead, which returns the band and the position inside it together — Home drew its own bar from these two and printed a level the card below it printed again',
+  levelForXp:
+    'the inverse of xpForLevel, and the same answer: levelProgress is the one call, so a bar can never disagree with the number beside it',
   backfill: 'for a pack that adds an achievement to users who already earned it — needs server-side history',
   SLOTS: 'the type is what callers use; the screen keys its titles by Slot',
   SPEED_ROUND_MS: 'the whole-lesson goal for the speed_round quest slot, read inside advanceTask — NOT the same thing as SPEED_SECONDS, which is per question',

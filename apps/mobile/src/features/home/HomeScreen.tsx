@@ -12,9 +12,8 @@
  * docs/design/mockup-fidelity.md — none of them is an oversight.
  */
 
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
-  Avatar,
   Button,
   Card,
   colors,
@@ -23,15 +22,16 @@ import {
   Skeleton,
   space,
   squircle,
-  StreakBadge,
   Tally,
   text,
 } from '@worldquest/design'
-import { levelForXp, xpForLevel } from '@worldquest/engines'
+import { BALANCE } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 import { Icon } from '../../components/Icon.js'
+import type { IconName } from '../../lib/icons.generated.js'
 import { Stat } from '../../components/Stat.js'
+import { TopBar } from '../../components/TopBar.js'
 
 export type HomeProgress = {
   readonly xpTotal: number
@@ -74,6 +74,15 @@ const QUEST_ART = 132
  * hero.
  */
 const WORLD_GLOBE = 56
+
+/**
+ * Atlas beside the greeting.
+ *
+ * Smaller than the quest card's 132: that card is the primary action and this is a
+ * salutation, so he waves from the corner rather than presenting the screen. 84 is the
+ * largest that leaves a two-line greeting its own measure at 320.
+ */
+const GREETING_ART = 84
 
 export type HomeScreenProps = {
   readonly progress: HomeProgress | null
@@ -128,6 +137,18 @@ export type HomeScreenProps = {
   readonly world?: HomeWorld | undefined
   /** Opens Explore. Absent renders the card without its control rather than a dead one. */
   readonly onOpenWorld?: (() => void) | undefined
+  /**
+   * How long today's quest has left, already formatted.
+   *
+   * A string rather than a timestamp, deliberately: this screen is pure and formatting a
+   * duration needs a clock and a locale. Absent means "we cannot say", and absent renders
+   * nothing — which is the fix for the em-dash the old `challengeIn` produced.
+   */
+  readonly resetsIn?: string | undefined
+  /** The title the user is wearing, for the middle fact chip. */
+  readonly titleKey?: TranslationKey | undefined
+  readonly onOpenInbox?: (() => void) | undefined
+  readonly onOpenQuests?: (() => void) | undefined
 }
 
 /** The subset of the engine's `WorldProgress` this screen draws. */
@@ -155,6 +176,10 @@ export function HomeScreen({
   offerMore = false,
   world,
   onOpenWorld,
+  resetsIn,
+  titleKey = 'titles:wanderer',
+  onOpenInbox,
+  onOpenQuests,
 }: HomeScreenProps) {
   // Before the early return: hooks cannot be conditional, and the skeleton needs
   // translated copy too.
@@ -162,9 +187,6 @@ export function HomeScreen({
 
   if (loading) return <HomeSkeleton />
 
-  const level = progress ? levelForXp(progress.xpTotal) : 1
-  const levelFloor = xpForLevel(level)
-  const levelCeiling = xpForLevel(level + 1)
   const isNewUser = !progress || progress.xpTotal === 0
 
   return (
@@ -176,45 +198,11 @@ export function HomeScreen({
           </View>
         )}
 
-        <View style={styles.topRow}>
-          <Avatar initials="EX" accessibilityLabel={t('home:avatar.label')} />
-          <View style={styles.spacer} />
-          {/* The economy, in the header, from the first screen.
-   
-              Measured off the reference: two chips, right-aligned, each about 2 % of the
-              screen's height, above the hero card. Ours had a bell and nothing else —
-              the coin balance was real and on this screen the whole time, in a `Stat`
-              inside the LEVEL card, below the fold and gated on `!isNewUser`. So the
-              currency the entire product turns on was invisible to precisely the user
-              who has never seen it.
-   
-              Coins show at zero and the streak does not, and that is not an
-              inconsistency. A wallet reading 0 is a fact about a balance; a streak
-              reading 0 is a verdict on the person holding it. The test one row down
-              says so in the case that matters: "0 day streak" is a worse first
-              impression than none. */}
-          {progress && (
-            <Stat
-              kind="coin"
-              value={progress.coins}
-              accessibilityLabel={t('home:stats.coins', { amount: progress.coins })}
-            />
-          )}
-          {progress && progress.streak > 0 && (
-            <StreakBadge
-              days={progress.streak}
-              label={t('home:streak.label')}
-              icon={<Icon name="streak" size={20} color={colors.status.streak} />}
-              accessibilityLabel={t('home:streak.days', { count: progress.streak })}
-              // The badge is the way in to freezes and repair. A streak you can see
-              // but cannot protect is a number, not a feature.
-              {...(onOpenStreak !== undefined ? { onPress: onOpenStreak } : {})}
-            />
-          )}
-          <View style={styles.bell} accessible aria-label={t('home:inbox.label')}>
-            <Icon name="bell" size={20} color={colors.text.secondary} />
-          </View>
-        </View>
+        <TopBar
+          initials="EX"
+          {...(progress !== null ? { coins: progress.coins } : {})}
+          onInbox={onOpenInbox ?? (() => {})}
+        />
 
         {/* Two-tier greeting: light salutation, bold role. Matches the mockup and
             keeps the header to two lines instead of three. */}
@@ -230,6 +218,67 @@ export function HomeScreen({
               {t('home:greeting.role')}
             </Text>
           </View>
+          {/* Atlas waving hello, beside his own greeting.
+   
+              The redesign paints him into a landscape band behind the salutation. There
+              is no landscape master (`docs/design/asset-prompts.md` has no entry for one
+              and inventing a horizon is the one thing that page forbids), so he stands
+              beside the words instead of in front of scenery — the same cutout, the same
+              size, one layer short of the reference. Decorative: the greeting is right
+              there in words. */}
+          <View pointerEvents="none">
+            <Art name="atlas/waving-back" size={GREETING_ART} />
+          </View>
+        </View>
+
+        {/* Three facts about today, in a row, above everything you can act on.
+   
+            The streak was a badge in the header, the title was two taps into Profile, and
+            quest progress was a bar inside the card below. Grouped, they are the answer to
+            "where am I?" before the screen asks anything of you — which is what the
+            reference puts here and what a header of loose chips could not say.
+   
+            The middle one is the earned TITLE rather than a league rank. Leagues are v2.0
+            (`docs/systems/social-and-leagues.md`) and a rank chip today would be the third
+            unbuilt thing on this screen; a title is the same shape of reward, is earned by
+            the same ladder, and is real now. */}
+        <View style={styles.factRow}>
+          {/* Not at zero, which is the one rule this row inherited rather than
+              invented. The coin chip beside it shows 0 quite happily: a wallet reading 0
+              is a fact about a balance, and a streak reading 0 is a verdict on the person
+              holding it. `HomeScreen.test.tsx` has held that line since the streak was a
+              badge in the header, and moving it into a tile does not change what zero
+              would say to a ten-year-old on their first morning. */}
+          {progress !== null && progress.streak > 0 && (
+            <Fact
+              icon="streak"
+              tint={colors.status.streak}
+              label={t('home:streak.label')}
+              value={t('home:facts.streak', { count: progress.streak })}
+              {...(onOpenStreak !== undefined ? { onPress: onOpenStreak } : {})}
+            />
+          )}
+          <Fact
+            icon="medal"
+            tint={colors.reward.coin}
+            label={t('home:facts.rank')}
+            value={t(titleKey)}
+          />
+          {/* Absent, never an em-dash.
+   
+              `quest` is undefined only while the content index is still building, which
+              is the one moment there is no quest to count. A dash where a value belongs
+              is a rendering bug the user has to interpret — the same defect that got the
+              Daily Challenge card deleted, and `HomeScreen.test.tsx` holds the line. */}
+          {quest !== undefined && (
+            <Fact
+              icon="quests"
+              tint={colors.action.primary}
+              label={t('nav:quests')}
+              value={t('home:facts.quests', { done: quest.done, total: quest.total })}
+              {...(onOpenQuests !== undefined ? { onPress: onOpenQuests } : {})}
+            />
+          )}
         </View>
 
         {/* Today's quest — the one primary action, and now the one SESSION.
@@ -242,7 +291,22 @@ export function HomeScreen({
         <Card level={2} style={styles.questCard}>
           <View style={styles.questBody}>
             <View style={styles.questText}>
-              <Text style={styles.cardLabel}>{t('home:quest.today')}</Text>
+              <View style={styles.questHead}>
+                <Text style={styles.cardLabel}>{t('home:quest.today')}</Text>
+                {/* How long today has left, when the route knows.
+   
+                    A quest that resets is only urgent if you can see the clock, and this
+                    card carried a `challengeIn` prop that NOTHING ever passed — so the
+                    countdown it was written for rendered "New challenge in —" and was
+                    deleted rather than filled. This is the filled version: absent when
+                    there is no time to state, never an em-dash. */}
+                {resetsIn !== undefined && (
+                  <View style={styles.countdown}>
+                    <Icon name="clock" size={12} color={colors.text.secondary} />
+                    <Text style={styles.countdownText}>{resetsIn}</Text>
+                  </View>
+                )}
+              </View>
               <Text style={styles.questTitle}>
                 {/* Three moments, three lines. A first launch is genuinely different
                     from a Tuesday and is the one the whole funnel turns on, so it keeps
@@ -331,6 +395,36 @@ export function HomeScreen({
                   : t('quests:progress', { done: quest.done, total: quest.total })
               }
             />
+          )}
+
+          {/* What finishing it pays, from the balance table and nowhere else.
+   
+              The reference shows three chips — a gem, a coin and an XP figure. Two of
+              those three are real: `BALANCE.xp.dailyQuest` and `BALANCE.coins.dailyQuest`
+              are the numbers the server actually awards, so they are read rather than
+              typed. The gem is not: gems are purchase-only by design
+              (`docs/systems/xp-economy.md` §4 — "Never buy hearts, XP, league position,
+              or progression"), and a free quest that pays premium currency is a different
+              monetisation model, not a different chip. Two chips that are true beat three
+              that are not.
+   
+              Hidden once the quest is done: a reward you have already collected is not an
+              incentive, it is a receipt. */}
+          {quest?.complete !== true && (
+            <View style={styles.rewards}>
+              <Stat
+                kind="xp"
+                value={`+${BALANCE.xp.dailyQuest}`}
+                accessibilityLabel={t('home:quest.reward.xp', { amount: BALANCE.xp.dailyQuest })}
+              />
+              <Stat
+                kind="coin"
+                value={`+${BALANCE.coins.dailyQuest}`}
+                accessibilityLabel={t('home:quest.reward.coins', {
+                  amount: BALANCE.coins.dailyQuest,
+                })}
+              />
+            </View>
           )}
 
           {/* One button, and after the quest is done it stops being primary.
@@ -446,59 +540,64 @@ export function HomeScreen({
           </Card>
         )}
 
-        {/* Friends / League pair, LAST rather than first.
+        {/* The level bar lived here AND on Profile, which is the mockup's own answer
+            to where it belongs: Profile. It is gone rather than duplicated — the three
+            facts at the top of this screen are what Home owes a returning user, and a
+            second XP bar under them was the same number twice on one scroll. */}
 
-            Both are unbuilt — Friends is v1.5, Leagues v2.0 — and they were sitting
-            directly under the primary action, above the only section on this screen
-            with real numbers in it. A new user read two tiles about features that do
-            not exist before reaching the one that describes their actual progress.
-            Order is the cheapest hierarchy there is: what is true goes first. */}
-        <View style={styles.twoUp}>
-          <Card style={styles.tile} accessibilityLabel={t('home:friends.label')}>
-            <Text style={styles.cardTitle}>{t('home:friends.title')}</Text>
-            <Text style={styles.cardLabel}>
-              {t('home:friends.online', { count: progress?.friendsOnline ?? 0 })}
-            </Text>
-          </Card>
-          <Card style={styles.tile} accessibilityLabel={t('home:league.label')}>
-            <Text style={styles.cardTitle}>{t('home:league.title')}</Text>
-            {/* Leagues are v2.0 and the tile stays, per the roadmap — but it stayed as
-                an em-dash, which is not an empty state, it is a missing value. A tile
-                that says plainly it is not open yet is honest; a dash is a rendering
-                bug the user has to interpret. No date and no teaser: a promise with a
-                month attached is a promise to break. */}
-            {progress?.leagueTier === undefined ? (
-              <Text style={styles.cardLabel}>{t('home:league.closed')}</Text>
-            ) : (
-              <>
-                <Text style={styles.leagueTier}>{progress.leagueTier}</Text>
-                <Text style={styles.cardLabel}>{progress.leaguePercentile ?? ''}</Text>
-              </>
-            )}
-          </Card>
-        </View>
-
-        {/* Level bar, which the mockup carries on Profile rather than Home. */}
-        {progress && !isNewUser && (
-          <Card style={styles.levelCard} accessibilityLabel={t('home:stats.label')}>
-            <ProgressBar
-              current={progress.xpTotal - levelFloor}
-              total={Math.max(1, levelCeiling - levelFloor)}
-              label={t('home:level', { level })}
-            />
-            {/* XP only. Coins moved to the header, where a balance belongs; XP stays
-                here because it is what the bar above it is measuring. */}
-            <View style={styles.chips}>
-              <Stat
-                kind="xp"
-                value={progress.xpTotal}
-                accessibilityLabel={t('home:stats.xp', { amount: progress.xpTotal })}
-              />
-            </View>
-          </Card>
-        )}
       </ScrollView>
     </View>
+  )
+}
+
+/**
+ * One fact about today: a glyph, a number, and what the number is.
+ *
+ * Three of these in a row is the header the reference puts under the greeting, and the
+ * shape is deliberately NOT `Stat`/`StatChip`: those are wallet chips — a tinted pill
+ * carrying a balance — and these are a stacked label-and-value tile carrying a mixed bag
+ * of units. Reusing the pill would have made a streak, a title and a fraction all read
+ * as currencies.
+ *
+ * Pressable only when it goes somewhere, and one accessibility element either way so a
+ * reader hears "Day streak, 7 days" rather than three fragments.
+ */
+function Fact({
+  icon,
+  tint,
+  label,
+  value,
+  onPress,
+}: {
+  readonly icon: IconName
+  readonly tint: string
+  readonly label: string
+  readonly value: string
+  readonly onPress?: (() => void) | undefined
+}) {
+  const body = (
+    <>
+      <Icon name={icon} size={18} color={tint} />
+      <Text style={styles.factValue} numberOfLines={1}>
+        {value}
+      </Text>
+      <Text style={styles.factLabel} numberOfLines={1}>
+        {label}
+      </Text>
+    </>
+  )
+
+  if (onPress === undefined) {
+    return (
+      <View accessible aria-label={`${label}, ${value}`} style={styles.fact}>
+        {body}
+      </View>
+    )
+  }
+  return (
+    <Pressable onPress={onPress} role="button" aria-label={`${label}, ${value}`} style={styles.fact}>
+      {body}
+    </Pressable>
   )
 }
 
@@ -527,6 +626,40 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
 
   topRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  // Three across, `flex: 1` rather than a percentage — a percentage plus a gap
+  // overflows the row by the gap.
+  factRow: { flexDirection: 'row', gap: space[2] },
+  fact: {
+    flex: 1,
+    alignItems: 'center',
+    gap: space[1],
+    paddingVertical: space[3],
+    paddingHorizontal: space[2],
+    borderRadius: radius.lg,
+    ...squircle,
+    backgroundColor: colors.bg.surface,
+    borderWidth: 1,
+    borderColor: colors.border.subtle,
+    // A real target even for the two that are pressable, without the tile growing.
+    minHeight: 72,
+    justifyContent: 'center',
+  },
+  factValue: { ...text('bodyStrong', { numeric: true }), color: colors.text.primary },
+  factLabel: { ...text('caption'), color: colors.text.tertiary },
+  questHead: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  // A quiet pill, not the loud one the reference draws in violet: this app has no
+  // violet, and the countdown is context rather than a reward.
+  countdown: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space[1],
+    paddingHorizontal: space[2],
+    paddingVertical: space[1],
+    borderRadius: radius.full,
+    backgroundColor: colors.bg.surfaceRaised,
+  },
+  countdownText: { ...text('caption', { numeric: true }), color: colors.text.secondary },
+  rewards: { flexDirection: 'row', gap: space[2], marginTop: space[1] },
   spacer: { flex: 1 },
   bell: {
     width: 36,
@@ -561,12 +694,9 @@ const styles = StyleSheet.create({
 
   challengeCard: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   challengeText: { flex: 1, gap: space[1] },
-  // Tabular, because it ticks: proportional digits make the whole card twitch.
-  countdown: { ...text('numeric'), color: colors.text.primary },
 
   twoUp: { flexDirection: 'row', gap: space[3] },
   tile: { flex: 1, gap: space[1] },
-  leagueTier: { ...text('h3', { weight: '700' }), color: colors.reward.xp },
 
   // A row now, so the globe sits beside the counts rather than above them.
   worldCard: { flexDirection: 'row', alignItems: 'center', gap: space[3] },

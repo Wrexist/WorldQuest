@@ -7,15 +7,12 @@
   "country:attribute.currency": "Valuta",
   "country:attribute.location": "Världsdel",
   "country:attribute.language": "Språk",
-
   "country:fact.hidden": "Lär dig den först",
   "country:fact.due": "Dags att repetera",
   "country:fact.label": "{attribute}: {value}, {mastery}",
-
   "country:progress": "{learned} av {total} inlärda",
-
   "country:practice": "Öva på det här landet",
-
   "country:missing.title": "Det här landet finns inte än",
-  "country:missing.body": "Mer av världen kommer med varje innehållsuppdatering."
+  "country:missing.body": "Mer av världen kommer med varje innehållsuppdatering.",
+  "country:attribute.callingCode": "Landsnummer"
 }

@@ -52,7 +52,7 @@ const ROUTES = [
   '/explore',
   '/quests',
   '/profile',
-  '/more',
+  '/settings',
   '/collection/flags',
   '/country/SE',
   '/achievements',
