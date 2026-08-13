@@ -25,5 +25,12 @@
   "quests:intro.title": "Dagens uppdrag",
   "quests:intro.headline": "{count, plural, one {Svara på # fråga} other {Svara på # frågor}}",
   "quests:intro.body": "Klara alla för att få bonusen.",
-  "quests:intro.start": "Starta uppdraget"
+  "quests:intro.start": "Starta uppdraget",
+  "quests:done.title": "Uppdraget klart",
+  "quests:done.body": "Det var dagens fem. Kom tillbaka i morgon för nästa omgång.",
+  "quests:done.reward.xp": "Bonus: {amount} XP",
+  "quests:done.reward.coins": "Bonus: {amount} mynt",
+  "quests:done.streak": "{count, plural, one {# dag i rad} other {# dagar i rad}}",
+  "quests:done.milestone": "Milstolpe i svit — {amount} XP",
+  "quests:done.cta": "Fint"
 }

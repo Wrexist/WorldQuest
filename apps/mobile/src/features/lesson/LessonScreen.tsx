@@ -242,6 +242,17 @@ const MAP_PROMPT_WIDTH_SHORT = 180
 export type LessonExit = {
   /** Entity ids, in the order they were practised. Stable codes, safe in a URL. */
   readonly practised: readonly string[]
+  /**
+   * Whether THIS lesson finished the daily quest.
+   *
+   * Computed here because this is where it is known — the runner is what advances the
+   * quest, and `recordQuestEvent` returns `becameComplete` for exactly this reason. It
+   * used to be consumed by a `track()` call and dropped, so the one moment the whole
+   * daily loop builds to reached nothing that could show it to the user.
+   *
+   * Carried out rather than acted on: this screen does not navigate, the route does.
+   */
+  readonly questCompleted: boolean
 }
 
 export function LessonScreen({
@@ -335,6 +346,13 @@ export function LessonScreen({
    * bottom, so with four options and a short viewport the first two go off the top, and
    * the correct one is hidden again whenever it happens to be first.
    */
+  /**
+   * Set by the end-of-lesson effect when this lesson landed the quest's last task.
+   *
+   * A ref rather than state: it is read by the summary's exit handler and setting it
+   * must not re-render the summary while its own entrance is playing.
+   */
+  const questCompleted = useRef(false)
   const scroller = useRef<ScrollView>(null)
   const optionsTop = useRef(0)
   // Called from BOTH `onLayout`s rather than only the row's, because their order is not
@@ -445,6 +463,10 @@ export function LessonScreen({
       // finished, so testing it non-empty announced a five-task quest complete the first
       // time any one task landed — and again for each of the others.
       if (finished) {
+        // Held for the exit, as well as tracked. The route pushes the celebration; a
+        // ref rather than state because it is read by the exit handler and must not
+        // cause a render in the middle of the summary's own entrance.
+        questCompleted.current = true
         track('quest_completed', { quest_id: quest.date })
         // `ach.quest.regular` counts `daily_quest_completed` and had no producer at all,
         // so all three of its tiers were permanently zero. The quest engine has known
@@ -555,7 +577,12 @@ export function LessonScreen({
         // `summary`, because the lesson ended rather than the user leaving it.
         wasAbandoned={lesson.state.phase === 'abandoned'}
         isOffline={isOffline}
-        onExit={() => onExit({ practised: practised.map((c) => c.id) })}
+        onExit={() =>
+          onExit({
+            practised: practised.map((c) => c.id),
+            questCompleted: questCompleted.current,
+          })
+        }
       />
     )
   }

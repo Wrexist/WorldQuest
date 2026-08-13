@@ -44,5 +44,19 @@
   "quests:intro.body": "Finish them all to earn the bonus.",
   "quests:intro.body__note": "One line under the headline saying what the quest is for. Max 2 sentences.",
   "quests:intro.start": "Start quest",
-  "quests:intro.start__note": "Primary button on the quest cover page. Verb first. Max 3 words."
+  "quests:intro.start__note": "Primary button on the quest cover page. Verb first. Max 3 words.",
+  "quests:done.title": "Quest complete",
+  "quests:done.title__note": "Headline on the screen shown once the daily quest's last task lands. Warm, not loud — no exclamation mark, and never a superlative about the person. Max 20 characters.",
+  "quests:done.body": "That's today's five. Come back tomorrow for the next set.",
+  "quests:done.body__note": "One line under the headline. States what was finished and what happens next. Never implies the user must return — an invitation, not an obligation.",
+  "quests:done.reward.xp": "Bonus: {amount} XP",
+  "quests:done.reward.xp__note": "Accessibility label for the XP tile on the quest-complete screen. This is the completion bonus, already awarded by the server. {amount} is a whole number.",
+  "quests:done.reward.coins": "Bonus: {amount} coins",
+  "quests:done.reward.coins__note": "Accessibility label for the coin tile on the quest-complete screen. {amount} is a whole number.",
+  "quests:done.streak": "{count, plural, one {# day in a row} other {# days in a row}}",
+  "quests:done.streak__note": "The streak, stated on the quest-complete screen as something earned rather than as a scoreboard. Hidden at zero.",
+  "quests:done.milestone": "Streak milestone — {amount} XP",
+  "quests:done.milestone__note": "Shown ONLY on a day that hits a streak milestone (7, 30, 100 or 365 days), which is the only day a streak pays anything. {amount} is a whole number.",
+  "quests:done.cta": "Nice",
+  "quests:done.cta__note": "The button that leaves the quest-complete screen. Deliberately not 'Claim' — the reward is already granted, and a button that claims what you have been given is a lie about who did what. Max 8 characters."
 }

@@ -79,6 +79,17 @@ export default function LessonRoute() {
           )
           return
         }
+        // The day's ritual, finished. AFTER the summary rather than instead of it: the
+        // summary is about the lesson — what you got right and what it earned — and the
+        // celebration is about the day. Collapsed into one screen the quest bonus would
+        // read as part of the lesson's XP, which is the one thing it is not.
+        //
+        // `replace`, so the lesson is off the stack before the celebration draws and
+        // "back" from it cannot return the user to a summary they have dismissed.
+        if (summary.questCompleted) {
+          router.replace('/quest-complete')
+          return
+        }
         // Opened from a notification there is no history to pop, and `back()` would
         // do nothing at all — leaving the user stuck on the summary.
         if (router.canGoBack()) router.back()

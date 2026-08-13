@@ -91,6 +91,8 @@ const DEFAULT_ROUTES = [
   '/shop',
   // The quest's cover page — the beat between the home card and the runner.
   '/quest',
+  // …and the celebration at the other end of it.
+  '/quest-complete',
   // Reached by a gate in the root layout and by the "we miss you" push, never by a tap.
   // It went unphotographed for that reason and was rendering "It's been 0 days." to
   // anyone who followed the notification the same afternoon.
