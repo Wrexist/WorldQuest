@@ -106,6 +106,47 @@ const ALLOWED: Record<string, string> = {
     'cap holds nine freezes. streak-recovery.test.ts reads the migration and asserts the ' +
     'two copies of MAX_FREEZES agree.',
 
+  /**
+   * ── leagues: built, tested, and deliberately not wired ──────────────────────
+   *
+   * The whole module is unreachable on purpose, and this is the one place that says so
+   * out loud rather than leaving it to look like an oversight.
+   *
+   * The engine is done and tested. The migration that backs it is written. What is
+   * missing is the half that cannot be produced in an environment with no Docker: a
+   * local Postgres to run the migration against, `pnpm db:types` to regenerate
+   * `database.types.ts` from it, and `supabase test db` to prove the RLS policies do
+   * what they claim.
+   *
+   * A leaderboard is not a feature where "the policies look right" is good enough. RLS
+   * that has never been executed is RLS that has never been tested, and the failure
+   * mode is every child's cohort being readable by everyone. So the client half waits
+   * for a stack to test against, and the screen waits with it — a league screen with no
+   * league behind it is the "Not open yet" tile that was just deleted from Home.
+   *
+   * To finish: `pnpm db:start && pnpm db:reset && pnpm db:types && supabase test db`,
+   * then the read, the screen, and delete these lines.
+   */
+  LEAGUE_TIERS: 'leagues — engine and migration landed, client half blocked on a local Postgres; see the note above',
+  DIVISIONS: 'leagues — see LEAGUE_TIERS',
+  BRONZE_III: 'leagues — see LEAGUE_TIERS',
+  COHORT_SIZE: 'leagues — see LEAGUE_TIERS',
+  PROMOTED: 'leagues — see LEAGUE_TIERS',
+  RELEGATED: 'leagues — see LEAGUE_TIERS',
+  rankIndex: 'leagues — see LEAGUE_TIERS',
+  rankFromIndex: 'leagues — see LEAGUE_TIERS',
+  promote: 'leagues — see LEAGUE_TIERS',
+  relegate: 'leagues — see LEAGUE_TIERS',
+  outcomeFor: 'leagues — see LEAGUE_TIERS',
+  podiumCoins: 'leagues — see LEAGUE_TIERS',
+  weekStart: 'leagues — see LEAGUE_TIERS',
+  weekEnd: 'leagues — see LEAGUE_TIERS',
+  weekId: 'leagues — see LEAGUE_TIERS',
+  standings: 'leagues — see LEAGUE_TIERS',
+  xpToPromotion: 'leagues — see LEAGUE_TIERS',
+  handleFor: 'leagues — see LEAGUE_TIERS',
+  HANDLE_SPACE: 'leagues — see LEAGUE_TIERS',
+
   // ── consumed by another engine rather than by a screen
   evaluate: 'the single-definition form; the client calls evaluateAll',
   xpForLevel:

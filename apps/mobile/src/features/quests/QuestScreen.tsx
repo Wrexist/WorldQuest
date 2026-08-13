@@ -15,6 +15,7 @@ import {
   Button,
   Card,
   colors,
+  layout,
   ProgressBar,
   radius,
   Skeleton,
@@ -351,7 +352,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 40,
+    // 44, not 40. `pnpm design:shots` measures every control on every route and these
+    // two were the only things in the app under the line — a segment is a real target
+    // and 40 was chosen to look like the tray around it rather than to be pressed.
+    minHeight: layout.minTouchTarget,
     borderRadius: radius.full,
   },
   segmentOn: { backgroundColor: colors.bg.surfaceRaised },

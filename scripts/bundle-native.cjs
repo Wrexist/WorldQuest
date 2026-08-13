@@ -156,8 +156,30 @@ const MOBILE = join(process.cwd(), 'apps', 'mobile')
  * At 4.2 the measured 4.19 left 0.01 MB of headroom, which is not headroom — the next
  * lockfile churn fails the gate for no reason anyone could act on. 4.3 is the same
  * ~0.1 MB margin every previous note in this file has asked for.
+ *
+ * ── 2026-08-13 · 4.3 → 4.4 ──────────────────────────────────────────────────────────
+ *
+ * The redesign, plus leagues: **4.19 → 4.31 MB**. No dependency was added; all of it is
+ * application code.
+ *
+ * What bought it, in rough order of weight: three new screens (the quest cover page, the
+ * quest-complete celebration, and the shared `TopBar` that five tabs now draw), the
+ * rebuild of Home, Profile, Quests and Shop, and `packages/engines/src/leagues` — an
+ * engine that is deliberately not yet reachable from a screen, so it is ~4 KB of the
+ * 0.12 and will earn its place when the client half lands.
+ *
+ * Trimmed first rather than raised first, which is the order this note has not always
+ * been written in: `sparkle`, `book` and `repeat` were added to the icon set for quest
+ * rows that turned out to have glyphs already, and shipped as three files nothing
+ * imported. They are gone. It moved the number by almost nothing — icons are assets, and
+ * the header of `build-icons.cjs` says so — but three unused files in a set is a defect
+ * whether or not it is a heavy one, and finding it was the point of looking.
+ *
+ * 4.4 restores the ~0.1 MB margin. The honest reading: this is the first raise in this
+ * file bought by ordinary feature work rather than by a dependency or a bug fix, and if
+ * the next one is too, the answer is lazy routes rather than a fifth number.
  */
-const BUDGET_MB = 4.3
+const BUDGET_MB = 4.4
 
 /** Warn from 90 % of the budget, so the wall is visible before it is hit. */
 const WARN_AT = BUDGET_MB * 0.9

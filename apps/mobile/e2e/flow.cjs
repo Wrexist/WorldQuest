@@ -550,11 +550,26 @@ const skip = (name, why) => {
   await page.screenshot({ path: path.join(SHOTS, 'home.png') })
 
   // ── the taster lesson, which is the whole product in one flow ─────────────
+  //
+  // Two taps now, not one. Home's quest button opens the quest's COVER PAGE — what
+  // today is, what it pays, start when you are ready — and the lesson begins from
+  // there. This step failed the first time that landed, which is the whole reason the
+  // E2E drives the real bundle: the change was deliberate, and nothing else in the
+  // repo would have noticed that the path to the core loop had grown a screen.
   await page.getByText('Continue', { exact: true }).first().click()
+  await page.waitForTimeout(1000)
+  const cover = await body()
+  step('Continue opens the quest cover page', cover.includes('Daily Quest'), cover.slice(0, 60))
+
+  // `Start quest` on a fresh day, `Continue` once some of it is done — the cover page
+  // says so with the same words the card did, so either is a correct label to find.
+  const start = page.getByText('Start quest', { exact: true }).first()
+  if ((await start.count()) > 0) await start.click()
+  else await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(1500)
   text = await body()
   const prompt = await lessonPrompt()
-  step('Continue opens a lesson', prompt !== undefined, prompt)
+  step('the cover page opens a lesson', prompt !== undefined, prompt)
 
   if (prompt !== undefined) {
     await page.screenshot({ path: path.join(SHOTS, 'lesson.png') })
@@ -753,7 +768,11 @@ const skip = (name, why) => {
     { name: 'Explore', proof: /continents/i },
     { name: 'Quests', proof: /quest/i },
     { name: 'Profile', proof: /level|streak|explorer/i },
-    { name: 'More', proof: /settings|about|language/i },
+    // Shop, where More used to be. The fifth tab changed in the August 2026 redesign
+    // (PROJECT.md §7) and Settings moved behind the gear on Profile — which this walk
+    // reaches one step further down, because a destination that no longer has a tab
+    // still has to be reachable or it is gone.
+    { name: 'Shop', proof: /coins|titles|spend/i },
   ]
   const homeText = await (async () => {
     await home()
@@ -802,6 +821,28 @@ const skip = (name, why) => {
     )
     if (tab.name === 'Explore') await page.screenshot({ path: path.join(SHOTS, 'explore.png') })
   }
+
+  // ── Settings, now that it is not a tab ─────────────────────────────────────
+  //
+  // The one step this walk gained rather than swapped. Moving a destination off the tab
+  // bar is exactly how a screen becomes unreachable without anybody noticing: the tab is
+  // gone from the bar, the route still exists, and nothing fails. So the walk follows
+  // the path a user now has to take — Profile, then the gear.
+  await home()
+  await page.getByRole('tab', { name: 'Profile' }).click()
+  await page.waitForTimeout(1000)
+  const gear = page.getByRole('button', { name: 'More' }).first()
+  const hasGear = (await gear.count()) > 0
+  if (hasGear) {
+    await gear.click()
+    await page.waitForTimeout(1200)
+  }
+  const settings = await body()
+  step(
+    'Settings is still reachable, through the gear on Profile',
+    hasGear && /settings|about|language/i.test(settings),
+    hasGear ? settings.slice(0, 40) : 'no gear on Profile',
+  )
 
   // ── the collection, reached the way a user reaches it ──────────────────────
   await home()
@@ -870,7 +911,10 @@ const skip = (name, why) => {
   step('paywall is escapable on the first frame, at full size', dismissed)
 
   // ── Settings owns the subscription, and does not bury cancelling ───────────
-  await page.goto(`http://localhost:${PORT}/more`, { waitUntil: 'networkidle' })
+  // `/settings`, not `/more`. The route moved when Shop took the fifth tab, and a URL
+  // that 404s here would have failed as "Settings has no Premium section" — a check
+  // reporting the wrong defect is worse than one that does not run.
+  await page.goto(`http://localhost:${PORT}/settings`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(1200)
   const more = await body()
   step('Settings has a Premium section', /premium/i.test(more))

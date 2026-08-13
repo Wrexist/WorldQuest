@@ -123,14 +123,15 @@ const ICONS = {
   continent: 'earth', //     which continent a country is in
 
   // ── the redesign's chrome ────────────────────────────────────────────────
+  // `sparkle`, `book` and `repeat` were added here for quest rows that turned out to
+  // already have glyphs, and shipped as three PNGs and three asset registrations that
+  // nothing imported. Removed rather than left "for later": an icon set is a budget,
+  // and the bundle was 0.01 MB over when they were found.
   settings: 'settings', //   the gear on Profile, now that More is not a tab
   edit: 'pencil', //         rename yourself, on Profile
   clock: 'clock', //         "new quests in 23h 15m"
   moon: 'moon', //           Night Owl
   sunrise: 'sunrise', //     Early Bird
-  sparkle: 'sparkles', //    the daily quiz, and anything that is a treat
-  book: 'book-open', //      "learn N countries"
-  repeat: 'repeat', //       "practise N times"
 }
 
 const require_ = createRequire(join(process.cwd(), 'index.js'))

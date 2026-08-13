@@ -45,9 +45,6 @@ import edit from '../../assets/icons/edit.png'
 import clock from '../../assets/icons/clock.png'
 import moon from '../../assets/icons/moon.png'
 import sunrise from '../../assets/icons/sunrise.png'
-import sparkle from '../../assets/icons/sparkle.png'
-import book from '../../assets/icons/book.png'
-import repeat from '../../assets/icons/repeat.png'
 
 /** Metro hands back a numeric handle; Vite hands back a URL string. Both are real. */
 export type IconAsset = number | string
@@ -90,9 +87,6 @@ export type IconName =
   | 'clock'
   | 'moon'
   | 'sunrise'
-  | 'sparkle'
-  | 'book'
-  | 'repeat'
 
 export const ICON_BY_NAME: Readonly<Record<IconName, IconAsset>> = {
   'home': home,
@@ -132,7 +126,4 @@ export const ICON_BY_NAME: Readonly<Record<IconName, IconAsset>> = {
   'clock': clock,
   'moon': moon,
   'sunrise': sunrise,
-  'sparkle': sparkle,
-  'book': book,
-  'repeat': repeat,
 }
