@@ -20,6 +20,7 @@ import { equippedTitleKey, levelProgress, worldProgress } from '@worldquest/engi
 import { CATALOGUE } from '../../src/features/shop/catalogue.js'
 import { useShop } from '../../src/features/shop/useShop.js'
 import { useDayCountdown } from '../../src/features/quests/useDayCountdown.js'
+import { useQuestCover } from '../../src/features/quests/ceremony.js'
 import { useT, type TranslationKey } from '../../src/lib/i18n.js'
 
 /**
@@ -88,6 +89,7 @@ export default function HomeRoute() {
     shop.owned,
   )
 
+  const coverPage = useQuestCover()
   const goal = useDailyGoal()
   const { quest } = useDailyQuest()
   const standing = quest === null ? undefined : questStanding(quest)
@@ -128,10 +130,15 @@ export default function HomeRoute() {
       // finished, which is exactly when the button stops being primary and becomes
       // "practise anyway" — an ordinary lesson, correctly.
       // Through the quest's cover page rather than straight into the runner — but only
-      // while the quest is unfinished. Once it is done the same button is "practise
-      // anyway", which is an ordinary lesson and has no quest to introduce.
+      // while the quest is unfinished, and only while the flag is on. Once the quest is
+      // done the same button is "practise anyway", which is an ordinary lesson and has
+      // no quest to introduce.
+      //
+      // Flagged because it puts one more tap between a user and the thing the product is
+      // for, and the only honest way to learn whether that costs completions is a staged
+      // rollout. Off is exactly the old path. See `features/quests/ceremony.ts`.
       onStartLesson={() => {
-        if (standing !== undefined && !standing.complete) {
+        if (coverPage && standing !== undefined && !standing.complete) {
           router.push('/quest')
           return
         }

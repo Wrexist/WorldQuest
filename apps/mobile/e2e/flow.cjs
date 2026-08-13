@@ -551,25 +551,19 @@ const skip = (name, why) => {
 
   // ── the taster lesson, which is the whole product in one flow ─────────────
   //
-  // Two taps now, not one. Home's quest button opens the quest's COVER PAGE — what
-  // today is, what it pays, start when you are ready — and the lesson begins from
-  // there. This step failed the first time that landed, which is the whole reason the
-  // E2E drives the real bundle: the change was deliberate, and nothing else in the
-  // repo would have noticed that the path to the core loop had grown a screen.
+  // Straight into the runner, because that is what SHIPS. The quest cover page sits
+  // behind `quest_cover_page`, which is off at 0 % — and `useFeatureFlag` returns false
+  // for a flag it has never fetched, which is the state this harness is always in.
+  //
+  // Asserting the flagged-on path here would have been the more impressive-looking test
+  // and the wrong one: it would prove a route no user can currently reach while saying
+  // nothing about the one every user takes. The cover page is visited directly by
+  // `pnpm design:shots /quest` instead, and the flag's own default is asserted below.
   await page.getByText('Continue', { exact: true }).first().click()
-  await page.waitForTimeout(1000)
-  const cover = await body()
-  step('Continue opens the quest cover page', cover.includes('Daily Quest'), cover.slice(0, 60))
-
-  // `Start quest` on a fresh day, `Continue` once some of it is done — the cover page
-  // says so with the same words the card did, so either is a correct label to find.
-  const start = page.getByText('Start quest', { exact: true }).first()
-  if ((await start.count()) > 0) await start.click()
-  else await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(1500)
   text = await body()
   const prompt = await lessonPrompt()
-  step('the cover page opens a lesson', prompt !== undefined, prompt)
+  step('Continue opens a lesson, the flag being off', prompt !== undefined, prompt)
 
   if (prompt !== undefined) {
     await page.screenshot({ path: path.join(SHOTS, 'lesson.png') })
