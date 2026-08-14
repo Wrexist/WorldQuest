@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { BALANCE } from '../xp/balance.js'
 import {
@@ -115,10 +115,23 @@ describe('which title the profile shows', () => {
  * So this reads all three: the migration, the pack, and the balance table.
  */
 describe('shop_items agrees with the pack and the balance table', () => {
-  const migration = readFileSync(
-    new URL('../../../../supabase/migrations/20260805120000_purchase_item.sql', import.meta.url),
-    'utf8',
-  )
+  /**
+   * EVERY migration that seeds the table, not one named file.
+   *
+   * It was a single path, which was true while one migration existed and became a hole
+   * the moment a second batch of titles landed in its own file — `supabase/migrations/`
+   * is forward-only, so stock is always added by a NEW file, and a check that reads only
+   * the first one silently stops covering everything after it. That is the same
+   * check-matches-its-own-documentation failure this file's own comment names, wearing
+   * different clothes: the guard would have kept passing while the thing it guards drifted.
+   */
+  const migrationsDir = new URL('../../../../supabase/migrations/', import.meta.url)
+  const migration = readdirSync(migrationsDir)
+    .filter((f) => f.endsWith('.sql'))
+    .sort()
+    .map((f) => readFileSync(new URL(f, migrationsDir), 'utf8'))
+    .filter((sql) => /insert into\s+(public\.)?shop_items/i.test(sql))
+    .join('\n')
   const pack = JSON.parse(
     readFileSync(
       new URL('../../../content/packs/shop/titles.v1.json', import.meta.url),
@@ -134,14 +147,31 @@ describe('shop_items agrees with the pack and the balance table', () => {
    * flags the paragraph that most carefully justifies the rule, which is the
    * check-matches-its-own-documentation bug this repo has now shipped four times.
    */
-  const sql = migration.replace(/^\s*--.*$/gm, '')
+  /**
+   * The purchase FUNCTION's own file, for the absence checks below.
+   *
+   * Deliberately not the concatenation above. `p_price` must be absent from the function
+   * that takes a purchase; scanning every migration in the repo for the string would
+   * match any future function that legitimately has a price parameter and turn a precise
+   * guard into a repo-wide grep.
+   */
+  const purchaseFn = readFileSync(
+    new URL('20260805120000_purchase_item.sql', migrationsDir),
+    'utf8',
+  )
+  const sql = purchaseFn.replace(/^\s*--.*$/gm, '')
 
-  /** `('title.map-nerd', 'title', 1000)` → the three fields. */
-  const seeded = [...migration.matchAll(/\('([\w.-]+)',\s*'(\w+)',\s*(\d+)\)/g)].map((m) => ({
-    id: m[1]!,
-    kind: m[2]!,
-    price: Number(m[3]!),
-  }))
+  /**
+   * `('title.map-nerd', 'title', 1000)` → the three fields, across every seed migration.
+   *
+   * Filtered to `SELLABLE_KINDS`, because `shop_items` also carries the streak freeze —
+   * a `consumable`, seeded by its own migration and correctly absent from a pack of
+   * titles. Without the filter this comparison asks the titles pack to account for a
+   * consumable and fails for a reason that has nothing to do with what it is checking.
+   */
+  const seeded = [...migration.matchAll(/\('([\w.-]+)',\s*'(\w+)',\s*(\d+)\)/g)]
+    .map((m) => ({ id: m[1]!, kind: m[2]!, price: Number(m[3]!) }))
+    .filter((row) => SELLABLE_KINDS.includes(row.kind as (typeof SELLABLE_KINDS)[number]))
 
   const sellable = pack.items.filter((i) =>
     SELLABLE_KINDS.includes(i.kind as (typeof SELLABLE_KINDS)[number]),

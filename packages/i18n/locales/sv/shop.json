@@ -23,5 +23,17 @@
   "shop:title.earlyBird": "Morgonpigg",
   "shop:title.islandHopper": "Öhoppare",
   "shop:title.mapNerd": "Kartnörd",
-  "shop:balance.label": "Dina mynt"
+  "shop:balance.label": "Dina mynt",
+  "shop:title.compassRose": "Kompassros",
+  "shop:title.borderHopper": "Gränshopparen",
+  "shop:title.peakSeeker": "Toppjagaren",
+  "shop:title.riverReader": "Flodläsaren",
+  "shop:title.timezoneTamer": "Tidszonstämjaren",
+  "shop:title.atlasApprentice": "Atlas lärling",
+  "shop:title.coastWatcher": "Kustvakten",
+  "shop:title.duneWalker": "Dynvandraren",
+  "shop:title.starSteerer": "Stjärnstyraren",
+  "shop:title.cloudSpotter": "Molnspanaren",
+  "shop:title.deepDiver": "Djupdykaren",
+  "shop:title.longWayRound": "Långa vägen"
 }

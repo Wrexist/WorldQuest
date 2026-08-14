@@ -232,6 +232,20 @@ const TITLE_ICON: Partial<Record<string, IconName>> = {
   'title.early-bird': 'sunrise',
   'title.island-hopper': 'pin',
   'title.map-nerd': 'map',
+  // The 2026-08-13 batch. Twelve more, glyphed from the set that already ships — a
+  // title is a word you wear, so none of these needed drawing.
+  'title.compass-rose': 'pin',
+  'title.border-hopper': 'continent',
+  'title.peak-seeker': 'explore',
+  'title.river-reader': 'globe',
+  'title.timezone-tamer': 'clock',
+  'title.atlas-apprentice': 'medal',
+  'title.coast-watcher': 'map',
+  'title.dune-walker': 'sunrise',
+  'title.star-steerer': 'star',
+  'title.cloud-spotter': 'offline',
+  'title.deep-diver': 'heart',
+  'title.long-way-round': 'quests',
 }
 
 function TitleRow({
