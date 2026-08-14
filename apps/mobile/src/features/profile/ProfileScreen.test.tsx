@@ -81,6 +81,45 @@ describe('Profile — the five states', () => {
   })
 })
 
+describe('Profile — the only way to Settings', () => {
+  /**
+   * Settings stopped being a tab in the August 2026 redesign and moved behind the gear
+   * on this screen. That makes ONE screen the sole route to language, sound, haptics,
+   * reminders, help and the account area — and the gear lived only in the populated
+   * branch, so a user with no XP had no route to any of it from anywhere in the app.
+   *
+   * Which is to say: every brand-new install. The route resolved, the gear worked, and
+   * the screen looked correct in every screenshot.
+   */
+  const states: readonly (readonly [string, ProfileStats | null])[] = [
+    ['populated', stats],
+    ['first launch', null],
+    ['zeroed user', { xpTotal: 0, coins: 0, streak: 0, longestStreak: 0, factsMastered: 0 }],
+  ]
+
+  for (const [state, only] of states) {
+    it(`offers the gear on the ${state} state`, () => {
+      const onOpenSettings = vi.fn()
+      render(
+        <ProfileScreen
+          stats={only}
+          world={only === stats ? world : null}
+          loading={false}
+          onOpenSettings={onOpenSettings}
+        />,
+      )
+      fireEvent.click(screen.getByLabelText('More'))
+      expect(onOpenSettings).toHaveBeenCalledOnce()
+    })
+  }
+
+  it('draws no coin balance beside an empty profile', () => {
+    // A `0` next to "Nothing to show yet" reads as a scolding rather than a fact.
+    render(<ProfileScreen stats={null} world={null} loading={false} onOpenSettings={() => {}} />)
+    expect(screen.queryByLabelText(/coins/i)).toBeNull()
+  })
+})
+
 describe('Profile — the level curve', () => {
   it('shows the distance to the next level from the real curve', () => {
     // The redesign shows `1,250 / 2,000 XP`, which corresponds to no coherent

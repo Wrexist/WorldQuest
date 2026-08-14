@@ -151,32 +151,55 @@ export function ProfileScreen({
 
   if (stats === null || stats.xpTotal === 0) {
     return (
-      <View style={[styles.screen, styles.centered]}>
-        <Avatar
-          size={72}
-          accessibilityLabel={t('profile:anonymous')}
+      <View style={styles.screen}>
+        {/* The gear, on the state that needs it MOST.
+
+            Settings stopped being a tab in the August 2026 redesign and moved behind
+            this gear — which lived only in the populated branch below. So the way to
+            language, sound, haptics and reminders existed for a user with XP and
+            existed for nobody else: a brand-new install, a user whose first lesson had
+            not synced yet, and anyone running without a backend all landed here, where
+            there was no route to Settings from anywhere in the app.
+
+            Every symptom of that is invisible. The route still resolves, the gear still
+            works, the screen still looks right, and the only person who finds out is a
+            new user hunting for the language switch. The e2e walk caught it because it
+            follows the path a user has to take rather than pushing the route.
+
+            No coin chip: an empty profile has nothing to report and a `0` beside a
+            "nothing here yet" screen reads as a scolding rather than a fact. */}
+        <TopBar
           initials="EX"
-          {...(portrait !== null ? { image: <Art name={portrait} size={72} /> } : {})}
+          {...(portrait !== null ? { avatar: <Art name={portrait} size={40} /> } : {})}
+          {...(onOpenSettings !== undefined ? { onSettings: onOpenSettings } : {})}
         />
-        {/* The blank explorer's journal, briefed for this screen as "ready to be
-            filled, not sad" — which is the same distinction `profile:empty.body`
-            draws in words. */}
-        <Art name="states/empty-profile" size={140} />
-        <Text style={styles.title} role="heading">
-          {t('profile:empty.title')}
-        </Text>
-        <Text style={styles.subtitle}>{t('profile:empty.body')}</Text>
-        {/* The empty state named the way out and did not open it. An empty state that
-            tells you what to do next and then makes you find it yourself is a dead
-            end — the one place a new user is most likely to be looking for a way in. */}
-        {onStartLesson !== undefined && (
-          <Button
-            label={t('profile:empty.cta')}
-            onPress={onStartLesson}
-            fullWidth={false}
-            style={styles.emptyCta}
+        <View style={[styles.screen, styles.centered]}>
+          <Avatar
+            size={72}
+            accessibilityLabel={t('profile:anonymous')}
+            initials="EX"
+            {...(portrait !== null ? { image: <Art name={portrait} size={72} /> } : {})}
           />
-        )}
+          {/* The blank explorer's journal, briefed for this screen as "ready to be
+              filled, not sad" — which is the same distinction `profile:empty.body`
+              draws in words. */}
+          <Art name="states/empty-profile" size={140} />
+          <Text style={styles.title} role="heading">
+            {t('profile:empty.title')}
+          </Text>
+          <Text style={styles.subtitle}>{t('profile:empty.body')}</Text>
+          {/* The empty state named the way out and did not open it. An empty state that
+              tells you what to do next and then makes you find it yourself is a dead
+              end — the one place a new user is most likely to be looking for a way in. */}
+          {onStartLesson !== undefined && (
+            <Button
+              label={t('profile:empty.cta')}
+              onPress={onStartLesson}
+              fullWidth={false}
+              style={styles.emptyCta}
+            />
+          )}
+        </View>
       </View>
     )
   }
