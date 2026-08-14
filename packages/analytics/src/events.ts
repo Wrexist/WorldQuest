@@ -207,6 +207,18 @@ export const EVENTS = {
   offline_mode_entered: { description: 'Lost connectivity', properties: {} },
   notification_opened: { description: 'A push notification was opened', properties: { type: 'string' } },
   setting_changed: { description: 'A setting was changed', properties: { setting: 'string', value: 'string' } },
+  review_prompt_requested: {
+    description:
+      'The native store-review modal was requested, after a moment of earned pride. ' +
+      'What the user then chose is deliberately absent: iOS does not report it, and a ' +
+      'per-user rating is not something we would want if it did. This measures which ' +
+      'moment is worth asking at — nothing about the person asked.',
+    properties: {
+      moment: 'quest_complete|streak_milestone',
+      active_days: 'number',
+      $comment_active_days: 'separate days with a finished lesson — the prompt requires at least three, and this is how we find out whether three is the right number',
+    },
+  },
   a11y_feature_detected: {
     description:
       'An accessibility setting is active. AGGREGATE ONLY — that 12% of users run 200% text is a design input; which users do is not our business.',

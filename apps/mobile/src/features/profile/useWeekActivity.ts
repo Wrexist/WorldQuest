@@ -53,6 +53,22 @@ export function lessonsToday(now: Date = new Date()): number {
   return log[isoDay(now)] ?? 0
 }
 
+/**
+ * Distinct days with a finished lesson, within the month the log keeps.
+ *
+ * The honest answer to "has this person actually used the app", and the reason the
+ * review prompt has one: a five-star rating from someone on their first afternoon is a
+ * rating of the App Store screenshots. Three separate days means they came back, twice.
+ *
+ * Bounded to the log's 31-day window, and that is the useful behaviour rather than a
+ * limitation — a user who was last here in March and opened the app again today has one
+ * active day, which is exactly what the prompt should see.
+ */
+export function activeDays(): number {
+  const log = readJson<Record<string, number>>(KEY) ?? {}
+  return Object.values(log).filter((count) => count > 0).length
+}
+
 /** Called when a lesson finishes. Idempotent per call, not per lesson id. */
 export function recordLessonCompleted(now: Date = new Date()): void {
   const log = readJson<Record<string, number>>(KEY) ?? {}

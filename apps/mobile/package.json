@@ -33,6 +33,7 @@
     "expo-localization": "~17.0.9",
     "expo-router": "~6.0.24",
     "expo-splash-screen": "~31.0.13",
+    "expo-store-review": "~9.0.9",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-i18next": "^15.2.0",
