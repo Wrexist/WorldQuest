@@ -1,8 +1,8 @@
 {
   "$schema": "../../schema/pack.schema.json",
-  "$comment": "Definitions are CONTENT, not code. Adding an achievement is a pack release — the engine in packages/engines/src/achievements evaluates these and knows nothing about geography. IDs ship in user save data and in dashboards. Renaming one is a migration, not a rename. Thresholds may be tuned; ids may not. `backfill: false` marks a rule that CANNOT be replayed from history. Nothing in review_log records that a lesson was finished in under sixty seconds two years ago, so inventing that unlock later would be worse than granting it late. This is a starter set of 12, deliberately small. The ~300 in docs/systems/achievements.md arrive in batches once the content packs are deep enough for them to be reachable — an achievement for 100 flags is a locked row for everyone until there are 100 flags.",
+  "$comment": "Definitions are CONTENT, not code. Adding an achievement is a pack release — the engine in packages/engines/src/achievements evaluates these and knows nothing about geography. IDs ship in user save data and in dashboards. Renaming one is a migration, not a rename. Thresholds may be tuned; ids may not. `backfill: false` marks a rule that CANNOT be replayed from history. Grown from 12 to 30 on 2026-08-13. The starter set was deliberately small for a stated reason — \"an achievement for 100 flags is a locked row for everyone until there are 100 flags\" — and that rule is what shaped this batch rather than being set aside by it: EVERY threshold here is capped at what the packs actually hold. Currency, capital, calling-code and flag top out at 65 because there are 65; language tops out at 26 because there are 26; and the thirteen regional sets name the real members of a real subregion, so each is finishable today. That is also why this is 30 and not the 35 asked for — five more would have had to be locked rows, and a shelf of things nobody can win is worse than a short shelf. Regional set ids are lowercase and unpunctuated (`ach.set.eastasia`) because they have to satisfy two rules at once: this schema admits only `^ach\\.[a-z0-9-]+\\.[a-z0-9-]+$`, and the copy key is derived from the id by convention — `achievements:set.eastasia.name` — while `namespace:screen.element` admits no hyphens. The intersection is lowercase without punctuation. These are the first ids in the set with a multi-word segment, which is why nothing had found the conflict. The NAME a user reads is \"East Asia\", from the locale file; the id is a machine identifier and permanent.",
   "packId": "core.achievements",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "subject": "core",
   "kind": "achievements",
   "locales": [
@@ -10,7 +10,7 @@
     "sv"
   ],
   "license": "CC-BY-4.0",
-  "generatedAt": "2026-08-01",
+  "generatedAt": "2026-08-13",
   "items": [
     {
       "id": "ach.flags.collector",
@@ -351,6 +351,472 @@
       "ceiling": {
         "of": "regions"
       }
+    },
+    {
+      "id": "ach.currencies.collector",
+      "category": "currencies",
+      "rule": {
+        "type": "counter",
+        "event": "fact_mastered",
+        "where": {
+          "attribute": "currency"
+        },
+        "distinctBy": "entityId"
+      },
+      "tiers": [
+        {
+          "tier": "bronze",
+          "threshold": 5
+        },
+        {
+          "tier": "silver",
+          "threshold": 20
+        },
+        {
+          "tier": "gold",
+          "threshold": 40
+        },
+        {
+          "tier": "platinum",
+          "threshold": 64
+        }
+      ],
+      "showProgress": true,
+      "ceiling": {
+        "of": "facts",
+        "attribute": "currency"
+      }
+    },
+    {
+      "id": "ach.locations.collector",
+      "category": "locations",
+      "rule": {
+        "type": "counter",
+        "event": "fact_mastered",
+        "where": {
+          "attribute": "location"
+        },
+        "distinctBy": "entityId"
+      },
+      "tiers": [
+        {
+          "tier": "bronze",
+          "threshold": 5
+        },
+        {
+          "tier": "silver",
+          "threshold": 20
+        },
+        {
+          "tier": "gold",
+          "threshold": 40
+        },
+        {
+          "tier": "platinum",
+          "threshold": 64
+        }
+      ],
+      "showProgress": true,
+      "ceiling": {
+        "of": "facts",
+        "attribute": "location"
+      }
+    },
+    {
+      "id": "ach.codes.collector",
+      "category": "codes",
+      "rule": {
+        "type": "counter",
+        "event": "fact_mastered",
+        "where": {
+          "attribute": "calling-code"
+        },
+        "distinctBy": "entityId"
+      },
+      "tiers": [
+        {
+          "tier": "bronze",
+          "threshold": 5
+        },
+        {
+          "tier": "silver",
+          "threshold": 20
+        },
+        {
+          "tier": "gold",
+          "threshold": 40
+        },
+        {
+          "tier": "platinum",
+          "threshold": 65
+        }
+      ],
+      "showProgress": true,
+      "ceiling": {
+        "of": "facts",
+        "attribute": "calling-code"
+      }
+    },
+    {
+      "id": "ach.languages.collector",
+      "category": "languages",
+      "rule": {
+        "type": "counter",
+        "event": "fact_mastered",
+        "where": {
+          "attribute": "language"
+        },
+        "distinctBy": "entityId"
+      },
+      "tiers": [
+        {
+          "tier": "bronze",
+          "threshold": 3
+        },
+        {
+          "tier": "silver",
+          "threshold": 10
+        },
+        {
+          "tier": "gold",
+          "threshold": 20
+        },
+        {
+          "tier": "platinum",
+          "threshold": 26
+        }
+      ],
+      "showProgress": true,
+      "ceiling": {
+        "of": "facts",
+        "attribute": "language"
+      }
+    },
+    {
+      "id": "ach.facts.everything",
+      "category": "facts",
+      "rule": {
+        "type": "counter",
+        "event": "fact_mastered",
+        "distinctBy": "factId"
+      },
+      "tiers": [
+        {
+          "tier": "bronze",
+          "threshold": 25
+        },
+        {
+          "tier": "silver",
+          "threshold": 100
+        },
+        {
+          "tier": "gold",
+          "threshold": 250
+        },
+        {
+          "tier": "legendary",
+          "threshold": 347
+        }
+      ],
+      "showProgress": true,
+      "ceiling": {
+        "of": "facts"
+      }
+    },
+    {
+      "id": "ach.set.eastasia",
+      "category": "set",
+      "rule": {
+        "type": "set-completion",
+        "event": "entity_mastered",
+        "distinctBy": "entityId",
+        "members": [
+          "CN",
+          "JP",
+          "KP",
+          "KR",
+          "MN"
+        ]
+      },
+      "tiers": [
+        {
+          "tier": "gold",
+          "threshold": 5
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.set.eastafrica",
+      "category": "set",
+      "rule": {
+        "type": "set-completion",
+        "event": "entity_mastered",
+        "distinctBy": "entityId",
+        "members": [
+          "ET",
+          "KE",
+          "TZ",
+          "UG"
+        ]
+      },
+      "tiers": [
+        {
+          "tier": "gold",
+          "threshold": 4
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.set.easterneurope",
+      "category": "set",
+      "rule": {
+        "type": "set-completion",
+        "event": "entity_mastered",
+        "distinctBy": "entityId",
+        "members": [
+          "CZ",
+          "HU",
+          "PL",
+          "RO",
+          "UA"
+        ]
+      },
+      "tiers": [
+        {
+          "tier": "gold",
+          "threshold": 5
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.set.northamerica",
+      "category": "set",
+      "rule": {
+        "type": "set-completion",
+        "event": "entity_mastered",
+        "distinctBy": "entityId",
+        "members": [
+          "CA",
+          "CR",
+          "CU",
+          "GT",
+          "MX",
+          "PA",
+          "US"
+        ]
+      },
+      "tiers": [
+        {
+          "tier": "gold",
+          "threshold": 7
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.set.northafrica",
+      "category": "set",
+      "rule": {
+        "type": "set-completion",
+        "event": "entity_mastered",
+        "distinctBy": "entityId",
+        "members": [
+          "DZ",
+          "EG",
+          "MA",
+          "TN"
+        ]
+      },
+      "tiers": [
+        {
+          "tier": "gold",
+          "threshold": 4
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.set.oceania",
+      "category": "set",
+      "rule": {
+        "type": "set-completion",
+        "event": "entity_mastered",
+        "distinctBy": "entityId",
+        "members": [
+          "AU",
+          "FJ",
+          "NZ",
+          "PG"
+        ]
+      },
+      "tiers": [
+        {
+          "tier": "gold",
+          "threshold": 4
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.set.southamerica",
+      "category": "set",
+      "rule": {
+        "type": "set-completion",
+        "event": "entity_mastered",
+        "distinctBy": "entityId",
+        "members": [
+          "AR",
+          "BR",
+          "CL",
+          "CO",
+          "PE"
+        ]
+      },
+      "tiers": [
+        {
+          "tier": "gold",
+          "threshold": 5
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.set.southasia",
+      "category": "set",
+      "rule": {
+        "type": "set-completion",
+        "event": "entity_mastered",
+        "distinctBy": "entityId",
+        "members": [
+          "BD",
+          "IN",
+          "NP",
+          "PK"
+        ]
+      },
+      "tiers": [
+        {
+          "tier": "gold",
+          "threshold": 4
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.set.southeastasia",
+      "category": "set",
+      "rule": {
+        "type": "set-completion",
+        "event": "entity_mastered",
+        "distinctBy": "entityId",
+        "members": [
+          "ID",
+          "MY",
+          "PH",
+          "TH",
+          "VN"
+        ]
+      },
+      "tiers": [
+        {
+          "tier": "gold",
+          "threshold": 5
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.set.southernafrica",
+      "category": "set",
+      "rule": {
+        "type": "set-completion",
+        "event": "entity_mastered",
+        "distinctBy": "entityId",
+        "members": [
+          "BW",
+          "NA",
+          "ZA",
+          "ZW"
+        ]
+      },
+      "tiers": [
+        {
+          "tier": "gold",
+          "threshold": 4
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.set.southerneurope",
+      "category": "set",
+      "rule": {
+        "type": "set-completion",
+        "event": "entity_mastered",
+        "distinctBy": "entityId",
+        "members": [
+          "ES",
+          "GR",
+          "IT",
+          "PT"
+        ]
+      },
+      "tiers": [
+        {
+          "tier": "gold",
+          "threshold": 4
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.set.westafrica",
+      "category": "set",
+      "rule": {
+        "type": "set-completion",
+        "event": "entity_mastered",
+        "distinctBy": "entityId",
+        "members": [
+          "GH",
+          "ML",
+          "NG",
+          "SN"
+        ]
+      },
+      "tiers": [
+        {
+          "tier": "gold",
+          "threshold": 4
+        }
+      ],
+      "showProgress": true
+    },
+    {
+      "id": "ach.set.westerneurope",
+      "category": "set",
+      "rule": {
+        "type": "set-completion",
+        "event": "entity_mastered",
+        "distinctBy": "entityId",
+        "members": [
+          "AT",
+          "BE",
+          "CH",
+          "DE",
+          "FR",
+          "NL"
+        ]
+      },
+      "tiers": [
+        {
+          "tier": "gold",
+          "threshold": 6
+        }
+      ],
+      "showProgress": true
     }
   ]
 }

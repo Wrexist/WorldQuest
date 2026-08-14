@@ -149,6 +149,18 @@ export type OnboardingScreenProps = {
   readonly onLanguage: (choice: LanguageChoice) => void
   readonly onFinish: (result: OnboardingResult) => void
   readonly onSignIn?: (() => void) | undefined
+  /**
+   * How many countries this build ships, for the third slide's promise.
+   *
+   * A prop, from `COUNTRY_COUNT`, rather than a number in the copy. The slide read
+   * "195 flags. 195 capitals." — the UN member-state count, and the right number for the
+   * app this becomes — while the packs held 65 and the very next screen said so. A new
+   * user met the pitch and its contradiction inside thirty seconds.
+   *
+   * Defaulted so the screenshot renderer and the component tests mount without it, the
+   * same as every other optional here.
+   */
+  readonly countryCount?: number | undefined
 }
 
 type Step =
@@ -417,6 +429,7 @@ export function OnboardingScreen({
   onLanguage,
   onFinish,
   onSignIn,
+  countryCount = 0,
 }: OnboardingScreenProps) {
   const t = useT()
   // `language`, not `slides`. Everything after this point assumes the user can read the
@@ -825,7 +838,15 @@ export function OnboardingScreen({
                   <Art name={s.art} size={page} height={band} frame="fill" />
                   <View style={styles.slideText} onLayout={onCopyLayout}>
                     <Text style={[styles.title, styles.slideTitle]}>{t(s.title)}</Text>
-                    <Text style={styles.body}>{t(s.body)}</Text>
+                    {/* The third slide's body is the only one carrying a number, and it
+                        is the build's own. `t()` is typed per key, so passing `count` to
+                        the two that do not take it would be a compile error — which is
+                        why this is a conditional rather than a spread. */}
+                    <Text style={styles.body}>
+                      {s.body === 'onboarding:slide.3.body'
+                        ? t(s.body, { count: countryCount })
+                        : t(s.body)}
+                    </Text>
                   </View>
                 </View>
               ))}
