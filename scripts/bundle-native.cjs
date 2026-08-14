@@ -178,8 +178,30 @@ const MOBILE = join(process.cwd(), 'apps', 'mobile')
  * 4.4 restores the ~0.1 MB margin. The honest reading: this is the first raise in this
  * file bought by ordinary feature work rather than by a dependency or a bug fix, and if
  * the next one is too, the answer is lazy routes rather than a fifth number.
+ *
+ * ── 2026-08-14 · 4.4 → 4.6 ──────────────────────────────────────────────────────────
+ *
+ * Two native modules, and the last note's own warning coming true: it said "the next
+ * dependency is likely the one that breaks it", and the next two did. **4.31 → 4.55 MB**,
+ * measured one install at a time:
+ *
+ *   · `expo-store-review`  +0.04 MB — the store-review prompt (`src/lib/review.ts`)
+ *   · `expo-notifications` +0.20 MB — the daily reminder (`src/lib/notifications.ts`)
+ *
+ * Neither is ordinary feature work and neither can be trimmed to fit: both ARE native
+ * modules, and the JavaScript this repo wrote on top of them is a few kilobytes. Lazy
+ * loading does not help either — Metro has no route-level code splitting on native, so a
+ * dynamic `import()` moves a module within the bundle rather than out of it.
+ *
+ * What they buy is the two features with the largest effect on whether anybody is still
+ * here in a week: a reminder the Settings toggle had been promising since the first week
+ * while nothing was scheduled, and the ask that ratings do not happen without. 0.24 MB of
+ * Hermes parse against those is the right trade, and it is the last one available at this
+ * budget — a sixth number bought by a dependency should be refused, and the answer to the
+ * one after that is trimming the 9.7 MB of assets, which dwarf the bundle and which
+ * nothing has yet looked at.
  */
-const BUDGET_MB = 4.4
+const BUDGET_MB = 4.6
 
 /** Warn from 90 % of the budget, so the wall is visible before it is hit. */
 const WARN_AT = BUDGET_MB * 0.9

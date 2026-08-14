@@ -29,6 +29,15 @@ export type LanguageChoice = 'system' | Locale
 export type Preferences = {
   readonly dailyGoalMinutes: DailyGoal
   readonly reminder: boolean
+  /**
+   * The hour of the daily reminder, 0–23 local, or null to use the learned suggestion.
+   *
+   * Null is a real value rather than a missing one: it means "you choose", and the app
+   * then follows the median hour of recent sessions (`notifications.md` §6) so a user
+   * whose routine moves does not have to come back here and move it by hand. Picking an
+   * hour opts out of that permanently, which is the correct reading of picking one.
+   */
+  readonly reminderHour: number | null
   readonly sound: boolean
   readonly haptics: boolean
   /** Explicit override. The system setting still wins when this is false. */
@@ -66,6 +75,10 @@ export type Preferences = {
 export const DEFAULTS: Preferences = {
   dailyGoalMinutes: 10,
   reminder: true,
+  // Learn it rather than assert it — see the type. A default of 19 would be a guess
+  // stated as a decision, and it is the fallback the engine already uses when there is
+  // nothing to learn from.
+  reminderHour: null,
   // Off, per design-system.md §9. A game that starts making noise on a bus, in a
   // classroom, or next to a sleeping baby has made an enemy in its first ten seconds.
   // This read `true` until sound actually existed, which cost nothing while nothing

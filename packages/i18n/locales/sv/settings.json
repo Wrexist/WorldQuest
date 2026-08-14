@@ -46,5 +46,13 @@
   "settings:avatar.none": "Initialer",
   "settings:avatar.none__note": "The option that shows the user's initials instead of a portrait. Max 12 characters.",
   "settings:avatar.option": "Avatar {number} av {total}",
-  "settings:avatar.option__note": "Spoken label for one portrait. Numbered rather than described, so it does not assert what the character looks like. {number} and {total} are integers."
+  "settings:avatar.option__note": "Spoken label for one portrait. Numbered rather than described, so it does not assert what the character looks like. {number} and {total} are integers.",
+  "settings:reminder.time": "Påminn mig kl.",
+  "settings:reminder.time.help": "Mellan 08:00 och 20:00. Vi skickar aldrig på natten.",
+  "settings:reminder.time.child.help": "Mellan 08:00 och 18:00, eftersom det här är ett barnkonto.",
+  "settings:reminder.time.value": "{hour, number, ::00}:00",
+  "settings:reminder.earlier": "Tidigare",
+  "settings:reminder.later": "Senare",
+  "settings:reminder.blocked": "Aviseringar är avstängda för WorldQuest i telefonens inställningar.",
+  "settings:reminder.blocked.cta": "Öppna inställningar"
 }

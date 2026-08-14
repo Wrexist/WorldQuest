@@ -39,5 +39,9 @@
   "home:facts.quests": "{done} / {total}",
   "home:quest.reward.xp": "Ger {amount} XP",
   "home:quest.reward.coins": "Ger {amount} mynt",
-  "home:quest.resets": "{hours} tim {minutes} min kvar"
+  "home:quest.resets": "{hours} tim {minutes} min kvar",
+  "home:reminder.title": "Vill du ha en knuff?",
+  "home:reminder.body": "En påminnelse om dagen, vid en tid du väljer. Inget annat, någonsin.",
+  "home:reminder.yes": "Välj en tid",
+  "home:reminder.later": "Inte nu"
 }

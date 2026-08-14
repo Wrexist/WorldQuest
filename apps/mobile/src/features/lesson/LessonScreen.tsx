@@ -43,6 +43,7 @@ import { useContent } from '../../lib/content.js'
 import { currentLocale, tContent, useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
 import { recordLessonCompleted } from '../profile/useWeekActivity.js'
+import { recordSessionHour } from '../../lib/notifications.js'
 import { localDay } from '../../lib/day.js'
 import { recordPredictedAward } from '../../lib/awards.js'
 import { enqueueLesson } from '../../lib/sync.js'
@@ -393,6 +394,11 @@ export function LessonScreen({
     // must be right the moment the lesson ends — waiting for the server round trip
     // would show an empty week to anyone who finishes a lesson offline.
     recordLessonCompleted()
+    // What time of day this person actually practises, which is what the daily
+    // reminder's hour is learned from (`notifications.md` §6). Recorded here rather
+    // than derived from the activity log because that log stores a DAY and a count —
+    // the hour is a different fact and was never being kept.
+    recordSessionHour()
     /**
      * The same argument as the line above, for the numbers rather than the chart.
      *

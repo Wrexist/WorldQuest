@@ -13,7 +13,8 @@
  * destination being buried.
  */
 
-import { openURL } from 'expo-linking'
+import { useMemo } from 'react'
+import { openSettings, openURL } from 'expo-linking'
 import Constants from 'expo-constants'
 import { router } from 'expo-router'
 import {
@@ -25,6 +26,8 @@ import { useSyncStatus } from '../src/features/settings/useSyncStatus.js'
 import { useEntitlement } from '../src/features/paywall/useEntitlement.js'
 import { usePurchases } from '../src/features/paywall/usePurchases.js'
 import { useOnboarding } from '../src/features/onboarding/useOnboarding.js'
+import { useReminder } from '../src/features/settings/useReminder.js'
+import { useT } from '../src/lib/i18n.js'
 
 /**
  * Real URLs, not placeholders.
@@ -47,6 +50,34 @@ export default function SettingsRoute() {
   const entitlement = useEntitlement()
   const purchases = usePurchases()
   const { state } = useOnboarding()
+  const t = useT()
+
+  /**
+   * The words the reminder will arrive in.
+   *
+   * Memoised because `useReminder` re-schedules whenever they change, and a fresh
+   * object every render would re-schedule on every render — which on this feature means
+   * cancelling and re-registering an OS notification sixty times a second.
+   *
+   * The region is the continent onboarding chose to start in, so the nudge names
+   * somewhere this particular person is actually learning. Falling back to "The world"
+   * rather than dropping the sentence: `notifications.md` §4 rule 7 says a notification
+   * is localised as a WHOLE sentence and never assembled from fragments, and a template
+   * with an empty slot is a fragment with extra steps.
+   */
+  const copy = useMemo(
+    () => ({
+      title: t('notifications:daily.title'),
+      body: t('notifications:daily.reminder', {
+        region:
+          preferences.startRegion === null
+            ? t('notifications:daily.anywhere')
+            : t(`explore:region.${preferences.startRegion}` as 'explore:region.EU'),
+      }),
+    }),
+    [t, preferences.startRegion],
+  )
+  const reminder = useReminder(copy)
 
   /**
    * Absent entirely on a child account.
@@ -78,6 +109,14 @@ export default function SettingsRoute() {
       onChange={set}
       sync={sync}
       premium={premium}
+      reminder={{
+        ...reminder,
+        onChange: reminder.setEnabled,
+        // The OS's own page for this app — the only place a denied notification
+        // permission can be granted, and the reason the blocked row is a link rather
+        // than an apology.
+        onOpenSystemSettings: () => void openSettings(),
+      }}
       onOpenPrivacyPolicy={open(PRIVACY_URL)}
       onOpenTerms={open(TERMS_URL)}
       onOpenLicences={open(LICENCES_URL)}

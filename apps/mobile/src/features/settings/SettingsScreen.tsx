@@ -15,7 +15,14 @@
 
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { colors, space, text } from '@worldquest/design'
-import { ChoiceRow, LinkRow, Note, Section, SwitchRow } from '../../components/SettingsRow.js'
+import {
+  ChoiceRow,
+  LinkRow,
+  Note,
+  Section,
+  StepperRow,
+  SwitchRow,
+} from '../../components/SettingsRow.js'
 import { AvatarPicker } from './AvatarPicker.js'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
@@ -63,6 +70,31 @@ export type PremiumStatus = {
   readonly onRestore: () => void
 }
 
+/**
+ * The daily reminder, flattened the same way `premium` is and for the same reason.
+ *
+ * A reminder is not a preference — it is a preference AND an OS permission AND a
+ * schedule, and only one of those three lives in `preferences`. Passing the resolved
+ * shape keeps this screen presentational while letting it draw the state that actually
+ * matters: the user said yes and the phone said no.
+ */
+export type ReminderStatus = {
+  /** The preference and the permission, together. Either one false is off. */
+  readonly enabled: boolean
+  /** The user wants it and the OS refuses. The one state a boolean cannot express. */
+  readonly blocked: boolean
+  /** The hour it fires at — chosen, or learned from when this person practises. */
+  readonly hour: number
+  /** Under-13. Only changes the sentence under the stepper, never a capability here. */
+  readonly isChild: boolean
+  /** Absent at the ends of the range. Stepping never wraps into quiet hours. */
+  readonly earlier?: (() => void) | undefined
+  readonly later?: (() => void) | undefined
+  readonly onChange: (value: boolean) => void
+  /** Opens the phone's own settings page for this app. The only fix for `blocked`. */
+  readonly onOpenSystemSettings: () => void
+}
+
 export type SettingsScreenProps = {
   /** From app.json at build time; passed in so the screen stays testable. */
   readonly version: string
@@ -97,6 +129,15 @@ export type SettingsScreenProps = {
    * it, which means a new caller cannot accidentally show one.
    */
   readonly premium?: PremiumStatus | undefined
+  /**
+   * Required, not optional.
+   *
+   * An optional reminder would mean a fallback branch that draws the switch straight
+   * onto the preference — which is exactly what this screen did for four months while
+   * nothing was scheduled, and a branch that renders the old lie is a branch that will
+   * be rendered by something.
+   */
+  readonly reminder: ReminderStatus
   readonly onOpenPrivacyPolicy?: (() => void) | undefined
   readonly onOpenTerms?: (() => void) | undefined
   readonly onOpenLicences?: (() => void) | undefined
@@ -117,6 +158,7 @@ export function SettingsScreen({
   onChange: set,
   sync,
   premium,
+  reminder,
   onOpenPrivacyPolicy,
   onOpenTerms,
   onOpenLicences,
@@ -156,9 +198,46 @@ export function SettingsScreen({
         <SwitchRow
           label={t('settings:reminder.label')}
           help={t('settings:reminder.help')}
-          value={preferences.reminder}
-          onChange={(value) => set('reminder', value)}
+          // The resolved state, not the preference. A switch drawn from the preference
+          // alone sits proudly ON while iOS quietly drops every notification, which is
+          // the shape this feature shipped in and the reason nobody noticed for months.
+          value={reminder.enabled}
+          onChange={reminder.onChange}
         />
+        {/* The one state a boolean cannot express: the user said yes and the phone said
+            no. Nothing here can fix it — only the OS can — so the row states the fact
+            and opens the place where it is fixable, and does not pretend the toggle
+            above is doing anything. */}
+        {reminder.blocked && (
+          <>
+            {/* The sentence as a NOTE, not as a row label. It is an explanation, and
+                `rowLabel` is `bodyStrong` — the first version set a three-line bold
+                paragraph next to a small grey "Open settings", which read as a section
+                heading shouting at its own action. */}
+            <Note body={t('settings:reminder.blocked')} />
+            <LinkRow
+              label={t('settings:reminder.blocked.cta')}
+              onPress={reminder.onOpenSystemSettings}
+            />
+          </>
+        )}
+        {/* Only when a reminder will actually arrive. An hour picker above a
+            notification that is switched off is a control for nothing. */}
+        {reminder.enabled && (
+          <StepperRow
+            label={t('settings:reminder.time')}
+            help={
+              reminder.isChild
+                ? t('settings:reminder.time.child.help')
+                : t('settings:reminder.time.help')
+            }
+            value={t('settings:reminder.time.value', { hour: reminder.hour })}
+            previousLabel={t('settings:reminder.earlier')}
+            nextLabel={t('settings:reminder.later')}
+            {...(reminder.earlier !== undefined ? { onPrevious: reminder.earlier } : {})}
+            {...(reminder.later !== undefined ? { onNext: reminder.later } : {})}
+          />
+        )}
       </Section>
 
       <Section title={t('settings:section.sound')}>

@@ -93,6 +93,31 @@ const ALLOWED: Record<string, string> = {
   // check below the loop is what found them and what stops them coming back.
 
 
+  /**
+   * ── the notification budget's numbers, which are the engine's and nobody else's ──
+   *
+   * `notifications.md` §2 is explicit that the frequency budget is "enforced in the
+   * scheduling service, not by convention". These six constants ARE that enforcement,
+   * and the app is deliberately unable to reach them: `lib/notifications.ts` calls
+   * `reminderPlan()` and `useReminderAsk` calls `shouldAskForReminder()`, and both get
+   * back a decision rather than the numbers behind it.
+   *
+   * A screen that imported `LATEST_HOUR` would be a screen holding a second opinion
+   * about when quiet hours start, which is exactly the convention the spec refuses to
+   * rely on. `notifications.test.ts` in the app asserts the app layer does no hour
+   * arithmetic of its own.
+   *
+   * They are exported at all so the engine's own tests can assert against the named
+   * value rather than re-typing 8, 20, 18, 19, 3 and 90 — a test that hardcodes the
+   * number it is checking passes when somebody changes the number.
+   */
+  EARLIEST_HOUR: 'quiet hours start and end in the engine; see the block above',
+  LATEST_HOUR: 'quiet hours start and end in the engine; see the block above',
+  CHILD_LATEST_HOUR: 'the under-13 ceiling is the engine\'s; see the block above',
+  FALLBACK_HOUR: 'used only when there is no session history to learn from',
+  LESSONS_BEFORE_ASK: 'the ask threshold is applied inside `shouldAskForReminder`',
+  REASK_AFTER_DAYS: 'the ninety-day retry is applied inside `shouldAskForReminder`',
+
   // ── roadmapped, and deliberately not built during v1.0
 
   markBroken:

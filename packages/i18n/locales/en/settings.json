@@ -79,5 +79,21 @@
   "settings:avatar.none": "Initials",
   "settings:avatar.none__note": "The option that shows the user's initials instead of a portrait. Max 12 characters.",
   "settings:avatar.option": "Avatar {number} of {total}",
-  "settings:avatar.option__note": "Spoken label for one portrait. Numbered rather than described, so it does not assert what the character looks like. {number} and {total} are integers."
+  "settings:avatar.option__note": "Spoken label for one portrait. Numbered rather than described, so it does not assert what the character looks like. {number} and {total} are integers.",
+  "settings:reminder.time": "Remind me at",
+  "settings:reminder.time__note": "Heading above a stepper that picks the hour of the daily reminder. Max 20 characters.",
+  "settings:reminder.time.help": "Between 08:00 and 20:00. We never send one at night.",
+  "settings:reminder.time.help__note": "Under the hour stepper. Explains why the range stops where it does. Max 60 characters.",
+  "settings:reminder.time.child.help": "Between 08:00 and 18:00, because this is a child account.",
+  "settings:reminder.time.child.help__note": "Same row, shown instead of the line above on an under-13 account, which gets no evening notifications at all. Max 60 characters.",
+  "settings:reminder.time.value": "{hour, number, ::00}:00",
+  "settings:reminder.time.value__note": "The hour itself, on a 24-hour clock — 08:00, 19:00. {hour} is 8 to 20. Translators using a 12-hour convention should write it that way.",
+  "settings:reminder.earlier": "Earlier",
+  "settings:reminder.earlier__note": "Spoken name of the button that moves the reminder an hour earlier. Max 12 characters.",
+  "settings:reminder.later": "Later",
+  "settings:reminder.later__note": "Spoken name of the button that moves the reminder an hour later. Max 12 characters.",
+  "settings:reminder.blocked": "Notifications are off for WorldQuest in your phone's settings.",
+  "settings:reminder.blocked__note": "Shown when the OS has denied notification permission, so the toggle above cannot do anything. States the fact; the button beside it opens the OS settings. Max 80 characters.",
+  "settings:reminder.blocked.cta": "Open settings",
+  "settings:reminder.blocked.cta__note": "Opens the phone's own settings page for this app. Max 16 characters."
 }

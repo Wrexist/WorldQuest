@@ -149,6 +149,16 @@ export type HomeScreenProps = {
   readonly titleKey?: TranslationKey | undefined
   readonly onOpenInbox?: (() => void) | undefined
   readonly onOpenQuests?: (() => void) | undefined
+  /**
+   * The "Want a nudge?" card, or nothing.
+   *
+   * Absent is the normal state — this appears twice in the lifetime of an install. The
+   * decision is the engine's (`shouldAskForReminder`); passing the resolved answer keeps
+   * this screen presentational and keeps the timing rule in the one place it is tested.
+   */
+  readonly reminderAsk?:
+    | { readonly onAccept: () => void; readonly onDismiss: () => void }
+    | undefined
 }
 
 /** The subset of the engine's `WorldProgress` this screen draws. */
@@ -180,6 +190,7 @@ export function HomeScreen({
   titleKey = 'titles:wanderer',
   onOpenInbox,
   onOpenQuests,
+  reminderAsk,
 }: HomeScreenProps) {
   // Before the early return: hooks cannot be conditional, and the skeleton needs
   // translated copy too.
@@ -445,6 +456,38 @@ export function HomeScreen({
           ) : null}
         </Card>
 
+        {/* "Want a nudge?" — the in-context permission ask.
+
+            After the third finished lesson, on the screen the user lands on when a
+            lesson ends, and NEVER on first launch: `notifications.md` §1, and the single
+            biggest lever on opt-in rate there is. Asked twice for the lifetime of the
+            install and then never again; `shouldAskForReminder()` in the engine owns
+            both halves of that and this card only draws what it decided. */}
+        {reminderAsk !== undefined && (
+          <Card level={2} style={styles.reminderCard}>
+            <Text style={styles.reminderTitle} role="heading">
+              {t('home:reminder.title')}
+            </Text>
+            <Text style={styles.reminderBody}>{t('home:reminder.body')}</Text>
+            <View style={styles.reminderActions}>
+              <Button
+                label={t('home:reminder.yes')}
+                onPress={reminderAsk.onAccept}
+                fullWidth={false}
+              />
+              {/* "Not now", not "No thanks". The one retry is ninety days away and the
+                  user has not refused anything yet — wording it as a refusal would make
+                  a dismissal feel like a door closing. */}
+              <Button
+                label={t('home:reminder.later')}
+                variant="secondary"
+                onPress={reminderAsk.onDismiss}
+                fullWidth={false}
+              />
+            </View>
+          </Card>
+        )}
+
         {/* The Daily Challenge card is deliberately not here — see
             docs/design/mockup-fidelity.md. Nothing produces `challengeIn`, so it
             rendered "New challenge in —" for every user on every day, and an em-dash
@@ -681,6 +724,10 @@ const styles = StyleSheet.create({
   // the mechanic, not a tidy-up: art that ends before the edge is a picture placed in a
   // box, and art the box cuts is a scene the box is a window onto.
   questCard: { gap: space[3], overflow: 'hidden' },
+  reminderCard: { gap: space[2] },
+  reminderTitle: { ...text('h3'), color: colors.text.primary },
+  reminderBody: { ...text('body'), color: colors.text.secondary },
+  reminderActions: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
   // Bleeds off the card's end edge and a little below its own row, so he overlaps the
   // gap toward the progress bar rather than sitting in a reserved rectangle. Negative
   // margins rather than absolute positioning: he still claims width in the row, which is

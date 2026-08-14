@@ -22,6 +22,7 @@ import { useShop } from '../../src/features/shop/useShop.js'
 import { useDayCountdown } from '../../src/features/quests/useDayCountdown.js'
 import { useQuestCover } from '../../src/features/quests/ceremony.js'
 import { useT, type TranslationKey } from '../../src/lib/i18n.js'
+import { useReminderAsk } from '../../src/features/home/useReminderAsk.js'
 
 /**
  * Zeroed rather than invented. A first launch shows the real empty state — and a
@@ -111,6 +112,8 @@ export default function HomeRoute() {
       }
     : COLD_START
 
+  const reminderAsk = useReminderAsk()
+
   return (
     <HomeScreen
       progress={progress}
@@ -152,6 +155,10 @@ export default function HomeRoute() {
       resetsIn={t('home:quest.resets', untilReset)}
       titleKey={worn as TranslationKey}
       onOpenQuests={() => router.push('/quests')}
+      // Twice in the lifetime of an install, after the third finished lesson, on the
+      // screen a lesson ends on. `useReminderAsk` returns undefined the rest of the time
+      // and the card is simply absent — see `notifications.md` §1.
+      {...(reminderAsk !== undefined ? { reminderAsk } : {})}
       onOpenInbox={() => router.push('/quests')}
     />
   )

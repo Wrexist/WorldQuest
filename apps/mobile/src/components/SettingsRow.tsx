@@ -183,6 +183,98 @@ export function ChoiceRow<T extends string>({
   )
 }
 
+// ── stepper row ─────────────────────────────────────────────────────────────
+
+export type StepperRowProps = {
+  readonly label: string
+  readonly help?: string | undefined
+  /** The current value, and the words for it — "19:00", not 19. */
+  readonly value: string
+  readonly onPrevious?: (() => void) | undefined
+  readonly onNext?: (() => void) | undefined
+  /** Spoken names for the two buttons, e.g. "Earlier" and "Later". */
+  readonly previousLabel: string
+  readonly nextLabel: string
+}
+
+/**
+ * One value from an ordered range, changed a step at a time.
+ *
+ * `ChoiceRow` is the right control for three or four options and the wrong one for
+ * thirteen: the reminder hour runs 08:00 to 20:00, and thirteen chips wrap to four rows
+ * on a 320 pt screen and are 24 pt tall by the time they fit. A stepper is two large
+ * targets and one legible number at any width.
+ *
+ * `adjustable` rather than two bare buttons, so VoiceOver announces the value and offers
+ * its own increment gesture — a user swiping up on this row gets the next hour without
+ * hunting for a 44 pt target, which is the whole point of the role existing.
+ *
+ * An absent handler DISABLES its end of the range rather than wrapping. Wrapping from
+ * 20:00 to 08:00 on one tap is how a user ends up with a reminder twelve hours from
+ * where they meant, and the ends of this range are quiet hours — the one place the app
+ * must not put a notification by accident.
+ */
+export function StepperRow({
+  label,
+  help,
+  value,
+  onPrevious,
+  onNext,
+  previousLabel,
+  nextLabel,
+}: StepperRowProps) {
+  return (
+    <View style={styles.rowStacked}>
+      <Text style={styles.rowLabel} role="heading">
+        {label}
+      </Text>
+      {help !== undefined && <Text style={styles.rowHelp}>{help}</Text>}
+      {/* `spinbutton`, which React Native maps to its own `adjustable` role on device
+          and passes straight through as ARIA on web. `adjustable` spelled directly is
+          the native-only name and does not cross over — the same trap as the
+          `accessibilityState` and `accessibilityElementsHidden` bugs above, where a
+          platform prop silently no-ops on web and the control ships unannounced. */}
+      <View style={styles.stepper} role="spinbutton" aria-valuetext={value}>
+        {/* `back`/`forward` rather than a minus and a plus, which this build does not
+            ship and which would each cost an icon on a bundle already inside 0.05 MB of
+            its budget. They also read better here: the value is a time, and earlier and
+            later are directions rather than arithmetic. */}
+        <StepperButton label={previousLabel} glyph="back" onPress={onPrevious} />
+        <Text style={styles.stepperValue}>{value}</Text>
+        <StepperButton label={nextLabel} glyph="forward" onPress={onNext} />
+      </View>
+    </View>
+  )
+}
+
+function StepperButton({
+  label,
+  glyph,
+  onPress,
+}: {
+  label: string
+  glyph: 'back' | 'forward'
+  onPress?: (() => void) | undefined
+}) {
+  const disabled = onPress === undefined
+  return (
+    <Pressable
+      role="button"
+      aria-label={label}
+      aria-disabled={disabled}
+      disabled={disabled}
+      onPress={onPress}
+      style={[styles.stepperButton, disabled && styles.stepperButtonOff]}
+    >
+      <Icon
+        name={glyph}
+        size={18}
+        color={disabled ? colors.text.tertiary : colors.text.primary}
+      />
+    </Pressable>
+  )
+}
+
 // ── link row ────────────────────────────────────────────────────────────────
 
 export function LinkRow({
@@ -291,4 +383,29 @@ const styles = StyleSheet.create({
   },
   choiceLabel: { ...text('caption', { weight: '600' }), color: colors.text.secondary },
   choiceLabelSelected: { color: colors.text.onAccent },
+
+  stepper: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  stepperButton: {
+    // Square at the touch-target floor on BOTH axes, for the same reason the choice
+    // chips are: an icon has no text to pad out, so a button around one is exactly as
+    // large as you make it and no larger.
+    width: layout.minTouchTarget,
+    height: layout.minTouchTarget,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: radius.full,
+    backgroundColor: colors.bg.surfaceRaised,
+    borderWidth: 1,
+    borderColor: colors.border.subtle,
+  },
+  stepperButtonOff: { opacity: 0.4 },
+  stepperValue: {
+    ...text('h3'),
+    color: colors.text.primary,
+    // Room for the widest time this can hold, so the two buttons do not shuffle
+    // sideways as the value steps from "08:00" to "18:00" — a control whose buttons
+    // move under the finger is a control you tap twice.
+    minWidth: 76,
+    textAlign: 'center',
+  },
 })

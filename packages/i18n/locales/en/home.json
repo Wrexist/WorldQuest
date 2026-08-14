@@ -79,5 +79,13 @@
   "home:quest.reward.coins": "Earns {amount} coins",
   "home:quest.reward.coins__note": "Accessibility label for the coin chip on the daily quest card. {amount} is a whole number.",
   "home:quest.resets": "{hours}h {minutes}m left",
-  "home:quest.resets__note": "Countdown on the daily quest card — how long until today's quest resets. Both are whole numbers; hours can be 0."
+  "home:quest.resets__note": "Countdown on the daily quest card — how long until today's quest resets. Both are whole numbers; hours can be 0.",
+  "home:reminder.title": "Want a nudge?",
+  "home:reminder.title__note": "Heading on the card that asks permission to send the daily reminder. An offer, never a push. Max 24 characters.",
+  "home:reminder.body": "One reminder a day, at a time you choose. Nothing else, ever.",
+  "home:reminder.body__note": "Under the heading. States the whole deal so the user can say yes without wondering what else arrives. Max 70 characters.",
+  "home:reminder.yes": "Pick a time",
+  "home:reminder.yes__note": "Accepts. Opens the phone's notification permission dialogue. Max 14 characters.",
+  "home:reminder.later": "Not now",
+  "home:reminder.later__note": "Dismisses the card. NOT 'No thanks' — nothing has been refused, and we may ask once more in ninety days. Max 12 characters."
 }

@@ -169,7 +169,7 @@ const OFFLINE_ROUTES = ['/', '/shop', '/streak', '/settings', '/paywall?source=s
  * rather than asserted. Seeding local state to fake it would photograph a lie about what
  * the client is allowed to decide.
  */
-const PLAYED_ROUTES = ['/profile', '/streak', '/', '/quests']
+const PLAYED_ROUTES = ['/profile', '/streak', '/', '/quests', '/settings']
 
 /**
  * The routes worth photographing with every string inflated by ~40 %.
@@ -353,6 +353,20 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
   for (const viewport of VIEWPORTS) {
     const page = await browser.newPage({
       viewport: { width: viewport.width, height: viewport.height },
+      /**
+       * Notifications GRANTED, because denied is not the state worth photographing.
+       *
+       * Chromium answers "denied" by default, so `/settings` rendered the blocked
+       * explanation and its link — and the hour stepper, which only exists when a
+       * reminder will actually arrive, had never been photographed at all. It is a new
+       * control with two icon buttons and a value that has to stay put as it steps, and
+       * none of that is visible in a screen that is not drawing it.
+       *
+       * The denied state is still reachable and still worth a look; it is what the
+       * component test covers and what a device pass sees the first time it declines.
+       * This picks the one a user who said yes is looking at.
+       */
+      permissions: ['notifications'],
     })
     const consoleErrors = []
     page.on('pageerror', (e) => consoleErrors.push(String(e)))
