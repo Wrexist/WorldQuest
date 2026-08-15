@@ -56,6 +56,25 @@
     "attribution": {
       "type": "string"
     },
+    "assetLicenses": {
+      "type": "object",
+      "description": "Licence records for the artwork this pack references, keyed by a short id that each asset points at with `licenseRef`. There are three of them across the whole geography pack — flag-icons MIT, and two Natural Earth records — and before this existed each was copied verbatim onto all 65 countries: 45.5 KB of identical strings inlined into the app bundle, which `scripts/bundle-native.cjs` measured when the budget ran out. The obligation is unchanged; the attribution still ships, once instead of sixty-five times.",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "license"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "license": {
+            "type": "string"
+          },
+          "attribution": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "generatedAt": {
       "type": "string",
       "format": "date"
@@ -154,17 +173,16 @@
             "type": "object",
             "required": [
               "path",
-              "license"
+              "licenseRef"
             ],
+            "additionalProperties": false,
             "properties": {
               "path": {
                 "type": "string"
               },
-              "license": {
-                "type": "string"
-              },
-              "attribution": {
-                "type": "string"
+              "licenseRef": {
+                "type": "string",
+                "description": "A key of the pack's `assetLicenses`. `pnpm content:validate` fails if it does not resolve — a path whose licence cannot be looked up is exactly what a path with no licence beside it was."
               }
             }
           }
