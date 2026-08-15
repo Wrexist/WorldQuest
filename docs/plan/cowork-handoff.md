@@ -10,7 +10,12 @@ already gathered.
 see `docs/plan/definition-of-done-status.md` for what is closed and
 `docs/engineering/security-review-2026-08.md` for the review that was outstanding.
 
-Ordered by what unblocks the most downstream work.
+Ordered by what unblocks the most downstream work. **§3 is the one to do first** — it is
+a two-minute dashboard change, and until it is done the account flow that shipped in
+PR #11 fails for every user in exactly the same way.
+
+Last refreshed 2026-08-15, after PR #11 merged. Items 3 and 4 are new; the old §3 (feature
+flags) is closed and moved to the table at the bottom.
 
 ---
 
@@ -89,34 +94,103 @@ security review.
 
 ---
 
-## 3 · Feature flags — blocks the staged rollout, and the rollback plan depends on it
+## 3 · The Supabase email templates — a shipped feature is broken until this is done
 
-**Needs:** a product decision about where flags live (remote config vs. Supabase table).
-**Closes:** the staged-rollout box, and step 3 of `docs/engineering/rollback-plan.md`.
+**Needs:** Supabase dashboard access. Two minutes, no code.
+**Closes:** accounts working at all. This is the highest-priority item on this page.
 
-> In the WorldQuest repo, design and build the feature-flag system for a staged rollout.
-> **It does not exist** — `docs/plan/build-order.md:97` describes the ladder
-> (5 → 25 → 50 → 100 %) as intent, and there is no flag store, no remote config, and no
-> gating anywhere in the code.
+Accounts shipped in PR #11: a user adds an email, gets a **six-digit code**, and types it
+back into the app. Supabase's default templates send `{{ .ConfirmationURL }}` — a magic
+link. Against the defaults every account attempt fails in exactly the same way: the user
+receives an email containing a link and no number, and the app sits waiting for six digits
+they do not have. Nothing in the code can detect or work around this.
+
+> In the Supabase dashboard for the WorldQuest project, go to **Authentication → Email
+> Templates**. Edit both the **Magic Link** and the **Change Email Address** templates so
+> each includes `{{ .Token }}` — the six-digit code — rather than only
+> `{{ .ConfirmationURL }}`. Keep the link if you like; the code is what the app reads.
 >
-> Read `docs/engineering/rollback-plan.md` first: it explains why this matters more here
-> than in a typical app. The app binary cannot be recalled, so a flag is the only way to
-> turn something off without shipping a new version, and without one every release is
-> 100 % on arrival.
+> Then verify end to end on a real build: Settings → Account → "Save your progress",
+> enter an address, and confirm the email contains six digits and that entering them
+> completes the flow. Do the same for "I already have an account" on a second device.
 >
-> Constraints from this repo that will shape the design:
-> - The server is authoritative for rewards and entitlements; flags must not become a
->   second, client-trusted source of truth about what a user is entitled to.
-> - The app works offline by design. A flag system that fails closed on a metro train
->   turns a working app into a broken one — decide the offline default deliberately and
->   write down why.
-> - Kids are users. No flag may enable third-party tracking on a child account.
->
-> Propose the design before building it; this is architectural.
+> The symptom to watch for in support afterwards is several users at once saying "I never
+> got a code" while the email they received contained a link — that is this setting, not a
+> bug. It is written up in `docs/product/support-notes.md`.
 
 ---
 
-## 4 · Store submission and the data-safety declaration
+## 4 · Raising the league flag — needs production data, not more code
+
+**Needs:** a deployed database with real users on it, and someone to watch two numbers.
+**Closes:** the league actually existing for anyone.
+
+Everything is built and merged. The engine, the schema, the RLS (35/35 tests green in CI),
+the screen, the Home chip, the Settings opt-out, and — as of `20260815110000` — the weekly
+placement, scoring and close-week jobs. The flag `weekly_league` is seeded at
+`enabled = false, rollout_percent = 0`, deliberately.
+
+> In the WorldQuest project's database, bring the weekly league up carefully.
+>
+> **First, prove the jobs run.** They are scheduled with pg_cron, but the migration
+> degrades to a notice if pg_cron is laid out differently on the host — so check the
+> schedule exists before assuming it does:
+>
+> ```sql
+> select jobname, schedule from cron.job where jobname like 'league-%';
+> -- expect: league-refresh-xp '13 * * * *', league-place '19 * * * *', league-close '5 0 * * 1'
+> ```
+>
+> If they are missing, schedule them by hand with those cron expressions. Then run each
+> once manually and check the return value is sane rather than an error:
+>
+> ```sql
+> select public.league_place_members();   -- users placed
+> select public.league_refresh_xp();      -- rows whose weekly_xp changed
+> select public.league_close_week();      -- cohorts closed (0 until a week has passed)
+> ```
+>
+> **Then check the shape of what it produced**, because this is the part no test can
+> reach — cohort sizes and band spread only exist once real people are in them:
+>
+> ```sql
+> select c.tier, c.division, c.band, count(*) as members
+>   from public.league_cohorts c join public.league_members m on m.cohort_id = c.id
+>  where c.week_id = (date_trunc('week', now() at time zone 'utc'))::date
+>  group by 1,2,3 order by 1,2,3;
+> ```
+>
+> A healthy result is cohorts of roughly 20–30. A long tail of cohorts with 2 or 3 members
+> means the band buckets are too narrow for the population size — widen `league_band` so
+> more people share a band, rather than shipping leagues where a user competes with two
+> other people and always finishes third.
+>
+> **Only then raise the flag**, one step at a time:
+>
+> ```sql
+> update public.feature_flags set enabled = true, rollout_percent = 5
+>  where key = 'weekly_league';
+> ```
+>
+> **What to watch is not engagement.** `docs/systems/social-and-leagues.md` §4 exists
+> because a leaderboard can raise engagement while making the product worse. The two
+> numbers that decide whether this stays are **next-day return among users in the bottom
+> half of a cohort**, and the **opt-out rate**. If people who are losing stop coming back,
+> the feature is working exactly as designed and should be removed anyway. Halt with
+> `enabled = false`, which reaches a foregrounded device within one poll interval.
+>
+> Under-13 accounts must never appear. They are blocked three times over — a trigger, the
+> RLS, and a client that does not send the query — but confirm it once with real data:
+>
+> ```sql
+> select count(*) from public.league_members m
+>   join public.profiles p on p.id = m.user_id where p.is_child;
+> -- must be 0, always
+> ```
+
+---
+
+## 5 · Store submission and the data-safety declaration
 
 **Needs:** App Store Connect and Play Console access, and a human who can sign.
 **Closes:** "store metadata, screenshots and data-safety declarations match reality
@@ -143,7 +217,7 @@ exactly".
 
 ---
 
-## 5 · Two illustrations — blocked on credits, and one on licensing
+## 6 · Two illustrations — blocked on credits, and one on licensing
 
 **Needs:** image-generation credits; and for the second, a licensing decision.
 **Closes:** the last two rows of `docs/design/mockup-fidelity.md`.
@@ -167,25 +241,55 @@ exactly".
 
 ---
 
-## 6 · Two decisions only a person can make
+## 7 · Decisions only a person can make
 
-Neither is a task. Both block a checklist box.
+Neither is a task. Both block a checklist box. The first now has a measurement task in
+front of it, which is worth doing before deciding.
 
-### The bundle budget contradicts itself
+### The bundle is at the wall, and the next change fails CI
 
-`PROJECT.md:297`, `docs/engineering/architecture.md:187` and
-`docs/engineering/testing-strategy.md:156` all say the mobile bundle must be **under
-4 MB**. The enforced gate in `scripts/bundle-native.cjs` is **6.0 MB**, raised from 4.5
-when `@sentry/react-native` added 1.92 MB — with the reasoning recorded in that file. The
-current bundle is **5.93 MB**: it passes the gate and fails the constitution.
+The contradiction this section used to describe is resolved. Sentry was removed on
+2026-08-09 to hold the budget rather than raise it (see the header of
+`apps/mobile/src/lib/reporting.ts` for that decision and what it cost), and the gate came
+back down: **4.6 MiB**, against a current bundle of **4.60 MiB**. It passes by nothing at
+all, which means the next line of application code fails CI.
 
-One wrinkle worth knowing before deciding: `bundle-native.cjs` divides bytes by 1024 twice, so its 6.0 and 5.93 are **MiB**, while the documented 4 is unqualified. If the target was ever meant as decimal MB it is 3.81 MiB, and the gap is wider than it looks. The docs were not silently reunitised — inventing a stricter target while recording a contradiction would be its own small dishonesty — so pick the number *and* its unit.
+Two things are already known, so nobody has to rediscover them:
 
-Someone has to decide which number is real. The options are genuinely different products:
-raise the documented budget and accept the size for crash visibility, or hold 4 MB and
-drop or lazy-load Sentry. `PROJECT.md` is edited deliberately, so an agent should not pick
-this unilaterally — and 0.07 MB of headroom means the next dependency forces the question
-anyway.
+- **The documented target is 4 MB and the gate is 4.6 MiB.** `PROJECT.md:297`,
+  `architecture.md:187` and `testing-strategy.md:156` all say 4; the gate has been raised
+  three times with the reason recorded each time. The unit matters: `bundle-native.cjs`
+  divides by 1024 twice, so its numbers are MiB while the documented 4 is unqualified. If
+  the target was ever meant as decimal MB it is 3.81 MiB. Pick the number *and* the unit.
+- **Deduplicating repeated strings does nothing.** This was tried: 45.5 KB of identical
+  `license`/`attribution` strings were collapsed out of the content packs and the bundle
+  moved by 0.00 MB, because Hermes already deduplicates strings into its bytecode string
+  table. `flag-icons` appears **once** in the compiled output despite sixty-five source
+  copies. The command that proves it is in `bundle-native.cjs`. Do not spend an afternoon
+  on "the same string is repeated N times" — it is never a lever here.
+
+**What has never been measured is where the 4.6 MiB actually goes.** That is the next
+step and it is a task, not a decision:
+
+> In the WorldQuest repo, measure the native bundle's real composition and report it.
+>
+> ```bash
+> npx expo export --platform android --dump-sourcemap
+> ```
+>
+> Attribute the bytes to modules — `source-map-explorer` or equivalent over the emitted
+> map. Then say plainly which three things dominate and what each would cost to remove or
+> defer. Note that Metro has no route-level code splitting on native, so "lazy load it"
+> does not reduce shipped bytes; it only defers evaluation. Only removing a dependency, or
+> not writing the code, actually recovers budget.
+>
+> Do not raise `BUDGET_MB` as part of this. Raising it is the decision below; measuring is
+> what makes that decision informed rather than a shrug.
+
+The decision that follows the measurement: hold 4 MB and cut something real, or raise the
+documented number to match reality. `PROJECT.md` is edited deliberately, so an agent
+should not pick this unilaterally — but with 0.00 MiB of headroom, the next feature forces
+the question whether or not anyone chooses to answer it.
 
 ### Waiver owners, and the rollback decision-maker
 
@@ -205,4 +309,9 @@ permanent exemption. Names cannot be invented from inside the repo.
 | Rollback plan | `docs/engineering/rollback-plan.md` |
 | Release notes | `docs/release-notes.md` — drafted, marked pending the device pass |
 | Pseudo-locale screenshots | `pnpm design:shots` runs an `en-XA` pass over 6 routes × 3 viewports; clean at +40 % inflation |
-| Support docs | `docs/support/known-issues.md` — the questions users will ask and the honest answer to each, plus the known-issues table. What still needs a person is a support *function* to hand it to. |
+| Support docs | `docs/support/known-issues.md` and `docs/product/support-notes.md` — the questions users will ask and the honest answer to each. What still needs a person is a support *function* to hand it to. |
+| Feature flags | Built. `feature_flags` table, client bucketing by `hash(key + userId) % 100`, closed by default. Three flags seeded off: `quest_cover_page`, `quest_completion_screen`, `weekly_league`. This was §3 of this document and is no longer a blocker. |
+| Accounts | Built and merged — email + six-digit code, linking in place so no progress moves. Blocked only on §3 above, which is a dashboard setting. |
+| The daily reminder | Built. Local notifications, quiet hours in a tested engine, permission asked after the third lesson. Delivery on a real device is part of §1. |
+| The store-review prompt | Built. Cannot fire in TestFlight by design, so §1 is where it gets seen. |
+| Leagues | Built end to end, including the weekly placement/scoring/close jobs. Flag closed; raising it is §4. |
