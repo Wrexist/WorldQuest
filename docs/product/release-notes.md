@@ -1,5 +1,34 @@
 # Release notes
 
+## Unreleased — accounts, reminders, and the review prompt
+
+Three capabilities the UI has been promising and the app did not have.
+
+**Your progress can be saved.** Add an email in Settings or from Profile's "Save your
+progress" card and everything comes with you to a new phone. Until now every install was
+anonymous with no way back: uninstall, change phone, or clear storage and a hundred-day
+streak was gone. Sign-in is a six-digit code rather than a magic link, so the whole flow
+stays on one screen.
+
+Signing in on a phone that already has unsaved progress leaves that progress behind. The
+app warns before it happens, names the streak at stake, and offers to save it instead.
+
+Child accounts have no account section, deliberately: we do not collect an email address
+from an under-13. Their progress stays on the phone, and Settings says so.
+
+**The daily reminder works.** The toggle has defaulted to ON since the first week and
+scheduled nothing. It now fires once a day at an hour you pick between 08:00 and 20:00 —
+18:00 on a child account — and never during quiet hours. The permission is asked after
+your third finished lesson, on the screen a lesson ends on, never at launch, and at most
+twice ever.
+
+**The app asks for a review, once.** After a finished daily quest, on the third separate
+day of use at the earliest, at most once per version and never twice in 122 days. Never
+for a child account, and never after a wrong answer.
+
+**Fixed:** a brand-new user could not reach Settings at all — the gear lives on Profile,
+and Profile's empty state did not draw it.
+
 Written in the product voice, for the people who use the app — not changelog-speak.
 `docs/design/voice-and-tone.md` applies here exactly as it does in the app: second person,
 present tense, no exclamation marks, never a promise with a month attached.

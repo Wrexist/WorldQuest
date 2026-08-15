@@ -58,6 +58,49 @@ Two strings on the onboarding screens were wrong Swedish and are fixed. If a Swe
 reports odd wording elsewhere, please capture the exact screen and the exact string — the
 rest of the app has not had a native-speaker pass, so more of these are likely.
 
+### Accounts, reminders, and the review prompt
+
+Three things that were promised by the UI and did nothing now work. Each has one
+operational precondition worth knowing before a ticket arrives.
+
+**Accounts — the email template must send a CODE, not a link.** The app asks for a
+six-digit code on screen. Supabase's default templates send `{{ .ConfirmationURL }}`, a
+magic link, and against those templates every account attempt fails in the same way: the
+user gets an email with a link and no number, and the app sits waiting for six digits
+they do not have.
+
+The fix is a dashboard setting, not a release. In **Authentication → Email Templates**,
+the **Magic Link** and **Change Email Address** templates must include `{{ .Token }}`.
+If several users at once report "I never got a code" and the email itself contained a
+link, this is the cause — escalate rather than troubleshooting individually.
+
+Two other account facts:
+
+- **Signing in on a phone that already has progress leaves that progress behind.** The
+  app warns before it happens and offers "Save this progress instead", but a user who
+  taps through it has stranded an anonymous account that cannot be recovered. There is
+  no undo, and support cannot merge two accounts. Say so plainly and kindly.
+- **Child accounts have no account section at all.** That is deliberate — we must not
+  collect an email address from an under-13 — and it is not a bug to fix for them. Their
+  progress lives on the phone. If a parent asks, the answer is that a parent-consent
+  flow is planned and does not exist yet.
+
+**The daily reminder is a LOCAL notification.** It needs no server, works with the radio
+off, and fires once a day at an hour the user picks between 08:00 and 20:00 (18:00 on a
+child account — quiet hours have no exceptions). If a user says the toggle is on and
+nothing arrives, the usual cause is OS-level permission: Settings shows "Notifications
+are off for WorldQuest in your phone's settings" with a link when that is the case, so
+ask them what that row says.
+
+Only the daily reminder ships. Streak-at-risk, comeback and the rest need a push service
+that does not exist yet — if a user reports any other notification, escalate.
+
+**The review prompt does not appear in TestFlight.** iOS reports the in-app review sheet
+as unavailable under TestFlight, so the prompt correctly never fires there. It also fires
+at most once per app version, never before three separate days of use, and never for a
+child account. "I was never asked to rate it" is almost always one of those four rules
+working.
+
 ### Not in this release, if asked
 
 - **Leagues / leaderboards.** Not shipped. There is no date. If a user has seen a
