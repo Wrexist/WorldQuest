@@ -44,7 +44,7 @@
  * Neutral, and boring on purpose. No nationalities, no body words, no anything that
  * pairs badly.
  */
-const ADJECTIVES = [
+export const ADJECTIVES = [
   'amber', 'arctic', 'bold', 'brave', 'bright', 'brisk', 'calm', 'cheerful', 'clever',
   'cobalt', 'coral', 'cosmic', 'curious', 'daring', 'dawn', 'deft', 'dusty', 'eager',
   'early', 'emerald', 'far', 'fleet', 'gentle', 'golden', 'granite', 'hardy', 'high',
@@ -56,7 +56,7 @@ const ADJECTIVES = [
 ] as const
 
 /** Things that explore, or that get explored. Nothing that can be a person. */
-const NOUNS = [
+export const NOUNS = [
   'atlas', 'basin', 'bay', 'beacon', 'bluff', 'canyon', 'cape', 'cavern', 'channel',
   'cliff', 'coast', 'compass', 'cove', 'crater', 'creek', 'delta', 'dune', 'estuary',
   'fjord', 'forest', 'geyser', 'glacier', 'glade', 'gorge', 'grove', 'harbour',

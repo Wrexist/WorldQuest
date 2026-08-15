@@ -162,7 +162,13 @@ const ALLOWED: Record<string, string> = {
   podiumCoins: 'leagues — the reward is paid by the server on rollover (ADR 0006)',
   weekStart: 'leagues — the week boundary the placement job works from; the app needs only `weekEnd`',
   handleFor: 'leagues — generated server-side and stored behind a CHECK; a device that could generate one could propose one',
-  HANDLE_SPACE: 'leagues — the size of the handle space, asserted by handles.test.ts',
+  HANDLE_SPACE: 'leagues — the size of the handle space, asserted by leagues.test.ts',
+  ADJECTIVES:
+    'leagues — exported ONLY so leagues.test.ts can assert the SQL copy in ' +
+    '20260815110000_league_weekly_job.sql is the same list in the same order. The server ' +
+    'assigns handles, so a drifted word list would rename people between devices without ' +
+    'anything throwing.',
+  NOUNS: 'leagues — see ADJECTIVES',
 
   // ── consumed by another engine rather than by a screen
   evaluate: 'the single-definition form; the client calls evaluateAll',

@@ -18,7 +18,9 @@ import {
   xpToPromotion,
   type LeagueMember,
 } from './index.js'
-import { HANDLE_SPACE, handleFor } from './handles.js'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { ADJECTIVES, HANDLE_SPACE, NOUNS, handleFor } from './handles.js'
 import { BALANCE } from '../xp/balance.js'
 
 const member = (handle: string, weeklyXp: number, isYou = false): LeagueMember =>
@@ -187,5 +189,60 @@ describe('handles', () => {
     // And it actually spreads: 2,000 ids should not pile into a handful of names.
     const seen = new Set(Array.from({ length: 2000 }, (_, i) => handleFor(`user-${i}`)))
     expect(seen.size).toBeGreaterThan(1900)
+  })
+})
+
+describe('the handle, in two languages', () => {
+  /**
+   * `league_handle()` in SQL and `handleFor()` here must agree, forever.
+   *
+   * The server assigns handles at placement time and the client renders them, so a
+   * disagreement would not throw — it would show one user two different names depending
+   * on which side answered, and nobody would notice until somebody said "why is my name
+   * different on my new phone". Two copies of a word list is exactly the drift this repo
+   * keeps finding, so this reads the migration and checks the copies still match.
+   *
+   * It cannot execute the SQL — no Postgres here — so it asserts the two INPUTS to the
+   * construction are identical: the same words in the same order, and the same constants
+   * in the arithmetic. The construction itself is four lines on each side and the arrays
+   * are the part that changes.
+   */
+  const migration = readFileSync(
+    join(import.meta.dirname, '../../../../supabase/migrations/20260815110000_league_weekly_job.sql'),
+    'utf8',
+  )
+
+  const sqlArray = (name: string): readonly string[] => {
+    const block = migration.match(new RegExp(`${name} constant text\\[\\] := array\\[(.*?)\\]`, 's'))
+    if (block === null) throw new Error(`${name} not found in the migration`)
+    return [...block[1]!.matchAll(/'([^']+)'/g)].map((m) => m[1]!)
+  }
+
+  it('uses the same adjectives, in the same order', () => {
+    // Order matters as much as membership: the index is the hash modulo the length, so
+    // reordering the list renames everybody.
+    expect(sqlArray('adjectives')).toEqual(ADJECTIVES)
+  })
+
+  it('uses the same nouns, in the same order', () => {
+    expect(sqlArray('nouns')).toEqual(NOUNS)
+  })
+
+  it('does the same arithmetic on the same list lengths', () => {
+    // The SQL hardcodes 65 and 60 rather than reading the array lengths, so a word added
+    // to one list would silently divide by the wrong number. If this fails, the SQL's
+    // literals need updating along with the list.
+    expect(ADJECTIVES).toHaveLength(65)
+    expect(NOUNS).toHaveLength(60)
+    expect(migration).toMatch(/value % 65/)
+    expect(migration).toMatch(/\(value \/ 65\) % 60/)
+    expect(migration).toMatch(/\(value \/ \(65 \* 60\)\) % 100/)
+  })
+
+  it('seeds and folds FNV-1a with the same constants', () => {
+    expect(migration).toMatch(/2166136261/)
+    expect(migration).toMatch(/16777619/)
+    // The `>>> 0` the JavaScript ends each round on.
+    expect(migration).toMatch(/4294967295/)
   })
 })
