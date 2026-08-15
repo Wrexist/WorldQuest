@@ -114,6 +114,19 @@ const PAIRS: Pair[] = [
     note: 'the "XP" unit label under the hero number, and any caption on a level-2 card',
   },
   { name: 'status.streak on surface', fg: p.flame['500'], bg: p.surface['1'], min: 3.0 },
+  {
+    name: 'status.error on canvas',
+    fg: p.red['500'],
+    bg: p.space['800'],
+    // 4.5, not 3: this one is READ, not glanced at. It is the sentence telling somebody
+    // their sign-in code was wrong, and it is the only text on the screen that matters
+    // at that moment. The generated matrix cannot reach it — that crosses `color.text`
+    // with surfaces, and this is a status colour used as text, which is precisely the
+    // "a new text token joins the system checked by nothing at all" case the note under
+    // the matrix describes.
+    min: 4.5,
+    note: 'form errors in the account flow — the app\'s only red text',
+  },
   { name: 'status.progress on surface', fg: p.green['400'], bg: p.surface['1'], min: 3.0 },
   {
     name: 'status.progress on progressTrack',

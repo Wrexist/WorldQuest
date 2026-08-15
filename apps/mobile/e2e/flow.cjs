@@ -838,6 +838,27 @@ const skip = (name, why) => {
     hasGear ? settings.slice(0, 40) : 'no gear on Profile',
   )
 
+  // ── the account flow, which is three entry points that pointed at nothing ──
+  //
+  // "Save your progress" was on Profile from the first week with its handler passed as
+  // `undefined`, and "I already have an account" was in onboarding the same way. A
+  // screen that exists and cannot be reached is this repo's most-repeated defect, so
+  // the walk opens it the way a user does rather than pushing the route.
+  step('Settings offers a way to save progress', /save your progress/i.test(settings))
+  if (/save your progress/i.test(settings)) {
+    // By ROLE, not by text: `LinkRow` collapses to one accessible element with
+    // `accessible`, so the Text inside it is not the click target — the same trap the
+    // tab walk above documents at length.
+    await page.getByRole('button', { name: 'Save your progress' }).first().click()
+    await page.waitForTimeout(1000)
+    const account = await body()
+    step(
+      'and it opens the account screen, asking for an email',
+      /email|you@/i.test(account) && /send me a code/i.test(account),
+      account.slice(0, 60),
+    )
+  }
+
   // ── the collection, reached the way a user reaches it ──────────────────────
   await home()
   await page.getByRole('tab', { name: 'Explore' }).click()

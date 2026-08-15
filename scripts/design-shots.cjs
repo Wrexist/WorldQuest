@@ -84,6 +84,10 @@ const DEFAULT_ROUTES = [
   '/region/EU',
   '/achievements',
   '/streak',
+  // The account flow. `mode=link` is the one nearly everybody takes — signing in is the
+  // new-phone path, and its extra piece (the warning over unsaved progress) needs a
+  // streak the harness has no way to have.
+  '/account?mode=link',
   // `?source=settings` so it opens on the plans page. From onboarding it opens on
   // "you just learned N countries", which is the right screen there and an empty one
   // here — the harness has no lesson behind it.
@@ -179,7 +183,7 @@ const PLAYED_ROUTES = ['/profile', '/streak', '/', '/quests', '/settings']
  * labels that could push them (Home, Streak), and the lesson, whose answer options are
  * the only place in the app where a wrapped string costs a tap target.
  */
-const PSEUDO_ROUTES = ['/', '/settings', '/paywall?source=settings', '/streak', '/lesson', '/quests']
+const PSEUDO_ROUTES = ['/', '/settings', '/account?mode=link', '/paywall?source=settings', '/streak', '/lesson', '/quests']
 
 const TYPES = {
   '.html': 'text/html',

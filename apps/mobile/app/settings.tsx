@@ -27,6 +27,8 @@ import { useEntitlement } from '../src/features/paywall/useEntitlement.js'
 import { usePurchases } from '../src/features/paywall/usePurchases.js'
 import { useOnboarding } from '../src/features/onboarding/useOnboarding.js'
 import { useReminder } from '../src/features/settings/useReminder.js'
+import { useAccountStatus } from '../src/features/account/useAccountStatus.js'
+import { signOutEverywhere } from '../src/features/account/signOut.js'
 import { useT } from '../src/lib/i18n.js'
 
 /**
@@ -51,6 +53,7 @@ export default function SettingsRoute() {
   const purchases = usePurchases()
   const { state } = useOnboarding()
   const t = useT()
+  const account = useAccountStatus()
 
   /**
    * The words the reminder will arrive in.
@@ -109,6 +112,19 @@ export default function SettingsRoute() {
       onChange={set}
       sync={sync}
       premium={premium}
+      // Absent on a child account. Same rule as `premium` above and a stronger reason:
+      // we must not collect an email address from an under-13, so there is no flow to
+      // show. Settings draws a plain note in its place.
+      {...(account.isChild
+        ? {}
+        : {
+            account: {
+              email: account.email,
+              onLink: () => router.push('/account?mode=link'),
+              onSignIn: () => router.push('/account?mode=signIn'),
+              onSignOut: () => void signOutEverywhere(),
+            },
+          })}
       reminder={{
         ...reminder,
         onChange: reminder.setEnabled,

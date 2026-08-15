@@ -344,3 +344,95 @@ export async function buyStreakFreeze(client: WorldQuestClient): Promise<FreezeP
   if (error) throw error
   return (data ?? { status: 'unauthorized' }) as FreezePurchase
 }
+
+// ── accounts ────────────────────────────────────────────────────────────────
+
+/**
+ * Giving an anonymous session a way home.
+ *
+ * `ensureSession` above says an anonymous session "upgrades in place later without
+ * losing a day of progress". Until now nothing upgraded it, so every install was a
+ * dead end: uninstall the app, change phone, or clear its storage, and a hundred-day
+ * streak and every mastered fact were gone with no way back and nothing to support.
+ * For a learning app that is the worst bug available and the surest one-star review.
+ *
+ * ## Why a code and not a magic link
+ *
+ * A link makes the user leave for their mail client and come back through a deep link,
+ * which is where the flow breaks: in-app mail previews, corporate link rewriters, and
+ * the "open in" dialogue all eat it, and each failure looks like the app being broken.
+ * A six-digit code keeps the whole flow on one screen.
+ *
+ * This requires the Supabase email templates to send `{{ .Token }}` rather than
+ * `{{ .ConfirmationURL }}` — a dashboard setting, not code, and it is written down in
+ * `docs/product/support-notes.md` because a template nobody changed makes every one of
+ * these functions look broken in exactly the same way.
+ *
+ * ## The upgrade is in place
+ *
+ * `updateUser({ email })` attaches an address to the CURRENT user rather than making a
+ * new one, so the `user_id` on every ledger row, fact and streak is untouched. That is
+ * the whole point, and it is why signing in must never be the path a linking user takes.
+ */
+
+/** The email on this session, or null while it is still anonymous. */
+export async function accountEmail(client: WorldQuestClient): Promise<string | null> {
+  const { data } = await client.auth.getUser()
+  return data.user?.email ?? null
+}
+
+/**
+ * Attach an email to the session that already exists. Sends a confirmation code.
+ *
+ * Nothing changes until `confirmEmail` succeeds — Supabase holds the address as
+ * pending, so an abandoned attempt leaves the account exactly as anonymous as it was.
+ */
+export async function linkEmail(client: WorldQuestClient, email: string): Promise<void> {
+  const { error } = await client.auth.updateUser({ email })
+  if (error) throw error
+}
+
+/** Finish `linkEmail`. The user id does not change; the account stops being anonymous. */
+export async function confirmEmail(
+  client: WorldQuestClient,
+  email: string,
+  token: string,
+): Promise<void> {
+  const { error } = await client.auth.verifyOtp({ email, token, type: 'email_change' })
+  if (error) throw error
+}
+
+/**
+ * Send a sign-in code to an address that already has an account.
+ *
+ * `shouldCreateUser: false` on purpose, and it is the difference between a recovery
+ * flow and a trap: with the default, a typo'd address silently mints a brand-new empty
+ * account, signs the user into it, and shows them zero XP where their streak used to
+ * be. They would conclude their progress was deleted, and they would be describing
+ * what happened. Failing with "we have no account for that address" is recoverable.
+ */
+export async function requestSignIn(client: WorldQuestClient, email: string): Promise<void> {
+  const { error } = await client.auth.signInWithOtp({
+    email,
+    options: { shouldCreateUser: false },
+  })
+  if (error) throw error
+}
+
+/** Finish `requestSignIn`, replacing this device's session with the real account's. */
+export async function confirmSignIn(
+  client: WorldQuestClient,
+  email: string,
+  token: string,
+): Promise<{ userId: string }> {
+  const { data, error } = await client.auth.verifyOtp({ email, token, type: 'email' })
+  if (error) throw error
+  if (!data.user) throw new Error('verifyOtp returned no user')
+  return { userId: data.user.id }
+}
+
+/** Ends the session. The CALLER must clear device storage — see `lib/storage.ts`. */
+export async function signOut(client: WorldQuestClient): Promise<void> {
+  const { error } = await client.auth.signOut()
+  if (error) throw error
+}

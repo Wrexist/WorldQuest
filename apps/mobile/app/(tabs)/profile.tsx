@@ -19,6 +19,7 @@ import { ProfileScreen } from '../../src/features/profile/ProfileScreen.js'
 import { useOptimisticProgress } from '../../src/features/home/useOptimisticProgress.js'
 import { ContentGate } from '../../src/components/ContentGate.js'
 import { useContent } from '../../src/lib/content.js'
+import { useAccountStatus } from '../../src/features/account/useAccountStatus.js'
 
 export default function ProfileRoute() {
   const { preferences } = usePreferences()
@@ -61,6 +62,8 @@ export default function ProfileRoute() {
     CATALOGUE,
     shop.owned,
   )
+
+  const account = useAccountStatus()
 
   const world = useMemo(() => {
     if (index === null) return null
@@ -112,7 +115,14 @@ export default function ProfileRoute() {
         loading={status === 'loading'}
         // The account prompt appears only while there is no account. It disappears with
         // its own reason rather than becoming a permanent piece of furniture.
-        onCreateAccount={undefined}
+        //
+        // It has been `undefined` since the first week, so the card never drew and the
+        // copy under it — "Creating one keeps your streak safe if you change phone" —
+        // was a promise nothing could keep. Absent on a child account: we must not
+        // collect an email address from an under-13, so there is no flow to open.
+        {...(account.isChild || account.linked
+          ? {}
+          : { onCreateAccount: () => router.push('/account?mode=link') })}
         wornTitleKey={worn}
         avatar={preferences.avatar}
         badges={badges}

@@ -95,6 +95,21 @@ export type ReminderStatus = {
   readonly onOpenSystemSettings: () => void
 }
 
+/**
+ * The account, as Settings draws it.
+ *
+ * Absent entirely on a child account — the same shape as `premium`, and for a stronger
+ * reason. We must not collect an email address from an under-13, so there is no flow to
+ * disable; there is no flow. `useAccountStatus` explains what replaces it.
+ */
+export type AccountSection = {
+  /** The linked address, or null while the session is still anonymous. */
+  readonly email: string | null
+  readonly onLink: () => void
+  readonly onSignIn: () => void
+  readonly onSignOut: () => void
+}
+
 export type SettingsScreenProps = {
   /** From app.json at build time; passed in so the screen stays testable. */
   readonly version: string
@@ -138,6 +153,13 @@ export type SettingsScreenProps = {
    * be rendered by something.
    */
   readonly reminder: ReminderStatus
+  /**
+   * Absent on a child account, which gets the note below instead.
+   *
+   * Not "hidden": there is genuinely nothing here for them, and a disabled row asking
+   * for an email is still a row asking a ten-year-old for an email.
+   */
+  readonly account?: AccountSection | undefined
   readonly onOpenPrivacyPolicy?: (() => void) | undefined
   readonly onOpenTerms?: (() => void) | undefined
   readonly onOpenLicences?: (() => void) | undefined
@@ -159,6 +181,7 @@ export function SettingsScreen({
   sync,
   premium,
   reminder,
+  account,
   onOpenPrivacyPolicy,
   onOpenTerms,
   onOpenLicences,
@@ -237,6 +260,29 @@ export function SettingsScreen({
             {...(reminder.earlier !== undefined ? { onPrevious: reminder.earlier } : {})}
             {...(reminder.later !== undefined ? { onNext: reminder.later } : {})}
           />
+        )}
+      </Section>
+
+      {/* Account, directly under Learning: it is the section that decides whether any
+          of the rest survives a new phone, and it was not here at all. */}
+      <Section title={t('account:settings.section')}>
+        {account === undefined ? (
+          /* A child account. Says what is true in words a ten-year-old reads without
+             alarm, and names the person who can do something about it. */
+          <Note body={t('account:settings.child')} />
+        ) : account.email !== null ? (
+          <>
+            <LinkRow label={t('account:settings.email')} value={account.email} />
+            <LinkRow label={t('account:settings.signOut')} onPress={account.onSignOut} />
+          </>
+        ) : (
+          <>
+            {/* The state, before the offer. "No account yet" is a fact rather than a
+                warning — nothing is wrong, and the row below says what it buys. */}
+            <LinkRow label={t('account:settings.anonymous')} />
+            <LinkRow label={t('account:settings.link')} onPress={account.onLink} />
+            <LinkRow label={t('account:settings.signIn')} onPress={account.onSignIn} />
+          </>
         )}
       </Section>
 
