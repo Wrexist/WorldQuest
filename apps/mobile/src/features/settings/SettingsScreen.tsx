@@ -160,6 +160,15 @@ export type SettingsScreenProps = {
    * for an email is still a row asking a ten-year-old for an email.
    */
   readonly account?: AccountSection | undefined
+  /**
+   * The league toggle, or nothing.
+   *
+   * Absent when the flag is closed and absent on a child account — under-13s are never
+   * placed in a cohort, and a switch offering to join one would be a switch that lies.
+   * Present, it must leave in ONE tap: `social-and-leagues.md` §4 makes that a product
+   * rule, so there is no confirmation and nothing to talk the user out of it.
+   */
+  readonly league?: { readonly joined: boolean; readonly onChange: (value: boolean) => void } | undefined
   readonly onOpenPrivacyPolicy?: (() => void) | undefined
   readonly onOpenTerms?: (() => void) | undefined
   readonly onOpenLicences?: (() => void) | undefined
@@ -182,6 +191,7 @@ export function SettingsScreen({
   premium,
   reminder,
   account,
+  league,
   onOpenPrivacyPolicy,
   onOpenTerms,
   onOpenLicences,
@@ -285,6 +295,20 @@ export function SettingsScreen({
           </>
         )}
       </Section>
+
+      {league !== undefined && (
+        <Section title={t('league:settings.label')}>
+          <SwitchRow
+            label={t('league:settings.label')}
+            // Says what is shared BEFORE asking them to opt in, which is the whole
+            // reason the handle is assigned rather than chosen: there is no name to
+            // show, so the sentence can promise there isn't one.
+            help={t('league:settings.help')}
+            value={league.joined}
+            onChange={league.onChange}
+          />
+        </Section>
+      )}
 
       <Section title={t('settings:section.sound')}>
         <SwitchRow

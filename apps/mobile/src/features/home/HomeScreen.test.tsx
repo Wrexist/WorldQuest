@@ -10,8 +10,6 @@ const RETURNING: HomeProgress = {
   questTotal: 10,
   challengeIn: '14:22:18',
   friendsOnline: 12,
-  leagueTier: 'Gold I',
-  leaguePercentile: 'Top 15%',
 }
 
 const COLD: HomeProgress = {

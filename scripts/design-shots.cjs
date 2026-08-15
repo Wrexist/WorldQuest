@@ -88,6 +88,9 @@ const DEFAULT_ROUTES = [
   // new-phone path, and its extra piece (the warning over unsaved progress) needs a
   // streak the harness has no way to have.
   '/account?mode=link',
+  // The league. Renders its "no league yet" state in the harness — there is no backend
+  // behind it — which is the state most users see most weeks and had never been drawn.
+  '/league',
   // `?source=settings` so it opens on the plans page. From onboarding it opens on
   // "you just learned N countries", which is the right screen there and an empty one
   // here — the harness has no lesson behind it.

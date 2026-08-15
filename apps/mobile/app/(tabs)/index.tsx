@@ -23,6 +23,8 @@ import { useDayCountdown } from '../../src/features/quests/useDayCountdown.js'
 import { useQuestCover } from '../../src/features/quests/ceremony.js'
 import { useT, type TranslationKey } from '../../src/lib/i18n.js'
 import { useReminderAsk } from '../../src/features/home/useReminderAsk.js'
+import { useLeague } from '../../src/features/league/useLeague.js'
+import { useLeagueEnabled } from '../../src/features/league/flag.js'
 
 /**
  * Zeroed rather than invented. A first launch shows the real empty state — and a
@@ -114,6 +116,27 @@ export default function HomeRoute() {
 
   const reminderAsk = useReminderAsk()
 
+  /**
+   * The league chip, only when there is genuinely a standing to show.
+   *
+   * Four conditions, all ordinary and all indistinguishable from here: the flag is
+   * closed, the user opted out, they are under 13, or the weekly placement has not run
+   * for them. `useLeague` returns no rows for every one of them, and no rows means no
+   * chip — rather than a chip explaining why there is no chip.
+   */
+  const leagueOn = useLeagueEnabled()
+  const league = useLeague()
+  const you = league.rows?.find((row) => row.isYou === true)
+  const leagueChip =
+    leagueOn && league.rows !== null && league.rank !== null && you !== undefined
+      ? {
+          tier: t(`league:tier.${league.rank.tier}` as 'league:tier.bronze'),
+          position: you.position,
+          total: league.rows.length,
+          onPress: () => router.push('/league'),
+        }
+      : undefined
+
   return (
     <HomeScreen
       progress={progress}
@@ -159,6 +182,7 @@ export default function HomeRoute() {
       // screen a lesson ends on. `useReminderAsk` returns undefined the rest of the time
       // and the card is simply absent — see `notifications.md` §1.
       {...(reminderAsk !== undefined ? { reminderAsk } : {})}
+      {...(leagueChip !== undefined ? { league: leagueChip } : {})}
       onOpenInbox={() => router.push('/quests')}
     />
   )

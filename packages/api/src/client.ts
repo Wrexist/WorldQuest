@@ -436,3 +436,111 @@ export async function signOut(client: WorldQuestClient): Promise<void> {
   const { error } = await client.auth.signOut()
   if (error) throw error
 }
+
+// ── the league ──────────────────────────────────────────────────────────────
+
+/**
+ * Reading the week's cohort.
+ *
+ * ## Why this waited
+ *
+ * The engine and the migration have been done and unreachable since they were written,
+ * with the reason recorded in `scripts/reachability.ts`: the environment they were
+ * written in has no Docker, so the migration could not be applied to a real Postgres,
+ * `pnpm db:types` could not regenerate the types from it, and `supabase test db` could
+ * not prove the RLS policies do what they claim. Shipping an unproven policy on a
+ * children's leaderboard was the one thing not worth guessing at.
+ *
+ * CI has now done all three. All 35 RLS tests pass against this schema, and
+ * `database.types.ts` carries the tables and the view. So the client half is buildable
+ * on evidence rather than on hope, and this is it.
+ *
+ * ## One read, through the view
+ *
+ * `league_standings` is `security_invoker` and carries no `user_id` column — it joins
+ * the cohort and computes `is_you` server-side. That is the whole privacy design: a
+ * client cannot ask "who is user X", because the answer is not in the shape it receives.
+ * The row policy on `league_members` restricts SELECT to cohorts the reader belongs to,
+ * so a reader outside a cohort gets nothing rather than a filtered nothing.
+ *
+ * Nothing here writes. `league_members` has no client write policy, deliberately —
+ * weekly XP is the server's, and a client that can write it is a client that can win.
+ */
+
+/** One row of the standings view, in the engine's shape. */
+export type LeagueRow = {
+  readonly handle: string
+  readonly weeklyXp: number
+  readonly isYou: boolean
+}
+
+export type LeagueCohort = {
+  readonly weekId: string
+  readonly tier: string
+  readonly division: number
+  readonly members: readonly LeagueRow[]
+}
+
+/**
+ * This week's cohort, or null when the reader is in none.
+ *
+ * Null is the ordinary state for most of the app's life, not an error: a user who has
+ * not been placed yet, a user who opted out, and every under-13 account — none of them
+ * belongs to a cohort, and the RLS policy answers all three the same way, with no rows.
+ * The screen says "you are not in a league yet" rather than showing an empty table.
+ */
+export async function fetchLeague(client: WorldQuestClient): Promise<LeagueCohort | null> {
+  const { data, error } = await client
+    .from('league_standings')
+    .select('cohort_id, week_id, tier, division, handle, weekly_xp, is_you')
+
+  if (error) throw error
+  if (data === null || data.length === 0) return null
+
+  // Every row carries the same cohort, because the policy only returns one. Reading the
+  // week and rank off the first row rather than a second query: they are columns of the
+  // join, and a second round trip for three constants is a round trip.
+  const first = data[0]!
+  return {
+    weekId: first.week_id ?? '',
+    tier: first.tier ?? 'bronze',
+    division: first.division ?? 3,
+    members: data.map((row) => ({
+      handle: row.handle ?? '',
+      weeklyXp: row.weekly_xp ?? 0,
+      // `is_you` is computed by the view from `auth.uid()`, never sent by the client.
+      isYou: row.is_you === true,
+    })),
+  }
+}
+
+/** Whether this user has opted out of leagues entirely. */
+export async function fetchLeagueOptOut(client: WorldQuestClient): Promise<boolean> {
+  const { data, error } = await client
+    .from('league_opt_outs')
+    .select('opted_out')
+    .maybeSingle()
+
+  if (error) throw error
+  return data?.opted_out === true
+}
+
+/**
+ * Leave, or come back.
+ *
+ * Upserted on the user's own row, which is the only row the policy lets them touch.
+ * Opting out does not delete history — it stops the next placement, and the current
+ * week runs out on its own. Deleting a cohort membership mid-week would renumber
+ * everybody else's positions for a reason none of them can see.
+ */
+export async function setLeagueOptOut(
+  client: WorldQuestClient,
+  userId: string,
+  optedOut: boolean,
+): Promise<void> {
+  const { error } = await client
+    .from('league_opt_outs')
+    .upsert({ user_id: userId, opted_out: optedOut }, { onConflict: 'user_id' })
+
+  if (error) throw error
+}

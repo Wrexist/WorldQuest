@@ -200,6 +200,30 @@ const MOBILE = join(process.cwd(), 'apps', 'mobile')
  * budget — a sixth number bought by a dependency should be refused, and the answer to the
  * one after that is trimming the 9.7 MB of assets, which dwarf the bundle and which
  * nothing has yet looked at.
+ *
+ * ── 2026-08-15 · at the wall, and what to cut first ──────────────────────────────────
+ *
+ * The league's client half and the account flow brought this to **4.60 MB against a
+ * 4.60 budget** — passing by nothing at all, which means the next line of code fails CI.
+ * The budget is NOT being raised for it: the note above says a sixth number bought by a
+ * dependency should be refused, and raising it for application code instead would be the
+ * same decision wearing a different hat.
+ *
+ * So here is the measurement the next person needs, taken rather than guessed. The
+ * content packs are 320 KB of inlined JSON, and two things in them never render:
+ *
+ *   · **45.5 KB of `license` and `attribution` strings**, repeated per item. There are a
+ *     handful of distinct values — flag-icons MIT, Natural Earth public domain — copied
+ *     onto all 65 countries. Deduplicating them into one licence block per pack, with
+ *     items referencing it, is the single biggest win available and does not weaken the
+ *     obligation: the attribution still ships, once instead of sixty-five times. It is a
+ *     schema change to `pack.schema.json`, which is why it is written down here rather
+ *     than done in a commit about leagues.
+ *   · **11.4 KB of `$comment` authoring notes.** Worth keeping in the source and worth
+ *     stripping from the bundle; needs a build step, and 11 KB does not justify one on
+ *     its own. It comes free with the pass above.
+ *
+ * Together that is ~0.055 MB, which buys back the margin this note is written in.
  */
 const BUDGET_MB = 4.6
 

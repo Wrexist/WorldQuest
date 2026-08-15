@@ -132,45 +132,37 @@ const ALLOWED: Record<string, string> = {
     'two copies of MAX_FREEZES agree.',
 
   /**
-   * ── leagues: built, tested, and deliberately not wired ──────────────────────
+   * ── leagues: the client half landed, and most of this block went with it ────
    *
-   * The whole module is unreachable on purpose, and this is the one place that says so
-   * out loud rather than leaving it to look like an oversight.
+   * This block used to hold nineteen entries and a long note explaining that the whole
+   * module was unreachable on purpose: the engine and the migration were done, and the
+   * client half was blocked on something the authoring environment could not provide —
+   * a local Postgres to apply the migration to, `pnpm db:types` to regenerate from it,
+   * and `supabase test db` to prove the RLS policies actually do what they claim.
    *
-   * The engine is done and tested. The migration that backs it is written. What is
-   * missing is the half that cannot be produced in an environment with no Docker: a
-   * local Postgres to run the migration against, `pnpm db:types` to regenerate
-   * `database.types.ts` from it, and `supabase test db` to prove the RLS policies do
-   * what they claim.
+   * The note ended "to finish: run those, then the read, the screen, and delete these
+   * lines." CI ran them. All 35 RLS tests pass against this schema, the types are
+   * generated and committed, and the screen exists. So they are deleted.
    *
-   * A leaderboard is not a feature where "the policies look right" is good enough. RLS
-   * that has never been executed is RLS that has never been tested, and the failure
-   * mode is every child's cohort being readable by everyone. So the client half waits
-   * for a stack to test against, and the screen waits with it — a league screen with no
-   * league behind it is the "Not open yet" tile that was just deleted from Home.
-   *
-   * To finish: `pnpm db:start && pnpm db:reset && pnpm db:types && supabase test db`,
-   * then the read, the screen, and delete these lines.
+   * What remains is the part the CLIENT genuinely has no business doing. Promotion,
+   * relegation, cohort assembly and the weekly rollover are the server's — a client
+   * that can compute its own promotion is a client that can grant it — so these live in
+   * the engine for the placement job to use, and the app reads standings and nothing
+   * else. `handleFor` is the same shape of rule: the handle is generated once, server
+   * side, and stored behind a CHECK constraint, so a device that could generate one
+   * could also propose one.
    */
-  LEAGUE_TIERS: 'leagues — engine and migration landed, client half blocked on a local Postgres; see the note above',
-  DIVISIONS: 'leagues — see LEAGUE_TIERS',
-  BRONZE_III: 'leagues — see LEAGUE_TIERS',
-  COHORT_SIZE: 'leagues — see LEAGUE_TIERS',
-  PROMOTED: 'leagues — see LEAGUE_TIERS',
-  RELEGATED: 'leagues — see LEAGUE_TIERS',
-  rankIndex: 'leagues — see LEAGUE_TIERS',
-  rankFromIndex: 'leagues — see LEAGUE_TIERS',
-  promote: 'leagues — see LEAGUE_TIERS',
-  relegate: 'leagues — see LEAGUE_TIERS',
-  outcomeFor: 'leagues — see LEAGUE_TIERS',
-  podiumCoins: 'leagues — see LEAGUE_TIERS',
-  weekStart: 'leagues — see LEAGUE_TIERS',
-  weekEnd: 'leagues — see LEAGUE_TIERS',
-  weekId: 'leagues — see LEAGUE_TIERS',
-  standings: 'leagues — see LEAGUE_TIERS',
-  xpToPromotion: 'leagues — see LEAGUE_TIERS',
-  handleFor: 'leagues — see LEAGUE_TIERS',
-  HANDLE_SPACE: 'leagues — see LEAGUE_TIERS',
+  BRONZE_III: 'leagues — the starting rank, assigned by the placement job, never by a device',
+  COHORT_SIZE: 'leagues — cohort assembly is the server\'s; a client that sizes a cohort picks its opponents',
+  RELEGATED: 'leagues — the client draws promotion only, by design (social-and-leagues.md §4 kindness rules)',
+  rankIndex: 'leagues — rank arithmetic belongs to the weekly rollover, not to a screen',
+  promote: 'leagues — a client that can compute its own promotion is a client that can grant it',
+  relegate: 'leagues — as `promote`, and the app deliberately has no way to draw a demotion',
+  outcomeFor: 'leagues — reached through `standings`, which is what the screen calls',
+  podiumCoins: 'leagues — the reward is paid by the server on rollover (ADR 0006)',
+  weekStart: 'leagues — the week boundary the placement job works from; the app needs only `weekEnd`',
+  handleFor: 'leagues — generated server-side and stored behind a CHECK; a device that could generate one could propose one',
+  HANDLE_SPACE: 'leagues — the size of the handle space, asserted by handles.test.ts',
 
   // ── consumed by another engine rather than by a screen
   evaluate: 'the single-definition form; the client calls evaluateAll',

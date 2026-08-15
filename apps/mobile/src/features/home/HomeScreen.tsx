@@ -49,8 +49,12 @@ export type HomeProgress = {
   readonly questTotal?: number
   readonly challengeIn?: string
   readonly friendsOnline?: number
-  readonly leagueTier?: string
-  readonly leaguePercentile?: string
+  /**
+   * `leagueTier` and `leaguePercentile` used to sit here as free-form strings that
+   * nothing ever rendered. The league is real now and arrives as `league` below,
+   * already resolved — a tier the i18n catalogue can name and two numbers, rather than
+   * two sentences somebody would have had to assemble at the call site.
+   */
 }
 
 /**
@@ -156,6 +160,23 @@ export type HomeScreenProps = {
    * decision is the engine's (`shouldAskForReminder`); passing the resolved answer keeps
    * this screen presentational and keeps the timing rule in the one place it is tested.
    */
+  /**
+   * This week's standing, or nothing.
+   *
+   * Absent whenever there is no league to show — the flag is closed, the user opted
+   * out, they are under 13, or the weekly placement has not run for them yet. All four
+   * are ordinary, and all four look the same from here: no chip. A chip that said "no
+   * league" would be a row about an absence.
+   */
+  readonly league?:
+    | {
+        /** Already localised — the screen does not know the tier list. */
+        readonly tier: string
+        readonly position: number
+        readonly total: number
+        readonly onPress: () => void
+      }
+    | undefined
   readonly reminderAsk?:
     | { readonly onAccept: () => void; readonly onDismiss: () => void }
     | undefined
@@ -190,6 +211,7 @@ export function HomeScreen({
   titleKey = 'titles:wanderer',
   onOpenInbox,
   onOpenQuests,
+  league,
   reminderAsk,
 }: HomeScreenProps) {
   // Before the early return: hooks cannot be conditional, and the skeleton needs
@@ -249,10 +271,14 @@ export function HomeScreen({
             "where am I?" before the screen asks anything of you — which is what the
             reference puts here and what a header of loose chips could not say.
    
-            The middle one is the earned TITLE rather than a league rank. Leagues are v2.0
-            (`docs/systems/social-and-leagues.md`) and a rank chip today would be the third
-            unbuilt thing on this screen; a title is the same shape of reward, is earned by
-            the same ladder, and is real now. */}
+            The middle one is the earned TITLE, and the league sits beside it rather than
+            replacing it: they are different rewards. A title is what the XP ladder gave
+            you and it does not move; a league standing is what this week looks like
+            against twenty-nine other people and it moves every day. Showing one as the
+            other would be the app telling a user their rank had dropped when it had not.
+
+            The league chip appears only when there IS one — the flag is closed by
+            default, and under-13 accounts never have one at all. */}
         <View style={styles.factRow}>
           {/* Not at zero, which is the one rule this row inherited rather than
               invented. The coin chip beside it shows 0 quite happily: a wallet reading 0
@@ -288,6 +314,23 @@ export function HomeScreen({
               label={t('nav:quests')}
               value={t('home:facts.quests', { done: quest.done, total: quest.total })}
               {...(onOpenQuests !== undefined ? { onPress: onOpenQuests } : {})}
+            />
+          )}
+          {/* The league, on the same row as the streak and the rank, because it is the
+              same kind of thing: a number about this week that you can tap to see in
+              full. Deliberately NOT a card of its own — a leaderboard is something a
+              user chooses to look at, and giving it the largest surface on Home is how
+              a learning app turns into a competition. */}
+          {league !== undefined && (
+            <Fact
+              icon="trophy"
+              tint={colors.status.premium}
+              label={league.tier}
+              value={t('league:home.position', {
+                position: league.position,
+                total: league.total,
+              })}
+              onPress={league.onPress}
             />
           )}
         </View>

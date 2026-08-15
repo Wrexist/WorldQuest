@@ -39,6 +39,7 @@ import svCollection from '../locales/sv/collection.json' with { type: 'json' }
 import enOnboarding from '../locales/en/onboarding.json' with { type: 'json' }
 import svOnboarding from '../locales/sv/onboarding.json' with { type: 'json' }
 import enAccount from '../locales/en/account.json' with { type: 'json' }
+import enLeague from '../locales/en/league.json' with { type: 'json' }
 import enAchievements from '../locales/en/achievements.json' with { type: 'json' }
 import enCommon from '../locales/en/common.json' with { type: 'json' }
 import enCountry from '../locales/en/country.json' with { type: 'json' }
@@ -54,6 +55,7 @@ import enPaywall from '../locales/en/paywall.json' with { type: 'json' }
 import enShop from '../locales/en/shop.json' with { type: 'json' }
 import enSettings from '../locales/en/settings.json' with { type: 'json' }
 import svAccount from '../locales/sv/account.json' with { type: 'json' }
+import svLeague from '../locales/sv/league.json' with { type: 'json' }
 import svAchievements from '../locales/sv/achievements.json' with { type: 'json' }
 import svCommon from '../locales/sv/common.json' with { type: 'json' }
 import svCountry from '../locales/sv/country.json' with { type: 'json' }
@@ -126,6 +128,7 @@ export const LOCALE_ENDONYM: Record<Locale, string> = {
 const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
   en: {
     account: enAccount,
+    league: enLeague,
     achievements: enAchievements,
     onboarding: enOnboarding,
     collection: enCollection,
@@ -149,6 +152,7 @@ const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
   },
   sv: {
     account: svAccount,
+    league: svLeague,
     achievements: svAchievements,
     onboarding: svOnboarding,
     collection: svCollection,

@@ -28,6 +28,8 @@ import { usePurchases } from '../src/features/paywall/usePurchases.js'
 import { useOnboarding } from '../src/features/onboarding/useOnboarding.js'
 import { useReminder } from '../src/features/settings/useReminder.js'
 import { useAccountStatus } from '../src/features/account/useAccountStatus.js'
+import { useLeagueOptOut } from '../src/features/league/useLeagueOptOut.js'
+import { useLeagueEnabled } from '../src/features/league/flag.js'
 import { signOutEverywhere } from '../src/features/account/signOut.js'
 import { useT } from '../src/lib/i18n.js'
 
@@ -54,6 +56,8 @@ export default function SettingsRoute() {
   const { state } = useOnboarding()
   const t = useT()
   const account = useAccountStatus()
+  const leagueOn = useLeagueEnabled()
+  const league = useLeagueOptOut()
 
   /**
    * The words the reminder will arrive in.
@@ -125,6 +129,12 @@ export default function SettingsRoute() {
               onSignOut: () => void signOutEverywhere(),
             },
           })}
+      // Absent on a child account and while the flag is closed — see the prop's note.
+      // Under-13s are never placed in a cohort, so a switch to join one would be one
+      // more control that does nothing.
+      {...(leagueOn && !account.isChild
+        ? { league: { joined: league.joined, onChange: league.setJoined } }
+        : {})}
       reminder={{
         ...reminder,
         onChange: reminder.setEnabled,
