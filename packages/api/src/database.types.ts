@@ -25,7 +25,26 @@ export type Database = {
       [_ in never]: never
     }
     Views: {
-      [_ in never]: never
+      league_standings: {
+        Row: {
+          cohort_id: string | null
+          division: number | null
+          handle: string | null
+          is_you: boolean | null
+          tier: string | null
+          week_id: string | null
+          weekly_xp: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'league_members_cohort_id_fkey'
+            columns: ['cohort_id']
+            isOneToOne: false
+            referencedRelation: 'league_cohorts'
+            referencedColumns: ['id']
+          },
+        ]
+      }
     }
     Functions: {
       graphql: {
@@ -165,6 +184,98 @@ export type Database = {
             foreignKeyName: 'inventory_user_id_fkey'
             columns: ['user_id']
             isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      league_cohorts: {
+        Row: {
+          band: number | null
+          created_at: string
+          division: number
+          id: string
+          tier: string
+          week_id: string
+        }
+        Insert: {
+          band?: number | null
+          created_at?: string
+          division: number
+          id?: string
+          tier: string
+          week_id: string
+        }
+        Update: {
+          band?: number | null
+          created_at?: string
+          division?: number
+          id?: string
+          tier?: string
+          week_id?: string
+        }
+        Relationships: []
+      }
+      league_members: {
+        Row: {
+          cohort_id: string
+          handle: string
+          joined_at: string
+          user_id: string
+          weekly_xp: number
+        }
+        Insert: {
+          cohort_id: string
+          handle: string
+          joined_at?: string
+          user_id: string
+          weekly_xp?: number
+        }
+        Update: {
+          cohort_id?: string
+          handle?: string
+          joined_at?: string
+          user_id?: string
+          weekly_xp?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'league_members_cohort_id_fkey'
+            columns: ['cohort_id']
+            isOneToOne: false
+            referencedRelation: 'league_cohorts'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'league_members_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      league_opt_outs: {
+        Row: {
+          opted_out: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          opted_out?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          opted_out?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'league_opt_outs_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: true
             referencedRelation: 'profiles'
             referencedColumns: ['id']
           },
@@ -616,7 +727,26 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      league_standings: {
+        Row: {
+          cohort_id: string | null
+          division: number | null
+          handle: string | null
+          is_you: boolean | null
+          tier: string | null
+          week_id: string | null
+          weekly_xp: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'league_members_cohort_id_fkey'
+            columns: ['cohort_id']
+            isOneToOne: false
+            referencedRelation: 'league_cohorts'
+            referencedColumns: ['id']
+          },
+        ]
+      }
     }
     Functions: {
       expire_streaks: { Args: never; Returns: number }
