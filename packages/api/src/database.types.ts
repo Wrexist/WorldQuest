@@ -25,26 +25,7 @@ export type Database = {
       [_ in never]: never
     }
     Views: {
-      league_standings: {
-        Row: {
-          cohort_id: string | null
-          division: number | null
-          handle: string | null
-          is_you: boolean | null
-          tier: string | null
-          week_id: string | null
-          weekly_xp: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'league_members_cohort_id_fkey'
-            columns: ['cohort_id']
-            isOneToOne: false
-            referencedRelation: 'league_cohorts'
-            referencedColumns: ['id']
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
       graphql: {
