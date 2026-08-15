@@ -75,7 +75,7 @@ const DEFAULT_ROUTES = [
   '/explore',
   '/quests',
   '/profile',
-  '/more',
+  '/settings',
   '/collection/flags',
   '/country/SE',
   // The continent detail. Absent from this list until it was noticed that it had no
@@ -84,11 +84,22 @@ const DEFAULT_ROUTES = [
   '/region/EU',
   '/achievements',
   '/streak',
+  // The account flow. `mode=link` is the one nearly everybody takes — signing in is the
+  // new-phone path, and its extra piece (the warning over unsaved progress) needs a
+  // streak the harness has no way to have.
+  '/account?mode=link',
+  // The league. Renders its "no league yet" state in the harness — there is no backend
+  // behind it — which is the state most users see most weeks and had never been drawn.
+  '/league',
   // `?source=settings` so it opens on the plans page. From onboarding it opens on
   // "you just learned N countries", which is the right screen there and an empty one
   // here — the harness has no lesson behind it.
   '/paywall?source=settings',
   '/shop',
+  // The quest's cover page — the beat between the home card and the runner.
+  '/quest',
+  // …and the celebration at the other end of it.
+  '/quest-complete',
   // Reached by a gate in the root layout and by the "we miss you" push, never by a tap.
   // It went unphotographed for that reason and was rendering "It's been 0 days." to
   // anyone who followed the notification the same afternoon.
@@ -136,7 +147,7 @@ const SHOOT_FLOWS = process.env.WQ_NO_FLOWS === undefined
  * `context.setOffline` fires the browser's own `offline` event, which is the same
  * path `connectivity.ts` listens on in a real browser. Not a mock, not a test seam.
  */
-const OFFLINE_ROUTES = ['/', '/shop', '/streak', '/more', '/paywall?source=settings']
+const OFFLINE_ROUTES = ['/', '/shop', '/streak', '/settings', '/paywall?source=settings']
 
 /**
  * The routes re-photographed AFTER a lesson has been played.
@@ -165,7 +176,7 @@ const OFFLINE_ROUTES = ['/', '/shop', '/streak', '/more', '/paywall?source=setti
  * rather than asserted. Seeding local state to fake it would photograph a lie about what
  * the client is allowed to decide.
  */
-const PLAYED_ROUTES = ['/profile', '/streak', '/', '/quests']
+const PLAYED_ROUTES = ['/profile', '/streak', '/', '/quests', '/settings']
 
 /**
  * The routes worth photographing with every string inflated by ~40 %.
@@ -175,7 +186,7 @@ const PLAYED_ROUTES = ['/profile', '/streak', '/', '/quests']
  * labels that could push them (Home, Streak), and the lesson, whose answer options are
  * the only place in the app where a wrapped string costs a tap target.
  */
-const PSEUDO_ROUTES = ['/', '/more', '/paywall?source=settings', '/streak', '/lesson', '/quests']
+const PSEUDO_ROUTES = ['/', '/settings', '/account?mode=link', '/paywall?source=settings', '/streak', '/lesson', '/quests']
 
 const TYPES = {
   '.html': 'text/html',
@@ -349,6 +360,20 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
   for (const viewport of VIEWPORTS) {
     const page = await browser.newPage({
       viewport: { width: viewport.width, height: viewport.height },
+      /**
+       * Notifications GRANTED, because denied is not the state worth photographing.
+       *
+       * Chromium answers "denied" by default, so `/settings` rendered the blocked
+       * explanation and its link — and the hour stepper, which only exists when a
+       * reminder will actually arrive, had never been photographed at all. It is a new
+       * control with two icon buttons and a value that has to stay put as it steps, and
+       * none of that is visible in a screen that is not drawing it.
+       *
+       * The denied state is still reachable and still worth a look; it is what the
+       * component test covers and what a device pass sees the first time it declines.
+       * This picks the one a user who said yes is looking at.
+       */
+      permissions: ['notifications'],
     })
     const consoleErrors = []
     page.on('pageerror', (e) => consoleErrors.push(String(e)))

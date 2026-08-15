@@ -11,6 +11,7 @@ import { router } from 'expo-router'
 import { OnboardingScreen, type OnboardingResult } from '../../src/features/onboarding/OnboardingScreen.js'
 import { useOnboarding } from '../../src/features/onboarding/useOnboarding.js'
 import { usePreferences } from '../../src/features/settings/usePreferences.js'
+import { COUNTRY_COUNT } from '../../src/lib/content.js'
 
 export default function OnboardingRoute() {
   const { complete } = useOnboarding()
@@ -51,6 +52,17 @@ export default function OnboardingRoute() {
       // redraws this screen in the chosen language before the finger lifts.
       onLanguage={(choice) => set('language', choice)}
       onFinish={finish}
+      // The build's own count, so the third slide's promise cannot outrun the packs.
+      countryCount={COUNTRY_COUNT}
+      /**
+       * "I already have an account" — a button that has been in this screen, correctly
+       * hidden for children, and wired to nothing since it was written.
+       *
+       * `push`, not `replace`: someone who taps this by mistake, or who turns out not to
+       * have an account after all, has to be able to come back to the taster lesson. The
+       * account screen's own back control is what returns them.
+       */
+      onSignIn={() => router.push('/account?mode=signIn')}
     />
   )
 }

@@ -42,6 +42,32 @@ for a bad migration is a **new** migration, written and reviewed like any other.
 for that: the fastest possible database rollback is as slow as writing a correct
 migration.
 
+### The league migration, specifically
+
+`20260813100000_create_leagues.sql` is add-only — three new tables, a view, a trigger and
+their policies. It touches nothing an earlier client reads, so a client from before it is
+completely unaffected: it does not know the tables exist and never queries them.
+
+Its undo is therefore the easy kind, and worth writing down before it is needed:
+
+```sql
+-- the undo, as a NEW migration — never by editing the landed file
+drop view if exists public.league_standings;
+drop trigger if exists league_members_no_children on public.league_members;
+drop function if exists public.league_member_is_not_a_child();
+drop table if exists public.league_members;
+drop table if exists public.league_opt_outs;
+drop table if exists public.league_cohorts;
+```
+
+Nothing else references them, so the order above is the only constraint. **No user data is
+lost that matters:** a cohort is derived — weekly XP is recomputed from `xp_ledger`, which
+is the real record — so dropping these tables costs a week of standings and no progress.
+
+The one thing to check before running it: whether any coins have been paid out from
+`leaguePodium`. Those live in `coin_ledger` like every other award and are unaffected by
+the drop, which is the point of ledgers.
+
 ## Rule 2 — the reward path is the thing to watch
 
 XP, coins, mastery and streaks are server-authoritative (`record_lesson`, the mastery

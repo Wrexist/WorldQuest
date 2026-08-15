@@ -45,6 +45,14 @@ const GLYPH: Record<string, string> = {
   session: 'perfect',
   set: 'collections',
   lessons: 'collections',
+  // Added with the 2026-08-13 batch. Four of these five glyphs were drawn, shipped and
+  // mapped to nothing — `landmarks`, `legendary`, `premium` and `social` had been in the
+  // bundle since the set was delivered with no achievement pointing at them.
+  currencies: 'premium', //  value, and the only money-shaped glyph in the set
+  locations: 'landmarks', // where a place IS
+  codes: 'countries', //     a dialling code is a fact about a country, like its flag
+  languages: 'social', //    the one about people rather than terrain
+  facts: 'legendary', //     every fact in the app is the biggest thing you can finish
 }
 
 /** `ach.flags.collector` → `glyph-flags`. */

@@ -1,11 +1,14 @@
 {
   "$schema": "../../schema/pack.schema.json",
-  "$comment": "The shop's opening stock, and content rather than code for the usual reason: adding a title is a pack release, not a deploy. IDs ship in user save data — a renamed id is somebody's purchase disappearing, which is a refund request rather than a rename. These are FLAVOUR titles, deliberately not rank titles: the level ladder in packages/i18n/locales/*/titles.json is earned and must stay earned, and selling 'Circumnavigator' to a level-3 player would devalue every hour somebody spent climbing to it. Prices come from BALANCE.prices.titleUnlock via priceFor(); the field here exists so a future sale or a regional adjustment is a pack change, and packages/engines/src/shop validates it against the balance table rather than trusting it.",
+  "$comment": "Purchasable titles. Six was a shop, not a catalogue: the economy simulation has a regular player earning 26,310 coins in ninety days against 6,000 of stock, so there was nothing left to want by about week three. Eighteen now.\n\nAll at `BALANCE.prices.titleUnlock`, and that is not laziness — `priceFor` returns one number for this kind and `catalogue.ts` DROPS any row that disagrees with it, deliberately, so that a pack cannot quietly give the shop away or price something out of reach. Varying title prices is an economy change and belongs in the balance table with a simulation run behind it, not here.\n\nTitles rather than avatar items, map skins or themes, which is where the real money would go: `SELLABLE_KINDS` is `['title']` because \"everything else has no artwork or no runtime\", and the twelve avatars that DO ship are already free in Settings — selling those would be taking something away. A title costs nothing to make and is the one cosmetic this app can honestly stock today.\n\nNames are flavour and never rank. The level ladder in `titles.json` is earned and must stay earned, so nothing here reuses one of its ten words.",
   "packId": "shop.titles",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "subject": "shop",
   "kind": "cosmetics",
-  "locales": ["en", "sv"],
+  "locales": [
+    "en",
+    "sv"
+  ],
   "license": "CC-BY-4.0",
   "generatedAt": "2026-08-03",
   "items": [
@@ -43,6 +46,78 @@
       "id": "title.map-nerd",
       "kind": "title",
       "nameKey": "shop:title.mapNerd",
+      "price": 1000
+    },
+    {
+      "id": "title.compass-rose",
+      "kind": "title",
+      "nameKey": "shop:title.compassRose",
+      "price": 1000
+    },
+    {
+      "id": "title.border-hopper",
+      "kind": "title",
+      "nameKey": "shop:title.borderHopper",
+      "price": 1000
+    },
+    {
+      "id": "title.peak-seeker",
+      "kind": "title",
+      "nameKey": "shop:title.peakSeeker",
+      "price": 1000
+    },
+    {
+      "id": "title.river-reader",
+      "kind": "title",
+      "nameKey": "shop:title.riverReader",
+      "price": 1000
+    },
+    {
+      "id": "title.timezone-tamer",
+      "kind": "title",
+      "nameKey": "shop:title.timezoneTamer",
+      "price": 1000
+    },
+    {
+      "id": "title.atlas-apprentice",
+      "kind": "title",
+      "nameKey": "shop:title.atlasApprentice",
+      "price": 1000
+    },
+    {
+      "id": "title.coast-watcher",
+      "kind": "title",
+      "nameKey": "shop:title.coastWatcher",
+      "price": 1000
+    },
+    {
+      "id": "title.dune-walker",
+      "kind": "title",
+      "nameKey": "shop:title.duneWalker",
+      "price": 1000
+    },
+    {
+      "id": "title.star-steerer",
+      "kind": "title",
+      "nameKey": "shop:title.starSteerer",
+      "price": 1000
+    },
+    {
+      "id": "title.cloud-spotter",
+      "kind": "title",
+      "nameKey": "shop:title.cloudSpotter",
+      "price": 1000
+    },
+    {
+      "id": "title.deep-diver",
+      "kind": "title",
+      "nameKey": "shop:title.deepDiver",
+      "price": 1000
+    },
+    {
+      "id": "title.long-way-round",
+      "kind": "title",
+      "nameKey": "shop:title.longWayRound",
       "price": 1000
     }
   ]

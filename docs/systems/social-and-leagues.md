@@ -1,5 +1,18 @@
 # Social & leagues *(v2.0)*
 
+> **Status, August 2026.** The league's *rules* and its *schema* have landed —
+> `packages/engines/src/leagues` (19 tests) and
+> `supabase/migrations/20260813100000_create_leagues.sql`. The client half has not, and
+> the reason is written into `scripts/reachability.ts` beside the allowlist entry rather
+> than left to look like an oversight: RLS that has never been executed against a real
+> Postgres is RLS that has never been tested, and on a children's leaderboard the failure
+> mode is every child's cohort being readable by everyone. To finish:
+> `pnpm db:start && pnpm db:reset && pnpm db:types && supabase test db`, then the read
+> and the screen.
+>
+> One thing below changed in the building of it, and it is §1's own prerequisite that
+> forced it — see **Handles are assigned, never authored**.
+
 Social features are the strongest retention lever available and the single largest
 safety liability in a product used by children. Both facts are true, so the design
 below is deliberately narrow: **competition without contact.**
@@ -24,6 +37,37 @@ below is deliberately narrow: **competition without contact.**
 
 Everything that follows lives inside those constraints. A social feature that requires
 loosening them does not get built.
+
+### Handles are assigned, never authored
+
+The table above said "no user-authored display text beyond a handle, **which is
+moderated**". Building it made the cost of that clause visible: a moderated handle needs
+a queue, a policy, an appeals path, and somebody reading it on a Sunday. This product has
+none of those and will not have them for a leaderboard, so "which is moderated" was a
+promise the feature could not keep — and an unkept moderation promise on a kids' app is
+the headline the prerequisite above is written to prevent.
+
+So the handle is **assigned**, deterministically, from two curated word lists:
+`Swift Glacier 42`. Not a stopgap for real moderation — strictly stronger than it. There
+is no free text anywhere in the feature, so there is nothing to moderate, nothing to
+report and nobody to block. The surface is removed rather than policed.
+
+It is enforced at three levels, because one is a decision and three is a guarantee:
+
+| Level | What it does |
+|---|---|
+| `packages/engines/src/leagues/handles.ts` | Generates the handle from the user id. 390,000 of them, deterministic, so it survives a reinstall. |
+| A `CHECK` on `league_members.handle` | Only `Word Word 00` can be stored. A future code path that tried to write a display name fails at the database. |
+| No writable column | RLS grants no insert or update on `league_members` at all. Handles are the server's. |
+
+A user who wants to be called something else can be, on the one screen where it reaches
+nobody: their own profile. The league shows the handle.
+
+### Under-13 is absent, and the database says so
+
+Not filtered in the client, not hidden behind a flag — a trigger on `league_members`
+refuses the insert. `profiles.is_child` is set once at signup from the age gate and is
+immutable by trigger, so there is no field to edit around it.
 
 ---
 

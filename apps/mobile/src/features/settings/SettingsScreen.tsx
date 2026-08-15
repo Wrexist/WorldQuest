@@ -15,7 +15,14 @@
 
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { colors, space, text } from '@worldquest/design'
-import { ChoiceRow, LinkRow, Note, Section, SwitchRow } from '../../components/SettingsRow.js'
+import {
+  ChoiceRow,
+  LinkRow,
+  Note,
+  Section,
+  StepperRow,
+  SwitchRow,
+} from '../../components/SettingsRow.js'
 import { AvatarPicker } from './AvatarPicker.js'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
@@ -63,6 +70,46 @@ export type PremiumStatus = {
   readonly onRestore: () => void
 }
 
+/**
+ * The daily reminder, flattened the same way `premium` is and for the same reason.
+ *
+ * A reminder is not a preference — it is a preference AND an OS permission AND a
+ * schedule, and only one of those three lives in `preferences`. Passing the resolved
+ * shape keeps this screen presentational while letting it draw the state that actually
+ * matters: the user said yes and the phone said no.
+ */
+export type ReminderStatus = {
+  /** The preference and the permission, together. Either one false is off. */
+  readonly enabled: boolean
+  /** The user wants it and the OS refuses. The one state a boolean cannot express. */
+  readonly blocked: boolean
+  /** The hour it fires at — chosen, or learned from when this person practises. */
+  readonly hour: number
+  /** Under-13. Only changes the sentence under the stepper, never a capability here. */
+  readonly isChild: boolean
+  /** Absent at the ends of the range. Stepping never wraps into quiet hours. */
+  readonly earlier?: (() => void) | undefined
+  readonly later?: (() => void) | undefined
+  readonly onChange: (value: boolean) => void
+  /** Opens the phone's own settings page for this app. The only fix for `blocked`. */
+  readonly onOpenSystemSettings: () => void
+}
+
+/**
+ * The account, as Settings draws it.
+ *
+ * Absent entirely on a child account — the same shape as `premium`, and for a stronger
+ * reason. We must not collect an email address from an under-13, so there is no flow to
+ * disable; there is no flow. `useAccountStatus` explains what replaces it.
+ */
+export type AccountSection = {
+  /** The linked address, or null while the session is still anonymous. */
+  readonly email: string | null
+  readonly onLink: () => void
+  readonly onSignIn: () => void
+  readonly onSignOut: () => void
+}
+
 export type SettingsScreenProps = {
   /** From app.json at build time; passed in so the screen stays testable. */
   readonly version: string
@@ -97,6 +144,31 @@ export type SettingsScreenProps = {
    * it, which means a new caller cannot accidentally show one.
    */
   readonly premium?: PremiumStatus | undefined
+  /**
+   * Required, not optional.
+   *
+   * An optional reminder would mean a fallback branch that draws the switch straight
+   * onto the preference — which is exactly what this screen did for four months while
+   * nothing was scheduled, and a branch that renders the old lie is a branch that will
+   * be rendered by something.
+   */
+  readonly reminder: ReminderStatus
+  /**
+   * Absent on a child account, which gets the note below instead.
+   *
+   * Not "hidden": there is genuinely nothing here for them, and a disabled row asking
+   * for an email is still a row asking a ten-year-old for an email.
+   */
+  readonly account?: AccountSection | undefined
+  /**
+   * The league toggle, or nothing.
+   *
+   * Absent when the flag is closed and absent on a child account — under-13s are never
+   * placed in a cohort, and a switch offering to join one would be a switch that lies.
+   * Present, it must leave in ONE tap: `social-and-leagues.md` §4 makes that a product
+   * rule, so there is no confirmation and nothing to talk the user out of it.
+   */
+  readonly league?: { readonly joined: boolean; readonly onChange: (value: boolean) => void } | undefined
   readonly onOpenPrivacyPolicy?: (() => void) | undefined
   readonly onOpenTerms?: (() => void) | undefined
   readonly onOpenLicences?: (() => void) | undefined
@@ -117,6 +189,9 @@ export function SettingsScreen({
   onChange: set,
   sync,
   premium,
+  reminder,
+  account,
+  league,
   onOpenPrivacyPolicy,
   onOpenTerms,
   onOpenLicences,
@@ -156,10 +231,84 @@ export function SettingsScreen({
         <SwitchRow
           label={t('settings:reminder.label')}
           help={t('settings:reminder.help')}
-          value={preferences.reminder}
-          onChange={(value) => set('reminder', value)}
+          // The resolved state, not the preference. A switch drawn from the preference
+          // alone sits proudly ON while iOS quietly drops every notification, which is
+          // the shape this feature shipped in and the reason nobody noticed for months.
+          value={reminder.enabled}
+          onChange={reminder.onChange}
         />
+        {/* The one state a boolean cannot express: the user said yes and the phone said
+            no. Nothing here can fix it — only the OS can — so the row states the fact
+            and opens the place where it is fixable, and does not pretend the toggle
+            above is doing anything. */}
+        {reminder.blocked && (
+          <>
+            {/* The sentence as a NOTE, not as a row label. It is an explanation, and
+                `rowLabel` is `bodyStrong` — the first version set a three-line bold
+                paragraph next to a small grey "Open settings", which read as a section
+                heading shouting at its own action. */}
+            <Note body={t('settings:reminder.blocked')} />
+            <LinkRow
+              label={t('settings:reminder.blocked.cta')}
+              onPress={reminder.onOpenSystemSettings}
+            />
+          </>
+        )}
+        {/* Only when a reminder will actually arrive. An hour picker above a
+            notification that is switched off is a control for nothing. */}
+        {reminder.enabled && (
+          <StepperRow
+            label={t('settings:reminder.time')}
+            help={
+              reminder.isChild
+                ? t('settings:reminder.time.child.help')
+                : t('settings:reminder.time.help')
+            }
+            value={t('settings:reminder.time.value', { hour: reminder.hour })}
+            previousLabel={t('settings:reminder.earlier')}
+            nextLabel={t('settings:reminder.later')}
+            {...(reminder.earlier !== undefined ? { onPrevious: reminder.earlier } : {})}
+            {...(reminder.later !== undefined ? { onNext: reminder.later } : {})}
+          />
+        )}
       </Section>
+
+      {/* Account, directly under Learning: it is the section that decides whether any
+          of the rest survives a new phone, and it was not here at all. */}
+      <Section title={t('account:settings.section')}>
+        {account === undefined ? (
+          /* A child account. Says what is true in words a ten-year-old reads without
+             alarm, and names the person who can do something about it. */
+          <Note body={t('account:settings.child')} />
+        ) : account.email !== null ? (
+          <>
+            <LinkRow label={t('account:settings.email')} value={account.email} />
+            <LinkRow label={t('account:settings.signOut')} onPress={account.onSignOut} />
+          </>
+        ) : (
+          <>
+            {/* The state, before the offer. "No account yet" is a fact rather than a
+                warning — nothing is wrong, and the row below says what it buys. */}
+            <LinkRow label={t('account:settings.anonymous')} />
+            <LinkRow label={t('account:settings.link')} onPress={account.onLink} />
+            <LinkRow label={t('account:settings.signIn')} onPress={account.onSignIn} />
+          </>
+        )}
+      </Section>
+
+      {league !== undefined && (
+        <Section title={t('league:settings.label')}>
+          <SwitchRow
+            label={t('league:settings.label')}
+            // Says what is shared BEFORE asking them to opt in, which is the whole
+            // reason the handle is assigned rather than chosen: there is no name to
+            // show, so the sentence can promise there isn't one.
+            help={t('league:settings.help')}
+            value={league.joined}
+            onChange={league.onChange}
+          />
+        </Section>
+      )}
 
       <Section title={t('settings:section.sound')}>
         <SwitchRow

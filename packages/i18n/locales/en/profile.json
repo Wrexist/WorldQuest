@@ -44,5 +44,13 @@
   "profile:week.day": "{day}: {count, plural, =0 {no lessons} one {# lesson} other {# lessons}}",
   "profile:week.day__note": "Accessibility label for one activity bar. {day} is a weekday name.",
   "profile:shop.cta": "Shop",
-  "profile:shop.cta__note": "Row on Profile that opens the shop. Sits under the title it changes; never on Home, where it would put a purchase in front of somebody who opened the app to learn. Max 10 characters."
+  "profile:shop.cta__note": "Row on Profile that opens the shop. Sits under the title it changes; never on Home, where it would put a purchase in front of somebody who opened the app to learn. Max 10 characters.",
+  "profile:level.xp": "{earned} / {span} XP",
+  "profile:level.xp__note": "The XP fraction beside the level number on Profile — points earned INSIDE the current level over the size of that level, which is what the bar under it measures. Both are whole numbers.",
+  "profile:rename": "Change your name",
+  "profile:rename__note": "Accessibility label for the pencil beside the explorer's name. Never rendered visibly — the control is a 16pt pencil.",
+  "profile:badges.title": "Recent badges",
+  "profile:badges.title__note": "Heading over the row of earned achievement medals on Profile. Tapping it opens the full set. Max 18 characters.",
+  "profile:stats.longest.short": "best {days}",
+  "profile:stats.longest.short__note": "The record streak, as a quiet caption under the live one. Lower case on purpose — it is a footnote to the number above it, not a label of its own. {days} is a whole number of days. Max 12 characters."
 }

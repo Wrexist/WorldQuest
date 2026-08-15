@@ -46,8 +46,8 @@ import { coinsShort, purchase, type ShopItem } from '@worldquest/engines'
 import { Icon } from '../../components/Icon.js'
 import { Art } from '../../components/Art.js'
 import type { ArtName } from '../../lib/art.generated.js'
+import type { IconName } from '../../lib/icons.generated.js'
 import { INSIGNIA_SIZE, insigniaFor } from '../../lib/insignia.js'
-import { Stat } from '../../components/Stat.js'
 import { FailureState } from '../../components/FailureState.js'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 
@@ -99,12 +99,30 @@ export function ShopScreen({
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        <Text style={styles.h1} role="heading" aria-level={1}>
-          {t('shop:title')}
-        </Text>
-        <Stat kind="coin" value={coins} accessibilityLabel={t('shop:balance', { count: coins })} />
-      </View>
+      <Text style={styles.h1} role="heading" aria-level={1}>
+        {t('shop:title')}
+      </Text>
+
+      {/* The balance, as the first thing on the screen rather than a chip beside the
+          heading.
+   
+          It is the number every row on this screen is measured against — "1,000 coins"
+          means nothing until you know what you have — and it was a 20pt pill sharing a
+          line with the title. The reference gives it a card of its own with the mascot
+          leaning in, which is what makes it read as YOUR balance rather than as a unit
+          label. Atlas is decorative; the card says what it is in words. */}
+      <Card level={2} style={styles.wallet} accessibilityLabel={t('shop:balance', { count: coins })}>
+        <View style={styles.walletText}>
+          <Text style={styles.walletLabel}>{t('shop:balance.label')}</Text>
+          <View style={styles.walletAmount}>
+            <Icon name="coins" size={24} color={colors.reward.coin} />
+            <Text style={styles.walletNumber}>{coins}</Text>
+          </View>
+        </View>
+        <View style={styles.walletArt} pointerEvents="none">
+          <Art name="atlas/explorer" size={WALLET_ART} />
+        </View>
+      </Card>
 
       {/* The rule the whole screen obeys, in the first sentence a child reads. */}
       <Text style={styles.intro}>{t('shop:intro')}</Text>
@@ -151,6 +169,7 @@ export function ShopScreen({
               <TitleRow
                 key={item.id}
                 name={t(item.nameKey as TranslationKey)}
+                glyph={TITLE_ICON[item.id]}
                 owned={isOwned}
                 equipped={equippedId === item.id}
                 price={t('shop:price', { count: item.price })}
@@ -187,10 +206,53 @@ export function ShopScreen({
   )
 }
 
+/**
+ * A glyph per title, keyed on the item id.
+ *
+ * Every cosmetic row drew an empty 48pt slot: the space is reserved so the one row with
+ * an insignia does not indent its name past the five without one, and for the five it was
+ * reserved and then left blank — a column of white gutter down the left of the only
+ * screen in the app that asks for money.
+ *
+ * These are Lucide glyphs rather than commissioned art, and that is the right call rather
+ * than a stopgap: a shop title is a WORD you wear, not an object, and drawing six
+ * illustrations for six adjectives would make them look like items you own. The rank
+ * insignia stays art, because a rank is a thing.
+ *
+ * Keyed on the id and `Partial`: ids are permanent by rule, and a title shipped without a
+ * glyph gets the empty slot it has today rather than a wrong one.
+ */
+/** Atlas leaning into the wallet card. Sized to the card, not to the mascot. */
+const WALLET_ART = 96
+
+const TITLE_ICON: Partial<Record<string, IconName>> = {
+  'title.flag-fanatic': 'flag',
+  'title.capital-collector': 'capital',
+  'title.night-owl': 'moon',
+  'title.early-bird': 'sunrise',
+  'title.island-hopper': 'pin',
+  'title.map-nerd': 'map',
+  // The 2026-08-13 batch. Twelve more, glyphed from the set that already ships — a
+  // title is a word you wear, so none of these needed drawing.
+  'title.compass-rose': 'pin',
+  'title.border-hopper': 'continent',
+  'title.peak-seeker': 'explore',
+  'title.river-reader': 'globe',
+  'title.timezone-tamer': 'clock',
+  'title.atlas-apprentice': 'medal',
+  'title.coast-watcher': 'map',
+  'title.dune-walker': 'sunrise',
+  'title.star-steerer': 'star',
+  'title.cloud-spotter': 'offline',
+  'title.deep-diver': 'heart',
+  'title.long-way-round': 'quests',
+}
+
 function TitleRow({
   name,
   help,
   insignia,
+  glyph,
   owned,
   equipped,
   price,
@@ -210,6 +272,8 @@ function TitleRow({
    * that row is the earned one, and looking different is the whole point of it.
    */
   readonly insignia?: ArtName | null | undefined
+  /** The bought titles' glyph, filling the slot the insignia leaves empty. */
+  readonly glyph?: IconName | undefined
   readonly owned: boolean
   readonly equipped: boolean
   readonly price?: string
@@ -230,7 +294,15 @@ function TitleRow({
           list of otherwise identical rows had two left edges and the earned title read
           as a different KIND of thing rather than as the same thing, owned. */}
       <View style={styles.insignia}>
-        {insignia != null && <Art name={insignia} size={INSIGNIA_SIZE} />}
+        {insignia != null ? (
+          <Art name={insignia} size={INSIGNIA_SIZE} />
+        ) : glyph !== undefined ? (
+          // Dimmed until it is owned, so the column reads as a set of things you could
+          // have. Decorative — the row already says the title's name.
+          <View style={[styles.glyph, !owned && styles.glyphLocked]}>
+            <Icon name={glyph} size={22} color={colors.reward.coin} />
+          </View>
+        ) : null}
       </View>
       <View style={styles.rowText}>
         <Text style={styles.rowName}>{name}</Text>
@@ -302,6 +374,28 @@ const styles = StyleSheet.create({
   screen: { flex: 1 },
   content: { padding: space[4], gap: space[3] },
 
+  wallet: { flexDirection: 'row', alignItems: 'center', overflow: 'hidden' },
+  walletText: { flex: 1, gap: space[1] },
+  walletLabel: { ...text('caption'), color: colors.text.secondary },
+  walletAmount: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  walletNumber: { ...text('display', { numeric: true }), color: colors.text.primary },
+  // Bleeds past the card's padding on the trailing side, the way the quest card's
+  // mascot does on Home: a cutout inside its own padding reads as a sticker.
+  walletArt: { marginEnd: -space[3], marginVertical: -space[2] },
+  // A tinted disc, so a 22pt glyph fills the 48pt slot an insignia would occupy
+  // instead of floating in the middle of it.
+  glyph: {
+    width: INSIGNIA_SIZE,
+    height: INSIGNIA_SIZE,
+    borderRadius: radius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.bg.surfaceRaised,
+  },
+  // Dimmed, not ghosted. 0.45 photographed as a watermark — the glyph is the only thing
+  // distinguishing five otherwise identical rows, so it has to be legible while still
+  // reading as something you do not own yet.
+  glyphLocked: { opacity: 0.7 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   h1: { ...text('h1'), color: colors.text.primary },
   intro: { ...text('body'), color: colors.text.secondary },

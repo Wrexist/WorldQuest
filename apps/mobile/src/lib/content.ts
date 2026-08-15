@@ -91,6 +91,23 @@ export type LoadedContent = {
  */
 const PRESENTABLE = ['text', 'image', 'map'] as const
 
+/**
+ * How many countries this build actually ships.
+ *
+ * Derived from the pack rather than written down, and exported so that the one place
+ * which makes a PROMISE about it cannot drift from the truth again.
+ *
+ * It had. Onboarding's third slide read "195 flags. 195 capitals." — the number of UN
+ * member states, and the right number for the app this will be — while the packs held
+ * 65. Two screens later Explore said "0 of 65 countries". A new user met the pitch and
+ * its contradiction inside thirty seconds, and "advertises 195, has 65" is the kind of
+ * sentence that ends up in a one-star review verbatim.
+ *
+ * A constant here and a `{count}` in the string means the slide is true on the day the
+ * 66th country lands, with nobody remembering to edit copy.
+ */
+export const COUNTRY_COUNT: number = entitiesPack.items.length
+
 export function useContent() {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('ready')
   const [nonce, setNonce] = useState(0)

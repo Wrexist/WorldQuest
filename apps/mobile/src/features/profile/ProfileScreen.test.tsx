@@ -45,9 +45,15 @@ const world: WorldProgress = {
 describe('Profile — the five states', () => {
   it('renders real numbers', () => {
     render(<ProfileScreen stats={stats} world={world} loading={false} />)
-    expect(screen.getByLabelText('Total XP, 4.8K')).toBeTruthy()
-    expect(screen.getByLabelText('Day streak, 12')).toBeTruthy()
-    expect(screen.getByLabelText('Best streak, 31')).toBeTruthy()
+    // Three tiles, not six. Lifetime XP and the coin balance moved to the two places
+    // that already carried them — the level card's fraction directly above, and the
+    // currency bar at the top of every tab — so printing them here as well was the
+    // same number twice on one scroll.
+    expect(screen.getByLabelText(/^Facts mastered, /)).toBeTruthy()
+    expect(screen.getByLabelText(/^Countries, /)).toBeTruthy()
+    // The record joins the live streak's own label rather than trailing after it as a
+    // fourth tile: same unit, and only one of the two is burning.
+    expect(screen.getByLabelText('Day streak, 12, best 31')).toBeTruthy()
   })
 
   it('shows a skeleton while loading', () => {
@@ -75,16 +81,58 @@ describe('Profile — the five states', () => {
   })
 })
 
+describe('Profile — the only way to Settings', () => {
+  /**
+   * Settings stopped being a tab in the August 2026 redesign and moved behind the gear
+   * on this screen. That makes ONE screen the sole route to language, sound, haptics,
+   * reminders, help and the account area — and the gear lived only in the populated
+   * branch, so a user with no XP had no route to any of it from anywhere in the app.
+   *
+   * Which is to say: every brand-new install. The route resolved, the gear worked, and
+   * the screen looked correct in every screenshot.
+   */
+  const states: readonly (readonly [string, ProfileStats | null])[] = [
+    ['populated', stats],
+    ['first launch', null],
+    ['zeroed user', { xpTotal: 0, coins: 0, streak: 0, longestStreak: 0, factsMastered: 0 }],
+  ]
+
+  for (const [state, only] of states) {
+    it(`offers the gear on the ${state} state`, () => {
+      const onOpenSettings = vi.fn()
+      render(
+        <ProfileScreen
+          stats={only}
+          world={only === stats ? world : null}
+          loading={false}
+          onOpenSettings={onOpenSettings}
+        />,
+      )
+      fireEvent.click(screen.getByLabelText('More'))
+      expect(onOpenSettings).toHaveBeenCalledOnce()
+    })
+  }
+
+  it('draws no coin balance beside an empty profile', () => {
+    // A `0` next to "Nothing to show yet" reads as a scolding rather than a fact.
+    render(<ProfileScreen stats={null} world={null} loading={false} onOpenSettings={() => {}} />)
+    expect(screen.queryByLabelText(/coins/i)).toBeNull()
+  })
+})
+
 describe('Profile — the level curve', () => {
   it('shows the distance to the next level from the real curve', () => {
-    // The mockup shows `12,850 / 15,000 XP`, which corresponds to no coherent
-    // progression. This uses `50·n^1.9`.
-    // `textContent`, not `getByText`: this line is the level bar's own label now — it
-    // used to be a third `Text` under a bar labelled "Level 11", which printed the level
-    // number three times in a card four lines tall — and a label with digits in it goes
-    // through `Tally`, so "12" is its own node.
-    const { container } = render(<ProfileScreen stats={stats} world={world} loading={false} />)
-    expect(container.textContent).toMatch(/XP to level 12/)
+    // The redesign shows `1,250 / 2,000 XP`, which corresponds to no coherent
+    // progression. This uses `50·n^1.9`, so the fraction is the position INSIDE the
+    // current level rather than a lifetime total against the next threshold.
+    render(<ProfileScreen stats={stats} world={world} loading={false} />)
+    // Printed: the fraction, beside the level number.
+    expect(screen.getByText(/\/ .* XP$/)).toBeTruthy()
+    // Spoken but not printed: the distance to the next level. The card already says
+    // "Level 11" and the fraction directly above the bar, so a third line naming the
+    // same thing is the duplication this card was rebuilt to remove — and dropping the
+    // words entirely would have left the bar unnamed for a screen reader.
+    expect(screen.getByLabelText(/XP to level 12/)).toBeTruthy()
   })
 })
 
@@ -102,7 +150,9 @@ describe('Profile — the world section', () => {
     // directly above "0 of 10 learned" from here — two truths on one screen.
     render(<ProfileScreen stats={stats} world={null} loading={false} />)
     expect(screen.queryByText('Your world')).toBeNull()
-    expect(screen.getByLabelText('Total XP, 4.8K')).toBeTruthy()
+    // The rest of the screen still renders — the point is that ONE section is absent,
+    // not that the screen gives up.
+    expect(screen.getByLabelText(/^Facts mastered, /)).toBeTruthy()
   })
 })
 

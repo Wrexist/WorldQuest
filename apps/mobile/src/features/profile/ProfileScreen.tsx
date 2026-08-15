@@ -14,7 +14,7 @@
  * it is the accessible default the component was built around.
  */
 
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   Avatar,
   Button,
@@ -29,14 +29,28 @@ import {
   Tally,
   text,
 } from '@worldquest/design'
-import { levelProgress, type WorldProgress } from '@worldquest/engines'
-import { formatCompact, useT, currentLocale, type TranslationKey } from '../../lib/i18n.js'
+import { levelProgress, type Tier, type WorldProgress } from '@worldquest/engines'
+import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { REGIONS, type RegionCode } from '../explore/ExploreScreen.js'
 import { Art } from '../../components/Art.js'
 import { avatarArt } from '../settings/AvatarPicker.js'
 import { INSIGNIA_SIZE, insigniaFor } from '../../lib/insignia.js'
 import { Icon } from '../../components/Icon.js'
+import { TopBar } from '../../components/TopBar.js'
+import { AchievementMedal } from '../achievements/AchievementMedal.js'
 import type { IconName } from '../../lib/icons.generated.js'
+
+/**
+ * The portrait, and the badges beside it.
+ *
+ * 96 rather than the 72 it was: this is the only picture on the screen and the one thing
+ * a user is looking at when they open their own profile. `BADGE` is sized so four medals
+ * plus their gaps clear 320 with room — five would not, which is why `RECENT_BADGES` is
+ * four rather than "as many as fit".
+ */
+const PORTRAIT = 96
+const BADGE = 60
+const RECENT_BADGES = 4
 
 const REGION_NAME: Record<RegionCode, TranslationKey> = {
   EU: 'explore:region.EU',
@@ -81,8 +95,6 @@ export type ProfileScreenProps = {
    * every user who has never opened the shop.
    */
   readonly wornTitleKey?: string | undefined
-  /** Opens the shop. Absent hides the row rather than showing a dead control. */
-  readonly onOpenShop?: (() => void) | undefined
   /**
    * Starts a lesson from the empty state.
    *
@@ -93,6 +105,27 @@ export type ProfileScreenProps = {
   readonly onStartLesson?: (() => void) | undefined
   /** The chosen avatar id, or null/absent for initials. */
   readonly avatar?: string | null | undefined
+  /**
+   * The badges to show under "Recent", newest first.
+   *
+   * Earned ones only, and the screen renders at most `RECENT_BADGES` of them. Twelve
+   * locked medallions belong on the achievements screen, which draws every one of them
+   * and can say what each is for; a row on Profile is a trophy shelf, and a shelf of
+   * things you have not won is not a shelf.
+   */
+  readonly badges?: readonly ProfileBadge[] | undefined
+  /** Opens the achievements screen from the badge row's heading. */
+  readonly onOpenAchievements?: (() => void) | undefined
+  /** Opens Settings — the gear, now that More is not a tab. */
+  readonly onOpenSettings?: (() => void) | undefined
+  /** Renames the explorer. Absent renders the identity without a pencil. */
+  readonly onRename?: (() => void) | undefined
+}
+
+/** One earned badge: which achievement, and the highest tier reached. */
+export type ProfileBadge = {
+  readonly id: string
+  readonly tier: Tier
 }
 
 export function ProfileScreen({
@@ -102,12 +135,14 @@ export function ProfileScreen({
   loading,
   onCreateAccount,
   wornTitleKey,
-  onOpenShop,
   onStartLesson,
   avatar,
+  badges,
+  onOpenAchievements,
+  onOpenSettings,
+  onRename,
 }: ProfileScreenProps) {
   const t = useT()
-  const locale = currentLocale()
   // Falls back to initials when nothing is chosen, and also when a stored id names an
   // avatar this build does not ship — a set that shrinks must not leave a blank circle.
   const portrait = avatarArt(avatar ?? null)
@@ -116,32 +151,55 @@ export function ProfileScreen({
 
   if (stats === null || stats.xpTotal === 0) {
     return (
-      <View style={[styles.screen, styles.centered]}>
-        <Avatar
-          size={72}
-          accessibilityLabel={t('profile:anonymous')}
+      <View style={styles.screen}>
+        {/* The gear, on the state that needs it MOST.
+
+            Settings stopped being a tab in the August 2026 redesign and moved behind
+            this gear — which lived only in the populated branch below. So the way to
+            language, sound, haptics and reminders existed for a user with XP and
+            existed for nobody else: a brand-new install, a user whose first lesson had
+            not synced yet, and anyone running without a backend all landed here, where
+            there was no route to Settings from anywhere in the app.
+
+            Every symptom of that is invisible. The route still resolves, the gear still
+            works, the screen still looks right, and the only person who finds out is a
+            new user hunting for the language switch. The e2e walk caught it because it
+            follows the path a user has to take rather than pushing the route.
+
+            No coin chip: an empty profile has nothing to report and a `0` beside a
+            "nothing here yet" screen reads as a scolding rather than a fact. */}
+        <TopBar
           initials="EX"
-          {...(portrait !== null ? { image: <Art name={portrait} size={72} /> } : {})}
+          {...(portrait !== null ? { avatar: <Art name={portrait} size={40} /> } : {})}
+          {...(onOpenSettings !== undefined ? { onSettings: onOpenSettings } : {})}
         />
-        {/* The blank explorer's journal, briefed for this screen as "ready to be
-            filled, not sad" — which is the same distinction `profile:empty.body`
-            draws in words. */}
-        <Art name="states/empty-profile" size={140} />
-        <Text style={styles.title} role="heading">
-          {t('profile:empty.title')}
-        </Text>
-        <Text style={styles.subtitle}>{t('profile:empty.body')}</Text>
-        {/* The empty state named the way out and did not open it. An empty state that
-            tells you what to do next and then makes you find it yourself is a dead
-            end — the one place a new user is most likely to be looking for a way in. */}
-        {onStartLesson !== undefined && (
-          <Button
-            label={t('profile:empty.cta')}
-            onPress={onStartLesson}
-            fullWidth={false}
-            style={styles.emptyCta}
+        <View style={[styles.screen, styles.centered]}>
+          <Avatar
+            size={72}
+            accessibilityLabel={t('profile:anonymous')}
+            initials="EX"
+            {...(portrait !== null ? { image: <Art name={portrait} size={72} /> } : {})}
           />
-        )}
+          {/* The blank explorer's journal, briefed for this screen as "ready to be
+              filled, not sad" — which is the same distinction `profile:empty.body`
+              draws in words. */}
+          <Art name="states/empty-profile" size={140} />
+          <Text style={styles.title} role="heading">
+            {t('profile:empty.title')}
+          </Text>
+          <Text style={styles.subtitle}>{t('profile:empty.body')}</Text>
+          {/* The empty state named the way out and did not open it. An empty state that
+              tells you what to do next and then makes you find it yourself is a dead
+              end — the one place a new user is most likely to be looking for a way in. */}
+          {onStartLesson !== undefined && (
+            <Button
+              label={t('profile:empty.cta')}
+              onPress={onStartLesson}
+              fullWidth={false}
+              style={styles.emptyCta}
+            />
+          )}
+        </View>
       </View>
     )
   }
@@ -154,58 +212,94 @@ export function ProfileScreen({
   // showing a rank insignia beside it would claim a level the user has not reached.
   const insignia = insigniaFor(progress.titleKey)
 
+  const earned = (badges ?? []).slice(0, RECENT_BADGES)
+
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      <TopBar
+        initials="EX"
+        {...(portrait !== null ? { avatar: <Art name={portrait} size={40} /> } : {})}
+        coins={stats.coins}
+        {...(onOpenSettings !== undefined ? { onSettings: onOpenSettings } : {})}
+      />
+
+      {/* Portrait, name, worn title — one block, centred.
+   
+          It was an avatar with the name beside it and the title three lines down inside
+          the level card, so the two halves of an identity sat in different components.
+          Stacked, the title reads as what it is: something you are called, under the
+          face you chose. */}
       <View style={styles.identity}>
-        <Avatar
-          size={72}
-          accessibilityLabel={t('profile:anonymous')}
-          initials="EX"
-          {...(portrait !== null ? { image: <Art name={portrait} size={72} /> } : {})}
-        />
-        <Text style={styles.name} role="heading">
-          {t('profile:anonymous')}
+        <View style={styles.portrait}>
+          <Avatar
+            size={PORTRAIT}
+            ringed={false}
+            accessibilityLabel={t('profile:anonymous')}
+            initials="EX"
+            {...(portrait !== null ? { image: <Art name={portrait} size={PORTRAIT} /> } : {})}
+          />
+        </View>
+        <View style={styles.nameRow}>
+          <Text style={styles.name} role="heading">
+            {t('profile:anonymous')}
+          </Text>
+          {/* A real 44pt target around a 16pt pencil, and absent rather than dead when
+              there is nothing to rename into. */}
+          {onRename !== undefined && (
+            <Pressable
+              onPress={onRename}
+              role="button"
+              aria-label={t('profile:rename')}
+              hitSlop={12}
+              style={styles.pencil}
+            >
+              <Icon name="edit" size={16} color={colors.text.tertiary} />
+            </Pressable>
+          )}
+        </View>
+        <Text style={styles.wornTitle}>
+          {t((wornTitleKey ?? levelProgress(stats.xpTotal).titleKey) as TranslationKey)}
         </Text>
       </View>
 
+      {/* Level on the left, the XP fraction on the right, the bar under both.
+   
+          The insignia and the title used to live in here too, which made one card carry
+          the level number three separate times. The title has moved up to the identity
+          block where it belongs, and what is left is the one thing a level card is for:
+          how far through this level you are, in the same units on the bar and beside it.
+   
+          The fraction is `earnedInLevel / levelSpan` — the position INSIDE the band, not
+          the lifetime total against the next threshold. Those two differ by every point
+          earned before this level and the second one is what makes a bar disagree with
+          the number printed next to it. */}
       <Card style={styles.levelCard}>
-        {/* The title is the reward here, not the number. Levels are a ladder; a title
-            is something a user says out loud, and it is the cheapest status reward
-            that exists (xp-economy.md). */}
-        {/* The rank's own insignia, when it has one.
-            The title ladder is the slowest reward in the app — a rank takes weeks — and
-            it arrived as a word. Six of the ten ranks are drawn (`asset-prompts.md`
-            §12); `scout`, `circumnavigator`, `trailblazer` and `globetrotter` are not
-            yet, and a bought shop title is not a rank at all, so this renders nothing
-            rather than guessing. Decorative — the title is right beside it in words. */}
-        {insignia !== null && (
-          <View style={styles.insignia}>
-            <Art name={insignia} size={INSIGNIA_SIZE} />
-          </View>
-        )}
-        <Text style={styles.levelTitle}>
-          {t('profile:levelTitle', {
-            level: progress.level,
-            // The worn title when there is one, the earned one otherwise. The level
-            // number stays either way: a bought title is a different hat, not a
-            // shortcut up the ladder.
-            title: t((wornTitleKey ?? progress.titleKey) as TranslationKey),
-          })}
-        </Text>
-        {/* No label. The card reads "Level 1 · Wanderer" directly above and "102 XP to
-            level 2" directly below, and the bar was printing "Level 1" between them —
-            the level number three times in a card four lines tall, and the one line of
-            the three that said nothing about what the bar measures.
-
-            The same defect Home's quest card and Explore's world card each had: a bar
-            labelled with a quantity it does not measure. This one measures XP inside the
-            band, which is what the line under it already says in words, so the bar takes
-            its accessible name from that instead of adding a fourth voice. */}
+        <View style={styles.levelRow}>
+          {/* The rank's own insignia, when it has one. Six of the ten ranks are drawn
+              (`asset-prompts.md` §12) and a bought shop title is not a rank at all, so
+              this renders nothing rather than guessing. Decorative — the level is beside
+              it in words. */}
+          {insignia !== null && <Art name={insignia} size={INSIGNIA_SIZE} />}
+          <Text style={styles.levelNumber}>{t('profile:level', { level: progress.level })}</Text>
+          <View style={styles.spacer} />
+          <Text style={styles.levelXp}>
+            {t('profile:level.xp', {
+              earned: progress.earnedInLevel,
+              span: Math.max(1, progress.levelSpan),
+            })}
+          </Text>
+        </View>
         <ProgressBar
           current={progress.earnedInLevel}
           total={Math.max(1, progress.levelSpan)}
           showCount={false}
-          label={
+          tone="reward"
+          // Named but not captioned. The row directly above already reads "Level 12" and
+          // "41 / 187 XP", so a third line saying "146 XP to level 2" is the same fact a
+          // third time in a card four lines tall — which is the exact defect this file
+          // records for the level NUMBER one section down. The sentence survives as the
+          // bar's name and value, where it is the only thing a reader gets.
+          accessibilityLabel={
             progress.remaining === null
               ? t('profile:level.max')
               : t('profile:level.next', {
@@ -213,55 +307,70 @@ export function ProfileScreen({
                   level: progress.level + 1,
                 })
           }
+          valueText={t('profile:level.xp', {
+            earned: progress.earnedInLevel,
+            span: Math.max(1, progress.levelSpan),
+          })}
         />
       </Card>
 
       {week !== undefined && <WeeklyActivity week={week} />}
 
-      <Section title={t('profile:stats.title')}>
-        <View style={styles.statGrid}>
-          <Stat
-            icon="xp"
-            tint={colors.reward.xp}
-            label={t('profile:stats.xp')}
-            value={formatCompact(stats.xpTotal, locale)}
-          />
-          <Stat
-            icon="coins"
-            tint={colors.reward.coin}
-            label={t('profile:stats.coins')}
-            value={formatCompact(stats.coins, locale)}
-          />
-          <Stat
-            icon="streak"
-            tint={colors.status.streak}
-            label={t('profile:stats.streak')}
-            value={String(stats.streak)}
-          />
-          {/* The same flame for the same quantity, and `text.tertiary` because this one
-              is the RECORD rather than the live streak. Two identical gold flames would
-              say the two numbers are the same kind of thing; they are the same unit, and
-              only one of them is burning. */}
-          <Stat
-            icon="streak"
-            tint={colors.text.tertiary}
-            label={t('profile:stats.longest')}
-            value={String(stats.longestStreak)}
-          />
-          <Stat
-            icon="star"
-            tint={colors.status.progress}
-            label={t('profile:stats.mastered')}
-            value={String(stats.factsMastered)}
-          />
-          <Stat
-            icon="globe"
-            tint={colors.action.primary}
-            label={t('profile:stats.countries')}
-            value={String(world?.entitiesComplete ?? 0)}
-          />
-        </View>
-      </Section>
+      {/* Three numbers, not six.
+   
+          It was a six-tile grid holding XP, coins, streak, longest streak, facts and
+          countries — and two of those six now have a better home: the coin balance is in
+          the bar at the top of every tab, and lifetime XP is the fraction on the level
+          card directly above. Printing them again here was the same defect this file
+          already records for the level number, one section down.
+   
+          What is left is what a record is actually for: how much you know, how much of
+          the world that covers, and whether you came back. Longest streak keeps its place
+          as the caption under the live one rather than as a seventh tile — same unit, and
+          only one of the two is burning. */}
+      <View style={styles.statRow}>
+        <Stat
+          icon="star"
+          tint={colors.status.progress}
+          label={t('profile:stats.mastered')}
+          value={String(stats.factsMastered)}
+        />
+        <Stat
+          icon="globe"
+          tint={colors.action.primary}
+          label={t('profile:stats.countries')}
+          value={String(world?.entitiesComplete ?? 0)}
+        />
+        <Stat
+          icon="streak"
+          tint={colors.status.streak}
+          label={t('profile:stats.streak')}
+          value={String(stats.streak)}
+          caption={t('profile:stats.longest.short', { days: stats.longestStreak })}
+        />
+      </View>
+
+      {/* The trophy shelf.
+   
+          Earned only, newest first — see `badges`. The heading is the way in to the full
+          set, which is where a locked achievement can be shown next to what it is for. */}
+      {earned.length > 0 && (
+        <Section
+          title={t('profile:badges.title')}
+          {...(onOpenAchievements !== undefined ? { onPress: onOpenAchievements } : {})}
+        >
+          <View style={styles.badgeRow}>
+            {earned.map((badge) => (
+              <AchievementMedal
+                key={badge.id}
+                achievementId={badge.id}
+                tier={badge.tier}
+                size={BADGE}
+              />
+            ))}
+          </View>
+        </Section>
+      )}
 
       {world !== null && (
         <Section title={t('profile:world.title')}>
@@ -298,17 +407,6 @@ export function ProfileScreen({
         </Section>
       )}
 
-      {onOpenShop !== undefined && (
-        // Right under the title it changes, and nowhere else. A shop entry on Home
-        // would put a purchase in front of somebody who opened the app to learn.
-        <Card level={1} onPress={onOpenShop} role="button" accessibilityLabel={t('profile:shop.cta')} style={styles.shopRow}>
-          <Icon name="shop" size={20} color={colors.reward.coin} />
-          <Text style={styles.shopLabel}>{t('profile:shop.cta')}</Text>
-          <View style={styles.spacer} />
-          <Icon name="chevron" size={18} color={colors.text.tertiary} />
-        </Card>
-      )}
-
       {onCreateAccount !== undefined && (
         <Card style={styles.accountCard}>
           <Text style={styles.cardTitle}>{t('profile:account.title')}</Text>
@@ -322,12 +420,36 @@ export function ProfileScreen({
   )
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+/**
+ * A titled block, with an optional way into the screen that owns the whole set.
+ *
+ * The chevron is on the HEADING rather than a "See all" row underneath, because the
+ * heading is already the thing naming the destination and a second control saying the
+ * same word is a second control to skip past with a screen reader.
+ */
+function Section({
+  title,
+  onPress,
+  children,
+}: {
+  title: string
+  onPress?: (() => void) | undefined
+  children: React.ReactNode
+}) {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle} role="heading">
-        {title}
-      </Text>
+      {onPress === undefined ? (
+        <Text style={styles.sectionTitle} role="heading">
+          {title}
+        </Text>
+      ) : (
+        <Pressable onPress={onPress} role="button" style={styles.sectionHead} hitSlop={8}>
+          <Text style={styles.sectionTitle} role="heading">
+            {title}
+          </Text>
+          <Icon name="chevron" size={18} color={colors.text.tertiary} />
+        </Pressable>
+      )}
       {children}
     </View>
   )
@@ -351,18 +473,27 @@ function Stat({
   value,
   icon,
   tint,
+  caption,
 }: {
   label: string
   value: string
   readonly icon: IconName
   readonly tint: string
+  /** A second, quieter number about the same thing — the streak's record. */
+  readonly caption?: string | undefined
 }) {
   return (
-    // One element: a reader says "Total XP, 12.9K" rather than two disconnected nodes.
-    <View accessible aria-label={`${label}, ${value}`} style={styles.stat}>
-      <Icon name={icon} size={16} color={tint} />
+    // One element: a reader says "Facts learned, 347" rather than three disconnected
+    // nodes, and the caption joins that one phrase rather than trailing after it.
+    <View
+      accessible
+      aria-label={caption === undefined ? `${label}, ${value}` : `${label}, ${value}, ${caption}`}
+      style={styles.stat}
+    >
+      <Icon name={icon} size={20} color={tint} />
       <Text style={styles.statValue}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
+      {caption !== undefined && <Text style={styles.statCaption}>{caption}</Text>}
     </View>
   )
 }
@@ -462,7 +593,6 @@ const styles = StyleSheet.create({
   content: { padding: space[4], gap: space[4] },
   centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },
 
-  identity: { alignItems: 'center', gap: space[2] },
   name: { ...text('h1'), color: colors.text.primary },
   title: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
   subtitle: { ...text('caption'), color: colors.text.secondary },
@@ -476,26 +606,51 @@ const styles = StyleSheet.create({
   section: { gap: space[2] },
   sectionTitle: { ...text('overline'), color: colors.text.tertiary },
 
-  statGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
+  // Three across, each taking a third. `flex: 1` on the tiles rather than a percentage
+  // width, because a percentage plus a gap overflows the row by the gap — the same trap
+  // the lesson's answer grid and onboarding's continent grid each document.
+  statRow: { flexDirection: 'row', gap: space[2] },
+  badgeRow: { flexDirection: 'row', gap: space[3], alignItems: 'center' },
+  sectionHead: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  identity: { alignItems: 'center', gap: space[1] },
+  // A ring drawn by the layout rather than by `Avatar`, so it can be the accent and thick
+  // enough to read at 96 — `ringed` is a hairline sized for the 40pt header avatar.
+  portrait: {
+    padding: space[1],
+    borderRadius: radius.full,
+    borderWidth: 3,
+    borderColor: colors.action.primaryEdge,
+    backgroundColor: colors.bg.surface,
+  },
+  nameRow: { flexDirection: 'row', alignItems: 'center', gap: space[1], marginTop: space[2] },
+  pencil: { padding: space[1] },
+  wornTitle: { ...text('body'), color: colors.text.secondary },
+  levelRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  levelNumber: { ...text('h3'), color: colors.text.primary },
+  // Tabular, like every other fraction in the app: two numbers that change independently
+  // must not shift each other sideways as they do.
+  levelXp: { ...text('caption', { numeric: true }), color: colors.text.secondary },
+  statCaption: { ...text('caption'), color: colors.text.tertiary },
   stat: {
-    // Three per row at phone width, with the grid's gap between them.
-    width: '31%',
+    // `flex: 1` and not a percentage: these sit in a row with a `gap`, and a percentage
+    // width plus a gap overflows the row by the gap.
+    flex: 1,
+    alignItems: 'center',
     gap: space[1],
-    padding: space[3],
+    paddingVertical: space[4],
+    paddingHorizontal: space[2],
     borderRadius: radius.lg,
     ...squircle,
     backgroundColor: colors.bg.surface,
   },
   statValue: { ...text('numeric'), color: colors.text.primary },
-  statLabel: { ...text('caption'), color: colors.text.secondary },
+  statLabel: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
 
   worldCard: { gap: space[3] },
   regionRow: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   swatch: { width: 6, height: 28, borderRadius: radius.full },
   regionBar: { flex: 1 },
 
-  shopRow: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
-  shopLabel: { ...text('bodyStrong'), color: colors.text.primary },
   spacer: { flex: 1 },
   accountCard: { gap: space[3] },
   cardTitle: { ...text('h3'), color: colors.text.primary },

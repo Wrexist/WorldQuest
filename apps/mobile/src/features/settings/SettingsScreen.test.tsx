@@ -3,10 +3,34 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { SettingsScreen, type PremiumStatus } from './SettingsScreen.js'
 import { DEFAULTS } from './usePreferences.js'
 
+/**
+ * A reminder that is on, permitted and scheduled for 19:00.
+ *
+ * Spelled out rather than defaulted inside the screen: the whole point of
+ * `ReminderStatus` being required is that there is no "just draw the preference"
+ * fallback branch, and a helper that quietly supplied one would put it back.
+ */
+const reminderOn = () => ({
+  enabled: true,
+  blocked: false,
+  hour: 19,
+  isChild: false,
+  earlier: vi.fn(),
+  later: vi.fn(),
+  onChange: vi.fn(),
+  onOpenSystemSettings: vi.fn(),
+})
+
 const renderSettings = (overrides: Partial<Parameters<typeof SettingsScreen>[0]> = {}) => {
   const onChange = vi.fn()
   const result = render(
-    <SettingsScreen version="1.2.3" preferences={DEFAULTS} onChange={onChange} {...overrides} />,
+    <SettingsScreen
+      version="1.2.3"
+      preferences={DEFAULTS}
+      onChange={onChange}
+      reminder={reminderOn()}
+      {...overrides}
+    />,
   )
   return { ...result, onChange }
 }
@@ -144,6 +168,7 @@ describe('Settings — work waiting to sync', () => {
   const withSync = (parked: number, onRetry = vi.fn()) => {
     render(
       <SettingsScreen
+        reminder={reminderOn()}
         version="1.0.0"
         preferences={DEFAULTS}
         onChange={vi.fn()}
@@ -156,7 +181,7 @@ describe('Settings — work waiting to sync', () => {
   it('says nothing at all when nothing is waiting', () => {
     // A permanent "0 items waiting" row is anxiety with no cause.
     const { container } = render(
-      <SettingsScreen version="1.0.0" preferences={DEFAULTS} onChange={vi.fn()} sync={syncProp()} />,
+      <SettingsScreen version="1.0.0" preferences={DEFAULTS} onChange={vi.fn()} reminder={reminderOn()} sync={syncProp()} />,
     )
     expect(container.textContent).not.toMatch(/waiting to sync/i)
   })
@@ -176,7 +201,7 @@ describe('Settings — work waiting to sync', () => {
     // The work IS safe — it just has not arrived. A child reading "failed" hears
     // "your lessons are gone".
     const { container } = render(
-      <SettingsScreen version="1.0.0" preferences={DEFAULTS} onChange={vi.fn()} sync={syncProp({ parked: 3 })} />,
+      <SettingsScreen version="1.0.0" preferences={DEFAULTS} onChange={vi.fn()} reminder={reminderOn()} sync={syncProp({ parked: 3 })} />,
     )
     expect(container.textContent).not.toMatch(/failed|error|couldn'?t sync|problem/i)
   })
@@ -211,7 +236,7 @@ const PREMIUM: PremiumStatus = {
 const withPremium = (over: Partial<PremiumStatus> = {}) => {
   const premium = { ...PREMIUM, ...over, onFixBilling: vi.fn(), onSeePlans: vi.fn(), onRestore: vi.fn() }
   const view = render(
-    <SettingsScreen version="1.0.0" preferences={DEFAULTS} onChange={vi.fn()} premium={premium} />,
+    <SettingsScreen version="1.0.0" preferences={DEFAULTS} onChange={vi.fn()} reminder={reminderOn()} premium={premium} />,
   )
   return { ...view, premium }
 }
@@ -332,6 +357,7 @@ describe('Settings — work that is merely waiting', () => {
   it('says a queued lesson is on its way', () => {
     render(
       <SettingsScreen
+        reminder={reminderOn()}
         version="1.0.0"
         preferences={DEFAULTS}
         onChange={vi.fn()}
@@ -346,6 +372,7 @@ describe('Settings — work that is merely waiting', () => {
     // nothing, and a user who presses it twice learns not to trust the screen.
     render(
       <SettingsScreen
+        reminder={reminderOn()}
         version="1.0.0"
         preferences={DEFAULTS}
         onChange={vi.fn()}
@@ -358,6 +385,7 @@ describe('Settings — work that is merely waiting', () => {
   it('still never says failed, on either message', () => {
     const { container } = render(
       <SettingsScreen
+        reminder={reminderOn()}
         version="1.0.0"
         preferences={DEFAULTS}
         onChange={vi.fn()}
@@ -374,6 +402,7 @@ describe('Settings — work that is merely waiting', () => {
     // / "as soon as you're online"), so neither can stand in for the other.
     const { container } = render(
       <SettingsScreen
+        reminder={reminderOn()}
         version="1.0.0"
         preferences={DEFAULTS}
         onChange={vi.fn()}
@@ -389,6 +418,7 @@ describe('Settings — work that is merely waiting', () => {
   it('stays silent when the queue is empty', () => {
     const { container } = render(
       <SettingsScreen
+        reminder={reminderOn()}
         version="1.0.0"
         preferences={DEFAULTS}
         onChange={vi.fn()}
@@ -403,5 +433,87 @@ describe('Settings — work that is merely waiting', () => {
     // wrong if somebody rewords the heading.
     expect(container.textContent).not.toMatch(/waiting to sync/i)
     expect(container.textContent).not.toMatch(/waiting to reach the server/i)
+  })
+})
+
+describe('Settings — the daily reminder, which was a lie until now', () => {
+  it('draws the switch from the resolved state, not from the preference', () => {
+    // The preference has defaulted to ON since the first week while nothing was ever
+    // scheduled. A switch bound to the preference sits proudly on while iOS drops every
+    // notification, and that is the shape this feature shipped in for four months.
+    render(
+      <SettingsScreen
+        version="1.0.0"
+        preferences={DEFAULTS}
+        onChange={vi.fn()}
+        reminder={{ ...reminderOn(), enabled: false, blocked: true }}
+      />,
+    )
+    expect(screen.getByRole('switch', { name: 'Daily reminder' }).getAttribute('aria-checked')).toBe(
+      'false',
+    )
+  })
+
+  it('says so when the phone is the thing saying no, and opens where it is fixable', () => {
+    // The one state a boolean cannot express: the user said yes and the OS said no.
+    // Nothing in this app can fix it, so the row states the fact and links out.
+    const onOpenSystemSettings = vi.fn()
+    render(
+      <SettingsScreen
+        version="1.0.0"
+        preferences={DEFAULTS}
+        onChange={vi.fn()}
+        reminder={{ ...reminderOn(), enabled: false, blocked: true, onOpenSystemSettings }}
+      />,
+    )
+    // The sentence is a note; the action is the row below it.
+    expect(screen.getAllByText(/Notifications are off/).length).toBeGreaterThan(0)
+    fireEvent.click(screen.getByText('Open settings'))
+    expect(onOpenSystemSettings).toHaveBeenCalledOnce()
+  })
+
+  it('offers the hour only when a reminder will actually arrive', () => {
+    // An hour picker above a notification that is switched off is a control for nothing.
+    render(
+      <SettingsScreen
+        version="1.0.0"
+        preferences={DEFAULTS}
+        onChange={vi.fn()}
+        reminder={{ ...reminderOn(), enabled: false }}
+      />,
+    )
+    expect(screen.queryByText('19:00')).toBeNull()
+  })
+
+  it('steps the hour without wrapping into quiet hours', () => {
+    render(
+      <SettingsScreen
+        version="1.0.0"
+        preferences={DEFAULTS}
+        onChange={vi.fn()}
+        // 20:00 is the last hour before quiet hours start, so there is no "later".
+        // Wrapping to 08:00 on one tap would put a reminder twelve hours from where the
+        // user meant it, which is the single most uninstall-worthy thing this can do.
+        reminder={{ ...reminderOn(), hour: 20, later: undefined }}
+      />,
+    )
+    expect(screen.getByText('20:00')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Later' }).getAttribute('aria-disabled')).toBe('true')
+  })
+
+  it('tells a child account why its range stops earlier', () => {
+    // Under-13 gets one a day and never after 19:00. A range that silently differs is a
+    // range a parent cannot verify.
+    render(
+      <SettingsScreen
+        version="1.0.0"
+        preferences={DEFAULTS}
+        onChange={vi.fn()}
+        reminder={{ ...reminderOn(), hour: 18, isChild: true }}
+      />,
+    )
+    // `getAllBy`: react-native-web renders a Text as nested divs, so the phrase matches
+    // both the wrapper and the leaf. The assertion is that it is on screen at all.
+    expect(screen.getAllByText(/child account/).length).toBeGreaterThan(0)
   })
 })

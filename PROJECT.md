@@ -138,7 +138,7 @@ worldquest/
 ├── apps/
 │   ├── mobile/                 Expo app — SCREENS AND NAVIGATION ONLY
 │   │   ├── app/                expo-router file routes
-│   │   │   ├── (tabs)/         home · explore · quests · profile · more
+│   │   │   ├── (tabs)/         home · explore · quests · profile · shop
 │   │   │   ├── (auth)/         onboarding · sign-in
 │   │   │   ├── lesson/         the lesson runner (modal stack)
 │   │   │   └── _layout.tsx
@@ -347,8 +347,18 @@ Distilled from the mockup ([`docs/design/assets/mockup-v1.png`](docs/design/asse
    correct answer, ≤ 900 ms, then Continue. Celebration never blocks the next tap.
 6. **Thumb-first.** Primary actions live in the bottom third. Nothing critical within
    44 pt of the top edge.
-7. **Five tabs, forever.** Home · Explore · Quests · Profile · More. New features
+7. **Five tabs, forever.** Home · Explore · Quests · Profile · Shop. New features
    find a home inside these — they do not add a tab.
+
+   The fifth was **More** until the August 2026 redesign, and swapping it is the one
+   change this rule permits: the count is the rule, and which five is a product
+   decision that has to be argued. The argument, recorded in
+   `app/(tabs)/_layout.tsx`: More held Settings, a screen a user opens twice in a
+   lifetime, while the Shop — the only sink for a currency every lesson pays out —
+   was one row deep on Profile, with the economy simulation showing a regular player
+   earning 26,310 coins in ninety days and nowhere to look for what to do with them.
+   Settings moved to the gear on Profile, which is where every phone already keeps
+   one, so a destination moved to where users look first rather than being buried.
 8. **Every screen has five states.** Content, loading (skeleton, not spinner), empty,
    error, offline. A screen without all five is not done ([§12](#12-definition-of-done)).
 9. **Motion is physical.** Things scale and spring; they don't fade in place.

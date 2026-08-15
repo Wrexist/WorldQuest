@@ -1,28 +1,36 @@
 {
   "quests:title": "Dagens uppdrag",
   "quests:subtitle": "Fem saker. Ungefär tio minuter.",
-
   "quests:progress": "{done} av {total} klara",
   "quests:reward.task": "+{xp} XP",
   "quests:reward.bonus": "+{xp} XP för alla fem",
-
   "quests:slot.locate": "Hitta på kartan",
   "quests:slot.recognise": "Känn igen flaggan",
   "quests:slot.recall": "Namnge huvudstaden",
   "quests:slot.discover": "Lär dig något nytt",
   "quests:slot.perform": "Avsluta starkt",
-
   "quests:goal.perfect_lesson": "En lektion utan fel",
   "quests:goal.speed_round": "En lektion på under 90 sekunder",
   "quests:goal.streak_keeper": "Vilken lektion som helst – det är hela uppgiften",
-
   "quests:task.count": "{progress} / {target}",
   "quests:task.done": "Klart",
   "quests:task.label": "{title}, {progress} av {target}",
-
   "quests:complete.title": "Alla fem. Snyggt jobbat.",
   "quests:complete.body": "Ditt nästa uppdrag kommer vid midnatt.",
-
   "quests:empty.title": "Ditt uppdrag byggs",
-  "quests:empty.body": "Gör en lektion så är dagens fem redo."
+  "quests:empty.body": "Gör en lektion så är dagens fem redo.",
+  "quests:tab.daily": "Dagligt",
+  "quests:tab.achievements": "Utmärkelser",
+  "quests:resets": "Nya uppdrag om {hours} tim {minutes} min",
+  "quests:intro.title": "Dagens uppdrag",
+  "quests:intro.headline": "{count, plural, one {Svara på # fråga} other {Svara på # frågor}}",
+  "quests:intro.body": "Klara alla för att få bonusen.",
+  "quests:intro.start": "Starta uppdraget",
+  "quests:done.title": "Uppdraget klart",
+  "quests:done.body": "Det var dagens fem. Kom tillbaka i morgon för nästa omgång.",
+  "quests:done.reward.xp": "Bonus: {amount} XP",
+  "quests:done.reward.coins": "Bonus: {amount} mynt",
+  "quests:done.streak": "{count, plural, one {# dag i rad} other {# dagar i rad}}",
+  "quests:done.milestone": "Milstolpe i svit — {amount} XP",
+  "quests:done.cta": "Fint"
 }

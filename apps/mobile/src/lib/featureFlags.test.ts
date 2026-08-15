@@ -78,3 +78,38 @@ describe('evaluateFlag — bucketing', () => {
     expect(agree).toBeLessThan(users.length)
   })
 })
+
+/**
+ * The hook, mounted with no Supabase config.
+ *
+ * This is a regression test for a crash that shipped undetected because the module had
+ * no consumers. `useFeatureFlag` resolves the user through `currentUser()`, which throws
+ * *synchronously* when there is no config — `supabase()` is evaluated as its argument —
+ * so the throw escaped the effect and the ErrorBoundary replaced the whole app with
+ * "Something broke on our side" on the first screen of a first launch.
+ *
+ * Three environments have no config and are all normal: the screenshot harness, the E2E
+ * export, and a fresh clone without `.env.local`. The first real caller found all three
+ * at once.
+ */
+describe('useFeatureFlag — with no backend to ask', () => {
+  it('renders false instead of throwing when the user cannot be identified', async () => {
+    vi.doMock('./supabase.js', () => ({
+      currentUser: () => {
+        throw new Error('Supabase config missing. Copy .env.example to .env.local')
+      },
+      supabase: () => {
+        throw new Error('Supabase config missing. Copy .env.example to .env.local')
+      },
+    }))
+
+    const { useFeatureFlag } = await import('./featureFlags.js')
+    const { renderHook } = await import('@testing-library/react')
+
+    // The assertion is as much that this LINE does not throw as that it returns false.
+    const { result } = renderHook(() => useFeatureFlag('wq_new_home_layout'))
+    expect(result.current).toBe(false)
+
+    vi.doUnmock('./supabase.js')
+  })
+})

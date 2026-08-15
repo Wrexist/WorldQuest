@@ -134,4 +134,5 @@ export function invalidateProgress(): void {
 export const queryKeys = {
   progress: ['progress'] as const,
   subscription: ['subscription'] as const,
+  league: ['league'] as const,
 } as const

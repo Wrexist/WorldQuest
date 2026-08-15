@@ -7,7 +7,8 @@ hooks — never in JSX.
 
 ```
 app/              expo-router file routes — thin: fetch, compose, delegate
-  (tabs)/         home · explore · quests · profile · more   — FIVE TABS, FOREVER
+  (tabs)/         home · explore · quests · profile · shop   — FIVE TABS, FOREVER
+                  (settings lives at app/settings.tsx, behind the gear on Profile)
   (auth)/         onboarding · sign-in
   lesson/         the lesson runner (full-screen modal)
 src/features/     feature-first: components/ · hooks/ · api/ · store.ts

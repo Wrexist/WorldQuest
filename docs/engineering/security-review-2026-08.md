@@ -154,3 +154,79 @@ paused, not satisfied, until that happens.
 Reviewed by an automated pass over source and schema. A human should re-read findings 1
 and 2 before submission, because both are judgement calls about acceptable exposure
 rather than facts about the code.
+
+---
+
+# Addendum — 2026-08-13, the redesign and leagues
+
+Reviewed at `HEAD` of `claude/mascot-hat-cutoff-l193nd`, against the same document.
+
+**Verdict: no blocker found in what ships. One finding is a deliberate non-ship — the
+league's client half — and it is recorded here because "we decided not to" and "we forgot"
+look identical in a diff.**
+
+## What changed that this review cares about
+
+| Change | Privacy or safety surface |
+|---|---|
+| Shop became the fifth tab; Settings moved behind the gear on Profile | None. Same screens, same data, different route. |
+| `TopBar` on five tabs | Renders a coin balance already on Home. The gem chip is wired but hides at zero, so nothing new is displayed. |
+| Quest cover page and quest-complete celebration | Local. No new fetch, no new event, no new field. |
+| Country page attribute icons and the `calling-code` label | Content, not user data. |
+| **`league_cohorts`, `league_members`, `league_opt_outs`, `league_standings`** | **A social surface. The rest of this addendum is about it.** |
+
+## The league schema — what holds
+
+1. **No free text exists in the feature.** `league_members.handle` carries a
+   `CHECK (handle ~ '^[A-Z][a-z]+ [A-Z][a-z]+ [0-9]{2}$')`, so only an assigned
+   `Swift Glacier 42` can be stored. Nothing a user typed can reach another user's
+   screen — there is no user-generated content to moderate, report or block. This is
+   the §1 prerequisite discharged by removing the surface rather than policing it.
+2. **`profiles.handle` is not used here.** A user could in principle influence that
+   column; the league has its own, written by the server. The two never meet.
+3. **Under-13 accounts cannot be inserted.** A `before insert or update` trigger raises
+   against `profiles.is_child`, which is set once at signup and immutable by its own
+   trigger. Not filtered in a client, not hidden behind a flag — refused by the database.
+4. **No `user_id` crosses the wire.** The client reads `league_standings`, a
+   `security_invoker` view whose columns are handle, weekly XP and a computed `is_you`.
+   A cohort cannot be turned into a list of accounts to go looking for.
+5. **Default deny, then three narrow reads.** RLS is enabled on all three tables. A user
+   sees a cohort only if they are in it — not "any cohort in their tier", which would let
+   anyone enumerate the population.
+6. **Nothing about placement is client-writable.** `insert, update, delete` are revoked
+   on `league_cohorts` and `league_members` for both `anon` and `authenticated`. The one
+   league row a client may write is its own opt-out. A client that could write
+   `weekly_xp` could write itself a Legend badge.
+
+## Finding 1 — ⚠️ the league is schema-only, on purpose
+
+The engine (19 tests) and the migration have landed; the client read and the screen have
+not, and no user can reach any of it.
+
+This is not caution for its own sake. The RLS above has never been **executed**: this
+environment has no Docker, so `supabase db reset`, `pnpm db:types` and `supabase test db`
+could not run. Every claim in the section above is a source read, exactly as this
+document's Method section says of the original review. On a children's leaderboard the
+failure mode of an untested policy is every child's cohort being readable by everyone,
+and that is not a risk worth taking for a feature nobody is asking for yet.
+
+**Does it block the release?** No — nothing ships. It blocks *the league*, and the gate is
+named: `pnpm db:start && pnpm db:reset && pnpm db:types && supabase test db`, plus an RLS
+test that asserts a user in cohort A gets zero rows for cohort B, and that a child's insert
+raises.
+
+## Finding 2 — ⚠️ handle assignment is specified but not implemented server-side
+
+`handleFor(userId, salt)` is deterministic and collision-resolvable, and the schema
+constrains what may be stored. The **job** that assigns cohorts and calls it does not
+exist. Until it does there is no path that writes a member row at all, which is why
+finding 1 is a non-ship rather than a hole.
+
+Worth stating for whoever writes it: the salt loop must be bounded and must run inside the
+insert's transaction, or two concurrent assignments can agree on the same handle.
+
+## Unchanged from the original review
+
+The three properties that could not be verified in August still cannot: no live project
+was reached, no traffic was inspected, and no device was tested. Nothing in this addendum
+changes that, and neither review should be read as a penetration test.

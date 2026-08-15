@@ -78,6 +78,25 @@ vi.mock('expo-haptics', () => ({
 }))
 
 /**
+ * Notifications reach a native module, and importing the real one drags in
+ * `expo/src/async-require/setup.ts`, which fails to resolve in jsdom — so the failure
+ * lands as "cannot find module ./setupFastRefresh" in whatever screen happens to import
+ * the scheduler, several files from the actual cause.
+ *
+ * Permission defaults to DENIED here. That is the honest default for a fresh install on
+ * iOS, and it means any test that wants a scheduled reminder has to say so — a stub that
+ * granted by default would let a screen ship believing the OS always says yes, which is
+ * the assumption this feature was built entirely on for four months.
+ */
+vi.mock('expo-notifications', () => ({
+  getPermissionsAsync: async () => ({ granted: false }),
+  requestPermissionsAsync: async () => ({ granted: false }),
+  scheduleNotificationAsync: async () => 'stub',
+  cancelScheduledNotificationAsync: async () => {},
+  SchedulableTriggerInputTypes: { DAILY: 'daily' },
+}))
+
+/**
  * Every test in this suite runs in REDUCED MOTION, and nothing here chose that.
  *
  * jsdom does not implement `window.matchMedia`, and react-native-web answers

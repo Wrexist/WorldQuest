@@ -70,8 +70,17 @@ export function currentUser(): Promise<{ userId: string }> {
   return session
 }
 
-/** Test seam. Not for app code. */
-export function __resetSupabaseForTests(): void {
+/**
+ * Drops the memoised client and session.
+ *
+ * Named for what it does rather than for who calls it. It was `__resetSupabaseForTests`,
+ * "not for app code" — and then sign-out needed exactly this: after `clearAll()` empties
+ * the storage the client was constructed around, the in-memory client is holding a token
+ * for a session that no longer exists anywhere else, and `currentUser()` would hand it
+ * back rather than minting the fresh anonymous one. A seam whose name forbids the one
+ * real use it has is a seam somebody works around.
+ */
+export function resetClient(): void {
   client = null
   session = null
 }

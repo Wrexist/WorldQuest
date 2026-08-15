@@ -6,5 +6,9 @@
   "notifications:mastery.almost": "{country} is almost mastered — one lesson to go.",
   "notifications:mastery.almost__note": "Push notification. {country} is a localised name. Max 60 chars.",
   "notifications:comeback": "The world missed you.",
-  "notifications:comeback__note": "Warm, never guilty. No 'we haven't seen you in 3 days'."
+  "notifications:comeback__note": "Warm, never guilty. No 'we haven't seen you in 3 days'.",
+  "notifications:daily.title": "Ready to explore?",
+  "notifications:daily.title__note": "Bold first line of the daily reminder notification. An invitation, never pressure. Max 30 characters.",
+  "notifications:daily.anywhere": "The world",
+  "notifications:daily.anywhere__note": "Used as {region} in notifications:daily.reminder when the user did not pick a continent to start in, giving 'The world is waiting. 5 minutes?'. Must read naturally as the subject of that sentence. Max 16 characters."
 }

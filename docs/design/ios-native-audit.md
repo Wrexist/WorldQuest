@@ -173,6 +173,11 @@ asked for, inside a visible rectangle. That is precisely the "placeholder frame"
 columns carrying less than ~0.5 % coverage before taking the box — then re-run
 `pnpm build:art`. The threshold stays; the measurement stops being fooled by dust.
 
+**What that fix then cost, and how it was paid:** the trimmed box is also what `Art` crops
+to, so the 0.5 % it dropped was 0.5 % the app cut off — the flat-topped hat of finding 23
+below. The box is now trimmed to classify and grown back over contiguous solid ink to
+draw.
+
 ---
 
 ## Audit 7 — what only a device could show
@@ -564,3 +569,63 @@ afternoon. In California a lesson finished at 5pm was recorded against tomorrow 
 daily-goal line reset while the user was still in the app, and Monday evening's work
 landed on Tuesday's bar. `useWeekActivity` walks back seven days with `setDate`, which is
 local, and then formatted each one through this, which was not.
+
+### Fifth pass — the mascot with the flat hat
+
+One more TestFlight batch, three screenshots of the same flow, and one complaint: Atlas's
+pith helmet is sliced flat across the top on the language step, on the taster, and
+everywhere else he appears.
+
+23. **The subject box was being used as a crop.** Audit 4's fix replaced the any-pixel
+    bounding box with a mass-weighted one — trim the faintest 0.5 % from each end of each
+    axis — and it classified the assets correctly, which is what it was written to do.
+    But `Art` scales the image until that box fills its frame and clips the overflow, so
+    the box is not only a measurement, it is a **cut line**: every pixel the trim discards
+    is a pixel the app amputates. A subject's thinnest, brightest extremity is exactly the
+    low-mass tail a trim takes first, and on this character that is his hat.
+
+    Measured across all 68 shipped assets, it was not one asset. Every illustration lost
+    between 2 and 30 pixels on some edge — `atlas/welcome` 9 rows off the crown,
+    `atlas/celebrate` 11 columns off the left arm, `atlas/explorer` 30 — and only the hat
+    turned a curve into a straight line where anyone would notice.
+
+    Fixed in `measure()`: the mass box still decides *where the subject is* and whether the
+    asset is a panel, and the reported box then grows outward from it over any contiguous
+    line that still carries solid ink (α > 200). Contiguity is what keeps the dust out —
+    the corner speck that made an extremal box useless is attached to nothing — and it is
+    why the feathered assets (`atlas/resting`, `states/empty-profile`) grow by exactly
+    zero: their ramp never reaches 200 outside the box. The panel decision stays on the
+    trimmed box, or `avatars/avatar-07` crosses the line at 0.91 × 0.99 and goes back to
+    being drawn as a plate among eleven siblings drawn as cutouts.
+
+24. **Onboarding's first hero was still a pasted rectangle.** `frame="bleed"` was
+    introduced (Audit 3) to stop whole-frame art being drawn as a bordered panel, and it
+    took the border off and left the geometry alone: `Art` still *fits* the picture inside
+    the box. `onboarding/explore` is a whole frame, so a 3:2 picture in the 390 × 220 band
+    came out 330 wide with 30 points of canvas down each side and a visible vertical seam
+    on both — on the first picture anybody ever sees. Two of the three slides are cutouts
+    and had no gap, which is why the original fix measured as working.
+
+    `frame="fill"` is the third mode: whichever is larger of the subject fit and the box
+    cover. Cover alone would blow a cutout up until only a detail of it was left; fit alone
+    leaves the gap. Covered by `Art.test.tsx`, both halves.
+
+25. **The band ate the sentence at 320.** The hero was a flat 220 points against a page
+    that does not scroll — `styles.slide` centres and clips — so at 320 × 568 the last line
+    of slide one's sentence sat under the page dots where no gesture on a phone can reach
+    it. The band is now the page's own width at the art's aspect, capped by what is left
+    after the copy, measured. Two hand-tuned fractions of the viewport were tried first and
+    both photographed as still clipping: what has to be cleared is a paragraph's *wrapped*
+    height, and no fraction of a viewport knows it.
+
+    The measurement was then wrong by 24 points, which is `title`'s `marginTop` plus its
+    `marginBottom` — `onLayout` reported the copy box shorter than it drew, and the band
+    was handed space that was already spoken for. **Anything measured has to own its own
+    spacing**: the slide's copy carries padding and a gap now, not margins on its children.
+
+26. **Two Swedish strings were not Swedish.** `onboarding:taster.title` was "Vi provar en",
+    a word-for-word "Let's try one" that leaves the article dangling with no noun, and
+    `taster.start` was "Börja lära", which without a reflexive means *begin to teach*. Now
+    "Nu kör vi" and "Börja lära dig". Both are on screens in the screenshots; neither is
+    something a check in this repo can see, because `pnpm i18n:check` verifies that a key
+    is *present* in a locale, never that what is there is a sentence.

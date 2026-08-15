@@ -201,11 +201,40 @@ export function useFeatureFlag(key: string): boolean {
   const [userId, setUserId] = useState<string | null>(null)
   const [, setTick] = useState(0)
 
+  /**
+   * Identify the user, and NEVER let failing to do so take a screen down.
+   *
+   * `currentUser()` throws — synchronously, before any promise exists, because
+   * `supabase()` is evaluated as its argument — when there is no Supabase config. That
+   * is a real state: the screenshot harness has none, the E2E export has none, and a
+   * fresh clone without `.env.local` has none. Unguarded, the throw escaped this effect
+   * and the ErrorBoundary replaced the whole app with "Something broke on our side" on
+   * the FIRST SCREEN of a first launch.
+   *
+   * It had never happened because this hook had never been called. `featureFlags.ts`
+   * shipped complete in August with no consumer anywhere in the app, so its read path
+   * had run exactly zero times outside a unit test that passes its own user id. The
+   * first real caller — a flag on the quest cover page — crashed the app at boot, which
+   * is the same "built, ticked as done, never checked for a producer" pattern this repo
+   * has now found in the Daily Challenge card, the achievements screen and `questTitle`.
+   *
+   * Failing closed is the correct answer and not merely a safe one: no user id means no
+   * stable bucket, and `evaluateFlag` already treats a null user as outside every
+   * rollout. A flag nobody can be bucketed into must not be on.
+   */
   useEffect(() => {
     let cancelled = false
-    void currentUser().then(({ userId: id }) => {
-      if (!cancelled) setUserId(id)
-    })
+    try {
+      void currentUser()
+        .then(({ userId: id }) => {
+          if (!cancelled) setUserId(id)
+        })
+        .catch(() => {
+          // Anonymous sign-in failed — offline, or no backend. Stay unbucketed.
+        })
+    } catch {
+      // Thrown before the promise existed. Same answer.
+    }
     return () => {
       cancelled = true
     }

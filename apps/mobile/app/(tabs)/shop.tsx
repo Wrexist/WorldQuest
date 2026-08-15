@@ -1,17 +1,21 @@
 /**
- * The shop route — data in, screen out.
+ * The shop — data in, screen out.
  *
- * Its own route rather than a sixth tab: `PROJECT.md §7` says five tabs, forever, and
- * a shop is not a destination people visit daily. It is reached from Profile, where
- * the title it sells is displayed.
+ * The FIFTH TAB, and it used to be a route on the reasoning that "a shop is not a
+ * destination people visit daily". That is true of a shop nobody can find: it held the
+ * only sink for a currency every lesson pays out, behind one row on Profile, and the
+ * economy simulation has a regular player earning 26,310 coins in ninety days.
+ *
+ * Still five tabs (PROJECT.md §7). Settings took its place at `app/settings.tsx`, behind
+ * the gear on Profile — see the note there.
  */
 
 import { useEffect } from 'react'
-import { ShopScreen } from '../src/features/shop/ShopScreen.js'
-import { CATALOGUE } from '../src/features/shop/catalogue.js'
-import { reconcileOwned, useShop } from '../src/features/shop/useShop.js'
-import { useProgress } from '../src/features/home/useProgress.js'
-import { useOnline } from '../src/lib/connectivity.js'
+import { ShopScreen } from '../../src/features/shop/ShopScreen.js'
+import { CATALOGUE } from '../../src/features/shop/catalogue.js'
+import { reconcileOwned, useShop } from '../../src/features/shop/useShop.js'
+import { useProgress } from '../../src/features/home/useProgress.js'
+import { useOnline } from '../../src/lib/connectivity.js'
 import { levelProgress } from '@worldquest/engines'
 
 export default function ShopRoute() {

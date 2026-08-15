@@ -62,6 +62,28 @@ describe('the catalogue', () => {
       'ach.review.faithful': { name: 'overdue_review_cleared' },
       'ach.quest.regular': { name: 'daily_quest_completed' },
       'ach.explorer.continents': { name: 'region_started', payload: { region: 'EU' } },
+      // ── the 2026-08-13 batch ──────────────────────────────────────────────
+      // Each regional set is driven by one of its OWN members, read from the pack
+      // rather than typed: a set whose first member is not in its own list would
+      // otherwise pass here and be unfinishable in the app.
+      'ach.currencies.collector': { name: 'fact_mastered', payload: { attribute: 'currency', entityId: 'SE' } },
+      'ach.locations.collector': { name: 'fact_mastered', payload: { attribute: 'location', entityId: 'SE' } },
+      'ach.codes.collector': { name: 'fact_mastered', payload: { attribute: 'calling-code', entityId: 'SE' } },
+      'ach.languages.collector': { name: 'fact_mastered', payload: { attribute: 'language', entityId: 'SE' } },
+      'ach.facts.everything': { name: 'fact_mastered', payload: { factId: 'geo.SE.capital' } },
+      'ach.set.eastasia': { name: 'entity_mastered', payload: { entityId: 'CN' } },
+      'ach.set.eastafrica': { name: 'entity_mastered', payload: { entityId: 'ET' } },
+      'ach.set.easterneurope': { name: 'entity_mastered', payload: { entityId: 'CZ' } },
+      'ach.set.northamerica': { name: 'entity_mastered', payload: { entityId: 'CA' } },
+      'ach.set.northafrica': { name: 'entity_mastered', payload: { entityId: 'DZ' } },
+      'ach.set.oceania': { name: 'entity_mastered', payload: { entityId: 'AU' } },
+      'ach.set.southamerica': { name: 'entity_mastered', payload: { entityId: 'AR' } },
+      'ach.set.southasia': { name: 'entity_mastered', payload: { entityId: 'BD' } },
+      'ach.set.southeastasia': { name: 'entity_mastered', payload: { entityId: 'ID' } },
+      'ach.set.southernafrica': { name: 'entity_mastered', payload: { entityId: 'BW' } },
+      'ach.set.southerneurope': { name: 'entity_mastered', payload: { entityId: 'ES' } },
+      'ach.set.westafrica': { name: 'entity_mastered', payload: { entityId: 'GH' } },
+      'ach.set.westerneurope': { name: 'entity_mastered', payload: { entityId: 'AT' } },
     }
 
     for (const def of CATALOGUE) {

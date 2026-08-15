@@ -93,6 +93,31 @@ const ALLOWED: Record<string, string> = {
   // check below the loop is what found them and what stops them coming back.
 
 
+  /**
+   * ── the notification budget's numbers, which are the engine's and nobody else's ──
+   *
+   * `notifications.md` §2 is explicit that the frequency budget is "enforced in the
+   * scheduling service, not by convention". These six constants ARE that enforcement,
+   * and the app is deliberately unable to reach them: `lib/notifications.ts` calls
+   * `reminderPlan()` and `useReminderAsk` calls `shouldAskForReminder()`, and both get
+   * back a decision rather than the numbers behind it.
+   *
+   * A screen that imported `LATEST_HOUR` would be a screen holding a second opinion
+   * about when quiet hours start, which is exactly the convention the spec refuses to
+   * rely on. `notifications.test.ts` in the app asserts the app layer does no hour
+   * arithmetic of its own.
+   *
+   * They are exported at all so the engine's own tests can assert against the named
+   * value rather than re-typing 8, 20, 18, 19, 3 and 90 — a test that hardcodes the
+   * number it is checking passes when somebody changes the number.
+   */
+  EARLIEST_HOUR: 'quiet hours start and end in the engine; see the block above',
+  LATEST_HOUR: 'quiet hours start and end in the engine; see the block above',
+  CHILD_LATEST_HOUR: 'the under-13 ceiling is the engine\'s; see the block above',
+  FALLBACK_HOUR: 'used only when there is no session history to learn from',
+  LESSONS_BEFORE_ASK: 'the ask threshold is applied inside `shouldAskForReminder`',
+  REASK_AFTER_DAYS: 'the ninety-day retry is applied inside `shouldAskForReminder`',
+
   // ── roadmapped, and deliberately not built during v1.0
 
   markBroken:
@@ -106,8 +131,45 @@ const ALLOWED: Record<string, string> = {
     'cap holds nine freezes. streak-recovery.test.ts reads the migration and asserts the ' +
     'two copies of MAX_FREEZES agree.',
 
+  /**
+   * ── leagues: the client half landed, and most of this block went with it ────
+   *
+   * This block used to hold nineteen entries and a long note explaining that the whole
+   * module was unreachable on purpose: the engine and the migration were done, and the
+   * client half was blocked on something the authoring environment could not provide —
+   * a local Postgres to apply the migration to, `pnpm db:types` to regenerate from it,
+   * and `supabase test db` to prove the RLS policies actually do what they claim.
+   *
+   * The note ended "to finish: run those, then the read, the screen, and delete these
+   * lines." CI ran them. All 35 RLS tests pass against this schema, the types are
+   * generated and committed, and the screen exists. So they are deleted.
+   *
+   * What remains is the part the CLIENT genuinely has no business doing. Promotion,
+   * relegation, cohort assembly and the weekly rollover are the server's — a client
+   * that can compute its own promotion is a client that can grant it — so these live in
+   * the engine for the placement job to use, and the app reads standings and nothing
+   * else. `handleFor` is the same shape of rule: the handle is generated once, server
+   * side, and stored behind a CHECK constraint, so a device that could generate one
+   * could also propose one.
+   */
+  BRONZE_III: 'leagues — the starting rank, assigned by the placement job, never by a device',
+  COHORT_SIZE: 'leagues — cohort assembly is the server\'s; a client that sizes a cohort picks its opponents',
+  RELEGATED: 'leagues — the client draws promotion only, by design (social-and-leagues.md §4 kindness rules)',
+  rankIndex: 'leagues — rank arithmetic belongs to the weekly rollover, not to a screen',
+  promote: 'leagues — a client that can compute its own promotion is a client that can grant it',
+  relegate: 'leagues — as `promote`, and the app deliberately has no way to draw a demotion',
+  outcomeFor: 'leagues — reached through `standings`, which is what the screen calls',
+  podiumCoins: 'leagues — the reward is paid by the server on rollover (ADR 0006)',
+  weekStart: 'leagues — the week boundary the placement job works from; the app needs only `weekEnd`',
+  handleFor: 'leagues — generated server-side and stored behind a CHECK; a device that could generate one could propose one',
+  HANDLE_SPACE: 'leagues — the size of the handle space, asserted by handles.test.ts',
+
   // ── consumed by another engine rather than by a screen
   evaluate: 'the single-definition form; the client calls evaluateAll',
+  xpForLevel:
+    'the curve itself; every screen asks levelProgress instead, which returns the band and the position inside it together — Home drew its own bar from these two and printed a level the card below it printed again',
+  levelForXp:
+    'the inverse of xpForLevel, and the same answer: levelProgress is the one call, so a bar can never disagree with the number beside it',
   backfill: 'for a pack that adds an achievement to users who already earned it — needs server-side history',
   SLOTS: 'the type is what callers use; the screen keys its titles by Slot',
   SPEED_ROUND_MS: 'the whole-lesson goal for the speed_round quest slot, read inside advanceTask — NOT the same thing as SPEED_SECONDS, which is per question',

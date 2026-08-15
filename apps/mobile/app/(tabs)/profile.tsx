@@ -9,15 +9,17 @@
 
 import { useMemo } from 'react'
 import { router } from 'expo-router'
-import { equippedTitleKey, levelProgress, worldProgress } from '@worldquest/engines'
+import { equippedTitleKey, levelProgress, worldProgress, type Tier } from '@worldquest/engines'
 import { CATALOGUE } from '../../src/features/shop/catalogue.js'
 import { useShop } from '../../src/features/shop/useShop.js'
 import { useWeekActivity } from '../../src/features/profile/useWeekActivity.js'
+import { useAchievements } from '../../src/features/achievements/useAchievements.js'
 import { usePreferences } from '../../src/features/settings/usePreferences.js'
 import { ProfileScreen } from '../../src/features/profile/ProfileScreen.js'
 import { useOptimisticProgress } from '../../src/features/home/useOptimisticProgress.js'
 import { ContentGate } from '../../src/components/ContentGate.js'
 import { useContent } from '../../src/lib/content.js'
+import { useAccountStatus } from '../../src/features/account/useAccountStatus.js'
 
 export default function ProfileRoute() {
   const { preferences } = usePreferences()
@@ -27,6 +29,24 @@ export default function ProfileRoute() {
   const { index, memory, status: contentStatus, reload, isOffline } = useContent()
   const week = useWeekActivity()
   const shop = useShop()
+  const achievements = useAchievements()
+
+  /**
+   * The trophy shelf: earned badges, most recent first.
+   *
+   * `unlockedAt` is the sort key rather than catalogue order, because "recent" is the
+   * heading's own promise and the catalogue's order is editorial. A row with a tier but
+   * no timestamp — which is what awarding an achievement retroactively writes — sorts
+   * last rather than being dropped: it IS earned, it just cannot say when.
+   */
+  const badges = useMemo(
+    () =>
+      achievements
+        .filter((row) => row.progress.tier !== null)
+        .sort((a, b) => (b.progress.unlockedAt ?? 0) - (a.progress.unlockedAt ?? 0))
+        .map((row) => ({ id: row.def.id, tier: row.progress.tier as Tier })),
+    [achievements],
+  )
 
   /**
    * Which title is actually worn.
@@ -42,6 +62,8 @@ export default function ProfileRoute() {
     CATALOGUE,
     shop.owned,
   )
+
+  const account = useAccountStatus()
 
   const world = useMemo(() => {
     if (index === null) return null
@@ -93,10 +115,24 @@ export default function ProfileRoute() {
         loading={status === 'loading'}
         // The account prompt appears only while there is no account. It disappears with
         // its own reason rather than becoming a permanent piece of furniture.
-        onCreateAccount={undefined}
+        //
+        // It has been `undefined` since the first week, so the card never drew and the
+        // copy under it — "Creating one keeps your streak safe if you change phone" —
+        // was a promise nothing could keep. Absent on a child account: we must not
+        // collect an email address from an under-13, so there is no flow to open.
+        {...(account.isChild || account.linked
+          ? {}
+          : { onCreateAccount: () => router.push('/account?mode=link') })}
         wornTitleKey={worn}
         avatar={preferences.avatar}
-        onOpenShop={() => router.push('/shop')}
+        badges={badges}
+        onOpenAchievements={() => router.push('/achievements')}
+        // The gear. Settings stopped being a tab when Shop took the fifth slot, and
+        // this is where it went — see `app/settings.tsx`.
+        onOpenSettings={() => router.push('/settings')}
+        // No `onRename` yet: there is no display name to change. `profile:anonymous`
+        // is what this screen shows and an account is what would give it a real one, so
+        // the pencil stays absent rather than opening a field that writes nowhere.
         onStartLesson={() => router.push('/lesson')}
       />
     </ContentGate>

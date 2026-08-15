@@ -123,6 +123,30 @@ for (const file of packFiles) {
   const items = pack.items as Record<string, any>[]
   if (pack.volatilityReviewed === true) reviewedVolatility.add(rel)
 
+  /**
+   * Every `licenseRef` on an asset resolves to a record in this pack.
+   *
+   * The licence used to be copied onto every asset — three distinct records, each
+   * repeated onto all 65 countries, 45.5 KB of identical strings inlined into the app
+   * bundle. They were deduplicated into a pack-level `assetLicenses` map, and this is
+   * the check that makes that safe rather than merely smaller: a reference that does not
+   * resolve is exactly the thing the original `required: [path, license]` existed to
+   * prevent, wearing an indirection. A path whose licence cannot be looked up has no
+   * licence.
+   */
+  const assetLicenses = (pack.assetLicenses ?? {}) as Record<string, unknown>
+  for (const item of items) {
+    for (const [kind, asset] of Object.entries((item.assets ?? {}) as Record<string, any>)) {
+      const ref = asset?.licenseRef
+      if (typeof ref !== 'string' || assetLicenses[ref] === undefined) {
+        errors.push({
+          file: rel,
+          message: `${item.id}.assets.${kind} references licence "${String(ref)}", which this pack does not define`,
+        })
+      }
+    }
+  }
+
   for (const item of items) {
     // 2. IDs are permanent and must be unique — they ship in save data.
     if (typeof item.id === 'string') {

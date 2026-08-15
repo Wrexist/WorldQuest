@@ -62,6 +62,7 @@ import type { EntityProgress, Mastery } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import type { RegionCode } from './ExploreScreen.js'
 import { Icon } from '../../components/Icon.js'
+import type { IconName } from '../../lib/icons.generated.js'
 
 /**
  * Every attribute the packs can carry, and `location` was missing from it.
@@ -85,6 +86,36 @@ const ATTRIBUTE_LABEL: Record<string, TranslationKey> = {
   population: 'country:attribute.population',
   currency: 'country:attribute.currency',
   language: 'country:attribute.language',
+  // The second time this list has shipped a hole, and the second time the hole was
+  // 67 facts wide. `location` was missing once; `calling-code` was missing since the
+  // dialling-code templates landed, so every one of the 65 country pages printed the
+  // raw pack key `calling-code` in a column beside Capital, Flag and Currency.
+  //
+  // The fall-through below is what made it survive: rendering the attribute id is a
+  // reasonable last resort for an id nobody has met, and it looks exactly like a
+  // deliberate label to anyone who is not reading the packs.
+  'calling-code': 'country:attribute.callingCode',
+}
+
+/**
+ * The glyph beside each attribute.
+ *
+ * The list was five identical rows of two words, which is a column the eye has to READ
+ * to navigate. A mark per kind is what lets somebody find the capital without reading,
+ * and the same glyphs name the same things in a quest and in the shop.
+ *
+ * `Partial`, and a row without one draws no icon rather than a placeholder: an attribute
+ * that arrives before its glyph should be a plain row, not a broken one. That is the same
+ * rule the labels above wanted and did not have.
+ */
+const ATTRIBUTE_ICON: Partial<Record<string, IconName>> = {
+  capital: 'capital',
+  flag: 'flag',
+  location: 'continent',
+  population: 'profile',
+  currency: 'currency',
+  language: 'language',
+  'calling-code': 'callingCode',
 }
 
 const MASTERY_LABEL: Record<Mastery, TranslationKey> = {
@@ -262,6 +293,7 @@ function FactRow({ fact }: { fact: CountryFact }) {
   const t = useT()
   const label = ATTRIBUTE_LABEL[fact.attribute]
   const attribute = label ? t(label) : fact.attribute
+  const glyph = ATTRIBUTE_ICON[fact.attribute]
 
   // The rule at the top of this file, in one line.
   const known = fact.mastery !== 'unseen'
@@ -277,6 +309,17 @@ function FactRow({ fact }: { fact: CountryFact }) {
       })}
       style={styles.factRow}
     >
+      {/* Decorative: the row is one accessibility element already naming the attribute,
+          and a reader announcing "landmark" before "Capital" is a word with no
+          referent. Dimmed while the fact is unknown, so the column reads as a set of
+          slots to fill rather than a set of facts you have. */}
+      {glyph !== undefined && (
+        <Icon
+          name={glyph}
+          size={20}
+          color={known ? colors.text.secondary : colors.text.tertiary}
+        />
+      )}
       <View style={styles.factText}>
         <Text style={styles.factAttribute}>{attribute}</Text>
         <Text style={[styles.factValue, !known && styles.factHidden]}>{value}</Text>

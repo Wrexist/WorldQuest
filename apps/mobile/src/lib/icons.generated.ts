@@ -35,6 +35,16 @@ import bell from '../../assets/icons/bell.png'
 import offline from '../../assets/icons/offline.png'
 import failure from '../../assets/icons/failure.png'
 import shop from '../../assets/icons/shop.png'
+import capital from '../../assets/icons/capital.png'
+import currency from '../../assets/icons/currency.png'
+import language from '../../assets/icons/language.png'
+import callingCode from '../../assets/icons/callingCode.png'
+import continent from '../../assets/icons/continent.png'
+import settings from '../../assets/icons/settings.png'
+import edit from '../../assets/icons/edit.png'
+import clock from '../../assets/icons/clock.png'
+import moon from '../../assets/icons/moon.png'
+import sunrise from '../../assets/icons/sunrise.png'
 
 /** Metro hands back a numeric handle; Vite hands back a URL string. Both are real. */
 export type IconAsset = number | string
@@ -67,6 +77,16 @@ export type IconName =
   | 'offline'
   | 'failure'
   | 'shop'
+  | 'capital'
+  | 'currency'
+  | 'language'
+  | 'callingCode'
+  | 'continent'
+  | 'settings'
+  | 'edit'
+  | 'clock'
+  | 'moon'
+  | 'sunrise'
 
 export const ICON_BY_NAME: Readonly<Record<IconName, IconAsset>> = {
   'home': home,
@@ -96,4 +116,14 @@ export const ICON_BY_NAME: Readonly<Record<IconName, IconAsset>> = {
   'offline': offline,
   'failure': failure,
   'shop': shop,
+  'capital': capital,
+  'currency': currency,
+  'language': language,
+  'callingCode': callingCode,
+  'continent': continent,
+  'settings': settings,
+  'edit': edit,
+  'clock': clock,
+  'moon': moon,
+  'sunrise': sunrise,
 }

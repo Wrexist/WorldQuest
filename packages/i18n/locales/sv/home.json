@@ -13,6 +13,7 @@
   "home:stats.label": "Dina framsteg",
   "home:stats.xp": "{amount} XP totalt",
   "home:stats.coins": "{amount} mynt",
+  "home:stats.gems": "{amount} ädelstenar",
   "home:greeting.role": "Upptäckare!",
   "home:streak.label": "Dagars svit",
   "home:avatar.label": "Din profil",
@@ -32,5 +33,15 @@
   "home:quest.play": "Fem saker, ungefär tio minuter",
   "home:quest.done": "Uppdraget klart",
   "home:quest.doneBody": "Din svit är säkrad. Fortsätt gärna om du vill.",
-  "home:quest.more": "Öva ändå"
+  "home:quest.more": "Öva ändå",
+  "home:facts.streak": "{count, plural, one {# dag} other {# dagar}}",
+  "home:facts.rank": "Rang",
+  "home:facts.quests": "{done} / {total}",
+  "home:quest.reward.xp": "Ger {amount} XP",
+  "home:quest.reward.coins": "Ger {amount} mynt",
+  "home:quest.resets": "{hours} tim {minutes} min kvar",
+  "home:reminder.title": "Vill du ha en knuff?",
+  "home:reminder.body": "En påminnelse om dagen, vid en tid du väljer. Inget annat, någonsin.",
+  "home:reminder.yes": "Välj en tid",
+  "home:reminder.later": "Inte nu"
 }

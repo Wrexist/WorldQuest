@@ -10,11 +10,12 @@
  * game into an obligation.
  */
 
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   Button,
   Card,
   colors,
+  layout,
   ProgressBar,
   radius,
   Skeleton,
@@ -36,6 +37,8 @@ import { SPEED_SECONDS } from '../lesson/modes.js'
 import { Art } from '../../components/Art.js'
 import { Icon } from '../../components/Icon.js'
 import { SLOT_ICON, SLOT_TITLE } from './slots.js'
+import { TopBar } from '../../components/TopBar.js'
+import type { DayCountdown } from './useDayCountdown.js'
 
 const GOAL_BODY: Record<PerformGoal, TranslationKey> = {
   perfect_lesson: 'quests:goal.perfect_lesson',
@@ -47,6 +50,13 @@ export type QuestScreenProps = {
   readonly quest: DailyQuest | null
   readonly loading: boolean
   readonly onStart: () => void
+  /** The wallet, for the bar at the top. Absent draws the bar without it. */
+  readonly coins?: number | undefined
+  /** Hours and minutes until today's quest is replaced. See `useDayCountdown`. */
+  readonly resetsIn?: DayCountdown | undefined
+  /** Opens the achievements half of this screen. Absent hides the segmented control. */
+  readonly onOpenAchievements?: (() => void) | undefined
+  readonly onOpenInbox?: (() => void) | undefined
   /**
    * Optional so the screenshot renderer and component tests mount without a router,
    * like every other callback here.
@@ -70,6 +80,10 @@ export function QuestScreen({
   loading,
   onStart,
   onStartSpeedRound,
+  coins,
+  resetsIn,
+  onOpenAchievements,
+  onOpenInbox,
 }: QuestScreenProps) {
   const t = useT()
 
@@ -98,6 +112,11 @@ export function QuestScreen({
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      <TopBar
+        initials="EX"
+        {...(coins !== undefined ? { coins } : {})}
+        {...(onOpenInbox !== undefined ? { onInbox: onOpenInbox } : {})}
+      />
       <View style={styles.header}>
         <View style={styles.headerText}>
           <Text style={styles.title} role="heading">
@@ -118,6 +137,30 @@ export function QuestScreen({
             the screen is. */}
         <Art name="atlas/thinking" size={HEADER_ART} />
       </View>
+
+      {/* Daily and Achievements, as two halves of one control.
+   
+          Achievements were a route with no entrance except a row buried on Profile, and
+          they are the same KIND of thing as a quest — something with a target you are
+          working towards — so the reference files them as the second tab of this screen
+          rather than as a separate destination. Rendered as a segmented control and not
+          two buttons: a segment says "these are the two views of this screen", where two
+          buttons would say "here are two places to go". */}
+      {onOpenAchievements !== undefined && (
+        <View style={styles.segment} role="tablist">
+          <View style={[styles.segmentItem, styles.segmentOn]} role="tab" aria-selected>
+            <Text style={styles.segmentTextOn}>{t('quests:tab.daily')}</Text>
+          </View>
+          <Pressable
+            onPress={onOpenAchievements}
+            role="tab"
+            aria-selected={false}
+            style={styles.segmentItem}
+          >
+            <Text style={styles.segmentText}>{t('quests:tab.achievements')}</Text>
+          </Pressable>
+        </View>
+      )}
 
       <Card style={styles.summary}>
         {/* The label already reads "2 of 5 done", so the bar's own counter would
@@ -149,6 +192,18 @@ export function QuestScreen({
           screen the user leaves. */}
       {!quest.complete && <Button label={t('common:continue')} onPress={onStart} />}
     
+      {/* When today's quest is replaced.
+   
+          The reference puts it under the list, and it answers the one question a
+          half-finished quest raises: how long have I got. Absent rather than an em-dash
+          when the route cannot say — the same rule Home's countdown follows. */}
+      {resetsIn !== undefined && (
+        <View style={styles.reset}>
+          <Icon name="clock" size={14} color={colors.text.tertiary} />
+          <Text style={styles.resetText}>{t('quests:resets', resetsIn)}</Text>
+        </View>
+      )}
+
       {/* The speed round: the same items against a clock, for someone already in a
           practising frame of mind. */}
       {onStartSpeedRound !== undefined && (
@@ -283,6 +338,31 @@ const styles = StyleSheet.create({
   content: { padding: space[4], gap: space[3] },
   centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },
 
+  // One control, two halves. A hairline tray with a raised pill in it, which is the
+  // iOS segmented shape and the one the goal step's inset group already establishes.
+  segment: {
+    flexDirection: 'row',
+    padding: space[1],
+    borderRadius: radius.full,
+    backgroundColor: colors.bg.surface,
+    borderWidth: 1,
+    borderColor: colors.border.subtle,
+  },
+  segmentItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // 44, not 40. `pnpm design:shots` measures every control on every route and these
+    // two were the only things in the app under the line — a segment is a real target
+    // and 40 was chosen to look like the tray around it rather than to be pressed.
+    minHeight: layout.minTouchTarget,
+    borderRadius: radius.full,
+  },
+  segmentOn: { backgroundColor: colors.bg.surfaceRaised },
+  segmentText: { ...text('bodyStrong'), color: colors.text.secondary },
+  segmentTextOn: { ...text('bodyStrong'), color: colors.text.primary },
+  reset: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[2] },
+  resetText: { ...text('caption', { numeric: true }), color: colors.text.tertiary },
   header: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
   headerText: { flex: 1, gap: space[1] },
   title: { ...text('h1'), color: colors.text.primary },

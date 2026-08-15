@@ -17,6 +17,16 @@ import { localDay } from '../../lib/day.js'
 /** `YYYY-MM-DD` → lessons completed. Written by the lesson runner on completion. */
 const KEY = 'activity.byDay.v1'
 
+/**
+ * Lessons finished on this install, ever. A counter, not a derived sum.
+ *
+ * The day log above keeps a month and then forgets, which is right for a week chart and
+ * wrong for "has this person done three lessons yet" — the question the reminder ask
+ * turns on. Summing a window that expires would ask a returning user the same question
+ * again every time their history aged out.
+ */
+const TOTAL_KEY = 'activity.total.v1'
+
 export type WeekDay = { readonly day: string; readonly count: number }
 
 // The local name this file has always used. `localDay` moved to `lib/day.ts` when a
@@ -53,8 +63,29 @@ export function lessonsToday(now: Date = new Date()): number {
   return log[isoDay(now)] ?? 0
 }
 
+/**
+ * Distinct days with a finished lesson, within the month the log keeps.
+ *
+ * The honest answer to "has this person actually used the app", and the reason the
+ * review prompt has one: a five-star rating from someone on their first afternoon is a
+ * rating of the App Store screenshots. Three separate days means they came back, twice.
+ *
+ * Bounded to the log's 31-day window, and that is the useful behaviour rather than a
+ * limitation — a user who was last here in March and opened the app again today has one
+ * active day, which is exactly what the prompt should see.
+ */
+export function activeDays(): number {
+  const log = readJson<Record<string, number>>(KEY) ?? {}
+  return Object.values(log).filter((count) => count > 0).length
+}
+
 /** Called when a lesson finishes. Idempotent per call, not per lesson id. */
+export function lessonsEverCompleted(): number {
+  return readJson<number>(TOTAL_KEY) ?? 0
+}
+
 export function recordLessonCompleted(now: Date = new Date()): void {
+  writeJson(TOTAL_KEY, lessonsEverCompleted() + 1)
   const log = readJson<Record<string, number>>(KEY) ?? {}
   const day = isoDay(now)
   log[day] = (log[day] ?? 0) + 1

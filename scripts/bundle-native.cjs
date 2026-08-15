@@ -156,8 +156,93 @@ const MOBILE = join(process.cwd(), 'apps', 'mobile')
  * At 4.2 the measured 4.19 left 0.01 MB of headroom, which is not headroom — the next
  * lockfile churn fails the gate for no reason anyone could act on. 4.3 is the same
  * ~0.1 MB margin every previous note in this file has asked for.
+ *
+ * ── 2026-08-13 · 4.3 → 4.4 ──────────────────────────────────────────────────────────
+ *
+ * The redesign, plus leagues: **4.19 → 4.31 MB**. No dependency was added; all of it is
+ * application code.
+ *
+ * What bought it, in rough order of weight: three new screens (the quest cover page, the
+ * quest-complete celebration, and the shared `TopBar` that five tabs now draw), the
+ * rebuild of Home, Profile, Quests and Shop, and `packages/engines/src/leagues` — an
+ * engine that is deliberately not yet reachable from a screen, so it is ~4 KB of the
+ * 0.12 and will earn its place when the client half lands.
+ *
+ * Trimmed first rather than raised first, which is the order this note has not always
+ * been written in: `sparkle`, `book` and `repeat` were added to the icon set for quest
+ * rows that turned out to have glyphs already, and shipped as three files nothing
+ * imported. They are gone. It moved the number by almost nothing — icons are assets, and
+ * the header of `build-icons.cjs` says so — but three unused files in a set is a defect
+ * whether or not it is a heavy one, and finding it was the point of looking.
+ *
+ * 4.4 restores the ~0.1 MB margin. The honest reading: this is the first raise in this
+ * file bought by ordinary feature work rather than by a dependency or a bug fix, and if
+ * the next one is too, the answer is lazy routes rather than a fifth number.
+ *
+ * ── 2026-08-14 · 4.4 → 4.6 ──────────────────────────────────────────────────────────
+ *
+ * Two native modules, and the last note's own warning coming true: it said "the next
+ * dependency is likely the one that breaks it", and the next two did. **4.31 → 4.55 MB**,
+ * measured one install at a time:
+ *
+ *   · `expo-store-review`  +0.04 MB — the store-review prompt (`src/lib/review.ts`)
+ *   · `expo-notifications` +0.20 MB — the daily reminder (`src/lib/notifications.ts`)
+ *
+ * Neither is ordinary feature work and neither can be trimmed to fit: both ARE native
+ * modules, and the JavaScript this repo wrote on top of them is a few kilobytes. Lazy
+ * loading does not help either — Metro has no route-level code splitting on native, so a
+ * dynamic `import()` moves a module within the bundle rather than out of it.
+ *
+ * What they buy is the two features with the largest effect on whether anybody is still
+ * here in a week: a reminder the Settings toggle had been promising since the first week
+ * while nothing was scheduled, and the ask that ratings do not happen without. 0.24 MB of
+ * Hermes parse against those is the right trade, and it is the last one available at this
+ * budget — a sixth number bought by a dependency should be refused, and the answer to the
+ * one after that is trimming the 9.7 MB of assets, which dwarf the bundle and which
+ * nothing has yet looked at.
+ *
+ * ── 2026-08-15 · at the wall, and the lever that turned out not to be one ───────────
+ *
+ * The league's client half and the account flow brought this to **4.60 MB against a
+ * 4.60 budget** — passing by nothing, which means the next line of code fails CI. The
+ * budget is NOT raised for it: the note above says a sixth number bought by a dependency
+ * should be refused, and raising it for application code instead would be the same
+ * decision wearing a different hat.
+ *
+ * ### What was tried, and the measurement that killed it
+ *
+ * The content packs are 320 KB of JSON inlined into the bundle, and 45.5 KB of that was
+ * `license` and `attribution` strings: three distinct records — flag-icons MIT and two
+ * Natural Earth ones — copied verbatim onto all 65 countries. That looked like the
+ * obvious first cut, and it was deduplicated into a pack-level `assetLicenses` map.
+ *
+ * It moved the bundle by **0.00 MB**, and here is why, because it is worth knowing once:
+ *
+ *     $ python3 -c "print(open('…/entry.hbc','rb').read().count(b'flag-icons'))"
+ *     1
+ *
+ * **Hermes already deduplicates identical strings into its string table.** Sixty-five
+ * copies in the source cost what one costs in the bytecode. `Natural Earth` appears
+ * three times — once per distinct record — and `geo/countries` appears 66 times, because
+ * those paths are genuinely different from each other.
+ *
+ * So "the same string is repeated N times" is never a bundle lever in this project, and
+ * anybody reaching for one should measure the compiled `.hbc` rather than the source.
+ * The dedup was kept anyway — it is 45 KB less JSON on disk, one place to change a
+ * licence instead of sixty-five, and a schema that can no longer express an asset
+ * without one — but it is a content-pipeline improvement, not a size one.
+ *
+ * ### What has NOT been measured
+ *
+ * The real distribution of these 4.6 MB. `npx expo export --platform android
+ * --dump-sourcemap` is the tool and nobody has run it. Until somebody does, any claim
+ * about what to cut is a guess, and this note is not going to make a second one.
+ *
+ * The 9.74 MB of assets beside the bundle are a separate and larger question, and they
+ * are not parsed at start — which is why they are reported separately and why they are
+ * not the first place to look for cold-start time.
  */
-const BUDGET_MB = 4.3
+const BUDGET_MB = 4.6
 
 /** Warn from 90 % of the budget, so the wall is visible before it is hit. */
 const WARN_AT = BUDGET_MB * 0.9

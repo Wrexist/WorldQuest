@@ -85,6 +85,18 @@
  * Default `auto` rather than an allowlist of the seven that need it, deliberately: a
  * whole-frame master delivered next month is then correct on arrival, and the two known
  * exceptions are the ones that had to say so.
+ *
+ * ## `bleed` takes the panel off; `fill` also closes the gap
+ *
+ * The two are not the same question and were treated as one for a while. `bleed` is about
+ * the FRAME — no border, no radius, because the container owns its own edge. It says
+ * nothing about the fit, so the art is still fitted inside the box and a whole-frame
+ * picture in a box of a different aspect still letterboxes. Onboarding's first slide
+ * shipped that way: a 3:2 hero in a 390×220 band, drawn 330 wide, with a visible strip of
+ * canvas down each side of a picture that was supposed to be full bleed.
+ *
+ * `fill` is the fit: never smaller than covers the box. See `boxCovered` below for why it
+ * is the LARGER of the two fits rather than a plain `cover`.
  */
 
 import { useState } from 'react'
@@ -111,9 +123,11 @@ export type ArtProps = {
   readonly label?: string | undefined
   /**
    * `bleed` for art that fills a container which owns its own edge — the continent
-   * tiles. `auto`, the default, gives whole-frame art a panel's shape. See above.
+   * tiles. `fill` for a box that IS the picture and must never show canvas inside it —
+   * the onboarding hero band. `auto`, the default, gives whole-frame art a panel's
+   * shape. See above.
    */
-  readonly frame?: 'auto' | 'bleed' | undefined
+  readonly frame?: 'auto' | 'bleed' | 'fill' | undefined
 }
 
 /**
@@ -157,7 +171,31 @@ export function Art({ name, size, height, label, frame = 'auto' }: ArtProps) {
   // `contain`, but measured against the subject instead of the frame. Whichever of the
   // two constraints binds first wins, so the subject touches one pair of edges and stays
   // inside the other.
-  const imageWidth = Math.min(box.width / geometry.w, (box.height * geometry.aspect) / geometry.h)
+  const subjectFits = Math.min(box.width / geometry.w, (box.height * geometry.aspect) / geometry.h)
+
+  /**
+   * `fill` — and the one thing subject-fitting cannot do.
+   *
+   * Fitting the subject leaves the FRAME wherever it lands, and for a cutout that is
+   * right: the leftover is transparent margin and the canvas showing through it is the
+   * canvas the mascot is standing on. For a whole-frame composition it is the opposite —
+   * the frame IS the picture, so leftover is a strip of empty canvas inside a box that
+   * was supposed to be filled.
+   *
+   * Onboarding's first slide is where that showed. `onboarding/explore` measures as a
+   * whole frame, so at 390 the "full bleed" hero fitted a 3:2 picture into a 390×220 band
+   * and drew it 330 wide, with 30 points of canvas down each side and a visible vertical
+   * seam on both — a bordered rectangle pasted on the screen, which is the exact thing
+   * `bleed` was introduced to stop, on the first picture anybody ever sees.
+   *
+   * So `fill` takes whichever is larger: enough to fit the subject, or enough to cover
+   * the box. Cover alone would be wrong — a small cutout would be blown up until its
+   * transparent margin covered the box and the subject would be cropped to a detail — and
+   * fit alone leaves the gap. The larger of the two is the only one that is right for
+   * both kinds of asset, which is why this is one mode rather than two.
+   */
+  const boxCovered = Math.max(box.width, box.height * geometry.aspect)
+  const imageWidth = frame === 'fill' ? Math.max(subjectFits, boxCovered) : subjectFits
   const imageHeight = imageWidth / geometry.aspect
 
   // The image is centred by the frame; this is the leftover — how far the subject's own

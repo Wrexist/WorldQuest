@@ -10,6 +10,7 @@ import { router, useLocalSearchParams } from 'expo-router'
 import { LessonScreen } from '../src/features/lesson/LessonScreen.js'
 import { useProgress } from '../src/features/home/useProgress.js'
 import { useEntitlement } from '../src/features/paywall/useEntitlement.js'
+import { useQuestCelebration } from '../src/features/quests/ceremony.js'
 import { parseFocusParams } from '../src/features/lesson/focusParams.js'
 import { useLessonFocus } from '../src/features/lesson/useLessonFocus.js'
 
@@ -50,6 +51,10 @@ export default function LessonRoute() {
   // paid. Asking an existing subscriber to subscribe is the fastest way to make a
   // paying user feel like a target, and it earns nothing.
   const { isPremium } = useEntitlement()
+  // Flagged, like the cover page at the other end of the loop, and for the same reason:
+  // it is a screen inserted into the core path, and it lands at the moment somebody has
+  // just finished and might be about to leave. Off is the old behaviour exactly.
+  const celebration = useQuestCelebration()
 
   return (
     <LessonScreen
@@ -77,6 +82,17 @@ export default function LessonRoute() {
           router.replace(
             `/paywall?source=onboarding&countries=${encodeURIComponent(summary.practised.join(','))}`,
           )
+          return
+        }
+        // The day's ritual, finished. AFTER the summary rather than instead of it: the
+        // summary is about the lesson — what you got right and what it earned — and the
+        // celebration is about the day. Collapsed into one screen the quest bonus would
+        // read as part of the lesson's XP, which is the one thing it is not.
+        //
+        // `replace`, so the lesson is off the stack before the celebration draws and
+        // "back" from it cannot return the user to a summary they have dismissed.
+        if (celebration && summary.questCompleted) {
+          router.replace('/quest-complete')
           return
         }
         // Opened from a notification there is no history to pop, and `back()` would

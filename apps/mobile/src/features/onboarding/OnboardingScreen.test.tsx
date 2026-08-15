@@ -335,3 +335,59 @@ describe('OnboardingScreen', () => {
     expect(container.textContent).not.toMatch(/\{[a-zA-Z_]+[,}]/)
   })
 })
+
+/**
+ * The promise on the third slide.
+ *
+ * This is the assertion that stops a number in the copy outrunning the content again.
+ * The slide read "195 flags. 195 capitals." — the count of UN member states, and the
+ * right number for the app this becomes — while the packs held 65 and Explore said so
+ * two screens later. Nothing failed, because a translated string is not typechecked
+ * against a JSON file.
+ *
+ * It asserts against `COUNTRY_COUNT` rather than against 65, so adding the 66th country
+ * moves the slide and this test together and neither has to be remembered.
+ */
+describe('the third slide promises what the app actually ships', () => {
+  // The carousel is two steps in and the answer beat is a real `setTimeout`, so these
+  // need the same fake clock every other navigating test in this file uses.
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('states the build\'s own country count', async () => {
+    const { COUNTRY_COUNT } = await import('../../lib/content.js')
+    render(
+      <OnboardingScreen
+        currentYear={2026}
+        language="en"
+        onLanguage={() => {}}
+        onFinish={() => {}}
+        countryCount={COUNTRY_COUNT}
+      />,
+    )
+    // The flow OPENS on the language picker, not the carousel — everything after step
+    // one assumes the user can read the screen, which is the one thing step one fixes.
+    // So the slides have to be reached the way a user reaches them.
+    answer('English')
+    expect(screen.getByText(new RegExp(`${COUNTRY_COUNT} flags`))).toBeTruthy()
+  })
+
+  it('names no country count the packs cannot back', () => {
+    // The specific defect, guarded directly: 195 must not appear unless 195 ship.
+    const { container } = render(
+      <OnboardingScreen
+        currentYear={2026}
+        language="en"
+        onLanguage={() => {}}
+        onFinish={() => {}}
+        countryCount={65}
+      />,
+    )
+    answer('English')
+    expect(container.textContent).not.toMatch(/195/)
+  })
+})

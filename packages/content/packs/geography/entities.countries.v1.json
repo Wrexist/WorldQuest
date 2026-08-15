@@ -5,852 +5,873 @@
   "version": "1.0.0",
   "subject": "geography",
   "kind": "entities",
-  "locales": ["en", "sv"],
+  "locales": [
+    "en",
+    "sv"
+  ],
   "license": "CC-BY-4.0",
   "attribution": "Country names and codes from the UN Statistics Division M49 standard. Flag drawings from flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them.",
+  "assetLicenses": {
+    "flag-icons": {
+      "license": "MIT",
+      "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+    },
+    "natural-earth-country": {
+      "license": "Public domain (Natural Earth)",
+      "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+    },
+    "natural-earth-region": {
+      "license": "Public domain (Natural Earth)",
+      "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+    }
+  },
   "generatedAt": "2026-07-31",
   "items": [
     {
       "id": "US",
       "type": "country",
-      "names": { "en": "United States", "sv": "USA" },
+      "names": {
+        "en": "United States",
+        "sv": "USA"
+      },
       "$comment": "English takes the article inside a sentence but not in a list. Swedish 'USA' needs none.",
-      "namesInSentence": {"en": "the United States"},
+      "namesInSentence": {
+        "en": "the United States"
+      },
       "region": "NA",
       "subregion": "north-america",
       "assets": {
         "flag": {
           "path": "flags/US.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/US.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/US.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "CA",
       "type": "country",
-      "names": { "en": "Canada", "sv": "Kanada" },
+      "names": {
+        "en": "Canada",
+        "sv": "Kanada"
+      },
       "region": "NA",
       "subregion": "north-america",
       "assets": {
         "flag": {
           "path": "flags/CA.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/CA.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/CA.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "MX",
       "type": "country",
-      "names": { "en": "Mexico", "sv": "Mexiko" },
+      "names": {
+        "en": "Mexico",
+        "sv": "Mexiko"
+      },
       "region": "NA",
       "subregion": "north-america",
       "assets": {
         "flag": {
           "path": "flags/MX.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/MX.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/MX.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "CU",
       "type": "country",
-      "names": { "en": "Cuba", "sv": "Kuba" },
+      "names": {
+        "en": "Cuba",
+        "sv": "Kuba"
+      },
       "region": "NA",
       "subregion": "north-america",
       "assets": {
         "flag": {
           "path": "flags/CU.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/CU.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/CU.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "GT",
       "type": "country",
-      "names": { "en": "Guatemala", "sv": "Guatemala" },
+      "names": {
+        "en": "Guatemala",
+        "sv": "Guatemala"
+      },
       "region": "NA",
       "subregion": "north-america",
       "assets": {
         "flag": {
           "path": "flags/GT.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/GT.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/GT.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "CR",
       "type": "country",
-      "names": { "en": "Costa Rica", "sv": "Costa Rica" },
+      "names": {
+        "en": "Costa Rica",
+        "sv": "Costa Rica"
+      },
       "region": "NA",
       "subregion": "north-america",
       "assets": {
         "flag": {
           "path": "flags/CR.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/CR.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/CR.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "PA",
       "type": "country",
-      "names": { "en": "Panama", "sv": "Panama" },
+      "names": {
+        "en": "Panama",
+        "sv": "Panama"
+      },
       "region": "NA",
       "subregion": "north-america",
       "assets": {
         "flag": {
           "path": "flags/PA.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/PA.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/PA.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "ID",
       "type": "country",
-      "names": { "en": "Indonesia", "sv": "Indonesien" },
+      "names": {
+        "en": "Indonesia",
+        "sv": "Indonesien"
+      },
       "region": "AS",
       "subregion": "south-east-asia",
       "assets": {
         "flag": {
           "path": "flags/ID.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/ID.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/ID.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "TH",
       "type": "country",
-      "names": { "en": "Thailand", "sv": "Thailand" },
+      "names": {
+        "en": "Thailand",
+        "sv": "Thailand"
+      },
       "region": "AS",
       "subregion": "south-east-asia",
       "assets": {
         "flag": {
           "path": "flags/TH.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/TH.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/TH.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "VN",
       "type": "country",
-      "names": { "en": "Vietnam", "sv": "Vietnam" },
+      "names": {
+        "en": "Vietnam",
+        "sv": "Vietnam"
+      },
       "region": "AS",
       "subregion": "south-east-asia",
       "assets": {
         "flag": {
           "path": "flags/VN.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/VN.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/VN.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "PH",
       "type": "country",
-      "names": { "en": "Philippines", "sv": "Filippinerna" },
+      "names": {
+        "en": "Philippines",
+        "sv": "Filippinerna"
+      },
       "$comment": "English takes the article inside a sentence but not in a list. Swedish 'Filippinerna' carries its own definite ending.",
-      "namesInSentence": {"en": "the Philippines"},
+      "namesInSentence": {
+        "en": "the Philippines"
+      },
       "region": "AS",
       "subregion": "south-east-asia",
       "assets": {
         "flag": {
           "path": "flags/PH.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/PH.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/PH.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "MY",
       "type": "country",
-      "names": { "en": "Malaysia", "sv": "Malaysia" },
+      "names": {
+        "en": "Malaysia",
+        "sv": "Malaysia"
+      },
       "region": "AS",
       "subregion": "south-east-asia",
       "assets": {
         "flag": {
           "path": "flags/MY.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/MY.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/MY.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "AU",
       "type": "country",
-      "names": { "en": "Australia", "sv": "Australien" },
+      "names": {
+        "en": "Australia",
+        "sv": "Australien"
+      },
       "region": "OC",
       "subregion": "oceania",
       "assets": {
         "flag": {
           "path": "flags/AU.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/AU.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/AU.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "NZ",
       "type": "country",
-      "names": { "en": "New Zealand", "sv": "Nya Zeeland" },
+      "names": {
+        "en": "New Zealand",
+        "sv": "Nya Zeeland"
+      },
       "region": "OC",
       "subregion": "oceania",
       "assets": {
         "flag": {
           "path": "flags/NZ.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/NZ.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/NZ.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "FJ",
       "type": "country",
-      "names": { "en": "Fiji", "sv": "Fiji" },
+      "names": {
+        "en": "Fiji",
+        "sv": "Fiji"
+      },
       "region": "OC",
       "subregion": "oceania",
       "assets": {
         "flag": {
           "path": "flags/FJ.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/FJ.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/FJ.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "PG",
       "type": "country",
-      "names": { "en": "Papua New Guinea", "sv": "Papua Nya Guinea" },
+      "names": {
+        "en": "Papua New Guinea",
+        "sv": "Papua Nya Guinea"
+      },
       "region": "OC",
       "subregion": "oceania",
       "assets": {
         "flag": {
           "path": "flags/PG.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/PG.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/PG.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "PL",
       "type": "country",
-      "names": { "en": "Poland", "sv": "Polen" },
+      "names": {
+        "en": "Poland",
+        "sv": "Polen"
+      },
       "region": "EU",
       "subregion": "eastern-europe",
       "assets": {
         "flag": {
           "path": "flags/PL.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/PL.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/PL.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "UA",
       "type": "country",
-      "names": { "en": "Ukraine", "sv": "Ukraina" },
+      "names": {
+        "en": "Ukraine",
+        "sv": "Ukraina"
+      },
       "region": "EU",
       "subregion": "eastern-europe",
       "assets": {
         "flag": {
           "path": "flags/UA.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/UA.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/UA.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "CZ",
       "type": "country",
-      "names": { "en": "Czechia", "sv": "Tjeckien" },
+      "names": {
+        "en": "Czechia",
+        "sv": "Tjeckien"
+      },
       "region": "EU",
       "subregion": "eastern-europe",
       "assets": {
         "flag": {
           "path": "flags/CZ.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/CZ.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/CZ.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "HU",
       "type": "country",
-      "names": { "en": "Hungary", "sv": "Ungern" },
+      "names": {
+        "en": "Hungary",
+        "sv": "Ungern"
+      },
       "region": "EU",
       "subregion": "eastern-europe",
       "assets": {
         "flag": {
           "path": "flags/HU.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/HU.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/HU.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "RO",
       "type": "country",
-      "names": { "en": "Romania", "sv": "Rumänien" },
+      "names": {
+        "en": "Romania",
+        "sv": "Rumänien"
+      },
       "region": "EU",
       "subregion": "eastern-europe",
       "assets": {
         "flag": {
           "path": "flags/RO.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/RO.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/RO.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "IN",
       "type": "country",
-      "names": { "en": "India", "sv": "Indien" },
+      "names": {
+        "en": "India",
+        "sv": "Indien"
+      },
       "region": "AS",
       "subregion": "south-asia",
       "assets": {
         "flag": {
           "path": "flags/IN.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/IN.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/IN.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "PK",
       "type": "country",
-      "names": { "en": "Pakistan", "sv": "Pakistan" },
+      "names": {
+        "en": "Pakistan",
+        "sv": "Pakistan"
+      },
       "region": "AS",
       "subregion": "south-asia",
       "assets": {
         "flag": {
           "path": "flags/PK.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/PK.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/PK.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "BD",
       "type": "country",
-      "names": { "en": "Bangladesh", "sv": "Bangladesh" },
+      "names": {
+        "en": "Bangladesh",
+        "sv": "Bangladesh"
+      },
       "region": "AS",
       "subregion": "south-asia",
       "assets": {
         "flag": {
           "path": "flags/BD.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/BD.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/BD.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "NP",
       "type": "country",
-      "names": { "en": "Nepal", "sv": "Nepal" },
+      "names": {
+        "en": "Nepal",
+        "sv": "Nepal"
+      },
       "region": "AS",
       "subregion": "south-asia",
       "assets": {
         "flag": {
           "path": "flags/NP.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/NP.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/NP.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "EG",
       "type": "country",
-      "names": { "en": "Egypt", "sv": "Egypten" },
+      "names": {
+        "en": "Egypt",
+        "sv": "Egypten"
+      },
       "region": "AF",
       "subregion": "northern-africa",
       "assets": {
         "flag": {
           "path": "flags/EG.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/EG.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/EG.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "MA",
       "type": "country",
-      "names": { "en": "Morocco", "sv": "Marocko" },
+      "names": {
+        "en": "Morocco",
+        "sv": "Marocko"
+      },
       "region": "AF",
       "subregion": "northern-africa",
       "assets": {
         "flag": {
           "path": "flags/MA.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/MA.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/MA.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "DZ",
       "type": "country",
-      "names": { "en": "Algeria", "sv": "Algeriet" },
+      "names": {
+        "en": "Algeria",
+        "sv": "Algeriet"
+      },
       "region": "AF",
       "subregion": "northern-africa",
       "assets": {
         "flag": {
           "path": "flags/DZ.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/DZ.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/DZ.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "TN",
       "type": "country",
-      "names": { "en": "Tunisia", "sv": "Tunisien" },
+      "names": {
+        "en": "Tunisia",
+        "sv": "Tunisien"
+      },
       "region": "AF",
       "subregion": "northern-africa",
       "assets": {
         "flag": {
           "path": "flags/TN.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/TN.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/TN.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "NG",
       "type": "country",
-      "names": { "en": "Nigeria", "sv": "Nigeria" },
+      "names": {
+        "en": "Nigeria",
+        "sv": "Nigeria"
+      },
       "region": "AF",
       "subregion": "western-africa",
       "assets": {
         "flag": {
           "path": "flags/NG.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/NG.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/NG.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "GH",
       "type": "country",
-      "names": { "en": "Ghana", "sv": "Ghana" },
+      "names": {
+        "en": "Ghana",
+        "sv": "Ghana"
+      },
       "region": "AF",
       "subregion": "western-africa",
       "assets": {
         "flag": {
           "path": "flags/GH.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/GH.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/GH.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "SN",
       "type": "country",
-      "names": { "en": "Senegal", "sv": "Senegal" },
+      "names": {
+        "en": "Senegal",
+        "sv": "Senegal"
+      },
       "region": "AF",
       "subregion": "western-africa",
       "assets": {
         "flag": {
           "path": "flags/SN.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/SN.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/SN.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "ML",
       "type": "country",
-      "names": { "en": "Mali", "sv": "Mali" },
+      "names": {
+        "en": "Mali",
+        "sv": "Mali"
+      },
       "region": "AF",
       "subregion": "western-africa",
       "assets": {
         "flag": {
           "path": "flags/ML.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/ML.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/ML.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "KE",
       "type": "country",
-      "names": { "en": "Kenya", "sv": "Kenya" },
+      "names": {
+        "en": "Kenya",
+        "sv": "Kenya"
+      },
       "region": "AF",
       "subregion": "eastern-africa",
       "assets": {
         "flag": {
           "path": "flags/KE.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/KE.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/KE.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "ET",
       "type": "country",
-      "names": { "en": "Ethiopia", "sv": "Etiopien" },
+      "names": {
+        "en": "Ethiopia",
+        "sv": "Etiopien"
+      },
       "region": "AF",
       "subregion": "eastern-africa",
       "assets": {
         "flag": {
           "path": "flags/ET.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/ET.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/ET.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
@@ -858,722 +879,724 @@
       "id": "ZA",
       "type": "country",
       "$comment": "Its capital fact lives in sample.capitals.v1.json and is review-required — South Africa has three (Pretoria, Cape Town, Bloemfontein) and the policy is to flag that, not pick one. The entity and the flag are uncontested, so they ship.",
-      "names": { "en": "South Africa", "sv": "Sydafrika" },
+      "names": {
+        "en": "South Africa",
+        "sv": "Sydafrika"
+      },
       "region": "AF",
       "subregion": "southern-africa",
       "assets": {
         "flag": {
           "path": "flags/ZA.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/ZA.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/ZA.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "UG",
       "type": "country",
-      "names": { "en": "Uganda", "sv": "Uganda" },
+      "names": {
+        "en": "Uganda",
+        "sv": "Uganda"
+      },
       "region": "AF",
       "subregion": "eastern-africa",
       "assets": {
         "flag": {
           "path": "flags/UG.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/UG.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/UG.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "TZ",
       "type": "country",
-      "names": { "en": "Tanzania", "sv": "Tanzania" },
+      "names": {
+        "en": "Tanzania",
+        "sv": "Tanzania"
+      },
       "region": "AF",
       "subregion": "eastern-africa",
       "assets": {
         "flag": {
           "path": "flags/TZ.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/TZ.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/TZ.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "NA",
       "type": "country",
-      "names": { "en": "Namibia", "sv": "Namibia" },
+      "names": {
+        "en": "Namibia",
+        "sv": "Namibia"
+      },
       "region": "AF",
       "subregion": "southern-africa",
       "assets": {
         "flag": {
           "path": "flags/NA.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/NA.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/NA.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "BW",
       "type": "country",
-      "names": { "en": "Botswana", "sv": "Botswana" },
+      "names": {
+        "en": "Botswana",
+        "sv": "Botswana"
+      },
       "region": "AF",
       "subregion": "southern-africa",
       "assets": {
         "flag": {
           "path": "flags/BW.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/BW.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/BW.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "ZW",
       "type": "country",
-      "names": { "en": "Zimbabwe", "sv": "Zimbabwe" },
+      "names": {
+        "en": "Zimbabwe",
+        "sv": "Zimbabwe"
+      },
       "region": "AF",
       "subregion": "southern-africa",
       "assets": {
         "flag": {
           "path": "flags/ZW.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/ZW.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/ZW.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "JP",
       "type": "country",
-      "names": { "en": "Japan", "sv": "Japan" },
+      "names": {
+        "en": "Japan",
+        "sv": "Japan"
+      },
       "region": "AS",
       "subregion": "east-asia",
       "assets": {
         "flag": {
           "path": "flags/JP.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/JP.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/JP.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "CN",
       "type": "country",
-      "names": { "en": "China", "sv": "Kina" },
+      "names": {
+        "en": "China",
+        "sv": "Kina"
+      },
       "region": "AS",
       "subregion": "east-asia",
       "assets": {
         "flag": {
           "path": "flags/CN.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/CN.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/CN.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "KR",
       "type": "country",
-      "names": { "en": "South Korea", "sv": "Sydkorea" },
+      "names": {
+        "en": "South Korea",
+        "sv": "Sydkorea"
+      },
       "region": "AS",
       "subregion": "east-asia",
       "assets": {
         "flag": {
           "path": "flags/KR.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/KR.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/KR.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "KP",
       "type": "country",
-      "names": { "en": "North Korea", "sv": "Nordkorea" },
+      "names": {
+        "en": "North Korea",
+        "sv": "Nordkorea"
+      },
       "region": "AS",
       "subregion": "east-asia",
       "assets": {
         "flag": {
           "path": "flags/KP.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/KP.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/KP.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "MN",
       "type": "country",
-      "names": { "en": "Mongolia", "sv": "Mongoliet" },
+      "names": {
+        "en": "Mongolia",
+        "sv": "Mongoliet"
+      },
       "region": "AS",
       "subregion": "east-asia",
       "assets": {
         "flag": {
           "path": "flags/MN.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/MN.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/MN.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "BR",
       "type": "country",
-      "names": { "en": "Brazil", "sv": "Brasilien" },
+      "names": {
+        "en": "Brazil",
+        "sv": "Brasilien"
+      },
       "region": "SA",
       "subregion": "south-america",
       "assets": {
         "flag": {
           "path": "flags/BR.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/BR.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/BR.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "AR",
       "type": "country",
-      "names": { "en": "Argentina", "sv": "Argentina" },
+      "names": {
+        "en": "Argentina",
+        "sv": "Argentina"
+      },
       "region": "SA",
       "subregion": "south-america",
       "assets": {
         "flag": {
           "path": "flags/AR.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/AR.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/AR.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "CL",
       "type": "country",
-      "names": { "en": "Chile", "sv": "Chile" },
+      "names": {
+        "en": "Chile",
+        "sv": "Chile"
+      },
       "region": "SA",
       "subregion": "south-america",
       "assets": {
         "flag": {
           "path": "flags/CL.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/CL.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/CL.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "PE",
       "type": "country",
-      "names": { "en": "Peru", "sv": "Peru" },
+      "names": {
+        "en": "Peru",
+        "sv": "Peru"
+      },
       "region": "SA",
       "subregion": "south-america",
       "assets": {
         "flag": {
           "path": "flags/PE.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/PE.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/PE.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "CO",
       "type": "country",
-      "names": { "en": "Colombia", "sv": "Colombia" },
+      "names": {
+        "en": "Colombia",
+        "sv": "Colombia"
+      },
       "region": "SA",
       "subregion": "south-america",
       "assets": {
         "flag": {
           "path": "flags/CO.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/CO.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/CO.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "IT",
       "type": "country",
-      "names": { "en": "Italy", "sv": "Italien" },
+      "names": {
+        "en": "Italy",
+        "sv": "Italien"
+      },
       "region": "EU",
       "subregion": "southern-europe",
       "assets": {
         "flag": {
           "path": "flags/IT.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/IT.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/IT.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "ES",
       "type": "country",
-      "names": { "en": "Spain", "sv": "Spanien" },
+      "names": {
+        "en": "Spain",
+        "sv": "Spanien"
+      },
       "region": "EU",
       "subregion": "southern-europe",
       "assets": {
         "flag": {
           "path": "flags/ES.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/ES.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/ES.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "PT",
       "type": "country",
-      "names": { "en": "Portugal", "sv": "Portugal" },
+      "names": {
+        "en": "Portugal",
+        "sv": "Portugal"
+      },
       "region": "EU",
       "subregion": "southern-europe",
       "assets": {
         "flag": {
           "path": "flags/PT.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/PT.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/PT.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "GR",
       "type": "country",
-      "names": { "en": "Greece", "sv": "Grekland" },
+      "names": {
+        "en": "Greece",
+        "sv": "Grekland"
+      },
       "region": "EU",
       "subregion": "southern-europe",
       "assets": {
         "flag": {
           "path": "flags/GR.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/GR.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/GR.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "FR",
       "type": "country",
-      "names": { "en": "France", "sv": "Frankrike" },
+      "names": {
+        "en": "France",
+        "sv": "Frankrike"
+      },
       "region": "EU",
       "subregion": "western-europe",
       "assets": {
         "flag": {
           "path": "flags/FR.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/FR.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/FR.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "DE",
       "type": "country",
-      "names": { "en": "Germany", "sv": "Tyskland" },
+      "names": {
+        "en": "Germany",
+        "sv": "Tyskland"
+      },
       "region": "EU",
       "subregion": "western-europe",
       "assets": {
         "flag": {
           "path": "flags/DE.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/DE.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/DE.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "BE",
       "type": "country",
-      "names": { "en": "Belgium", "sv": "Belgien" },
+      "names": {
+        "en": "Belgium",
+        "sv": "Belgien"
+      },
       "region": "EU",
       "subregion": "western-europe",
       "assets": {
         "flag": {
           "path": "flags/BE.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/BE.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/BE.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "NL",
       "type": "country",
-      "names": { "en": "Netherlands", "sv": "Nederländerna" },
+      "names": {
+        "en": "Netherlands",
+        "sv": "Nederländerna"
+      },
       "$comment": "English takes the article inside a sentence but not in a list — 'the capital of the Netherlands', filed under N. Swedish needs no variant.",
-      "namesInSentence": { "en": "the Netherlands" },
+      "namesInSentence": {
+        "en": "the Netherlands"
+      },
       "region": "EU",
       "subregion": "western-europe",
       "assets": {
         "flag": {
           "path": "flags/NL.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/NL.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/NL.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "AT",
       "type": "country",
-      "names": { "en": "Austria", "sv": "Österrike" },
+      "names": {
+        "en": "Austria",
+        "sv": "Österrike"
+      },
       "region": "EU",
       "subregion": "western-europe",
       "assets": {
         "flag": {
           "path": "flags/AT.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/AT.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/AT.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "CH",
       "type": "country",
-      "names": { "en": "Switzerland", "sv": "Schweiz" },
+      "names": {
+        "en": "Switzerland",
+        "sv": "Schweiz"
+      },
       "region": "EU",
       "subregion": "western-europe",
       "assets": {
         "flag": {
           "path": "flags/CH.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/CH.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/CH.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "SE",
       "type": "country",
-      "names": { "en": "Sweden", "sv": "Sverige" },
+      "names": {
+        "en": "Sweden",
+        "sv": "Sverige"
+      },
       "region": "EU",
       "subregion": "northern-europe",
       "assets": {
         "flag": {
           "path": "flags/SE.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/SE.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/SE.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "NO",
       "type": "country",
-      "names": { "en": "Norway", "sv": "Norge" },
+      "names": {
+        "en": "Norway",
+        "sv": "Norge"
+      },
       "region": "EU",
       "subregion": "northern-europe",
       "assets": {
         "flag": {
           "path": "flags/NO.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/NO.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/NO.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "DK",
       "type": "country",
-      "names": { "en": "Denmark", "sv": "Danmark" },
+      "names": {
+        "en": "Denmark",
+        "sv": "Danmark"
+      },
       "region": "EU",
       "subregion": "northern-europe",
       "assets": {
         "flag": {
           "path": "flags/DK.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/DK.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/DK.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     },
     {
       "id": "FI",
       "type": "country",
-      "names": { "en": "Finland", "sv": "Finland" },
+      "names": {
+        "en": "Finland",
+        "sv": "Finland"
+      },
       "region": "EU",
       "subregion": "northern-europe",
       "assets": {
         "flag": {
           "path": "flags/FI.png",
-          "license": "MIT",
-          "attribution": "flag-icons 7.5.0 (github.com/lipis/flag-icons) — MIT. The flag DESIGNS are public domain; the MIT licence covers these drawings of them."
+          "licenseRef": "flag-icons"
         },
         "map": {
           "path": "geo/countries/FI.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Outlines from Natural Earth 1:50m, public domain, redistributed as TopoJSON by world-atlas 2.0.2 (ISC). Rasterised by pnpm build:maps. The region layer geo/regions/<REGION>.png shares this file's projection frame."
+          "licenseRef": "natural-earth-country"
         },
         "mapContext": {
           "path": "geo/context/FI.png",
-          "license": "Public domain (Natural Earth)",
-          "attribution": "Land surrounding this country, from the same Natural Earth 1:50m source and drawn in the SAME projection frame as geo/countries/<CODE>.png, so the two overlay exactly. Public domain via world-atlas 2.0.2 (ISC)."
+          "licenseRef": "natural-earth-region"
         }
       }
     }

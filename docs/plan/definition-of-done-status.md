@@ -193,6 +193,21 @@ green while two thirds of the authored content was unreachable.
    and cold-start weight, named as a decision only a person could make in
    `docs/plan/cowork-handoff.md` §6.
 
+   **Drift since, 2026-08-13 — worth a decision rather than another comment.** The
+   enforced gate has been raised four times since that call, each time by ~0.1 MiB and
+   each time with a defensible reason written into `scripts/bundle-native.cjs`:
+   4.0 → 4.1 (the original arithmetic undercounted a real build) → 4.2 (safe-area-context,
+   a visible defect) → 4.3 (`@formatjs/intl-pluralrules`, the worst bug that branch found)
+   → **4.4 (the August redesign and the league engine — ordinary feature work, no new
+   dependency)**. Measured today: **4.32 MiB**.
+   Every individual raise reads as reasonable. The sum is that a number a person chose to
+   hold at 4, and paid for by deleting a crash reporter, is now 4.4 and was moved each
+   time by whoever happened to be over it. **That is how a budget dies**, and the last
+   raise is the first bought by features rather than by a dependency or a bug fix, which
+   makes it the right moment to ask the question rather than the next one.
+   The options have not changed: hold ~4 and start lazy-loading routes, or accept ~4.4 and
+   say so in the documented figure so the two stop disagreeing. Only a person can pick.
+
    Isac decided to hold 4 MiB and drop Sentry rather than raise the documented number,
    which was the lower-risk choice given no Sentry account existed yet either — nothing
    with a live DSN behind it was lost. Lazy-loading was considered and rejected: Metro

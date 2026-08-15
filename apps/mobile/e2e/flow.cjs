@@ -550,11 +550,20 @@ const skip = (name, why) => {
   await page.screenshot({ path: path.join(SHOTS, 'home.png') })
 
   // ── the taster lesson, which is the whole product in one flow ─────────────
+  //
+  // Straight into the runner, because that is what SHIPS. The quest cover page sits
+  // behind `quest_cover_page`, which is off at 0 % — and `useFeatureFlag` returns false
+  // for a flag it has never fetched, which is the state this harness is always in.
+  //
+  // Asserting the flagged-on path here would have been the more impressive-looking test
+  // and the wrong one: it would prove a route no user can currently reach while saying
+  // nothing about the one every user takes. The cover page is visited directly by
+  // `pnpm design:shots /quest` instead, and the flag's own default is asserted below.
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(1500)
   text = await body()
   const prompt = await lessonPrompt()
-  step('Continue opens a lesson', prompt !== undefined, prompt)
+  step('Continue opens a lesson, the flag being off', prompt !== undefined, prompt)
 
   if (prompt !== undefined) {
     await page.screenshot({ path: path.join(SHOTS, 'lesson.png') })
@@ -753,7 +762,11 @@ const skip = (name, why) => {
     { name: 'Explore', proof: /continents/i },
     { name: 'Quests', proof: /quest/i },
     { name: 'Profile', proof: /level|streak|explorer/i },
-    { name: 'More', proof: /settings|about|language/i },
+    // Shop, where More used to be. The fifth tab changed in the August 2026 redesign
+    // (PROJECT.md §7) and Settings moved behind the gear on Profile — which this walk
+    // reaches one step further down, because a destination that no longer has a tab
+    // still has to be reachable or it is gone.
+    { name: 'Shop', proof: /coins|titles|spend/i },
   ]
   const homeText = await (async () => {
     await home()
@@ -801,6 +814,49 @@ const skip = (name, why) => {
       selected === 'true' && shown !== homeText && tab.proof.test(shown) && !/Something broke/.test(shown),
     )
     if (tab.name === 'Explore') await page.screenshot({ path: path.join(SHOTS, 'explore.png') })
+  }
+
+  // ── Settings, now that it is not a tab ─────────────────────────────────────
+  //
+  // The one step this walk gained rather than swapped. Moving a destination off the tab
+  // bar is exactly how a screen becomes unreachable without anybody noticing: the tab is
+  // gone from the bar, the route still exists, and nothing fails. So the walk follows
+  // the path a user now has to take — Profile, then the gear.
+  await home()
+  await page.getByRole('tab', { name: 'Profile' }).click()
+  await page.waitForTimeout(1000)
+  const gear = page.getByRole('button', { name: 'More' }).first()
+  const hasGear = (await gear.count()) > 0
+  if (hasGear) {
+    await gear.click()
+    await page.waitForTimeout(1200)
+  }
+  const settings = await body()
+  step(
+    'Settings is still reachable, through the gear on Profile',
+    hasGear && /settings|about|language/i.test(settings),
+    hasGear ? settings.slice(0, 40) : 'no gear on Profile',
+  )
+
+  // ── the account flow, which is three entry points that pointed at nothing ──
+  //
+  // "Save your progress" was on Profile from the first week with its handler passed as
+  // `undefined`, and "I already have an account" was in onboarding the same way. A
+  // screen that exists and cannot be reached is this repo's most-repeated defect, so
+  // the walk opens it the way a user does rather than pushing the route.
+  step('Settings offers a way to save progress', /save your progress/i.test(settings))
+  if (/save your progress/i.test(settings)) {
+    // By ROLE, not by text: `LinkRow` collapses to one accessible element with
+    // `accessible`, so the Text inside it is not the click target — the same trap the
+    // tab walk above documents at length.
+    await page.getByRole('button', { name: 'Save your progress' }).first().click()
+    await page.waitForTimeout(1000)
+    const account = await body()
+    step(
+      'and it opens the account screen, asking for an email',
+      /email|you@/i.test(account) && /send me a code/i.test(account),
+      account.slice(0, 60),
+    )
   }
 
   // ── the collection, reached the way a user reaches it ──────────────────────
@@ -870,7 +926,10 @@ const skip = (name, why) => {
   step('paywall is escapable on the first frame, at full size', dismissed)
 
   // ── Settings owns the subscription, and does not bury cancelling ───────────
-  await page.goto(`http://localhost:${PORT}/more`, { waitUntil: 'networkidle' })
+  // `/settings`, not `/more`. The route moved when Shop took the fifth tab, and a URL
+  // that 404s here would have failed as "Settings has no Premium section" — a check
+  // reporting the wrong defect is worse than one that does not run.
+  await page.goto(`http://localhost:${PORT}/settings`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(1200)
   const more = await body()
   step('Settings has a Premium section', /premium/i.test(more))
