@@ -260,9 +260,17 @@ const MOBILE = join(process.cwd(), 'apps', 'mobile')
  *     before   ✗ ios 4.60  ⚠ android 4.60
  *     after    ⚠ ios 4.51  ⚠ android 4.51
  *
- * 69.3 KB of notes out of a 145.6 KB catalogue, and ~0.09 MB off the compiled bytecode —
- * roughly the 0.1 MB of headroom every raise in this file has asked for, recovered
- * without a sixth number.
+ * 69.6 KB of notes out of a 132.4 KB catalogue — 53 % of it — and ~0.09 MB off the
+ * compiled bytecode. Roughly the 0.1 MB of headroom every raise in this file has asked
+ * for, recovered without a sixth number.
+ *
+ * Those catalogue figures are UTF-8 bytes of key and value text, printed by
+ * `pnpm i18n:types` so there is one source for them rather than a number retyped here.
+ * The first draft of this note said 69.3 of 145.6, which was two different metrics in one
+ * sentence: `String.length` (UTF-16 code units — every `ö` in the Swedish notes counted
+ * one where it weighs two) against a JSON-serialised total that also counted quotes and
+ * braces. Neither was bytes. That is precisely the mistake the rest of this file is a
+ * monument to, made in the note recording the fix.
  *
  * Measured by ablation on the `.hbc` — strip, build, compare, restore — rather than from
  * the source bytes, because the paragraph above this one is the reason not to trust

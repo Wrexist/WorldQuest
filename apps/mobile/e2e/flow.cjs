@@ -404,11 +404,13 @@ const skip = (name, why) => {
   /** Slide one to the age step. A function because the 200 % check below rewinds. */
   const toAgeStep = async () => {
     // The welcome frame first — first launch opens on a greeting, not on a question.
-    const start = page.getByText('Get started', { exact: true }).first()
-    if ((await start.count()) > 0) {
-      await start.click()
-      await page.waitForTimeout(400)
-    }
+    //
+    // Required, not guarded. Both callers reach this with onboarding incomplete — the
+    // second one right after a reload — so the greeting is always what is on screen, and
+    // a `count() > 0` guard around it would be a way for the frame to go unvisited rather
+    // than a way to survive its absence. `count()` does not wait, either; `click()` does.
+    await page.getByRole('button', { name: 'Get started' }).first().click()
+    await page.waitForTimeout(400)
     // The language step has no button any more: answering IS the navigation, so the
     // row is what moves the flow on. This drives it the way a user does rather than
     // through the shared walker, because the checks below rewind to this point and

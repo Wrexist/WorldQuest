@@ -67,6 +67,24 @@ const locales = readdirSync(localesDir, { withFileTypes: true })
   .map((entry) => entry.name)
   .sort()
 
+/**
+ * All three counters are **UTF-8 bytes of the key and value text**, via
+ * `Buffer.byteLength` rather than `String.length`.
+ *
+ * `.length` is UTF-16 code units, which is not a size in bytes and is not even the same
+ * shape as one: `ö` is one unit and two bytes, and every Swedish note in this catalogue
+ * has several. Reported as "KB" it is simply a wrong number, and a wrong number in a note
+ * about bundle weight is worse than none — `scripts/bundle-native.cjs` exists because this
+ * repo has twice been misled by a size it did not actually measure.
+ *
+ * What it does NOT count is the JSON syntax around the strings — the quotes, colons,
+ * commas and braces. That is deliberate: what this script removes from the bundle is the
+ * note text, and the punctuation would only be double-counted against the generated module
+ * that replaces it. The only number that decides anything is the compiled `.hbc`, which
+ * `pnpm bundle:native` measures and neither of these counters tries to predict.
+ */
+const utf8 = (value: string): number => Buffer.byteLength(value, 'utf8')
+
 let noteBytes = 0
 let stringBytes = 0
 let keyCount = 0
@@ -84,7 +102,7 @@ for (const locale of locales) {
     const bundle: Record<string, string> = {}
 
     for (const [key, value] of Object.entries(raw)) {
-      const size = key.length + value.length
+      const size = utf8(key) + utf8(value)
       if (key.endsWith('__note')) {
         noteBytes += size
         continue
@@ -123,6 +141,9 @@ const kb = (bytes: number): string => `${(bytes / 1024).toFixed(1)} KB`
 console.log(`\nRuntime catalogue\n`)
 console.log(`  locales     ${locales.length}  (${locales.join(', ')})`)
 console.log(`  keys        ${keyCount}`)
-console.log(`  shipped     ${kb(stringBytes)}`)
+// The unit is named in the output, so a number copied out of here into a commit message
+// or a budget note carries its own definition. See `utf8` above.
+console.log(`  shipped     ${kb(stringBytes)} of key + value text (UTF-8)`)
 console.log(`  left behind ${kb(noteBytes)} of translator notes`)
+console.log(`  catalogue   ${kb(stringBytes + noteBytes)} — notes are ${Math.round((noteBytes / (stringBytes + noteBytes)) * 100)}% of it`)
 console.log(`\n✓ wrote src/catalogue.generated.ts`)
