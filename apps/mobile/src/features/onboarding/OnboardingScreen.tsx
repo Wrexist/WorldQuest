@@ -1409,7 +1409,19 @@ export function OnboardingScreen({
           <>
             <Button label={t('onboarding:taster.start')} onPress={finish} />
             {/* Not shown to children: there is no account for them to already have,
-                and offering one is offering a flow we would have to refuse. */}
+                and offering one is offering a flow we would have to refuse.
+
+                The second door, and it survives the welcome frame getting the first one
+                — which review read as a duplicate, reasonably, so here is why it is not.
+                These two differ on the guard: up there nobody has been asked their age
+                yet, so `isChild` cannot be consulted and the offer goes to everybody.
+                Here it can, and this is the only age-aware sign-in in the flow. Deleting
+                it would leave the unguarded one as the only door, on a frame the user
+                left eight steps ago, which is the wrong half to keep.
+
+                They are a front door and a back door rather than two buttons on one
+                screen. Both sit before any lesson runs, and both `push` rather than
+                `replace`, so neither one strands anybody who taps it by mistake. */}
             {!isChild && onSignIn !== undefined && (
               <Button
                 variant="ghost"
