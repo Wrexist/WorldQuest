@@ -6,7 +6,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "check": "tsx scripts/check.ts",
-    "types": "tsx scripts/build-keys.ts",
+    "types": "tsx scripts/build-keys.ts && tsx scripts/build-catalogue.ts",
     "test": "vitest run",
     "pseudo": "tsx scripts/pseudo.ts"
   },
