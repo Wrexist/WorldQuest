@@ -26,50 +26,7 @@ import { IcuFormat } from './icu.js'
 import { pseudo } from './pseudo.js'
 import { NAMESPACES, type Namespace, type TranslationKey, type TranslationParams } from './keys.js'
 
-import enWelcome from '../locales/en/welcome.json' with { type: 'json' }
-import svWelcome from '../locales/sv/welcome.json' with { type: 'json' }
-import enSplash from '../locales/en/splash.json' with { type: 'json' }
-import svSplash from '../locales/sv/splash.json' with { type: 'json' }
-import enStreak from '../locales/en/streak.json' with { type: 'json' }
-import svStreak from '../locales/sv/streak.json' with { type: 'json' }
-import enTitles from '../locales/en/titles.json' with { type: 'json' }
-import svTitles from '../locales/sv/titles.json' with { type: 'json' }
-import enCollection from '../locales/en/collection.json' with { type: 'json' }
-import svCollection from '../locales/sv/collection.json' with { type: 'json' }
-import enOnboarding from '../locales/en/onboarding.json' with { type: 'json' }
-import svOnboarding from '../locales/sv/onboarding.json' with { type: 'json' }
-import enAccount from '../locales/en/account.json' with { type: 'json' }
-import enLeague from '../locales/en/league.json' with { type: 'json' }
-import enAchievements from '../locales/en/achievements.json' with { type: 'json' }
-import enCommon from '../locales/en/common.json' with { type: 'json' }
-import enCountry from '../locales/en/country.json' with { type: 'json' }
-import enErrors from '../locales/en/errors.json' with { type: 'json' }
-import enExplore from '../locales/en/explore.json' with { type: 'json' }
-import enHome from '../locales/en/home.json' with { type: 'json' }
-import enLesson from '../locales/en/lesson.json' with { type: 'json' }
-import enNav from '../locales/en/nav.json' with { type: 'json' }
-import enNotifications from '../locales/en/notifications.json' with { type: 'json' }
-import enProfile from '../locales/en/profile.json' with { type: 'json' }
-import enQuests from '../locales/en/quests.json' with { type: 'json' }
-import enPaywall from '../locales/en/paywall.json' with { type: 'json' }
-import enShop from '../locales/en/shop.json' with { type: 'json' }
-import enSettings from '../locales/en/settings.json' with { type: 'json' }
-import svAccount from '../locales/sv/account.json' with { type: 'json' }
-import svLeague from '../locales/sv/league.json' with { type: 'json' }
-import svAchievements from '../locales/sv/achievements.json' with { type: 'json' }
-import svCommon from '../locales/sv/common.json' with { type: 'json' }
-import svCountry from '../locales/sv/country.json' with { type: 'json' }
-import svErrors from '../locales/sv/errors.json' with { type: 'json' }
-import svExplore from '../locales/sv/explore.json' with { type: 'json' }
-import svHome from '../locales/sv/home.json' with { type: 'json' }
-import svLesson from '../locales/sv/lesson.json' with { type: 'json' }
-import svNav from '../locales/sv/nav.json' with { type: 'json' }
-import svNotifications from '../locales/sv/notifications.json' with { type: 'json' }
-import svProfile from '../locales/sv/profile.json' with { type: 'json' }
-import svQuests from '../locales/sv/quests.json' with { type: 'json' }
-import svPaywall from '../locales/sv/paywall.json' with { type: 'json' }
-import svShop from '../locales/sv/shop.json' with { type: 'json' }
-import svSettings from '../locales/sv/settings.json' with { type: 'json' }
+import { CATALOGUE } from './catalogue.generated.js'
 
 export * from './format.js'
 export { NAMESPACES, type Namespace, type TranslationKey, type TranslationParams }
@@ -124,83 +81,27 @@ export const LOCALE_ENDONYM: Record<Locale, string> = {
 /**
  * Core locales ship IN THE BINARY. A first launch on a plane must render words, and a
  * translation bundle is a few kilobytes — the download is not worth the failure mode.
- */
-const RAW: Record<Locale, Record<Namespace, Record<string, string>>> = {
-  en: {
-    account: enAccount,
-    league: enLeague,
-    achievements: enAchievements,
-    onboarding: enOnboarding,
-    collection: enCollection,
-    titles: enTitles,
-    splash: enSplash,
-    streak: enStreak,
-    welcome: enWelcome,
-    common: enCommon,
-    country: enCountry,
-    errors: enErrors,
-    explore: enExplore,
-    home: enHome,
-    lesson: enLesson,
-    nav: enNav,
-    notifications: enNotifications,
-    profile: enProfile,
-    quests: enQuests,
-    paywall: enPaywall,
-    shop: enShop,
-    settings: enSettings,
-  },
-  sv: {
-    account: svAccount,
-    league: svLeague,
-    achievements: svAchievements,
-    onboarding: svOnboarding,
-    collection: svCollection,
-    titles: svTitles,
-    splash: svSplash,
-    streak: svStreak,
-    welcome: svWelcome,
-    common: svCommon,
-    country: svCountry,
-    errors: svErrors,
-    explore: svExplore,
-    home: svHome,
-    lesson: svLesson,
-    nav: svNav,
-    notifications: svNotifications,
-    profile: svProfile,
-    quests: svQuests,
-    paywall: svPaywall,
-    shop: svShop,
-    settings: svSettings,
-  },
-}
-
-/**
- * The locale files store the full `namespace:key`, because that is what a developer
- * greps for and what CI validates. i18next wants the namespace as a bundle boundary
- * and the remainder as the key, so strip the prefix on the way in.
  *
- * `__note` entries are translator context, not strings — they never reach the runtime.
+ * ## Why this is one generated import and not forty-four JSON ones
+ *
+ * It used to be forty-four `import … from '../locales/…json'` lines, a `RAW` map naming
+ * each one twice, and a `toBundle` that walked all 629 keys on the first frame to drop the
+ * `__note` entries and strip the namespace prefixes.
+ *
+ * All three jobs now happen at build time, in `scripts/build-catalogue.ts`. The reason is
+ * the notes: they are half the catalogue by bytes, they are written for a translator, and
+ * skipping them at runtime still meant Hermes had parsed every one of them to get to the
+ * strings. Removing them from the bundle moved iOS from 4.60 MB to 4.52 — measured on the
+ * compiled bytecode, which is the only measurement `scripts/bundle-native.cjs` accepts.
+ *
+ * The notes have not gone anywhere. They are still in `locales/`, still required by
+ * `pnpm i18n:check`, still the thing a translator opens. They just stop being shipped to a
+ * device that has no translator on it.
+ *
+ * `CATALOGUE` is regenerated by `pnpm i18n:types`, which `pnpm generate` runs, which
+ * `pnpm verify` runs first — so it cannot drift from `locales/` and survive a verify.
  */
-function toBundle(namespace: string, raw: Record<string, string>): Record<string, string> {
-  const bundle: Record<string, string> = {}
-  const prefix = `${namespace}:`
-  for (const [key, value] of Object.entries(raw)) {
-    if (key.endsWith('__note')) continue
-    bundle[key.startsWith(prefix) ? key.slice(prefix.length) : key] = value
-  }
-  return bundle
-}
-
-const resources = Object.fromEntries(
-  Object.entries(RAW).map(([locale, namespaces]) => [
-    locale,
-    Object.fromEntries(
-      Object.entries(namespaces).map(([ns, raw]) => [ns, toBundle(ns, raw)]),
-    ),
-  ]),
-)
+const resources = CATALOGUE
 
 // ── the instance ────────────────────────────────────────────────────────────
 
@@ -375,10 +276,11 @@ export async function enablePseudoLocale(): Promise<boolean> {
   const forced = (globalThis as { __WQ_PSEUDO__?: boolean }).__WQ_PSEUDO__ === true
   if (!isDev() && !forced) return false
 
-  for (const [namespace, bundle] of Object.entries(RAW.en)) {
-    const stripped = toBundle(namespace, bundle)
+  // Straight off the generated catalogue, which is already note-free and prefix-free —
+  // this used to re-run `toBundle` over the raw JSON to get to the same place.
+  for (const [namespace, bundle] of Object.entries(CATALOGUE[FALLBACK_LOCALE] ?? {})) {
     const pseudoBundle = Object.fromEntries(
-      Object.entries(stripped).map(([key, value]) => [key, pseudo(value)]),
+      Object.entries(bundle).map(([key, value]) => [key, pseudo(value)]),
     )
     i18n.addResourceBundle(PSEUDO_LOCALE, namespace, pseudoBundle, true, true)
   }

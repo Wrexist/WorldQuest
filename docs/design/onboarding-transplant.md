@@ -1,4 +1,9 @@
-# Onboarding — the second Duolingo transplant
+# Onboarding — the second Duolingo transplant, and a third one after it
+
+> §1–§5 are the transplant that moved the questions into Atlas's mouth. **§6 is a later
+> pass on the frame in front of them**, from a different donor, and it is the one that
+> moved `I already have an account` off step eight.
+
 
 The first transplant took Duolingo's **visual** DNA: one heavy rounded face, a bright
 face on a solid darker edge that sinks on press, saturated accents that each mean one
@@ -88,6 +93,75 @@ The single highest-leverage thing in this flow was already right and was left al
 **the user finishes a real lesson before being asked for an account.** That is Duolingo's
 biggest onboarding decision and WorldQuest already had it. A transplant that "improved"
 it would have been the reskin failure mode — moving what was already working.
+
+---
+
+## 6. The third transplant: the frame before the flow
+
+The first two took the *look* and then the *grammar of the questions*. This one takes the
+thing neither of them touched, because neither of them was looking at it: **the first
+frame**.
+
+The donor is not one app this time. It is
+[Appllama/top-welcome-screens](https://github.com/Appllama/top-welcome-screens), which
+rebuilt ten iOS welcome screens — Duolingo, Strava, MyFitnessPal, Perplexity, Yazio, onX
+Hunt, Speak & Learn, Hallow, SCRL, Speak — and measured every one of them frame by frame in
+its `MOTION_SPEC.md`. Same licence position as §4: read, measured, implemented
+independently. None of its code is here.
+
+### What all ten do, and we did not
+
+Ten apps, one shape. The frame after the splash is a **mark, one line, a primary button,
+and a link for people who already have an account**. Nine of the ten stagger the entrance
+rather than cutting to it, and the two the spec measures most closely — Yazio (splash
+dissolve 0.567–0.800 s, then damped-spring entries 1.167–1.700 s) and SCRL (hard cut at
+1.200 s, then separate ease-out reveals 1.300–1.800 s) — are the same idea twice: the mark
+lands, then everything else follows it in.
+
+WorldQuest opened on a **list of languages**.
+
+### The defect that made this worth doing
+
+`I already have an account` was not missing. It was written, correctly hidden from
+children, wired to `/account?mode=signIn` — and rendered on the **taster step, the eighth
+of eight**. A user reinstalling the app to get their streak back answered seven questions
+about a profile that already existed before reaching the door out.
+
+That is the whole justification. The greeting is nice; moving the sign-in door from step
+eight to step one is the change. It costs a new user one tap and saves a returning user
+seven.
+
+### What was measured, and what the measurements changed
+
+| Measured | Adopted | Why |
+|---|---|---|
+| Stagger interval ≈ 130 ms an item (Yazio's five spring entries over 533 ms) | **40 ms** — `motion.stagger.stepMs` | Not a compromise: three items reading as one gesture, not a grid being dealt out. The token is the app's one answer to "these arrive in order"; a second interval here would be a second answer. `useStagger` already existed and already collapses under reduced motion. |
+| Splash → welcome **crossfade**, in eight of ten | **Continuity without the crossfade** | The wordmark is the same string from the same key at the same `display` size, and it does not move between the two frames. A real crossfade would need the splash to hold — and `SplashScreen`'s header is explicit that it never holds, for anybody, ever. The cheap half of the effect is free; the expensive half costs every cold start forever. |
+| Mark scales in (Duolingo 0.900–1.033 s; Hallow's pulse) | **Kept**, as `arrival` | The scale-and-drop that used to play on the language step. Same animation, moved to the frame it was always describing: an entrance belongs where there is nothing to do but watch it. |
+| A **loading** welcome — Strava's 4.3 s spinner, MyFitnessPal's 8.9 s | **Rejected outright** | Both are a progress bar for a network call wearing a brand costume. `SplashScreen` already refuses to hold for a logo; holding for one *after* boot would be worse. |
+
+### What else this moved
+
+- **The progress bar starts at the first question, not at the greeting.** A welcome frame
+  under a bar reading `Step 1 of 9` has already told you it is a form. `SETUP_STEPS` is
+  the flow minus the greeting, and the bar is absent on the frame entirely.
+- **The back chevron lost its disabled state.** It was dimmed on step one — "disabled, not
+  absent", so nobody learns it as a control that might vanish. With a frame in front, the
+  only step with nothing behind it draws no chrome bar at all, so the condition became
+  unreachable and the branch was deleted rather than left in. The principle survived; the
+  case for it stopped existing.
+- **The last value slide says `Continue`, not `Get started`.** Two buttons reading
+  `Get started` in one flow means one of them is lying about being the start. The slide
+  now uses the same forward string as every other step, which is also what stops the four
+  screenshot harnesses clicking the wrong screen.
+
+### What was deliberately not taken
+
+| Rejected | Why |
+|---|---|
+| **Testimonials on the welcome frame** (Speak & Learn) | We have none. Inventing a quote or a rating is the wrong-fact bug that `PROJECT.md` forbids, wearing a marketing hat. |
+| **A user-count or download-count line** ("joined by 10 million learners") | Same reason, and worse: it is a number about ourselves that we would have to keep true. |
+| **A second full-screen brand hold** before the questions | The splash is already the boot cover and is already forbidden from holding. Two brand moments before the first question is one and a half more than the product has earned. |
 
 ---
 

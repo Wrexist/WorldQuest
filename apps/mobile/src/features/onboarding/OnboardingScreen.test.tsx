@@ -20,12 +20,24 @@ const answer = (name: string | RegExp): void => {
 }
 
 /**
- * Past the language picker and the carousel, to the first question with a wrong answer.
+ * Through the welcome frame.
+ *
+ * One tap, and it is the tap the whole frame exists for — every other test in this file
+ * starts behind it, so it is worth naming rather than inlining.
+ */
+const getStarted = (): void => {
+  fireEvent.click(screen.getByRole('button', { name: 'Get started' }))
+}
+
+/**
+ * Past the welcome frame, the language picker and the carousel, to the first question
+ * with a wrong answer.
  *
  * Most of this file is about the age gate, so getting there is one helper rather than
  * three lines in twelve tests.
  */
 const advanceToAgeStep = (): void => {
+  getStarted() // welcome → language
   answer('English') // language → slides
   fireEvent.click(screen.getByRole('button', { name: 'Skip' })) // slides → age
 }
@@ -70,12 +82,54 @@ describe('OnboardingScreen', () => {
   it('opens on the value slides, not on a sign-up wall', () => {
     // The conversion decision the whole flow is built around: teach first, ask later.
     render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    // The language step comes first, and it is still not a wall: one tap, already
-    // answered, no account anywhere in sight.
+    // A greeting first, then the language step, and neither is a wall: two taps, one of
+    // them already answered, and nothing asking anybody to make an account.
+    expect(screen.getByText(/Atlas/i)).toBeTruthy()
+    getStarted()
     expect(screen.getByText(/Choose your language/i)).toBeTruthy()
     answer('English')
     expect(screen.getByText(/five minutes a day/i)).toBeTruthy()
     expect(screen.queryByText(/sign up|create account/i)).toBeNull()
+  })
+
+  it('puts sign-in on the first frame, not behind the whole flow', () => {
+    // The defect the welcome frame was built for. This button existed and was wired,
+    // at the END of the taster — so a user reinstalling the app and wanting their
+    // streak back answered seven questions about a profile they already had before
+    // finding the door. Reachability at step eight is not reachability.
+    const onSignIn = vi.fn()
+    render(
+      <OnboardingScreen
+        currentYear={YEAR}
+        language="en"
+        onLanguage={vi.fn()}
+        onFinish={vi.fn()}
+        onSignIn={onSignIn}
+      />,
+    )
+    fireEvent.click(screen.getByRole('button', { name: /already have an account/i }))
+    expect(onSignIn).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not count the greeting as a step of the setup', () => {
+    // A welcome frame under a progress bar has already told you it is a form. The bar
+    // is absent here and opens at 1 on the first question rather than at 2.
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
+    expect(screen.queryByRole('progressbar')).toBeNull()
+    getStarted()
+    expect(screen.getByRole('progressbar').getAttribute('aria-valuetext')).toMatch(
+      /Step 1 of 8/i,
+    )
+  })
+
+  it('steps back from the first question to the greeting', () => {
+    // Auto-advance without a back is a trap, and the trap has to hold at the seam the
+    // new frame introduced: `canGoBack` is an index comparison, so an off-by-one here
+    // would strand the user on the language step with a live-looking chevron.
+    render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
+    getStarted()
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }))
+    expect(screen.getByRole('button', { name: 'Get started' })).toBeTruthy()
   })
 
   it('applies a language on tap, not on Continue', () => {
@@ -87,6 +141,7 @@ describe('OnboardingScreen', () => {
     render(
       <OnboardingScreen currentYear={YEAR} language="en" onLanguage={onLanguage} onFinish={vi.fn()} />,
     )
+    getStarted()
     fireEvent.click(screen.getByRole('radio', { name: 'Svenska' }))
     expect(onLanguage).toHaveBeenCalledWith('sv')
   })
@@ -276,7 +331,8 @@ describe('OnboardingScreen', () => {
     // makes a swipe possible — and is why this asserts on presence rather than on
     // visibility, since jsdom has no viewport to be outside of.
     render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    // Past the language step, which is now what the flow opens on.
+    // Past the greeting and the language step, which are what the flow opens on.
+    getStarted()
     answer('English')
     expect(screen.getByText(/five minutes a day/i)).toBeTruthy()
     expect(screen.getByText(/Remembers what you forget/i)).toBeTruthy()
@@ -302,14 +358,16 @@ describe('OnboardingScreen', () => {
     )
   })
 
-  it('has nothing to go back to on the first step, and says so rather than hiding it', () => {
-    // Disabled, not absent. A control that appears on step two teaches the user it
-    // might vanish again; one that is visibly dimmed on step one teaches them where it
-    // lives before they need it.
+  it('never shows a back control that cannot go back', () => {
+    // This used to assert the opposite — a chevron dimmed on step one, "disabled, not
+    // absent", so nobody learns it as a control that might vanish. The welcome frame
+    // removed the case rather than the principle: the one step with nothing behind it
+    // draws no chrome bar at all, so every chevron the user ever sees is live.
     render(<OnboardingScreen currentYear={YEAR} language="en" onLanguage={vi.fn()} onFinish={vi.fn()} />)
-    const back = screen.getByRole('button', { name: 'Back' })
-    expect(back.getAttribute('aria-disabled')).toBe('true')
+    expect(screen.queryByRole('button', { name: 'Back' })).toBeNull()
 
+    getStarted() // → language
+    expect(screen.getByRole('button', { name: 'Back' }).getAttribute('aria-disabled')).toBeNull()
     answer('English') // → slides
     expect(screen.getByRole('button', { name: 'Back' }).getAttribute('aria-disabled')).toBeNull()
   })
@@ -326,7 +384,12 @@ describe('OnboardingScreen', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Back' })) // slides → language
     expect(screen.getByText(/Choose your language/i)).toBeTruthy()
-    expect(screen.getByRole('button', { name: 'Back' }).getAttribute('aria-disabled')).toBe('true')
+
+    // And one more, out of the questions and back to the greeting — where the chrome
+    // stops rather than the chevron dimming. See the test above.
+    fireEvent.click(screen.getByRole('button', { name: 'Back' })) // language → welcome
+    expect(screen.getByRole('button', { name: 'Get started' })).toBeTruthy()
+    expect(screen.queryByRole('button', { name: 'Back' })).toBeNull()
   })
 
   it('leaves no raw key or unformatted placeholder on screen', () => {
@@ -369,9 +432,10 @@ describe('the third slide promises what the app actually ships', () => {
         countryCount={COUNTRY_COUNT}
       />,
     )
-    // The flow OPENS on the language picker, not the carousel — everything after step
-    // one assumes the user can read the screen, which is the one thing step one fixes.
-    // So the slides have to be reached the way a user reaches them.
+    // The flow OPENS on a greeting and then the language picker, not on the carousel —
+    // the slides are the one place prose is doing the work, so they come after the step
+    // that chooses the language they are in. Reached the way a user reaches them.
+    getStarted()
     answer('English')
     expect(screen.getByText(new RegExp(`${COUNTRY_COUNT} flags`))).toBeTruthy()
   })
@@ -387,6 +451,7 @@ describe('the third slide promises what the app actually ships', () => {
         countryCount={65}
       />,
     )
+    getStarted()
     answer('English')
     expect(container.textContent).not.toMatch(/195/)
   })

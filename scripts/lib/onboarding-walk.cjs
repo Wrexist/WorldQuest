@@ -20,9 +20,9 @@
  * shared part and the pause is the parameter: `at(step)` is called with a stable step
  * name before each is answered, and defaults to doing nothing.
  *
- * Step names are the flow's own: `language · slide-1 · slide-2 · slide-3 · age · goal ·
- * region · level · taster`. They are part of this module's contract — `design-shots`
- * names its PNGs after them.
+ * Step names are the flow's own: `welcome · language · slide-1 · slide-2 · slide-3 · age ·
+ * goal · region · level · plan · taster`. They are part of this module's contract —
+ * `design-shots` names its PNGs after them.
  *
  * ## Why the waits are what they are
  *
@@ -48,7 +48,10 @@ const AFTER_TAP = 400
  */
 async function onOnboarding(page) {
   const text = await page.evaluate(() => document.body.innerText)
-  return /Choose your language|five minutes a day|Get started|Next/i.test(text)
+  // `Get started` is the welcome frame's button, which is now what first launch opens
+  // on — so the first alternative here is the one that fires in practice and the rest
+  // are what let this be called from part-way through the flow.
+  return /Get started|Choose your language|five minutes a day|Next/i.test(text)
 }
 
 /**
@@ -60,6 +63,15 @@ async function onOnboarding(page) {
  */
 async function walkOnboarding(page, at = async () => {}) {
   if (!(await onOnboarding(page))) return false
+
+  // ── welcome ───────────────────────────────────────────────────────────────
+  // The greeting, and the frame that carries the returning user's door. `Get started` is
+  // its button and nothing else in the flow uses that string any more — the last value
+  // slide says `Continue` like every other forward step, precisely so this click cannot
+  // land on the wrong screen.
+  await at('welcome')
+  await page.getByText('Get started', { exact: true }).first().click()
+  await page.waitForTimeout(AFTER_TAP)
 
   // ── language ──────────────────────────────────────────────────────────────
   // A named row, not a Continue. The step lost its button when answering became the
@@ -75,7 +87,7 @@ async function walkOnboarding(page, at = async () => {}) {
     await page.waitForTimeout(AFTER_TAP)
   }
   await at('slide-3')
-  await page.getByText('Get started', { exact: true }).first().click()
+  await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(500)
 
   // ── age ───────────────────────────────────────────────────────────────────

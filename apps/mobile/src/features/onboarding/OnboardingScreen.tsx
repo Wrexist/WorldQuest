@@ -1,11 +1,28 @@
 /**
  * Onboarding — mockup screen 2.
  *
- * Language → three value slides → age gate → daily goal → continent → level → taster
- * lesson. The order is the product decision, not a layout one: **the user completes a real lesson before we
- * ask for an account**, which is the single highest-leverage conversion choice in the
- * app (screen-catalog.md 2). Ask first and most people leave; teach first and the
- * account is worth having.
+ * Welcome → language → three value slides → age gate → daily goal → continent → level →
+ * taster lesson. The order is the product decision, not a layout one: **the user completes
+ * a real lesson before we ask for an account**, which is the single highest-leverage
+ * conversion choice in the app (screen-catalog.md 2). Ask first and most people leave;
+ * teach first and the account is worth having.
+ *
+ * ## The welcome frame, and the defect that made it necessary
+ *
+ * The flow used to open on a list of languages. That is a form, and it is the one frame
+ * where every app worth copying does something else: ten of them were measured in
+ * `docs/design/onboarding-transplant.md` §6 and all ten open on the same three things —
+ * the mark, one line, and two buttons, the second of which is *I already have an account*.
+ *
+ * Ours had that button. It was on step **eight**, at the end of the taster, which meant a
+ * user who reinstalled the app and wanted their streak back answered seven questions about
+ * a profile they already had before finding the door. It was reachable, it was wired, and
+ * it was behind the entire flow it exists to let you skip.
+ *
+ * So the first frame is now a welcome: Atlas arrives, the wordmark the splash just showed
+ * stays put, one line, `Get started`, and the sign-in door at the front of the building.
+ * It costs one tap for a new user and saves seven for a returning one, which is the whole
+ * trade and it is not close.
  *
  * ## The age gate
  *
@@ -93,6 +110,8 @@ import {
   SpeechBubble,
   Slider,
   useAnimatedTo,
+  useStagger,
+  staggerStyle,
 } from '@worldquest/design'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
@@ -164,6 +183,7 @@ export type OnboardingScreenProps = {
 }
 
 type Step =
+  | 'welcome'
   | 'language'
   | 'slides'
   | 'age'
@@ -176,10 +196,21 @@ type Step =
 /**
  * The order, and why each step is where it is.
  *
- * **Language first**, before a single word of the pitch. Every other screen in this flow
- * assumes the user can read it; the one screen that must not is the one that fixes that.
- * It is also the cheapest possible first interaction — a tap on your own language, with
- * nothing to think about.
+ * **Welcome first**, and it is the only step here that asks nothing. It exists so the
+ * returning user's door is at the front (see the header) and so the character who asks the
+ * next seven questions gets to arrive before he starts asking them.
+ *
+ * It is deliberately in front of `language`, which used to be first on the argument that
+ * "every other screen in this flow assumes the user can read it". That argument turned out
+ * to prove less than it claimed: the default language is `system`, so on first launch the
+ * app is *already* in the device's language and the welcome frame is read in it. What the
+ * language step actually offers is an override, and an override is not the thing that has
+ * to come before the greeting. The frame in front of it is also the least reading in the
+ * whole flow — a name, a sentence, and two buttons.
+ *
+ * **Language second**, before a single word of the pitch. That part of the old argument
+ * stands: the three slides are the one place where prose is doing the work, and they must
+ * be in a language the reader chose.
  *
  * **Slides before the questions.** Ask first and most people leave; show what the app is
  * for and the questions become worth answering.
@@ -197,6 +228,7 @@ type Step =
  * answer goes nowhere is a form, not an onboarding.
  */
 const STEPS: readonly Step[] = [
+  'welcome',
   'language',
   'slides',
   'age',
@@ -210,14 +242,23 @@ const STEPS: readonly Step[] = [
 /**
  * The steps that still end in a button, and therefore still need a footer.
  *
- * `slides` has next/skip because a carousel is not a question. `age` has Continue
- * because a wheel is a scroll and a scroll that navigated on settling would advance
- * while the user was still looking for their year. `taster` has one because starting a
- * lesson is a different kind of act from answering a question.
+ * `welcome` has two because it is not a question at all — it is a front door with a
+ * handle on each side. `slides` has next/skip because a carousel is not a question. `age`
+ * has Continue because a wheel is a scroll and a scroll that navigated on settling would
+ * advance while the user was still looking for their year. `taster` has one because
+ * starting a lesson is a different kind of act from answering a question.
  *
  * Everything else answers by being tapped.
  */
-const HAS_ACTION = new Set<Step>(['slides', 'age', 'goal', 'level', 'plan', 'taster'])
+const HAS_ACTION = new Set<Step>([
+  'welcome',
+  'slides',
+  'age',
+  'goal',
+  'level',
+  'plan',
+  'taster',
+])
 
 /**
  * The levels in scale order, which is the order the slider lays them out in.
@@ -289,6 +330,15 @@ const OPENS_AT = 2000
 
 /** Seven. Named because `goal * 7` in a template reads like a magic number. */
 const DAYS_A_WEEK = 7
+
+/**
+ * How many steps the progress bar counts: everything except the welcome frame.
+ *
+ * Derived rather than typed, so a ninth question moves this on its own — and expressed as
+ * "the flow minus the greeting" rather than as a number, because that is the sentence the
+ * bar is trying to say.
+ */
+const SETUP_STEPS = STEPS.length - 1
 
 
 const LEVEL_COPY = {
@@ -432,9 +482,8 @@ export function OnboardingScreen({
   countryCount = 0,
 }: OnboardingScreenProps) {
   const t = useT()
-  // `language`, not `slides`. Everything after this point assumes the user can read the
-  // screen; this is the one step whose job is to make that true.
-  const [step, setStep] = useState<Step>('language')
+  // The head of `STEPS`, and it is a greeting rather than a question — see that list.
+  const [step, setStep] = useState<Step>('welcome')
   const [slide, setSlide] = useState(0)
   const [birthYear, setBirthYear] = useState<number | null>(null)
   const [goal, setGoal] = useState<DailyGoal>(10)
@@ -556,7 +605,10 @@ export function OnboardingScreen({
   )
 
   const isChild = birthYear !== null && currentYear - birthYear < CHILD_AGE
+  /** Position in the whole flow, welcome included — what the entrance interpolates on. */
   const stepIndex = STEPS.indexOf(step) + 1
+  /** Position in the part of the flow that is setup — what the bar counts. See the bar. */
+  const setupIndex = stepIndex - 1
 
   /**
    * The step change, given a direction.
@@ -640,6 +692,11 @@ export function OnboardingScreen({
    * that a character was going to be asking the questions, so his appearance on step one
    * read as an illustration rather than as somebody walking up.
    *
+   * He arrives on `welcome` now rather than on `language`, which is the same animation on
+   * the frame it was always describing: an entrance belongs on the step where there is
+   * nothing else to do but watch it, not on one that is also asking you to pick something
+   * out of a list.
+   *
    * Deliberately NOT on the splash. `SplashScreen`'s header is explicit that it is not a
    * brand moment and holds no minimum duration — "a splash held open so the logo can be
    * admired is an app made slower on purpose" — and an entrance there would cost every
@@ -665,21 +722,53 @@ export function OnboardingScreen({
     ],
   }
 
+  /**
+   * The three things that settle in behind Atlas on the welcome frame.
+   *
+   * `useStagger` and `motion.stagger` — the design system's one answer to "these arrive in
+   * order" — rather than a second sequence hand-rolled here. The donors measured for this
+   * frame stagger at roughly 130 ms an item (`onboarding-transplant.md` §6); ours is the
+   * token's 40, and that difference was a decision rather than an oversight. A second
+   * stagger interval in the app would be a second answer to a settled question, and the
+   * elements here are a wordmark, a line and a button stack — three items reading as one
+   * gesture, not a grid being dealt out.
+   *
+   * Indexed from 1 because index 0 is Atlas, who is not staggered: he gets the scale-and-
+   * drop `arrival` instead, because a mark that fades up eight points has not *arrived*,
+   * it has merely appeared. Everything else follows him in.
+   *
+   * Hooks, so they run on every step and not just this one. That is correct rather than
+   * merely tolerable: `welcome` is mounted at t=0, so all three have finished long before
+   * any later step is reachable, and making them conditional would make them illegal.
+   */
+  const markIn = useStagger(1, 'expressive')
+  const lineIn = useStagger(2, 'expressive')
+  const doorsIn = useStagger(3, 'expressive')
+
   const Ask = ({ step: at }: { step: keyof typeof ASK }) => (
     <View style={styles.ask}>
-      {/* The arrival plays on the FIRST step only. Every later step already enters
-          through `stepStyle`, and two entrances stacked on one element read as a
-          stutter rather than as emphasis. */}
-      <Animated.View style={at === 'language' ? arrivalStyle : undefined}>
-        <Art name={reacting ? REACTION : ASK[at].art} size={askArt} />
-      </Animated.View>
+      {/* No entrance of its own. Every question step already enters through `stepStyle`,
+          and two entrances stacked on one element read as a stutter rather than as
+          emphasis — the arrival that used to live here belongs to `welcome` now. */}
+      <Art name={reacting ? REACTION : ASK[at].art} size={askArt} />
       <SpeechBubble from="top" style={styles.askBubble}>
         {t(ASK[at].line)}
       </SpeechBubble>
     </View>
   )
 
-  const canGoBack = stepIndex > 1
+  /**
+   * There is no disabled state any more, and that is the welcome frame's doing.
+   *
+   * The chevron used to be dimmed on step one — "disabled, not absent", so a control that
+   * exists everywhere is never learned as one that might vanish. The frame in front of the
+   * questions makes the whole condition unreachable: the only step with nothing behind it
+   * is `welcome`, and `welcome` renders no chrome bar at all. Every step that draws this
+   * row has somewhere to go back TO.
+   *
+   * So the dimming is gone rather than left in as a branch nothing can enter. `back` keeps
+   * its own guard because the guard is about the array, not about the picture.
+   */
   const back = (): void => {
     const previous = STEPS[STEPS.indexOf(step) - 1]
     if (previous === undefined) return
@@ -753,16 +842,21 @@ export function OnboardingScreen({
           bar alone here made this the only multi-step flow on the phone with no way
           out of a step.
 
-          The chevron holds its space when it is disabled rather than unmounting, so the
-          bar does not grow by 44 pt between step one and step two — a progress bar that
-          changes LENGTH as you advance is reporting two things at once and neither
-          legibly. */}
-      <View style={styles.progress}>
+          The chevron is live on every step that draws this row, because the only step
+          with nothing behind it is the welcome frame and the welcome frame draws no row
+          — see `back`. It still holds its 44 pt whatever happens, so the bar cannot
+          change LENGTH as you advance, which would be a progress bar reporting two
+          things at once and neither legibly. */}
+      {/* Not on the welcome frame.
+          A greeting under a bar reading "Step 1 of 9" is a greeting that has already told
+          you it is a form, and none of the ten donors puts progress on the frame with the
+          Get started button on it. The bar therefore counts the eight steps that are
+          actually setup, starting at 1 on `language` — a bar that opened at 1/9 and then
+          took two taps to reach 2/9 would be counting a step nobody was asked to take. */}
+      {step !== 'welcome' && <View style={styles.progress}>
         <Pressable
           onPress={back}
-          disabled={!canGoBack}
           aria-label={t('onboarding:back')}
-          aria-disabled={!canGoBack}
           role="button"
           hitSlop={12}
           style={styles.back}
@@ -772,7 +866,7 @@ export function OnboardingScreen({
               from the reader because the Pressable is already named — otherwise the
               control announces its own arrowhead. */}
           <Text
-            style={[styles.backGlyph, !canGoBack && styles.backGlyphOff]}
+            style={styles.backGlyph}
             aria-hidden
             importantForAccessibility="no-hide-descendants"
           >
@@ -782,18 +876,41 @@ export function OnboardingScreen({
 
         <View style={styles.progressBar}>
           <ProgressBar
-            current={stepIndex}
-            total={STEPS.length}
+            current={setupIndex}
+            total={SETUP_STEPS}
             height={4}
             showCount={false}
             // As the VALUE, not the `label` — `label` renders visibly, and a written step
             // count beside the dots is the exact duplication finding O4 removed.
-            valueText={t('onboarding:progress', { step: stepIndex, total: STEPS.length })}
+            valueText={t('onboarding:progress', { step: setupIndex, total: SETUP_STEPS })}
           />
         </View>
-      </View>
+      </View>}
 
       <Animated.View style={[styles.stepFill, stepStyle]}>
+        {step === 'welcome' && (
+          <View style={styles.centred}>
+            {/* Atlas at the slides' hero size rather than the questions' `askArt`. He is
+                the subject here, not the speaker: there is no bubble, because a character
+                who greets you by putting a sentence in a speech balloon is a character
+                delivering a line rather than one turning up. */}
+            <Animated.View style={[styles.hero, arrivalStyle]}>
+              <Art name="atlas/welcome" size={HERO} />
+            </Animated.View>
+
+            {/* The same wordmark the splash was showing a moment ago, from the same key.
+                That is the continuity the donors get out of a splash-to-welcome crossfade
+                and it costs nothing here: the mark does not move, so the frame the user
+                boots into and the frame they act on are recognisably one screen. */}
+            <Animated.Text style={[styles.wordmark, staggerStyle(markIn)]}>
+              {t('splash:wordmark')}
+            </Animated.Text>
+            <Animated.Text style={[styles.body, staggerStyle(lineIn)]}>
+              {t('onboarding:welcome.body')}
+            </Animated.Text>
+          </View>
+        )}
+
         {step === 'slides' && (
           <>
             {/* The measurement wrapper the band is computed against.
@@ -1200,10 +1317,43 @@ export function OnboardingScreen({
           Photographed at 320 before this line existed: the list sat high with a void
           beneath it and read as a screen still loading its button. */}
       {HAS_ACTION.has(step) && <View style={styles.actions}>
+        {step === 'welcome' && (
+          /* Last in, after the mark and the line, which is the order they are read in —
+             and the order that matters, because a primary button that is already there
+             while the sentence above it is still arriving invites a tap before anybody
+             has been told what they are agreeing to. */
+          <Animated.View style={[styles.actionsStack, staggerStyle(doorsIn)]}>
+            <Button label={t('onboarding:cta.start')} onPress={() => go('language')} />
+            {/* The door this frame exists for.
+                Not guarded by `isChild`, unlike the copy of this button on the taster,
+                and that is not an oversight: nobody has been asked their age yet, so
+                there is no child to withhold it from. The guard downstream withholds an
+                account OFFER from someone who has just told us they are ten; this is a
+                returning user saying they already have one, and a child who taps it
+                meets a sign-in screen with a back arrow rather than a refusal. */}
+            {onSignIn !== undefined && (
+              <Button
+                variant="ghost"
+                label={t('onboarding:cta.haveAccount')}
+                onPress={onSignIn}
+              />
+            )}
+          </Animated.View>
+        )}
+
         {step === 'slides' && (
           <>
+            {/* `Continue` on the last slide, not `Get started`.
+                `Get started` is the welcome frame's button now, and two of them in one
+                flow means the second is claiming to begin something that began four taps
+                ago. `age.continue` is the string every other forward step in this flow
+                already uses — the last slide leaving the carousel is that, not a launch. */}
             <Button
-              label={slide < SLIDES.length - 1 ? t('onboarding:cta.next') : t('onboarding:cta.start')}
+              label={
+                slide < SLIDES.length - 1
+                  ? t('onboarding:cta.next')
+                  : t('onboarding:age.continue')
+              }
               onPress={() =>
                 slide < SLIDES.length - 1 ? goToSlide(slide + 1) : go('age')
               }
@@ -1259,7 +1409,19 @@ export function OnboardingScreen({
           <>
             <Button label={t('onboarding:taster.start')} onPress={finish} />
             {/* Not shown to children: there is no account for them to already have,
-                and offering one is offering a flow we would have to refuse. */}
+                and offering one is offering a flow we would have to refuse.
+
+                The second door, and it survives the welcome frame getting the first one
+                — which review read as a duplicate, reasonably, so here is why it is not.
+                These two differ on the guard: up there nobody has been asked their age
+                yet, so `isChild` cannot be consulted and the offer goes to everybody.
+                Here it can, and this is the only age-aware sign-in in the flow. Deleting
+                it would leave the unguarded one as the only door, on a frame the user
+                left eight steps ago, which is the wrong half to keep.
+
+                They are a front door and a back door rather than two buttons on one
+                screen. Both sit before any lesson runs, and both `push` rather than
+                `replace`, so neither one strands anybody who taps it by mistake. */}
             {!isChild && onSignIn !== undefined && (
               <Button
                 variant="ghost"
@@ -1333,9 +1495,6 @@ const styles = StyleSheet.create({
     marginStart: -space[3],
   },
   backGlyph: { ...text('h1'), color: colors.text.secondary, lineHeight: undefined },
-  // Dimmed, not gone. On step one there is nowhere back TO, and a control that
-  // disappears and reappears teaches the user it might not be there next time.
-  backGlyphOff: { color: colors.text.tertiary, opacity: 0.4 },
   progressBar: { flex: 1 },
   // The step owns everything between the bar and the buttons, and it is `flex: 1` so a
   // short step centres inside it rather than hanging from the top of the screen.
@@ -1574,4 +1733,15 @@ const styles = StyleSheet.create({
   // Reserved rather than removed — selection changes colour, never layout.
   tickOff: { opacity: 0 },
   actions: { padding: space[4], gap: space[2] },
+  // The welcome frame's pair, so the stagger animates ONE wrapper rather than two
+  // buttons that would then have to keep their own spacing. Same gap as `actions`,
+  // which is the container it sits inside — nesting must not change the rhythm.
+  actionsStack: { gap: space[2] },
+  /**
+   * The product name on the welcome frame, at the size the splash draws it.
+   *
+   * `display` and the same key, because it is the same mark on the next frame: any other
+   * size here and the boot reads as two screens rather than one arrival.
+   */
+  wordmark: { ...text('display'), color: colors.text.primary, textAlign: 'center' },
 })

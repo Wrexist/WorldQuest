@@ -238,6 +238,49 @@ const MOBILE = join(process.cwd(), 'apps', 'mobile')
  * --dump-sourcemap` is the tool and nobody has run it. Until somebody does, any claim
  * about what to cut is a guess, and this note is not going to make a second one.
  *
+ * ── 2026-08-16 · 4.60 → 4.51, and the budget stays at 4.6 ──────────────────────────
+ *
+ * The note above said "the next line of code fails CI". It was right: the onboarding
+ * welcome frame is a few hundred bytes of application code and it took iOS from
+ * "within 0.00" to "over by 0.00".
+ *
+ * Not raised, for exactly the reason recorded above — a sixth number bought by a
+ * dependency should be refused, and one bought by application code is the same decision
+ * in a different hat. Bytes were found instead.
+ *
+ * **Translator notes were being shipped to phones.** Half the locale catalogue by weight
+ * is `__note`: context written for a human deciding how to phrase something in Swedish.
+ * `packages/i18n/src/index.ts` had always known they were not strings — its `toBundle`
+ * skipped every one of them — but it skipped them at *runtime*, from JSON that had
+ * already been imported and parsed. They are stripped at build time now, by
+ * `packages/i18n/scripts/build-catalogue.ts`, and the notes themselves have not moved:
+ * they are still in `locales/`, still required by `pnpm i18n:check`, still what a
+ * translator opens.
+ *
+ *     before   ✗ ios 4.60  ⚠ android 4.60
+ *     after    ⚠ ios 4.51  ⚠ android 4.51
+ *
+ * 69.6 KB of notes out of a 132.4 KB catalogue — 53 % of it — and ~0.09 MB off the
+ * compiled bytecode. Roughly the 0.1 MB of headroom every raise in this file has asked
+ * for, recovered without a sixth number.
+ *
+ * Those catalogue figures are UTF-8 bytes of key and value text, printed by
+ * `pnpm i18n:types` so there is one source for them rather than a number retyped here.
+ * The first draft of this note said 69.3 of 145.6, which was two different metrics in one
+ * sentence: `String.length` (UTF-16 code units — every `ö` in the Swedish notes counted
+ * one where it weighs two) against a JSON-serialised total that also counted quotes and
+ * braces. Neither was bytes. That is precisely the mistake the rest of this file is a
+ * monument to, made in the note recording the fix.
+ *
+ * Measured by ablation on the `.hbc` — strip, build, compare, restore — rather than from
+ * the source bytes, because the paragraph above this one is the reason not to trust
+ * source bytes. It is also why this worked where the licence-string dedup did not: those
+ * were 65 copies of three identical strings, which Hermes folds into one, and these are
+ * 629 distinct paragraphs, which it cannot.
+ *
+ * So the sourcemap dump is still unrun and still the right next tool. This was one lever
+ * found without it, not a reason to keep guessing.
+ *
  * The 9.74 MB of assets beside the bundle are a separate and larger question, and they
  * are not parsed at start — which is why they are reported separately and why they are
  * not the first place to look for cold-start time.
