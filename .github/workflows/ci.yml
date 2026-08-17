@@ -114,8 +114,31 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm }
+      # Pinned, for the same reason the `version:` above is absent — one source of truth
+      # and nothing that can drift under us — plus a second reason that is specific to
+      # this action.
+      #
+      # `version: latest` is not a constant, it is a REQUEST. `setup-cli` resolves it by
+      # asking the GitHub API which release is newest, unauthenticated, from a shared
+      # runner IP. On 2026-08-17 that call was refused and the job died 25 seconds in,
+      # before it had read a migration:
+      #
+      #   ##[error]Failed to resolve latest Supabase CLI release: rate limit exceeded
+      #
+      # Nothing was wrong with the PR. A pin removes the lookup entirely, so the job no
+      # longer has a dependency on an API quota it does not control.
+      #
+      # The drift is the worse half, though, and it is why this is not just a retry. This
+      # job applies twenty-nine migrations and runs the RLS suite — it is the gate that
+      # decides whether the database is correct — and `latest` let the tool doing the
+      # deciding change between two runs of the same commit, with no diff anywhere. A
+      # green run last week proved nothing about this week's CLI.
+      #
+      # 2.114.0 is the current release, read from the npm registry (`npm view supabase
+      # version`), which is Supabase's own distribution of this binary. Bump it
+      # deliberately, in a commit, the way every other version in this repo moves.
       - uses: supabase/setup-cli@v1
-        with: { version: latest }
+        with: { version: 2.114.0 }
 
       - run: pnpm install --frozen-lockfile
 
