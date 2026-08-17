@@ -12,6 +12,6 @@
     "preview": "tsx scripts/build-preview.ts"
   },
   "dependencies": {
-    "expo-linear-gradient": "~14.0.0"
+    "expo-linear-gradient": "~15.0.8"
   }
 }
