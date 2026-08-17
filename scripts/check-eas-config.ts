@@ -54,6 +54,10 @@
  *
  * 5. The app config identifies its EAS project — `owner`, or `extra.eas.projectId`,
  *    or both. That is run #2.
+ * 6. No key anywhere starts with `$`. Same rule as (2) and the same cause: Expo's
+ *    app-config schema is closed too, and `expo doctor` rejected `expo.$comment`.
+ *    That one is NOT fatal — EAS logs it mid-build and carries on — which is why it
+ *    sat red rather than being fixed. The prose is in docs/engineering/app-config.md.
  *
  * It deliberately does not reimplement EAS's schema. A copy of someone else's
  * schema goes stale and then fails builds that were fine. It reads app.json as
@@ -96,9 +100,15 @@ try {
   process.exit(1)
 }
 
-function walk(node: unknown, path: string): void {
+/**
+ * @param prose Where a `$comment` found in THIS file should go instead. Both schemas are
+ *   closed and both reject the convention, but they are different files with different
+ *   notes, and a message that sends an app.json reader to the eas.json doc is a message
+ *   that gets the prose moved to the wrong place.
+ */
+function walk(node: unknown, path: string, prose: string): void {
   if (Array.isArray(node)) {
-    node.forEach((child, i) => walk(child, `${path}[${i}]`))
+    node.forEach((child, i) => walk(child, `${path}[${i}]`, prose))
     return
   }
   if (node === null || typeof node !== 'object') return
@@ -107,8 +117,8 @@ function walk(node: unknown, path: string): void {
     const here = path === '' ? key : `${path}.${key}`
     if (key.startsWith('$')) {
       problems.push(
-        `"${here}" — eas-cli rejects unknown keys, including this repo's $comment ` +
-          `convention. Move the note to docs/engineering/eas-build-profiles.md.`,
+        `"${here}" — the schema rejects unknown keys, including this repo's $comment ` +
+          `convention. Move the note to ${prose}.`,
       )
     }
     if (CREDENTIAL_KEYS.includes(key)) {
@@ -117,11 +127,11 @@ function walk(node: unknown, path: string): void {
           `write these at runtime from GitHub secrets and delete them afterwards.`,
       )
     }
-    walk(value, here)
+    walk(value, here, prose)
   }
 }
 
-walk(config, '')
+walk(config, '', 'docs/engineering/eas-build-profiles.md')
 
 const build = (config.build ?? {}) as Record<string, unknown>
 const submit = (config.submit ?? {}) as Record<string, unknown>
@@ -143,6 +153,24 @@ const appConfig = (JSON.parse(readFileSync(APP_JSON, 'utf8')) as { expo?: Record
 if (appConfig === undefined) {
   problems.push('apps/mobile/app.json has no `expo` key — that is not an Expo app config.')
 } else {
+  /**
+   * The same `$` rule as `eas.json`, and it is here because the same thing happened again.
+   *
+   * `expo.$comment` was four kilobytes of genuinely load-bearing prose — it is why `owner`
+   * and `extra.eas.projectId` are pinned, which is the fix for a failure that cost two
+   * macOS runs. Expo's app-config schema is closed too, so `expo doctor` rejected it:
+   *
+   *     should NOT have additional property '$comment'.
+   *
+   * The difference from run #1 is that this one is **not fatal** — EAS runs doctor during
+   * a build, logs the failure and carries on — which is precisely why it survived. A check
+   * that is permanently red is a check nobody reads, and the failure it is meant to catch
+   * arrives disguised as the noise everyone has learned to scroll past.
+   *
+   * The prose is in docs/engineering/app-config.md. This is what keeps it there.
+   */
+  walk({ expo: appConfig }, '', 'docs/engineering/app-config.md')
+
   const owner = appConfig.owner
   const extra = (appConfig.extra ?? {}) as { eas?: { projectId?: unknown } }
   const projectId = extra.eas?.projectId
@@ -168,5 +196,5 @@ if (problems.length > 0) {
 
 console.log(
   '✓ eas.json is strict JSON with schema keys only and no committed credentials; ' +
-    'app.json identifies its EAS project',
+    'app.json identifies its EAS project and carries no schema-rejected keys',
 )
