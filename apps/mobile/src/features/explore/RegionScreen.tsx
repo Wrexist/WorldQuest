@@ -34,6 +34,8 @@ import type { EntityProgress, Mastery, RegionProgress } from '@worldquest/engine
 import { collator, currentLocale, useT, type TranslationKey } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 import { Flag } from '../../components/Flag.js'
+import { ScreenHeader } from '../../components/ScreenHeader.js'
+import { StickyFooter } from '../../components/StickyFooter.js'
 import {
   CONTINENT_ART,
   CONTINENT_SILHOUETTE,
@@ -104,6 +106,16 @@ export type RegionScreenProps = {
   readonly progress: RegionProgress | null
   readonly onSelectCountry: (id: string) => void
   readonly onStartLesson: () => void
+  /**
+   * Optional, like every other screen's, so the component tests and the screenshot
+   * renderer mount without a router.
+   *
+   * It had none at all. `ScreenHeader`'s own header says every full-screen route outside
+   * the tabs shipped with no way back and lists the four that were fixed — this one was
+   * added after that sweep and inherited the defect the sweep existed to remove. On iOS
+   * the edge-swipe hides it; on web and for a screen-reader user it is a dead end.
+   */
+  readonly onBack?: (() => void) | undefined
 }
 
 /**
@@ -123,6 +135,7 @@ export function RegionScreen({
   progress: regionTotals,
   onSelectCountry,
   onStartLesson,
+  onBack,
 }: RegionScreenProps) {
   const t = useT()
   // Measured, like the Explore tile's: the sky has to cover the banner at every width,
@@ -145,6 +158,11 @@ export function RegionScreen({
   }
 
   return (
+    /* A column: the start button is pinned below the scroller rather than being the last
+       row of it. Nineteen countries in Europe means the action was a full screen's scroll
+       away from the banner that motivates it. See `StickyFooter`. */
+    <View style={styles.screen}>
+      {onBack !== undefined && <ScreenHeader onBack={onBack} />}
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       {/* The continent's own sky, again.
    
@@ -265,8 +283,12 @@ export function RegionScreen({
 
       {/* One primary action per screen. From here, the only thing worth doing is
           learning some of it. */}
-      <Button label={t('common:start')} onPress={onStartLesson} />
     </ScrollView>
+
+      <StickyFooter>
+        <Button label={t('common:start')} onPress={onStartLesson} fullWidth />
+      </StickyFooter>
+    </View>
   )
 }
 

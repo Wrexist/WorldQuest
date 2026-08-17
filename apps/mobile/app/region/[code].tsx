@@ -105,6 +105,7 @@ export default function RegionRoute() {
         // continent the page is not showing. The lesson route omits an unknown region
         // rather than failing closed, so the result was a lesson about the whole world
         // under a heading saying Europe — the widening `focusFilter` exists to prevent.
+        onBack={() => router.back()}
         onStartLesson={() => router.push(`/lesson?region=${encodeURIComponent(region)}`)}
       />
     </ContentGate>

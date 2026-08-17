@@ -164,6 +164,20 @@ export function useContent() {
             // distinguishes an absent property from one set to undefined, and the
             // composer's own spread of it does the same.
             ...(topicFilter ? { topicFilter } : {}),
+            /**
+             * One entity in focus means the entity is not the question.
+             *
+             * `?entity=SE` from the country page is a lesson about Sweden, so every
+             * template that answers WITH the country — "which country's flag is this?",
+             * "calling +46 reaches which country?" — has the same answer all lesson, and
+             * the user scores by remembering what they tapped rather than by knowing
+             * anything. Reported off TestFlight with a screenshot of exactly that.
+             *
+             * Exactly one, not "at least one": a continent lesson is `?region=EU`, which
+             * expands to nineteen entities, and there "which country's flag is this?" is
+             * a real question with eighteen wrong answers.
+             */
+            entityIsGiven: focus?.entities?.length === 1,
           })
         },
       }
