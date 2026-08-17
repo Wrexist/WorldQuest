@@ -126,6 +126,7 @@ export default function ProfileRoute() {
         wornTitleKey={worn}
         avatar={preferences.avatar}
         badges={badges}
+        onOpenLeague={() => router.push('/league')}
         onOpenAchievements={() => router.push('/achievements')}
         // The gear. Settings stopped being a tab when Shop took the fifth slot, and
         // this is where it went — see `app/settings.tsx`.

@@ -34,6 +34,8 @@
   "league:empty.title": "No league yet",
   "league:empty.title__note": "Shown when the reader is not in a cohort. This is the ordinary state, not an error. Max 24 characters.",
   "league:empty.body": "Leagues start on Monday. Keep learning this week and you will be placed in one with 29 other explorers.",
+  "league:empty.action": "Start a lesson",
+  "league:empty.action__note": "Button on the league empty state. Placement is earned by learning, so this opens a lesson — the only thing a user can actually do about not being in a league yet. Same wording as the profile and achievements empty states on purpose: it is the same action.",
   "league:empty.body__note": "Explains rather than apologises. Max 110 characters.",
   "league:error.title": "Could not load the league",
   "league:error.title__note": "Shown when the standings request failed. Max 30 characters.",

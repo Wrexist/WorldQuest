@@ -25,6 +25,7 @@ import {
 } from '../../components/SettingsRow.js'
 import { AvatarPicker } from './AvatarPicker.js'
 import { useT } from '../../lib/i18n.js'
+import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { Art } from '../../components/Art.js'
 import {
   DAILY_GOALS,
@@ -111,6 +112,18 @@ export type AccountSection = {
 }
 
 export type SettingsScreenProps = {
+  /**
+   * The way out. Optional so the component tests and the screenshot renderer mount
+   * without a router, like every other screen's.
+   *
+   * There was none. `ScreenHeader`'s header records a sweep that gave four full-screen
+   * routes a back control and explains why it matters — `/achievements` reported ZERO
+   * interactive nodes to the accessibility tree, so a reader user could enter and never
+   * leave. Settings was written after that sweep and shipped the same way: the gear on
+   * Profile is a one-way door, and on this screen of all screens, because it holds the
+   * account controls. iOS edge-swipe hides it; on web it is a hard dead end.
+   */
+  readonly onBack?: (() => void) | undefined
   /** From app.json at build time; passed in so the screen stays testable. */
   readonly version: string
   readonly preferences: Preferences
@@ -195,6 +208,7 @@ export function SettingsScreen({
   onOpenPrivacyPolicy,
   onOpenTerms,
   onOpenLicences,
+  onBack,
 }: SettingsScreenProps) {
   const t = useT()
 
@@ -207,6 +221,10 @@ export function SettingsScreen({
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      {/* Title stays below rather than moving into the header: `ScreenHeader`'s own
+          note says a screen that already carries its title takes a back control and
+          nothing else, so a reader does not hear "Settings" twice. */}
+      {onBack !== undefined && <ScreenHeader onBack={onBack} />}
       <Text style={styles.title} role="heading">
         {t('settings:title')}
       </Text>

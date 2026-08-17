@@ -17,6 +17,7 @@
   "league:row.label": "{position}. {handle}, {xp} XP",
   "league:empty.title": "Ingen liga än",
   "league:empty.body": "Ligorna startar på måndag. Fortsätt lära dig den här veckan så placeras du i en tillsammans med 29 andra upptäckare.",
+  "league:empty.action": "Starta en lektion",
   "league:error.title": "Kunde inte ladda ligan",
   "league:error.body": "Din XP är trygg — det här är bara topplistan.",
   "league:settings.label": "Ligor",

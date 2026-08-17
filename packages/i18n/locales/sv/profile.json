@@ -27,5 +27,7 @@
   "profile:level.xp": "{earned} / {span} XP",
   "profile:rename": "Byt namn",
   "profile:badges.title": "Senaste märken",
-  "profile:stats.longest.short": "bäst {days}"
+  "profile:stats.longest.short": "bäst {days}",
+  "profile:league.title": "Liga",
+  "profile:league.body": "Se hur du ligger till mot 29 andra utforskare den här veckan."
 }

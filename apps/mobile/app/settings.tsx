@@ -111,6 +111,8 @@ export default function SettingsRoute() {
 
   return (
     <SettingsScreen
+      // The gear on Profile was a one-way door. See `SettingsScreenProps.onBack`.
+      onBack={() => router.back()}
       version={Constants.expoConfig?.version ?? '0.0.0'}
       preferences={preferences}
       onChange={set}

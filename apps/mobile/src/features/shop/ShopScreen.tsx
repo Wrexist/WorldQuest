@@ -44,6 +44,7 @@ import {
 } from '@worldquest/design'
 import { coinsShort, purchase, type ShopItem } from '@worldquest/engines'
 import { Icon } from '../../components/Icon.js'
+import { TopBar } from '../../components/TopBar.js'
 import { Art } from '../../components/Art.js'
 import type { ArtName } from '../../lib/art.generated.js'
 import type { IconName } from '../../lib/icons.generated.js'
@@ -64,6 +65,8 @@ export type ShopScreenProps = {
   readonly isOffline: boolean
   readonly error?: boolean
   readonly onRetry?: (() => void) | undefined
+  /** The bell, so the header matches the other tabs. Optional like every other route hook. */
+  readonly onOpenInbox?: (() => void) | undefined
   readonly onBuy: (item: ShopItem) => void
   /** `null` takes the bought title off and returns to the level one. */
   readonly onEquip: (id: string | null) => void
@@ -79,6 +82,7 @@ export function ShopScreen({
   isOffline,
   error = false,
   onRetry,
+  onOpenInbox,
   onBuy,
   onEquip,
 }: ShopScreenProps) {
@@ -99,6 +103,18 @@ export function ShopScreen({
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      {/* The same chrome the other four tabs wear.
+   
+          Shop was the only tab without it, so moving between tabs the header appeared and
+          disappeared under you — and the tab it vanished on is the one where identity and
+          the inbox are least expected to go missing.
+   
+          Deliberately WITHOUT `coins`. The wallet card below is a better presentation of
+          the same number and the note on it argues why; a chip in the header two hundred
+          points above it would state the balance twice on the one screen where it is
+          already the subject. Consistency here is the avatar and the inbox, not the
+          duplication of a figure. */}
+      <TopBar initials="EX" {...(onOpenInbox !== undefined ? { onInbox: onOpenInbox } : {})} />
       <Text style={styles.h1} role="heading" aria-level={1}>
         {t('shop:title')}
       </Text>

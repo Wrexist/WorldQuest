@@ -11,6 +11,7 @@
  */
 
 import { useEffect } from 'react'
+import { router } from 'expo-router'
 import { ShopScreen } from '../../src/features/shop/ShopScreen.js'
 import { CATALOGUE } from '../../src/features/shop/catalogue.js'
 import { reconcileOwned, useShop } from '../../src/features/shop/useShop.js'
@@ -50,6 +51,8 @@ export default function ShopRoute() {
       // `coins - price` is for the analytics event only. The server computes the real
       // balance; sending our guess lets the funnel be read before the sync lands, and
       // it is corrected on the next reconcile like every other optimistic number.
+      // Same destination as the other tabs' bell.
+      onOpenInbox={() => router.push('/streak')}
       onBuy={(item) => shop.buy(item, coins - item.price)}
       onEquip={(id) => shop.equip(id)}
     />

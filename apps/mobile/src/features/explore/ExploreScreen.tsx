@@ -165,6 +165,25 @@ const HEADER_ART = 84
  */
 const WORLD_GLOBE = 72
 
+/**
+ * Below this width the two collection cards stack instead of sharing a row.
+ *
+ * The mid-word break they were fixed for came back at 320 and only at 320. The comment
+ * beside them records the whole diagnosis — "Countries" splitting as `Countrie / s`,
+ * `adjustsFontSizeToFit` rejected as a no-op on react-native-web, space won back by
+ * shrinking the icon and the chevron — and every bit of it is still right. It was
+ * measured at 390.
+ *
+ * At 320 the arithmetic runs out: two cards inside the screen's padding leave about
+ * 140pt each, and an icon, a chevron and their gaps take a third of that, so the word
+ * has around 85pt to live in and breaks as `Coun / tries`. There is no font size that
+ * fixes it without making the label smaller than the hint underneath it.
+ *
+ * 360 rather than 320 exactly, so a 350pt device is not one point from the same defect.
+ * `design:shots` renders 320 and 390; this threshold sits between them on purpose.
+ */
+const STACK_COLLECTIONS_BELOW = 360
+
 type TileSize = { readonly width: number; readonly height: number }
 
 /** `width: '48%'` of the grid, which is the screen inside its own padding. */
@@ -289,7 +308,12 @@ export function ExploreScreen({
           navigation — where do I go next — while these two answer "what do I have",
           which is the question that brings someone back on day nine. */}
       {onOpenCollection !== undefined && (
-        <View style={styles.collections}>
+        <View
+          style={[
+            styles.collections,
+            windowWidth < STACK_COLLECTIONS_BELOW && styles.collectionsStacked,
+          ]}
+        >
           <Card
             level={2}
             role="button"
@@ -569,6 +593,10 @@ function ExploreSkeleton() {
 
 const styles = StyleSheet.create({
   collections: { flexDirection: 'row', gap: space[2], paddingHorizontal: space[4], marginBottom: space[3] },
+  // One per line on a narrow phone. Each card keeps `flex: 1`, which in a column means
+  // it takes the full width rather than a half of it — and a full-width row is the shape
+  // the icon/text/chevron arrangement was designed for anyway.
+  collectionsStacked: { flexDirection: 'column' },
   // A ROW, not a centred stack. The icon leads, the words explain, the chevron points
   // out — which is the shape of every navigation row iOS has ever drawn, and it fits a
   // subtitle without growing the tile.

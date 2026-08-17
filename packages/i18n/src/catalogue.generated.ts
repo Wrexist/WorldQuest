@@ -281,6 +281,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "row.label": "{position}. {handle}, {xp} XP",
       "empty.title": "No league yet",
       "empty.body": "Leagues start on Monday. Keep learning this week and you will be placed in one with 29 other explorers.",
+      "empty.action": "Start a lesson",
       "error.title": "Could not load the league",
       "error.body": "Your XP is safe — this is just the leaderboard.",
       "settings.label": "Leagues",
@@ -498,7 +499,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "level.xp": "{earned} / {span} XP",
       "rename": "Change your name",
       "badges.title": "Recent badges",
-      "stats.longest.short": "best {days}"
+      "stats.longest.short": "best {days}",
+      "league.title": "League",
+      "league.body": "See where you stand against 29 other explorers this week."
     },
     "quests": {
       "title": "Today's Quest",
@@ -956,6 +959,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "row.label": "{position}. {handle}, {xp} XP",
       "empty.title": "Ingen liga än",
       "empty.body": "Ligorna startar på måndag. Fortsätt lära dig den här veckan så placeras du i en tillsammans med 29 andra upptäckare.",
+      "empty.action": "Starta en lektion",
       "error.title": "Kunde inte ladda ligan",
       "error.body": "Din XP är trygg — det här är bara topplistan.",
       "settings.label": "Ligor",
@@ -1173,7 +1177,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "level.xp": "{earned} / {span} XP",
       "rename": "Byt namn",
       "badges.title": "Senaste märken",
-      "stats.longest.short": "bäst {days}"
+      "stats.longest.short": "bäst {days}",
+      "league.title": "Liga",
+      "league.body": "Se hur du ligger till mot 29 andra utforskare den här veckan."
     },
     "quests": {
       "title": "Dagens uppdrag",
