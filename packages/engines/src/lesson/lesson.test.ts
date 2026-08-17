@@ -225,6 +225,60 @@ describe('composeLesson', () => {
     if (seen) expect(seen.isNew).toBe(false)
   })
 
+  describe('a lesson about one country does not ask which country it is', () => {
+    /**
+     * Reported off TestFlight, with a screenshot: practising Sweden asked "Att ringa +46
+     * går till vilket land?" over Finland, Frankrike, Sverige and Norge. Every such
+     * question in that lesson has the same answer, because the lesson is about Sweden —
+     * so a user scores by remembering which country they tapped rather than by knowing
+     * the calling code.
+     */
+    const oneCountry = (entityId: string) =>
+      composeLesson({
+        index,
+        memory: [],
+        now: T0,
+        rng: seededRng(11),
+        locale: 'en',
+        count: 20,
+        entityIsGiven: true,
+        topicFilter: (factId) => index.facts.get(factId)?.entity === entityId,
+      })
+
+    const entityAnswered = (questions: readonly Question[]) =>
+      questions.filter((q) => index.templates.get(q.item.templateId)?.answer.from === 'entity.names')
+
+    it('asks about the country instead of for it', () => {
+      const only = index.entities.values().next().value
+      const questions = oneCountry(only!.id)
+      expect(questions.length).toBeGreaterThan(0)
+      expect(entityAnswered(questions)).toHaveLength(0)
+    })
+
+    it('still asks the entity-answer templates when the country is not the scope', () => {
+      // The guard is about SCOPE, not about the templates being bad. Unfocused, "which
+      // country's flag is this?" is a real question and must keep being asked.
+      const questions = composeLesson({
+        index, memory: [], now: T0, rng: seededRng(12), locale: 'en', count: 30,
+      })
+      expect(entityAnswered(questions).length).toBeGreaterThan(0)
+    })
+
+    it('drops no fact — it reorders rather than filtering', () => {
+      // The safety property. A filter would silently shorten the lesson for whoever hit
+      // a fact whose only other presentation was unusable; ordering cannot.
+      const only = index.entities.values().next().value
+      const scoped = (given: boolean) =>
+        composeLesson({
+          index, memory: [], now: T0, rng: seededRng(11), locale: 'en', count: 20,
+          entityIsGiven: given,
+          topicFilter: (factId) => index.facts.get(factId)?.entity === only!.id,
+        }).map((q) => q.item.factId)
+
+      expect(new Set(scoped(true))).toEqual(new Set(scoped(false)))
+    })
+  })
+
   it('returns only screen-reader-safe questions when asked', () => {
     const questions = composeLesson({
       index, memory: [], now: T0, rng: seededRng(3), locale: 'en',

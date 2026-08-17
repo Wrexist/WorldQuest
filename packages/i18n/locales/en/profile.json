@@ -52,5 +52,9 @@
   "profile:badges.title": "Recent badges",
   "profile:badges.title__note": "Heading over the row of earned achievement medals on Profile. Tapping it opens the full set. Max 18 characters.",
   "profile:stats.longest.short": "best {days}",
-  "profile:stats.longest.short__note": "The record streak, as a quiet caption under the live one. Lower case on purpose — it is a footnote to the number above it, not a label of its own. {days} is a whole number of days. Max 12 characters."
+  "profile:stats.longest.short__note": "The record streak, as a quiet caption under the live one. Lower case on purpose — it is a footnote to the number above it, not a label of its own. {days} is a whole number of days. Max 12 characters.",
+  "profile:league.title": "League",
+  "profile:league.title__note": "Navigation row on Profile that opens the weekly league. It existed only as a link from Home, so the one screen a person checks for their own standing did not offer it. Keep it factual — it is a link, not a boast.",
+  "profile:league.body": "See where you stand against 29 other explorers this week.",
+  "profile:league.body__note": "Navigation row on Profile that opens the weekly league. It existed only as a link from Home, so the one screen a person checks for their own standing did not offer it. Keep it factual — it is a link, not a boast."
 }

@@ -78,6 +78,15 @@ export type LeagueScreenProps = {
    */
   readonly offline?: boolean | undefined
   readonly onBack: () => void
+  /**
+   * The way out of the empty state.
+   *
+   * It had none — the only empty state in the app with nothing to press. A user who
+   * followed the single link in got "Leagues start on Monday" and a back arrow, which
+   * states a fact and offers no way to act on it. Placement is earned by learning, so a
+   * lesson is both the honest answer and the useful one.
+   */
+  readonly onStartLesson?: (() => void) | undefined
   readonly onRetry: () => void
 }
 
@@ -91,6 +100,7 @@ export function LeagueScreen({
   hoursLeft,
   offline,
   onBack,
+  onStartLesson,
   onRetry,
 }: LeagueScreenProps) {
   const t = useT()
@@ -138,6 +148,9 @@ export function LeagueScreen({
             {t('league:empty.title')}
           </Text>
           <Text style={styles.emptyBody}>{t('league:empty.body')}</Text>
+          {onStartLesson !== undefined && (
+            <Button label={t('league:empty.action')} onPress={onStartLesson} fullWidth={false} />
+          )}
         </View>
       ) : (
         <Standings rows={rows} rank={rank} hoursLeft={hoursLeft} offline={offline === true} />
@@ -241,7 +254,16 @@ function Row({ row }: { readonly row: Standing }) {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg.canvas },
   content: { padding: space[4], gap: space[2] },
-  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space[3], padding: space[4] },
+  /** Upper third rather than dead centre — same reasoning as ProfileScreen's `centered`. */
+  centered: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    gap: space[3],
+    // Shorthand before the override — see ProfileScreen's `centered`.
+    padding: space[4],
+    paddingTop: space[8],
+  },
 
   header: { gap: space[1], marginBottom: space[2] },
   tier: { ...text('h1'), color: colors.text.primary },

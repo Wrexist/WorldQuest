@@ -165,6 +165,25 @@ const HEADER_ART = 84
  */
 const WORLD_GLOBE = 72
 
+/**
+ * Below this width the two collection cards stack instead of sharing a row.
+ *
+ * The mid-word break they were fixed for came back at 320 and only at 320. The comment
+ * beside them records the whole diagnosis — "Countries" splitting as `Countrie / s`,
+ * `adjustsFontSizeToFit` rejected as a no-op on react-native-web, space won back by
+ * shrinking the icon and the chevron — and every bit of it is still right. It was
+ * measured at 390.
+ *
+ * At 320 the arithmetic runs out: two cards inside the screen's padding leave about
+ * 140pt each, and an icon, a chevron and their gaps take a third of that, so the word
+ * has around 85pt to live in and breaks as `Coun / tries`. There is no font size that
+ * fixes it without making the label smaller than the hint underneath it.
+ *
+ * 360 rather than 320 exactly, so a 350pt device is not one point from the same defect.
+ * `design:shots` renders 320 and 390; this threshold sits between them on purpose.
+ */
+const STACK_COLLECTIONS_BELOW = 360
+
 type TileSize = { readonly width: number; readonly height: number }
 
 /** `width: '48%'` of the grid, which is the screen inside its own padding. */
@@ -184,6 +203,19 @@ export function ExploreScreen({
   // the window rather than from zero, so the first frame already has its sky instead of
   // flashing seven navy rectangles and then filling them in.
   const { width: windowWidth } = useWindowDimensions()
+  /**
+   * The grid's cell size, and the height of the TALLEST card in it.
+   *
+   * Height is a running maximum rather than the last card to report, which is what makes
+   * the six cards one size: it is fed back as a `minHeight` on every tile, so the short
+   * ones grow to meet the tall one instead of the tall one being cut down to fit. It
+   * converges in a pass and cannot run away — a card held at the maximum measures as the
+   * maximum, so the next round has nothing to raise.
+   *
+   * Measured rather than fixed because the text decides it, and how much text there is
+   * depends on the translation and on the user's Dynamic Type setting. See `tile` in the
+   * stylesheet for the two simpler answers that were tried and photographed failing.
+   */
   const [tile, setTile] = useState({ width: estimateTileWidth(windowWidth), height: 0 })
 
   if (loading || world === null) return <ExploreSkeleton />
@@ -276,7 +308,12 @@ export function ExploreScreen({
           navigation — where do I go next — while these two answer "what do I have",
           which is the question that brings someone back on day nine. */}
       {onOpenCollection !== undefined && (
-        <View style={styles.collections}>
+        <View
+          style={[
+            styles.collections,
+            windowWidth < STACK_COLLECTIONS_BELOW && styles.collectionsStacked,
+          ]}
+        >
           <Card
             level={2}
             role="button"
@@ -330,6 +367,7 @@ export function ExploreScreen({
             index={index}
             progress={byRegion.get(region)}
             art={continentArtSize(tile.width, tile.height)}
+            minHeight={tile.height}
             onSelect={onSelectRegion}
             onMeasure={setTile}
           />
@@ -352,6 +390,7 @@ function ContinentTile({
   index,
   progress,
   art,
+  minHeight,
   onSelect,
   onMeasure,
 }: {
@@ -359,6 +398,8 @@ function ContinentTile({
   readonly index: number
   readonly progress: WorldProgress['regions'][number] | undefined
   readonly art: number
+  /** The tallest card measured so far, so all six settle on one height. See the parent. */
+  readonly minHeight: number
   readonly onSelect: (region: RegionCode) => void
   readonly onMeasure: (next: (current: TileSize) => TileSize) => void
 }) {
@@ -380,15 +421,26 @@ function ContinentTile({
           const { width, height } = event.nativeEvent.layout
           // Guarded, because setting state from a layout that the state itself feeds is
           // how a render loop starts. Sub-point changes are noise.
+          // Width from whoever reported last; height only ever upward. A card already
+          // held at the maximum reports exactly the maximum, so this settles rather than
+          // creeping — and a card that genuinely needs more (a longer translation, 200 %
+          // text) raises it for the other five.
           onMeasure((current) =>
-            Math.abs(current.width - width) < 1 && Math.abs(current.height - height) < 1
+            Math.abs(current.width - width) < 1 && height <= current.height + 1
               ? current
-              : { width, height },
+              : { width, height: Math.max(current.height, height) },
           )
         }}
         // A continent with no content yet is dimmed rather than hidden. Hiding it would
         // read as a smaller world; dimming says "not yet".
-        style={[styles.tile, { borderColor: tint }, empty && styles.tileEmpty]}
+        style={[
+          styles.tile,
+          { borderColor: tint },
+          // The measured maximum, applied as a floor. `styles.tile` carries the seed for
+          // the frame before anything has reported.
+          minHeight > 0 && { minHeight },
+          empty && styles.tileEmpty,
+        ]}
       >
         {/* The continent's own sky, behind its card.
             This screen is the second tab of a geography app and had no picture on it at
@@ -447,7 +499,12 @@ function ContinentTile({
           </View>
         )}
 
-        <View style={[styles.swatch, { backgroundColor: tint }]} />
+        {/* The 6pt colour chip that used to sit here is gone.
+            It predates the artwork: when every tile was a navy rectangle the swatch was
+            the ONLY thing telling Europe from Asia. Now each card carries its continent's
+            own sky and its own silhouette, and the border is already tinted — so the chip
+            was a fourth statement of the same fact, stealing the first line of a card
+            whose picture is the point. Reported from a device as a bar to remove. */}
         <Text style={styles.regionName}>{t(REGION_NAME[region])}</Text>
 
         {empty ? (
@@ -472,19 +529,17 @@ function ContinentTile({
                 total: progress.factsTotal,
               })}
             </Tally>
-            {/* `showPercent` rather than a row built here. It started as a local one and
-                moved into the primitive the moment Quests and Achievements turned out to
-                have the same unreadable-at-zero bar — see `ProgressBar`. */}
-            <ProgressBar
-              current={progress.factsLearned}
-              total={Math.max(1, progress.factsTotal)}
-              showCount={false}
-              showPercent
-              // Reward tone where there is something to review — the same gold the
-              // streak uses, so "come back to this" reads consistently.
-              tone={progress.factsDue > 0 ? 'reward' : 'progress'}
-              height={8}
-            />
+            {/* The progress bar that used to sit here is gone.
+
+                Same reason as the chip above: it was the third thing on the card saying
+                zero. "0 av 97 inlärda" is directly above it, and the bar added a rail, a
+                fill of no width and a "0 %" — a percentage of a number already on screen.
+                On a card at 0 % that is two empty shapes and a redundant digit occupying
+                the half of the tile the map wants. Reported from a device as a bar to
+                remove, and the count is the honest version of the same information.
+
+                It stays on the REGION screen, where the same figure is the page's subject
+                rather than one line of a six-up grid. */}
             {/* A pin, in the continent's own colour.
    
                 ONE glyph tinted six ways, not six pictures. `Icon` renders Lucide's
@@ -538,6 +593,10 @@ function ExploreSkeleton() {
 
 const styles = StyleSheet.create({
   collections: { flexDirection: 'row', gap: space[2], paddingHorizontal: space[4], marginBottom: space[3] },
+  // One per line on a narrow phone. Each card keeps `flex: 1`, which in a column means
+  // it takes the full width rather than a half of it — and a full-width row is the shape
+  // the icon/text/chevron arrangement was designed for anyway.
+  collectionsStacked: { flexDirection: 'column' },
   // A ROW, not a centred stack. The icon leads, the words explain, the chevron points
   // out — which is the shape of every navigation row iOS has ever drawn, and it fits a
   // subtitle without growing the tile.
@@ -604,9 +663,21 @@ const styles = StyleSheet.create({
     gap: space[2],
     padding: space[3],
     /**
-     * A FLOOR on the height, so a two-line count cannot make one card taller than the
-     * one beside it. Read off a device, "19 countries to meet" wrapped in Europe and not
-     * in Asia, and the row came out visibly crooked.
+     * The floor every card starts from. The one they SETTLE on is measured — see
+     * `tallestTile` and the `minHeight` applied at the call site.
+     *
+     * A fixed height was tried first and is the wrong answer, which is worth recording
+     * because it looks like the obvious one. `minHeight` equalises the two cards in a
+     * row (flex stretches a wrapped line to its tallest) and does nothing across rows, so
+     * on a device the Europe/Asia row stood taller than the ones beneath it — "19 länder
+     * att upptäcka" wraps and "7 länder att upptäcka" does not. Pinning `height: 148`
+     * made all six identical and clipped every one of them at 200 % text, which `pnpm
+     * e2e` caught: `clipped "19" · clipped "14" · clipped "16"`.
+     *
+     * Scaling the number by `fontScale` is the textbook fix and does not work here
+     * either: `PaywallScreen` already records that react-native-web reports `fontScale`
+     * as 1 whatever the user set, so it would fix the device and leave the harness — and
+     * every browser user — clipped.
      */
     minHeight: 148,
     borderRadius: radius.lg,
@@ -617,7 +688,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bg.surface,
   },
   tileEmpty: { opacity: 0.45 },
-  swatch: { width: 28, height: 6, borderRadius: radius.full },
   regionName: { ...text('h3'), color: colors.text.primary },
   regionMeta: { ...text('caption'), color: colors.text.secondary },
   // Same size, brighter and heavier. `numeric` for tabular figures so a column of
@@ -630,5 +700,15 @@ const styles = StyleSheet.create({
   // only — it clears 3:1 and not 4.5:1 — and this is a 13pt caption. It was wrong on a
   // plain surface before it was ever put over a picture; the artwork only made it
   // visible.
-  regionDue: { ...text('caption'), color: colors.text.secondary },
+  /**
+   * `flex: 1`, and it is a bug fix rather than a tidy-up.
+   *
+   * The row is `flexDirection: 'row'` with a pin beside it, and a Text in a row with no
+   * flex does not wrap — it lays out at its natural width and overflows the parent. On a
+   * device "7 länder att upptäcka" ran off the card's right edge with the final letters
+   * clipped by the border, on three of the six tiles. It looked like a truncation bug
+   * and was a flex bug: nothing had told the text it was allowed to be narrower than its
+   * content.
+   */
+  regionDue: { ...text('caption'), color: colors.text.secondary, flex: 1 },
 })

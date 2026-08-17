@@ -116,6 +116,15 @@ export type ProfileScreenProps = {
   readonly badges?: readonly ProfileBadge[] | undefined
   /** Opens the achievements screen from the badge row's heading. */
   readonly onOpenAchievements?: (() => void) | undefined
+  /**
+   * Opens the weekly league.
+   *
+   * A second door, and the audit finding that asked for it is worth keeping: the whole
+   * app had exactly ONE link to `/league`, from Home. Profile is where a person looks for
+   * their own standing — it is the screen with their rank, their streak and their badges
+   * on it — and it was the one place that did not offer it.
+   */
+  readonly onOpenLeague?: (() => void) | undefined
   /** Opens Settings — the gear, now that More is not a tab. */
   readonly onOpenSettings?: (() => void) | undefined
   /** Renames the explorer. Absent renders the identity without a pencil. */
@@ -139,6 +148,7 @@ export function ProfileScreen({
   avatar,
   badges,
   onOpenAchievements,
+  onOpenLeague,
   onOpenSettings,
   onRename,
 }: ProfileScreenProps) {
@@ -174,15 +184,16 @@ export function ProfileScreen({
           {...(onOpenSettings !== undefined ? { onSettings: onOpenSettings } : {})}
         />
         <View style={[styles.screen, styles.centered]}>
-          <Avatar
-            size={72}
-            accessibilityLabel={t('profile:anonymous')}
-            initials="EX"
-            {...(portrait !== null ? { image: <Art name={portrait} size={72} /> } : {})}
-          />
-          {/* The blank explorer's journal, briefed for this screen as "ready to be
-              filled, not sad" — which is the same distinction `profile:empty.body`
-              draws in words. */}
+          {/* The 72pt `Avatar` that used to sit here is gone.
+   
+              `TopBar` above already draws the same initials, or the same portrait, four
+              hundred points higher up the screen. Photographed, the empty profile was the
+              letters EX twice with nothing between them — and the second one was the
+              larger, so the eye read the header as the duplicate.
+   
+              The journal is the picture this state wants: it is briefed for this screen as
+              "ready to be filled, not sad", which is the distinction `profile:empty.body`
+              draws in words, and an avatar of a user with no progress illustrates nothing. */}
           <Art name="states/empty-profile" size={140} />
           <Text style={styles.title} role="heading">
             {t('profile:empty.title')}
@@ -349,6 +360,15 @@ export function ProfileScreen({
           caption={t('profile:stats.longest.short', { days: stats.longestStreak })}
         />
       </View>
+
+      {/* The way into this week's league. A heading with a chevron, the same shape the
+          badge shelf below uses to reach the full achievement set — so the two "there is
+          more of this elsewhere" affordances on this screen look like each other. */}
+      {onOpenLeague !== undefined && (
+        <Section title={t('profile:league.title')} onPress={onOpenLeague}>
+          <Text style={styles.subtitle}>{t('profile:league.body')}</Text>
+        </Section>
+      )}
 
       {/* The trophy shelf.
    
@@ -591,7 +611,29 @@ const styles = StyleSheet.create({
   emptyCta: { marginTop: space[4] },
   screen: { flex: 1 },
   content: { padding: space[4], gap: space[4] },
-  centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },
+  /**
+   * Anchored to the upper third, not centred.
+   *
+   * `justifyContent: 'center'` put a picture and two short lines in the exact middle of
+   * an 844pt screen, so the first thing a new user saw on a primary tab was three hundred
+   * points of empty navy, then the content, then three hundred more. Optically an empty
+   * state belongs where the eye already is — near the top, where the content of a filled
+   * screen would start — and the space below it reads as room to grow rather than as a
+   * gap someone forgot to fill.
+   *
+   * `flex-start` plus a deliberate lead-in rather than a smaller flex weighting, because
+   * the distance from the header is the thing being set and a ratio would move it every
+   * time the header changed height.
+   */
+  centered: {
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    // `padding` FIRST, then the override. React Native resolves these in declaration
+    // order, so a shorthand written after `paddingTop` silently discards it.
+    padding: space[5],
+    paddingTop: space[9],
+    gap: space[3],
+  },
 
   name: { ...text('h1'), color: colors.text.primary },
   title: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },

@@ -119,7 +119,33 @@ export function itemsForFact(
   index: ContentIndex,
   factId: FactId,
   rng: Rng,
-  options: { screenReaderOnly?: boolean; modalities?: readonly Template['modality'][] } = {},
+  options: {
+    screenReaderOnly?: boolean
+    modalities?: readonly Template['modality'][]
+    /**
+     * Push templates whose ANSWER is the entity to the back of the queue.
+     *
+     * Set when the lesson is scoped to a single entity, where those templates stop being
+     * questions. Practising Sweden served "Att ringa +46 går till vilket land?" with
+     * Finland, Frankrike, Sverige and Norge underneath it — and every such question in
+     * that lesson had the same answer, because the lesson is *about* Sweden. The user
+     * does not need to know the calling code to score full marks; they need to remember
+     * which country they tapped.
+     *
+     * Six attributes ship, and every one has a forward template (`answer.from` is
+     * `fact.value.names`), so the useful question — "vad har Sverige för landsnummer?" —
+     * already existed for all of them. It was being passed over at random.
+     *
+     * **Ordered, not filtered**, and that distinction is the whole safety of this. A
+     * filter would drop a fact whose only remaining presentation was unusable for some
+     * other reason — a screen-reader user practising one country would silently get a
+     * shorter lesson than a sighted one, which is the exact parity bug
+     * `docs/design/accessibility.md` §8 exists to prevent and which this file's own
+     * `$comment` records being shipped once already. Ordering degrades instead: the
+     * revealing template is still there, last, and is used only when nothing else can be.
+     */
+    deprioritizeEntityAnswers?: boolean
+  } = {},
 ): Item[] {
   const candidates = index.itemsByFact.get(factId) ?? []
   const usable = candidates.filter((i) => {
@@ -128,7 +154,18 @@ export function itemsForFact(
     const modality = index.templates.get(i.templateId)?.modality
     return modality !== undefined && options.modalities.includes(modality)
   })
-  return shuffle(usable, rng)
+  const shuffled = shuffle(usable, rng)
+  if (!options.deprioritizeEntityAnswers) return shuffled
+
+  // A stable partition rather than a sort: within each half the shuffle's order stands,
+  // so which forward template gets asked is still random.
+  const asksSomething: Item[] = []
+  const namesTheEntity: Item[] = []
+  for (const item of shuffled) {
+    const template = index.templates.get(item.templateId)
+    ;(template?.answer.from === 'entity.names' ? namesTheEntity : asksSomething).push(item)
+  }
+  return [...asksSomething, ...namesTheEntity]
 }
 
 /** Distractor pools, in the order the strategy prefers them. */

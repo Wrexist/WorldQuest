@@ -38,6 +38,8 @@ export default function LeagueRoute() {
       status={league.status}
       offline={!online}
       {...(hoursLeft !== undefined ? { hoursLeft } : {})}
+      // Placement is earned by learning — see `onStartLesson`.
+      onStartLesson={() => router.push('/lesson')}
       onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))}
       onRetry={league.refetch}
     />

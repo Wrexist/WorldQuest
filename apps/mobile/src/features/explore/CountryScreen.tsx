@@ -47,6 +47,7 @@
 
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
+import { StickyFooter } from '../../components/StickyFooter.js'
 import { Flag } from '../../components/Flag.js'
 import { CountryMap } from '../../components/CountryMap.js'
 import {
@@ -199,6 +200,11 @@ export function CountryScreen({
   }
 
   return (
+    /* A column, not a bare scroller. The practice button is this page's whole purpose and
+       it used to be the last child of the ScrollView — below the fold on every country
+       with more than a few facts, so the primary action was reachable only by scrolling
+       past the content you had come to read. See `StickyFooter`. */
+    <View style={styles.screen}>
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       {onBack !== undefined && <ScreenHeader onBack={onBack} />}
       <View style={styles.header}>
@@ -284,8 +290,12 @@ export function CountryScreen({
         </Card>
       </View>
 
-      <Button label={t('country:practice')} onPress={onPractise} />
     </ScrollView>
+
+      <StickyFooter>
+        <Button label={t('country:practice')} onPress={onPractise} fullWidth />
+      </StickyFooter>
+    </View>
   )
 }
 

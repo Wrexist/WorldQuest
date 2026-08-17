@@ -49,6 +49,15 @@ export type ComposeInput = {
    */
   readonly modalities?: readonly Template['modality'][]
   readonly catchUpMode?: boolean
+  /**
+   * True when this lesson is about ONE entity, so the entity is not askable.
+   *
+   * Set by the caller because only the caller knows the scope: `?entity=SE` from the
+   * country page is a lesson about Sweden, and in it "which country is this the flag
+   * of?" has one answer the user already has. See `itemsForFact`, which orders the
+   * revealing templates last rather than removing them.
+   */
+  readonly entityIsGiven?: boolean
 }
 
 export function composeLesson(input: ComposeInput): readonly Question[] {
@@ -63,6 +72,7 @@ export function composeLesson(input: ComposeInput): readonly Question[] {
     screenReaderOnly,
     modalities,
     catchUpMode,
+    entityIsGiven,
   } = input
 
   const seen = new Set(memory.map((m) => m.factId))
@@ -122,6 +132,7 @@ export function composeLesson(input: ComposeInput): readonly Question[] {
     for (const item of itemsForFact(index, factId, rng, {
       ...(screenReaderOnly !== undefined ? { screenReaderOnly } : {}),
       ...(modalities !== undefined ? { modalities } : {}),
+      ...(entityIsGiven !== undefined ? { deprioritizeEntityAnswers: entityIsGiven } : {}),
     })) {
       const question = buildQuestion(index, item, locale, rng, { isNew: !seen.has(factId) })
       if (question) {
