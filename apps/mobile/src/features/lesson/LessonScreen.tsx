@@ -35,6 +35,7 @@ import { OutOfHearts } from './OutOfHearts.js'
 import { payForContinue } from './continuePurchase.js'
 import { Paused } from './Paused.js'
 import { recordPace, useItemPace } from './usePace.js'
+import { recordAccuracy, recentAccuracy } from './useAccuracy.js'
 import { hapticCelebrate, hapticCorrect, hapticWrong } from '../../lib/haptics.js'
 import { soundCorrect, soundLevelUp, soundWrong } from '../../lib/sound.js'
 import { recordLessonForAchievements, recordQuestCompleted } from '../achievements/progress.js'
@@ -405,7 +406,8 @@ export function LessonScreen({
      * `memory` is the pre-lesson memory, which is exactly what the screen composed from —
      * so what is sent is the quest the user was actually shown.
      */
-    const quest = index === null ? null : todaysQuest(index.index, memory)
+    const quest =
+      index === null ? null : todaysQuest(index.index, memory, Date.now(), recentAccuracy())
 
     // Enqueue, never await. A lesson finishing must not depend on the network —
     // the queue replays it whenever connectivity returns.
@@ -463,6 +465,11 @@ export function LessonScreen({
     soundLevelUp()
     // The user's pace, from the answers just given. Sizes every later lesson.
     recordPace(state.answers)
+    // And how well they did, which scales the quest's fifth slot. Recorded AFTER the
+    // quest above was composed, deliberately: `recentAccuracy` excludes today so the
+    // figure cannot move mid-day, and taking the sample before composing would not
+    // change that but would make the ordering look like it mattered when it does not.
+    recordAccuracy(state.answers)
 
     // Achievements, evaluated on device. Optimistic like the XP above — the server
     // is still the authority on the coins an unlock pays out (ADR 0006). Without

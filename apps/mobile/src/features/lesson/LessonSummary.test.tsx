@@ -9,11 +9,26 @@
 import { describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { factsStrengthened } from '@worldquest/engines'
-import type { GradeResult, Mastery } from '@worldquest/engines'
+import type { GradeResult, Mastery, Rating } from '@worldquest/engines'
 import { LessonSummary, outcomeOf } from './LessonSummary.js'
 import { CATALOGUE } from '../achievements/useAchievements.js'
 
 const move = (factId: string, from: Mastery, to: Mastery) => ({ factId, from, to })
+
+/**
+ * A graded answer, for the fact the mastery change is about.
+ *
+ * `factsStrengthened` reads these now: a wrong answer never strengthens anything, and
+ * `unseen → learning` is an upward mastery change that a wrong answer produces.
+ */
+const reviewed = (factId: string, wasCorrect = true) => ({
+  factId,
+  templateId: 'tpl.capital-of.mc4',
+  rating: (wasCorrect ? 3 : 1) as Rating,
+  wasCorrect,
+  elapsedMs: 3_000,
+  at: 1_800_000_000_000,
+})
 
 const grade = (over: Partial<GradeResult> = {}): GradeResult => ({
   lessonId: 'l1',
@@ -138,10 +153,27 @@ describe('LessonSummary — the numbers', () => {
         move('geo.NO.capital', 'familiar', 'proficient'),
         move('geo.FI.capital', 'proficient', 'learning'),
       ],
+      reviews: [reviewed('geo.SE.capital'), reviewed('geo.NO.capital'), reviewed('geo.FI.capital')],
     })
     const tile = screen.getByTestId('summary-stronger')
     expect(tile.textContent).toContain('2')
     expect(tile.getAttribute('aria-label')).toBe('2 facts moved up a level')
+  })
+
+  it('counts nothing a wrong answer moved', () => {
+    // `unseen → learning` is an upward change that a WRONG answer produces — the
+    // scheduler creates a memory state on first contact whatever the rating — so this
+    // tile read "20 Facts stronger" beside "15% Accuracy" on the real summary. A count
+    // that equals the item count for every new user measures nothing, and it is
+    // flattery on the screen where a struggling learner is most likely to notice.
+    summary({
+      masteryChanges: [
+        move('geo.SE.capital', 'unseen', 'learning'),
+        move('geo.NO.capital', 'unseen', 'learning'),
+      ],
+      reviews: [reviewed('geo.SE.capital', false), reviewed('geo.NO.capital', false)],
+    })
+    expect(screen.getByTestId('summary-stronger').textContent).toContain('0')
   })
 
   it('shows the learning tile at zero rather than hiding it', () => {
@@ -283,9 +315,24 @@ describe('the summary — badges that used to unlock in silence', () => {
 
 describe('the summary rules, on their own', () => {
   it('ranks mastery in the order the model defines', () => {
-    expect(factsStrengthened(grade({ masteryChanges: [move('a', 'mastered', 'burnished')] }))).toBe(1)
-    expect(factsStrengthened(grade({ masteryChanges: [move('a', 'burnished', 'mastered')] }))).toBe(0)
-    expect(factsStrengthened(grade({ masteryChanges: [move('a', 'unseen', 'learning')] }))).toBe(1)
+    // Each with the correct answer that moved it — a wrong answer strengthens nothing at
+    // all, which is the case below rather than the ordering being tested here.
+    const moved = (from: Mastery, to: Mastery) =>
+      grade({ masteryChanges: [move('a', from, to)], reviews: [reviewed('a')] })
+    expect(factsStrengthened(moved('mastered', 'burnished'))).toBe(1)
+    expect(factsStrengthened(moved('burnished', 'mastered'))).toBe(0)
+    expect(factsStrengthened(moved('unseen', 'learning'))).toBe(1)
+  })
+
+  it('does not count a fact whose only answer was wrong', () => {
+    expect(
+      factsStrengthened(
+        grade({
+          masteryChanges: [move('a', 'unseen', 'learning')],
+          reviews: [reviewed('a', false)],
+        }),
+      ),
+    ).toBe(0)
   })
 
   it('treats leaving early as its own outcome, whatever the score was', () => {
