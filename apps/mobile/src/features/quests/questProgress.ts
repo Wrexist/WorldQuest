@@ -35,7 +35,7 @@ import {
   type QuestTask,
   type Slot,
 } from '@worldquest/engines'
-import { readJson, writeJson } from '../../lib/storage.js'
+import { isNumberRecord, readJson, writeJson } from '../../lib/storage.js'
 
 const KEY = 'quest.progress.v1'
 
@@ -52,13 +52,24 @@ const listeners = new Set<() => void>()
 
 const empty = (date: string): Stored => ({ date, done: {}, bonusClaimed: false })
 
+/**
+ * `date` was checked and `done` was not, which is the half that gets indexed.
+ *
+ * `withStoredProgress` reads `stored.done[task.slot]` as soon as the stored date matches
+ * today — so a row whose `done` is missing or is not an object threw a TypeError while
+ * RENDERING Home and Quests, with no way out but a reinstall. Checking one field of a
+ * record and casting the rest is the shape of most of these bugs.
+ */
+const isStored = (value: unknown): boolean =>
+  typeof value === 'object' &&
+  value !== null &&
+  typeof (value as Stored).date === 'string' &&
+  isNumberRecord((value as Stored).done) &&
+  typeof (value as Stored).bonusClaimed === 'boolean'
+
 const read = (): Stored => {
   if (snapshot !== null) return snapshot
-  const stored = readJson<Stored>(KEY)
-  snapshot =
-    stored !== null && typeof stored === 'object' && typeof stored.date === 'string'
-      ? stored
-      : empty('')
+  snapshot = readJson<Stored>(KEY, isStored) ?? empty('')
   return snapshot
 }
 

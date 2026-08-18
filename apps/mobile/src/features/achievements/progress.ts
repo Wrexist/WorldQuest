@@ -52,7 +52,7 @@ import {
   type DomainEvent,
   type Unlock,
 } from '@worldquest/engines'
-import { readJson, writeJson } from '../../lib/storage.js'
+import { isRecord, readJson, writeJson } from '../../lib/storage.js'
 import { CATALOGUE } from './useAchievements.js'
 
 const KEY = 'achievements.progress.v1'
@@ -71,14 +71,37 @@ type Stored = Record<string, AchievementProgress>
 let snapshot: ReadonlyMap<string, AchievementProgress> | null = null
 const listeners = new Set<() => void>()
 
+/**
+ * A row the engine can add to.
+ *
+ * The map itself was shape-checked and its VALUES were not, and the values are what
+ * arithmetic runs on: `evaluateAll` adds to `value` and compares it against a tier
+ * threshold, so a stored `value` of `null` makes every comparison false and a stored
+ * string makes `"3" + 1` into `"31"` — a legendary tier awarded on the fourth event. Both
+ * then persist. `seen` is spread into a Set, so a non-array throws outright.
+ */
+const isProgressRow = (value: unknown): boolean => {
+  if (typeof value !== 'object' || value === null) return false
+  const row = value as AchievementProgress
+  if (typeof row.value !== 'number' || !Number.isFinite(row.value)) return false
+  if (row.seen !== undefined && !Array.isArray(row.seen)) return false
+  return row.tier === null || typeof row.tier === 'string'
+}
+
 const load = (): ReadonlyMap<string, AchievementProgress> => {
-  const stored = readJson<Stored>(KEY)
-  if (stored === null || typeof stored !== 'object') return new Map()
-  // Only ids the shipped catalogue still carries. An achievement removed from a pack
-  // leaves rows behind on every device that ever had it, and a stale row would render
-  // as a row with no name.
+  const stored = readJson<Stored>(KEY, isRecord)
+  if (stored === null) return new Map()
+  // Only ids the shipped catalogue still carries, and only rows the engine can use. An
+  // achievement removed from a pack leaves rows behind on every device that ever had it,
+  // and a stale row would render as a row with no name.
+  //
+  // A bad ROW is dropped rather than taking the whole map with it, unlike the sync queue
+  // where the parts are interdependent: these are independent counters, and losing one
+  // badge's progress is a smaller harm than losing every badge's.
   const known = new Set(CATALOGUE.map((def) => def.id))
-  return new Map(Object.entries(stored).filter(([id]) => known.has(id)))
+  return new Map(
+    Object.entries(stored).filter(([id, row]) => known.has(id) && isProgressRow(row)),
+  )
 }
 
 const read = (): ReadonlyMap<string, AchievementProgress> => (snapshot ??= load())

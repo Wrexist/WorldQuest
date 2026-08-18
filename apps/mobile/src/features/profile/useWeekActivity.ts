@@ -11,7 +11,7 @@
  */
 
 import { useMemo } from 'react'
-import { readJson, writeJson } from '../../lib/storage.js'
+import { isFiniteNumber, isNumberRecord, readJson, writeJson } from '../../lib/storage.js'
 import { localDay } from '../../lib/day.js'
 
 /** `YYYY-MM-DD` → lessons completed. Written by the lesson runner on completion. */
@@ -35,7 +35,7 @@ const isoDay = localDay
 
 export function useWeekActivity(): readonly WeekDay[] {
   return useMemo(() => {
-    const log = readJson<Record<string, number>>(KEY) ?? {}
+    const log = readJson<Record<string, number>>(KEY, isNumberRecord) ?? {}
     const today = new Date()
 
     return Array.from({ length: 7 }, (_, i) => {
@@ -59,7 +59,7 @@ export function useWeekActivity(): readonly WeekDay[] {
  * the instant a lesson ends rather than after a sync.
  */
 export function lessonsToday(now: Date = new Date()): number {
-  const log = readJson<Record<string, number>>(KEY) ?? {}
+  const log = readJson<Record<string, number>>(KEY, isNumberRecord) ?? {}
   return log[isoDay(now)] ?? 0
 }
 
@@ -75,18 +75,20 @@ export function lessonsToday(now: Date = new Date()): number {
  * active day, which is exactly what the prompt should see.
  */
 export function activeDays(): number {
-  const log = readJson<Record<string, number>>(KEY) ?? {}
+  const log = readJson<Record<string, number>>(KEY, isNumberRecord) ?? {}
   return Object.values(log).filter((count) => count > 0).length
 }
 
 /** Called when a lesson finishes. Idempotent per call, not per lesson id. */
 export function lessonsEverCompleted(): number {
-  return readJson<number>(TOTAL_KEY) ?? 0
+  // Shape-checked because the next line adds one to it: a stored object or string turns
+  // the lifetime lesson count into `"[object Object]1"`, which then persists and grows.
+  return readJson<number>(TOTAL_KEY, isFiniteNumber) ?? 0
 }
 
 export function recordLessonCompleted(now: Date = new Date()): void {
   writeJson(TOTAL_KEY, lessonsEverCompleted() + 1)
-  const log = readJson<Record<string, number>>(KEY) ?? {}
+  const log = readJson<Record<string, number>>(KEY, isNumberRecord) ?? {}
   const day = isoDay(now)
   log[day] = (log[day] ?? 0) + 1
 

@@ -31,13 +31,44 @@ import { track } from './analytics.js'
 const QUEUE_KEY = 'sync.queue.v1'
 
 /**
+ * Both halves must be arrays of things with an id and a kind.
+ *
+ * The cast this replaces was the most dangerous read in the app. `enqueue` calls
+ * `queue.pending.some(...)` and `nextBatch` spreads it, so a stored queue from an older
+ * shape — or one truncated by a full disk — threw a TypeError at the end of EVERY lesson,
+ * from inside the one function whose entire job is that a finished lesson survives. The
+ * queue would then be unrecoverable without reinstalling, which is the "I lost my
+ * progress" failure this file calls the most trust-destroying bug a learning app has.
+ *
+ * A mutation that fails this is dropped with the rest of the queue rather than filtered
+ * out of it, and that is the honest trade: a partially-readable queue is a queue whose
+ * ordering and idempotency keys we cannot vouch for, and replaying half of one is worse
+ * than losing it. In exchange the app starts.
+ */
+const isQueue = (value: unknown): boolean => {
+  if (typeof value !== 'object' || value === null) return false
+  const q = value as { pending?: unknown; parked?: unknown }
+  const list = (v: unknown): boolean =>
+    Array.isArray(v) &&
+    v.every(
+      (m) =>
+        typeof m === 'object' &&
+        m !== null &&
+        typeof (m as { id?: unknown }).id === 'string' &&
+        typeof (m as { kind?: unknown }).kind === 'string' &&
+        typeof (m as { attempts?: unknown }).attempts === 'number',
+    )
+  return list(q.pending) && list(q.parked)
+}
+
+/**
  * Restored from disk on first use.
  *
  * This is the whole reason the queue exists. A lesson finished in a tunnel has to
  * survive the app being killed on the walk home — an in-memory queue silently loses
  * the XP a user earned, and they never find out why their streak broke.
  */
-let queue: SyncQueue = readJson<SyncQueue>(QUEUE_KEY) ?? emptyQueue()
+let queue: SyncQueue = readJson<SyncQueue>(QUEUE_KEY, isQueue) ?? emptyQueue()
 
 function commit(next: SyncQueue): void {
   queue = next
