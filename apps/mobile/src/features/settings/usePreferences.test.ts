@@ -8,10 +8,10 @@
  * at a time.
  */
 
-import { describe, expect, it } from 'vitest'
-import { act, renderHook } from '@testing-library/react'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { act, cleanup, renderHook } from '@testing-library/react'
 import { usePreferences } from './usePreferences.js'
-import { readJson } from '../../lib/storage.js'
+import { clearAll, readJson, writeJson } from '../../lib/storage.js'
 import type { Preferences } from './usePreferences.js'
 
 describe('usePreferences', () => {
@@ -43,5 +43,56 @@ describe('usePreferences', () => {
     expect(stored?.startRegion).toBe('Asia')
     expect(stored?.startLevel).toBe('new')
     expect(stored?.dailyGoalMinutes).toBe(5)
+  })
+})
+
+describe('usePreferences — a stored row this build cannot use', () => {
+  const KEY = 'preferences.v1'
+
+  beforeEach(() => clearAll())
+
+  it('refuses a null where a boolean belongs', () => {
+    // The exact crash the old comment named and the old code did not prevent: a spread
+    // overrode `sound: false` with the stored `null`, and `<Switch value={null}>` is a
+    // crash on a screen the user is looking at.
+    writeJson(KEY, { sound: null, haptics: null })
+    const { result } = renderHook(() => usePreferences())
+    expect(result.current.preferences.sound).toBe(false)
+    expect(result.current.preferences.haptics).toBe(true)
+  })
+
+  it('refuses a goal that is not one of the three', () => {
+    // `lessonsPerDay(minutes, itemMs)` runs on this, so a string makes the daily goal on
+    // Home `NaN` — and 999 would be a goal nobody can reach.
+    writeJson(KEY, { dailyGoalMinutes: '10' })
+    expect(renderHook(() => usePreferences()).result.current.preferences.dailyGoalMinutes).toBe(10)
+    cleanup()
+    writeJson(KEY, { dailyGoalMinutes: 999 })
+    expect(renderHook(() => usePreferences()).result.current.preferences.dailyGoalMinutes).toBe(10)
+  })
+
+  it('still accepts every real value of a nullable preference', () => {
+    // The regression the first attempt at this introduced: checking a stored value's
+    // `typeof` against its DEFAULT's rejects `reminderHour: 19` outright, because the
+    // default is null and `typeof null` is 'object'.
+    writeJson(KEY, { reminderHour: 19, avatar: 'avatar-07', startRegion: 'EU' })
+    const { preferences } = renderHook(() => usePreferences()).result.current
+    expect(preferences.reminderHour).toBe(19)
+    expect(preferences.avatar).toBe('avatar-07')
+    expect(preferences.startRegion).toBe('EU')
+  })
+
+  it('rejects an hour that is not an hour', () => {
+    writeJson(KEY, { reminderHour: 47 })
+    expect(renderHook(() => usePreferences()).result.current.preferences.reminderHour).toBeNull()
+  })
+
+  it('keeps the good keys when one is bad', () => {
+    // Preferences are independent. Losing somebody's language because their avatar was
+    // malformed is a worse trade than the one this is fixing.
+    writeJson(KEY, { language: 'sv', avatar: 42 })
+    const { preferences } = renderHook(() => usePreferences()).result.current
+    expect(preferences.language).toBe('sv')
+    expect(preferences.avatar).toBeNull()
   })
 })

@@ -35,9 +35,31 @@ const MAX_ROWS = 500
 let snapshot: readonly PredictedAward[] | null = null
 const listeners = new Set<() => void>()
 
+/**
+ * A row `optimisticProgress` can add up.
+ *
+ * The check was `Array.isArray` and a cast, which is half of it: `pendingXp` is
+ * `reduce((sum, a) => sum + a.xp, 0)`, so a row whose `xp` came back as a string turns
+ * the user's visible total into `"0" + "10"` and one whose `xp` is null turns it into
+ * NaN — rendered as "NaN XP" on Home, on top of a real balance, until the queue drains.
+ * An array of the wrong things is not an array of these things.
+ *
+ * A bad ROW is dropped rather than the file, unlike the sync queue: these are independent
+ * predictions of independent lessons, and the lesson each one describes is still in the
+ * queue and still going to be paid. Losing a row under-reports XP for a few seconds;
+ * losing the file under-reports every unsynced lesson at once.
+ */
+const isAward = (value: unknown): value is PredictedAward => {
+  if (typeof value !== 'object' || value === null) return false
+  const a = value as PredictedAward
+  if (typeof a.lessonId !== 'string' || typeof a.localDay !== 'string') return false
+  if (!Number.isFinite(a.xp) || !Number.isFinite(a.coins)) return false
+  return a.deliveredAt === null || Number.isFinite(a.deliveredAt)
+}
+
 const load = (): readonly PredictedAward[] => {
   const stored = readJson<unknown>(KEY)
-  return Array.isArray(stored) ? (stored as readonly PredictedAward[]) : []
+  return Array.isArray(stored) ? stored.filter(isAward) : []
 }
 
 const read = (): readonly PredictedAward[] => (snapshot ??= load())
