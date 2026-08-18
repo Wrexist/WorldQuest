@@ -274,6 +274,41 @@ export const BALANCE = {
 
 ---
 
+## 5b. What is actually paid, 2026-08-18
+
+Every number in the table above is a decision. Not every one of them is a transaction,
+and the difference is invisible from the table — which is how three of these ran for
+months as prices and rewards nothing charged or granted. This section is the register.
+
+| Number | Paid by | State |
+|---|---|---|
+| `xp.*` and `coins.*` per answer, lesson, perfect, first-of-day | `record_lesson` | ✅ |
+| `xp.factMastered` | `gradeLesson`, in `record_lesson` | ✅ |
+| `xp/coins.streakMilestones` | `record_lesson`, `p_streak_xp` / `p_streak_coins` | ✅ |
+| `xp.dailyQuestTask`, `xp.dailyQuest`, `coins.dailyQuest` | `record_lesson`, from the pinned quest | ✅ **new** |
+| `prices.continueLesson` | `continue_lesson` RPC | ✅ **new** |
+| `prices.streakFreeze` | `purchase_freeze` RPC | ✅ |
+| `prices.streakRepair` | `repair_streak` RPC | ✅ **new** |
+| `prices.titleUnlock` | `purchase_item` RPC | ✅ |
+| `xp/coins.achievementByTier` | — | ⬜ **nothing pays these** |
+| `xp/coins.collectionComplete` | — | ⬜ no collection-complete producer |
+| `xp.friendActivated` | — | ⬜ no referral system |
+| `xp/coins.dailyChallenge` | — | ⬜ the daily challenge was removed |
+| `coins.leaguePodium` | — | ⬜ no weekly settlement job |
+| `prices.avatarItem`, `pet`, `mapSkin`, `theme`, `celebration` | — | ⬜ nothing to sell yet (see `shop/index.ts`) |
+| `prices.giftSurchargePct` | — | ⬜ no gifting |
+
+The four unpaid REWARDS are the ones worth watching, because a reward nobody grants is
+indistinguishable from a bug to the person who earned it. Achievements are the largest:
+thirty of them, unlockable today, paying nothing. The block comment beside
+`achievementByTier` in `balance.ts` says what building it properly costs and which
+shortcut must not be taken.
+
+`§8`'s simulation models the lesson rewards, the quest and `factMastered`, and none of
+the ⬜ rows — so the economy it validates is the economy that ships. That is deliberate
+and it is the reason this table exists: the moment one of those rows is built, the
+simulation has to gain it in the same change.
+
 ## 6. Anti-cheat
 
 The client is not trusted with anything that produces a reward.

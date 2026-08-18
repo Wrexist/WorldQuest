@@ -90,6 +90,30 @@ function parseBody(raw: unknown): SubmitBody | null {
   const b = raw as Record<string, unknown>
 
   if (typeof b.lessonId !== 'string' || !/^[0-9a-f-]{36}$/i.test(b.lessonId)) return null
+  /**
+   * `kind` reaches `record_lesson` as a `lesson_kind` enum, and was not checked.
+   *
+   * An unrecognised value is not a security hole — Postgres refuses it — but the refusal
+   * arrives as a 22P02 from inside the RPC, which this function reports as
+   * `persist_failed` with a 500. The client's queue classifies a 5xx as retryable, so a
+   * lesson carrying a bad kind burns all five attempts and PARKS: work the user actually
+   * did, held for ever, over a string. A 400 parks it immediately with an honest reason.
+   *
+   * The list is the enum's, and the shape is the reason it is worth writing out: a value
+   * that reaches a database enum is a value this parser should have decided about.
+   */
+  if (
+    typeof b.kind !== 'string' ||
+    !['lesson', 'quest', 'review', 'challenge', 'event'].includes(b.kind)
+  ) {
+    return null
+  }
+  // Free text on the way to a `text` column, so it is bounded rather than trusted. Nothing
+  // reads it back as an identifier; it is a label on a row, and an unbounded one is a
+  // client choosing how much of our storage to use.
+  if (b.topicId !== undefined && (typeof b.topicId !== 'string' || b.topicId.length > 128)) {
+    return null
+  }
   // `isFiniteMs`, not `typeof === 'number'`. The latter admits NaN, Infinity and 1e300,
   // all three of which reach `new Date(x).toISOString()` further down and throw a
   // RangeError there — an uncaught 500 any client could ask for.

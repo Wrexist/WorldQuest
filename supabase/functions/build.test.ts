@@ -267,6 +267,14 @@ describe('the endpoint does not trust the client', () => {
     expect(index).toMatch(/wasCorrect:[\s\S]{0,120}ANSWER_BY_FACT\[/)
   })
 
+  it('checks the lesson kind before it reaches a database enum', () => {
+    // Not a security hole — Postgres refuses an unknown enum value — but the refusal
+    // arrives as a 500, which the client's queue treats as retryable. So a lesson with a
+    // bad `kind` burned five attempts and PARKED: work the user actually did, held for
+    // ever, over a string. A 400 parks it immediately and says why.
+    expect(index).toMatch(/'lesson', 'quest', 'review', 'challenge', 'event'/)
+  })
+
   it('scores the quest from its own grading, never from the payload', () => {
     // The first version of `evaluateQuest` took `body` and read `answer.wasCorrect` off
     // it — the client's field, the one this whole file exists to ignore. It would have
