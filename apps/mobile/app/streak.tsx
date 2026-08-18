@@ -11,17 +11,23 @@
  * 0 on every row this product ever created, so the kindness rule inside `applyActivity`
  * that forgives one missed day had never once run for a real user.
  *
- * Repair is still absent, and honestly so. It needs `brokenOn` and `lastRepairAt`, and
- * nothing writes either: recording a break requires noticing a day with NO activity, and
- * that is the one thing a client cannot do for itself. (The engine function for it is
- * named in scripts/reachability.ts rather than here — that script greps this tree for
- * engine export names, so writing the symbol in a comment would make it look wired.)
+ * Repair is wired too, now, and the reason it was not is worth keeping: it needed
+ * `brokenOn` and `lastRepairAt`, and nothing wrote either, because recording a break
+ * means noticing a day with NO activity and that is the one thing a client cannot do for
+ * itself. `expire_streaks()` closed that gap when it started running hourly per user
+ * timezone — and from that moment the repair card was reachable with its button
+ * permanently disabled and no explanation beside it, which is worse than the honest
+ * absence it replaced. `repair_streak` is the endpoint behind it.
+ *
+ * The server takes no arguments at all. `restoreTo` below is for the button's WORDS —
+ * "Restore your 214-day streak" — and sending it would let a modified client name any
+ * number and buy it for 600 coins.
  */
 
 import { useCallback, useMemo, useState } from 'react'
 import { router } from 'expo-router'
 import { currentStreak, repairAvailability, type RecoveryState } from '@worldquest/engines'
-import { buyStreakFreeze } from '@worldquest/api'
+import { buyStreakFreeze, repairStreak } from '@worldquest/api'
 import { StreakScreen } from '../src/features/streak/StreakScreen.js'
 import { ContentGate } from '../src/components/ContentGate.js'
 import { useOptimisticProgress } from '../src/features/home/useOptimisticProgress.js'
@@ -114,6 +120,33 @@ export default function StreakRoute() {
       .finally(() => setBuyingFreeze(false))
   }, [buyingFreeze])
 
+  const [repairing, setRepairing] = useState(false)
+  const [repairNotice, setRepairNotice] = useState<'insufficient_funds' | 'failed' | null>(null)
+
+  const onRepair = useCallback(() => {
+    if (!isConfigured()) return
+    // The same guard the freeze needs and for the same reason: `repair_streak` has no
+    // idempotency key, so a second tap before the first answer arrives is a second
+    // purchase — 1,200 coins for one intended repair.
+    if (repairing) return
+    setRepairing(true)
+    setRepairNotice(null)
+
+    void repairStreak(supabase())
+      .then((result) => {
+        if (result.status === 'repaired') {
+          invalidateProgress()
+          return
+        }
+        // Only the two the server can answer after the tap get a notice. `cooldown`,
+        // `window_expired` and `not_broken` are decided before it and are already the
+        // card's own copy — announcing them again here would say the same thing twice.
+        setRepairNotice(result.status === 'insufficient_funds' ? 'insufficient_funds' : 'failed')
+      })
+      .catch(() => setRepairNotice('failed'))
+      .finally(() => setRepairing(false))
+  }, [repairing])
+
   // Every number on this screen comes from the server, so a fetch that has not
   // ARRIVED must not render either — `data?.x ?? 0` shows a streak of zero, a longest
   // of zero and no freezes to a user who has all three. That is the wrong-fact failure
@@ -147,7 +180,9 @@ export default function StreakRoute() {
         onBuyFreeze={isConfigured() ? onBuyFreeze : undefined}
         buyingFreeze={buyingFreeze}
         freezeNotice={freezeNotice}
-        onRepair={undefined}
+        onRepair={isConfigured() ? onRepair : undefined}
+        repairing={repairing}
+        repairNotice={repairNotice}
         // H7, scoped. Only these two controls need a server; the rest of this screen —
         // and the rest of the app — works exactly as well without one.
         offline={!online}

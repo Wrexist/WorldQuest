@@ -212,6 +212,7 @@ describe('shop_items agrees with the pack and the balance table', () => {
   it('prices every seeded consumable from the balance table', () => {
     expect(consumables.get('consumable.streak-freeze')).toBe(BALANCE.prices.streakFreeze)
     expect(consumables.get('consumable.continue-lesson')).toBe(BALANCE.prices.continueLesson)
+    expect(consumables.get('consumable.streak-repair')).toBe(BALANCE.prices.streakRepair)
   })
 
   it('never takes a price from the caller', () => {

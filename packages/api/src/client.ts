@@ -379,6 +379,43 @@ export async function buyStreakFreeze(client: WorldQuestClient): Promise<FreezeP
   return (data ?? { status: 'unauthorized' }) as FreezePurchase
 }
 
+export type StreakRepair =
+  | { readonly status: 'repaired'; readonly spent: number; readonly current: number; readonly coins: number }
+  | { readonly status: 'cooldown'; readonly availableInDays: number }
+  | {
+      readonly status:
+        | 'insufficient_funds'
+        | 'not_for_sale'
+        | 'no_streak'
+        | 'not_broken'
+        | 'nothing_to_restore'
+        | 'window_expired'
+        | 'unauthorized'
+    }
+
+/**
+ * Buy a broken streak back.
+ *
+ * Takes NOTHING — not the length to restore, not the price, not the date. `StreakScreen`
+ * has a `restoreTo` prop so the button can say "restore your 214-day streak"; sending it
+ * would let a modified client name any number and buy it for 600 coins, which is a
+ * leaderboard entry at cosmetic prices. The server reads `streaks.longest`.
+ *
+ * Every refusal is a STATUS rather than an error, because each one needs different words:
+ * "the window closed yesterday" and "you can do this again in 12 days" are different
+ * facts, and a generic failure invites the user to keep tapping.
+ */
+export async function repairStreak(client: WorldQuestClient): Promise<StreakRepair> {
+  // No second argument: the function takes none, and the generated type for a
+  // zero-argument RPC is `never` — `{}` is not assignable to it. `purchase_freeze` above
+  // passes `{}` because it has an ignored `p_price` parameter; this one has nothing to
+  // ignore, and adding a parameter so the call site could look the same would be a
+  // signature shaped by a type error.
+  const { data, error } = await client.rpc('repair_streak')
+  if (error) throw error
+  return (data ?? { status: 'unauthorized' }) as StreakRepair
+}
+
 export type ContinuePurchase =
   | { readonly status: 'purchased'; readonly spent: number; readonly coins: number }
   | { readonly status: 'already_paid'; readonly coins: number }

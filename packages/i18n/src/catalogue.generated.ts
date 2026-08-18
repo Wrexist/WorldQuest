@@ -659,6 +659,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "repair.expires": "Available for {hours, plural, one {# more hour} other {# more hours}}",
       "repair.cooldown": "Repair is available again in {days, plural, one {# day} other {# days}}",
       "repair.expired": "The window for this one has closed",
+      "repair.refused.funds": "Not quite enough coins for that yet",
+      "repair.refused.failed": "That didn't go through. Nothing was spent.",
       "coins": "{count, plural, one {# coin} other {# coins}}",
       "cantAfford": "You need {short} more",
       "earned": "Coins come from lessons, never from money"
@@ -1335,6 +1337,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "repair.expires": "Tillgänglig i {hours, plural, one {# timme till} other {# timmar till}}",
       "repair.cooldown": "Reparation går att göra igen om {days, plural, one {# dag} other {# dagar}}",
       "repair.expired": "Fönstret för den här har stängts",
+      "repair.refused.funds": "Inte riktigt tillräckligt med mynt än",
+      "repair.refused.failed": "Det gick inte igenom. Inga mynt drogs.",
       "coins": "{count, plural, one {# mynt} other {# mynt}}",
       "cantAfford": "Du behöver {short} till",
       "earned": "Mynt kommer från lektioner, aldrig från pengar"

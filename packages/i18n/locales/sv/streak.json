@@ -21,6 +21,8 @@
   "streak:repair.expires": "Tillgänglig i {hours, plural, one {# timme till} other {# timmar till}}",
   "streak:repair.cooldown": "Reparation går att göra igen om {days, plural, one {# dag} other {# dagar}}",
   "streak:repair.expired": "Fönstret för den här har stängts",
+  "streak:repair.refused.funds": "Inte riktigt tillräckligt med mynt än",
+  "streak:repair.refused.failed": "Det gick inte igenom. Inga mynt drogs.",
   "streak:coins": "{count, plural, one {# mynt} other {# mynt}}",
   "streak:cantAfford": "Du behöver {short} till",
   "streak:earned": "Mynt kommer från lektioner, aldrig från pengar"

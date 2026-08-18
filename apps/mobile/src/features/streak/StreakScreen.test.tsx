@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { FREEZE_PRICE, MAX_FREEZES, REPAIR_PRICE } from '@worldquest/engines'
 import { StreakScreen, type StreakScreenProps } from './StreakScreen.js'
 
@@ -187,6 +187,57 @@ describe('StreakScreen', () => {
     const { container } = render(<StreakScreen {...props()} />)
     expect(container.textContent).not.toMatch(/\bstreak:[a-z]/)
     expect(container.textContent).not.toMatch(/\{[a-zA-Z_]+[,}]/)
+  })
+})
+
+describe('StreakScreen — the repair actually happens', () => {
+  const broken = (over: Partial<StreakScreenProps> = {}): StreakScreenProps =>
+    props({
+      current: 1,
+      longest: 214,
+      restoreTo: 214,
+      repair: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 10 * 3_600_000 },
+      ...over,
+    })
+
+  it('offers a button that can be pressed', () => {
+    // The whole reason this block exists. `app/streak.tsx` passed `onRepair={undefined}`,
+    // and once `expire_streaks()` started recording a break the card became reachable with
+    // a permanently disabled button naming a 600-coin price and no reason beside it. A
+    // control that refuses every tap is worse than no control, and worst on the screen a
+    // user reaches after losing a 214-day streak.
+    const onRepair = vi.fn()
+    render(<StreakScreen {...broken({ onRepair })} />)
+    const button = screen.getByRole('button', { name: new RegExp(String(REPAIR_PRICE)) })
+    expect(button.getAttribute('aria-disabled')).not.toBe('true')
+    fireEvent.click(button)
+    expect(onRepair).toHaveBeenCalledOnce()
+  })
+
+  it('refuses the second tap while one is in flight', () => {
+    // `repair_streak` has no idempotency key, so two taps are two purchases — 1,200 coins
+    // for one intended repair. The route guards it too; the button says so.
+    render(<StreakScreen {...broken({ repairing: true })} />)
+    const button = screen.getByRole('button', { name: new RegExp(String(REPAIR_PRICE)) })
+    expect(button.getAttribute('aria-busy')).toBe('true')
+  })
+
+  it('says why a repair did not happen, out loud', () => {
+    // Announced with `role="alert"`, because the text is inserted after the tap — without
+    // it a screen-reader user is told nothing at all happened.
+    render(<StreakScreen {...broken({ repairNotice: 'insufficient_funds' })} />)
+    const alert = screen.getByRole('alert')
+    expect(alert.textContent).toMatch(/not quite enough coins/i)
+  })
+
+  it('does not restate a refusal the card already explains', () => {
+    // `cooldown` and `window_expired` are decided before the tap and are the card's own
+    // copy. A notice for them would say the same thing twice.
+    const { container } = render(
+      <StreakScreen {...props({ repair: { available: false, reason: 'window-expired' } })} />,
+    )
+    expect(screen.queryByRole('alert')).toBeNull()
+    expect(container.textContent).toMatch(/window for this one has closed/i)
   })
 })
 

@@ -129,6 +129,21 @@ export type StreakScreenProps = {
   readonly freezeNotice?: 'at_cap' | 'insufficient_funds' | 'failed' | null | undefined
   readonly onRepair?: (() => void) | undefined
   /**
+   * A repair is in flight. Same reasoning as `buyingFreeze`.
+   *
+   * `repair_streak` has no idempotency key either — a broken streak is not a thing with
+   * an id the client can mint — so the button refuses the second tap rather than charging
+   * 1,200 coins for one intended repair.
+   */
+  readonly repairing?: boolean | undefined
+  /**
+   * Why the last repair did not happen, if it did not.
+   *
+   * `cooldown` and `expired` are not here: those are decided before the tap and rendered
+   * as the card's own copy. These are the two the server can only answer afterwards.
+   */
+  readonly repairNotice?: 'insufficient_funds' | 'failed' | null | undefined
+  /**
    * H7, scoped to the two actions that genuinely need a server.
    *
    * Freezes and repairs are spends against a server-authoritative balance (ADR 0006).
@@ -165,6 +180,8 @@ export function StreakScreen({
   onBuyFreeze,
   buyingFreeze = false,
   freezeNotice = null,
+  repairing = false,
+  repairNotice = null,
   onRepair,
   offline = false,
 }: StreakScreenProps) {
@@ -238,6 +255,8 @@ export function StreakScreen({
             coins={coins}
             now={now}
             onRepair={onRepair}
+            repairing={repairing}
+            repairNotice={repairNotice}
             offline={offline}
           />
         </Card>
@@ -319,6 +338,8 @@ function RepairAction({
   coins,
   now,
   onRepair,
+  repairing,
+  repairNotice,
   offline,
 }: {
   readonly repair: RepairAvailability
@@ -326,6 +347,8 @@ function RepairAction({
   readonly coins: number
   readonly now: number
   readonly onRepair: (() => void) | undefined
+  readonly repairing: boolean
+  readonly repairNotice: 'insufficient_funds' | 'failed' | null
   readonly offline: boolean
 }) {
   const t = useT()
@@ -358,8 +381,22 @@ function RepairAction({
         label={t('streak:repair.buy', { count: restoreTo, price: repair.price })}
         variant="secondary"
         disabled={offline || !canAfford || onRepair === undefined}
+        // `loading` rather than a third clause in `disabled`, exactly as the freeze does:
+        // it keeps the label mounted so the button does not change width, and it sets
+        // `aria-busy`, which is the whole of what a screen reader learns from a control
+        // that has gone inert.
+        loading={repairing}
         onPress={() => onRepair?.()}
       />
+      {repairNotice !== null && (
+        // `role="alert"`: inserted after the tap, so without it the refusal is silent for
+        // a screen-reader user — who has just been told nothing at all happened.
+        <Text style={styles.note} role="alert">
+          {repairNotice === 'insufficient_funds'
+            ? t('streak:repair.refused.funds')
+            : t('streak:repair.refused.failed')}
+        </Text>
+      )}
       {offline && <Text style={styles.note}>{t('common:offline.action')}</Text>}
       {!offline && !canAfford && (
         <Text style={styles.note}>{t('streak:cantAfford', { short: repair.price - coins })}</Text>

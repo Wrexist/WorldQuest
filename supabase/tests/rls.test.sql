@@ -46,7 +46,13 @@ begin;
 -- `continue_lesson` the client-callable pair `purchase_item` and `purchase_freeze` have:
 -- it spends coins on behalf of a signed-in user, which is exactly those two's shape.
 -- 14 + 26 standalone assertions is 40.
-select plan(40);
+--
+-- 40 → 42. `repair_streak`, the fourth and last function a signed-in client may call. It
+-- gets the same pair, and it is the one whose ARGUMENT LIST is the security property:
+-- taking a `p_restore_to` would let a modified client name any streak length and buy it
+-- for 600 coins, so the function takes nothing and reads `streaks.longest` itself.
+-- 14 + 28 standalone assertions is 42.
+select plan(42);
 
 -- Every table that holds user data must have RLS on. This catches the classic
 -- failure: a new table added months from now with RLS quietly left off.
@@ -339,6 +345,31 @@ select is_empty(
         and p.proname = 'continue_lesson'
         and has_function_privilege('anon', p.oid, 'EXECUTE') $$,
   'continue_lesson is not callable by anon'
+);
+
+-- ── the streak repair ───────────────────────────────────────────────────────
+--
+-- The fourth client-callable function, and the one whose signature is the control: it
+-- takes NO arguments. `StreakScreen` has a `restoreTo` prop so the button can name the
+-- streak being bought back, and a parameter for it here would be a leaderboard entry at
+-- cosmetic prices.
+select ok(
+  (select has_function_privilege('authenticated', p.oid, 'EXECUTE')
+     from pg_proc p
+     join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public' and p.proname = 'repair_streak'),
+  'repair_streak is callable by a signed-in user'
+);
+
+select is_empty(
+  $$ select p.proname
+       from pg_proc p
+       join pg_namespace n on n.oid = p.pronamespace
+      where n.nspname = 'public'
+        and p.proname = 'repair_streak'
+        and (has_function_privilege('anon', p.oid, 'EXECUTE')
+             or p.pronargs > 0) $$,
+  'repair_streak takes no arguments and is not callable by anon'
 );
 
 -- ── the quest pin ───────────────────────────────────────────────────────────
