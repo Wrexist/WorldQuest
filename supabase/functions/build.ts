@@ -74,6 +74,11 @@ const FUNCTIONS: Record<string, FunctionSpec> = {
       'xp/balance.ts',
       'grading/index.ts',
       'time/index.ts',
+      // The progress half of the quest engine, and only that half. `quests/index.ts`
+      // composes a quest and needs the content types to do it; this function never
+      // composes one — it pays for the one the device composed and the first submission
+      // of the day pinned. See `quests/progress.ts` for why the file was split.
+      'quests/progress.ts',
     ],
     shared: ['submission-time.ts'],
     generated: () => [

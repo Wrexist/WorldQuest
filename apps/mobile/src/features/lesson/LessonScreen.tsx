@@ -382,6 +382,20 @@ export function LessonScreen({
   }, [status, index, itemMs, focus, length])
 
   const handleComplete = useCallback((state: LessonState, optimistic: GradeResult) => {
+    /**
+     * Today's quest, composed once and used twice.
+     *
+     * It goes UP with the submission as well as advancing the local copy below, because
+     * the reward is the server's to pay and the server cannot compose the quest itself:
+     * generation partitions facts by what was due at that moment, and these very answers
+     * have moved those dates. The first submission of a local day pins these five tasks
+     * server-side and everything that pays is decided from `review_log` and `lessons`.
+     *
+     * `memory` is the pre-lesson memory, which is exactly what the screen composed from —
+     * so what is sent is the quest the user was actually shown.
+     */
+    const quest = index === null ? null : todaysQuest(index.index, memory)
+
     // Enqueue, never await. A lesson finishing must not depend on the network —
     // the queue replays it whenever connectivity returns.
     enqueueLesson({
@@ -390,6 +404,20 @@ export function LessonScreen({
       startedAt: state.startedAt ?? Date.now(),
       answers: state.answers,
       heartsLost: state.heartsLost,
+      ...(quest !== null
+        ? {
+            quest: {
+              tasks: quest.tasks.map((task) => ({
+                slot: task.slot,
+                target: task.target,
+                factIds: task.factIds,
+                // `exactOptionalPropertyTypes` — `goal` is only on the perform slot, and
+                // spreading an explicit `undefined` is not the same as omitting it.
+                ...(task.goal !== undefined ? { goal: task.goal } : {}),
+              })),
+            },
+          }
+        : {}),
     })
     // Local, immediate, and independent of the queue. The weekly chart on Profile
     // must be right the moment the lesson ends — waiting for the server round trip
@@ -441,12 +469,9 @@ export function LessonScreen({
       track('achievement_unlocked', { achievement_id: unlock.achievementId, tier: unlock.tier })
     }
 
-    // Today's quest, advanced. Regenerated rather than held: it is deterministic per
-    // (user, day), and a second copy of the seed logic would mean the screen showed
-    // one quest while the lesson ticked another.
-    if (index !== null) {
-      const quest = todaysQuest(index.index, memory)
-
+    // Today's quest, advanced locally so the screen moves in the same frame. The server
+    // decides what it PAYS; this is the prediction, like the XP above.
+    if (quest !== null) {
       // The answers first, because that is the order they happened in, and then the
       // lesson. Either path can be the one that finishes the quest — the last
       // outstanding requirement is often a fact answer, and that loop's result used to

@@ -123,6 +123,14 @@ export type LessonSubmission = {
    * makes trusting it acceptable.
    */
   heartsLost: number
+  /**
+   * Today's quest as this device composed it. Absent on a lesson that carried none.
+   *
+   * Queued with the lesson rather than sent separately, so a quest finished in a tunnel
+   * is paid when the queue drains — by the same idempotency key, in the same transaction
+   * as the lesson that finished it.
+   */
+  quest?: { tasks: readonly { slot: string; target: number; factIds: readonly string[]; goal?: string }[] }
 }
 
 /**
@@ -283,6 +291,7 @@ async function send(mutation: QueuedMutation): Promise<void> {
     startedAt: submission.startedAt,
     answers: submission.answers,
     heartsLost: submission.heartsLost,
+    ...(submission.quest !== undefined ? { quest: submission.quest } : {}),
   })
 
   /**

@@ -100,6 +100,26 @@ export type SubmitLessonRequest = {
   /** Statistic, not a reward input — see the note in `apps/mobile/src/lib/sync.ts`. */
   heartsLost?: number
   clientVersion?: string
+  /**
+   * Today's quest as this device composed it, so the server can pay for it.
+   *
+   * A proposal rather than a claim, and the distinction is the whole design. The quest is
+   * composed on the device because it has to be playable offline, and the server cannot
+   * recompute it — generation partitions facts by what was DUE at that moment, and the
+   * answers in this very submission have moved those dates. So the first submission of a
+   * local day pins these tasks and every later one is scored against the pinned copy.
+   *
+   * Nothing here says what anything is WORTH, and nothing here says what was done. The
+   * server reads its own `review_log` and `lessons` for that.
+   */
+  quest?: {
+    tasks: readonly {
+      slot: string
+      target: number
+      factIds: readonly string[]
+      goal?: string
+    }[]
+  }
 }
 
 export type SubmitLessonResponse = {
@@ -156,6 +176,20 @@ export type SubmitLessonResponse = {
     extended: boolean
     freezeUsed: boolean
     reset: boolean
+  }
+  /**
+   * What the daily quest actually paid, decided and recorded server-side.
+   *
+   * Optional because a replayed submission returns the original lesson row without
+   * re-running the quest, and because a client too old to send a quest gets none back.
+   * Zero is a normal answer: it means every slot this lesson completed had already been
+   * paid for earlier today, which is what stops one quest paying five times.
+   */
+  quest?: {
+    xp: number
+    coins: number
+    slotsPaid: readonly string[]
+    bonusPaid: boolean
   }
   replayed: boolean
 }

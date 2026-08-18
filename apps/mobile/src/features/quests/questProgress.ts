@@ -23,8 +23,15 @@
  * ## The XP is still the server's
  *
  * `applyQuestEvent` returns `xpAwarded` and this deliberately drops it. The client
- * renders which tasks are done; the server re-derives the same quest when it grades
- * the lesson and awards the XP there (ADR 0006). Nothing here writes a balance.
+ * renders which tasks are done; the server pays (ADR 0006). Nothing here writes a balance.
+ *
+ * "The server re-derives the same quest when it grades the lesson" is what this said, and
+ * it was wrong twice over: the server had no quest logic at all, and it could not have
+ * re-derived one if it wanted to — generation partitions facts by what was DUE at that
+ * moment, and the answers in the submission have already moved those dates. What happens
+ * instead is that the quest goes UP with the lesson, the first submission of a local day
+ * pins it, and the award is decided from `review_log` and `lessons`. See
+ * `supabase/migrations/20260818100000_pay_daily_quest.sql`.
  */
 
 import { useSyncExternalStore } from 'react'

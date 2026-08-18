@@ -140,11 +140,22 @@ describe('submit-lesson bundle', () => {
       .replace(/\n{2,}/g, '\n')
 
   it('does not grow its code graph quietly', () => {
-    // 40 000 against ~37 500 today, and the 2.5 KB of headroom is calibrated rather than
-    // guessed: every engine module this function might plausibly acquire next is bigger
-    // than that. `selection` is 4.0 KB of code, `progression` 4.9, `lesson/machine` 5.7,
+    // 44 000 against ~42 600 today, and the headroom is calibrated rather than guessed:
+    // every engine module this function might plausibly acquire next is bigger than it.
+    // `selection` is 4.0 KB of code, `progression` 4.9, `lesson/machine` 5.7,
     // `content/index` 9.6. So vendoring any one of them fails this, which is precisely
     // the event worth stopping — while renaming a symbol or writing a paragraph does not.
+    //
+    // 40 000 → 44 000, deliberately, and this is the record of why. The function acquired
+    // `quests/progress.ts` and the code that pays a daily quest: the reward the balance
+    // table has funded since the quest engine was written and which nothing has ever
+    // paid. This test failed on that change, which is the test working — a budget is
+    // raised with a reason attached or it is not a budget.
+    //
+    // Only the PROGRESS half was vendored. `quests/index.ts` composes a quest and needs
+    // the content types to do it, and that is exactly the acquisition this number exists
+    // to refuse; the file was split so the server could take the half it runs. See
+    // `packages/engines/src/quests/progress.ts`.
     //
     // `_content/` is excluded, and the exclusion is the point rather than an escape. Those
     // files are generated DATA — the fact→entity answer key and the entity→facts index —
@@ -159,7 +170,7 @@ describe('submit-lesson bundle', () => {
     const code = files
       .filter((f) => !f.name.startsWith('_content/'))
       .reduce((sum, f) => sum + stripComments(f.content).length, 0)
-    expect(code).toBeLessThan(40_000)
+    expect(code).toBeLessThan(44_000)
   })
 
   it('keeps its generated data proportionate to the content', () => {
@@ -178,8 +189,12 @@ describe('submit-lesson bundle', () => {
     // Loose, and it is meant to be. What actually keeps this function cheap is the
     // assertion above and the one before it — no state machine, no content engine, no
     // `selection`, and `AnsweredItem` as a shim rather than an import.
+    //
+    // 120 000 → 130 000 alongside the code budget above, for the same change and with the
+    // same argument: raw bytes include the reasoning, and this repo's convention is that
+    // the reasoning is the part worth keeping.
     const total = files.reduce((sum, f) => sum + f.content.length, 0)
-    expect(total).toBeLessThan(120_000)
+    expect(total).toBeLessThan(130_000)
   })
 
   it('never accepts a client-supplied reward value', () => {
@@ -189,6 +204,27 @@ describe('submit-lesson bundle', () => {
     for (const forbidden of ['body.xp', 'body.coins', 'body.xpAwarded', 'body.mastery', 'body.streak']) {
       expect(entry, `entrypoint reads ${forbidden} from the request`).not.toContain(forbidden)
     }
+  })
+
+  it('vendors the real quest progress module, not a copy', () => {
+    // Same anti-drift rule as the grader and the balance table: the device advances the
+    // quest with `applyQuestEvent` and the server pays for it with the same function, so
+    // a second implementation would be two answers to "did they finish it".
+    const vendored = byName.get('_engines/quests/progress.ts')
+    expect(vendored).toBeDefined()
+    const source = readFileSync(
+      join(import.meta.dirname, '..', '..', 'packages', 'engines', 'src', 'quests', 'progress.ts'),
+      'utf8',
+    )
+    expect(vendored).toBe(source.replace(/(from\s+['"])(\.[^'"]*?)\.js(['"])/g, '$1$2.ts$3'))
+  })
+
+  it('does not vendor quest GENERATION, which needs the content engine', () => {
+    // The split exists for this budget. Composing a quest reads a `ContentIndex`; paying
+    // for one reads the pinned tasks and the day's evidence. Vendoring generation to
+    // reach `applyQuestEvent` would drag the content types in behind it.
+    expect(files.map((f) => f.name)).not.toContain('_engines/quests/index.ts')
+    expect(files.map((f) => f.name)).not.toContain('_engines/content/types.ts')
   })
 })
 
@@ -229,6 +265,28 @@ describe('the endpoint does not trust the client', () => {
 
   it('recomputes correctness from the vendored key', () => {
     expect(index).toMatch(/wasCorrect:[\s\S]{0,120}ANSWER_BY_FACT\[/)
+  })
+
+  it('scores the quest from its own grading, never from the payload', () => {
+    // The first version of `evaluateQuest` took `body` and read `answer.wasCorrect` off
+    // it — the client's field, the one this whole file exists to ignore. It would have
+    // been ignored for the lesson's XP and believed for the quest's, which is 100 XP and
+    // 25 coins a day for anyone who edited a boolean.
+    expect(index).toMatch(/evaluateQuest\([\s\S]{0,400}retimed\.answers,/)
+    expect(index).not.toMatch(/for \(const answer of body\.answers\)/)
+  })
+
+  it('decides the quest date itself rather than taking one', () => {
+    // The date is the primary key of the row recording what has been paid. A caller who
+    // could choose it could collect a daily quest once a day per date it invented.
+    expect(index).not.toMatch(/body\.quest\.date|quest\.date\b/)
+    expect(index).toMatch(/new Intl\.DateTimeFormat\('en-CA', \{ timeZone \}\)/)
+  })
+
+  it('takes the quest rates from the balance table, not the request', () => {
+    expect(index).toMatch(/p_quest_task_xp: TASK_XP/)
+    expect(index).toMatch(/p_quest_bonus_xp: COMPLETION_BONUS/)
+    expect(index).toMatch(/p_quest_bonus_coins: BALANCE\.coins\.dailyQuest/)
   })
 
   it('treats an unanswered question as not correct', () => {

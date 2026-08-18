@@ -25,42 +25,18 @@
 
 import type { Rng } from '../shared/index.js'
 import { shuffle } from '../shared/index.js'
-import type { ContentIndex, EntityId } from '../content/types.js'
+import type { ContentIndex } from '../content/types.js'
 import type { FactId, MemoryState } from '../learning/types.js'
-import { BALANCE } from '../xp/balance.js'
 import type { IsoDate } from '../time/index.js'
+import type { DailyQuest, PerformGoal, QuestTask, Slot } from './progress.js'
 
-/** Five slots, in this order, every day. The shape is the recognisable part. */
-export const SLOTS = ['locate', 'recognise', 'recall', 'discover', 'perform'] as const
-export type Slot = (typeof SLOTS)[number]
-
-/** What slot 5 can ask for. Scaled to recent accuracy, never to a target we set. */
-export type PerformGoal = 'perfect_lesson' | 'speed_round' | 'streak_keeper'
-
-export type QuestTask = {
-  readonly slot: Slot
-  /** How many of the thing. Always small enough to finish in one sitting. */
-  readonly target: number
-  /** Facts this task draws on. Empty for `perform`, which is about how, not what. */
-  readonly factIds: readonly FactId[]
-  /** Only on `perform`. */
-  readonly goal?: PerformGoal
-  readonly progress: number
-  readonly complete: boolean
-}
-
-export type DailyQuest = {
-  /** `${userId}:${localDate}` — the idempotency key, so a replay is a no-op. */
-  readonly id: string
-  readonly date: IsoDate
-  readonly tasks: readonly QuestTask[]
-  readonly complete: boolean
-  /** Awarded once, when the fifth task completes. */
-  readonly bonusClaimed: boolean
-}
-
-export const TASK_XP = BALANCE.xp.dailyQuestTask
-export const COMPLETION_BONUS = BALANCE.xp.dailyQuest
+/**
+ * The progress half, re-exported so `@worldquest/engines` still has one quest surface.
+ *
+ * Callers import `applyQuestEvent` and `generateDailyQuest` from the same place they
+ * always did; only the edge bundle cares that they are two files.
+ */
+export * from './progress.js'
 
 /**
  * Facts per review slot.
@@ -172,105 +148,3 @@ function performTask(recentAccuracy: number): QuestTask {
   return { slot: 'perform', target: 1, factIds: [], goal, progress: 0, complete: false }
 }
 
-// ── progress ────────────────────────────────────────────────────────────────
-
-export type QuestEvent =
-  | { readonly type: 'fact_answered'; readonly factId: FactId; readonly correct: boolean }
-  | { readonly type: 'lesson_completed'; readonly accuracy: number; readonly durationMs: number }
-  | { readonly type: 'entity_seen'; readonly entityId: EntityId }
-
-export type ProgressResult = {
-  readonly quest: DailyQuest
-  /** Tasks completed by THIS event — the celebration list. */
-  readonly completed: readonly Slot[]
-  /** XP earned by this event, including the all-five bonus. */
-  readonly xpAwarded: number
-}
-
-/** A speed round is a lesson finished inside this. Generous — it is a goal, not a trap. */
-export const SPEED_ROUND_MS = 90_000
-
-/**
- * Apply one event.
- *
- * Incremental and idempotent-ish: a task already complete is never advanced again, so
- * replaying the same lesson submission cannot award the bonus twice.
- */
-export function applyQuestEvent(quest: DailyQuest, event: QuestEvent): ProgressResult {
-  const completed: Slot[] = []
-
-  const tasks = quest.tasks.map((task) => {
-    if (task.complete) return task
-
-    const advanced = advanceTask(task, event)
-    if (advanced === task) return task
-
-    if (advanced.complete) completed.push(advanced.slot)
-    return advanced
-  })
-
-  const allComplete = tasks.every((t) => t.complete)
-  const earnsBonus = allComplete && !quest.bonusClaimed
-
-  return {
-    quest: {
-      ...quest,
-      tasks,
-      complete: allComplete,
-      bonusClaimed: quest.bonusClaimed || allComplete,
-    },
-    completed,
-    xpAwarded: completed.length * TASK_XP + (earnsBonus ? COMPLETION_BONUS : 0),
-  }
-}
-
-function advanceTask(task: QuestTask, event: QuestEvent): QuestTask {
-  const bump = (by: number): QuestTask => {
-    const progress = Math.min(task.target, task.progress + by)
-    return { ...task, progress, complete: progress >= task.target }
-  }
-
-  switch (event.type) {
-    case 'fact_answered':
-      // Only a CORRECT answer advances a review slot. Counting wrong answers would
-      // make the quest a measure of attendance rather than of learning.
-      if (!event.correct) return task
-      if (task.slot === 'perform') return task
-      if (!task.factIds.includes(event.factId)) return task
-      return bump(1)
-
-    case 'entity_seen':
-      return task
-
-    case 'lesson_completed': {
-      if (task.slot !== 'perform') return task
-      switch (task.goal) {
-        case 'perfect_lesson':
-          return event.accuracy >= 1 ? bump(1) : task
-        case 'speed_round':
-          return event.durationMs <= SPEED_ROUND_MS ? bump(1) : task
-        case 'streak_keeper':
-          return bump(1)
-        default:
-          return task
-      }
-    }
-  }
-}
-
-// ── expiry ──────────────────────────────────────────────────────────────────
-
-/**
- * Whether a quest belongs to a day that has passed.
- *
- * There is deliberately no `penalty`, no `missedCount`, and nothing to return about a
- * lapsed quest beyond the fact that it lapsed. A missed daily quest is never mentioned
- * again — no make-up guilt, no "you missed 3 quests this week". That mechanic is what
- * turns a game into an obligation, and this product does not use it.
- */
-export const hasExpired = (quest: DailyQuest, today: IsoDate): boolean => quest.date < today
-
-/** Progress across the five slots, for the ring on Home. */
-export function questProgress(quest: DailyQuest): { done: number; total: number } {
-  return { done: quest.tasks.filter((t) => t.complete).length, total: quest.tasks.length }
-}

@@ -13,6 +13,7 @@ import {
   generateDailyQuest,
   hasExpired,
   questProgress,
+  replayQuest,
   type DailyQuest,
 } from './index.js'
 
@@ -292,3 +293,68 @@ function completeEverything(quest: DailyQuest): DailyQuest {
   return applyQuestEvent(current, { type: 'lesson_completed', accuracy: 1, durationMs: 10_000 })
     .quest
 }
+
+describe('replayQuest — what the server pays for', () => {
+  const pinned = generateDailyQuest({
+    userId: 'u1',
+    date: '2026-08-18',
+    index,
+    memory: new Map(),
+    now: NOW,
+    rng: seededRng(7),
+    recentAccuracy: 0.5, // streak_keeper: any finished lesson
+  })
+
+  it('starts from zero, whatever progress the quest arrived carrying', () => {
+    // The device's progress is a local cache; the server's evidence is the truth. A
+    // quest handed over claiming four complete tasks must not be paid for them.
+    const forged: DailyQuest = {
+      ...pinned,
+      tasks: pinned.tasks.map((t) => ({ ...t, progress: t.target, complete: true })),
+      complete: true,
+    }
+    const replayed = replayQuest(forged, [])
+    expect(replayed.tasks.every((t) => !t.complete)).toBe(true)
+    expect(replayed.complete).toBe(false)
+  })
+
+  it('completes a slot from the evidence, and no more than once per fact', () => {
+    const task = pinned.tasks[0]!
+    const oneFact = task.factIds[0]!
+    // The same fact five times is one fact. A review slot asks for four FACTS, and
+    // `applyQuestEvent` on its own would count all five — see the note on `replayQuest`
+    // for why the dedupe lives on the paying side.
+    const repeated = Array.from({ length: 5 }, () => ({
+      type: 'fact_answered' as const,
+      factId: oneFact,
+      correct: true,
+    }))
+    expect(replayQuest(pinned, repeated).tasks[0]!.progress).toBe(1)
+
+    const distinct = task.factIds.map((factId) => ({
+      type: 'fact_answered' as const,
+      factId,
+      correct: true,
+    }))
+    expect(replayQuest(pinned, distinct).tasks[0]!.complete).toBe(true)
+  })
+
+  it('is idempotent — the same day replayed twice pays the same', () => {
+    const events = pinned.tasks.flatMap((t) =>
+      t.factIds.map((factId) => ({ type: 'fact_answered' as const, factId, correct: true })),
+    )
+    const once = replayQuest(pinned, events)
+    const twice = replayQuest(pinned, [...events, ...events])
+    expect(twice.tasks.map((t) => t.progress)).toEqual(once.tasks.map((t) => t.progress))
+  })
+
+  it('never counts a wrong answer', () => {
+    const task = pinned.tasks[0]!
+    const wrong = task.factIds.map((factId) => ({
+      type: 'fact_answered' as const,
+      factId,
+      correct: false,
+    }))
+    expect(replayQuest(pinned, wrong).tasks[0]!.progress).toBe(0)
+  })
+})

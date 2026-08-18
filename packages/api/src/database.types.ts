@@ -82,6 +82,41 @@ export type Database = {
           },
         ]
       }
+      daily_quests: {
+        Row: {
+          bonus_paid: boolean
+          created_at: string
+          date: string
+          paid_slots: string[]
+          tasks: Json
+          user_id: string
+        }
+        Insert: {
+          bonus_paid?: boolean
+          created_at?: string
+          date: string
+          paid_slots?: string[]
+          tasks: Json
+          user_id: string
+        }
+        Update: {
+          bonus_paid?: boolean
+          created_at?: string
+          date?: string
+          paid_slots?: string[]
+          tasks?: Json
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'daily_quests_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       entitlements: {
         Row: {
           expires_at: string | null
@@ -732,6 +767,7 @@ export type Database = {
     Functions: {
       continue_lesson: { Args: { p_continue_id: string }; Returns: Json }
       expire_streaks: { Args: never; Returns: number }
+      pin_daily_quest: { Args: { p_date: string; p_tasks: Json; p_user_id: string }; Returns: Json }
       purchase_freeze: { Args: { p_price?: number }; Returns: Json }
       purchase_item: { Args: { p_item_id: string }; Returns: Json }
       record_lesson: {
@@ -745,6 +781,12 @@ export type Database = {
           p_kind: Database['public']['Enums']['lesson_kind']
           p_lesson_id: string
           p_max_per_hour: number
+          p_quest_bonus_coins?: number
+          p_quest_bonus_xp?: number
+          p_quest_complete?: boolean
+          p_quest_date?: string
+          p_quest_slots?: string[]
+          p_quest_task_xp?: number
           p_reviews: Json
           p_started_at: string
           p_streak: Json
