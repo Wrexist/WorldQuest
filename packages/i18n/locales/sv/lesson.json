@@ -25,6 +25,7 @@
   "lesson:summary.stat.stronger": "Starkare fakta",
   "lesson:summary.stat.stronger.a11y": "{count, plural, =0 {Inga fakta steg en nivå den här gången} one {# faktum steg en nivå} other {# fakta steg en nivå}}",
   "lesson:summary.practised": "Här var du nyss",
+  "lesson:summary.unlocked": "{count, plural, one {Ny utmärkelse} other {Nya utmärkelser}}",
   "lesson:hearts.out.title": "Det var sista hjärtat",
   "lesson:hearts.out.body": "Du behåller allt du svarade rätt på. Nästa lektion börjar med fulla hjärtan.",
   "lesson:hearts.out.revive": "Fortsätt · {price}",

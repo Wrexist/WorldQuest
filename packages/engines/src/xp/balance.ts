@@ -46,6 +46,27 @@ export const BALANCE = {
     /** Paid only when the invitee completes 5 lessons across 3 days (anti-multi-account). */
     friendActivated: 100,
     streakMilestones: { 7: 50, 30: 200, 100: 500, 365: 1000 },
+    /**
+     * NOT PAID BY ANYTHING TODAY, and this note is here because the number reads as if
+     * it were.
+     *
+     * An achievement unlocks, `queueUnlocks` holds it, and the lesson summary shows the
+     * medal — but no XP and no coins move, because nothing evaluates achievements
+     * server-side. `docs/systems/achievements.md §5` specifies exactly that ("in the same
+     * edge function that grades a lesson"), and it does not exist: the client evaluates
+     * from server-derived events and the client may not write a balance (ADR 0006).
+     *
+     * The honest options are to build the server evaluator or to delete these numbers,
+     * and the first is the right one — an achievement is the only long-horizon reward in
+     * the economy. It is a real piece of work: the server holds no achievement state, so
+     * it means a progress table, the catalogue vendored into the bundle, and the
+     * achievements screen reading the server's map rather than the device's. Half of it —
+     * a client-claimed award endpoint — would be worse than nothing, because it would let
+     * the client decide what it is paid.
+     *
+     * `engines:simulate` does not model this income, so the economy it validates is the
+     * one that ships. That is why the gap is a stated debt rather than a live defect.
+     */
     achievementByTier: { bronze: 25, silver: 50, gold: 100, platinum: 250, legendary: 500 },
 
     /**
@@ -83,6 +104,7 @@ export const BALANCE = {
     dailyChallenge: 15,
     collectionComplete: 150,
     streakMilestones: { 7: 50, 30: 200, 100: 500 },
+    /** Unpaid, for the reason written out beside `xp.achievementByTier` above. */
     achievementByTier: { bronze: 10, silver: 25, gold: 50, platinum: 100, legendary: 200 },
     leaguePodium: { 1: 300, 2: 200, 3: 100 },
   },

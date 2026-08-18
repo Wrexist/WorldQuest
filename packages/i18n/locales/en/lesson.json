@@ -49,6 +49,8 @@
   "lesson:summary.stat.stronger.a11y__note": "Spoken label for the 'facts stronger' tile. The zero case is neutral, never disappointed — reviewing something you already know is a normal lesson.",
   "lesson:summary.practised": "Where you just were",
   "lesson:summary.practised__note": "Heading over the row of flags for the countries in the lesson just finished. Deliberately places the user IN the world rather than reporting on a score. Max 22 characters.",
+  "lesson:summary.unlocked": "{count, plural, one {New badge} other {New badges}}",
+  "lesson:summary.unlocked__note": "Heading above the achievements unlocked by this lesson, on the summary screen. ICU plural — usually one, occasionally two. \"New\" rather than \"Unlocked\" because it is a thing you now have, not a door that opened.",
   "lesson:hearts.out.title": "That's the last heart",
   "lesson:hearts.out.title__note": "Heading when hearts run out mid-lesson. States the fact. Never 'You failed' or 'Game over' — the user has not failed, the lesson has ended early. Max 28 characters.",
   "lesson:hearts.out.body": "You keep everything you got right. The next lesson starts with a full set.",

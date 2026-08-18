@@ -40,6 +40,7 @@ import {
 import { tContent, useT, type TranslationKey } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 import { AchievementMedal } from './AchievementMedal.js'
+import { achievementNameKey } from './useAchievements.js'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 
 const TIER_LABEL: Record<Tier, TranslationKey> = {
@@ -91,7 +92,9 @@ export type AchievementsScreenProps = {
  * typo'd key — there is no key to typo. `tContent` because the id comes from a pack
  * and is validated by `pnpm content:validate` rather than by the compiler.
  */
-const nameKey = (id: string): string => `achievements:${id.slice('ach.'.length)}.name`
+// Imported rather than declared: the lesson summary derives the same key, and the rule
+// lives with the catalogue it describes.
+const nameKey = achievementNameKey
 const descKey = (id: string): string => `achievements:${id.slice('ach.'.length)}.desc`
 
 export function AchievementsScreen({ rows, onStartLesson, onBack }: AchievementsScreenProps) {

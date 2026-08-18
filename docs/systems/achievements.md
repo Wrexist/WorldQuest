@@ -141,6 +141,20 @@ to evaluate on every answer.
 
 ## 5. Where it runs
 
+> **Status, 2026-08-18: the server half of this section is NOT built.** Achievements are
+> evaluated on the device, from events the server produced — `masteryChanges`, the
+> authoritative streak, `overdueCleared`, `entityMastered` — so the unlock is not a
+> client's guess about learning. But nothing evaluates the catalogue server-side, so
+> `BALANCE.xp.achievementByTier` and `BALANCE.coins.achievementByTier` are paid by
+> nothing. The unlock is real and visible; the XP and coins behind it are not.
+>
+> Building it means a progress table, the catalogue vendored into `submit-lesson`, and
+> the achievements screen reading the server's map instead of the device's. A
+> client-claimed award endpoint would be quicker and is the one thing that must not be
+> done: it would let the client decide what it is paid, which is the whole of what this
+> section is about. Recorded in `balance.ts` beside the numbers, so the next reader of
+> either finds the other.
+
 **Server-side, in the same edge function that grades a lesson.** Achievements award XP
 and coins, so a client that could unlock them could mint currency.
 
@@ -184,6 +198,18 @@ Rules:
 **Unlock moment:** full-screen celebration (`motion.celebrate`, 900 ms), medal, name,
 reward, haptic, sound. Dismissible from frame one. If several unlock at once, queue
 them with a maximum of **2** celebrations, then a summary card.
+
+> **What is built, 2026-08-18: the medal appears on the lesson summary**, under a "New
+> badges" heading, not as a full-screen celebration. Before that an unlock produced an
+> analytics event and nothing else — the whole reward loop for thirty achievements was a
+> row in a dashboard nobody had built yet.
+>
+> The queue is the part worth keeping either way (`features/achievements/pending.ts`).
+> Most unlocks are decided by the SERVER and arrive when the sync queue drains, which for
+> a lesson finished in a tunnel is on the walk home with the app in the background — there
+> is no screen mounted to celebrate anything, so an unlock is recorded and shown at the
+> end of the next lesson. A full-screen celebration can be built on top of that queue
+> without changing anything that produces an unlock.
 
 ## 8. Design rules
 

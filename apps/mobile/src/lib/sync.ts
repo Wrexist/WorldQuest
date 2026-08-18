@@ -26,6 +26,7 @@ import { invalidateProgress } from './query.js'
 import { readJson, writeJson } from './storage.js'
 import { markAwardDelivered } from './awards.js'
 import { recordServerOutcome } from '../features/achievements/progress.js'
+import { queueUnlocks } from '../features/achievements/pending.js'
 import { track } from './analytics.js'
 
 const QUEUE_KEY = 'sync.queue.v1'
@@ -374,13 +375,26 @@ function reconcile(result: SubmitLessonResponse): void {
      * on a prediction and taking it back, and a badge that is revoked is worse than one
      * that is late.
      */
-    for (const unlock of recordServerOutcome({
+    const unlocked = recordServerOutcome({
       masteryChanges: result.masteryChanges ?? [],
       streak: result.streak?.current ?? null,
       overdueCleared: result.overdueCleared ?? 0,
       entityMastered: result.entityMastered ?? [],
       at: Date.now(),
-    })) {
+    })
+
+    /**
+     * Held for the next screen that can celebrate them.
+     *
+     * This is the path that made a queue necessary rather than a callback. Most
+     * achievements are decided HERE, on a flush that may be happening in the background
+     * on the walk home from the tunnel where the lesson was finished — there is no screen
+     * mounted to tell, and firing a celebration at one would reach nobody. Before this,
+     * every one of these unlocks was an analytics event and nothing else.
+     */
+    queueUnlocks(unlocked.map((u) => ({ achievementId: u.achievementId, tier: u.tier })))
+
+    for (const unlock of unlocked) {
       track('achievement_unlocked', { achievement_id: unlock.achievementId, tier: unlock.tier })
     }
   } catch {
