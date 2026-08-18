@@ -16,9 +16,10 @@
  *
  * ## What it must never be
  *
- * **No countdown.** Hearts do regenerate on a timer elsewhere, but showing "45:00"
- * here would be both a lie — the next lesson does not wait for it — and exactly the
- * pressure this product refuses to apply to a child.
+ * **No countdown.** There is no regeneration clock anywhere in this product — the
+ * balance table deleted `regenMinutes` because it and `resetPerLesson` are two designs
+ * for one mechanic — so "45:00" here would be a lie about a system that does not exist,
+ * as well as exactly the pressure this product refuses to apply to a child.
  *
  * **No way to buy coins.** Coins come from lessons, never from money, and the moment a
  * user most wants coins is the moment that promise is most tempting to break.
@@ -42,13 +43,39 @@ import { Art } from '../../components/Art.js'
 export type OutOfHeartsProps = {
   /** The user's coin balance. Server-authoritative; passed down from the route. */
   readonly coins: number
+  /**
+   * Whether there is a question left to resume at.
+   *
+   * False when the hearts ran out on the LAST item, and then the offer is not made at
+   * all. `REVIVE` resumes at `index + 1`, so buying it there bought a question that
+   * does not exist — the machine now refuses, and this is the half of the fix that
+   * belongs on screen: the reassurance and the way out stay, the purchase goes. A
+   * button that takes 250 coins for nothing is worse than no button.
+   */
+  readonly canRevive: boolean
+  /**
+   * No connection, so the spend cannot reach the server.
+   *
+   * The offer is withheld rather than made and quietly unbilled: a continue is consumed
+   * the instant it is taken, so unlike a cosmetic there is no reconcile that can correct
+   * it afterwards, and an offline user with coins would have unlimited free continues.
+   * Same treatment the shop and the streak freeze already give a purchase that needs a
+   * server, and the same string.
+   */
+  readonly offline: boolean
   /** Spend coins and resume at the next question. */
   readonly onRevive: () => void
   /** End the lesson here, keeping every answer already given. */
   readonly onFinish: () => void
 }
 
-export function OutOfHearts({ coins, onRevive, onFinish }: OutOfHeartsProps) {
+export function OutOfHearts({
+  coins,
+  canRevive,
+  offline,
+  onRevive,
+  onFinish,
+}: OutOfHeartsProps) {
   const t = useT()
   const price = BALANCE.prices.continueLesson
   const canAfford = coins >= price
@@ -72,19 +99,23 @@ export function OutOfHearts({ coins, onRevive, onFinish }: OutOfHeartsProps) {
           has still been told the thing that stops them worrying. */}
       <Text style={styles.body}>{t('lesson:hearts.out.body')}</Text>
 
-      {canAfford ? (
-        <Button
-          label={t('lesson:hearts.out.revive', { price })}
-          variant="secondary"
-          onPress={onRevive}
-        />
-      ) : (
-        // The gap, stated once, ending on the reassurance rather than the shortfall.
-        // No store link, no second ask.
-        <Text style={styles.note}>
-          {t('lesson:hearts.out.cantAfford', { short: price - coins })}
-        </Text>
-      )}
+      {canRevive && offline && <Text style={styles.note}>{t('common:offline.action')}</Text>}
+
+      {canRevive &&
+        !offline &&
+        (canAfford ? (
+          <Button
+            label={t('lesson:hearts.out.revive', { price })}
+            variant="secondary"
+            onPress={onRevive}
+          />
+        ) : (
+          // The gap, stated once, ending on the reassurance rather than the shortfall.
+          // No store link, no second ask.
+          <Text style={styles.note}>
+            {t('lesson:hearts.out.cantAfford', { short: price - coins })}
+          </Text>
+        ))}
 
       {/* Always present, and never framed as giving up. The lesson is graded on what
           was answered, so stopping here costs the user nothing they earned. */}

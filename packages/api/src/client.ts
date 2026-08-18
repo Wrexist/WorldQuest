@@ -345,6 +345,30 @@ export async function buyStreakFreeze(client: WorldQuestClient): Promise<FreezeP
   return (data ?? { status: 'unauthorized' }) as FreezePurchase
 }
 
+export type ContinuePurchase =
+  | { readonly status: 'purchased'; readonly spent: number; readonly coins: number }
+  | { readonly status: 'already_paid'; readonly coins: number }
+  | { readonly status: 'insufficient_funds' | 'not_for_sale' | 'unauthorized' }
+
+/**
+ * Pay to carry on after running out of hearts mid-lesson.
+ *
+ * `continueId` is a UUID the client mints per OFFER, not per lesson: a lesson can run
+ * out of hearts more than once, so keying on the lesson would classify a genuine second
+ * continue as a replay and hand it over free. Per-offer, a double-tap is a replay and a
+ * second continue is not.
+ *
+ * The price is `shop_items`', not the caller's, exactly as for a cosmetic or a freeze.
+ */
+export async function buyLessonContinue(
+  client: WorldQuestClient,
+  continueId: string,
+): Promise<ContinuePurchase> {
+  const { data, error } = await client.rpc('continue_lesson', { p_continue_id: continueId })
+  if (error) throw error
+  return (data ?? { status: 'unauthorized' }) as ContinuePurchase
+}
+
 // ── accounts ────────────────────────────────────────────────────────────────
 
 /**

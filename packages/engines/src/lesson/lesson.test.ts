@@ -10,6 +10,7 @@ import { MIN_CREDIBLE_ANSWER_MS, type MemoryState } from '../learning/types.js'
 import { composeLesson } from './compose.js'
 import {
   accuracy,
+  canRevive,
   currentQuestion,
   initialState,
   isFinished,
@@ -193,6 +194,44 @@ describe('hearts', () => {
     expect(s.phase).toBe('presenting')
     expect(s.hearts).toBe(BALANCE.hearts.max)
     expect(s.outOfHearts).toBe(false)
+  })
+
+  /**
+   * The soft-lock. Running out of hearts on the FINAL question and then reviving left
+   * `index` past the end of the queue with the phase still `presenting`, so
+   * `currentQuestion` was null — which `LessonScreen` renders as a loading spinner with
+   * no back gesture, no summary and no submission. The user had paid for it, and the
+   * whole lesson was lost.
+   */
+  it('sends a revive with nothing left to resume to the summary', () => {
+    // Five questions, five wrong answers: the last one is what empties the hearts, so
+    // `index` is on the final item when the offer would be made.
+    let s = started(makeQuestions(BALANCE.hearts.max, false))
+    for (let i = 0; i < BALANCE.hearts.max; i++) {
+      s = answerWrongly(s, T0 + (i + 1) * 1_000)
+      if (!s.outOfHearts) s = transition(s, { type: 'CONTINUE', now: T0 + (i + 1) * 1_500 })
+    }
+    expect(s.outOfHearts).toBe(true)
+    expect(s.index).toBe(s.questions.length - 1)
+    expect(canRevive(s)).toBe(false)
+
+    s = transition(s, { type: 'REVIVE', now: T0 + 70_000 })
+    expect(s.phase).toBe('summary')
+    expect(isFinished(s)).toBe(true)
+    // Never a presented question that does not exist.
+    expect(currentQuestion(s)).not.toBeNull()
+  })
+
+  it('offers the revive only while a question is left to resume at', () => {
+    let s = started(makeQuestions(20, false))
+    expect(canRevive(s)).toBe(false) // hearts intact — nothing to revive from
+    for (let i = 0; i < BALANCE.hearts.max; i++) {
+      s = answerWrongly(s, T0 + (i + 1) * 1_000)
+      if (!s.outOfHearts) s = transition(s, { type: 'CONTINUE', now: T0 + (i + 1) * 1_500 })
+    }
+    expect(canRevive(s)).toBe(true)
+    s = transition(s, { type: 'REVIVE', now: T0 + 70_000 })
+    expect(currentQuestion(s)).not.toBeNull()
   })
 
   it('never charges a heart when hearts are disabled', () => {

@@ -112,7 +112,11 @@ export default function SettingsRoute() {
   return (
     <SettingsScreen
       // The gear on Profile was a one-way door. See `SettingsScreenProps.onBack`.
-      onBack={() => router.back()}
+      // `canGoBack()` first, and a replace when there is nothing to go back to.
+      // Every one of these routes is deep-linkable — a notification, a shared link,
+      // a cold start straight onto it — and `router.back()` on an empty stack is a
+      // no-op, so the only control on the screen did nothing at all.
+      onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))}
       version={Constants.expoConfig?.version ?? '0.0.0'}
       preferences={preferences}
       onChange={set}

@@ -24,7 +24,11 @@ export default function QuestRoute() {
     <QuestIntro
       quest={quest}
       resetsIn={untilReset}
-      onClose={() => router.back()}
+      // `canGoBack()` first, and a replace when there is nothing to go back to.
+      // Every one of these routes is deep-linkable — a notification, a shared link,
+      // a cold start straight onto it — and `router.back()` on an empty stack is a
+      // no-op, so the only control on the screen did nothing at all.
+      onClose={() => (router.canGoBack() ? router.back() : router.replace('/'))}
       // `replace`, not `push`: the cover page has done its job once the lesson starts,
       // and leaving it on the stack would put it between the summary and Home on the
       // way back out.

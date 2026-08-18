@@ -730,6 +730,7 @@ export type Database = {
       }
     }
     Functions: {
+      continue_lesson: { Args: { p_continue_id: string }; Returns: Json }
       expire_streaks: { Args: never; Returns: number }
       purchase_freeze: { Args: { p_price?: number }; Returns: Json }
       purchase_item: { Args: { p_item_id: string }; Returns: Json }

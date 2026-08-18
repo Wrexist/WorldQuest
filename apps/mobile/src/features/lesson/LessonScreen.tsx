@@ -22,7 +22,7 @@ import {
   squircle,
   text,
 } from '@worldquest/design'
-import { deriveRating, lessonLength } from '@worldquest/engines'
+import { canRevive, deriveRating, lessonLength } from '@worldquest/engines'
 import type { LessonFocus } from '@worldquest/engines'
 import type { ContentIndex, GradeResult, LessonState, Question } from '@worldquest/engines'
 import { Art } from '../../components/Art.js'
@@ -32,6 +32,7 @@ import { useLesson } from './hooks/useLesson.js'
 import { LessonSummary, type PractisedCountry } from './LessonSummary.js'
 import { SPEED_SECONDS } from './modes.js'
 import { OutOfHearts } from './OutOfHearts.js'
+import { payForContinue } from './continuePurchase.js'
 import { Paused } from './Paused.js'
 import { recordPace, useItemPace } from './usePace.js'
 import { hapticCelebrate, hapticCorrect, hapticWrong } from '../../lib/haptics.js'
@@ -557,7 +558,7 @@ export function LessonScreen({
     if (questions.length === 0) return setScreen('empty')
     setScreen('ready')
     if (lesson.state.phase === 'idle') {
-      lesson.start(makeLessonId())
+      lesson.start(makeUuid())
       track('lesson_started', {
         lesson_id: 'pending',
         kind: 'lesson',
@@ -928,7 +929,21 @@ export function LessonScreen({
           {lesson.state.outOfHearts ? (
             <OutOfHearts
               coins={coins}
-              onRevive={lesson.revive}
+              // False on the last item: `REVIVE` resumes at the NEXT question, and there
+              // is not one. The machine sends that case to the summary rather than
+              // presenting an index past the end, and this stops the offer being made
+              // for something already over.
+              canRevive={canRevive(lesson.state)}
+              offline={isOffline}
+              onRevive={() => {
+                // Paid FIRST, then resumed — the reverse of `useShop.buy()`, and for the
+                // opposite reason. A cosmetic that is owned but unpaid is recoverable on
+                // the next reconcile; a continue is consumed the instant it is taken and
+                // nothing can correct it afterwards. The call does not block the resume:
+                // it is fire-and-forget, so the next question still arrives in this frame.
+                void payForContinue(makeUuid())
+                lesson.revive()
+              }}
               onFinish={() => {
                 track('lesson_abandoned', {
                   lesson_id: lesson.state.lessonId,
@@ -1171,8 +1186,15 @@ function optionState(
 const chosenLabel = (q: Question, id: string | null | undefined): string =>
   q.options.find((o) => o.id === id)?.label ?? ''
 
-const makeLessonId = (): string =>
-  // Client-generated; doubles as the server's idempotency key.
+/**
+ * A v4 UUID, client-side.
+ *
+ * Two callers, both of them idempotency keys the server dedupes on: the lesson id, and
+ * the per-offer id behind a paid continue. Named for the shape rather than for the first
+ * caller — the second one is not a lesson, and a lesson-named factory minting a purchase
+ * key reads as a copy-paste rather than as a decision.
+ */
+const makeUuid = (): string =>
   'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0
     return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16)
