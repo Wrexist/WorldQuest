@@ -318,6 +318,16 @@ for (const file of packFiles) {
 // An achievement with no `ceiling` is unbounded by construction — lessons completed,
 // days of streak — and is skipped rather than guessed at.
 {
+  /** Only the parts of a rule this block reads. `rules` is how composites nest. */
+  type Rule = {
+    type?: string
+    event?: string
+    where?: Record<string, string | number | boolean>
+    members?: string[]
+    distinctBy?: string
+    rules?: Rule[]
+  }
+
   type PackItem = {
     id?: string
     type?: string
@@ -328,7 +338,7 @@ for (const file of packFiles) {
     volatility?: string
     sensitivity?: string
     ceiling?: { of?: string; attribute?: string }
-    rule?: { type?: string; members?: string[]; distinctBy?: string }
+    rule?: Rule
     tiers?: { tier: string; threshold: number }[]
   }
   type LoadedPack = { kind?: string; items?: PackItem[] }
@@ -400,6 +410,44 @@ for (const file of packFiles) {
           })
         }
       }
+
+      // ── a filter that matches nothing ─────────────────────────────────────
+      //
+      // A rule narrows `fact_mastered` with `where: { attribute: "location" }`, and the
+      // event's `attribute` is the one the fact DECLARES. So a filter naming an attribute
+      // no fact carries is a counter that can never increment — and the ceiling check
+      // below cannot see it, because an achievement is only obliged to declare a ceiling
+      // when it has one.
+      //
+      // The third phantom in this pack after Iceland and Antarctica, and the most
+      // expensive: `ach.locations.collector` filtered on `location` while both the app
+      // and the edge function derived the attribute by SPLITTING THE FACT ID, which
+      // reads `continent` for all 64 location facts. Four tiers, a visible progress bar,
+      // and no user could move it.
+      //
+      // Be clear about which half this check is. That bug was in the code — the pack was
+      // right — so this would not have caught it, and the tests that do are
+      // `_shared/achievement-events.test.ts` and `features/achievements/progress.test.ts`,
+      // which drive the real packs through the real engine. Both sides now read the
+      // attribute the fact declares, so "the event says X and the rule wants Y" can only
+      // arise one way any more: a rule naming an attribute nothing carries. That is a
+      // typo, or somebody "fixing" this bug from the wrong end by editing the filter to
+      // match the id. This is the check for that, and between them the class is closed.
+      const attributes = new Set(facts.filter(quizzable).map((f) => f.attribute))
+      const checkFilter = (rule: Rule): void => {
+        const wanted = rule.where?.['attribute']
+        if (typeof wanted === 'string' && !attributes.has(wanted)) {
+          errors.push({
+            file: rel,
+            message:
+              `${item.id}: filters on attribute "${wanted}", which no quizzable fact ` +
+              `declares — the counter can never increment. Shipped attributes: ` +
+              `${[...attributes].sort().join(', ')}`,
+          })
+        }
+        for (const inner of rule.rules ?? []) checkFilter(inner)
+      }
+      if (item.rule) checkFilter(item.rule)
 
       if (!item.ceiling) continue
       const max = ceilingOf(item.ceiling)

@@ -7,9 +7,10 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
-import { buildFunction, verifyBundle } from './build.js'
+import { buildFunction, isQuizzableCopy, verifyBundle } from './build.js'
+import { isQuizzable } from '../../packages/engines/src/content/index.js'
 
 const files = buildFunction('submit-lesson')
 const byName = new Map(files.map((f) => [f.name, f.content]))
@@ -237,8 +238,18 @@ describe('submit-lesson bundle', () => {
     // which is 8 KB against the pack's 18, and it is emitted on one line for the same
     // reason: fifteen of these rules are sets over member lists of up to 54 country codes,
     // and pretty-printing gave each code its own line.
+    //
+    // 175 000 → 190 000 for `ATTRIBUTE_BY_FACT`: 10 KB naming, for each of 350 facts, the
+    // attribute it declares. It is the price of not deriving that from the fact's id,
+    // which is what made `ach.locations.collector` unreachable at all four tiers — the
+    // location facts are keyed `geo.XX.continent` and declare `attribute: "location"`.
+    // 10 KB read once per cold start against a four-tier achievement no user could move
+    // is not a close call, and there is no cheaper honest form: the map's keys are
+    // per-fact because the question is per-fact. Compressing it into an index into a
+    // six-element table would save 4 KB and make the one file that documents this
+    // relationship unreadable.
     const total = files.reduce((sum, f) => sum + f.content.length, 0)
-    expect(total).toBeLessThan(175_000)
+    expect(total).toBeLessThan(190_000)
   })
 
   it('never accepts a client-supplied reward value', () => {
@@ -300,6 +311,95 @@ describe('the answer key the server grades with', () => {
     expect(answers!.content).toMatch(/geo\.SE\.capital["']?\s*:\s*["']SE["']/)
   })
 
+  it('applies the ENGINE\'s quizzability rule, not a copy that has drifted from it', () => {
+    // `build.ts` carries its own `isQuizzable`, and says so: it is the script that
+    // vendors the engine into the deployable function, so importing the package it is
+    // flattening is a resolution order nobody wants to debug at deploy time. That is a
+    // good reason to copy and not a reason to leave the copy unchecked — the two were
+    // three copies once, and the engine's comment records consolidating the other.
+    //
+    // What drift costs is specific. `QUIZZABLE_FACTS_BY_ENTITY` is the server's answer to
+    // "is this country finished?", so a fact the copy admits and the composer never asks
+    // is a country no user can complete — and `ach.countries.complete`, `ach.set.nordics`
+    // and every other region set count exactly that. Unreachable, silently, with a
+    // progress bar.
+    //
+    // So compare them over the real packs rather than by reading both.
+    const packs = join(import.meta.dirname, '..', '..', 'packages', 'content', 'packs', 'geography')
+    const facts = readdirSync(packs)
+      .filter((f) => f.startsWith('facts.') && f.endsWith('.json'))
+      .flatMap(
+        (f) =>
+          (
+            JSON.parse(readFileSync(join(packs, f), 'utf8')) as {
+              items: {
+                id: string
+                entity: string
+                quizzable?: boolean
+                volatility?: 'stable' | 'slow' | 'fast'
+                sensitivity?: 'none' | 'review-required'
+              }[]
+            }
+          ).items,
+      )
+
+    // Sliced between the map's own delimiters, not "from its name to the end of file" —
+    // `ATTRIBUTE_BY_FACT` follows it and is keyed by every fact there is, so a loose
+    // slice reads as "nothing is filtered" and the test passes by measuring the wrong
+    // map. It did, on the first run.
+    const answers = byName.get('_content/answers.ts')!
+    const open = answers.indexOf('QUIZZABLE_FACTS_BY_ENTITY: Record<string, string[]> = ')
+    const body = answers.slice(open, answers.indexOf('\n\n/**', open))
+    const inBundle = new Set((body.match(/"geo\.[^"]+"/g) ?? []).map((q) => q.slice(1, -1)))
+    expect(inBundle.size).toBeGreaterThan(0)
+
+    const disagreements = facts
+      .filter((f) => {
+        const engine = isQuizzable({
+          ...(f.quizzable !== undefined ? { quizzable: f.quizzable } : {}),
+          volatility: f.volatility ?? 'stable',
+          ...(f.sensitivity !== undefined ? { sensitivity: f.sensitivity } : {}),
+        })
+        return engine !== inBundle.has(f.id)
+      })
+      .map((f) => f.id)
+    expect(disagreements).toEqual([])
+
+    // And that it excludes something, so a rule that accidentally became `return true`
+    // cannot pass this by agreeing with a bundle that also stopped filtering.
+    expect(facts.length).toBeGreaterThan(inBundle.size)
+  })
+
+  it('agrees with the engine on inputs the packs do not currently contain', () => {
+    // The comparison above is over the real packs, which is the property that matters and
+    // is weaker than it looks: all three non-quizzable facts in the geography pack carry
+    // `quizzable: false` AND `sensitivity: "review-required"`, so any one clause can be
+    // deleted from the copy without changing a single generated byte. Verified by
+    // deleting each of the three — the packs-only comparison stayed green for all three.
+    //
+    // A drift like that is invisible until the first fact that relies on one clause
+    // alone, and by then the wrong answer key has shipped. So walk the whole truth table.
+    for (const quizzable of [true, false, undefined]) {
+      for (const volatility of ['stable', 'slow', 'fast', undefined]) {
+        for (const sensitivity of ['none', 'review-required', undefined]) {
+          const fact = {
+            ...(quizzable !== undefined ? { quizzable } : {}),
+            ...(volatility !== undefined ? { volatility } : {}),
+            ...(sensitivity !== undefined ? { sensitivity } : {}),
+          }
+          expect(
+            isQuizzableCopy(fact),
+            JSON.stringify(fact),
+          ).toBe(
+            isQuizzable(
+              fact as Parameters<typeof isQuizzable>[0],
+            ),
+          )
+        }
+      }
+    }
+  })
+
   it('covers every fact the shipped packs contain', () => {
     // A fact missing here is dropped from grading rather than mis-graded, so a gap is
     // silent — it costs a user their XP instead of throwing.
@@ -344,6 +444,24 @@ describe('the endpoint does not trust the client', () => {
     expect(index).not.toMatch(/for \(const answer of body\.answers\)/)
   })
 
+  it('feeds the achievement events the generated content maps, not empty ones', () => {
+    // What is left of two greps that moved. The rules they asserted — the region comes
+    // from an ANSWER rather than a navigation, and a fact's attribute is read rather than
+    // split out of its id — are executed now, in
+    // `_shared/achievement-events.test.ts`, against the real packs.
+    //
+    // This is the half that only exists at the seam: `achievementEvents` takes its three
+    // content maps as parameters, precisely so it can be loaded without the generated
+    // `_content` directory, and a test that injects its own maps cannot notice this file
+    // passing the wrong ones. Handing it `{}` would silently stop every collector, every
+    // set and every continent — with no failure anywhere, because an empty map is a valid
+    // map.
+    expect(index).toMatch(/entityByFact: ANSWER_BY_FACT/)
+    expect(index).toMatch(/attributeByFact: ATTRIBUTE_BY_FACT/)
+    expect(index).toMatch(/regionByEntity: REGION_BY_ENTITY/)
+    expect(index).toMatch(/achievementEvents\([\s\S]{0,900}\}, CONTENT\)/)
+  })
+
   it('decides the quest date itself, and only COMPARES the one it was sent', () => {
     // The date is the primary key of the row recording what has been paid, so a caller
     // that could choose it could collect a daily quest once per date it invented. The
@@ -365,13 +483,6 @@ describe('the endpoint does not trust the client', () => {
     expect(index).not.toMatch(/body\.achievement|body\.unlock|body\.tier/)
   })
 
-  it('emits the continent event from an ANSWER, never from a navigation', () => {
-    // `region_started` was fired by opening a continent page: invisible to a server, and
-    // six taps for a gold tier the moment gold started paying. It is derived here from the
-    // regions of the entities this lesson answered correctly.
-    expect(index).toMatch(/REGION_BY_ENTITY/)
-    expect(index).toMatch(/if \(!answer\.wasCorrect\) continue/)
-  })
 
   it('takes the quest rates from the balance table, not the request', () => {
     expect(index).toMatch(/p_quest_task_xp: TASK_XP/)

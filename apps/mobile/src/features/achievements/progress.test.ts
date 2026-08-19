@@ -3,11 +3,34 @@ import { act, renderHook } from '@testing-library/react'
 import {
   recordAchievementEvent,
   recordLessonForAchievements,
+  recordServerOutcome,
   resetAchievementCache,
   useAchievementProgress,
 } from './progress.js'
 import { CATALOGUE } from './useAchievements.js'
 import { remove } from '../../lib/storage.js'
+import { readFileSync, readdirSync } from 'node:fs'
+import { join } from 'node:path'
+
+/**
+ * Every shipped fact, read from the packs DIRECTORY rather than from a list here.
+ *
+ * The list-that-falls-behind is a bug this repo has already had twice —
+ * `facts.locations.v1.json` shipped with artwork, templates and a generator and produced
+ * no questions for weeks because nothing imported it. Walking the directory means a new
+ * attribute is covered by the test below on the day it lands.
+ */
+const PACK_DIR = join(import.meta.dirname, '../../../../../packages/content/packs/geography')
+const FACTS: readonly { id: string; entity: string; attribute: string }[] = readdirSync(PACK_DIR)
+  .filter((f) => f.startsWith('facts.') && f.endsWith('.json'))
+  .flatMap(
+    (f) =>
+      (
+        JSON.parse(readFileSync(join(PACK_DIR, f), 'utf8')) as {
+          items: { id: string; entity: string; attribute: string }[]
+        }
+      ).items,
+  )
 
 const lesson = (over: { accuracy?: number; durationMs?: number } = {}) =>
   recordLessonForAchievements({
@@ -97,6 +120,88 @@ describe('achievement progress', () => {
     const { result } = renderHook(() => useAchievementProgress())
     for (const id of result.current.keys()) {
       expect(CATALOGUE.some((def) => def.id === id)).toBe(true)
+    }
+  })
+})
+
+/**
+ * The server's answer, forwarded to the rule engine.
+ *
+ * `recordServerOutcome` had no test, and it is the producer for four of the six event
+ * kinds the catalogue counts — including the one that was wrong.
+ */
+describe('what the server tells us a lesson did', () => {
+  const outcome = (over: Partial<Parameters<typeof recordServerOutcome>[0]> = {}) =>
+    recordServerOutcome({
+      masteryChanges: [],
+      streak: null,
+      overdueCleared: 0,
+      entityMastered: [],
+      regionsStarted: [],
+      at: Date.parse('2026-08-02T12:00:00Z'),
+      ...over,
+    })
+
+  it('moves every collector the pack ships, including the one whose id lies', () => {
+    // `ach.locations.collector` filters `attribute: 'location'`, and its facts are keyed
+    // `geo.XX.continent`. Splitting the id made all four of its tiers unreachable — with
+    // `showProgress: true`, so the screen drew a bar towards a number nobody could reach.
+    //
+    // Driven from the real packs rather than a fixture, because a fixture would have
+    // agreed with whichever half wrote it. Each collector needs 5 distinct entities.
+    const factsFor = (attribute: string) =>
+      FACTS.filter((f) => f.attribute === attribute)
+        .slice(0, 5)
+        .map((f) => f.id)
+
+    for (const [attribute, id] of [
+      ['capital', 'ach.capitals.collector'],
+      ['flag', 'ach.flags.collector'],
+      ['currency', 'ach.currencies.collector'],
+      ['location', 'ach.locations.collector'],
+      ['calling-code', 'ach.codes.collector'],
+      ['language', 'ach.languages.collector'],
+    ] as const) {
+      remove('achievements.progress.v1')
+      resetAchievementCache()
+      const ids = factsFor(attribute)
+      expect(ids, attribute).toHaveLength(5)
+      act(() => {
+        void outcome({ masteryChanges: ids.map((factId) => ({ factId, to: 'mastered' })) })
+      })
+      const { result } = renderHook(() => useAchievementProgress())
+      expect(result.current.get(id)?.value ?? 0, `${attribute} → ${id}`).toBe(5)
+    }
+  })
+
+  it('counts only a change INTO a mastered state', () => {
+    act(() => {
+      void outcome({ masteryChanges: [{ factId: 'geo.SE.capital', to: 'learning' }] })
+    })
+    const { result } = renderHook(() => useAchievementProgress())
+    expect(result.current.get('ach.capitals.collector')?.value ?? 0).toBe(0)
+  })
+
+  it('ignores a fact the shipped packs no longer contain', () => {
+    // Mastery rows outlive the pack that created them. A retired fact must be skipped,
+    // never guessed at from the text of its id.
+    act(() => {
+      void outcome({ masteryChanges: [{ factId: 'geo.ZZ.capital', to: 'mastered' }] })
+    })
+    const { result } = renderHook(() => useAchievementProgress())
+    expect(result.current.get('ach.capitals.collector')?.value ?? 0).toBe(0)
+    expect(result.current.get('ach.facts.everything')?.value ?? 0).toBe(0)
+  })
+
+  it('never emits more cleared reviews than a lesson could hold', () => {
+    // The count arrives over the network. A loop whose trip count is a number off the
+    // wire is a hang if that number is ever wrong.
+    for (const overdueCleared of [Number.NaN, Number.POSITIVE_INFINITY, -5, 1e9]) {
+      remove('achievements.progress.v1')
+      resetAchievementCache()
+      act(() => void outcome({ overdueCleared }))
+      const { result } = renderHook(() => useAchievementProgress())
+      expect(result.current.get('ach.review.faithful')?.value ?? 0, String(overdueCleared)).toBeLessThanOrEqual(100)
     }
   })
 })

@@ -40,17 +40,37 @@ import {
   emptyProgress,
   evaluateAll,
   type AchievementProgress,
-  type DomainEvent,
   type Unlock,
 } from '../../../packages/engines/src/achievements/index.ts'
-import { levelProgress } from '../../../packages/engines/src/xp/level.ts'
 import { retimeLesson } from '../_shared/submission-time.ts'
 // The request parser lives in `_shared` so it can be TESTED — this module imports
 // `jsr:` specifiers and calls `Deno.serve`, so nothing in it is reachable by vitest.
 // See `_shared/parse-submission.ts`.
 import { parseBody, type SubmitBody } from '../_shared/parse-submission.ts'
-import { ANSWER_BY_FACT, QUIZZABLE_FACTS_BY_ENTITY } from './_content/answers.ts'
+// Likewise, and for a bug rather than for tidiness: the events this produces decide which
+// achievements pay out, and the version inlined here derived a fact's attribute by
+// splitting its id — which is right for five of the pack's six attributes and wrong for
+// `location`. See `_shared/achievement-events.ts`.
+import { achievementEvents } from '../_shared/achievement-events.ts'
+import {
+  ANSWER_BY_FACT,
+  ATTRIBUTE_BY_FACT,
+  QUIZZABLE_FACTS_BY_ENTITY,
+} from './_content/answers.ts'
 import { ACHIEVEMENTS, REGION_BY_ENTITY } from './_content/achievements.ts'
+
+/**
+ * The content packs, projected to the three questions the achievement events ask of them.
+ *
+ * Assembled here because `_shared` may not import `_content` — that directory is written
+ * by the bundler and gitignored, so a module importing it is a module vitest cannot load,
+ * which is the whole reason `achievementEvents` moved out of this file.
+ */
+const CONTENT = {
+  entityByFact: ANSWER_BY_FACT,
+  attributeByFact: ATTRIBUTE_BY_FACT,
+  regionByEntity: REGION_BY_ENTITY,
+} as const
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -370,7 +390,7 @@ async function handle(req: Request): Promise<Response> {
     questCompleted: quest?.allComplete === true && quest.bonusAlreadyPaid === false,
     xpTotalAfter,
     at: Date.now(),
-  })
+  }, CONTENT)
   for (const event of events) {
     const evaluated = evaluateAll(ACHIEVEMENTS, achievementProgress, event)
     achievementProgress = evaluated.progress
@@ -726,118 +746,6 @@ async function evaluateQuest(
   }
 }
 
-/**
- * The achievements this lesson moved, from events the server itself produced.
- *
- * ## The same engine, not a second one
- *
- * `evaluateAll` and the catalogue are the ones the device runs — vendored by `build.ts`,
- * byte-identical to the source, asserted by a bundle guard. A server-side reimplementation
- * of thirty rules would not throw when it drifted from the client's; it would award the
- * wrong thing, quietly, for everyone.
- *
- * ## Which events, and why these
- *
- * Every one is something this function decided rather than something it was told:
- * mastery from the memory state it graded, the streak from `applyActivity`, the reviews
- * it cleared, the quest it just paid, and the level the XP it just awarded puts the user
- * on. `ach.level.climber` had no producer anywhere before this — nothing on the device
- * ever put a `level` in a payload, so its single tier could not move.
- *
- * `region_started` is the one whose MEANING changed, and it had to. It was fired by
- * opening a continent page: invisible to a server, and six taps for a gold tier the
- * moment gold started paying. Here it means the user answered something correctly in
- * that region, which is what the copy has always said.
- *
- * ## Ordering
- *
- * `daily_quest_completed` is emitted when this submission's own evaluation completed the
- * quest and the pinned row had not yet paid the bonus. Two lessons submitted concurrently
- * could both read `bonusPaid: false` and both emit it, over-counting a 5/30/100 counter
- * by one — narrow, and it can never over-PAY, because the unlock table is keyed on
- * (user, achievement, tier).
- */
-function achievementEvents(input: {
-  readonly graded: readonly { factId: string; wasCorrect: boolean }[]
-  readonly masteryChanges: readonly { factId: string; to: string }[]
-  readonly entityMastered: readonly string[]
-  readonly overdueCleared: number
-  readonly streak: number | null
-  readonly accuracy: number
-  readonly durationMs: number
-  readonly questCompleted: boolean
-  readonly xpTotalAfter: number
-  readonly at: number
-}): readonly DomainEvent[] {
-  const { at } = input
-  const events: DomainEvent[] = []
-
-  for (const change of input.masteryChanges) {
-    if (change.to !== 'mastered' && change.to !== 'burnished') continue
-    // `geo.SE.capital` → attribute `capital`, entity `SE`. The BARE code, because
-    // `distinctBy: 'entityId'` and every `members` list use it — `geo.SE` here would
-    // count as a different country from `SE` in `ach.set.nordics`.
-    const parts = change.factId.split('.')
-    const attribute = parts[parts.length - 1] ?? ''
-    const entityId = parts[1] ?? ''
-    if (attribute === '' || entityId === '') continue
-    events.push({
-      name: 'fact_mastered',
-      at,
-      payload: { attribute, entityId, factId: change.factId },
-    })
-  }
-
-  for (const entityId of input.entityMastered) {
-    events.push({ name: 'entity_mastered', at, payload: { entityId } })
-  }
-
-  // One event per cleared review, because `counter` counts events — sending one carrying
-  // the number would make a ten-review lesson worth one, and a 1000-tier take a decade.
-  // Bounded by the answer count, which is already capped at 50 by the parser.
-  const cleared = Math.min(Math.max(input.overdueCleared, 0), input.graded.length)
-  for (let i = 0; i < cleared; i++) {
-    events.push({ name: 'overdue_review_cleared', at, payload: {} })
-  }
-
-  if (input.streak !== null) {
-    // `streak_extended` rather than `daily_lesson`: the name predates the rule and ships
-    // in dashboards, so it is not renameable. `length` is the field the rule reads.
-    events.push({ name: 'streak_extended', at, payload: { length: input.streak } })
-  }
-
-  events.push({
-    name: 'lesson_completed',
-    at,
-    payload: { accuracy: input.accuracy, durationMs: input.durationMs },
-  })
-
-  if (input.questCompleted) {
-    events.push({ name: 'daily_quest_completed', at, payload: {} })
-  }
-
-  // The regions this lesson actually earned something in. Distinct, because the
-  // set-completion rule dedupes by member anyway and a shorter event list is cheaper.
-  const regions = new Set<string>()
-  for (const answer of input.graded) {
-    if (!answer.wasCorrect) continue
-    const entity = ANSWER_BY_FACT[answer.factId]
-    const region = entity === undefined ? undefined : REGION_BY_ENTITY[entity]
-    if (region !== undefined) regions.add(region)
-  }
-  for (const region of regions) {
-    events.push({ name: 'region_started', at, payload: { region } })
-  }
-
-  // Absolute rather than incremental — `threshold` compares the stat the event reports.
-  events.push({
-    name: 'level_reached',
-    at,
-    payload: { level: levelProgress(Math.max(0, input.xpTotalAfter)).level },
-  })
-
-  return events
-}
 
 /**
  * The stored progress map, read back into the shape the engine wants.

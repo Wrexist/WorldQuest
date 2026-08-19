@@ -38,10 +38,16 @@
  * collectors, countries completed, the streak keeper, quests, and continents. Before
  * this, seven of the twelve could never move at all.
  *
- * Nothing is left. All six event kinds the catalogue counts now have a producer, and
- * every achievement in the pack can move. The two that could only ever be answered
- * server-side — `fact_mastered` and `entity_mastered` — are, and the client forwards
- * rather than decides.
+ * All six event kinds the catalogue counts have a producer, and the two that could only
+ * ever be answered server-side — `fact_mastered` and `entity_mastered` — are, with the
+ * client forwarding rather than deciding.
+ *
+ * This paragraph used to end "nothing is left; every achievement in the pack can move",
+ * and one could not. `ach.locations.collector` filters `fact_mastered` on
+ * `attribute: 'location'`, and the attribute was split out of the fact id, which reads
+ * `continent` for all 64 location facts. Having a producer for an event is not the same
+ * as producing the event a rule matches, and only `progress.test.ts` can tell the two
+ * apart — so the claim lives there now, as a test, for every attribute the pack ships.
  */
 
 import { useCallback, useSyncExternalStore } from 'react'
@@ -53,6 +59,7 @@ import {
   type Unlock,
 } from '@worldquest/engines'
 import { isRecord, readJson, writeJson } from '../../lib/storage.js'
+import { factEventFields } from '../../lib/content.js'
 import { CATALOGUE } from './useAchievements.js'
 
 const KEY = 'achievements.progress.v1'
@@ -185,15 +192,19 @@ export function recordServerOutcome(input: {
 
   for (const change of input.masteryChanges) {
     if (change.to !== 'mastered' && change.to !== 'burnished') continue
-    // `geo.SE.capital` → subject `geo`, entity `SE`, attribute `capital`. The id format
-    // is fixed by the content pipeline, so splitting it reads the shape rather than
-    // guessing at it — and the BARE code is what `distinctBy: 'entityId'` and the
-    // `members` lists both use, so `geo.SE` here would count as a different country from
-    // `SE` in `ach.set.nordics`.
-    const parts = change.factId.split('.')
-    const attribute = parts[parts.length - 1] ?? ''
-    const entityId = parts[1] ?? ''
-    if (attribute === '' || entityId === '') continue
+    // Read from the fact, never split out of its id. The comment that used to stand here
+    // said "the id format is fixed by the content pipeline, so splitting it reads the
+    // shape rather than guessing at it" — and the id format is fixed, which is exactly
+    // why it cannot be read this way: `geo.AR.continent` declares `attribute: "location"`,
+    // and `ach.locations.collector` filters on `location`. All four of its tiers were
+    // unreachable. See `factEventFields`.
+    //
+    // `entityId` is the BARE code for the reason the old comment gave and got right:
+    // `distinctBy: 'entityId'` and every `members` list use it, so `geo.SE` here would
+    // count as a different country from `SE` in `ach.set.nordics`.
+    const fields = factEventFields(change.factId)
+    if (fields === undefined) continue
+    const { attribute, entityId } = fields
     unlocked.push(
       ...recordAchievementEvent({
         name: 'fact_mastered',

@@ -108,6 +108,58 @@ const PRESENTABLE = ['text', 'image', 'map'] as const
  */
 export const COUNTRY_COUNT: number = entitiesPack.items.length
 
+/**
+ * What each fact is ABOUT, read from the fact rather than inferred from its name.
+ *
+ * An achievement rule filters `fact_mastered` on the attribute a fact declares —
+ * `where: { attribute: 'location' }` for `ach.locations.collector`. Both this app and
+ * `submit-lesson` used to produce that field by splitting the fact id on dots, which is
+ * right for five of the pack's six attributes and wrong for the sixth:
+ *
+ *     { "id": "geo.AR.continent", "entity": "AR", "attribute": "location" }
+ *
+ * So all four tiers of that achievement were unreachable — not hard, unreachable — with a
+ * progress bar creeping towards a number no user could arrive at. Every layer was
+ * self-consistent: the pack's ceiling check counts the declared attribute and agreed 64
+ * were available, and the rule engine's own tests pass the payload by hand. Only the join
+ * between the two was wrong, and nothing executed the join.
+ *
+ * A fact id is a permanent opaque key — `PROJECT.md` makes renaming one a migration — so
+ * its last segment is a coincidence and never a contract. Derived from the same pack list
+ * the index is built from, so a pack added above cannot be forgotten here.
+ */
+const FACT_FIELDS: ReadonlyMap<string, { readonly entityId: string; readonly attribute: string }> =
+  new Map(
+    (
+      [
+        capitalsPack,
+        flagsPack,
+        currenciesPack,
+        locationsPack,
+        languagesPack,
+        callingCodesPack,
+      ] as unknown as { items: readonly { id: string; entity: string; attribute: string }[] }[]
+    ).flatMap((pack) =>
+      pack.items.map(
+        (fact) => [fact.id, { entityId: fact.entity, attribute: fact.attribute }] as const,
+      ),
+    ),
+  )
+
+/**
+ * The entity and attribute an achievement event should carry for this fact.
+ *
+ * `undefined` for a fact the shipped packs do not contain. That is an ordinary thing to
+ * meet rather than an error: mastery rows outlive the pack that created them, so a
+ * retired fact arrives from storage long after its pack is gone. The caller skips it —
+ * it must never guess one from the text of the id, which is the bug above.
+ */
+export function factEventFields(
+  factId: string,
+): { readonly entityId: string; readonly attribute: string } | undefined {
+  return FACT_FIELDS.get(factId)
+}
+
 export function useContent() {
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('ready')
   const [nonce, setNonce] = useState(0)

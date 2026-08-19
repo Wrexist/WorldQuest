@@ -99,6 +99,43 @@ The check runs in **both directions**, and the second is the half that keeps wor
 Omit `ceiling` when the achievement is genuinely unbounded — lessons completed, days of
 streak, level reached. It is skipped rather than guessed at.
 
+### `where: { attribute }` — the attribute the fact DECLARES
+
+The filter names the `attribute` field on the fact, **never a segment of its id.** These
+are not the same thing, and reading one for the other cost a whole achievement:
+
+```json
+{ "id": "geo.AR.continent", "entity": "AR", "attribute": "location" }
+```
+
+All 64 location facts are keyed `.continent` and declare `attribute: "location"`, which
+is what `ach.locations.collector` filters on. Both producers of `fact_mastered` — the app
+and `submit-lesson` — built the event's payload by splitting the fact id on dots, which is
+right for the pack's five other attributes and wrong for this one. So that achievement's
+four tiers were unreachable at any number, with `showProgress: true` drawing the bar the
+section above exists to forbid.
+
+Nothing caught it because every layer agreed with itself. The ceiling check counts the
+declared attribute and correctly reported 64 available. The rule engine's own tests pass
+`{ attribute: "flag" }` by hand and correctly prove the filter works. Only the join
+between them was wrong, and nothing executed the join.
+
+Three things changed, and it is worth knowing which does what:
+
+- both producers now read the attribute from a map generated from the packs
+  (`ATTRIBUTE_BY_FACT` on the server, `factEventFields` in the app), and refuse a fact
+  they have no entry for rather than inventing one from its name;
+- `_shared/achievement-events.test.ts` and `features/achievements/progress.test.ts` drive
+  the **real packs** through the real rule engine and assert every collector in the pack
+  actually moves — the join, executed;
+- `pnpm content:validate` fails a rule that filters on an attribute no quizzable fact
+  declares, which is the shape of a typo, and the shape of somebody fixing this from the
+  wrong end by editing the filter to match the id.
+
+A fact id is a permanent opaque key — [`PROJECT.md`](../../PROJECT.md) makes renaming one
+a migration, not a rename — so the fact that it usually ends in its own attribute is a
+convention nobody promised and nothing enforces.
+
 > The first run of this check found one more thing than it was written for: Switzerland's
 > capital is `quizzable: false` (Bern is not the constitutional capital), so the real
 > number of askable capitals is 63, not the 64 the pack file suggests. That is the
