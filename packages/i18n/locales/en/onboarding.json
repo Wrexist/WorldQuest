@@ -54,7 +54,7 @@
   "onboarding:progress": "Step {step} of {total}",
   "onboarding:progress__note": "Accessibility label for the onboarding progress BAR, which counts the four steps of the whole flow. Read aloud by screen readers.",
   "onboarding:back": "Back",
-  "onboarding:back__note": "Accessibility label for the chevron that steps ONE question back in onboarding. Never rendered visibly — the control is a single ‹ glyph — so this string exists only for screen readers and should be the plain word the platform uses for going back, not a sentence.",
+  "onboarding:back__note": "Accessibility label for the control that steps ONE question back in onboarding. Never rendered visibly — the control is an icon — so this string exists only for screen readers and should be the plain word the platform uses for going back, not a sentence. Same word as `common:back`, and deliberately its own key: this one steps within the form rather than leaving the screen, and a translator may need different words for that in a language where the two are not the same verb.",
   "onboarding:plan.title": "Here is your plan.",
   "onboarding:plan.title__note": "Atlas says this at the top of the summary step, after the last question. A statement, not a question — it is the one step that tells rather than asks.",
   "onboarding:plan.body": "You can change any of this later in Settings.",
