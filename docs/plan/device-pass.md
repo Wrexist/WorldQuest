@@ -137,6 +137,39 @@ zero**. The a11y skill is explicit that this is the part that matters.
       *Less movement, not less feedback.* If a press stops giving anything back,
       `useTiming` has been bypassed.
 
+## 5b · The screen-polish pass — five things it could not verify
+
+Added 2026-08-19, after the work in [`docs/design/screen-polish-plan.md`](../design/screen-polish-plan.md).
+Every item below was designed against a measurement the harness CAN take and turns on
+one it cannot. They are grouped here rather than scattered above because they share a
+cause: a browser with no keyboard, no OLED panel and no real screen reader.
+
+- [ ] **The account form, with the keyboard up.** Its ink measures at 58 % of a 390-wide
+      screen and the plan asked for 65 %. The missing third is exactly where the keyboard
+      goes, which is why `KeyboardAvoidingView` wraps it — and a screenshot renders no
+      keyboard, so the number overstates the problem by an amount only a device can
+      settle. Tap the field: the form should fill the visible area with the send button
+      above the keyboard, not behind it. If it does not, the number was right and the
+      reasoning was wrong.
+- [ ] **The paywall with no prices, under Reduce Motion.** `AbsentContent` shimmers the
+      stand-in from behind while the store is being asked. `Skeleton` stops pulsing under
+      reduced motion and this inherits that — but it is now a shimmer behind text rather
+      than a bare block, which is a composition nothing has run on a device.
+- [ ] **The collection grid, on an OLED panel.** An uncollected flag is `opacity: 0.35`
+      over a near-black canvas, chosen because the previous 0.45 on the whole tile put
+      the country name under the contrast floor. On an OLED the blacks are blacker than
+      any monitor renders them, and 0.35 of a flag may read as absent rather than as
+      not-yet-yours. The name is at full contrast either way; what is in question is
+      whether the *collectible* still reads.
+- [ ] **The milestone ladder, by ear.** Four rungs × up to four announcements is
+      deliberate — composing "7 days" and "pays 50 XP" into one string is the
+      concatenation the i18n rules forbid, and the join word and order differ by
+      language. It is chatty on purpose, and whether it is chatty to the point of being
+      useless is a VoiceOver question.
+- [ ] **The week strip, twice, by ear.** Seven labelled columns on Profile and seven more
+      on the streak page. Each says "M, 3 lessons"; fourteen of those across two screens
+      is the same judgement call as the ladder.
+
 ## 6 · Performance, on the worst phone you can find
 
 Not a flagship. The budget is about a mid-tier Android — a device three or four years

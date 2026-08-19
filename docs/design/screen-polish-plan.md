@@ -208,18 +208,41 @@ screen as a user with none — no week filled in, no milestone nearer, nothing t
 what they did. That is finding #3 stated as a number, and it is a better argument for the
 week strip and the milestone ladder than "it feels thin" was.
 
-#### Targets for the later phases
+#### Targets for the later phases, and how they turned out
 
-Not a gate. A number to be argued with in review, and to notice when it moves the wrong
-way.
+Set before the work, kept here unedited beside the result. Two of the five were wrong,
+and the reason they were wrong is worth more than the two that were right.
 
-| Screen | 390 now | 390 after | Why that number |
-|---|---|---|---|
-| `paywall` (no prices) | 47 % | ≥ 70 % | Two stand-in plan cards restore the footprint the real ones occupy |
-| `account?mode=link` | 28 % | ≥ 65 % | The lower bound of the screens a review already passes |
-| `profile` (empty) | 40 % | ≥ 65 % | Same |
-| `league` (empty) | 43 % | ≥ 65 % | Same |
-| `streak` | 68 % | ≥ 80 % | The week strip and milestone ladder are real content, not filler |
+| Screen | 390 before | target | 390 after | |
+|---|---|---|---|---|
+| `streak` | 68 % | ≥ 80 % | **82 %** | met |
+| `paywall` (no prices) | 47 % | ≥ 70 % | **52 %** | **target was wrong** |
+| `account?mode=link` | 28 % | ≥ 65 % | **58 %** | **short, for a reason a device settles** |
+| `profile` (empty) | 40 % | ≥ 65 % | 44 % | **target was wrong** |
+| `league` (empty) | 43 % | ≥ 65 % | 43 % | **target was wrong** |
+
+**The three wrong targets share one mistake.** Each was derived from a populated screen —
+`played-profile` measures 86 %, so 65 % looked like a modest ask. But a populated screen
+and an empty state are not the same screen with less in it; they are answers to different
+questions. The empty profile has a picture, a heading, a sentence and a button, and there
+is nothing else that honestly belongs on it: the alternative is rendering the level card,
+the week strip and six stat tiles at zero, which reverses a decision already recorded in
+that file — "an empty bar is not a record of anything". Filling an empty state to hit a
+density number is padding, and padding is the thing this document was written against.
+
+The paywall's is the same mistake in a different costume. Its missing third is the space
+the purchase button occupies when there is something to buy, and that button is
+deliberately absent rather than disabled when there are no prices.
+
+So the honest revision: **an empty state's target is its GAP, not its ink.** Profile and
+League both went from a 46 % hole to a 27 % one at 390, and from 56 % to 31 % at 768. That
+is the number that describes the defect a reader recognises from the screenshot, and it
+is the one that moved.
+
+The account form is the only one genuinely short of a target that still stands, and even
+there the harness overstates it: the missing third is where the keyboard goes, and a
+screenshot renders no keyboard. It is on the device pass rather than written off — see
+[`docs/plan/device-pass.md`](../plan/device-pass.md) §5b.
 
 ### Phase 1 — the shared vocabulary — **`EmptyState` done 2026-08-19**
 
@@ -454,16 +477,56 @@ That ratio is the argument for Phase 0 having gone first, and against trusting a
 screenshot review that has not read the code underneath. It is also why the harness
 prints numbers and refuses to fail a build on them.
 
-### Phase 5 — verify, look again, record *(half a day)*
+### Phase 5 — verify, look again, record — **done 2026-08-19**
 
-1. `pnpm verify` and `pnpm verify:full`.
-2. `pnpm design:shots`, then **look at every PNG** — the harness says it itself:
-   "nothing measurable is wrong — now LOOK at the pictures, which is the part this cannot do."
-3. Re-measure against the Phase 0 baseline above and put the before/after beside it.
-4. Update `docs/plan/ui-completion.md` and `docs/design/device-pass.md` — a change this
-   broad invalidates rows in both, and docs are part of the product.
+Run at the end of every phase rather than once at the end, which is why there is no
+separate commit for it.
 
----
+1. ~~`pnpm verify` and `pnpm verify:full`~~ — green after each phase; 76/76 e2e steps.
+2. ~~Look at every PNG~~ — done per phase. It is what caught the paywall's remaining
+   footer gap, the account form's drawn `1 / 2`, and the fact that a fresh account shows
+   no week strip on the streak page (correct, and not obvious from the code).
+3. ~~Re-measure against the baseline~~ — the before/after is in the targets table above
+   and in each phase's section.
+4. ~~Update the docs~~ — [`docs/plan/ui-completion.md`](../plan/ui-completion.md) rows 2.1
+   and 7.5, which this work invalidated, and a new
+   [`docs/plan/device-pass.md`](../plan/device-pass.md) §5b listing the five things this
+   pass designed against a measurement the harness can take and turned on one it cannot.
+   `CLAUDE.md`'s `design:shots` line, in the Phase 0 commit.
+
+#### The final table
+
+```
+                                        320      390      768   320→768
+  ✎ league                         67%  13% 43%  27% 35%  31%    −32
+  ✎ welcome-back                   72%  11% 45%  43% 35%  55%    −37
+  ✎ profile                        65%  16% 44%  27% 36%  31%    −29
+  ✎ quest-complete                 77%   8% 51%  22% 40%  28%    −37
+  ✎ account?mode=link              82%   6% 58%  30% 41%  50%    −41
+  ✎ paywall?source=settings        77%   6% 52%  16% 46%  21%    −31
+  ✎ quest                          84%   6% 55%  20% 46%  25%    −38
+  ✎ lesson                         86%   5% 65%  15% 54%  21%    −32
+    country-SE                     77%   6% 85%   4% 71%  16%     −6
+    streak                         75%   8% 82%   5% 75%  10%     −0
+    settings                       80%   8% 81%   5% 81%   4%     +1
+    region-EU                      82%   4% 80%   3% 83%   2%     +1
+    home                           94%   3% 95%   2% 84%  11%    −10
+    shop                           82%   4% 85%   3% 86%   2%     +4
+    collection-flags               81%   6% 86%   4% 88%   4%     +7
+    achievements                   83%   6% 87%   4% 88%   3%     +5
+    quests                         92%   3% 93%   2% 90%   2%     −2
+    explore                        87%   5% 86%   3% 92%   3%     +5
+```
+
+`streak` has crossed the gap in the data — it sits with Settings and Region now, where it
+was beside the account form before. Eight rows still carry the ✎, and that is the right
+number: four are celebration and one-decision screens that are meant to be sparse
+(`welcome-back`, `quest-complete`, `quest`, `lesson`), two are empty states whose gap is
+what moved (`profile`, `league`), one is short by a keyboard's worth (`account`), and one
+is the paywall with a deliberately absent purchase button.
+
+**Nothing here has run on a phone.** That is unchanged by this work and is the largest
+outstanding risk in the repo, not just in this plan.
 
 ## 4. What is deliberately not in this plan
 
