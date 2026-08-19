@@ -34,11 +34,15 @@ const FACTOR = 19 / 81
  * w6 difficulty delta · w7 mean reversion · w8–w10 stability after recall ·
  * w11–w14 stability after a lapse · w15 hard penalty · w16 easy bonus.
  *
- * TODO(verify): pin these against the reference implementation
- * (open-spaced-repetition/fsrs4anki) and record the exact version before Phase 1
- * ships. A sanity check that catches a bad vector immediately: initial difficulty
- * for a "Good" first answer must land near the middle of the 1–10 range, not at a
- * clamp boundary. `pnpm engines:simulate` asserts this.
+ * VERIFIED 2026-08-19 against `ts-fsrs@4.7.1`, whose default `w` is exactly this vector
+ * followed by `0.51655, 0.6621` — FSRS-5's two same-day-review parameters, which this
+ * scheduler has no path for and deliberately does not carry. `fsrs.reference.test.ts`
+ * pins both the vector and four golden traces, and it found a real defect the moment it
+ * existed: see `review()` on why stability reads the PRE-update difficulty.
+ *
+ * A sanity check that catches a bad vector immediately: initial difficulty for a "Good"
+ * first answer must land near the middle of the 1–10 range, not at a clamp boundary.
+ * `pnpm engines:simulate` asserts this.
  *
  * After ~50k reviews, re-fit on our own `review_log` per cohort. The exact numbers
  * matter less than they look: `rebuild()` recomputes all state from the append-only
@@ -166,10 +170,27 @@ export function review(input: ReviewInput, weights: Weights = DEFAULT_WEIGHTS): 
   } else {
     const r = retrievability(state, now)
     difficulty = nextDifficulty(state.difficulty, rating, w)
+    /**
+     * `state.difficulty`, not the `difficulty` computed one line above.
+     *
+     * FSRS derives the new stability from the difficulty as it stood BEFORE this answer.
+     * This passed the updated value, and the error was invisible everywhere it was looked
+     * for: difficulty does not depend on stability, so every D assertion matched the
+     * reference exactly, and on a "Good" answer the difficulty barely moves so S agreed to
+     * 0.16 %. It showed only on Hard and Easy, where D swings by a whole point.
+     *
+     * - **Easy** lowered D first, so `(11 - D)` was larger and stability came out up to
+     *   **12.6 %** too high. Intervals too long — the fact returns after it is forgotten.
+     * - **Hard** raised D first, suppressing stability by up to **8.2 %**. Intervals too
+     *   short — busywork on exactly the items that are already hardest to face.
+     *
+     * Both are the wrong direction and both compound. 544 engine tests passed over it,
+     * because every one of them asserts a property that a subtly wrong scheduler also has.
+     */
     stability =
       rating === 1
-        ? stabilityAfterLapse(state.stability, difficulty, r, w)
-        : stabilityAfterRecall(state.stability, difficulty, r, rating, w)
+        ? stabilityAfterLapse(state.stability, state.difficulty, r, w)
+        : stabilityAfterRecall(state.stability, state.difficulty, r, rating, w)
     reps = state.reps + 1
     lapses = state.lapses + (rating === 1 ? 1 : 0)
   }
