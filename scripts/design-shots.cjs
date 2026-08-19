@@ -36,6 +36,7 @@
 
 const { chromium } = require('playwright')
 const { walkOnboarding } = require('./lib/onboarding-walk.cjs')
+const { MEASURE } = require('./lib/measure-ink.cjs')
 const { launchOptions } = require('./chromium.cjs')
 const http = require('node:http')
 const fs = require('node:fs')
@@ -188,6 +189,101 @@ const PLAYED_ROUTES = ['/profile', '/streak', '/', '/quests', '/settings']
  */
 const PSEUDO_ROUTES = ['/', '/settings', '/account?mode=link', '/paywall?source=settings', '/streak', '/lesson', '/quests']
 
+/**
+ * How full each screen is, as a table rather than a verdict.
+ *
+ * A threshold was tried first and thrown away. The one already in this file — "flag it
+ * when it is 25 % empty at EVERY width" — is why the only screen it ever named was the
+ * account form: 320 × 568 is a short phone, most screens overflow it, and a screen that
+ * overflows has no gap by construction. So the rule was silent about the profile's empty
+ * state, the league's, and the paywall with no prices, all of which are the defect.
+ *
+ * What the numbers actually show is a scaling failure, and it is bimodal enough not to
+ * need a threshold at all. Screens that grow into the space they are given hold their
+ * density from 320 to 768 — Home 94 → 84, Explore 87 → 92, Settings 80 → 81, Quests
+ * 92 → 90. Screens that are a fixed block hanging from the top lose a quarter to a third
+ * of it — Profile 63 → 33, League 63 → 35, the paywall 64 → 37, the account form
+ * 42 → 18. There is nothing between −10 and −24, and the gap is the finding.
+ *
+ * So: print all of them, worst first, and let the reader see the gap for themselves. The
+ * ✎ marks the ones on the far side of it. It is a pointer, not a pass mark — a
+ * celebration screen with one thing to say is meant to be sparse, and `quest-complete`
+ * sits there on purpose.
+ */
+const SCALING_DROP = 20
+
+/** Wide enough for `offline-paywall?source=settings`, which is the longest name here. */
+const NAME_COL = 32
+
+const inkRows = (measured) =>
+  Object.entries(measured)
+    .map(([name, byViewport]) => {
+      const seen = VIEWPORTS.map((v) => byViewport[v.name]).filter(
+        (m) => m !== undefined && m.contentDensity !== undefined,
+      )
+      if (seen.length !== VIEWPORTS.length) return null
+      const first = seen[0].contentDensity
+      const last = seen[seen.length - 1].contentDensity
+      return {
+        name,
+        cells: seen.map(
+          (m) =>
+            `${String(m.contentDensity).padStart(3)}%${String(m.emptiestBand.percentOfViewport).padStart(4)}%`,
+        ),
+        // The design target, and the number a state is compared against.
+        target: (byViewport[VIEWPORTS[1].name] ?? seen[0]).contentDensity,
+        widest: last,
+        drop: first - last,
+      }
+    })
+    .filter((row) => row !== null)
+    .sort((a, b) => a.widest - b.widest)
+
+/**
+ * A state named after a route — `offline-shop`, `played-profile`, `pseudo-lesson`.
+ *
+ * The states table is otherwise unreadable: every onboarding step and every lesson phase
+ * is a one-decision screen with a headline, a control and a button, so they fill the top
+ * of a sorted list by design and bury the four rows that mean something. Comparing a
+ * state against ITS OWN route asks the question that is actually interesting — did going
+ * offline, or replaying in a pseudo-locale, or having played a lesson, make this screen
+ * emptier than it is normally? — and a screen with no route to compare against simply
+ * has nothing in the column.
+ */
+const routeBehind = (stateName) => {
+  const match = /^(offline|played|pseudo)-(.+)$/.exec(stateName)
+  return match === null ? null : match[2]
+}
+
+const printInk = (title, rows, limit, baseline) => {
+  if (rows.length === 0) return
+  const total = rows.length
+  console.log(
+    `\n  ${title} — ink and the largest gap, per viewport, emptiest first` +
+      (total > limit ? ` (${limit} of ${total})` : ''),
+  )
+  console.log(
+    `      ${''.padEnd(NAME_COL)}${VIEWPORTS.map((v) => `${v.name}`.padStart(9)).join('')}   320→${
+      VIEWPORTS[VIEWPORTS.length - 1].name
+    }${baseline === undefined ? '' : '  vs route'}`,
+  )
+  for (const row of rows.slice(0, limit)) {
+    const mark = row.drop >= SCALING_DROP ? '✎' : ' '
+    const drop = row.drop >= 0 ? `−${row.drop}` : `+${-row.drop}`
+    let vs = ''
+    if (baseline !== undefined) {
+      const base = baseline[routeBehind(row.name) ?? '']
+      vs =
+        base === undefined
+          ? '         '
+          : `${(row.target - base.target >= 0 ? '+' : '−') + Math.abs(row.target - base.target)}`.padStart(9)
+    }
+    console.log(`    ${mark} ${row.name.padEnd(NAME_COL)}${row.cells.join('')}   ${drop.padStart(4)}${vs}`)
+  }
+  if (total > limit) console.log(`      +${total - limit} more in report.json`)
+}
+
+
 const TYPES = {
   '.html': 'text/html',
   '.js': 'text/javascript',
@@ -228,7 +324,7 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
 
   const browser = await chromium.launch(launchOptions())
 
-  const report = { routes: {}, generatedAt: null }
+  const report = { routes: {}, states: {}, generatedAt: null }
 
   /**
    * Get past the onboarding gate, once per browser context.
@@ -392,9 +488,29 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
     // purpose is "a shot that silently did not happen is worse than none" cannot itself
     // be guessing at how many there were.
     let taken = 0
-    const shot = (name) => {
+    /**
+     * A state shot, measured as well as photographed.
+     *
+     * It only took the picture before, so every measurement in this file described a
+     * ROUTE — and the emptiest screens in the app are not routes. Profile's empty state,
+     * League's empty state, the paywall with no prices and the account form are states of
+     * a route, or a route reached with a particular account, and the numbers a review
+     * argues about stopped exactly where they got interesting.
+     *
+     * The same `MEASURE`, so a state and a route are comparable.
+     */
+    const shot = async (name) => {
       taken += 1
-      return page.screenshot({ path: path.join(OUT, `${name}@${viewport.name}.png`) })
+      await page.screenshot({ path: path.join(OUT, `${name}@${viewport.name}.png`) })
+      // Never fatal. These fire mid-flow — between two taps in a lesson, with the radio
+      // pulled out — and a measurement that could abort the run would cost the pictures,
+      // which are the point.
+      try {
+        report.states[name] ??= {}
+        report.states[name][viewport.name] = await page.evaluate(MEASURE)
+      } catch {
+        /* the shot is taken; the number is a bonus */
+      }
     }
 
     await completeOnboarding(page, SHOOT_FLOWS ? shot : async () => {})
@@ -412,75 +528,17 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
        * cannot show you: a 30 pt button looks fine in a picture and fails under a
        * thumb, and a 4 px overflow is invisible until someone swipes.
        *
-       * `deadSpaceBelow` is the fourth, and it is here because it found three screens
-       * a human had already looked at and passed. A screenshot shows emptiness but not
-       * how much, and a reviewer's eye grades it against the screen rather than against
-       * the other viewports — so onboarding's taster sat 47 % empty at 320 and 66 % at
-       * 768 through several review passes. As a percentage across three widths it is
-       * obvious, and it is a number a review can argue with.
+       * The three emptiness measures are here because the first of them found three
+       * screens a human had already looked at and passed. A screenshot shows emptiness
+       * but not how much, and a reviewer's eye grades it against the screen rather than
+       * against the other viewports — so onboarding's taster sat 47 % empty at 320 and
+       * 66 % at 768 through several review passes. As a percentage across three widths
+       * it is obvious, and it is a number a review can argue with.
+       *
+       * `MEASURE` is defined at module scope so this pass and the state pass inside
+       * `shot()` cannot drift into measuring two different things.
        */
-      const measured = await page.evaluate(() => {
-        const doc = document.documentElement
-
-        /**
-         * How much of the viewport below the content is empty.
-         *
-         * Measured from the bottom of the deepest thing actually painted in the scroll
-         * area to the top of whatever is pinned below it — a footer, the tab bar — or to
-         * the bottom of the window when nothing is. Zero on any screen that scrolls,
-         * which is most of them; large only where short fixed content hangs from the top
-         * of a tall screen, which is the defect.
-         *
-         * Deliberately NOT a gate. A meditation screen might want to be mostly empty,
-         * "mostly empty" is sometimes the design, and a threshold here would either fire
-         * on those or be set so loose it fires on nothing. The number goes in the report
-         * and a person decides.
-         */
-        const deadSpaceBelow = (() => {
-          const scroller = Array.from(document.querySelectorAll('*')).find((node) => {
-            const style = getComputedStyle(node)
-            return /^(auto|scroll)$/.test(style.overflowY) && node.clientHeight > 200
-          })
-          if (scroller === undefined) return null
-          // A screen with more in it than fits has no dead space by definition.
-          if (scroller.scrollHeight > scroller.clientHeight + 4) return 0
-          const box = scroller.getBoundingClientRect()
-          let contentBottom = box.top
-          for (const node of scroller.querySelectorAll('*')) {
-            const r = node.getBoundingClientRect()
-            // Painted, inside the scroller, and not a zero-height wrapper.
-            if (r.height < 1 || r.width < 1 || r.top > box.bottom) continue
-            if (getComputedStyle(node).visibility === 'hidden') continue
-            contentBottom = Math.max(contentBottom, Math.min(r.bottom, box.bottom))
-          }
-          const gap = Math.round(box.bottom - contentBottom)
-          return { px: gap, percentOfViewport: Math.round((gap / window.innerHeight) * 100) }
-        })()
-        const interactive = Array.from(
-          document.querySelectorAll('[role="button"],[role="tab"],[role="radio"],[role="link"]'),
-        )
-        const small = interactive
-          .map((el) => ({ el, r: el.getBoundingClientRect() }))
-          .filter(({ r }) => r.width > 0 && (r.width < 44 || r.height < 44))
-          .map(({ el, r }) => ({
-            label: (el.getAttribute('aria-label') ?? el.textContent ?? '').trim().slice(0, 32),
-            size: `${Math.round(r.width)}×${Math.round(r.height)}`,
-          }))
-        const unlabelled = interactive.filter(
-          (el) =>
-            (el.getAttribute('aria-label') ?? '').trim() === '' &&
-            (el.textContent ?? '').trim() === '',
-        ).length
-        return {
-          sidewaysScroll: doc.scrollWidth - doc.clientWidth,
-          belowMinTarget: small,
-          unlabelledControls: unlabelled,
-          deadSpaceBelow,
-          headings: Array.from(document.querySelectorAll('[role="heading"]'))
-            .map((h) => (h.textContent ?? '').trim())
-            .slice(0, 4),
-        }
-      })
+      const measured = await page.evaluate(MEASURE)
 
       report.routes[slug] ??= {}
       report.routes[slug][viewport.name] = measured
@@ -679,23 +737,9 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
       }
       if (m.unlabelledControls > 0) notes.push(`${vp}: ${m.unlabelledControls} unlabelled control(s)`)
     }
-    // Reported apart from `notes`, and only when it is large at every width. A tall
-    // viewport showing a short screen is normal; the SAME screen being mostly empty at
-    // 320 and at 768 is a screen that is not using its space, which is what onboarding
-    // was. Not counted as a problem — see `deadSpaceBelow` — so a review reads it and
-    // decides rather than being told.
-    const dead = Object.entries(byViewport)
-      .map(([vp, m]) => [vp, m.deadSpaceBelow])
-      .filter(([, d]) => d !== null && d !== 0)
-    const empty =
-      dead.length === VIEWPORTS.length && dead.every(([, d]) => d.percentOfViewport >= 25)
-        ? dead.map(([vp, d]) => `${vp}: ${d.percentOfViewport}%`).join(' · ')
-        : null
-
     problems += notes.length
     console.log(`  ${notes.length === 0 ? '✓' : '⚠'} ${slug}`)
     for (const n of notes) console.log(`      ${n}`)
-    if (empty !== null) console.log(`      empty below the content — ${empty}`)
   }
   if (report.consoleErrors) {
     problems++
@@ -729,6 +773,18 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
     for (const n of notes.slice(0, 12)) console.log(`      ${n}`)
     if (notes.length > 12) console.log(`      +${notes.length - 12} more in report.json`)
   }
+  const routeInk = inkRows(report.routes)
+  printInk('routes', routeInk, routeInk.length)
+  // Every state is measured; the emptiest twelve are printed. Thirty-three rows is a wall
+  // nobody reads. `vs route` is the column to read here — it is the only one that says
+  // whether the STATE is the problem or the screen always looks like this.
+  printInk(
+    'states',
+    inkRows(report.states),
+    12,
+    Object.fromEntries(routeInk.map((r) => [r.name, r])),
+  )
+
   if (SHOOT_FLOWS) {
     const flowShots = Object.values(report.flowShots ?? {}).reduce((a, b) => a + b, 0)
     console.log(

@@ -153,10 +153,12 @@ unless asked. Full rules: [`PROJECT.md §11`](PROJECT.md#11-git-workflow).
   linter would carry are enforced by scripts instead: `pnpm escape-hatches` (`any`,
   `@ts-expect-error`, `eslint-disable`), `pnpm lint:a11y`, `pnpm design:contrast`,
   `pnpm reachability`, `pnpm five-states`, `pnpm scrollable`. All are in `pnpm verify`.
-- `pnpm design:shots` — renders 14 routes × 320(×568)/390/768, drives the onboarding and
-  lesson flows for the nine screens that are states rather than routes, and measures
-  what a picture cannot show (targets under 44 pt, sideways scroll, unlabelled
-  controls). Not a gate.
+- `pnpm design:shots` — renders every route × 320(×568)/390/768, drives the onboarding,
+  offline, pseudo-locale and lesson flows for the screens that are states rather than
+  routes, and measures what a picture cannot show: targets under 44 pt, sideways scroll,
+  unlabelled controls, and how full each screen is (`contentDensity`, `emptiestBand`,
+  `deadSpaceBelow` — see `docs/design/screen-polish-plan.md` for the baseline and how to
+  read them). Not a gate, deliberately: "mostly empty" is sometimes the design.
 - `pnpm design:measure <url>` — measures a reference in this repo's token shape.
 - `pnpm build:flags` — rasterises the country flags from `flag-icons` (MIT) and writes
   `src/lib/flags.generated.ts`. The PNGs are committed, so run it only when the country
