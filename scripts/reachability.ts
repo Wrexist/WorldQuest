@@ -196,7 +196,6 @@ const ALLOWED: Record<string, string> = {
   isLearned: 'used inside entityProgress, which the collection calls',
   REPAIR_WINDOW_HOURS: 'used inside repairAvailability, which the streak screen calls',
   REPAIR_COOLDOWN_DAYS: 'used inside repairAvailability',
-  STREAK_MILESTONES: 'used inside isMilestone',
 
   // ── surfaced by the comment-stripping fix above, and each one answered honestly
 

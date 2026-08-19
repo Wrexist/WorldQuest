@@ -309,20 +309,60 @@ Two things the work turned up:
   `space[4]`. That art size now carries two measurements in its comment, from two
   different failures of the same check.
 
-**2b. Account form (finding #2).** Drop the flat `bg.canvas` fill so the root gradient
-shows. Give it the art the rest of the app gives a moment like this and the three
-reassurances the body copy currently compresses into one paragraph — what is saved, what
-we do with the address, what we never do — as a short list rather than a wall. Two-step
-progress ("email → code"), because a form that does not say how long it is feels longer.
-Same treatment for `mode=signin`.
+**2b. Account form (finding #2) — done 2026-08-19.** The flat `bg.canvas` fill is gone,
+so the root gradient shows. `atlas/encouraging` on the link path and `atlas/waving-back`
+on sign-in — briefed respectively as "offering an open hand, reassuring, patient, not
+pitying" and "greeting someone returning after a long time", which are the two moments.
+The single 160-character paragraph became a lead sentence and three ticked lines; nothing
+new is promised, it is the same two promises separated so each can be read. A two-step
+`ProgressBar` under the header, the same one onboarding uses.
 
-**2c. Streak page (finding #3).** Add the week strip the Profile tab already has —
-extract it into a shared component rather than writing a second one, since two week
-calendars that can disagree is exactly the class of bug this repo keeps finding. Add the
-milestone ladder: the XP economy already funds days 7 / 30 / 100 / 365, `StreakScreen.tsx:61`
-notes that no screen ever mentioned them, and "6 days to your next milestone" is currently
-a sentence with no picture of what it is counting towards. Add the missing screen title.
-**No new numbers** — every value comes from the balance table.
+| | 320 | 390 | 768 |
+|---|---|---|---|
+| ink before | 42 % | 28 % | 18 % |
+| ink after | **82 %** | **58 %** | **41 %** |
+| gap before | 44 % | 63 % | 74 % |
+| gap after | **6 %** | **30 %** | **50 %** |
+
+**58 % against a 65 % target, and the 768 gap is still large.** Both are real and both are
+overstated by the harness: this screen's lower half is where the keyboard goes, and the
+keyboard is the one piece of chrome a screenshot cannot render. On a phone, a user who has
+tapped the field sees a form that fills the visible area — which is why `KeyboardAvoidingView`
+is wrapped round it in the first place. Padding the space a keyboard occupies would make
+the screenshot better and the screen worse.
+
+**2c. Streak page (finding #3) — done 2026-08-19.** The week strip moved out of
+`ProfileScreen` into `components/WeekStrip` and both screens draw the same one. The
+milestone ladder renders `STREAK_MILESTONES` and `streakMilestoneReward` — four rungs,
+every value read from the balance table, and no coin chip at 365 because there genuinely
+is no coin bonus there. It hides itself on a broken streak, because `MilestoneLine`
+already refuses to say "3 days to your next milestone" beside "Your streak ended" and a
+whole ladder of what you no longer have is that sentence at four times the length. And
+the screen finally has a title: `streak:title` had existed since it was written, with no
+reader.
+
+| | 320 | 390 | 768 | 320→768 |
+|---|---|---|---|---|
+| before | 78 % / 7 % | 68 % / 18 % | 54 % / 34 % | −24 |
+| after | **75 % / 8 %** | **82 % / 5 %** | **75 % / 10 %** | **−0** |
+
+Past the ≥ 80 % target at 390, and the scaling drop is gone: this screen has left the ✎
+group entirely and now sits with Settings and Region among the ones a review keeps
+passing. The two-point gap between an empty streak and a real one is closed — the week
+strip and the ladder are things that change when you use the app.
+
+**Two bugs the work turned up:**
+
+- **A duplicate React key, live, inherited.** `useWeekActivity` labels days with
+  `weekday: 'narrow'` — M T W T F S S in English, two Ts and two Ss — and the strip keyed
+  its seven columns on that. Duplicate keys in a list are undefined behaviour: React may
+  reuse the wrong node across a re-render, so a bar animates into the wrong column. It had
+  been in `ProfileScreen` since the strip was written and nothing saw it until a test
+  rendered the component outside a screen. Keyed by index now, which is correct here and
+  not a shrug: a fixed-length window of the last seven days in fixed order.
+- **A stale reachability allowance.** `STREAK_MILESTONES` was allowlisted as "used inside
+  isMilestone"; the ladder gave it a real caller, and `pnpm reachability` failed the build
+  until the entry came out. Exactly what that check is for.
 
 **2d. League + Profile empty states (findings #4, #5).** Consume `EmptyState` from Phase
 1; drop League's flat fill. Mostly free once Phase 1 has landed, which is why they are

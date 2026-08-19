@@ -39,6 +39,7 @@ import { INSIGNIA_SIZE, insigniaFor } from '../../lib/insignia.js'
 import { Icon } from '../../components/Icon.js'
 import { TopBar } from '../../components/TopBar.js'
 import { AchievementMedal } from '../achievements/AchievementMedal.js'
+import { WeekStrip, type WeekActivity } from '../../components/WeekStrip.js'
 import type { IconName } from '../../lib/icons.generated.js'
 
 /**
@@ -77,7 +78,7 @@ export type ProfileStats = {
  * Seven fixed slots rather than "days with activity": a week with two active days
  * should read as two bars among five empty ones, not as a full-looking chart of two.
  */
-export type WeekActivity = readonly { readonly day: string; readonly count: number }[]
+export type { WeekActivity } from '../../components/WeekStrip.js'
 
 export type ProfileScreenProps = {
   readonly stats: ProfileStats | null
@@ -544,44 +545,17 @@ function ProfileSkeleton() {
 /**
  * Seven bars, one per day.
  *
- * Heights are relative to the user's own best day, not to a fixed target. A chart
- * scaled to a goal makes a five-lesson day look like a failure next to a ten-lesson
- * one; scaled to the week, it shows the shape of the week, which is the only thing
- * seven bars can honestly say.
+ * Extracted to `components/WeekStrip` when the streak screen needed the same thing —
+ * the page whose entire subject is consecutive days had no calendar on it, so the tab
+ * that links to the streak showed more about it than the streak page did. Two
+ * implementations of "which days did I learn on" is two things that can disagree about
+ * one fact, and this repo has spent long enough finding that bug in other places.
  */
 function WeeklyActivity({ week }: { readonly week: WeekActivity }) {
   const t = useT()
-  const peak = Math.max(...week.map((d) => d.count))
-
   return (
     <Section title={t('profile:week.title')}>
-      {peak === 0 ? (
-        <Text style={styles.weekEmpty}>{t('profile:week.none')}</Text>
-      ) : (
-        <View style={styles.week}>
-          {week.map((day) => (
-            <View
-              key={day.day}
-              accessible
-              accessibilityLabel={t('profile:week.day', { day: day.day, count: day.count })}
-              style={styles.weekDay}
-            >
-              <View style={styles.weekTrack}>
-                <View
-                  style={[
-                    styles.weekBar,
-                    // A day with activity always shows something. A 1-lesson day next
-                    // to a 12-lesson one would otherwise round to an invisible sliver,
-                    // which reads as "you did nothing" — the opposite of the truth.
-                    { height: `${day.count === 0 ? 0 : Math.max(12, (day.count / peak) * 100)}%` },
-                  ]}
-                />
-              </View>
-              <Text style={styles.weekLabel}>{day.day}</Text>
-            </View>
-          ))}
-        </View>
-      )}
+      <WeekStrip week={week} emptyLabel={t('profile:week.none')} />
     </Section>
   )
 }
@@ -589,34 +563,6 @@ function WeeklyActivity({ week }: { readonly week: WeekActivity }) {
 const styles = StyleSheet.create({
   insignia: { alignSelf: 'flex-start', marginBottom: space[1] },
   levelTitle: { ...text('h3'), color: colors.text.primary, marginBottom: space[2] },
-  week: { flexDirection: 'row', justifyContent: 'space-between', gap: space[2], height: 96 },
-  weekDay: { flex: 1, alignItems: 'center', gap: space[1] },
-  /**
-   * The track is DRAWN, not just reserved.
-   *
-   * It had no background, so a day with no lessons rendered nothing at all — and the
-   * rendered week came out as a single green rectangle floating beside six invisible
-   * columns. This component's own header says a chart of "days with activity" would
-   * "flatter the user by lying about the shape of their week", and without a visible
-   * empty column that is exactly what it drew: the seven slots were there in the layout
-   * and only one of them was there on screen.
-   *
-   * `progressTrack` rather than a surface, and that is the point of using it: it is the
-   * same unfilled channel `ProgressBar` draws everywhere else in the app, so an empty day
-   * here reads as the same "nothing yet" an empty bar does on Explore.
-   */
-  weekTrack: {
-    flex: 1,
-    width: '100%',
-    justifyContent: 'flex-end',
-    borderRadius: radius.sm,
-    ...squircle,
-    backgroundColor: colors.status.progressTrack,
-    overflow: 'hidden',
-  },
-  weekBar: { width: '100%', borderRadius: radius.sm, backgroundColor: colors.status.progress, ...squircle },
-  weekLabel: { ...text('overline'), color: colors.text.tertiary },
-  weekEmpty: { ...text('body'), color: colors.text.secondary },
   screen: { flex: 1 },
   content: { padding: space[4], gap: space[4] },
   /**

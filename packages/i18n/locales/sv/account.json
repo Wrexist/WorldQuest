@@ -1,6 +1,10 @@
 {
   "account:link.title": "Spara dina framsteg",
-  "account:link.body": "Lägg till en e-postadress så följer din svit, din XP och allt du lärt dig med till en ny telefon. Vi använder den för att logga in dig igen och till ingenting annat.",
+  "account:link.body": "En e-postadress, och den här telefonen slutar vara det enda stället där dina framsteg finns.",
+  "account:link.assure.travels": "Din svit, din XP och varje fakta du har lärt dig",
+  "account:link.assure.anyPhone": "Logga in på vilken telefon som helst — allt finns kvar",
+  "account:link.assure.onlyUse": "Vi använder din e-post för att logga in dig, inget annat",
+  "account:step": "Steg {current} av {total}",
   "account:signIn.title": "Logga in",
   "account:signIn.body": "Ange e-postadressen du sparade dina framsteg med så skickar vi en kod.",
   "account:signIn.warning.title": "Det finns framsteg på den här telefonen",

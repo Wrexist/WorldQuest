@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
-import { FREEZE_PRICE, MAX_FREEZES, REPAIR_PRICE } from '@worldquest/engines'
+import { FREEZE_PRICE, MAX_FREEZES, REPAIR_PRICE, STREAK_MILESTONES } from '@worldquest/engines'
 import { StreakScreen, type StreakScreenProps } from './StreakScreen.js'
 
 const NOW = Date.parse('2026-08-02T12:00:00Z')
@@ -72,11 +72,21 @@ describe('StreakScreen', () => {
     expect(screen.queryByText(/to your next milestone/)).toBeNull()
   })
 
-  it('says nothing past the last milestone the balance table funds', () => {
+  it('names no target past the last milestone the balance table funds', () => {
     // 7/30/100/365 and no more. A fifth target would promise a reward no ledger
     // honours, which the user finds out about on the day they reach it.
+    //
+    // This asserted "no text matching /milestone/i" and therefore also forbade the
+    // LADDER, which arrived later and shows the same four days as a list. Four rungs all
+    // ticked is a record of what somebody did, not a target dangled at them, so the
+    // assertion now says what the rule always meant: no fifth rung, and nothing counting
+    // down to one.
     render(<StreakScreen {...props({ current: 400, longest: 400 })} />)
-    expect(screen.queryByText(/milestone/i)).toBeNull()
+    expect(screen.queryByText(/to your next milestone/)).toBeNull()
+    for (const day of STREAK_MILESTONES) {
+      expect(screen.getByText(new RegExp(`^${day} days$`))).toBeTruthy()
+    }
+    expect(screen.getAllByLabelText(/Reached/)).toHaveLength(STREAK_MILESTONES.length)
   })
 
   it('does not dangle a milestone at someone whose streak just broke', () => {
@@ -90,6 +100,9 @@ describe('StreakScreen', () => {
       />,
     )
     expect(screen.queryByText(/milestone/i)).toBeNull()
+    // The ladder goes with it. A list of the four things you no longer have, each with
+    // its price in days, is the same taunt at four times the length.
+    expect(screen.queryByText(/Milestones/)).toBeNull()
   })
 
   it('hides the repair card while the streak is intact', () => {

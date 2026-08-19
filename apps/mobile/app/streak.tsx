@@ -29,6 +29,7 @@ import { router } from 'expo-router'
 import { currentStreak, repairAvailability, type RecoveryState } from '@worldquest/engines'
 import { buyStreakFreeze, repairStreak } from '@worldquest/api'
 import { StreakScreen } from '../src/features/streak/StreakScreen.js'
+import { useWeekActivity } from '../src/features/profile/useWeekActivity.js'
 import { ContentGate } from '../src/components/ContentGate.js'
 import { useOptimisticProgress } from '../src/features/home/useOptimisticProgress.js'
 import { useOnline } from '../src/lib/connectivity.js'
@@ -43,6 +44,7 @@ export default function StreakRoute() {
   const { data, shown, status, refetch } = useOptimisticProgress()
   const online = useOnline()
   const now = Date.now()
+  const week = useWeekActivity()
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
   /**
@@ -172,6 +174,10 @@ export default function StreakRoute() {
         longest={state.longest}
         freezesHeld={state.freezesHeld}
         coins={data?.coins ?? 0}
+        // The same seven days Profile draws, from the same hook — this is a strip of
+        // local lesson history, so there is nothing to fetch and nothing that can be out
+        // of step with the tab that also shows it.
+        week={week}
         // `repairOffer`, not `repair`. The engine exports a pure `repair()` with no
         // caller — the transaction is `repair_streak` in SQL, because a Postgres function
         // cannot import TypeScript — and `pnpm reachability` matches export names on a
