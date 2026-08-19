@@ -83,7 +83,7 @@ const FUNCTIONS: Record<string, FunctionSpec> = {
       // of the day pinned. See `quests/progress.ts` for why the file was split.
       'quests/progress.ts',
     ],
-    shared: ['submission-time.ts'],
+    shared: ['submission-time.ts', 'parse-submission.ts'],
     generated: () => [
       // Shimmed rather than vendored: each is one small binding behind a module that
       // would drag the content engine into every cold start. See the two shims.
@@ -384,7 +384,26 @@ export function buildFunction(name: string): DeployFile[] {
 
   for (const module of spec.shared) {
     const source = readFileSync(join(SRC, '_shared', module), 'utf8')
-    files.push({ name: `_shared/${module}`, content: rewriteImports(source) })
+    files.push({
+      name: `_shared/${module}`,
+      content: rewriteImports(
+        // `../_engines/`, not the entrypoint's `./_engines/`. A shared module sits one
+        // directory down in the bundle, so it needs one more level up to reach the
+        // vendored engines beside `index.ts`.
+        //
+        // This rewrite did not exist until `parse-submission.ts` arrived, because
+        // `submission-time.ts` — the only shared module before it — imports nothing from
+        // the engines. So the path had never been exercised, and the first module that
+        // needed it produced a bundle importing a directory three levels above the
+        // deployed function. The self-containment guard refused it immediately, which is
+        // the guard doing precisely what it was written for.
+        // `(\.\./)+` rather than a fixed depth: a shared module sits one level deeper
+        // than the entrypoint, so its own path to the engines is four segments and not
+        // three. Matching an exact count would encode the directory layout in a regex,
+        // which is the kind of thing that breaks silently the day somebody nests one.
+        source.replace(/(?:\.\.\/)+packages\/engines\/src\//g, '../_engines/'),
+      ),
+    })
   }
 
   files.push(...(spec.generated?.() ?? []))

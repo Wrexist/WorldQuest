@@ -311,6 +311,18 @@ describe('the answer key the server grades with', () => {
 describe('the endpoint does not trust the client', () => {
   const index = buildFunction('submit-lesson').find((f) => f.name === 'index.ts')!.content
 
+  // These assert against the file's TEXT, which is the weakest form of test there is: it
+  // proves a string is present, not that a request is refused, and it breaks the day
+  // somebody reformats an array across two lines. They are here because `index.ts` imports
+  // `jsr:@supabase/supabase-js@2` and calls `Deno.serve` at module scope, so nothing under
+  // Node can load it — a grep was the only check available.
+  //
+  // The request parser no longer needs one. It lives in `_src/_shared/parse-submission.ts`
+  // and `parse-submission.test.ts` EXECUTES every rule it used to be grepped for, `kind`
+  // included. What is left below guards the wiring between the parser, the grader and the
+  // RPC — the part that is genuinely only visible in this file — and each one should move
+  // out the same way if the code it watches ever becomes loadable.
+
   it('never hands the client\'s answers straight to the grader', () => {
     // The P1 from review: `parseBody` checked `wasCorrect` was a boolean and passed
     // it straight into gradeLesson, so a modified client could post ten fabricated
@@ -321,14 +333,6 @@ describe('the endpoint does not trust the client', () => {
 
   it('recomputes correctness from the vendored key', () => {
     expect(index).toMatch(/wasCorrect:[\s\S]{0,120}ANSWER_BY_FACT\[/)
-  })
-
-  it('checks the lesson kind before it reaches a database enum', () => {
-    // Not a security hole — Postgres refuses an unknown enum value — but the refusal
-    // arrives as a 500, which the client's queue treats as retryable. So a lesson with a
-    // bad `kind` burned five attempts and PARKED: work the user actually did, held for
-    // ever, over a string. A 400 parks it immediately and says why.
-    expect(index).toMatch(/'lesson', 'quest', 'review', 'challenge', 'event'/)
   })
 
   it('scores the quest from its own grading, never from the payload', () => {
