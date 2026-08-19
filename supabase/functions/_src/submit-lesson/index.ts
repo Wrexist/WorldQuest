@@ -56,7 +56,7 @@ type SubmitBody = {
    * rates come from `BALANCE` on this side. See the migration for why the quest cannot
    * simply be re-derived here.
    */
-  quest?: { tasks: QuestTask[] }
+  quest?: { date: string; tasks: QuestTask[] }
 }
 
 const json = (body: unknown, status = 200) =>
@@ -163,6 +163,11 @@ function parseBody(raw: unknown): SubmitBody | null {
 /** Five slots at most, each naming a bounded set of facts. Everything else is refused. */
 function isQuestPayload(raw: unknown): boolean {
   if (typeof raw !== 'object' || raw === null) return false
+  // The date the device composed it for. Shape only — what it MEANS is decided by the
+  // comparison in `evaluateQuest`, which is the only thing this field is ever used for.
+  const date = (raw as { date?: unknown }).date
+  if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return false
+
   const tasks = (raw as { tasks?: unknown }).tasks
   if (!Array.isArray(tasks) || tasks.length === 0 || tasks.length > 8) return false
 
@@ -613,7 +618,7 @@ async function handle(req: Request): Promise<Response> {
 async function evaluateQuest(
   admin: SupabaseClient,
   userId: string,
-  quest: { tasks: QuestTask[] } | undefined,
+  quest: { date: string; tasks: QuestTask[] } | undefined,
   /**
    * The answers as THIS FUNCTION graded them, never the ones off the wire.
    *
@@ -634,6 +639,22 @@ async function evaluateQuest(
   // the payload: it is the primary key of the row that records what has been paid, and a
   // caller who could choose it could collect a quest a day.
   const date = new Intl.DateTimeFormat('en-CA', { timeZone }).format(new Date())
+
+  /**
+   * The device composed this for a different day, so it is not today's quest.
+   *
+   * A lesson that spans local midnight is submitted on the new day carrying the old
+   * day's five tasks. Pinning those would make the new day's quest unpayable for the
+   * rest of it — the pinned facts are yesterday's, and today's evidence will not name
+   * them. Skipping is the right answer: the next lesson pins the quest the user is
+   * actually looking at.
+   *
+   * A COMPARISON, never a use. The server still decides the date, from
+   * `profiles.timezone`, because the date is the primary key of the row recording what
+   * has been paid. The worst a client can do by lying here is have its own quest
+   * declined.
+   */
+  if (quest.date !== date) return null
 
   const { data: pinned, error: pinError } = await admin.rpc('pin_daily_quest', {
     p_user_id: userId,

@@ -420,6 +420,11 @@ export function LessonScreen({
       ...(quest !== null
         ? {
             quest: {
+              // The day the device composed it for. The server decides which day to
+              // RECORD under and only compares this — a lesson that spans local midnight
+              // arrives on a new day carrying the old day's tasks, and pinning those
+              // would make the new day's quest unpayable.
+              date: quest.date,
               tasks: quest.tasks.map((task) => ({
                 slot: task.slot,
                 target: task.target,

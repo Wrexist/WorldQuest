@@ -131,7 +131,11 @@ export type LessonSubmission = {
    * is paid when the queue drains — by the same idempotency key, in the same transaction
    * as the lesson that finished it.
    */
-  quest?: { tasks: readonly { slot: string; target: number; factIds: readonly string[]; goal?: string }[] }
+  quest?: {
+    /** The local date the device composed it for; the server compares rather than uses it. */
+    date: string
+    tasks: readonly { slot: string; target: number; factIds: readonly string[]; goal?: string }[]
+  }
 }
 
 /**

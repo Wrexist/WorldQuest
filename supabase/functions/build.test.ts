@@ -284,11 +284,16 @@ describe('the endpoint does not trust the client', () => {
     expect(index).not.toMatch(/for \(const answer of body\.answers\)/)
   })
 
-  it('decides the quest date itself rather than taking one', () => {
-    // The date is the primary key of the row recording what has been paid. A caller who
-    // could choose it could collect a daily quest once a day per date it invented.
-    expect(index).not.toMatch(/body\.quest\.date|quest\.date\b/)
-    expect(index).toMatch(/new Intl\.DateTimeFormat\('en-CA', \{ timeZone \}\)/)
+  it('decides the quest date itself, and only COMPARES the one it was sent', () => {
+    // The date is the primary key of the row recording what has been paid, so a caller
+    // that could choose it could collect a daily quest once per date it invented. The
+    // client sends the day it composed for anyway, because a lesson spanning local
+    // midnight arrives carrying yesterday's tasks — but the only thing that field can do
+    // is get its own quest declined.
+    expect(index).toMatch(/const date = new Intl\.DateTimeFormat\('en-CA', \{ timeZone \}\)/)
+    expect(index).toMatch(/if \(quest\.date !== date\) return null/)
+    // Never on the right-hand side of anything that reaches the database.
+    expect(index).not.toMatch(/p_date: quest\.date|p_quest_date: quest\.date/)
   })
 
   it('takes the quest rates from the balance table, not the request', () => {

@@ -13,7 +13,7 @@
 import { useEffect, useRef } from 'react'
 import { Stack, router, usePathname } from 'expo-router'
 import { DarkTheme, ThemeProvider } from '@react-navigation/native'
-import { StatusBar, StyleSheet } from 'react-native'
+import { AppState, type AppStateStatus, StatusBar, StyleSheet } from 'react-native'
 /**
  * `SafeAreaView` from react-native-safe-area-context, NOT the one in react-native.
  *
@@ -40,6 +40,7 @@ import { useReturnVisit } from '../src/features/welcome/useReturnVisit.js'
 import { useSubscriptionSync } from '../src/features/paywall/useSubscriptionSync.js'
 import { useAppFonts } from '../src/lib/fonts.js'
 import { setChildAccount, track } from '../src/lib/analytics.js'
+import { syncTimeZone } from '../src/lib/timezone.js'
 import { t } from '../src/lib/i18n.js'
 import { useDeviceLocale } from '../src/lib/locale.js'
 import { QueryProvider } from '../src/lib/query.js'
@@ -132,6 +133,32 @@ function useAnalyticsAudience(): void {
 }
 
 /**
+ * Tells the SERVER which day this user is in.
+ *
+ * `profiles.timezone` decides the streak day, the XP soft-cap window,
+ * `isFirstLessonOfDay`, and which rows `expire_streaks()` breaks each hour. It defaults
+ * to `'UTC'` and nothing had ever written it — `signInAnonymously()` sends no metadata
+ * and no screen writes a profile — so every user this product created rolled over at UTC
+ * midnight. In Auckland that ends the day at 11 a.m.: an evening lesson counts towards
+ * tomorrow, and a streak can break while the user still considers the day young.
+ *
+ * On resume as well as on mount, because the case that matters most is a phone that
+ * crossed a timezone while it was asleep.
+ *
+ * Fire-and-forget and never awaited: `syncTimeZone` swallows its own failures, and a
+ * cold start must not wait on a round trip for a column that matters at midnight.
+ */
+function useTimeZoneSync(): void {
+  useEffect(() => {
+    void syncTimeZone()
+    const subscription = AppState.addEventListener('change', (next: AppStateStatus) => {
+      if (next === 'active') void syncTimeZone()
+    }) as { remove?: () => void } | undefined
+    return () => subscription?.remove?.()
+  }, [])
+}
+
+/**
  * One `screen_viewed` per navigation, and none on a redirect.
  *
  * `usePathname` fires for every route change including the gates above, so a first
@@ -185,6 +212,7 @@ function SubscriptionSync(): null {
 export default function RootLayout() {
   const fontsReady = useAppFonts()
   useAnalyticsAudience()
+  useTimeZoneSync()
   useAppOpened()
   const phase = useSplashPhase(fontsReady)
   useDeviceLocale()

@@ -113,6 +113,18 @@ export type SubmitLessonRequest = {
    * server reads its own `review_log` and `lessons` for that.
    */
   quest?: {
+    /**
+     * The local date the DEVICE composed this quest for.
+     *
+     * Not the date anything is recorded under — the server decides that from
+     * `profiles.timezone`, because the date is the primary key of the row saying what has
+     * been paid and a caller who could choose it could collect a quest a day. This is a
+     * MATCH check: a lesson that spans local midnight is submitted on a new day carrying
+     * the old day's five tasks, and pinning those would make the new day's quest
+     * unpayable. The two disagreeing means "skip it, the next lesson will pin the right
+     * one", which is the only thing a client can cause here.
+     */
+    date: string
     tasks: readonly {
       slot: string
       target: number
