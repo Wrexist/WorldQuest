@@ -31,13 +31,18 @@ counts below look small and the work does not.
 | 9. Explore — continents | ✅ |
 | 10. Flags collection | ✅ — plus a countries twin, search, and three filters |
 | 11. Landmarks collection | ⬜ — blocked on photo licensing |
-| 12. Leagues | ⛔ **v2.0** — out of scope by the roadmap |
+| 12. Leagues | ✅ — built ahead of the roadmap once CI could prove the RLS. Standings, rank, week end in local time, and an honest "no league yet" for the days before the placement job runs |
 | 13. Profile | ✅ — level, earned title, band-relative XP bar, seven-day activity |
 | 14. Achievements | ✅ |
 | 15. Settings | ✅ |
 
 Hidden screens: H8 (crash) and H9 (404) done. H6/H11/H15 inline. **H1–H5, H7, H10,
-H12–H14, H16–H22 remain**, and most of the account ones are gated on auth existing.
+H12–H14, H16–H22 remain** — a snapshot, and one clause of it has since expired: the
+account screens are no longer "gated on auth existing", because auth exists (the
+email-code link and sign-in flow, `features/account`). Which of H16–H22 that closes has
+not been re-audited against `screen-catalog.md`, and writing a number here without
+doing that is how the two rows below this table came to say "not built" about things
+that were.
 
 ---
 
@@ -209,17 +214,25 @@ real, narrower gap turned up.
 | 7.6 | ~~`regionProgress`~~ | ✅ The region screen added up `factsLearned` and `factsTotal` across its rows beside an engine function built to do exactly that. The two agreed — same per-entity numbers, same addition — which is what makes a duplicate dangerous rather than obviously broken: it agrees until one side changes, and `regionProgress` is the side that knows non-quizzable facts are excluded (otherwise a disputed capital makes a country permanently incompletable). The screen now takes `RegionProgress` and reports it. That also made `entitiesComplete` free, which the reduce could not have produced without duplicating the "is this country finished?" rule too — so the header gained "1 of 2 countries finished", a number a user actually wants from a continent. The screen had **no component test at all**, which is why a reachability check rather than a failing assertion found this; it has six now, and the one guarding the regression asserts a completed-count the rendered rows could not produce. |
 
 Deliberately NOT in that list, because they are right: everything server-authoritative
-(`applyActivity`, `grantFreeze`, `markBroken`, the reward maths), everything Leagues
-(v2.0), and everything consumed by another engine.
+(`applyActivity`, `grantFreeze`, `markBroken`, `repair`, the reward maths), the half of
+Leagues the SERVER owns (placement, promotion, the weekly rollover), and everything
+consumed by another engine.
 
 ### Deliberately not built
 | Item | Why |
 |---|---|
-| **Leagues (#12)** | v2.0. The tile on Home stays a tile. |
 | **Explore globe (#8)** | Map geometry is an unresolved licensing decision, not an effort problem. The continent grid is the shipping fallback and is already the accessible one. |
 | **Landmarks (#11)** | Every photo needs a recorded licence before ship. Authoring 300 unlicensed photos is worse than shipping without the screen. |
-| **H16–H22 account screens** | Gated on real accounts. Anonymous sessions are all that exist today. |
 | **Friends / social** | v1.5. The Home tile is honest about being empty. |
+| **Achievement AWARDS** | The unlock is real, visible and evaluated from server-derived events; the XP and coins behind a tier are paid by nothing, because the server holds no achievement state. `balance.ts` beside the numbers says what building it costs and which shortcut must not be taken. |
+
+Two rows left this table, and the reason is worth keeping: both said "not built" about
+things that had been built. **Leagues** were shipped ahead of the roadmap once CI could
+run `supabase test db` against the RLS, and **the account screens** landed with the
+email-code flow — so "anonymous sessions are all that exist today" described a repo from
+several releases earlier. A file whose entire purpose is to hold true reasons is the
+worst possible place for a stale one, which this document already says about itself one
+section up.
 
 ---
 
