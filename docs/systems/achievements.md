@@ -141,19 +141,33 @@ to evaluate on every answer.
 
 ## 5. Where it runs
 
-> **Status, 2026-08-18: the server half of this section is NOT built.** Achievements are
-> evaluated on the device, from events the server produced — `masteryChanges`, the
-> authoritative streak, `overdueCleared`, `entityMastered` — so the unlock is not a
-> client's guess about learning. But nothing evaluates the catalogue server-side, so
-> `BALANCE.xp.achievementByTier` and `BALANCE.coins.achievementByTier` are paid by
-> nothing. The unlock is real and visible; the XP and coins behind it are not.
+> **Status, 2026-08-18: built.** `submit-lesson` evaluates the catalogue with the same
+> `evaluateAll` the device runs — vendored by `build.ts`, byte-identical to the source and
+> asserted by a bundle guard — over events the server produced, and `record_lesson` pays
+> the tier in the same transaction as the lesson that earned it.
 >
-> Building it means a progress table, the catalogue vendored into `submit-lesson`, and
-> the achievements screen reading the server's map instead of the device's. A
-> client-claimed award endpoint would be quicker and is the one thing that must not be
-> done: it would let the client decide what it is paid, which is the whole of what this
-> section is about. Recorded in `balance.ts` beside the numbers, so the next reader of
-> either finds the other.
+> Two tables. `achievement_progress` is a cache of the engine's counters, one jsonb blob
+> per user. `achievement_unlocks` is the ledger, keyed on (user, achievement, tier), and
+> that key is what makes payment once: a replayed evaluation inserts nothing and pays
+> nothing — a stronger guarantee than checking the progress blob, because progress is
+> supplied by the caller and an unlock is a fact the table owns.
+>
+> The client still evaluates its own copy, and that is the optimistic half — the same
+> bargain the XP on the lesson summary makes. The device's map decides what the
+> achievements screen draws; the server's decides what moved a balance.
+>
+> **`ach.explorer.continents` changed meaning, and had to.** It counted `region_started`,
+> fired by opening a continent page — invisible to a server, and six taps for a gold tier
+> the moment gold started paying. It counts a region the user answered something correctly
+> in now, which is what §7's copy always said.
+>
+> **`ach.level.climber` had no producer at all.** The `threshold` rule reads a `level` off
+> an event payload, and nothing on the device ever put one there, so its single tier could
+> not move. The server emits it from the XP it has just awarded.
+>
+> What was deliberately NOT built is the shortcut named below: a client-claimed award
+> endpoint, at a tenth the work, handing the client the decision this section exists to
+> take away.
 
 **Server-side, in the same edge function that grades a lesson.** Achievements award XP
 and coins, so a client that could unlock them could mint currency.

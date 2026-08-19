@@ -52,7 +52,13 @@ begin;
 -- taking a `p_restore_to` would let a modified client name any streak length and buy it
 -- for 600 coins, so the function takes nothing and reads `streaks.longest` itself.
 -- 14 + 28 standalone assertions is 42.
-select plan(42);
+--
+-- 42 → 45. The two achievement tables, plus one on the pair of them: `achievement_unlocks`
+-- is a LEDGER — a row in it is what says a tier was paid — so a client that could insert
+-- there could pay itself, and `achievement_progress` holds the counters those payments are
+-- justified by. Both are readable by their owner (the achievements screen has a reason to
+-- know) and writable by nobody. 16 + 29 standalone assertions is 45.
+select plan(45);
 
 -- Every table that holds user data must have RLS on. This catches the classic
 -- failure: a new table added months from now with RLS quietly left off.
@@ -71,7 +77,8 @@ where n.nspname = 'public'
   and c.relname in (
     'profiles','entitlements','user_facts','review_log','lessons',
     'xp_ledger','coin_ledger','wallets','inventory','streaks',
-    'subscriptions','subscription_events','shop_items','daily_quests'
+    'subscriptions','subscription_events','shop_items','daily_quests',
+    'achievement_progress','achievement_unlocks'
   );
 
 -- No client-facing write path may exist on a reward table. The absence of a
@@ -84,7 +91,8 @@ select is_empty(
   $$ select policyname from pg_policies
      where tablename in ('xp_ledger','coin_ledger','user_facts','review_log',
                          'league_members','entitlements','subscriptions',
-                         'subscription_events','daily_quests')
+                         'subscription_events','daily_quests',
+                         'achievement_progress','achievement_unlocks')
        and cmd in ('INSERT','UPDATE','DELETE') $$,
   'no client write policy on any reward or billing table'
 );
@@ -370,6 +378,20 @@ select is_empty(
         and (has_function_privilege('anon', p.oid, 'EXECUTE')
              or p.pronargs > 0) $$,
   'repair_streak takes no arguments and is not callable by anon'
+);
+
+-- ── the achievement ledger ──────────────────────────────────────────────────
+--
+-- Readable by its owner and writable by nobody. The read matters — the achievements
+-- screen has a legitimate reason to know which tiers are banked — and the absence of a
+-- write policy is what stops a client paying itself: a row in `achievement_unlocks` IS
+-- the statement that a tier was awarded, and `record_lesson` pays from exactly the rows
+-- its insert created.
+select isnt_empty(
+  $$ select policyname from pg_policies
+      where tablename in ('achievement_progress','achievement_unlocks')
+        and cmd = 'SELECT' $$,
+  'a user can read their own achievement progress and unlocks'
 );
 
 -- ── the quest pin ───────────────────────────────────────────────────────────

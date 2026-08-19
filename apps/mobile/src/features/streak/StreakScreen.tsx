@@ -102,7 +102,7 @@ export type StreakScreenProps = {
   readonly freezesHeld: number
   readonly coins: number
   /** Straight from `repairAvailability` — the reason is what decides the copy. */
-  readonly repair: RepairAvailability
+  readonly repairOffer: RepairAvailability
   /** The length a repair would restore. Not `current`, which has already reset to 1. */
   readonly restoreTo: number
   /** Epoch ms, injected so the screen never reads a clock. */
@@ -174,7 +174,7 @@ export function StreakScreen({
   longest,
   freezesHeld,
   coins,
-  repair,
+  repairOffer,
   restoreTo,
   now,
   onBuyFreeze,
@@ -187,8 +187,8 @@ export function StreakScreen({
 }: StreakScreenProps) {
   const t = useT()
 
-  const broken = !repair.available
-    ? repair.reason !== 'not-broken' && repair.reason !== 'nothing-to-restore'
+  const broken = !repairOffer.available
+    ? repairOffer.reason !== 'not-broken' && repairOffer.reason !== 'nothing-to-restore'
     : true
 
   const canAffordFreeze = coins >= FREEZE_PRICE
@@ -250,7 +250,7 @@ export function StreakScreen({
           <Text style={styles.cardTitle}>{t('streak:broken.title')}</Text>
           <Text style={styles.body}>{t('streak:broken.body')}</Text>
           <RepairAction
-            repair={repair}
+            repairOffer={repairOffer}
             restoreTo={restoreTo}
             coins={coins}
             now={now}
@@ -333,7 +333,7 @@ export function StreakScreen({
 }
 
 function RepairAction({
-  repair,
+  repairOffer,
   restoreTo,
   coins,
   now,
@@ -342,7 +342,7 @@ function RepairAction({
   repairNotice,
   offline,
 }: {
-  readonly repair: RepairAvailability
+  readonly repairOffer: RepairAvailability
   readonly restoreTo: number
   readonly coins: number
   readonly now: number
@@ -353,16 +353,16 @@ function RepairAction({
 }) {
   const t = useT()
 
-  if (!repair.available) {
+  if (!repairOffer.available) {
     // Every rejection names WHICH, because "you can repair again in 12 days" and "the
     // window closed" are different facts and a generic "unavailable" invites tapping.
-    if (repair.reason === 'window-expired') {
+    if (repairOffer.reason === 'window-expired') {
       return <Text style={styles.note}>{t('streak:repair.expired')}</Text>
     }
-    if (repair.reason === 'cooldown') {
+    if (repairOffer.reason === 'cooldown') {
       return (
         <Text style={styles.note}>
-          {t('streak:repair.cooldown', { days: repair.availableInDays })}
+          {t('streak:repair.cooldown', { days: repairOffer.availableInDays })}
         </Text>
       )
     }
@@ -372,13 +372,13 @@ function RepairAction({
   const canAfford = coins >= REPAIR_PRICE
   // Whole hours, rounded up, and never seconds. A ticking clock on a purchase is
   // pressure, and pressure aimed at a ten-year-old is the thing we do not do.
-  const hoursLeft = Math.max(1, Math.ceil((repair.expiresAt - now) / 3_600_000))
+  const hoursLeft = Math.max(1, Math.ceil((repairOffer.expiresAt - now) / 3_600_000))
 
   return (
     <>
       <Text style={styles.note}>{t('streak:repair.expires', { hours: hoursLeft })}</Text>
       <Button
-        label={t('streak:repair.buy', { count: restoreTo, price: repair.price })}
+        label={t('streak:repair.buy', { count: restoreTo, price: repairOffer.price })}
         variant="secondary"
         disabled={offline || !canAfford || onRepair === undefined}
         // `loading` rather than a third clause in `disabled`, exactly as the freeze does:
@@ -399,7 +399,7 @@ function RepairAction({
       )}
       {offline && <Text style={styles.note}>{t('common:offline.action')}</Text>}
       {!offline && !canAfford && (
-        <Text style={styles.note}>{t('streak:cantAfford', { short: repair.price - coins })}</Text>
+        <Text style={styles.note}>{t('streak:cantAfford', { short: repairOffer.price - coins })}</Text>
       )}
     </>
   )

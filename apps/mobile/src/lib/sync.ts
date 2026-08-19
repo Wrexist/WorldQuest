@@ -384,6 +384,7 @@ function reconcile(result: SubmitLessonResponse): void {
       streak: result.streak?.current ?? null,
       overdueCleared: result.overdueCleared ?? 0,
       entityMastered: result.entityMastered ?? [],
+      regionsStarted: result.regionsStarted ?? [],
       at: Date.now(),
     })
 

@@ -10,7 +10,7 @@ const props = (over: Partial<StreakScreenProps> = {}): StreakScreenProps => ({
   longest: 40,
   freezesHeld: 0,
   coins: 5000,
-  repair: { available: false, reason: 'not-broken' },
+  repairOffer: { available: false, reason: 'not-broken' },
   restoreTo: 40,
   now: NOW,
   onBuyFreeze: vi.fn(),
@@ -85,7 +85,7 @@ describe('StreakScreen', () => {
       <StreakScreen
         {...props({
           current: 0,
-          repair: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 3_600_000 },
+          repairOffer: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 3_600_000 },
         })}
       />,
     )
@@ -103,7 +103,7 @@ describe('StreakScreen', () => {
     const { container } = render(
       <StreakScreen
         {...props({
-          repair: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 10 * 3_600_000 },
+          repairOffer: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 10 * 3_600_000 },
         })}
       />,
     )
@@ -117,7 +117,7 @@ describe('StreakScreen', () => {
       <StreakScreen
         {...props({
           restoreTo: 40,
-          repair: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 10 * 3_600_000 },
+          repairOffer: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 10 * 3_600_000 },
         })}
       />,
     )
@@ -130,7 +130,7 @@ describe('StreakScreen', () => {
     const { container } = render(
       <StreakScreen
         {...props({
-          repair: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 10 * 3_600_000 },
+          repairOffer: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 10 * 3_600_000 },
         })}
       />,
     )
@@ -142,7 +142,7 @@ describe('StreakScreen', () => {
     // "Not available" makes a user tap again tomorrow. A number ends the question.
     render(
       <StreakScreen
-        {...props({ repair: { available: false, reason: 'cooldown', availableInDays: 12 } })}
+        {...props({ repairOffer: { available: false, reason: 'cooldown', availableInDays: 12 } })}
       />,
     )
     expect(screen.getByText(/available again in 12 days/i)).toBeTruthy()
@@ -176,7 +176,7 @@ describe('StreakScreen', () => {
     const { container } = render(
       <StreakScreen
         {...props({
-          repair: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 3_600_000 },
+          repairOffer: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 3_600_000 },
         })}
       />,
     )
@@ -196,7 +196,7 @@ describe('StreakScreen — the repair actually happens', () => {
       current: 1,
       longest: 214,
       restoreTo: 214,
-      repair: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 10 * 3_600_000 },
+      repairOffer: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 10 * 3_600_000 },
       ...over,
     })
 
@@ -234,7 +234,7 @@ describe('StreakScreen — the repair actually happens', () => {
     // `cooldown` and `window_expired` are decided before the tap and are the card's own
     // copy. A notice for them would say the same thing twice.
     const { container } = render(
-      <StreakScreen {...props({ repair: { available: false, reason: 'window-expired' } })} />,
+      <StreakScreen {...props({ repairOffer: { available: false, reason: 'window-expired' } })} />,
     )
     expect(screen.queryByRole('alert')).toBeNull()
     expect(container.textContent).toMatch(/window for this one has closed/i)
@@ -254,7 +254,7 @@ describe('StreakScreen — offline (H7, scoped)', () => {
   })
 
   it('will not sell a repair it cannot deliver', () => {
-    render(<StreakScreen {...props({ offline: true, repair: REPAIRABLE })} />)
+    render(<StreakScreen {...props({ offline: true, repairOffer: REPAIRABLE })} />)
     const repair = screen.getByRole('button', { name: /Restore/i })
     expect(repair.getAttribute('aria-disabled')).toBe('true')
   })
@@ -296,7 +296,7 @@ describe('StreakScreen — offline (H7, scoped)', () => {
   it('and the same buttons are live when the connection is fine', () => {
     // Without this the two disabled assertions above prove nothing: a button that is
     // disabled for some other reason would satisfy them just as well.
-    render(<StreakScreen {...props({ repair: REPAIRABLE })} />)
+    render(<StreakScreen {...props({ repairOffer: REPAIRABLE })} />)
     expect(
       screen.getByRole('button', { name: new RegExp(`${FREEZE_PRICE}`) }).getAttribute('aria-disabled'),
     ).not.toBe('true')

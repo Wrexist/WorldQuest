@@ -47,6 +47,67 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievement_progress: {
+        Row: {
+          progress: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          progress?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          progress?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'achievement_progress_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: true
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      achievement_unlocks: {
+        Row: {
+          achievement_id: string
+          coins: number
+          tier: string
+          unlocked_at: string
+          user_id: string
+          xp: number
+        }
+        Insert: {
+          achievement_id: string
+          coins?: number
+          tier: string
+          unlocked_at?: string
+          user_id: string
+          xp?: number
+        }
+        Update: {
+          achievement_id?: string
+          coins?: number
+          tier?: string
+          unlocked_at?: string
+          user_id?: string
+          xp?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'achievement_unlocks_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       coin_ledger: {
         Row: {
           amount: number
@@ -773,6 +834,8 @@ export type Database = {
       repair_streak: { Args: never; Returns: Json }
       record_lesson: {
         Args: {
+          p_achievement_progress?: Json
+          p_achievement_unlocks?: Json
           p_client_version: string
           p_coins: number
           p_correct: number

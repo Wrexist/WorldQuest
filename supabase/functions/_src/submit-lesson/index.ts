@@ -36,8 +36,17 @@ import {
   type QuestEvent,
   type QuestTask,
 } from '../../../packages/engines/src/quests/progress.ts'
+import {
+  emptyProgress,
+  evaluateAll,
+  type AchievementProgress,
+  type DomainEvent,
+  type Unlock,
+} from '../../../packages/engines/src/achievements/index.ts'
+import { levelProgress } from '../../../packages/engines/src/xp/level.ts'
 import { isFiniteMs, retimeLesson } from '../_shared/submission-time.ts'
 import { ANSWER_BY_FACT, QUIZZABLE_FACTS_BY_ENTITY } from './_content/answers.ts'
+import { ACHIEVEMENTS, REGION_BY_ENTITY } from './_content/achievements.ts'
 
 type SubmitBody = {
   lessonId: string
@@ -268,14 +277,21 @@ async function handle(req: Request): Promise<Response> {
 
   // XP already earned today, in the USER'S timezone — the soft cap is a daily
   // rule, and "today" is 23 or 25 hours long twice a year.
-  const [{ data: profile }, { data: streakRow }] = await Promise.all([
-    admin.from('profiles').select('timezone').eq('id', user.id).single(),
-    admin
-      .from('streaks')
-      .select('current, longest, last_active_date, freezes_held')
-      .eq('user_id', user.id)
-      .maybeSingle(),
-  ])
+  const [{ data: profile }, { data: streakRow }, { data: walletRow }, { data: achRow }] =
+    await Promise.all([
+      admin.from('profiles').select('timezone').eq('id', user.id).single(),
+      admin
+        .from('streaks')
+        .select('current, longest, last_active_date, freezes_held')
+        .eq('user_id', user.id)
+        .maybeSingle(),
+      // For `ach.level.climber`, which compares a LEVEL — so the total before this
+      // lesson, plus what this lesson is about to award, is the number the rule wants.
+      admin.from('wallets').select('xp_total').eq('user_id', user.id).maybeSingle(),
+      // The engine's counters. Absent for a user who has never finished a lesson, which
+      // `readProgress` reads as an empty map rather than as a failure.
+      admin.from('achievement_progress').select('progress').eq('user_id', user.id).maybeSingle(),
+    ])
 
   // A stored zone the app cannot read is a lesson nobody can submit: `Intl` throws a
   // RangeError on an unknown one, and `profiles.timezone` is a column its own owner can
@@ -438,6 +454,56 @@ async function handle(req: Request): Promise<Response> {
     localMidnight,
   )
 
+  // ── achievements ──────────────────────────────────────────────────────────
+  //
+  // The last reward in the balance table nothing paid. Evaluated with the SAME
+  // `evaluateAll` and the same catalogue the device runs — vendored, not reimplemented —
+  // over events this function decided rather than events it was told about.
+  //
+  // After the quest, because `daily_quest_completed` is one of them; before the write,
+  // because the write is where the tiers are banked and paid in the same transaction as
+  // the lesson that earned them.
+  const achievementsBefore = readProgress((achRow as { progress?: unknown } | null)?.progress)
+  const xpTotalAfter =
+    ((walletRow as { xp_total?: number } | null)?.xp_total ?? 0) +
+    result.xpAwarded +
+    milestone.xp
+
+  let achievementProgress = achievementsBefore
+  const achievementUnlocks: Unlock[] = []
+  const events = achievementEvents({
+    graded: retimed.answers,
+    masteryChanges: result.masteryChanges,
+    entityMastered,
+    overdueCleared: result.overdueCleared,
+    streak: streakChanged ? outcome.current : null,
+    accuracy: result.accuracy,
+    // Server-clamped, like everything else the session rules read. `ach.session.speedrun`
+    // asks for a perfect lesson under a minute, and a client-supplied duration would be a
+    // legendary tier for anyone who could edit a number.
+    durationMs: Math.max(0, Date.now() - retimed.startedAt),
+    questCompleted: quest?.allComplete === true && quest.bonusAlreadyPaid === false,
+    xpTotalAfter,
+    at: Date.now(),
+  })
+  for (const event of events) {
+    const evaluated = evaluateAll(ACHIEVEMENTS, achievementProgress, event)
+    achievementProgress = evaluated.progress
+    achievementUnlocks.push(...evaluated.unlocked)
+  }
+
+  /**
+   * The regions the server credited, echoed so the device's own copy can agree.
+   *
+   * Read back off the event list rather than recomputed, so the two cannot drift: the
+   * client's optimistic map and the server's authoritative one advance on exactly the
+   * same members.
+   */
+  const regionsStarted = events
+    .filter((event) => event.name === 'region_started')
+    .map((event) => String(event.payload?.region ?? ''))
+    .filter((region) => region !== '')
+
   // ── persist, in ONE transaction ───────────────────────────────────────────
   //
   // This was five supabase-js calls — five transactions — and only the first one's error
@@ -507,6 +573,16 @@ async function handle(req: Request): Promise<Response> {
     p_quest_task_xp: TASK_XP,
     p_quest_bonus_xp: COMPLETION_BONUS,
     p_quest_bonus_coins: BALANCE.coins.dailyQuest,
+    // The counters, as one blob, exactly as the device stores them.
+    p_achievement_progress: Object.fromEntries(achievementProgress),
+    // What the evaluation says was unlocked. NOT what to pay — the unique key on
+    // `achievement_unlocks` decides that, so a tier already banked inserts nothing and
+    // pays nothing however many times it is announced.
+    p_achievement_unlocks: achievementUnlocks.map((unlock) => ({
+      achievement_id: unlock.achievementId,
+      tier: unlock.tier,
+      ...tierReward(unlock.tier),
+    })),
   })
 
   // An error here means NOTHING was written — that is the point of the function — so the
@@ -582,6 +658,23 @@ async function handle(req: Request): Promise<Response> {
       slotsPaid: (recorded as { questSlotsPaid?: string[] } | null)?.questSlotsPaid ?? [],
       bonusPaid: (recorded as { questBonusPaid?: boolean } | null)?.questBonusPaid ?? false,
     },
+    /**
+     * The tiers this lesson banked, and what they paid.
+     *
+     * The SERVER's list, not the device's: the client evaluates its own copy for an
+     * immediate celebration, and this is the one that moved a balance. An empty list with
+     * a non-empty local one means the device was ahead of the truth, which is the same
+     * bargain every optimistic number here makes.
+     */
+    /** See `recordServerOutcome` — the device advances its own copy on these. */
+    regionsStarted,
+    achievements: {
+      xp: (recorded as { achievementXp?: number } | null)?.achievementXp ?? 0,
+      coins: (recorded as { achievementCoins?: number } | null)?.achievementCoins ?? 0,
+      unlocked:
+        (recorded as { achievementsPaid?: readonly { achievementId: string; tier: string }[] } | null)
+          ?.achievementsPaid ?? [],
+    },
     // Reported rather than swallowed, for the same reason `rejected` is: a spike in
     // either is the signal that a build is sending nonsense, and a number nobody
     // returns is a number nobody can graph.
@@ -632,7 +725,19 @@ async function evaluateQuest(
   lesson: { startedAt: number; endedAt: number },
   timeZone: string,
   localMidnight: Date,
-): Promise<{ date: string; completedSlots: string[]; allComplete: boolean } | null> {
+): Promise<{
+  date: string
+  completedSlots: string[]
+  allComplete: boolean
+  /**
+   * The pinned row had already paid the all-five bonus before this submission.
+   *
+   * Carried out for the achievement counter rather than for the award — `record_lesson`
+   * re-reads it under the lock to decide the payment. `ach.quest.regular` counts quests
+   * finished, and it must count the DAY the fifth slot lands, not every lesson after it.
+   */
+  bonusAlreadyPaid: boolean
+} | null> {
   if (quest === undefined) return null
 
   // The user's local date, decided here from `profiles.timezone` rather than taken from
@@ -732,7 +837,151 @@ async function evaluateQuest(
     date,
     completedSlots: scored.tasks.filter((t) => t.complete).map((t) => t.slot),
     allComplete: scored.tasks.every((t) => t.complete),
+    bonusAlreadyPaid: (pinned as { bonusPaid?: boolean }).bonusPaid === true,
   }
+}
+
+/**
+ * The achievements this lesson moved, from events the server itself produced.
+ *
+ * ## The same engine, not a second one
+ *
+ * `evaluateAll` and the catalogue are the ones the device runs — vendored by `build.ts`,
+ * byte-identical to the source, asserted by a bundle guard. A server-side reimplementation
+ * of thirty rules would not throw when it drifted from the client's; it would award the
+ * wrong thing, quietly, for everyone.
+ *
+ * ## Which events, and why these
+ *
+ * Every one is something this function decided rather than something it was told:
+ * mastery from the memory state it graded, the streak from `applyActivity`, the reviews
+ * it cleared, the quest it just paid, and the level the XP it just awarded puts the user
+ * on. `ach.level.climber` had no producer anywhere before this — nothing on the device
+ * ever put a `level` in a payload, so its single tier could not move.
+ *
+ * `region_started` is the one whose MEANING changed, and it had to. It was fired by
+ * opening a continent page: invisible to a server, and six taps for a gold tier the
+ * moment gold started paying. Here it means the user answered something correctly in
+ * that region, which is what the copy has always said.
+ *
+ * ## Ordering
+ *
+ * `daily_quest_completed` is emitted when this submission's own evaluation completed the
+ * quest and the pinned row had not yet paid the bonus. Two lessons submitted concurrently
+ * could both read `bonusPaid: false` and both emit it, over-counting a 5/30/100 counter
+ * by one — narrow, and it can never over-PAY, because the unlock table is keyed on
+ * (user, achievement, tier).
+ */
+function achievementEvents(input: {
+  readonly graded: readonly { factId: string; wasCorrect: boolean }[]
+  readonly masteryChanges: readonly { factId: string; to: string }[]
+  readonly entityMastered: readonly string[]
+  readonly overdueCleared: number
+  readonly streak: number | null
+  readonly accuracy: number
+  readonly durationMs: number
+  readonly questCompleted: boolean
+  readonly xpTotalAfter: number
+  readonly at: number
+}): readonly DomainEvent[] {
+  const { at } = input
+  const events: DomainEvent[] = []
+
+  for (const change of input.masteryChanges) {
+    if (change.to !== 'mastered' && change.to !== 'burnished') continue
+    // `geo.SE.capital` → attribute `capital`, entity `SE`. The BARE code, because
+    // `distinctBy: 'entityId'` and every `members` list use it — `geo.SE` here would
+    // count as a different country from `SE` in `ach.set.nordics`.
+    const parts = change.factId.split('.')
+    const attribute = parts[parts.length - 1] ?? ''
+    const entityId = parts[1] ?? ''
+    if (attribute === '' || entityId === '') continue
+    events.push({
+      name: 'fact_mastered',
+      at,
+      payload: { attribute, entityId, factId: change.factId },
+    })
+  }
+
+  for (const entityId of input.entityMastered) {
+    events.push({ name: 'entity_mastered', at, payload: { entityId } })
+  }
+
+  // One event per cleared review, because `counter` counts events — sending one carrying
+  // the number would make a ten-review lesson worth one, and a 1000-tier take a decade.
+  // Bounded by the answer count, which is already capped at 50 by the parser.
+  const cleared = Math.min(Math.max(input.overdueCleared, 0), input.graded.length)
+  for (let i = 0; i < cleared; i++) {
+    events.push({ name: 'overdue_review_cleared', at, payload: {} })
+  }
+
+  if (input.streak !== null) {
+    // `streak_extended` rather than `daily_lesson`: the name predates the rule and ships
+    // in dashboards, so it is not renameable. `length` is the field the rule reads.
+    events.push({ name: 'streak_extended', at, payload: { length: input.streak } })
+  }
+
+  events.push({
+    name: 'lesson_completed',
+    at,
+    payload: { accuracy: input.accuracy, durationMs: input.durationMs },
+  })
+
+  if (input.questCompleted) {
+    events.push({ name: 'daily_quest_completed', at, payload: {} })
+  }
+
+  // The regions this lesson actually earned something in. Distinct, because the
+  // set-completion rule dedupes by member anyway and a shorter event list is cheaper.
+  const regions = new Set<string>()
+  for (const answer of input.graded) {
+    if (!answer.wasCorrect) continue
+    const entity = ANSWER_BY_FACT[answer.factId]
+    const region = entity === undefined ? undefined : REGION_BY_ENTITY[entity]
+    if (region !== undefined) regions.add(region)
+  }
+  for (const region of regions) {
+    events.push({ name: 'region_started', at, payload: { region } })
+  }
+
+  // Absolute rather than incremental — `threshold` compares the stat the event reports.
+  events.push({
+    name: 'level_reached',
+    at,
+    payload: { level: levelProgress(Math.max(0, input.xpTotalAfter)).level },
+  })
+
+  return events
+}
+
+/**
+ * The stored progress map, read back into the shape the engine wants.
+ *
+ * Shape-checked rather than cast, for the same reason the device checks its own copy: a
+ * row whose `value` came back as a string makes `"3" + 1` into `"31"` and awards a
+ * legendary tier on the fourth event. A bad row is dropped rather than the map — these
+ * are independent counters, and one malformed badge must not reset the other twenty-nine.
+ */
+function readProgress(stored: unknown): Map<string, AchievementProgress> {
+  const progress = new Map<string, AchievementProgress>()
+  if (typeof stored !== 'object' || stored === null || Array.isArray(stored)) return progress
+
+  for (const [id, row] of Object.entries(stored as Record<string, unknown>)) {
+    if (typeof row !== 'object' || row === null) continue
+    const candidate = row as AchievementProgress
+    if (typeof candidate.value !== 'number' || !Number.isFinite(candidate.value)) continue
+    if (candidate.seen !== undefined && !Array.isArray(candidate.seen)) continue
+    if (candidate.tier !== null && typeof candidate.tier !== 'string') continue
+    progress.set(id, { ...candidate, achievementId: id })
+  }
+  return progress
+}
+
+/** The tier rewards, from the balance table. Unknown tiers pay nothing rather than NaN. */
+function tierReward(tier: string): { xp: number; coins: number } {
+  const xp = (BALANCE.xp.achievementByTier as Record<string, number | undefined>)[tier]
+  const coins = (BALANCE.coins.achievementByTier as Record<string, number | undefined>)[tier]
+  return { xp: xp ?? 0, coins: coins ?? 0 }
 }
 
 /**

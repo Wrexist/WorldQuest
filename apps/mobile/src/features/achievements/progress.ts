@@ -170,6 +170,15 @@ export function recordServerOutcome(input: {
   readonly streak: number | null
   readonly overdueCleared: number
   readonly entityMastered: readonly string[]
+  /**
+   * Regions the server credited this lesson — a continent the user answered something
+   * correctly in.
+   *
+   * It used to be emitted by OPENING the continent page, from the route. A server cannot
+   * see a navigation, and six taps completed a gold tier the moment gold started paying,
+   * so the meaning moved to the thing the copy always described.
+   */
+  readonly regionsStarted: readonly string[]
   readonly at: number
 }): readonly Unlock[] {
   const unlocked: Unlock[] = []
@@ -217,6 +226,12 @@ export function recordServerOutcome(input: {
     )
   }
 
+  for (const region of input.regionsStarted) {
+    unlocked.push(
+      ...recordAchievementEvent({ name: 'region_started', at: input.at, payload: { region } }),
+    )
+  }
+
   if (input.streak !== null) {
     // `streak_extended`, not `daily_lesson`: the engine notes that this name predates it
     // and ships in analytics dashboards, so it is not renameable. `length` is the field
@@ -232,11 +247,6 @@ export function recordServerOutcome(input: {
   }
 
   return unlocked
-}
-
-/** A region opened for the first time. Feeds `ach.explorer.continents`. */
-export function recordRegionStarted(region: string, at: number): readonly Unlock[] {
-  return recordAchievementEvent({ name: 'region_started', at, payload: { region } })
 }
 
 /** A daily quest finished. Feeds `ach.quest.regular`. */

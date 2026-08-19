@@ -290,7 +290,7 @@ months as prices and rewards nothing charged or granted. This section is the reg
 | `prices.streakFreeze` | `purchase_freeze` RPC | ✅ |
 | `prices.streakRepair` | `repair_streak` RPC | ✅ **new** |
 | `prices.titleUnlock` | `purchase_item` RPC | ✅ |
-| `xp/coins.achievementByTier` | — | ⬜ **nothing pays these** |
+| `xp/coins.achievementByTier` | `record_lesson`, from `submit-lesson`'s evaluation | ✅ **new** |
 | `xp/coins.collectionComplete` | — | ⬜ no collection-complete producer |
 | `xp.friendActivated` | — | ⬜ no referral system |
 | `xp/coins.dailyChallenge` | — | ⬜ the daily challenge was removed |
@@ -304,16 +304,19 @@ day all read `profiles.timezone`, which defaulted to `'UTC'` and which nothing w
 until 2026-08-18 — so every "daily" figure in this document was a UTC figure for every
 user, whatever their phone said.
 
-The four unpaid REWARDS are the ones worth watching, because a reward nobody grants is
-indistinguishable from a bug to the person who earned it. Achievements are the largest:
-thirty of them, unlockable today, paying nothing. The block comment beside
-`achievementByTier` in `balance.ts` says what building it properly costs and which
-shortcut must not be taken.
+The three unpaid REWARDS left are the ones worth watching, because a reward nobody grants
+is indistinguishable from a bug to the person who earned it. All three are unpaid because
+the thing that would produce them does not exist — there is no referral system, no
+collection-complete event and no weekly league settlement — rather than because a producer
+was forgotten, which is what the other four turned out to be.
 
-`§8`'s simulation models the lesson rewards, the quest and `factMastered`, and none of
-the ⬜ rows — so the economy it validates is the economy that ships. That is deliberate
-and it is the reason this table exists: the moment one of those rows is built, the
-simulation has to gain it in the same change.
+`§8`'s simulation models the lesson rewards, the quest and `factMastered`, and none of the
+⬜ rows. It does not model achievements either, and that is a deliberate omission rather
+than a stale one: the thirty pay once each and mostly land in the first weeks, so
+modelling them means modelling thirty distinct unlock curves, and a simulation that
+guessed at those would be a worse input to a balance decision than a known gap. The
+consequence is that the simulation now UNDERSTATES income slightly rather than describing
+a different economy.
 
 ## 6. Anti-cheat
 

@@ -203,6 +203,28 @@ export type SubmitLessonResponse = {
     slotsPaid: readonly string[]
     bonusPaid: boolean
   }
+  /**
+   * The achievement tiers this lesson actually banked, and what they paid.
+   *
+   * The SERVER's list. The device evaluates its own copy for an immediate celebration —
+   * that is the optimistic half, exactly like the XP on the summary — and this is the one
+   * that moved a balance. `unlocked` is empty when every tier announced had already been
+   * banked, which is the normal case for a replay.
+   */
+  achievements?: {
+    xp: number
+    coins: number
+    unlocked: readonly { achievementId: string; tier: string }[]
+  }
+  /**
+   * Continents this lesson earned something in.
+   *
+   * `ach.explorer.continents` used to count continent PAGES opened, which a server cannot
+   * see and six taps completed. It counts regions answered correctly in now, and the
+   * server sends back which ones so the device's optimistic copy advances on the same
+   * members rather than on a rule of its own.
+   */
+  regionsStarted?: readonly string[]
   replayed: boolean
 }
 

@@ -172,7 +172,12 @@ export default function StreakRoute() {
         longest={state.longest}
         freezesHeld={state.freezesHeld}
         coins={data?.coins ?? 0}
-        repair={repairAvailability(state, now, timeZone)}
+        // `repairOffer`, not `repair`. The engine exports a pure `repair()` with no
+        // caller — the transaction is `repair_streak` in SQL, because a Postgres function
+        // cannot import TypeScript — and `pnpm reachability` matches export names on a
+        // word boundary, so a prop spelled `repair` reported that function as wired. The
+        // check was passing on a coincidence, which is the failure mode it exists to end.
+        repairOffer={repairAvailability(state, now, timeZone)}
         // The pre-break length, which is what a repair restores. `current` has already
         // been reset to 1 by the time this screen can be reached.
         restoreTo={state.longest}

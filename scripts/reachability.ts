@@ -130,6 +130,15 @@ const ALLOWED: Record<string, string> = {
     'is enforced in SQL for the same reason the price is: a client that chooses its own ' +
     'cap holds nine freezes. streak-recovery.test.ts reads the migration and asserts the ' +
     'two copies of MAX_FREEZES agree.',
+  repair:
+    'superseded, not unbuilt — the same shape as `grantFreeze` and `markBroken` above. ' +
+    'The repair IS buyable; the transaction is `repair_streak`, in SQL, because a ' +
+    'Postgres function cannot import TypeScript and the restored LENGTH must come from ' +
+    '`streaks.longest` rather than from a parameter a client could name. The engine keeps ' +
+    'the pure version because `repairAvailability` — which the screen does call — reasons ' +
+    'against the same rules, and streak-recovery.test.ts asserts the window and the ' +
+    'cooldown match the migration. It took two fixes to this script to SEE this entry: ' +
+    'the name appeared in a comment, and then in an i18n key.',
 
   /**
    * ── leagues: the client half landed, and most of this block went with it ────
@@ -287,8 +296,25 @@ for (const file of walk(ENGINE_SRC)) {
 const stripComments = (code: string): string =>
   code.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
 
+/**
+ * Quoted strings are not code either.
+ *
+ * The same argument as the comments above, one step further in, and it took a second
+ * false positive to find: the engine's `repair()` has no caller — the transaction is
+ * `repair_streak` in SQL — and after the comment fix the check still passed, because
+ * `t('streak:repair.expired')` contains the word `repair` between two non-word
+ * characters. An i18n key is data.
+ *
+ * Single- and double-quoted only. Template literals are left alone on purpose: their
+ * `${...}` holes hold real identifiers, and stripping the literal would take those with
+ * it — trading a false positive for a false negative, which is the worse direction for a
+ * check whose whole job is to notice things nobody calls.
+ */
+const stripStrings = (code: string): string =>
+  code.replace(/'(?:[^'\\\n]|\\.)*'/g, "''").replace(/"(?:[^"\\\n]|\\.)*"/g, '""')
+
 const consumerCode = CONSUMERS.flatMap(walkAny)
-  .map((f) => stripComments(readFileSync(f, 'utf8')))
+  .map((f) => stripStrings(stripComments(readFileSync(f, 'utf8'))))
   .join('\n')
 
 function walkAny(dir: string): string[] {
