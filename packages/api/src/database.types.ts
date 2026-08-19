@@ -828,10 +828,12 @@ export type Database = {
     Functions: {
       continue_lesson: { Args: { p_continue_id: string }; Returns: Json }
       expire_streaks: { Args: never; Returns: number }
-      pin_daily_quest: { Args: { p_date: string; p_tasks: Json; p_user_id: string }; Returns: Json }
+      pin_daily_quest: {
+        Args: { p_date: string; p_tasks: Json; p_user_id: string }
+        Returns: Json
+      }
       purchase_freeze: { Args: { p_price?: number }; Returns: Json }
       purchase_item: { Args: { p_item_id: string }; Returns: Json }
-      repair_streak: { Args: never; Returns: Json }
       record_lesson: {
         Args: {
           p_achievement_progress?: Json
@@ -874,6 +876,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      repair_streak: { Args: never; Returns: Json }
     }
     Enums: {
       lesson_kind: 'lesson' | 'quest' | 'review' | 'challenge' | 'event'
