@@ -33,9 +33,19 @@
 
 import { useEffect, useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { Button, Card, Spacer, colors, radius, space, text } from '@worldquest/design'
+import {
+  AbsentContent,
+  Button,
+  Card,
+  Spacer,
+  colors,
+  radius,
+  space,
+  text,
+  type AbsentState,
+} from '@worldquest/design'
 import { Flag } from '../../components/Flag.js'
-import { useT } from '../../lib/i18n.js'
+import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
 import { yearlySavingPercent, type Plan, type PurchaseResult } from './purchases.js'
 import { Icon } from '../../components/Icon.js'
@@ -103,11 +113,18 @@ const PAGES: readonly Page[] = [0, 1, 2]
 /**
  * The illustration on the two states where page 3 has no prices to show.
  *
- * 88, and it is the one place in the app that does not use the 140 every other error and
- * empty state draws at. MEASURED, not chosen: at 140 the 200 %-text E2E check failed
- * here — the added height pushed "Every lesson stays free. Always." underneath the
- * footer button, which is the last line before the call to action and the one sentence
- * on this screen that has to survive.
+ * 72, and it is the one place in the app that does not use the 140 every other error and
+ * empty state draws at. MEASURED, not chosen, twice over.
+ *
+ * It was 140 and the 200 %-text E2E check failed here — the added height pushed "Every
+ * lesson stays free. Always." underneath the footer, which is the last line before the
+ * call to action and the one sentence on this screen that has to survive. 88 passed.
+ *
+ * Then the art moved inside `AbsentContent`, whose frame costs a border and its own
+ * padding, and 88 failed the same check for the same reason: "Offline packs" drawn under
+ * "Not now". 72 buys that back. The frame also does some of the work the size was doing
+ * — a picture inside a bordered box that is plainly the shape of the missing prices does
+ * not have to be large to say something belongs there.
  *
  * This screen carries more copy than any other empty state — a headline, a paragraph,
  * four distinct explanations of why there are no prices, a retry, and the free-forever
@@ -116,10 +133,47 @@ const PAGES: readonly Page[] = [0, 1, 2]
  * did keying the art off `fontScale`, which react-native-web reports as 1 regardless, so
  * the guard would have been dead code on the only harness that can see the bug.
  *
- * 88 passes at 200 %. It is smaller than the convention and that is the right trade: a
- * user who has doubled their text has said which of the two they came for.
+ * Smaller than the convention, and that is the right trade: a user who has doubled their
+ * text has said which of the two they came for.
  */
-const STATE_ART = 88
+const STATE_ART = 72
+
+/**
+ * The height the two plan cards occupy, which the stand-in holds when they are absent.
+ *
+ * Added up from the tokens rather than eyeballed, because the point of the number is
+ * that the page does not move when the prices arrive:
+ *
+ * ```
+ * annual   16 pad + 26 badge row + 4 + 30 price + 4 + 18 total + 16 pad = 114
+ * monthly  16 pad + 24 label     + 4 + 30 price          + 16 pad      =  90
+ * gap between them                                                     =  16
+ *                                                                        ---
+ *                                                                        220
+ * ```
+ *
+ * (The badge row is 26 rather than 24: the pill is `caption`'s 18 plus 4 above and
+ * below, and it is the taller of the two things on that line.)
+ *
+ * ONE stand-in rather than two. Drawing two boxes would claim we know the store would
+ * have returned two plans, and the whole reason this state exists is that we could not
+ * ask it. It is a `minHeight`, so at 200 % text the message inside grows the box rather
+ * than being clipped by it.
+ */
+const PLANS_FOOTPRINT = 220
+
+/**
+ * The four ways page 3 can have no prices on it, each said differently.
+ *
+ * Collapsing them into one "something went wrong" would tell a user on a train to retry
+ * forever, and tell a user with a real failure nothing.
+ */
+const ABSENT_MESSAGE: Record<AbsentState, TranslationKey> = {
+  loading: 'paywall:plans.loading',
+  offline: 'paywall:plans.offline',
+  error: 'paywall:plans.failed',
+  unavailable: 'paywall:plans.none',
+}
 
 
 /** Same as the lesson summary's, so the two screens read as one moment. */
@@ -190,6 +244,21 @@ export function PaywallScreen({
   const [selected, setSelected] = useState<Plan['id']>('annual')
   const [busy, setBusy] = useState(false)
   const [failed, setFailed] = useState(false)
+
+  /**
+   * Which of the four no-price states we are in, decided once.
+   *
+   * Offline first: a device with no connection cannot have reached the store, so
+   * `plansFailed` will also be true and reporting a failure to somebody on a train is
+   * both wrong and unactionable.
+   */
+  const absent: AbsentState = isOffline
+    ? 'offline'
+    : plansLoading
+      ? 'loading'
+      : plansFailed
+        ? 'error'
+        : 'unavailable'
 
   useEffect(() => {
     // Fired for the child branch too, as `blocked` — otherwise the funnel silently
@@ -317,49 +386,65 @@ export function PaywallScreen({
             {/* The four ways page 3 can have no prices on it, each said differently.
                 Collapsing them into one "something went wrong" would tell a user on a
                 train to retry forever, and tell a user with a real failure nothing. */}
-            {/* The two states that PERSIST get the picture the rest of the app gives
+            {/* The plan region KEEPS ITS SHAPE when there are no prices in it.
+                It used to vanish — two cards simply absent, everything below sliding up
+                to meet the headline — so the one screen where a person decides whether
+                to pay looked, at the exact moment of deciding, like a page that had
+                failed to render. Two hundred points of nothing where the prices go.
+
+                A missing price is not a missing layout. `AbsentContent` holds the
+                footprint the cards occupy and puts the explanation, and the retry, in
+                the place the decision would have been made.
+
+                The two states that PERSIST get the picture the rest of the app gives
                 them — the same `states/offline` and `states/error-generic` that
                 `ContentGate` draws, so a store that cannot be reached looks like every
-                other thing that cannot be reached rather than like a page that forgot
-                to render. Loading does not get one: it is a moment, and an illustration
-                that appears and vanishes is a flicker. "No plans configured" does not
-                either — that is our own misconfiguration, not the user's world, and
-                dressing it up as a weather event would be a lie told in pictures.
+                other thing that cannot be reached. Loading does not get one: it is a
+                moment, and an illustration that appears and vanishes is a flicker.
+                "No plans configured" does not either — that is our own misconfiguration,
+                not the user's world, and dressing it up as a weather event would be a
+                lie told in pictures.
 
-                Decorative: the sentence below says the same thing in words. */}
-            {plans.length === 0 && !plansLoading && (isOffline || plansFailed) && (
-              <View style={styles.stateArt}>
-                <Art name={isOffline ? 'states/offline' : 'states/error-generic'} size={STATE_ART} />
-              </View>
-            )}
+                The region carries the sentence as its accessible name and the `Text`
+                inside is `aria-hidden`, which is the idiom `PlanCard` below already
+                uses. Labelling the box AND reading its contents announces the same
+                sentence twice. */}
             {plans.length === 0 && (
-              <Text style={styles.terms} role={plansFailed && !isOffline ? 'alert' : undefined}>
-                {isOffline
-                  ? t('paywall:plans.offline')
-                  : plansLoading
-                    ? t('paywall:plans.loading')
-                    : plansFailed
-                      ? t('paywall:plans.failed')
-                      : t('paywall:plans.none')}
-              </Text>
-            )}
-            {plans.length === 0 && plansFailed && !isOffline && onRetryPlans !== undefined && (
-              /* A real control, not a text link. When the store is unreachable this is
-                 the ONLY thing on the page that can change the outcome — every other
-                 control is disabled for want of a price — and it was rendering as
-                 secondary-coloured body text with no ring and no depth. The target was
-                 already 44pt; what was missing was any sign it could be pressed.
+              <AbsentContent
+                state={absent}
+                minHeight={PLANS_FOOTPRINT}
+                // The cards' own radius, so the stand-in is the same shape as the thing
+                // it stands in for.
+                borderRadius={radius.xl}
+                label={t(ABSENT_MESSAGE[absent])}
+              >
+                {(absent === 'offline' || absent === 'error') && (
+                  <Art
+                    name={absent === 'offline' ? 'states/offline' : 'states/error-generic'}
+                    size={STATE_ART}
+                  />
+                )}
+                <Text style={styles.terms} aria-hidden>
+                  {t(ABSENT_MESSAGE[absent])}
+                </Text>
+                {absent === 'error' && onRetryPlans !== undefined && (
+                  /* A real control, not a text link. When the store is unreachable this
+                     is the ONLY thing on the page that can change the outcome — every
+                     other control is disabled for want of a price — and it was rendering
+                     as secondary-coloured body text with no ring and no depth. The target
+                     was already 44pt; what was missing was any sign it could be pressed.
 
-                 `tertiary`, so it reads as pressable without competing with the primary
-                 purchase button sitting disabled below it. */
-              <Button
-                label={t('common:retry')}
-                onPress={onRetryPlans}
-                variant="tertiary"
-                size="sm"
-                fullWidth={false}
-                style={styles.retry}
-              />
+                     `tertiary`, so it reads as pressable without competing with the
+                     primary purchase button sitting disabled below it. */
+                  <Button
+                    label={t('common:retry')}
+                    onPress={onRetryPlans}
+                    variant="tertiary"
+                    size="sm"
+                    fullWidth={false}
+                  />
+                )}
+              </AbsentContent>
             )}
 
             {annual !== undefined && (
@@ -602,7 +687,6 @@ const styles = StyleSheet.create({
   perkLabel: { ...text('bodyStrong'), color: colors.text.primary },
   free: { ...text('bodyStrong'), color: colors.status.progress, textAlign: 'center' },
   terms: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
-  stateArt: { alignItems: 'center' },
   error: { ...text('caption'), color: colors.text.primary, textAlign: 'center' },
 
   plan: { alignSelf: 'stretch', gap: space[1] },
@@ -634,7 +718,6 @@ const styles = StyleSheet.create({
   dot: { width: 8, height: 8, borderRadius: radius.full, backgroundColor: colors.bg.surfaceRaised },
   dotOn: { backgroundColor: colors.action.primary },
   dismiss: { minHeight: 44, alignItems: 'center', justifyContent: 'center' },
-  retry: { alignSelf: 'center', marginTop: space[2] },
   dismissLabel: { ...text('bodyStrong'), color: colors.text.secondary },
   restore: { ...text('caption'), color: colors.text.secondary },
 })

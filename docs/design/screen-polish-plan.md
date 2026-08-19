@@ -274,13 +274,40 @@ that package grows a component harness; `apps/mobile` already depends on
 
 This is the phase that answers the screenshot.
 
-**2a. Paywall (finding #1).** The plan region keeps its shape in all four states. Two
-`AbsentContent` cards the size of the real `PlanCard`s, so the page is the same page
-whether or not the store answered — `loading` shimmers, `error` carries the retry
-*inside* the card where the missing price is, `offline` says so, `unavailable` states it
-plainly. The perk list and the free-forever line stay where they are instead of sliding
-up. Nothing about the purchase logic changes; this is layout only, so the state machine
-and the analytics stay as they are.
+**2a. Paywall (finding #1) — done 2026-08-19.** The plan region keeps its shape in all
+four states. One `AbsentContent` at the cards' measured footprint (220 pt, added up from
+the tokens in `PLANS_FOOTPRINT`), carrying the picture, the explanation and — for the one
+state that can be acted on — the retry, in the place the decision would have been made.
+
+| | 320 | 390 | 768 |
+|---|---|---|---|
+| ink before | 64 % | 47 % | 37 % |
+| ink after | **77 %** | **52 %** | **46 %** |
+
+**The ≥ 70 % target at 390 is not met, and should not be.** What is left below the
+free-forever line is the space the purchase button occupies when there is something to
+buy — and that button is deliberately *absent* rather than disabled when there are no
+prices, which is a decision recorded at length in the screen and a good one: a dead
+primary action sitting three hundred points below the error it cannot act on says the
+opposite of the truth about what the user can do. Filling that space would mean inventing
+content for a screen whose entire message is that we could not reach the store. 52 % with
+a 16 % gap is where `lesson` sits, and nobody has ever called that screen empty. The
+target was written before the screen was looked at that closely; this is the honest number.
+
+Two things the work turned up:
+
+- **The primitive was wrong and a test said so.** `AbsentContent`'s first version made
+  `loading` a bare `Skeleton` and dropped its children, on the reasoning that a shimmer
+  with words on it is a lie. `PaywallScreen.test.tsx` failed inside five minutes: the
+  screen deliberately says "Checking prices with the store" while it waits, and that
+  decision is older than the component and better than the rule. There is one box now, and
+  loading shimmers it from behind. Suppressing an *action* during loading is real and
+  belongs to the caller, which knows which of its children is the action.
+- **The frame cost height, and the 200 %-text check charged for it.** A border and padding
+  on the screen with the least room to spare pushed "Offline packs" under "Not now".
+  `STATE_ART` went 88 → 72 and the box's padding is `space[3]` rather than a `Card`'s
+  `space[4]`. That art size now carries two measurements in its comment, from two
+  different failures of the same check.
 
 **2b. Account form (finding #2).** Drop the flat `bg.canvas` fill so the root gradient
 shows. Give it the art the rest of the app gives a moment like this and the three
