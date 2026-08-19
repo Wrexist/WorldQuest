@@ -364,6 +364,46 @@ in the message. It is measured per pack rather than pooled — pooling a skewed 
 an even one reports a smaller number than either, which is the wrong direction for a bias
 check and hid this one at 1.4 instead of 1.9.
 
+## 6b. Verifying the values, not just the sourcing
+
+Everything in §6 is about *provenance*: a fact carries a named source, a `verifiedAt` and
+a volatility window, and `pnpm content:validate` fails without them. None of that checks
+whether the value is right. The strongest statement the pipeline could make about
+"Sweden's capital is Stockholm" was that somebody had written down where they got it.
+
+**`pnpm content:crosscheck` asks a second, independent dataset the same questions.**
+`world-countries@5.1.0` (ODbL), pinned exactly, covering 349 values: capitals,
+currencies, calling codes, languages, regions, and the countries' own English names. It
+runs inside `pnpm verify`.
+
+Independence is the point. `countries-list` is already a devDependency and is what
+several of these packs were GENERATED from — checking against it would only prove the
+generator ran. The version is pinned rather than ranged because the reference is data: a
+minor release that renames a capital would turn the build red for a reason nobody here
+caused, which is how a check earns the reputation that gets it deleted.
+
+**The first run found zero errors in the pack.** Six values disagreed and all six were the
+reference being looser or answering a different question:
+
+| | The pack | The reference | Who is right |
+|---|---|---|---|
+| `MN` capital | Ulaanbaatar | Ulan Bator | **The pack** — modern standard romanisation |
+| `AT` language | German | Austro-Bavarian German | **The pack** — ISO 639-1 official language, not a dialect grouping |
+| `US`/`CA` calling code | +1 | +1201, +1202, … | **The pack** — ITU-T E.164 country code; the reference lists NANP *area* codes |
+| `US` capital | Washington, D.C. | Washington D.C. | Both — punctuation |
+| `US` currency | US dollar | USD | Both — the pack stores a readable name |
+
+That is a result worth recording rather than a clean bill of nothing: the sourcing
+discipline in §6 held across every value an independent list could check.
+
+All six are in the script's `ACCEPTED` table with the reason, and the check reports a
+stale entry as loudly as a new difference — the same discipline `scripts/reachability.ts`
+uses, for the same reason: "we forgot" and "we decided not to" look identical in a diff.
+
+**A disagreement is never resolved by editing the pack to match the reference.** Read both
+sources. Where they genuinely conflict on a disputed territory or a contested seat of
+government, §5 governs — not whichever list loaded first.
+
 ## 7. Adding a new subject (the thesis test)
 
 To add "World Wildlife" in v3.0:
