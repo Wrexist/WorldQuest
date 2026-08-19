@@ -44,6 +44,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "settings.link": "Save your progress",
       "settings.signIn": "I already have an account",
       "settings.signOut": "Sign out",
+      "settings.signOut.unsynced": "{count, plural, one {# lesson has not reached the server yet} other {# lessons have not reached the server yet}}. Signing out clears this device, so that work would be lost.",
+      "settings.signOut.anyway": "Sign out anyway",
       "settings.child": "Progress on this phone stays on this phone. Ask a grown-up if you want to keep it somewhere safe.",
       "offline.title": "You are offline",
       "offline.body": "Saving your progress needs a connection. Everything you learn keeps working without one — come back to this when you are online."
@@ -723,6 +725,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "settings.link": "Spara dina framsteg",
       "settings.signIn": "Jag har redan ett konto",
       "settings.signOut": "Logga ut",
+      "settings.signOut.unsynced": "{count, plural, one {# lektion har inte nått servern än} other {# lektioner har inte nått servern än}}. Att logga ut rensar den här enheten, så det arbetet går förlorat.",
+      "settings.signOut.anyway": "Logga ut ändå",
       "settings.child": "Framsteg på den här telefonen stannar på den här telefonen. Fråga en vuxen om du vill spara dem någonstans.",
       "offline.title": "Du är offline",
       "offline.body": "Att spara dina framsteg kräver uppkoppling. Allt du lär dig fungerar ändå utan — kom tillbaka hit när du är online."

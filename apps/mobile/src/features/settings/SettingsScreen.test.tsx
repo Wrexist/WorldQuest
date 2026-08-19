@@ -35,6 +35,46 @@ const renderSettings = (overrides: Partial<Parameters<typeof SettingsScreen>[0]>
   return { ...result, onChange }
 }
 
+/** A linked account, so the sign-out row is on screen. */
+const linkedAccount = (unsyncedLessons = 0) => ({
+  email: 'explorer@example.com',
+  onLink: vi.fn(),
+  onSignIn: vi.fn(),
+  onSignOut: vi.fn(),
+  unsyncedLessons,
+})
+
+describe('Settings — signing out is destructive and now says so', () => {
+  it('offers a plain sign-out when nothing is at risk', () => {
+    renderSettings({ account: linkedAccount() })
+    expect(screen.getByText('Sign out')).toBeTruthy()
+    expect(screen.queryByText(/have not reached the server/i)).toBeNull()
+  })
+
+  it('names what would be lost, before the control rather than after it', () => {
+    // `signOutEverywhere` calls `clearAll()` — deliberately, because a list of keys to
+    // clear is a list somebody forgets to add to. The cost is that it wipes the offline
+    // queue too, so a lesson finished on a plane and never synced is gone for good, and
+    // one tap on a row labelled "Sign out" did it in silence. `hasUnsyncedProgress` has
+    // said "used to warn before sign-out" in the engine since the queue was built.
+    const { container } = renderSettings({ account: linkedAccount(3) })
+    const body = container.textContent ?? ''
+    expect(body).toMatch(/3 lessons have not reached the server yet/i)
+    // The warning comes first. A risk stated after the button is a risk stated too late.
+    expect(body.indexOf('have not reached the server')).toBeLessThan(
+      body.indexOf('Sign out anyway'),
+    )
+  })
+
+  it('relabels the control, so the destructive one is never the one you meant', () => {
+    const account = linkedAccount(1)
+    renderSettings({ account })
+    expect(screen.queryByText('Sign out')).toBeNull()
+    fireEvent.click(screen.getByText('Sign out anyway'))
+    expect(account.onSignOut).toHaveBeenCalledOnce()
+  })
+})
+
 describe('Settings', () => {
   it('renders every section', () => {
     renderSettings()

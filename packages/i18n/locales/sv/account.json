@@ -29,6 +29,8 @@
   "account:settings.link": "Spara dina framsteg",
   "account:settings.signIn": "Jag har redan ett konto",
   "account:settings.signOut": "Logga ut",
+  "account:settings.signOut.unsynced": "{count, plural, one {# lektion har inte nått servern än} other {# lektioner har inte nått servern än}}. Att logga ut rensar den här enheten, så det arbetet går förlorat.",
+  "account:settings.signOut.anyway": "Logga ut ändå",
   "account:settings.child": "Framsteg på den här telefonen stannar på den här telefonen. Fråga en vuxen om du vill spara dem någonstans.",
   "account:offline.title": "Du är offline",
   "account:offline.body": "Att spara dina framsteg kräver uppkoppling. Allt du lär dig fungerar ändå utan — kom tillbaka hit när du är online."

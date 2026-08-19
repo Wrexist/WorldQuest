@@ -133,6 +133,12 @@ export default function SettingsRoute() {
               onLink: () => router.push('/account?mode=link'),
               onSignIn: () => router.push('/account?mode=signIn'),
               onSignOut: () => void signOutEverywhere(),
+              // The number the warning above the control puts a name on. Both counts, because
+              // sign-out throws away the parked work AND the lesson finished thirty seconds
+              // ago that is still trying — `clearAll()` does not distinguish, so neither may
+              // the sentence. Same predicate the Sync section uses, so the two cannot
+              // disagree about what counts as progress.
+              unsyncedLessons: sync.parked + sync.pending,
             },
           })}
       // Absent on a child account and while the flag is closed — see the prop's note.

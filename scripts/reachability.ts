@@ -188,6 +188,22 @@ const ALLOWED: Record<string, string> = {
   REPAIR_WINDOW_HOURS: 'used inside repairAvailability, which the streak screen calls',
   REPAIR_COOLDOWN_DAYS: 'used inside repairAvailability',
   STREAK_MILESTONES: 'used inside isMilestone',
+
+  // ── surfaced by the comment-stripping fix above, and each one answered honestly
+
+  MAX_ATTEMPTS:
+    'the retry ceiling, applied inside `fail()`. A screen that imported it would be a ' +
+    'screen holding a second opinion about when work parks, and the app reads the ' +
+    'PARKED COUNT instead — which is the outcome rather than the rule behind it.',
+  NEEDS_PUSH:
+    'the list somebody will reach for when they wire the push service, kept in code ' +
+    'rather than only in prose so it cannot go stale. Its own doc comment says so, and ' +
+    '`notifications.test.ts` asserts none of these has grown a local implementation.',
+  hasUnsyncedProgress:
+    'the boolean form of a count the app already takes. Settings warns before sign-out ' +
+    'now — that gap was real and is closed — but the warning names a NUMBER, so the ' +
+    'caller is `countUnsyncedProgress`, and a second read for the yes/no would be a ' +
+    'second chance for the sentence and the decision to show it to disagree.',
 }
 
 /**
@@ -249,7 +265,31 @@ for (const file of walk(ENGINE_SRC)) {
 
 // ── collect what the app mentions ────────────────────────────────────────────
 
-const consumerCode = CONSUMERS.flatMap(walkAny).map((f) => readFileSync(f, 'utf8')).join('\n')
+/**
+ * Comments are not callers.
+ *
+ * `mentioned()` tested the raw file text, so an engine export whose NAME appeared in a
+ * sentence read as wired. That is not hypothetical and this repo already knew: the header
+ * of `app/streak.tsx` says "that script greps this tree for engine export names, so
+ * writing the symbol in a comment would make it look wired", and worked around it by not
+ * writing the word. A guard you have to write prose around is a guard that is deciding
+ * the prose.
+ *
+ * `repair` was the one it was hiding. The engine's pure `repair()` has no caller — the
+ * transaction is `repair_streak` in SQL, because a Postgres function cannot import
+ * TypeScript — and the check passed because the streak screen has a `repair` PROP and a
+ * paragraph about repair windows.
+ *
+ * Crude on purpose, and it lives only here: it cannot affect what ships, and if it
+ * miscounts inside a string literal the answer is one name either way. Same trade the
+ * bundle budget's stripper makes for the same reason.
+ */
+const stripComments = (code: string): string =>
+  code.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
+
+const consumerCode = CONSUMERS.flatMap(walkAny)
+  .map((f) => stripComments(readFileSync(f, 'utf8')))
+  .join('\n')
 
 function walkAny(dir: string): string[] {
   return readdirSync(dir).flatMap((entry) => {
