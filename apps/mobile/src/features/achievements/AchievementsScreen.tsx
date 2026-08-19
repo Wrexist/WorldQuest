@@ -97,6 +97,45 @@ export type AchievementsScreenProps = {
 const nameKey = achievementNameKey
 const descKey = (id: string): string => `achievements:${id.slice('ach.'.length)}.desc`
 
+/**
+ * How many unearned rows count as "close".
+ *
+ * Five, because the list is already sorted by how near each one is and the point of the
+ * heading is to say "look here first" — a group of fifteen says nothing a reader could
+ * not have worked out. It is a slice of a sorted array, not a threshold on a distance:
+ * a distance threshold would be in the unit of whatever each achievement counts, and
+ * "3 countries" and "300 reviews" are not comparable numbers.
+ *
+ * On a fresh account every row is at zero and the tiebreak in `sorted` is what is
+ * absolutely nearest, so this group is still the five easiest things to go and do.
+ */
+const CLOSE_COUNT = 5
+
+/**
+ * The three sections, cut from the already-sorted list in its own order.
+ *
+ * No re-sorting and no second comparator. Two orderings of one list is two things that
+ * can disagree, and the sort above has a carefully argued tiebreak that a grouping pass
+ * would be free to undo silently.
+ */
+const GROUPS: readonly {
+  readonly key: TranslationKey
+  readonly rows: (sorted: readonly AchievementRow[]) => readonly AchievementRow[]
+}[] = [
+  {
+    key: 'achievements:group.earned',
+    rows: (sorted) => sorted.filter((row) => row.progress.tier !== null),
+  },
+  {
+    key: 'achievements:group.close',
+    rows: (sorted) => sorted.filter((row) => row.progress.tier === null).slice(0, CLOSE_COUNT),
+  },
+  {
+    key: 'achievements:group.rest',
+    rows: (sorted) => sorted.filter((row) => row.progress.tier === null).slice(CLOSE_COUNT),
+  },
+]
+
 export function AchievementsScreen({ rows, onStartLesson, onBack }: AchievementsScreenProps) {
   const t = useT()
 
@@ -165,9 +204,30 @@ export function AchievementsScreen({ rows, onStartLesson, onBack }: Achievements
         </Tally>
       </View>
 
-      {sorted.map((row, index) => (
-        <AchievementCard key={row.def.id} row={row} index={index} />
-      ))}
+      {/* Section headings over the sort that was already there.
+          The list has been earned → closest → rest since it was written, and nothing on
+          screen said so: thirty identically-shaped cards in a column read as thirty
+          unordered things, and a reader who cannot see the ordering cannot use it. Three
+          headings turn a good sort into a legible one, and they cost no new arithmetic —
+          the groups are cut from the same `sorted` array, in the same order.
+
+          Deliberately NOT a separate hero row for the nearest unlock, which the plan for
+          this work asked for. The first row of "Close" already IS the nearest, and a hero
+          above it would draw the same card twice. */}
+      {GROUPS.map(({ key, rows: pick }) => {
+        const group = pick(sorted)
+        if (group.length === 0) return null
+        return (
+          <View key={key} style={styles.group}>
+            <Text style={styles.groupTitle} role="heading" aria-level={2}>
+              {t(key)}
+            </Text>
+            {group.map((row) => (
+              <AchievementCard key={row.def.id} row={row} index={sorted.indexOf(row)} />
+            ))}
+          </View>
+        )
+      })}
     </ScrollView>
   )
 }
@@ -261,6 +321,10 @@ const styles = StyleSheet.create({
   centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },
 
   header: { gap: space[1] },
+  group: { gap: space[3] },
+  // `overline`, the same as every other section heading in the app. A heading that
+  // competes with the card titles under it turns a grouping into three more rows.
+  groupTitle: { ...text('overline'), color: colors.text.tertiary },
   title: { ...text('h1'), color: colors.text.primary },
   countNumber: { ...text('caption', { weight: '700', numeric: true }), color: colors.text.primary },
   body: { ...text('caption'), color: colors.text.secondary },

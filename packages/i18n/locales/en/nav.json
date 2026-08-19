@@ -12,13 +12,5 @@
   "nav:more": "More",
   "nav:more__note": "Label for the way into Settings — the gear on Profile, and the screen title. It was a bottom tab until the redesign put Shop there; the word stays \"More\" rather than \"Settings\" because what is behind it is settings, help and the parent area. Max 8 characters.",
   "nav:lesson.title": "Lesson",
-  "nav:lesson.title__note": "Accessibility title of the full-screen lesson. Not shown on screen.",
-  "nav:explore.soon.title": "Explore is on the way",
-  "nav:explore.soon.body": "Countries, continents and the flags you have collected will live here.",
-  "nav:quests.soon.title": "Quests are on the way",
-  "nav:quests.soon.body": "Your daily quest and the weekly challenges will live here.",
-  "nav:profile.soon.title": "Your profile is on the way",
-  "nav:profile.soon.body": "Level, streak history and everything you have mastered will live here.",
-  "nav:more.soon.title": "More is on the way",
-  "nav:more.soon.body": "Settings, sound, reminders and your account will live here."
+  "nav:lesson.title__note": "Accessibility title of the full-screen lesson. Not shown on screen."
 }

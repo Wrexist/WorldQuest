@@ -57,6 +57,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
     "achievements": {
       "title": "Achievements",
       "progress": "{unlocked} of {total} unlocked",
+      "group.earned": "Earned",
+      "group.close": "Close",
+      "group.rest": "Everything else",
       "locked": "Not yet",
       "next": "{remaining} to go",
       "empty.action": "Start a lesson",
@@ -370,15 +373,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "profile": "Profile",
       "shop": "Shop",
       "more": "More",
-      "lesson.title": "Lesson",
-      "explore.soon.title": "Explore is on the way",
-      "explore.soon.body": "Countries, continents and the flags you have collected will live here.",
-      "quests.soon.title": "Quests are on the way",
-      "quests.soon.body": "Your daily quest and the weekly challenges will live here.",
-      "profile.soon.title": "Your profile is on the way",
-      "profile.soon.body": "Level, streak history and everything you have mastered will live here.",
-      "more.soon.title": "More is on the way",
-      "more.soon.body": "Settings, sound, reminders and your account will live here."
+      "lesson.title": "Lesson"
     },
     "notifications": {
       "daily.reminder": "{region} is waiting. 5 minutes?",
@@ -747,6 +742,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
     "achievements": {
       "title": "Utmärkelser",
       "progress": "{unlocked} av {total} upplåsta",
+      "group.earned": "Klarade",
+      "group.close": "Nära",
+      "group.rest": "Allt annat",
       "locked": "Inte än",
       "next": "{remaining} kvar",
       "empty.action": "Starta en lektion",
@@ -1060,15 +1058,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "profile": "Profil",
       "shop": "Butik",
       "more": "Mer",
-      "lesson.title": "Lektion",
-      "explore.soon.title": "Utforska kommer snart",
-      "explore.soon.body": "Länder, kontinenter och flaggorna du har samlat kommer att finnas här.",
-      "quests.soon.title": "Uppdrag kommer snart",
-      "quests.soon.body": "Ditt dagliga uppdrag och veckans utmaningar kommer att finnas här.",
-      "profile.soon.title": "Din profil kommer snart",
-      "profile.soon.body": "Nivå, streakhistorik och allt du har bemästrat kommer att finnas här.",
-      "more.soon.title": "Mer kommer snart",
-      "more.soon.body": "Inställningar, ljud, påminnelser och ditt konto kommer att finnas här."
+      "lesson.title": "Lektion"
     },
     "notifications": {
       "daily.reminder": "{region} väntar. 5 minuter?",

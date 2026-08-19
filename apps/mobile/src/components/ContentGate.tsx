@@ -108,7 +108,12 @@ export function ContentGate({
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  loading: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[3] },
+  // No `backgroundColor`. It painted `bg.canvas` flat over the root gradient — the
+  // third and last of the stragglers `ScreenBackground` was written to remove, after
+  // League and the account form. A skeleton on a flat fill that becomes a gradient the
+  // moment the content lands is a visible seam at the one moment a screen is meant to
+  // feel like it is filling in.
+  loading: { flex: 1, padding: space[4], gap: space[3] },
   screen: {
     flex: 1,
     alignItems: 'center',

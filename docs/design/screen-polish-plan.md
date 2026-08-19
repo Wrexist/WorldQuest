@@ -373,41 +373,86 @@ above the Phase 0 baseline for each, and `pnpm verify` is green.
 
 ---
 
-### Phase 3 — the two flat lists *(one and a half days)*
+### Phase 3 — the two flat lists — **done 2026-08-19, and half of it was wrong**
 
-**3a. Achievements (finding #6).** Three changes, no new data:
-- Group by state — *close to unlocking* / *in progress* / *earned* / *not started* —
-  instead of one flat 30-row list in catalogue order.
-- Show the tier. Bronze / silver / gold exist in the pack and in the ledger and are
-  invisible on the screen; the tier ring around the icon is the cheapest way to make a
-  gold tier look like something worth having.
-- A hero row for the nearest unlock, which is the only row a returning user wants.
+**3a. Achievements (finding #6).** Section headings — *Earned*, *Close*, *Everything
+else* — over the sort that was already there. The list has been earned → closest → rest
+since it was written and nothing on screen said so: thirty identically-shaped cards read
+as thirty unordered things, and a reader who cannot see the ordering cannot use it. The
+groups are cut from the same sorted array in the same order, so there is no second
+comparator to disagree with the first.
 
-**3b. Collection (finding #7).** Three columns at 390 rather than two — the code at
-`CollectionScreen.tsx:421` already reasons about this and chose two for widths where it
-is "simply wide enough", which is true at 320 and generous at 390. And make an
-uncollected tile *read* as uncollected: `opacity: 0.45` is a dimming that survives being
-glanced at. Desaturation plus a dimmed frame, keeping the name legible, keeping the
-existing screen-reader labelling that already states the collected state in words.
+Two of the three things this finding asked for should not be built:
 
-**Done when** both screens are legible at 320 and neither has changed what it counts.
+- **"Show the tier — bronze/silver/gold are invisible."** They are not.
+  `AchievementMedal` composites a tier frame around a category glyph and has since the
+  art was delivered; the reason every row looked the same in the screenshot is that a
+  fresh account has earned nothing. The finding was written from one picture of one
+  state.
+- **"A hero row for the nearest unlock."** The first row of *Close* already is the
+  nearest. A hero above it draws the same card twice.
+
+**3b. Collection (finding #7) — one half wrong, and the other half was a contrast bug.**
+
+The three-column half is **wrong and stays wrong**. `CollectionScreen` already argues it
+at length: a country name is one unbreakable word, three columns at 390 give it about
+105 pt, that holds "Chile" and does not hold "Argentina", and at 200 % text the names ran
+out of their tiles — which the e2e overlap check catches. The alternatives are recorded
+too, and both are unverifiable here: `adjustsFontSizeToFit` is not implemented by
+react-native-web, and reflowing on `fontScale` is invisible to a harness that reports a
+scale of 1 whatever the OS says. Three columns already appear above the content cap,
+where the tiles are wide enough. This finding was an eyeball against a measurement.
+
+The dimming half turned out to be a real defect, and a different one from the plan's.
+`opacity: 0.45` on the whole tile put the country name at **4.31:1** against its own
+surface — under the 4.5 a 13 pt caption needs — while the file's own header promises
+"dimmed, with its country name readable". `pnpm design:contrast` can never catch this: it
+compares token PAIRS and cannot see an opacity applied in a component, the same blind
+spot that once left a paragraph on the paywall rendering near-black on navy.
+
+The fix is not a better number. The dimming moved off the card and onto the **flag** —
+the thing actually being collected — at 0.35. That is a stronger signal, not a weaker
+one: a name at half strength says the label is unimportant, which is the opposite of
+true. The card's own level already differs between earned and unearned, so there are two
+signals now and the name is at full contrast in both.
 
 ---
 
-### Phase 4 — depth and finish *(one day)*
+### Phase 4 — depth and finish — **done 2026-08-19, mostly by deleting findings**
 
-The small things that make the difference between "correct" and "made".
-
-1. `StickyFooter` gets a gradient fade instead of a hard opaque edge (finding #8).
-2. `ContentGate`'s loading branch stops painting flat canvas (finding #10 in §1 B).
-3. Country page: five "Learn it first" rows become one summary line plus the rows,
-   so the repetition is stated once (finding #9).
-4. Shop rows carry their state — owned / affordable / not yet — in the row and not only
-   in the button label (finding #10).
-5. Delete `Placeholder.tsx` and its `nav:*.soon.*` keys. Its own header says it deletes
-   itself when the last real screen lands. The last real screen landed (finding #11).
+1. **`ContentGate`'s loading branch** stopped painting flat canvas. The third and last of
+   the stragglers, after League and the account form. A skeleton on a flat fill that
+   becomes a gradient the moment content lands is a visible seam at the one moment a
+   screen is meant to feel like it is filling in.
+2. **`Placeholder.tsx` deleted**, with the eight `nav:*.soon.*` keys it rendered. Its own
+   header said it deletes itself when the last real screen lands. The last real screen
+   landed.
+3. ~~**`StickyFooter` gradient fade**~~ — **not doing it.** The hard edge is argued in the
+   component: the list scrolls *under* it, so anything less than opaque puts a country
+   name behind a button label, and the hairline is the deliberate boundary marker. A fade
+   above the opaque band is pure addition with a real legibility risk, for aesthetics.
+4. ~~**Country's five "Learn it first" rows**~~ — **not doing it.** The repetition is the
+   spoiler guard, which is the rule the whole screen is shaped by, and the typography is
+   already the right way round: the attribute at `caption`/secondary, the state at
+   tertiary. A summary line would lose the per-attribute state the moment some are
+   learned, which is every account after the first lesson.
+5. ~~**Shop rows carry state only in the button**~~ — **not true.** The glyph is dimmed
+   until owned, the price row is absent once it is, the buy control disables on
+   affordability, and the worn item carries its own marker. Four signals, not one.
 
 ---
+
+### What the phases cost the findings list
+
+Eleven findings went in. **Six were real and are fixed** (#1–#5, plus the collection
+contrast bug that #7 led to). **Four did not survive contact with the code** (#7's column
+count, #8, #9, #10) — each one turned out to be an eyeball judgment against a decision
+that was already argued and measured in the file. **One was half wrong** (#6: the
+grouping was worth doing, the tier colours were already there).
+
+That ratio is the argument for Phase 0 having gone first, and against trusting a
+screenshot review that has not read the code underneath. It is also why the harness
+prints numbers and refuses to fail a build on them.
 
 ### Phase 5 — verify, look again, record *(half a day)*
 
