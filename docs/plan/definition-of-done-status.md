@@ -137,7 +137,7 @@ green while two thirds of the authored content was unreachable.
 
 | Box | State |
 |---|---|
-| Analytics per spec | 🟡 **18 of 28** declared events fire (was 2). Every remaining one is blocked on a server, an account, or push — none is forgotten. The child no-op was broken; fixed. |
+| Analytics per spec | 🟡 **32 of 44** declared events fire (was 2). Audited 2026-08-19; the previous "18 of 28" was stale in both numbers. Five more were wired that audit: `fact_mastered`, `streak_extended`, `streak_broken` and `xp_reconciliation_failed` all became answerable when `submit-lesson` started returning mastery changes and the authoritative streak, and `signup_completed` when the account flow landed. `xp_reconciliation_failed` is the one the rollback plan NAMES as a release-health signal and had no caller. The remaining twelve are blocked on push (1), on store server-notifications (8), on a winback campaign nobody has designed (2), and on `review_log` (`fact_lapsed`, which needs the prior mastery and the days since — the response carries neither). None is forgotten. The child no-op was broken; fixed. |
 | Serves a named persona | ✅ |
 | Copy against the voice guide | ✅ And asserted, not trusted: no-shame, no-guilt, no-dark-pattern rules are tests in the streak, welcome-back, out-of-hearts, paused and sync screens. |
 | Docs updated | ✅ |

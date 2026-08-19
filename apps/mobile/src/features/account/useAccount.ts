@@ -25,6 +25,8 @@ import {
 import { supabase } from '../../lib/supabase.js'
 import { useT } from '../../lib/i18n.js'
 import type { AccountMode, AccountStage } from './AccountScreen.js'
+import { track } from '../../lib/analytics.js'
+import { lessonsEverCompleted } from '../profile/useWeekActivity.js'
 
 export type UseAccount = {
   readonly stage: AccountStage
@@ -112,7 +114,33 @@ export function useAccount(mode: AccountMode): UseAccount {
           await confirmSignIn(supabase(), address, code)
         }
       },
-      () => setStage('done'),
+      () => {
+        setStage('done')
+        /**
+         * The one place a signup can honestly be said to have completed.
+         *
+         * Declared in the registry since it was written, with no producer — because
+         * until the account flow existed there was no signup to report. Fired on the
+         * CODE being accepted rather than on the address being submitted: an address
+         * that never gets confirmed is an abandoned attempt, and counting it would make
+         * the funnel's last step look perfect.
+         *
+         * `guest_upgrade` for the link path, which is exactly what it is — the user id
+         * does not change and every ledger row stays where it is. Sign-in is a different
+         * event: nothing was created, an existing account was reached from a new device,
+         * and reporting that as a signup would double-count the person who does both.
+         *
+         * `after_lessons` is the property that makes the number useful. Somebody who
+         * saves their progress after twenty lessons and somebody who does it after one
+         * are two different findings about where the prompt should sit.
+         */
+        if (mode === 'link') {
+          track('signup_completed', {
+            method: 'guest_upgrade',
+            after_lessons: lessonsEverCompleted(),
+          })
+        }
+      },
     )
   }, [code, email, mode, run])
 

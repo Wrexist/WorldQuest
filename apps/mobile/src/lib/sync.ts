@@ -24,7 +24,7 @@ import { currentUser, isConfigured, supabase } from './supabase.js'
 import { isOnline, onConnectivityChange } from './connectivity.js'
 import { invalidateProgress } from './query.js'
 import { readJson, writeJson } from './storage.js'
-import { markAwardDelivered } from './awards.js'
+import { markAwardDelivered, peekAwards } from './awards.js'
 import { recordServerOutcome } from '../features/achievements/progress.js'
 import { queueUnlocks } from '../features/achievements/pending.js'
 import { track } from './analytics.js'
@@ -379,6 +379,68 @@ function reconcile(result: SubmitLessonResponse): void {
      * on a prediction and taking it back, and a badge that is revoked is worse than one
      * that is late.
      */
+    /**
+     * The three events the server's answer makes honest, fired where it arrives.
+     *
+     * All three were declared in the registry from the start and had no producer. Each
+     * was blocked on the same thing — the client cannot know a fact was mastered or a
+     * streak extended without being told, and a client that decides either is a client
+     * that can be edited. `submit-lesson` tells us now.
+     *
+     * Before the reconcile below rather than after, so a throw in a cache invalidation
+     * cannot cost the measurement. `track` is already a no-op on a child account.
+     */
+    for (const change of result.masteryChanges ?? []) {
+      if (change.to !== 'mastered' && change.to !== 'burnished') continue
+      // `days_to_master` and `total_reviews` are NOT sent. The registry declares them and
+      // the response does not carry them — they live in `review_log`, which is where this
+      // question is actually answerable, and inventing a number here to fill a property
+      // would put a wrong figure in the one dashboard that measures whether the product
+      // works. The event fires with what is true.
+      track('fact_mastered', { fact_id: change.factId })
+    }
+
+    /**
+     * `extended`, not `current > 0`.
+     *
+     * The first version of this fired whenever the streak was non-zero, which is every
+     * lesson of every active day — a second lesson on day 7 returns `extended: false` and
+     * a current of 7, so the chart would have counted lessons and called them streaks.
+     * The server already answers the question directly, and the type checker is what
+     * pointed at the field: `reset` and `freezeUsed` were sitting beside it unread.
+     *
+     * `streak_broken` comes from the same three booleans, with both of its declared
+     * properties real: the length that was lost and whether a freeze absorbed the miss.
+     * That distinction is the whole reason freezes exist, and no other event can report
+     * whether they work.
+     */
+    if (result.streak?.extended === true) {
+      track('streak_extended', { length: result.streak.current })
+    }
+    if (result.streak?.reset === true) {
+      track('streak_broken', {
+        length: result.streak.longest,
+        freeze_used: result.streak.freezeUsed,
+      })
+    }
+
+    /**
+     * The signal the rollback plan names and nothing produced.
+     *
+     * `docs/engineering/rollback-plan.md` step 1 lists `xp_reconciliation_failed` as one
+     * of the two ways to tell "our release" from "the internet" — and it had no caller,
+     * so that step was "wait for a user to complain" twice over rather than once.
+     *
+     * The client predicts an award before the lesson is sent; the server re-derives it
+     * from the answers. A disagreement is a grading bug, a stale balance table, or
+     * somebody editing the client — all three are worth knowing about, and none of them
+     * is visible any other way.
+     */
+    const predicted = peekAwards().find((award) => award.lessonId === result.lessonId)
+    if (predicted !== undefined && predicted.xp !== result.xpAwarded) {
+      track('xp_reconciliation_failed', { client_xp: predicted.xp, server_xp: result.xpAwarded })
+    }
+
     const unlocked = recordServerOutcome({
       masteryChanges: result.masteryChanges ?? [],
       streak: result.streak?.current ?? null,
@@ -409,3 +471,12 @@ function reconcile(result: SubmitLessonResponse): void {
 }
 
 export const peekQueue = (): SyncQueue => queue
+
+/**
+ * Test seam for `reconcile`.
+ *
+ * Exported rather than making `reconcile` public: this module's job is a queue, and
+ * everything it exports is something another part of the app is meant to call. A helper
+ * that only a test uses should say so in its name, so nobody wires a screen to it.
+ */
+export const __testReconcile = (result: SubmitLessonResponse): void => reconcile(result)

@@ -186,7 +186,7 @@ One dependency named in the release checklist is still not built; the other reso
   gate code that was written to check it. New risky work should default to shipping
   behind a flag from now on, not because the checklist asks but because "we could not
   halt this" is a choice made at write time, not at incident time.
-- **No telemetry.** No Sentry DSN, no analytics backend, 18 of 28 events wired. Sentry
+- **No telemetry.** No Sentry DSN, no analytics backend, 32 of 44 events wired. `xp_reconciliation_failed` — named in step 1 above as one of the two signals that distinguish "our release" from "the internet" — now HAS a producer as of 2026-08-19, in `lib/sync.ts` where the server's answer meets the client's prediction. That closes half of step 1's dependency; the other half is a backend for the event to reach, which is the same missing thing as the crash reporter. Sentry
   was in fact built and then removed on 2026-08-09 to hold the 4 MiB bundle budget (see
   `docs/plan/cowork-handoff.md` §6) — so this is now "no telemetry, by a decision" where
   it was previously "no telemetry, not yet built". Step 1 is currently "wait for a user
