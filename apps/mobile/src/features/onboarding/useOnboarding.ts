@@ -31,8 +31,29 @@ export type OnboardingState = {
 
 const NOT_DONE: OnboardingState = { completed: false }
 
+/**
+ * The one persisted read in the app whose type is a privacy decision.
+ *
+ * `_layout` does `if (completed && isChild !== undefined) setChildAccount(isChild)`, and
+ * a cast let a non-boolean through that gate. The failure direction happened to be the
+ * safe one — `track()` tests `isChildAccount !== false`, so anything that is not the
+ * boolean `false` emits nothing — but "happens to fail safe" is not the same claim as
+ * "cannot be wrong", and this is the flag that decides whether a ten-year-old's device
+ * talks to a third party.
+ *
+ * A row that fails is `NOT_DONE`, which runs the age gate again. Asking once more is the
+ * correct cost; guessing is not.
+ */
+const isOnboardingState = (value: unknown): boolean => {
+  if (typeof value !== 'object' || value === null) return false
+  const state = value as OnboardingState
+  if (typeof state.completed !== 'boolean') return false
+  if (state.birthYear !== undefined && !Number.isInteger(state.birthYear)) return false
+  return state.isChild === undefined || typeof state.isChild === 'boolean'
+}
+
 export function readOnboarding(): OnboardingState {
-  return readJson<OnboardingState>(KEY) ?? NOT_DONE
+  return readJson<OnboardingState>(KEY, isOnboardingState) ?? NOT_DONE
 }
 
 export type UseOnboarding = {
