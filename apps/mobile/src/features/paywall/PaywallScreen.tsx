@@ -142,6 +142,14 @@ const GATE_ART = 148
  * The same four strings page 2 shows. One list rather than two, so the pages cannot come
  * to disagree about what somebody is buying.
  */
+/**
+ * The perk tick, at the size the `body` glyph it replaces occupied.
+ *
+ * Fixed rather than font-scaled, per `Icon`'s own rule: the LABEL beside it carries the
+ * text setting, and an icon that grew with it would push the row apart.
+ */
+const INCLUDES_TICK = 18
+
 const PERKS = [
   'paywall:perk.hearts',
   'paywall:perk.offline',
@@ -392,9 +400,12 @@ export function PaywallScreen({
             <View style={styles.includes}>
               {PERKS.map((perk) => (
                 <View key={perk} style={styles.includesRow}>
-                  <Text style={styles.includesTick} aria-hidden importantForAccessibility="no-hide-descendants">
-                    ✓
-                  </Text>
+                  {/* An icon, not a `✓`. A literal character renders in whatever typeface
+                      the device has for it — the defect `pnpm build:icons` was written
+                      for, after the tab bar shipped five of them as text and four came
+                      out as colour emoji. This is the screen that asks for money, which
+                      is the worst one to render inconsistently. */}
+                  <Icon name="check" size={INCLUDES_TICK} color={colors.status.progress} />
                   <Text style={styles.includesText}>{t(perk)}</Text>
                 </View>
               ))}
@@ -568,7 +579,6 @@ const styles = StyleSheet.create({
   includesTitle: { ...text('overline'), color: colors.text.tertiary, textAlign: 'center' },
   includes: { alignSelf: 'center', gap: space[2] },
   includesRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
-  includesTick: { ...text('body', { weight: '700' }), color: colors.action.primary },
   includesText: { ...text('body'), color: colors.text.secondary },
 
   centred: { alignItems: 'center', justifyContent: 'center' },
@@ -589,7 +599,6 @@ const styles = StyleSheet.create({
   },
   perks: { gap: space[3], alignSelf: 'stretch' },
   perk: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
-  tick: { ...text('h3'), color: colors.status.progress },
   perkLabel: { ...text('bodyStrong'), color: colors.text.primary },
   free: { ...text('bodyStrong'), color: colors.status.progress, textAlign: 'center' },
   terms: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },

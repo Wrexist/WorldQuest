@@ -127,6 +127,7 @@ import {
   type RegionCode,
 } from '../explore/ExploreScreen.js'
 import { Art } from '../../components/Art.js'
+import { Icon } from '../../components/Icon.js'
 import { WheelPicker, type WheelOption } from '../../components/WheelPicker.js'
 import type { LevelChoice } from './levels.js'
 import { ART_GEOMETRY, type ArtName } from '../../lib/art.generated.js'
@@ -339,6 +340,15 @@ const DAYS_A_WEEK = 7
  * bar is trying to say.
  */
 const SETUP_STEPS = STEPS.length - 1
+
+/**
+ * The selected-row tick, at the size the `h3` glyph it replaces occupied.
+ *
+ * Fixed rather than font-scaled, which is `Icon`'s own rule: an icon that grows with the
+ * text setting overflows the 44 pt row it sits in, and the LABEL beside it is what
+ * carries the scale.
+ */
+const TICK = 20
 
 
 const LEVEL_COPY = {
@@ -861,17 +871,21 @@ export function OnboardingScreen({
           hitSlop={12}
           style={styles.back}
         >
-          {/* A glyph, not an icon font: this is one character in a repo with no icon
-              set, and the alternative is a third-party dependency for a chevron. Hidden
-              from the reader because the Pressable is already named — otherwise the
-              control announces its own arrowhead. */}
-          <Text
-            style={styles.backGlyph}
-            aria-hidden
-            importantForAccessibility="no-hide-descendants"
-          >
-            ‹
-          </Text>
+          {/* The icon, not a `‹`. This said "a glyph, not an icon font: one character in
+              a repo with no icon set" — true when it was written and not since
+              `pnpm build:icons` rasterised the Lucide set. `ScreenHeader` migrated its own
+              back control and recorded the reason in one line: "the icon MIRRORS for RTL,
+              which the `←` character never did". A chevron is the one glyph where that
+              matters most — under RTL a back control pointing the wrong way is not a
+              styling nit, it is an arrow to somewhere else.
+
+              A literal character is also a different typeface on every device, which is
+              the defect `build:icons` exists for: the tab bar shipped `⌂ ◎ ◈ ☺ ⋯` as text
+              and four of them rendered as colour emoji.
+
+              Decorative, because the Pressable is already named — otherwise the reader
+              announces the action and then the arrowhead. */}
+          <Icon name="back" size={22} color={colors.text.secondary} />
         </Pressable>
 
         <View style={styles.progressBar}>
@@ -1113,13 +1127,15 @@ export function OnboardingScreen({
                         : LOCALE_ENDONYM[choice as Locale]}
                     </Text>
                     <View style={styles.flex} />
-                    <Text
-                      style={[styles.tick, !chosen && styles.tickOff]}
-                      aria-hidden
-                      importantForAccessibility="no-hide-descendants"
-                    >
-                      ✓
-                    </Text>
+                    {/* Reserved rather than removed — selection changes colour, never
+                        layout — so the wrapper keeps its size and the OPACITY carries the
+                        off state. An icon rather than a `✓` for the reason
+                        `ScreenHeader` gives about its arrow: a literal character is a
+                        different typeface on every device, which is the defect
+                        `pnpm build:icons` exists for. */}
+                    <View style={!chosen && styles.tickOff}>
+                      <Icon name="check" size={TICK} color={colors.action.primary} />
+                    </View>
                   </Pressable>
                 )
               })}
@@ -1205,13 +1221,9 @@ export function OnboardingScreen({
               >
                 <Text style={styles.goalMinutes}>{t('onboarding:region.anywhere')}</Text>
                 <View style={styles.flex} />
-                <Text
-                  style={[styles.tick, startRegion !== null && styles.tickOff]}
-                  aria-hidden
-                  importantForAccessibility="no-hide-descendants"
-                >
-                  ✓
-                </Text>
+                <View style={startRegion !== null && styles.tickOff}>
+                  <Icon name="check" size={TICK} color={colors.action.primary} />
+                </View>
               </Pressable>
             </View>
 
@@ -1494,7 +1506,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginStart: -space[3],
   },
-  backGlyph: { ...text('h1'), color: colors.text.secondary, lineHeight: undefined },
   progressBar: { flex: 1 },
   // The step owns everything between the bar and the buttons, and it is `flex: 1` so a
   // short step centres inside it rather than hanging from the top of the screen.
@@ -1729,7 +1740,6 @@ const styles = StyleSheet.create({
   // is — `flex: 1` on the middle child rather than `space-between` on the row, because
   // the row has three children and `space-between` would centre the second one.
   goalLabel: { ...text('body'), color: colors.text.secondary, flex: 1 },
-  tick: { ...text('h3'), color: colors.action.primary },
   // Reserved rather than removed — selection changes colour, never layout.
   tickOff: { opacity: 0 },
   actions: { padding: space[4], gap: space[2] },
