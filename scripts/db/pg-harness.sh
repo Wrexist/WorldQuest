@@ -68,4 +68,9 @@ echo "→ properties"
 # anything.
 psq -t -q -f "$ROOT/scripts/db/assert.sql" 2>&1 | grep -E "✓|✗|ERROR|NOTICE" | sed 's/^psql:[^ ]* //; s/^NOTICE: *//'
 
+echo "→ generated types against the real schema"
+as "psql -h $RUNDIR -p $PORT -U postgres -tA -F'|' -c \"select table_name, column_name from information_schema.columns where table_schema='public' order by 1,2\"" > "$RUNDIR/columns.txt"
+as "psql -h $RUNDIR -p $PORT -U postgres -tA -F'|' -c \"select p.proname, p.pronargs from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname='public' order by 1\"" > "$RUNDIR/functions.txt"
+node "$ROOT/scripts/db/check-types.mjs" "$ROOT/packages/api/src/database.types.ts" "$RUNDIR/columns.txt" "$RUNDIR/functions.txt"
+
 echo "✓ schema applies and behaves"
