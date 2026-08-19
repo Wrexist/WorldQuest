@@ -15,9 +15,17 @@ export type SkeletonProps = {
   height?: number
   borderRadius?: number
   style?: StyleProp<ViewStyle>
+  /** Not for a11y — a skeleton is hidden from it. For a test asserting which state rendered. */
+  testID?: string
 }
 
-export function Skeleton({ width = '100%', height = 16, borderRadius = radius.sm, style }: SkeletonProps) {
+export function Skeleton({
+  width = '100%',
+  height = 16,
+  borderRadius = radius.sm,
+  style,
+  testID,
+}: SkeletonProps) {
   const opacity = useRef(new Animated.Value(0.4)).current
 
   useEffect(() => {
@@ -37,6 +45,7 @@ export function Skeleton({ width = '100%', height = 16, borderRadius = radius.sm
 
   return (
     <Animated.View
+      testID={testID}
       // A skeleton is decorative — the screen announces its own loading state.
       accessibilityElementsHidden
       importantForAccessibility="no-hide-descendants"

@@ -20,6 +20,7 @@ import {
   Button,
   Card,
   colors,
+  EmptyState,
   palette,
   ProgressBar,
   radius,
@@ -183,34 +184,42 @@ export function ProfileScreen({
           {...(portrait !== null ? { avatar: <Art name={portrait} size={40} /> } : {})}
           {...(onOpenSettings !== undefined ? { onSettings: onOpenSettings } : {})}
         />
-        <View style={[styles.screen, styles.centered]}>
-          {/* The 72pt `Avatar` that used to sit here is gone.
-   
-              `TopBar` above already draws the same initials, or the same portrait, four
-              hundred points higher up the screen. Photographed, the empty profile was the
-              letters EX twice with nothing between them — and the second one was the
-              larger, so the eye read the header as the duplicate.
-   
-              The journal is the picture this state wants: it is briefed for this screen as
-              "ready to be filled, not sad", which is the distinction `profile:empty.body`
-              draws in words, and an avatar of a user with no progress illustrates nothing. */}
-          <Art name="states/empty-profile" size={140} />
-          <Text style={styles.title} role="heading">
-            {t('profile:empty.title')}
-          </Text>
-          <Text style={styles.subtitle}>{t('profile:empty.body')}</Text>
-          {/* The empty state named the way out and did not open it. An empty state that
-              tells you what to do next and then makes you find it yourself is a dead
-              end — the one place a new user is most likely to be looking for a way in. */}
-          {onStartLesson !== undefined && (
-            <Button
-              label={t('profile:empty.cta')}
-              onPress={onStartLesson}
-              fullWidth={false}
-              style={styles.emptyCta}
-            />
-          )}
-        </View>
+        {/* The 72pt `Avatar` that used to sit here is gone.
+
+            `TopBar` above already draws the same initials, or the same portrait, four
+            hundred points higher up the screen. Photographed, the empty profile was the
+            letters EX twice with nothing between them — and the second one was the
+            larger, so the eye read the header as the duplicate.
+
+            The journal is the picture this state wants: it is briefed for this screen as
+            "ready to be filled, not sad", which is the distinction `profile:empty.body`
+            draws in words, and an avatar of a user with no progress illustrates nothing.
+
+            The block itself is `EmptyState` now rather than a local `centered` style,
+            which is what moves it off the top of the screen. It used to be pinned there
+            with `justifyContent: 'flex-start'` and 48 points of padding, leaving 46 % of
+            a 390-wide phone empty below it — the most common reason a screen in this app
+            reads as unfinished, and the same defect in seven other places. */}
+        <EmptyState
+          art={<Art name="states/empty-profile" size={140} />}
+          title={t('profile:empty.title')}
+          body={t('profile:empty.body')}
+          {...(onStartLesson !== undefined
+            ? {
+                // The empty state named the way out and did not open it. An empty state
+                // that tells you what to do next and then makes you find it yourself is
+                // a dead end — the one place a new user is most likely to be looking for
+                // a way in.
+                action: (
+                  <Button
+                    label={t('profile:empty.cta')}
+                    onPress={onStartLesson}
+                    fullWidth={false}
+                  />
+                ),
+              }
+            : {})}
+        />
       </View>
     )
   }
@@ -608,7 +617,6 @@ const styles = StyleSheet.create({
   weekBar: { width: '100%', borderRadius: radius.sm, backgroundColor: colors.status.progress, ...squircle },
   weekLabel: { ...text('overline'), color: colors.text.tertiary },
   weekEmpty: { ...text('body'), color: colors.text.secondary },
-  emptyCta: { marginTop: space[4] },
   screen: { flex: 1 },
   content: { padding: space[4], gap: space[4] },
   /**
@@ -625,18 +633,8 @@ const styles = StyleSheet.create({
    * the distance from the header is the thing being set and a ratio would move it every
    * time the header changed height.
    */
-  centered: {
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    // `padding` FIRST, then the override. React Native resolves these in declaration
-    // order, so a shorthand written after `paddingTop` silently discards it.
-    padding: space[5],
-    paddingTop: space[9],
-    gap: space[3],
-  },
 
   name: { ...text('h1'), color: colors.text.primary },
-  title: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
   subtitle: { ...text('caption'), color: colors.text.secondary },
   subtitleNumber: {
     ...text('caption', { weight: '700', numeric: true }),

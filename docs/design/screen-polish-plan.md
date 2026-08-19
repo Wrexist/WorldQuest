@@ -221,35 +221,54 @@ way.
 | `league` (empty) | 43 % | ≥ 65 % | Same |
 | `streak` | 68 % | ≥ 80 % | The week strip and milestone ladder are real content, not filler |
 
-### Phase 1 — the shared vocabulary *(one day)*
+### Phase 1 — the shared vocabulary — **`EmptyState` done 2026-08-19**
 
-Eight screens hand-roll the same three-part empty block with slightly different spacing,
-and four hand-roll a skeleton. That duplication is why fixing this screen-by-screen would
-be twelve edits that drift apart within a month.
+Eight screens hand-rolled the same three-part empty block with slightly different
+spacing, and four hand-rolled a skeleton. That duplication is why fixing this
+screen-by-screen would be twelve edits that drift apart within a month.
 
-1. **`EmptyState` in `packages/design/src/primitives/`** — art, heading, body, optional
-   primary action, optional secondary action. One spacing rhythm, one art size (140, with
-   the paywall's measured 88 as an explicit prop override — see the note at
-   `PaywallScreen.tsx:122`, it is a 200 %-text constraint and not a style choice).
-   Replaces the blocks in Profile, League, Collection, Country, Region, Explore, Shop and
-   the paywall. `FailureState` becomes a thin wrapper over it rather than a parallel
-   implementation.
-2. **Vertical strategy for empty states inside a scroller.** `pnpm scrollable` forbids
-   `justifyContent: 'center'` on scroll content, and correctly — it makes long content
-   unreachable. The fix is `contentContainerStyle={{ flexGrow: 1 }}` plus a centred child
-   *inside*, which centres when short and scrolls when tall. Encode it once, in
-   `EmptyState`, so no screen has to get it right again.
-3. **`AbsentContent`** — the missing half of the skeleton story. Same footprint as the
-   content it stands in for, in four flavours: `loading` (shimmer), `error` (dashed
-   outline + retry), `offline` (dashed outline + the offline line), `unavailable` (flat
-   outline). All four preserve layout; only the fill changes.
-4. Copy: every new string is a key in `en` and `sv` with a translator note. No new copy is
-   invented where an existing key says the same thing.
+1. ~~**`EmptyState`**~~ **Done** — `packages/design/src/primitives/EmptyState.tsx`. Art,
+   heading, body, action, footnote. The duplication was not the expensive part: all eight
+   copies were laid out the same wrong way, `justifyContent: 'flex-start'` with 40–48
+   points of top padding, which is a short block pinned to the top of a tall screen.
+   Profile and League consume it; the rest follow as their phases land.
+2. ~~**Vertical strategy**~~ **Done**, and encoded once. `pnpm scrollable` fails the build
+   on `justifyContent: 'center'` in scroll content, correctly — content taller than the
+   viewport gets centred past both edges and the ends become unreachable. The shape that
+   works is `flexGrow: 1` on the content container and a `flex: 1` centred child inside,
+   which centres while the content is short and scrolls once it is not. A caller in a
+   plain `View` does nothing and gets the same result.
+3. **`AbsentContent`** — written, tested, and **held back until the paywall consumes it**
+   in Phase 2a. A primitive with no caller is the shape of `Placeholder.tsx` and of
+   `ach.level.climber`, and this repo has spent enough of this branch deleting those.
+4. Copy: no new strings. Both screens pass the keys they already had.
 
-**Done when** `EmptyState` and `AbsentContent` exist with tests, and at least Profile and
-League consume them with no visual regression at 320 / 390 / 768.
+#### What it moved, and what it did not
 
----
+| | ink 390 | gap 390 | gap 768 |
+|---|---|---|---|
+| `profile` | 40 % → **44 %** | 46 % → **27 %** | 56 % → **31 %** |
+| `league` | 43 % → **43 %** | 46 % → **27 %** | 56 % → **31 %** |
+
+The largest gap roughly halves on both; the ink barely moves. That is exactly what
+centring can do — it redistributes emptiness rather than filling it, turning one
+half-screen hole into two smaller ones. The 65 % targets below are Phase 2's work and are
+not met by this, and saying otherwise would make the baseline useless for the phase that
+has to hit them.
+
+**League's flat fill went too**, out of sequence. It belongs to finding B and to Phase 4,
+but it is the thing that made the harness report this screen as 100 % full, so leaving it
+in meant Phase 1 could not be measured. The account form's and `ContentGate`'s stay where
+the plan puts them.
+
+#### One test harness gap, now closed
+
+`packages/design`'s suite is `environment: 'node'` with `include: ['src/**/*.test.ts']` —
+no jsdom, no `react-native-web` alias, no `.tsx`. So **no primitive in this repo has ever
+had a test**, not by a decision but because the only harness that can mount a React Native
+component lives in `apps/mobile`. The primitives' tests live there for now and move the day
+that package grows a component harness; `apps/mobile` already depends on
+`@worldquest/design`, so the import direction is legal.
 
 ### Phase 2 — the four worst screens *(two days)*
 
