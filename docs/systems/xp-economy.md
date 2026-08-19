@@ -298,6 +298,12 @@ months as prices and rewards nothing charged or granted. This section is the reg
 | `prices.avatarItem`, `pet`, `mapSkin`, `theme`, `celebration` | — | ⬜ nothing to sell yet (see `shop/index.ts`) |
 | `prices.giftSurchargePct` | — | ⬜ no gifting |
 
+One thing that is not a number and belongs here anyway: **the daily rules above are
+per-user-local for the first time.** The soft cap, `isFirstLessonOfDay` and the streak
+day all read `profiles.timezone`, which defaulted to `'UTC'` and which nothing wrote
+until 2026-08-18 — so every "daily" figure in this document was a UTC figure for every
+user, whatever their phone said.
+
 The four unpaid REWARDS are the ones worth watching, because a reward nobody grants is
 indistinguishable from a bug to the person who earned it. Achievements are the largest:
 thirty of them, unlockable today, paying nothing. The block comment beside
