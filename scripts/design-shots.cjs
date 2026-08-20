@@ -397,6 +397,21 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
 
       if ((await page.getByTestId('answer-option').locator('img').count()) > 0) {
         await shot('lesson-flags')
+
+        /**
+         * And the same question ANSWERED, which is where it actually went wrong.
+         *
+         * The shot above proved the four flags were drawn. It could not show what
+         * happened when one of them was picked: the correct/wrong mark was a sibling in
+         * the option's row, so answering added a box to a row whose artwork is centred
+         * in what is left, and the flag slid sideways — the answered cell visibly out of
+         * line with the three beside it, in the frame the user is staring at. Reported
+         * from TestFlight, invisible to every screenshot this harness had ever taken,
+         * because all of them were of the question and none of the answer.
+         */
+        await options[0].click()
+        await page.waitForTimeout(600)
+        await shot('lesson-flags-answered')
         return true
       }
 
