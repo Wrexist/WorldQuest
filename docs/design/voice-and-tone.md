@@ -25,7 +25,7 @@ thinks the world is genuinely amazing, and is glad you came along.
 |---|---|---|
 | Welcome | Warm, inviting | "Explore. Learn. Conquer." |
 | Correct | Genuine, brief | "Perfect! You found Japan 🎉" |
-| **Wrong** | **Neutral, informative** | "That's Thailand. **Japan** is the island chain to the northeast." |
+| **Wrong** | **Neutral, informative** | "You picked Thailand. **Japan** is the island chain to the northeast." |
 | Lesson done | Satisfied, closing | "Nice work. That's Europe a little smaller." |
 | Streak alive | Quietly proud | "12 days. The world is getting familiar." |
 | **Streak lost** | **Matter-of-fact, forward** | "Streak reset. Today's a good day to start a new one." |
@@ -43,11 +43,11 @@ thinks the world is genuinely amazing, and is glad you came along.
 The wrong-answer moment happens more than any other. Get it wrong and users feel
 stupid; feel stupid twice and they leave.
 
-**The formula:** *state the truth · name the right answer · give one memorable hook ·
-move on.*
+**The formula:** *name what they chose · name the right answer · give one memorable
+hook · move on.*
 
 ```
-✅  That's Thailand. Japan is the island chain to the northeast —
+✅  You picked Thailand. Japan is the island chain to the northeast —
     look for the four big islands off the Asian coast.
 
 ❌  Wrong! Try again!
@@ -55,6 +55,21 @@ move on.*
 ❌  Incorrect. The correct answer was Japan.
 ❌  Nice try, but no!
 ```
+
+**Say whose statement it is.** The first sentence was "That's Thailand." for most of
+the project, and it only ever worked because the example is a country name. The app
+asks about languages, currencies and flags too, and over a map of Papua New Guinea
+the same pattern rendered:
+
+```
+❌  Det är koreanska.
+    Svaret är engelska.
+```
+
+Two sentences that contradict each other, because the first one reads as a claim about
+the country on screen rather than about the tap. "You picked" costs two words and
+cannot be misread in any of the six attributes. It is still not shame: naming a choice
+is not judging it, which is exactly what separates it from "Incorrect."
 
 No exclamation mark. No sad emoji. No "but". No "unfortunately". The user is not
 being corrected by a teacher — they're being told something interesting by a friend.

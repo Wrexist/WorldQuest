@@ -170,6 +170,19 @@ Groups in use today: `like:nordic-cross`, `like:central-circle`,
 can carry a four-option question on its own; below that the fallback does the work,
 which is correct but easier than intended. `pnpm content:stats` reports the gap.
 
+**A value may read one way in a question and another in a citation.** `value.names` is
+the sourced form and is what the country screen, the collection and `pnpm
+content:crosscheck` read. `value.shortNames`, where a pack supplies it, is what the
+engine builds prompts, options and the ambiguity check from. Currencies need it: the
+full name is *Indian rupee*, and asked either way round that name is the answer printed
+beside the question. Shortened to *rupee* the forward question becomes real — rupee,
+taka, ringgit, baht — and the reverse one becomes honestly unanswerable, since India,
+Pakistan and Nepal all say *rupee*, so `isAmbiguous` refuses it exactly as it refuses
+the euro. What survives is the set of currencies whose short name really does name one
+country: forint, quetzal, pula, kina. A short form must cover the same locales as
+`names` (`pnpm content:validate` enforces it) and adds no claim — it is the head noun of
+the name already cited.
+
 **Hard rules**
 - Never a distractor that is *also* a correct answer (a country with two capitals; a
   shared capital; a shared currency). Enforced by `isAmbiguous`, which refuses a
@@ -180,8 +193,20 @@ which is correct but easier than intended. `pnpm content:stats` reports the gap.
   money do people use in France?" has exactly one answer however many countries share
   it. This had only ever been enforced for options that render as the same *string*,
   which is a far weaker rule and would have shipped the euro question.
+- Never a prompt that hands over its own answer. Enforced by `isSelfAnswering`, in two
+  strengths. A whole-word match catches "Guatemala City is the capital of which
+  country?" in either direction. A **shared four-character stem** catches the demonym —
+  "Which country uses the Indian rupee?", "Vilket land använder indisk rupie?" — and
+  applies to **reverse** templates only, because in the forward direction the same
+  overlap is how the place is named: "What is the capital of Mexico?" → "Mexico City"
+  is a fact worth learning, not a leak.
 - Never two options with the same displayed name.
-- Never options that differ only by a diacritic.
+- Never options that differ only by a diacritic, **or by one edit**. `excludeSimilarStrings`
+  is what enforces the second half, and for most of the project it did not: it compared
+  the candidate against the correct label for equality, which the duplicate rule already
+  did. The pair it exists for is *krona* beside *krone* — one letter apart, in a list of
+  four, in front of a ten-year-old. One edit only; two would start refusing Chile against
+  China, and those are the pairs that make a question worth asking.
 - Shuffle position with a **seeded** RNG, and never place the correct answer in the
   same slot more than twice in a row — users learn positions, not facts.
 - Difficulty is tuned by distractor *closeness*, not by making the question weirder.

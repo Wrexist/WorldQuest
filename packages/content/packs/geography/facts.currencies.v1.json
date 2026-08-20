@@ -1,6 +1,6 @@
 {
   "$schema": "../../schema/pack.schema.json",
-  "$comment": "Currency facts. Volatility is `slow`, not `stable`: currencies change — Zimbabwe has changed twice in five years, which is why it is absent here rather than present and wrong. Names are the FULL form ('Swedish krona', not 'krona') so that the value identifies the country wherever it can. Where it genuinely cannot — the euro's ten members, the West African CFA franc's two — the engine refuses the reverse question rather than asking one with ten right answers. See isAmbiguous in packages/engines/src/content.",
+  "$comment": "Currency facts. Volatility is `slow`, not `stable`: currencies change — Zimbabwe has changed twice in five years, which is why it is absent here rather than present and wrong.\n\n`names` is the FULL form (\"Indian rupee\", not \"rupee\") because that is the sourced, cross-checkable name of the thing, and it is what the country and collection screens show. `shortNames` is what a QUESTION uses, and it exists because the full form hands the answer over in both directions: \"Which country uses the Indian rupee?\" is answered by anybody who can read, and \"What money do people use in India?\" offered against Nepalese rupee and Bangladeshi taka is the same question wearing a hat. Fifty-four of the sixty-five values shared a stem with their own country's name in at least one shipped locale — this was not an edge case, it was most of the attribute.\n\nDropping the demonym also makes the reverse question honest rather than merely hard: \"rupee\" belongs to India, Pakistan and Nepal alike, so isAmbiguous refuses it, the same way it already refused the euro's ten members and the CFA franc's two. What survives — forint, quetzal, pula, kina — are the currencies whose short name really does name one country. See isAmbiguous and displayValue in packages/engines/src/content.\n\nThe euro carries no short form: its name is already the short one.\n\nNo new claim is made here. Each short name is the head noun of the full name in the same source cited on the item — the Wikipedia article \"Indian rupee\" is about the rupee — so `pnpm content:crosscheck`, which compares `names.en` against world-countries, is unaffected and still checks the sourced value.",
   "packId": "geography.facts.currencies",
   "version": "1.0.0",
   "subject": "geography",
@@ -20,6 +20,10 @@
         "names": {
           "en": "Swedish krona",
           "sv": "svensk krona"
+        },
+        "shortNames": {
+          "en": "krona",
+          "sv": "krona"
         }
       },
       "difficulty": 2,
@@ -43,6 +47,10 @@
         "names": {
           "en": "Norwegian krone",
           "sv": "norsk krone"
+        },
+        "shortNames": {
+          "en": "krone",
+          "sv": "krone"
         }
       },
       "difficulty": 3,
@@ -66,6 +74,10 @@
         "names": {
           "en": "Danish krone",
           "sv": "dansk krone"
+        },
+        "shortNames": {
+          "en": "krone",
+          "sv": "krone"
         }
       },
       "difficulty": 3,
@@ -319,6 +331,10 @@
         "names": {
           "en": "Swiss franc",
           "sv": "schweizisk franc"
+        },
+        "shortNames": {
+          "en": "franc",
+          "sv": "franc"
         }
       },
       "difficulty": 2,
@@ -342,6 +358,10 @@
         "names": {
           "en": "Polish złoty",
           "sv": "polsk zloty"
+        },
+        "shortNames": {
+          "en": "złoty",
+          "sv": "zloty"
         }
       },
       "difficulty": 3,
@@ -365,6 +385,10 @@
         "names": {
           "en": "Ukrainian hryvnia",
           "sv": "ukrainsk hryvnia"
+        },
+        "shortNames": {
+          "en": "hryvnia",
+          "sv": "hryvnia"
         }
       },
       "difficulty": 4,
@@ -388,6 +412,10 @@
         "names": {
           "en": "Czech koruna",
           "sv": "tjeckisk koruna"
+        },
+        "shortNames": {
+          "en": "koruna",
+          "sv": "koruna"
         }
       },
       "difficulty": 3,
@@ -411,6 +439,10 @@
         "names": {
           "en": "Hungarian forint",
           "sv": "ungersk forint"
+        },
+        "shortNames": {
+          "en": "forint",
+          "sv": "forint"
         }
       },
       "difficulty": 3,
@@ -434,6 +466,10 @@
         "names": {
           "en": "Romanian leu",
           "sv": "rumänsk leu"
+        },
+        "shortNames": {
+          "en": "leu",
+          "sv": "leu"
         }
       },
       "difficulty": 4,
@@ -457,6 +493,10 @@
         "names": {
           "en": "Japanese yen",
           "sv": "japansk yen"
+        },
+        "shortNames": {
+          "en": "yen",
+          "sv": "yen"
         }
       },
       "difficulty": 1,
@@ -480,6 +520,10 @@
         "names": {
           "en": "Chinese yuan",
           "sv": "kinesisk yuan"
+        },
+        "shortNames": {
+          "en": "yuan",
+          "sv": "yuan"
         }
       },
       "difficulty": 2,
@@ -503,6 +547,10 @@
         "names": {
           "en": "South Korean won",
           "sv": "sydkoreansk won"
+        },
+        "shortNames": {
+          "en": "won",
+          "sv": "won"
         }
       },
       "difficulty": 2,
@@ -526,6 +574,10 @@
         "names": {
           "en": "North Korean won",
           "sv": "nordkoreansk won"
+        },
+        "shortNames": {
+          "en": "won",
+          "sv": "won"
         }
       },
       "difficulty": 4,
@@ -549,6 +601,10 @@
         "names": {
           "en": "Mongolian tögrög",
           "sv": "mongolisk tögrög"
+        },
+        "shortNames": {
+          "en": "tögrög",
+          "sv": "tögrög"
         }
       },
       "difficulty": 5,
@@ -572,6 +628,10 @@
         "names": {
           "en": "Indonesian rupiah",
           "sv": "indonesisk rupiah"
+        },
+        "shortNames": {
+          "en": "rupiah",
+          "sv": "rupiah"
         }
       },
       "difficulty": 3,
@@ -595,6 +655,10 @@
         "names": {
           "en": "Thai baht",
           "sv": "thailändsk baht"
+        },
+        "shortNames": {
+          "en": "baht",
+          "sv": "baht"
         }
       },
       "difficulty": 2,
@@ -618,6 +682,10 @@
         "names": {
           "en": "Vietnamese đồng",
           "sv": "vietnamesisk đồng"
+        },
+        "shortNames": {
+          "en": "đồng",
+          "sv": "đồng"
         }
       },
       "difficulty": 3,
@@ -641,6 +709,10 @@
         "names": {
           "en": "Philippine peso",
           "sv": "filippinsk peso"
+        },
+        "shortNames": {
+          "en": "peso",
+          "sv": "peso"
         }
       },
       "difficulty": 3,
@@ -664,6 +736,10 @@
         "names": {
           "en": "Malaysian ringgit",
           "sv": "malaysisk ringgit"
+        },
+        "shortNames": {
+          "en": "ringgit",
+          "sv": "ringgit"
         }
       },
       "difficulty": 3,
@@ -687,6 +763,10 @@
         "names": {
           "en": "Indian rupee",
           "sv": "indisk rupie"
+        },
+        "shortNames": {
+          "en": "rupee",
+          "sv": "rupie"
         }
       },
       "difficulty": 2,
@@ -710,6 +790,10 @@
         "names": {
           "en": "Pakistani rupee",
           "sv": "pakistansk rupie"
+        },
+        "shortNames": {
+          "en": "rupee",
+          "sv": "rupie"
         }
       },
       "difficulty": 3,
@@ -733,6 +817,10 @@
         "names": {
           "en": "Bangladeshi taka",
           "sv": "bangladeshisk taka"
+        },
+        "shortNames": {
+          "en": "taka",
+          "sv": "taka"
         }
       },
       "difficulty": 4,
@@ -756,6 +844,10 @@
         "names": {
           "en": "Nepalese rupee",
           "sv": "nepalesisk rupie"
+        },
+        "shortNames": {
+          "en": "rupee",
+          "sv": "rupie"
         }
       },
       "difficulty": 4,
@@ -779,6 +871,10 @@
         "names": {
           "en": "Egyptian pound",
           "sv": "egyptiskt pund"
+        },
+        "shortNames": {
+          "en": "pound",
+          "sv": "pund"
         }
       },
       "difficulty": 3,
@@ -802,6 +898,10 @@
         "names": {
           "en": "Moroccan dirham",
           "sv": "marockansk dirham"
+        },
+        "shortNames": {
+          "en": "dirham",
+          "sv": "dirham"
         }
       },
       "difficulty": 4,
@@ -825,6 +925,10 @@
         "names": {
           "en": "Algerian dinar",
           "sv": "algerisk dinar"
+        },
+        "shortNames": {
+          "en": "dinar",
+          "sv": "dinar"
         }
       },
       "difficulty": 4,
@@ -848,6 +952,10 @@
         "names": {
           "en": "Tunisian dinar",
           "sv": "tunisisk dinar"
+        },
+        "shortNames": {
+          "en": "dinar",
+          "sv": "dinar"
         }
       },
       "difficulty": 4,
@@ -871,6 +979,10 @@
         "names": {
           "en": "Nigerian naira",
           "sv": "nigeriansk naira"
+        },
+        "shortNames": {
+          "en": "naira",
+          "sv": "naira"
         }
       },
       "difficulty": 3,
@@ -894,6 +1006,10 @@
         "names": {
           "en": "Ghanaian cedi",
           "sv": "ghanansk cedi"
+        },
+        "shortNames": {
+          "en": "cedi",
+          "sv": "cedi"
         }
       },
       "difficulty": 4,
@@ -917,6 +1033,10 @@
         "names": {
           "en": "West African CFA franc",
           "sv": "västafrikansk CFA-franc"
+        },
+        "shortNames": {
+          "en": "CFA franc",
+          "sv": "CFA-franc"
         }
       },
       "difficulty": 4,
@@ -940,6 +1060,10 @@
         "names": {
           "en": "West African CFA franc",
           "sv": "västafrikansk CFA-franc"
+        },
+        "shortNames": {
+          "en": "CFA franc",
+          "sv": "CFA-franc"
         }
       },
       "difficulty": 4,
@@ -963,6 +1087,10 @@
         "names": {
           "en": "Kenyan shilling",
           "sv": "kenyansk shilling"
+        },
+        "shortNames": {
+          "en": "shilling",
+          "sv": "shilling"
         }
       },
       "difficulty": 3,
@@ -986,6 +1114,10 @@
         "names": {
           "en": "Ethiopian birr",
           "sv": "etiopisk birr"
+        },
+        "shortNames": {
+          "en": "birr",
+          "sv": "birr"
         }
       },
       "difficulty": 4,
@@ -1009,6 +1141,10 @@
         "names": {
           "en": "Ugandan shilling",
           "sv": "ugandisk shilling"
+        },
+        "shortNames": {
+          "en": "shilling",
+          "sv": "shilling"
         }
       },
       "difficulty": 4,
@@ -1032,6 +1168,10 @@
         "names": {
           "en": "Tanzanian shilling",
           "sv": "tanzanisk shilling"
+        },
+        "shortNames": {
+          "en": "shilling",
+          "sv": "shilling"
         }
       },
       "difficulty": 4,
@@ -1055,6 +1195,10 @@
         "names": {
           "en": "South African rand",
           "sv": "sydafrikansk rand"
+        },
+        "shortNames": {
+          "en": "rand",
+          "sv": "rand"
         }
       },
       "difficulty": 2,
@@ -1078,6 +1222,10 @@
         "names": {
           "en": "Namibian dollar",
           "sv": "namibisk dollar"
+        },
+        "shortNames": {
+          "en": "dollar",
+          "sv": "dollar"
         }
       },
       "difficulty": 4,
@@ -1101,6 +1249,10 @@
         "names": {
           "en": "Botswana pula",
           "sv": "botswansk pula"
+        },
+        "shortNames": {
+          "en": "pula",
+          "sv": "pula"
         }
       },
       "difficulty": 5,
@@ -1124,6 +1276,10 @@
         "names": {
           "en": "US dollar",
           "sv": "amerikansk dollar"
+        },
+        "shortNames": {
+          "en": "dollar",
+          "sv": "dollar"
         }
       },
       "difficulty": 1,
@@ -1147,6 +1303,10 @@
         "names": {
           "en": "Canadian dollar",
           "sv": "kanadensisk dollar"
+        },
+        "shortNames": {
+          "en": "dollar",
+          "sv": "dollar"
         }
       },
       "difficulty": 2,
@@ -1170,6 +1330,10 @@
         "names": {
           "en": "Mexican peso",
           "sv": "mexikansk peso"
+        },
+        "shortNames": {
+          "en": "peso",
+          "sv": "peso"
         }
       },
       "difficulty": 2,
@@ -1193,6 +1357,10 @@
         "names": {
           "en": "Cuban peso",
           "sv": "kubansk peso"
+        },
+        "shortNames": {
+          "en": "peso",
+          "sv": "peso"
         }
       },
       "difficulty": 3,
@@ -1216,6 +1384,10 @@
         "names": {
           "en": "Guatemalan quetzal",
           "sv": "guatemalansk quetzal"
+        },
+        "shortNames": {
+          "en": "quetzal",
+          "sv": "quetzal"
         }
       },
       "difficulty": 5,
@@ -1239,6 +1411,10 @@
         "names": {
           "en": "Costa Rican colón",
           "sv": "costarikansk colón"
+        },
+        "shortNames": {
+          "en": "colón",
+          "sv": "colón"
         }
       },
       "difficulty": 5,
@@ -1262,6 +1438,10 @@
         "names": {
           "en": "Panamanian balboa",
           "sv": "panamansk balboa"
+        },
+        "shortNames": {
+          "en": "balboa",
+          "sv": "balboa"
         }
       },
       "difficulty": 5,
@@ -1285,6 +1465,10 @@
         "names": {
           "en": "Brazilian real",
           "sv": "brasiliansk real"
+        },
+        "shortNames": {
+          "en": "real",
+          "sv": "real"
         }
       },
       "difficulty": 2,
@@ -1308,6 +1492,10 @@
         "names": {
           "en": "Argentine peso",
           "sv": "argentinsk peso"
+        },
+        "shortNames": {
+          "en": "peso",
+          "sv": "peso"
         }
       },
       "difficulty": 3,
@@ -1331,6 +1519,10 @@
         "names": {
           "en": "Chilean peso",
           "sv": "chilensk peso"
+        },
+        "shortNames": {
+          "en": "peso",
+          "sv": "peso"
         }
       },
       "difficulty": 3,
@@ -1354,6 +1546,10 @@
         "names": {
           "en": "Peruvian sol",
           "sv": "peruansk sol"
+        },
+        "shortNames": {
+          "en": "sol",
+          "sv": "sol"
         }
       },
       "difficulty": 4,
@@ -1377,6 +1573,10 @@
         "names": {
           "en": "Colombian peso",
           "sv": "colombiansk peso"
+        },
+        "shortNames": {
+          "en": "peso",
+          "sv": "peso"
         }
       },
       "difficulty": 3,
@@ -1400,6 +1600,10 @@
         "names": {
           "en": "Australian dollar",
           "sv": "australisk dollar"
+        },
+        "shortNames": {
+          "en": "dollar",
+          "sv": "dollar"
         }
       },
       "difficulty": 2,
@@ -1423,6 +1627,10 @@
         "names": {
           "en": "New Zealand dollar",
           "sv": "nyzeeländsk dollar"
+        },
+        "shortNames": {
+          "en": "dollar",
+          "sv": "dollar"
         }
       },
       "difficulty": 3,
@@ -1446,6 +1654,10 @@
         "names": {
           "en": "Fijian dollar",
           "sv": "fijiansk dollar"
+        },
+        "shortNames": {
+          "en": "dollar",
+          "sv": "dollar"
         }
       },
       "difficulty": 5,
@@ -1469,6 +1681,10 @@
         "names": {
           "en": "Papua New Guinean kina",
           "sv": "papuansk kina"
+        },
+        "shortNames": {
+          "en": "kina",
+          "sv": "kina"
         }
       },
       "difficulty": 5,

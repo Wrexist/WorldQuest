@@ -42,7 +42,20 @@ export type Fact = {
   readonly id: FactId
   readonly entity: EntityId
   readonly attribute: string
-  readonly value: { readonly id?: string; readonly names?: LocalizedText }
+  /**
+   * The value, in two forms with two jobs.
+   *
+   * `names` is the full, sourced form — what a citation shows and what
+   * `pnpm content:crosscheck` compares against an independent dataset.
+   * `shortNames`, when present, is what a QUESTION uses instead, because a full name
+   * can carry its own answer: "Indian rupee" beside "Which country uses it?" is not a
+   * question. See `displayValue` in ./index.ts for which paths read which.
+   */
+  readonly value: {
+    readonly id?: string
+    readonly names?: LocalizedText
+    readonly shortNames?: LocalizedText
+  }
   /** Authored prior, 1–5. The engine learns the real per-user difficulty. */
   readonly difficulty: number
   readonly tags?: readonly string[]

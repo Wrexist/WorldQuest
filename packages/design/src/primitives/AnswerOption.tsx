@@ -41,8 +41,17 @@
  *    double-tap protection.
  */
 
-import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native'
+import {
+  Animated,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native'
 import { colors, radius, space } from '../tokens.js'
+import { useAnimatedTo } from '../motion.js'
 import { squircle } from '../shape.js'
 import { text } from '../typography.js'
 
@@ -177,6 +186,16 @@ const GLYPHS: Record<AnswerState, string | null> = {
 
 const FACE_HEIGHT = 56
 
+/**
+ * The mark's coin when it sits ON a picture.
+ *
+ * Big enough to hold a 20pt icon with a ring around it, small enough that it covers a
+ * corner of a flag rather than the flag. It overlaps the artwork's corner deliberately:
+ * a coin floating in the gap beside a flag is a fifth object in the row, and a coin
+ * biting into the corner reads as attached to the thing it is about.
+ */
+const COIN = 30
+
 export function AnswerOption({
   label,
   state = 'idle',
@@ -190,6 +209,33 @@ export function AnswerOption({
 }: AnswerOptionProps) {
   const isInert = state === 'disabled' || state === 'correct' || state === 'wrong'
   const skin = SKINS[state]
+
+  const fallbackGlyph = GLYPHS[state]
+  const glyph =
+    mark ??
+    (fallbackGlyph === null ? null : (
+      <Text style={[styles.glyph, { color: skin.edge }]}>{fallbackGlyph}</Text>
+    ))
+
+  /**
+   * The mark arriving, rather than being there.
+   *
+   * `expressive` is the only token whose easing overshoots (`Easing.out(back)`), which
+   * is exactly the pop this wants: the tick lands a shade too big and settles. Through
+   * `useAnimatedTo` so it collapses to a zero-duration jump when the user has asked for
+   * less movement — the tick still appears, it just does not travel. It is also seeded
+   * at its target, so a render with no effects (the screenshot harness) draws the
+   * finished state instead of an invisible one.
+   *
+   * Called unconditionally, before the branch that decides whether there IS a mark,
+   * because that is what hooks require — the value simply sits at 0 until there is
+   * something to show.
+   */
+  const arrive = useAnimatedTo(glyph === null ? 0 : 1, 'expressive')
+  const arriving = {
+    opacity: arrive,
+    transform: [{ scale: arrive.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] }) }],
+  }
 
   return (
     <Pressable
@@ -266,7 +312,27 @@ export function AnswerOption({
         // above already announces the description this picture replaces, and a decoded
         // image would announce it a second time or, worse, announce a filename.
         <View style={styles.art} importantForAccessibility="no-hide-descendants" aria-hidden>
-          {art}
+          {/* A frame that is exactly the artwork's size, so the mark can be placed
+              against the PICTURE's corner rather than the cell's. */}
+          <View style={styles.artFrame}>
+            {art}
+            {/* The mark, ON the flag.
+
+                It used to be a sibling in the card's row, which is right for a text
+                option — the label is `flex: 1`, so a tick at the end takes its space
+                from the label and nothing moves. With a picture it is wrong twice over:
+                the artwork is centred in what is left of the row, so the mark appearing
+                SHRINKS that space and shoves the flag sideways at the exact moment the
+                user is looking at it, and the answered cell then sits visibly off-axis
+                from the three that were not answered.
+
+                Absolute, so it costs no layout and the flag does not move at all. */}
+            {glyph !== null && (
+              <Animated.View style={[styles.coin, { borderColor: skin.edge }, arriving]}>
+                {glyph}
+              </Animated.View>
+            )}
+          </View>
         </View>
       ) : (
         /* NO `numberOfLines`. The line above it used to read "never truncate a
@@ -295,10 +361,16 @@ export function AnswerOption({
         </Text>
       )}
 
-      {(mark ?? GLYPHS[state]) !== null && (
-        <View style={styles.glyphWrap} importantForAccessibility="no-hide-descendants" aria-hidden>
-          {mark ?? <Text style={[styles.glyph, { color: skin.edge }]}>{GLYPHS[state]}</Text>}
-        </View>
+      {/* The row-level mark, for the options made of words. A picture option draws its
+          own, over the artwork — see above. */}
+      {art === undefined && glyph !== null && (
+        <Animated.View
+          style={[styles.glyphWrap, arriving]}
+          importantForAccessibility="no-hide-descendants"
+          aria-hidden
+        >
+          {glyph}
+        </Animated.View>
       )}
     </Pressable>
   )
@@ -351,6 +423,38 @@ const styles = StyleSheet.create({
    * crop Switzerland's square.
    */
   art: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  /**
+   * Shrink-wrapped around the artwork, and the anchor the mark is positioned against.
+   *
+   * `alignSelf: 'center'` rather than a width: the caller sizes its own flag and this
+   * has to be exactly that size, whatever it is, or the coin lands in empty space.
+   */
+  artFrame: { alignSelf: 'center', position: 'relative' },
+  /**
+   * The mark's disc, hung off the artwork's trailing bottom corner.
+   *
+   * `end`/`bottom` rather than `right`, so it mirrors with the writing direction along
+   * with everything else on the card.
+   *
+   * Dark disc, coloured ring, coloured mark: the fill is the app's own canvas colour
+   * rather than the state colour, because the state colour is what the MARK is, and a
+   * green tick on a green disc is not a tick. It also has to survive being drawn on top
+   * of any flag in the world — a white field, a red one, a yellow one — and a near-black
+   * coin with a lit edge is the one combination that reads on all of them. Same idea as
+   * the card's own lit edge, at a smaller radius.
+   */
+  coin: {
+    position: 'absolute',
+    end: -space[1],
+    bottom: -space[1],
+    width: COIN,
+    height: COIN,
+    borderRadius: radius.full,
+    borderWidth: 2,
+    backgroundColor: colors.bg.canvas,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   /**
    * Alignment is stated only for the BADGELESS case, and that is an RTL decision.
    *

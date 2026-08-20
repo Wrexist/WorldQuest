@@ -180,7 +180,7 @@ const wrong = `
     <div class="opt correct">Japan<span class="tick">✓</span></div>
   </div>
   <div class="explain">
-    <div class="t-h3">That's Thailand.</div>
+    <div class="t-h3">You picked Thailand.</div>
     <div class="t-body dim">Japan is the island chain to the northeast — look for the
     four big islands off the Asian coast.</div>
   </div>

@@ -242,6 +242,24 @@ for (const file of packFiles) {
       }
     }
 
+    // 5b. A short form is the question's copy of the value, so it has to exist in
+    //     every language the long form does — otherwise the same fact is asked as
+    //     "Which country uses the rupee?" in English and "Vilket land använder indisk
+    //     rupie?" in Swedish, and only one of those is a question. The engine's
+    //     per-locale fallback would hide this: it falls back to `names`, silently, in
+    //     exactly the locale nobody authored.
+    const shortNames = item.value?.shortNames
+    if (shortNames) {
+      if (!names) {
+        errors.push({ file: rel, message: `${item.id}: has shortNames with no names` })
+      }
+      for (const locale of locales) {
+        if (!shortNames[locale]) {
+          errors.push({ file: rel, message: `${item.id}: missing "${locale}" shortNames value` })
+        }
+      }
+    }
+
     // 6. Sensitive content needs a human, and must not be silently quizzable.
     if (item.sensitivity === 'review-required') {
       sensitiveCount++

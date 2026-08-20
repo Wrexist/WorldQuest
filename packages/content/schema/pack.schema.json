@@ -228,6 +228,11 @@
             "names": {
               "$ref": "#/$defs/localizedText"
             },
+            "shortNames": {
+              "$ref": "#/$defs/localizedText",
+              "description": "The form a QUESTION uses, when the full name gives its own answer away. \"Indian rupee\" is the sourced name of India's currency and belongs on the country screen; as an answer option beside \"Nepalese rupee\" it is not a question, it is a reading test. Where this is present the engine builds prompts, options and the ambiguity check from it, while everything that CITES the fact — the country page, the collection, content:crosscheck — still reads `names`. Must cover exactly the same locales as `names`: a value that is short in English and long in Swedish asks two different questions of two users, and content:validate rejects that.",
+              "$comment": "Not a second fact. It is the head noun of `names`, from the same source — the Wikipedia article \"Indian rupee\" is about the rupee — which is why adding it needs no new citation and changes nothing crosscheck compares."
+            },
             "number": {
               "type": "number"
             },

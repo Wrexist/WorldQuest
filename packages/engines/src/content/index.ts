@@ -234,7 +234,9 @@ function candidatePool(
        * blank one.
        */
       return all.filter((e) =>
-        [...index.facts.values()].some((f) => f.entity === e.id && f.attribute === fact.attribute),
+        [...index.facts.values()].some(
+          (f) => f.entity === e.id && f.attribute === fact.attribute && isQuizzable(f),
+        ),
       )
     case 'random-global':
       // Rejected by content validation for shipped packs; kept for test fixtures.
@@ -247,9 +249,80 @@ const normalise = (s: string): string =>
   s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
 
 /**
+ * What a fact's VALUE reads as inside a question — which is not always its name.
+ *
+ * A fact has one value and two audiences. The country screen cites it and wants the
+ * full, sourced form: India's currency is the *Indian rupee*. A question shows it to
+ * someone who is being asked to know it, and there the demonym is the answer printed
+ * next to the question — "Which country uses the Indian rupee?" needs no knowledge of
+ * India, and "What money do people use in India?" offered against *Nepalese rupee* and
+ * *Bangladeshi taka* needs none either. Fifty-four of the sixty-five currency values
+ * shared a stem with their own country's name in at least one shipped locale.
+ *
+ * So a value may carry `shortNames`, and everything a QUESTION is built from reads
+ * through here: the prompt's `{valueName}`, the correct option, every distractor's
+ * label, the wrong-answer hint, and the ambiguity check. Everything that CITES the
+ * fact — `app/country/[code]`, the collection, `pnpm content:crosscheck` — still reads
+ * `names`, which is why this could be added without restating a single sourced claim.
+ *
+ * Resolving the LOCALE first and the form second is deliberate. `shortNames.en` is
+ * not a better answer for a Swedish user than `names.sv`, and a value authored short
+ * in one language and long in another would ask two different questions of two users
+ * — `pnpm content:validate` rejects that outright, and this fails safe if one ever
+ * gets through.
+ */
+const displayValue = (
+  value: Fact['value'],
+  locale: string,
+): string | undefined =>
+  value.shortNames?.[locale] ??
+  value.names?.[locale] ??
+  value.shortNames?.['en'] ??
+  value.names?.['en']
+
+/**
+ * Whether two option labels are close enough that telling them apart is a spelling
+ * test rather than the question being asked.
+ *
+ * One edit — insert, delete or substitute — and only for labels of four characters or
+ * more. Below that a single edit is most of the word: "won" and "yen" are one edit
+ * apart and are not remotely the same answer, and refusing that pair would delete a
+ * fair question.
+ *
+ * Deliberately tight. Two edits would start eating real distractors — Chile against
+ * China, Niger against Nigeria — and those pairs are what makes a question worth
+ * asking. What this is for is krona/krone: identical to a reader who is not looking
+ * for the trick, and the trick is not the thing being taught.
+ */
+const isNearlyTheSame = (a: string, b: string): boolean => {
+  const x = normalise(a)
+  const y = normalise(b)
+  if (x === y) return true
+  if (x.length < 4 || y.length < 4) return false
+  if (Math.abs(x.length - y.length) > 1) return false
+
+  // Levenshtein, bounded at 2 — the answer is only ever "is this 0, 1, or more".
+  let previous = Array.from({ length: y.length + 1 }, (_, j) => j)
+  for (let i = 1; i <= x.length; i++) {
+    const row = [i]
+    for (let j = 1; j <= y.length; j++) {
+      const cost = x[i - 1] === y[j - 1] ? 0 : 1
+      row.push(Math.min((row[j - 1] ?? 0) + 1, (previous[j] ?? 0) + 1, (previous[j - 1] ?? 0) + cost))
+    }
+    previous = row
+  }
+  return (previous[y.length] ?? 99) <= 1
+}
+
+/** `displayValue` for a fact that may not exist — the distractor lookup's shape. */
+const valueLabelOf = (fact: Fact | undefined, locale: string): string | undefined =>
+  fact === undefined ? undefined : displayValue(fact.value, locale)
+
+/**
  * The wrong-answer hint, or nothing.
  *
- * Two ways a hint can be worthless, and both shipped before this function existed:
+ * Three ways a hint can be worthless, and all three shipped before this function
+ * existed or after it:
  *
  * 1. The answer IS the fact value, so the hint restates the answer — "Stockholm is
  *    Stockholm." Caught by looking at a screenshot.
@@ -257,23 +330,44 @@ const normalise = (s: string): string =>
  *    "Stockholm is the capital of which country?" → "Sweden is Stockholm." Caught by
  *    `pnpm content:preview`, which exists for exactly this.
  *
+ * 3. The prompt is a PICTURE of the answer and the value describes the same picture —
+ *    "Which country is highlighted?" over a map of Germany → "Germany is Europe."
+ *    Caught by looking at a screenshot, four months after the first one.
+ *
  * What is left is the case the copy was designed around: the answer is a country and
  * the fact value describes it. "Sweden is a yellow Nordic cross on a blue field."
  */
 function hintFor(
   template: Template,
   fact: Fact,
-  nameOf: (names: Readonly<Record<string, string>> | undefined) => string | undefined,
+  locale: string,
   promptParams: Readonly<Record<string, string>>,
 ): string | undefined {
   if (template.answer.from !== 'entity.names') return undefined
 
-  const value = nameOf(fact.value.names)
+  const value = displayValue(fact.value, locale)
   if (value === undefined) return undefined
 
   // Already said in the question. Repeating it is noise at the moment the user is
   // most in need of something new.
   if (Object.values(promptParams).includes(value)) return undefined
+
+  /**
+   * 3. The prompt is a PICTURE of the answer, and the hint describes the same picture.
+   *
+   * "Which country is highlighted?" over a map of Germany, answered wrongly, read:
+   * "Germany is Europe." Two faults in four words. The sentence shape — `{correct} is
+   * {hint}` — was written for a value that DESCRIBES the answer ("Sweden is a yellow
+   * Nordic cross on a blue field"), and a continent is a place rather than a
+   * description, so it comes out ungrammatical. And it is redundant even where it
+   * parses: the map is framed on the country with its neighbours around it, so the
+   * user has just been shown where it is more precisely than "Europe" says it.
+   *
+   * Same reasoning as `revealAsset` — do not hand back what is already on screen.
+   * Checked on the prompt's MODALITY rather than by naming the location attribute, so
+   * a future pack whose map question asks about a river's course inherits it.
+   */
+  if (template.modality === 'map') return undefined
 
   return value
 }
@@ -308,7 +402,9 @@ function resolveShallow(
     names?.[locale] ?? names?.['en']
 
   const correctLabel =
-    template.answer.from === 'entity.names' ? nameOf(entity.names) : nameOf(fact.value.names)
+    template.answer.from === 'entity.names'
+      ? nameOf(entity.names)
+      : displayValue(fact.value, locale)
   if (correctLabel === undefined) return null
 
   const promptParams: Record<string, string> = {}
@@ -320,8 +416,8 @@ function resolveShallow(
       promptParams[param] =
         nameOf(entity.namesInSentence) ?? nameOf(entity.names) ?? entity.id
     }
-    if (param === 'valueName') promptParams[param] = nameOf(fact.value.names) ?? ''
-    if (param === 'description') promptParams[param] = nameOf(fact.value.names) ?? ''
+    if (param === 'valueName') promptParams[param] = displayValue(fact.value, locale) ?? ''
+    if (param === 'description') promptParams[param] = displayValue(fact.value, locale) ?? ''
   }
 
   return { fact, template, entity, nameOf, correctLabel, promptParams }
@@ -348,9 +444,52 @@ function resolveShallow(
 export function isSelfAnswering(index: ContentIndex, item: Item, locale: string): boolean {
   const resolved = resolveShallow(index, item, locale)
   if (resolved === null) return false
-  return Object.values(resolved.promptParams).some((value) =>
-    namesAnswer(value, resolved.correctLabel),
-  )
+  const params = Object.values(resolved.promptParams)
+  if (params.some((value) => namesAnswer(value, resolved.correctLabel))) return true
+
+  /**
+   * The same leak one derivation away, and only in the direction where it IS a leak.
+   *
+   * `namesAnswer` wants a whole word, so "Which country uses the Indian rupee?" passed
+   * it: "India" is not a word of "Indian rupee", it is a stem of one. A ten-year-old
+   * does not need the word boundary. The same shape reaches every demonym there is —
+   * Norwegian/Norway, Filippinerna/filippinsk, Tjeckien/tjeckisk — which is why this is
+   * a rule rather than a list somebody maintains against a dataset that changes.
+   *
+   * Four characters, case- and accent-folded: the same test
+   * `scripts/build-country-facts.cjs` already applies to language facts, and the same
+   * trade — Sweden/Swedish and France/French caught, Austria/German and Brazil/Portuguese
+   * left alone. Over-rejecting is the correct direction: a question dropped is one
+   * nobody sees, and a giveaway kept is a question that teaches nothing while telling
+   * the user they knew it.
+   *
+   * ONLY for templates answered by the entity. That restriction is the whole safety of
+   * it. The forward direction is the case the note above defends — "What is the capital
+   * of Mexico?" → "Mexico City" shares four characters and is not a leak, it is how the
+   * place is named. Applied in both directions this would delete it, along with every
+   * other capital that carries its country's name.
+   */
+  if (resolved.template.answer.from !== 'entity.names') return false
+  return params.some((value) => sharesStem(value, resolved.correctLabel))
+}
+
+/** How much of a shared opening reads as the same word. See `sharesStem`. */
+const STEM = 4
+
+/**
+ * Whether `text` opens on the same stem as `answer`.
+ *
+ * Deliberately crude, and it tries EVERY word of the text rather than anchoring to one
+ * end. Which word carries the demonym moves with the language — "Indian rupee" opens on
+ * it and "indisk rupie" does too, but "North Korean won" hides it in the second word and
+ * a rule anchored to the first would miss it in one of the two shipped locales.
+ */
+const sharesStem = (text: string, answer: string): boolean => {
+  const stem = normalise(answer).slice(0, STEM)
+  if (stem.length < STEM) return false
+  return normalise(text)
+    .split(/\W+/)
+    .some((word) => word.length >= STEM && word.slice(0, STEM) === stem)
 }
 
 /**
@@ -429,9 +568,7 @@ export function isAmbiguous(index: ContentIndex, item: Item, locale: string): bo
    */
   if (template.modality === 'map') return false
 
-  const nameOf = (names: Readonly<Record<string, string>> | undefined): string | undefined =>
-    names?.[locale] ?? names?.['en']
-  const value = nameOf(fact.value.names)
+  const value = displayValue(fact.value, locale)
   if (value === undefined) return false
 
   for (const other of index.facts.values()) {
@@ -441,7 +578,7 @@ export function isAmbiguous(index: ContentIndex, item: Item, locale: string): bo
     // Only entities that actually exist in this index can be offered as options, so
     // a value shared with an orphaned fact is not ambiguity the user can observe.
     if (!index.entities.has(other.entity)) continue
-    if (normalise(nameOf(other.value.names) ?? '') === normalise(value)) return true
+    if (normalise(displayValue(other.value, locale) ?? '') === normalise(value)) return true
   }
   return false
 }
@@ -491,14 +628,31 @@ export function buildQuestion(
   ]
 
   if (spec) {
-    /** What this candidate would READ as, which is not always its own name. */
+    /**
+     * What this candidate would READ as, which is not always its own name.
+     *
+     * Through `displayValue` for the same reason the correct option is: a distractor
+     * drawn from a value has to read the way the answer reads. Left on `names` it would
+     * have offered "rupee" against "Nepalese rupee" and "Bangladeshi taka" — three
+     * options in two registers, and the odd one out is the answer.
+     */
     const labelOf = (candidate: Entity): string | undefined =>
       template.answer.from === 'entity.names'
         ? nameOf(candidate.names)
-        : nameOf(
+        : valueLabelOf(
             [...index.facts.values()].find(
-              (f) => f.entity === candidate.id && f.attribute === fact.attribute,
-            )?.value.names,
+              (f) =>
+                f.entity === candidate.id &&
+                f.attribute === fact.attribute &&
+                // A fact the pack has withdrawn is not an option. `geo.ZW.currency` is
+                // `quizzable: false` because Zimbabwe has changed currency twice in five
+                // years, and it still turned up under "What money do people use in
+                // Belgium?" as "Zimbabwe Gold (ZiG)" — printed to a child by the one
+                // path that never asked. Withdrawing a fact has to withdraw it from
+                // both sides of the question.
+                isQuizzable(f),
+            ),
+            locale,
           )
 
     const pick = (pool: readonly Entity[]): AnswerOption[] => {
@@ -515,7 +669,13 @@ export function buildQuestion(
         // the same. Both make the question unanswerable rather than difficult.
         const key = normalise(label)
         if (taken.has(key)) continue
-        if (spec.excludeSimilarStrings !== false && key === normalise(correctLabel)) continue
+        // `excludeSimilarStrings` is named for what it does now. It used to test
+        // `key === normalise(correctLabel)`, which is what the line above already
+        // does — so the flag every template in the pack sets was, exactly, dead. What
+        // it was written for is the pair it could not see: the Swedish krona beside
+        // the Norwegian krone. One letter apart, in a list of four, in front of a
+        // ten-year-old, is a spelling trap rather than a geography question.
+        if (spec.excludeSimilarStrings !== false && isNearlyTheSame(key, correctLabel)) continue
 
         taken.add(key)
         const asset = assetFor(candidate.id)
@@ -556,7 +716,7 @@ export function buildQuestion(
     options.push(...chosen)
   }
 
-  const hint = hintFor(template, fact, nameOf, promptParams)
+  const hint = hintFor(template, fact, locale, promptParams)
 
   /**
    * Indexed by the template's ATTRIBUTE, not by the literal `'flag'`. Templates are

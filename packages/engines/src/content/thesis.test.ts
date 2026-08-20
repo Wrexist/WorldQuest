@@ -273,6 +273,13 @@ describe('question construction', () => {
     // PROMPT this time, so the hint says "Sweden is Stockholm." Found by
     // `pnpm content:preview`, which exists to be read.
     expect(hintOf('geo.SE.capital', 'tpl.capital-reverse.mc4')).toBeUndefined()
+
+    // "Which country is highlighted?" over a map — the hint said "Germany is Europe."
+    // Ungrammatical, because the sentence shape is for a value that DESCRIBES the
+    // answer and a continent is a place; and redundant either way, because the map is
+    // framed on the country with its neighbours around it and has already said where
+    // it is more precisely than "Europe" can. Found by looking at a screenshot.
+    expect(hintOf('geo.DE.continent', 'tpl.country-to-map.mc4')).toBeUndefined()
   })
 
   it('refuses a reverse question whose answer is not unique', () => {
@@ -309,12 +316,17 @@ describe('question construction', () => {
   it('still asks a reverse question when the value identifies one country', () => {
     // The guard must not swallow the whole template — a currency only one country uses
     // is exactly the question worth asking.
+    //
+    // "Krona", not "Swedish krona", and that is now load-bearing: a value naming its
+    // own country is refused by the giveaway rule two tests below, so a fixture written
+    // the long way would pass this test for the wrong reason and then stop passing at
+    // all. It is also what the shipped pack does — see `shortNames`.
     const unique: Fact[] = [
       {
         id: 'geo.SE.currency',
         entity: 'SE',
         attribute: 'currency',
-        value: { names: { en: 'Swedish krona' } },
+        value: { names: { en: 'Krona' } },
         difficulty: 2,
         tags: ['currency', 'core'],
         volatility: 'stable',
@@ -419,6 +431,202 @@ describe('question construction', () => {
       .find((i) => i.templateId === 'tpl.capital.mc4')!
     expect(isSelfAnswering(index, item, 'en')).toBe(false)
     expect(buildQuestion(index, item, 'en', seededRng(1))).not.toBeNull()
+  })
+
+  it('refuses a reverse question whose value shares a stem with its answer', () => {
+    // The leak one derivation away from `namesAnswer`. "Which country uses the Indian
+    // rupee?" passed a whole-word check — "India" is a stem of "Indian", not a word of
+    // it — and a ten-year-old does not need the word boundary. Every demonym in every
+    // language has this shape, which is why the rule is a stem test and not a list.
+    const localised: Fact[] = [
+      {
+        id: 'geo.IN.currency',
+        entity: 'IN',
+        attribute: 'currency',
+        value: { names: { en: 'Indian rupee', sv: 'indisk rupie' } },
+        difficulty: 2,
+        tags: ['currency', 'core'],
+        volatility: 'stable',
+      },
+    ]
+    const reverse: Template = {
+      id: 'tpl.currency-reverse.mc4',
+      attribute: 'currency',
+      modality: 'text',
+      prompt: { key: 'lesson:prompt.currency_reverse', params: ['valueName'] },
+      answer: { from: 'entity.names' },
+      distractors: { count: 3, strategy: 'same-region' },
+      a11y: { screenReaderSafe: true },
+    }
+    const built = buildIndex({ entities, facts: localised, templates: [reverse] })
+    const item = built.itemsByFact.get('geo.IN.currency')![0]!
+
+    // Both shipped locales, because a giveaway in one of them is a giveaway. This is
+    // the question a TestFlight build actually served: "Vilket land använder indisk
+    // rupie?" over India, Nepal, Bangladesh and Pakistan.
+    expect(isSelfAnswering(built, item, 'en')).toBe(true)
+    expect(isSelfAnswering(built, item, 'sv')).toBe(true)
+    expect(buildQuestion(built, item, 'en', seededRng(1))).toBeNull()
+    expect(buildQuestion(built, item, 'sv', seededRng(1))).toBeNull()
+  })
+
+  it('leaves the forward direction alone when the answer merely echoes the prompt', () => {
+    // The stem rule applies to reverse templates ONLY, and this is why. "What is the
+    // capital of Mexico?" → "Mexico City" shares four characters and is not a leak; it
+    // is how the place is named. Applied both ways, the rule would delete it and every
+    // other capital carrying its country's name.
+    const item = index.itemsByFact
+      .get('geo.MX.capital')!
+      .find((i) => i.templateId === 'tpl.capital.mc4')!
+    expect(isSelfAnswering(index, item, 'en')).toBe(false)
+  })
+
+  it('asks a question with the short value and cites the fact with the long one', () => {
+    // `shortNames` is what a question is built from; `names` is what the country screen
+    // shows and what content:crosscheck compares. The prompt, the correct option and
+    // every distractor read short — a "rupee" offered against "Nepalese rupee" would be
+    // three options in two registers, and the odd one out is the answer.
+    const currencies: Fact[] = [
+      {
+        id: 'geo.SE.currency',
+        entity: 'SE',
+        attribute: 'currency',
+        value: { names: { en: 'Swedish krona' }, shortNames: { en: 'krona' } },
+        difficulty: 2,
+        tags: ['currency', 'core'],
+        volatility: 'stable',
+      },
+      {
+        id: 'geo.JP.currency',
+        entity: 'JP',
+        attribute: 'currency',
+        value: { names: { en: 'Japanese yen' }, shortNames: { en: 'yen' } },
+        difficulty: 2,
+        tags: ['currency', 'core'],
+        volatility: 'stable',
+      },
+    ]
+    const forward: Template = {
+      id: 'tpl.currency.mc4',
+      attribute: 'currency',
+      modality: 'text',
+      prompt: { key: 'lesson:prompt.currency_of', params: ['entityName'] },
+      answer: { from: 'fact.value.names' },
+      distractors: { count: 1, strategy: 'other-values' },
+      a11y: { screenReaderSafe: true },
+    }
+    const built = buildIndex({ entities, facts: currencies, templates: [forward] })
+    const item = built.itemsByFact.get('geo.SE.currency')![0]!
+    const q = buildQuestion(built, item, 'en', seededRng(3))!
+
+    expect(q.options.map((o) => o.label).sort()).toEqual(['krona', 'yen'])
+    // Untouched, and that is the point: the fact still asserts what it was sourced for.
+    expect(built.facts.get('geo.SE.currency')!.value.names!['en']).toBe('Swedish krona')
+
+    // And the reverse of it becomes honestly unanswerable rather than free, once the
+    // demonym stops distinguishing values that a reader cannot distinguish anyway.
+    const reverse: Template = {
+      ...forward,
+      id: 'tpl.currency-reverse.mc4',
+      prompt: { key: 'lesson:prompt.currency_reverse', params: ['valueName'] },
+      answer: { from: 'entity.names' },
+    }
+    const shared = buildIndex({
+      entities,
+      facts: currencies.map((f) => ({ ...f, value: { ...f.value, shortNames: { en: 'krona' } } })),
+      templates: [reverse],
+    })
+    expect(isAmbiguous(shared, shared.itemsByFact.get('geo.SE.currency')![0]!, 'en')).toBe(true)
+  })
+
+  it('never offers two options a reader would have to spell to tell apart', () => {
+    // `excludeSimilarStrings` is set on every template in the pack and used to test
+    // `key === correctLabel`, which the duplicate check already did — so the flag was
+    // exactly dead. What it was written for is krona beside krone: one letter apart, in
+    // a list of four, in front of a ten-year-old. That is a spelling trap, not a
+    // geography question.
+    const nordic: Fact[] = [
+      ['SE', 'krona'],
+      ['NO', 'krone'],
+      ['DK', 'krone'],
+      ['JP', 'yen'],
+    ].map(([code, name]) => ({
+      id: `geo.${code}.currency`,
+      entity: code!,
+      attribute: 'currency',
+      value: { names: { en: name! } },
+      difficulty: 2,
+      tags: ['currency', 'core'],
+      volatility: 'stable' as const,
+    }))
+    const forward: Template = {
+      id: 'tpl.currency.mc4',
+      attribute: 'currency',
+      modality: 'text',
+      prompt: { key: 'lesson:prompt.currency_of', params: ['entityName'] },
+      answer: { from: 'fact.value.names' },
+      distractors: { count: 1, strategy: 'other-values', excludeSimilarStrings: true },
+      a11y: { screenReaderSafe: true },
+    }
+    const built = buildIndex({ entities, facts: nordic, templates: [forward] })
+    const item = built.itemsByFact.get('geo.SE.currency')![0]!
+    for (let seed = 0; seed < 20; seed++) {
+      const q = buildQuestion(built, item, 'en', seededRng(seed))!
+      expect(q.options.map((o) => o.label)).not.toContain('krone')
+    }
+  })
+
+  it('never offers a fact the pack has withdrawn as a distractor', () => {
+    // Withdrawing a fact has to withdraw it from BOTH sides of a question. Zimbabwe's
+    // currency is `quizzable: false` — it has changed twice in five years — and it
+    // still turned up under "What money do people use in Belgium?" as an option,
+    // because the distractor pool asked which entities have a value and never asked
+    // whether that value may be shown.
+    const withdrawn: Fact[] = [
+      {
+        id: 'geo.SE.currency',
+        entity: 'SE',
+        attribute: 'currency',
+        value: { names: { en: 'krona' } },
+        difficulty: 2,
+        tags: ['currency', 'core'],
+        volatility: 'stable',
+      },
+      {
+        id: 'geo.JP.currency',
+        entity: 'JP',
+        attribute: 'currency',
+        value: { names: { en: 'yen' } },
+        difficulty: 2,
+        tags: ['currency', 'core'],
+        volatility: 'stable',
+      },
+      {
+        id: 'geo.NO.currency',
+        entity: 'NO',
+        attribute: 'currency',
+        value: { names: { en: 'gold-backed token' } },
+        difficulty: 2,
+        tags: ['currency', 'core'],
+        volatility: 'slow',
+        quizzable: false,
+      },
+    ]
+    const forward: Template = {
+      id: 'tpl.currency.mc4',
+      attribute: 'currency',
+      modality: 'text',
+      prompt: { key: 'lesson:prompt.currency_of', params: ['entityName'] },
+      answer: { from: 'fact.value.names' },
+      distractors: { count: 1, strategy: 'other-values' },
+      a11y: { screenReaderSafe: true },
+    }
+    const built = buildIndex({ entities, facts: withdrawn, templates: [forward] })
+    const item = built.itemsByFact.get('geo.SE.currency')![0]!
+    for (let seed = 0; seed < 20; seed++) {
+      const q = buildQuestion(built, item, 'en', seededRng(seed))!
+      expect(q.options.map((o) => o.label)).not.toContain('gold-backed token')
+    }
   })
 
   it('keeps the direction that is naming rather than leaking', () => {
