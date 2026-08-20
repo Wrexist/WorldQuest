@@ -6,6 +6,7 @@
   "lesson:feedback.correct.body": "Du hittade {entityName} 🎉",
   "lesson:feedback.correct.streak": "Du är på gång.",
   "lesson:feedback.wrong.title": "Du valde {chosen}.",
+  "lesson:feedback.wrong.title__note": "ALDRIG 'Fel!' eller 'Hoppsan!'. Namnger vad användaren valde och går direkt över till svaret — inget utropstecken, ingen ledsen emoji. Det brukade stå \"Det är {chosen}.\", vilket fungerar bra för ett landsnamn men faller sönder för allt annat: på en kartfråga med ett språksvar renderades det \"Det är koreanska. Svaret är engelska.\", där den första meningen läses som ett påstående om landet på skärmen och motsäger den andra rakt av. Vems påstående det är måste framgå av meningen. Se docs/design/voice-and-tone.md. {chosen} anger användarens valda svar.",
   "lesson:feedback.wrong.body": "{correct} är {hint}.",
   "lesson:leave.confirm": "Lämna lektionen? Dina framsteg sparas.",
   "lesson:summary.perfect.title": "Felfritt.",

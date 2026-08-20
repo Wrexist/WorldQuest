@@ -32,9 +32,22 @@ const fact = (entity: string, attribute: string, difficulty: number, value: stri
   volatility: 'stable',
 })
 
+/**
+ * Fake capital and currency values that are clearly distinct from each other.
+ *
+ * The old fixture used `CapA1`, `CapA2`, etc., which are all mutually one Levenshtein
+ * edit apart (same length, differ only in trailing digit/letter), so the similarity
+ * check that prevents "krona"/"krone" from both appearing would prevent any two of
+ * these from appearing together as distractors. That made `buildQuestion` fail to find
+ * enough options and return null. The test is about focus filtering, not about whether
+ * fake values can co-exist, so these are spelled to defeat the similarity guard.
+ */
+const capitalNames = ['Primopolis', 'Betaburg', 'Gammaton', 'Deltacity', 'Epsilonia', 'Zetaville', 'Etapolis', 'Thetaford']
+const currencyNames = ['Alphadollar', 'Betacoin', 'Gammamark', 'Deltapound', 'Epsiloneuro', 'Zetayen', 'Etafranc', 'Thetaruble']
+
 const facts: Fact[] = entities.flatMap((e, i) => [
-  fact(e.id, 'capital', 1 + (i % 5), `Cap${e.id}`),
-  fact(e.id, 'currency', 1 + ((i + 2) % 5), `Cur${e.id}`),
+  fact(e.id, 'capital', 1 + (i % 5), capitalNames[i]!),
+  fact(e.id, 'currency', 1 + ((i + 2) % 5), currencyNames[i]!),
 ])
 
 const templates: Template[] = [

@@ -50,7 +50,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native'
-import { colors, radius, space } from '../tokens.js'
+import { colors, icon, radius, space } from '../tokens.js'
 import { useAnimatedTo } from '../motion.js'
 import { squircle } from '../shape.js'
 import { text } from '../typography.js'
@@ -194,7 +194,7 @@ const FACE_HEIGHT = 56
  * a coin floating in the gap beside a flag is a fifth object in the row, and a coin
  * biting into the corner reads as attached to the thing it is about.
  */
-const COIN = 30
+const COIN = icon.sizes.badge
 
 export function AnswerOption({
   label,

@@ -658,6 +658,12 @@ export function buildQuestion(
     const pick = (pool: readonly Entity[]): AnswerOption[] => {
       const taken = new Set([normalise(correctLabel)])
       const chosen: AnswerOption[] = []
+      // Track all selected labels for similarity checks. The `taken` set above tracks
+      // normalised exact duplicates; this array tracks the original labels so we can
+      // compare each new candidate against the correct answer AND every already-selected
+      // distractor to prevent near-identical pairs like "krona"/"krone" from both
+      // being selected.
+      const selectedLabels: string[] = [correctLabel]
 
       for (const candidate of shuffle([...pool], rng)) {
         if (chosen.length >= spec.count) break
@@ -675,9 +681,22 @@ export function buildQuestion(
         // it was written for is the pair it could not see: the Swedish krona beside
         // the Norwegian krone. One letter apart, in a list of four, in front of a
         // ten-year-old, is a spelling trap rather than a geography question.
-        if (spec.excludeSimilarStrings !== false && isNearlyTheSame(key, correctLabel)) continue
+        //
+        // Now checks against the correct answer AND every already-selected distractor,
+        // so "krona" and "krone" cannot both appear as distractors together.
+        if (spec.excludeSimilarStrings !== false) {
+          let tooSimilar = false
+          for (const selected of selectedLabels) {
+            if (isNearlyTheSame(key, selected)) {
+              tooSimilar = true
+              break
+            }
+          }
+          if (tooSimilar) continue
+        }
 
         taken.add(key)
+        selectedLabels.push(label)
         const asset = assetFor(candidate.id)
         chosen.push({
           id: candidate.id,

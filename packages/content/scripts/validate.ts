@@ -253,6 +253,22 @@ for (const file of packFiles) {
       if (!names) {
         errors.push({ file: rel, message: `${item.id}: has shortNames with no names` })
       }
+      // Check that the exact locale sets match: every locale in names must be in
+      // shortNames, and vice versa. `names` may be absent here — that's the error
+      // above — so fall back to no locales rather than crash on Object.keys(undefined).
+      const namesLocales = new Set(Object.keys(names ?? {}))
+      const shortNamesLocales = new Set(Object.keys(shortNames))
+      for (const locale of namesLocales) {
+        if (!shortNamesLocales.has(locale)) {
+          errors.push({ file: rel, message: `${item.id}: names has "${locale}" but shortNames does not` })
+        }
+      }
+      for (const locale of shortNamesLocales) {
+        if (!namesLocales.has(locale)) {
+          errors.push({ file: rel, message: `${item.id}: shortNames has "${locale}" but names does not` })
+        }
+      }
+      // Still check against configured locales for the pack
       for (const locale of locales) {
         if (!shortNames[locale]) {
           errors.push({ file: rel, message: `${item.id}: missing "${locale}" shortNames value` })

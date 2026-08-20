@@ -576,6 +576,50 @@ describe('question construction', () => {
     }
   })
 
+  it('checks similarity between distractors too, not just against the correct answer', () => {
+    // The bug the above test missed: when the correct answer is "yen" and both "krona"
+    // and "krone" are available as distractors, the old logic only checked each candidate
+    // against "yen", so both near-identical options could be selected together. This
+    // regression test ensures that each new distractor is checked against the correct
+    // answer AND every already-selected distractor.
+    const nordic: Fact[] = [
+      ['SE', 'krona'],
+      ['NO', 'krone'],
+      ['DK', 'krone'],
+      ['JP', 'yen'],
+      ['GB', 'pound'],
+      ['US', 'dollar'],
+      ['CH', 'franc'],
+    ].map(([code, name]) => ({
+      id: `geo.${code}.currency`,
+      entity: code!,
+      attribute: 'currency',
+      value: { names: { en: name! } },
+      difficulty: 2,
+      tags: ['currency', 'core'],
+      volatility: 'stable' as const,
+    }))
+    const forward: Template = {
+      id: 'tpl.currency.mc4',
+      attribute: 'currency',
+      modality: 'text',
+      prompt: { key: 'lesson:prompt.currency_of', params: ['entityName'] },
+      answer: { from: 'fact.value.names' },
+      distractors: { count: 3, strategy: 'other-values', excludeSimilarStrings: true },
+      a11y: { screenReaderSafe: true },
+    }
+    const built = buildIndex({ entities, facts: nordic, templates: [forward] })
+    const item = built.itemsByFact.get('geo.JP.currency')![0]!
+    for (let seed = 0; seed < 50; seed++) {
+      const q = buildQuestion(built, item, 'en', seededRng(seed))!
+      const labels = q.options.map((o) => o.label)
+      const hasKrona = labels.includes('krona')
+      const hasKrone = labels.includes('krone')
+      // If one is selected, the other must not be — they are too similar to both appear
+      expect(hasKrona && hasKrone, `seed ${seed} offered both krona and krone`).toBe(false)
+    }
+  })
+
   it('never offers a fact the pack has withdrawn as a distractor', () => {
     // Withdrawing a fact has to withdraw it from BOTH sides of a question. Zimbabwe's
     // currency is `quizzable: false` — it has changed twice in five years — and it
