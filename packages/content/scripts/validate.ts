@@ -248,14 +248,33 @@ for (const file of packFiles) {
     //     rupie?" in Swedish, and only one of those is a question. The engine's
     //     per-locale fallback would hide this: it falls back to `names`, silently, in
     //     exactly the locale nobody authored.
+    //
+    //     Compared against `names`' OWN key set, not against the shipped locales. Those
+    //     are the same list until a pack carries a locale it does not ship yet — an
+    //     author translating ahead of a release — and then checking only the shipped
+    //     ones passes a value that is short in English and long in the language being
+    //     prepared, which is the exact defect this rule exists to catch, discovered on
+    //     the day that locale ships. The extra direction is checked too: a short name
+    //     for a locale `names` has never heard of is a typo in a locale code, and
+    //     silently unreachable.
     const shortNames = item.value?.shortNames
     if (shortNames) {
       if (!names) {
         errors.push({ file: rel, message: `${item.id}: has shortNames with no names` })
-      }
-      for (const locale of locales) {
-        if (!shortNames[locale]) {
-          errors.push({ file: rel, message: `${item.id}: missing "${locale}" shortNames value` })
+      } else {
+        const declared = new Set([...Object.keys(names as object), ...locales])
+        for (const locale of declared) {
+          if (!shortNames[locale]) {
+            errors.push({ file: rel, message: `${item.id}: missing "${locale}" shortNames value` })
+          }
+        }
+        for (const locale of Object.keys(shortNames as object)) {
+          if (!(names as Record<string, unknown>)[locale]) {
+            errors.push({
+              file: rel,
+              message: `${item.id}: has "${locale}" shortNames with no "${locale}" name`,
+            })
+          }
         }
       }
     }

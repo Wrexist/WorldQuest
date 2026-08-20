@@ -576,6 +576,92 @@ describe('question construction', () => {
     }
   })
 
+  it('never seats two near-identical options together, whatever the answer is', () => {
+    // The rule is about any two options, not about the answer — and the first version of
+    // it measured only against the correct label. So a question answered by "yen" still
+    // sat krona and krone side by side: neither is within an edit of "yen", so neither
+    // was refused. Caught in review of the commit that added the rule.
+    //
+    // Two distractors is `count: 2`, deliberately: with three the pool runs out and the
+    // question is dropped, which would pass this assertion for the wrong reason.
+    const nordic: Fact[] = [
+      ['JP', 'yen'],
+      ['SE', 'krona'],
+      ['NO', 'krone'],
+      ['DK', 'euro'],
+    ].map(([code, name]) => ({
+      id: `geo.${code}.currency`,
+      entity: code!,
+      attribute: 'currency',
+      value: { names: { en: name! } },
+      difficulty: 2,
+      tags: ['currency', 'core'],
+      volatility: 'stable' as const,
+    }))
+    const forward: Template = {
+      id: 'tpl.currency.mc4',
+      attribute: 'currency',
+      modality: 'text',
+      prompt: { key: 'lesson:prompt.currency_of', params: ['entityName'] },
+      answer: { from: 'fact.value.names' },
+      distractors: { count: 2, strategy: 'other-values', excludeSimilarStrings: true },
+      a11y: { screenReaderSafe: true },
+    }
+    const built = buildIndex({ entities, facts: nordic, templates: [forward] })
+    const item = built.itemsByFact.get('geo.JP.currency')![0]!
+
+    let sawOne = false
+    for (let seed = 0; seed < 40; seed++) {
+      const q = buildQuestion(built, item, 'en', seededRng(seed))
+      if (q === null) continue
+      const labels = q.options.map((o) => o.label)
+      expect(labels).toContain('yen')
+      expect(labels.includes('krona') && labels.includes('krone')).toBe(false)
+      if (labels.includes('krona') || labels.includes('krone')) sawOne = true
+    }
+    // Not vacuous: one of the pair really does get offered, so the assertion above is
+    // rejecting a pairing rather than passing on a question that contains neither.
+    expect(sawOne).toBe(true)
+  })
+
+  it('keeps two dialling codes that differ by a digit, because that is the question', () => {
+    // The exemption that makes the rule above safe. "+254" and "+255" are one edit apart
+    // and are Kenya and Tanzania — the difference is the fact, not noise obscuring it.
+    // Measured before this existed: 34 pairs of calling codes in the shipped pack refused
+    // each other, including +254/+255/+256, which are the three East African neighbours a
+    // question about Kenya most wants beside it.
+    const dialling: Fact[] = [
+      ['KE', '+254'],
+      ['TZ', '+255'],
+      ['UG', '+256'],
+      ['JP', '+81'],
+    ].map(([code, dial]) => ({
+      id: `geo.${code}.calling-code`,
+      entity: code!,
+      attribute: 'calling-code',
+      value: { names: { en: dial! } },
+      difficulty: 2,
+      tags: ['calling-code', 'core'],
+      volatility: 'stable' as const,
+    }))
+    const forward: Template = {
+      id: 'tpl.calling-code.mc4',
+      attribute: 'calling-code',
+      modality: 'text',
+      prompt: { key: 'lesson:prompt.calling_code_of', params: ['entityName'] },
+      answer: { from: 'fact.value.names' },
+      distractors: { count: 3, strategy: 'other-values', excludeSimilarStrings: true },
+      a11y: { screenReaderSafe: true },
+    }
+    const built = buildIndex({ entities, facts: dialling, templates: [forward] })
+    const item = built.itemsByFact.get('geo.KE.calling-code')![0]!
+    const q = buildQuestion(built, item, 'en', seededRng(4))
+
+    // All four, which is only possible if the neighbours one digit away were allowed.
+    expect(q).not.toBeNull()
+    expect(q!.options.map((o) => o.label).sort()).toEqual(['+254', '+255', '+256', '+81'])
+  })
+
   it('never offers a fact the pack has withdrawn as a distractor', () => {
     // Withdrawing a fact has to withdraw it from BOTH sides of a question. Zimbabwe's
     // currency is `quizzable: false` — it has changed twice in five years — and it

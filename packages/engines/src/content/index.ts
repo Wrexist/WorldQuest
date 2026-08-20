@@ -256,8 +256,9 @@ const normalise = (s: string): string =>
  * someone who is being asked to know it, and there the demonym is the answer printed
  * next to the question — "Which country uses the Indian rupee?" needs no knowledge of
  * India, and "What money do people use in India?" offered against *Nepalese rupee* and
- * *Bangladeshi taka* needs none either. Fifty-four of the sixty-five currency values
- * shared a stem with their own country's name in at least one shipped locale.
+ * *Bangladeshi taka* needs none either. Fifty-four of the sixty-four currency values in
+ * the geography pack shared a stem with their own country's name in at least one shipped
+ * locale.
  *
  * So a value may carry `shortNames`, and everything a QUESTION is built from reads
  * through here: the prompt's `{valueName}`, the correct option, every distractor's
@@ -293,11 +294,31 @@ const displayValue = (
  * China, Niger against Nigeria — and those pairs are what makes a question worth
  * asking. What this is for is krona/krone: identical to a reader who is not looking
  * for the trick, and the trick is not the thing being taught.
+ *
+ * ## Digits are never the trick
+ *
+ * A label containing a digit is exempt, and that exemption is most of this function's
+ * correctness. "+254" and "+255" are one edit apart, and telling Kenya's dialling code
+ * from Tanzania's IS the question — the difference is the fact being taught, not noise
+ * obscuring it. Without this, 34 pairs of calling codes across the shipped pack refused
+ * each other, and the ones that hurt most were the good distractors: +254/+255/+256 are
+ * East Africa, exactly the three a question about Kenya wants beside it. A whole
+ * attribute's worth of questions was quietly falling back to a global pool for want of
+ * neighbours that were sitting right there.
+ *
+ * The distinction is what the reader is being asked to do. Letters that differ by one
+ * are read as the same word — nobody scans "krone" and thinks about the vowel. Digits
+ * that differ by one are read as different numbers, because a number is nothing but its
+ * digits. So the rule fires on the first and stands aside for the second.
+ *
+ * Exact duplicates still return true here, before the exemption: two options rendering
+ * the identical string is unanswerable whatever they are made of.
  */
 const isNearlyTheSame = (a: string, b: string): boolean => {
   const x = normalise(a)
   const y = normalise(b)
   if (x === y) return true
+  if (/\d/.test(x) || /\d/.test(y)) return false
   if (x.length < 4 || y.length < 4) return false
   if (Math.abs(x.length - y.length) > 1) return false
 
@@ -657,6 +678,15 @@ export function buildQuestion(
 
     const pick = (pool: readonly Entity[]): AnswerOption[] => {
       const taken = new Set([normalise(correctLabel)])
+      /**
+       * Every label already on the question, correct one included.
+       *
+       * A SET of exact strings is not enough to answer "is this option too close to
+       * one already here?", because that question is about pairs rather than about
+       * membership — so the labels are kept in order as well, and each candidate is
+       * measured against all of them.
+       */
+      const shown: string[] = [correctLabel]
       const chosen: AnswerOption[] = []
 
       for (const candidate of shuffle([...pool], rng)) {
@@ -669,15 +699,33 @@ export function buildQuestion(
         // the same. Both make the question unanswerable rather than difficult.
         const key = normalise(label)
         if (taken.has(key)) continue
-        // `excludeSimilarStrings` is named for what it does now. It used to test
-        // `key === normalise(correctLabel)`, which is what the line above already
-        // does — so the flag every template in the pack sets was, exactly, dead. What
-        // it was written for is the pair it could not see: the Swedish krona beside
-        // the Norwegian krone. One letter apart, in a list of four, in front of a
-        // ten-year-old, is a spelling trap rather than a geography question.
-        if (spec.excludeSimilarStrings !== false && isNearlyTheSame(key, correctLabel)) continue
+        /**
+         * `excludeSimilarStrings` is named for what it does now.
+         *
+         * It used to test `key === normalise(correctLabel)`, which is what the line
+         * above already does — so the flag every template in the pack sets was,
+         * exactly, dead. What it was written for is the pair it could not see: the
+         * Swedish krona beside the Norwegian krone. One letter apart, in a list of
+         * four, in front of a ten-year-old, is a spelling trap rather than a
+         * geography question.
+         *
+         * Against every label ALREADY SHOWN, not just the correct one. Measured only
+         * against the answer, this still seated krona and krone together under a
+         * question answered by "yen" — neither is within an edit of "yen", so neither
+         * was refused, and the rule stated in content-pipeline.md is about any two
+         * options rather than about the answer. The question stays answerable that
+         * way, which is why it is a `Minor` and not a bug: what it costs is a reader
+         * squinting at two options that are not the answer.
+         */
+        if (
+          spec.excludeSimilarStrings !== false &&
+          shown.some((already) => isNearlyTheSame(label, already))
+        ) {
+          continue
+        }
 
         taken.add(key)
+        shown.push(label)
         const asset = assetFor(candidate.id)
         chosen.push({
           id: candidate.id,

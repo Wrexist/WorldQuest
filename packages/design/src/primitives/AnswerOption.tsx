@@ -187,14 +187,23 @@ const GLYPHS: Record<AnswerState, string | null> = {
 const FACE_HEIGHT = 56
 
 /**
- * The mark's coin when it sits ON a picture.
+ * The size of a disc on this card — the letter badge, and the mark's coin over a picture.
  *
- * Big enough to hold a 20pt icon with a ring around it, small enough that it covers a
- * corner of a flag rather than the flag. It overlaps the artwork's corner deliberately:
- * a coin floating in the gap beside a flag is a fifth object in the row, and a coin
- * biting into the corner reads as attached to the thing it is about.
+ * ONE constant for both, because they are the same object at two positions and a card
+ * showing a 30pt badge beside a 34pt coin reads as a mistake. It was written twice, once
+ * inline in `badge` and once as the coin's own value, which is how those two drift.
+ *
+ * Not a token: the space scale is 4/8/12/16/24/32/40/48/64 and this is deliberately none
+ * of them — it is the diameter that holds a 20pt icon plus its 2pt ring with the padding
+ * a tap target wants, which is a property of these two discs and not a value any other
+ * component should reach for. `packages/design/CLAUDE.md` asks for a token where a value
+ * is reusable; a second reader is what would earn one.
+ *
+ * The coin overlaps the artwork's corner deliberately: floating in the gap beside a flag
+ * it is a fifth object in the row, and biting into the corner it reads as attached to the
+ * thing it is about.
  */
-const COIN = 30
+const DISC = 30
 
 export function AnswerOption({
   label,
@@ -397,8 +406,8 @@ const styles = StyleSheet.create({
   // should feel like nothing at all.
   pressed: { opacity: 0.7 },
   badge: {
-    width: 30,
-    height: 30,
+    width: DISC,
+    height: DISC,
     borderRadius: radius.full,
     borderWidth: 2,
     borderColor: colors.border.subtle,
@@ -447,8 +456,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     end: -space[1],
     bottom: -space[1],
-    width: COIN,
-    height: COIN,
+    width: DISC,
+    height: DISC,
     borderRadius: radius.full,
     borderWidth: 2,
     backgroundColor: colors.bg.canvas,

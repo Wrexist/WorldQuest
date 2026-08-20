@@ -46,7 +46,7 @@ stupid; feel stupid twice and they leave.
 **The formula:** *name what they chose · name the right answer · give one memorable
 hook · move on.*
 
-```
+```text
 ✅  You picked Thailand. Japan is the island chain to the northeast —
     look for the four big islands off the Asian coast.
 
@@ -61,7 +61,7 @@ the project, and it only ever worked because the example is a country name. The 
 asks about languages, currencies and flags too, and over a map of Papua New Guinea
 the same pattern rendered:
 
-```
+```text
 ❌  Det är koreanska.
     Svaret är engelska.
 ```
