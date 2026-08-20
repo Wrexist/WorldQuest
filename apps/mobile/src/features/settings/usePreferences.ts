@@ -14,7 +14,7 @@
 
 import { useCallback, useRef, useState } from 'react'
 import { SUPPORTED_LOCALES, setLocale, type Locale } from '@worldquest/i18n'
-import { readJson, writeJson } from '../../lib/storage.js'
+import { isRecord, readJson, writeJson } from '../../lib/storage.js'
 import { deviceLocale } from '../../lib/locale.js'
 import { track } from '../../lib/analytics.js'
 
@@ -97,11 +97,55 @@ export const DEFAULTS: Preferences = {
   startLevel: 'some',
 }
 
+/**
+ * What a stored value has to look like before it may override a default.
+ *
+ * One entry per preference, and the exhaustiveness is the point: `Record<keyof
+ * Preferences, ...>` means adding a preference without deciding what a valid one looks
+ * like does not compile. A table rather than a `typeof value === typeof default` loop,
+ * because three of these default to `null` and a `typeof` comparison would reject every
+ * real value they can hold — `reminderHour: 19` against a null default is 'number' versus
+ * 'object'.
+ */
+const VALID: Record<keyof Preferences, (value: unknown) => boolean> = {
+  dailyGoalMinutes: (v) => DAILY_GOALS.includes(v as DailyGoal),
+  reminder: (v) => typeof v === 'boolean',
+  reminderHour: (v) => v === null || (typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= 23),
+  sound: (v) => typeof v === 'boolean',
+  haptics: (v) => typeof v === 'boolean',
+  reduceMotion: (v) => typeof v === 'boolean',
+  analytics: (v) => typeof v === 'boolean',
+  language: (v) => typeof v === 'string',
+  avatar: (v) => v === null || typeof v === 'string',
+  startRegion: (v) => v === null || typeof v === 'string',
+  startLevel: (v) => v === 'new' || v === 'some' || v === 'confident',
+}
+
+/**
+ * The stored preferences, merged over the defaults ONE KEY AT A TIME.
+ *
+ * A plain spread was here with the right reason attached — "a preference added in a later
+ * version is missing from every existing install, and `undefined` reaching a `<Switch
+ * value>` is a crash on a screen the user is looking at" — and it covered only the
+ * missing half. A spread takes whatever the stored object holds, so `{ sound: null }`
+ * from a truncated write puts exactly that `null` on the Switch the comment was worried
+ * about, and `{ dailyGoalMinutes: "10" }` makes the daily goal on Home `NaN` by way of
+ * `lessonsPerDay`.
+ *
+ * A key that fails falls back to its default rather than dropping the file: preferences
+ * are independent, and losing somebody's language because their avatar was malformed is a
+ * worse trade than the one this is fixing.
+ */
 function load(): Preferences {
-  // Spread over the defaults rather than trusting the stored shape: a preference
-  // added in a later version is missing from every existing install, and `undefined`
-  // reaching a `<Switch value>` is a crash on a screen the user is looking at.
-  return { ...DEFAULTS, ...(readJson<Partial<Preferences>>(KEY) ?? {}) }
+  const stored = readJson<Partial<Preferences>>(KEY, isRecord)
+  if (stored === null) return DEFAULTS
+
+  const merged: Record<string, unknown> = { ...DEFAULTS }
+  for (const key of Object.keys(DEFAULTS) as (keyof Preferences)[]) {
+    const value = (stored as Record<string, unknown>)[key]
+    if (value !== undefined && VALID[key](value)) merged[key] = value
+  }
+  return merged as Preferences
 }
 
 export type UsePreferences = {

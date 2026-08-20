@@ -1,6 +1,10 @@
 {
   "account:link.title": "Spara dina framsteg",
-  "account:link.body": "Lägg till en e-postadress så följer din svit, din XP och allt du lärt dig med till en ny telefon. Vi använder den för att logga in dig igen och till ingenting annat.",
+  "account:link.body": "En e-postadress, och den här telefonen slutar vara det enda stället där dina framsteg finns.",
+  "account:link.assure.travels": "Din svit, din XP och varje fakta du har lärt dig",
+  "account:link.assure.anyPhone": "Logga in på vilken telefon som helst — allt finns kvar",
+  "account:link.assure.onlyUse": "Vi använder din e-post för att logga in dig, inget annat",
+  "account:step": "Steg {current} av {total}",
   "account:signIn.title": "Logga in",
   "account:signIn.body": "Ange e-postadressen du sparade dina framsteg med så skickar vi en kod.",
   "account:signIn.warning.title": "Det finns framsteg på den här telefonen",
@@ -29,6 +33,8 @@
   "account:settings.link": "Spara dina framsteg",
   "account:settings.signIn": "Jag har redan ett konto",
   "account:settings.signOut": "Logga ut",
+  "account:settings.signOut.unsynced": "{count, plural, one {# lektion har inte nått servern än} other {# lektioner har inte nått servern än}}. Att logga ut rensar den här enheten, så det arbetet går förlorat.",
+  "account:settings.signOut.anyway": "Logga ut ändå",
   "account:settings.child": "Framsteg på den här telefonen stannar på den här telefonen. Fråga en vuxen om du vill spara dem någonstans.",
   "account:offline.title": "Du är offline",
   "account:offline.body": "Att spara dina framsteg kräver uppkoppling. Allt du lär dig fungerar ändå utan — kom tillbaka hit när du är online."

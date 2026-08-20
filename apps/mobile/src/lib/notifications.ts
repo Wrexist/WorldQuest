@@ -35,7 +35,7 @@
 
 import * as Notifications from 'expo-notifications'
 import { reminderPlan, type ReminderPlan } from '@worldquest/engines'
-import { readJson, writeJson } from './storage.js'
+import { isNumberArray, isRecord, readJson, writeJson } from './storage.js'
 import { readOnboarding } from '../features/onboarding/useOnboarding.js'
 
 /** The same key `usePreferences` writes. Read directly so any module can schedule. */
@@ -73,11 +73,14 @@ type StoredPreferences = {
   reminderHour?: number | null
 }
 
-const preferences = (): StoredPreferences => readJson<StoredPreferences>(PREFERENCES_KEY) ?? {}
+const preferences = (): StoredPreferences =>
+  readJson<StoredPreferences>(PREFERENCES_KEY, isRecord) ?? {}
 
 /** Local hours of the last `SESSION_WINDOW` finished lessons. */
 export function recentSessionHours(): readonly number[] {
-  return readJson<number[]>(SESSIONS_KEY) ?? []
+  // `recordSessionHour` spreads this, and spreading a non-iterable is a TypeError — at
+  // the end of a lesson, beside the write that records it.
+  return readJson<number[]>(SESSIONS_KEY, isNumberArray) ?? []
 }
 
 /**

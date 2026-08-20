@@ -38,10 +38,16 @@
  * collectors, countries completed, the streak keeper, quests, and continents. Before
  * this, seven of the twelve could never move at all.
  *
- * Nothing is left. All six event kinds the catalogue counts now have a producer, and
- * every achievement in the pack can move. The two that could only ever be answered
- * server-side — `fact_mastered` and `entity_mastered` — are, and the client forwards
- * rather than decides.
+ * All six event kinds the catalogue counts have a producer, and the two that could only
+ * ever be answered server-side — `fact_mastered` and `entity_mastered` — are, with the
+ * client forwarding rather than deciding.
+ *
+ * This paragraph used to end "nothing is left; every achievement in the pack can move",
+ * and one could not. `ach.locations.collector` filters `fact_mastered` on
+ * `attribute: 'location'`, and the attribute was split out of the fact id, which reads
+ * `continent` for all 64 location facts. Having a producer for an event is not the same
+ * as producing the event a rule matches, and only `progress.test.ts` can tell the two
+ * apart — so the claim lives there now, as a test, for every attribute the pack ships.
  */
 
 import { useCallback, useSyncExternalStore } from 'react'
@@ -52,7 +58,8 @@ import {
   type DomainEvent,
   type Unlock,
 } from '@worldquest/engines'
-import { readJson, writeJson } from '../../lib/storage.js'
+import { isRecord, readJson, writeJson } from '../../lib/storage.js'
+import { factEventFields } from '../../lib/content.js'
 import { CATALOGUE } from './useAchievements.js'
 
 const KEY = 'achievements.progress.v1'
@@ -71,14 +78,37 @@ type Stored = Record<string, AchievementProgress>
 let snapshot: ReadonlyMap<string, AchievementProgress> | null = null
 const listeners = new Set<() => void>()
 
+/**
+ * A row the engine can add to.
+ *
+ * The map itself was shape-checked and its VALUES were not, and the values are what
+ * arithmetic runs on: `evaluateAll` adds to `value` and compares it against a tier
+ * threshold, so a stored `value` of `null` makes every comparison false and a stored
+ * string makes `"3" + 1` into `"31"` — a legendary tier awarded on the fourth event. Both
+ * then persist. `seen` is spread into a Set, so a non-array throws outright.
+ */
+const isProgressRow = (value: unknown): boolean => {
+  if (typeof value !== 'object' || value === null) return false
+  const row = value as AchievementProgress
+  if (typeof row.value !== 'number' || !Number.isFinite(row.value)) return false
+  if (row.seen !== undefined && !Array.isArray(row.seen)) return false
+  return row.tier === null || typeof row.tier === 'string'
+}
+
 const load = (): ReadonlyMap<string, AchievementProgress> => {
-  const stored = readJson<Stored>(KEY)
-  if (stored === null || typeof stored !== 'object') return new Map()
-  // Only ids the shipped catalogue still carries. An achievement removed from a pack
-  // leaves rows behind on every device that ever had it, and a stale row would render
-  // as a row with no name.
+  const stored = readJson<Stored>(KEY, isRecord)
+  if (stored === null) return new Map()
+  // Only ids the shipped catalogue still carries, and only rows the engine can use. An
+  // achievement removed from a pack leaves rows behind on every device that ever had it,
+  // and a stale row would render as a row with no name.
+  //
+  // A bad ROW is dropped rather than taking the whole map with it, unlike the sync queue
+  // where the parts are interdependent: these are independent counters, and losing one
+  // badge's progress is a smaller harm than losing every badge's.
   const known = new Set(CATALOGUE.map((def) => def.id))
-  return new Map(Object.entries(stored).filter(([id]) => known.has(id)))
+  return new Map(
+    Object.entries(stored).filter(([id, row]) => known.has(id) && isProgressRow(row)),
+  )
 }
 
 const read = (): ReadonlyMap<string, AchievementProgress> => (snapshot ??= load())
@@ -147,21 +177,34 @@ export function recordServerOutcome(input: {
   readonly streak: number | null
   readonly overdueCleared: number
   readonly entityMastered: readonly string[]
+  /**
+   * Regions the server credited this lesson — a continent the user answered something
+   * correctly in.
+   *
+   * It used to be emitted by OPENING the continent page, from the route. A server cannot
+   * see a navigation, and six taps completed a gold tier the moment gold started paying,
+   * so the meaning moved to the thing the copy always described.
+   */
+  readonly regionsStarted: readonly string[]
   readonly at: number
 }): readonly Unlock[] {
   const unlocked: Unlock[] = []
 
   for (const change of input.masteryChanges) {
     if (change.to !== 'mastered' && change.to !== 'burnished') continue
-    // `geo.SE.capital` → subject `geo`, entity `SE`, attribute `capital`. The id format
-    // is fixed by the content pipeline, so splitting it reads the shape rather than
-    // guessing at it — and the BARE code is what `distinctBy: 'entityId'` and the
-    // `members` lists both use, so `geo.SE` here would count as a different country from
-    // `SE` in `ach.set.nordics`.
-    const parts = change.factId.split('.')
-    const attribute = parts[parts.length - 1] ?? ''
-    const entityId = parts[1] ?? ''
-    if (attribute === '' || entityId === '') continue
+    // Read from the fact, never split out of its id. The comment that used to stand here
+    // said "the id format is fixed by the content pipeline, so splitting it reads the
+    // shape rather than guessing at it" — and the id format is fixed, which is exactly
+    // why it cannot be read this way: `geo.AR.continent` declares `attribute: "location"`,
+    // and `ach.locations.collector` filters on `location`. All four of its tiers were
+    // unreachable. See `factEventFields`.
+    //
+    // `entityId` is the BARE code for the reason the old comment gave and got right:
+    // `distinctBy: 'entityId'` and every `members` list use it, so `geo.SE` here would
+    // count as a different country from `SE` in `ach.set.nordics`.
+    const fields = factEventFields(change.factId)
+    if (fields === undefined) continue
+    const { attribute, entityId } = fields
     unlocked.push(
       ...recordAchievementEvent({
         name: 'fact_mastered',
@@ -194,6 +237,12 @@ export function recordServerOutcome(input: {
     )
   }
 
+  for (const region of input.regionsStarted) {
+    unlocked.push(
+      ...recordAchievementEvent({ name: 'region_started', at: input.at, payload: { region } }),
+    )
+  }
+
   if (input.streak !== null) {
     // `streak_extended`, not `daily_lesson`: the engine notes that this name predates it
     // and ships in analytics dashboards, so it is not renameable. `length` is the field
@@ -209,11 +258,6 @@ export function recordServerOutcome(input: {
   }
 
   return unlocked
-}
-
-/** A region opened for the first time. Feeds `ach.explorer.continents`. */
-export function recordRegionStarted(region: string, at: number): readonly Unlock[] {
-  return recordAchievementEvent({ name: 'region_started', at, payload: { region } })
 }
 
 /** A daily quest finished. Feeds `ach.quest.regular`. */

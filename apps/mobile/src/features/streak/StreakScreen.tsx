@@ -36,13 +36,17 @@ import {
   FREEZE_PRICE,
   MAX_FREEZES,
   REPAIR_PRICE,
+  STREAK_MILESTONES,
   isMilestone,
   nextMilestone,
+  streakMilestoneReward,
   type RepairAvailability,
 } from '@worldquest/engines'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 import { Stat } from '../../components/Stat.js'
+import { Icon } from '../../components/Icon.js'
+import { WeekStrip, type WeekActivity } from '../../components/WeekStrip.js'
 
 /**
  * The freeze on its own card.
@@ -53,6 +57,9 @@ import { Stat } from '../../components/Stat.js'
  * screen is about and the freeze is what protects it.
  */
 const FREEZE_ART = 64
+
+/** The tick on a reached rung, at the optical size of the chips beside it. */
+const LADDER_TICK = 18
 
 /**
  * Where this streak sits relative to the milestones that actually pay out.
@@ -96,15 +103,108 @@ function MilestoneLine({ current, broken }: { current: number; broken: boolean }
   return <Text style={styles.milestone}>{t('streak:milestone.next', { count: next - current })}</Text>
 }
 
+/**
+ * The four days that pay, as a ladder rather than a sentence.
+ *
+ * `MilestoneLine` above says "23 days to your next milestone" and that was the only
+ * mention any screen made of the whole system. It is a number with nothing behind it: a
+ * user cannot tell what the next milestone IS, what it is worth, or that there are three
+ * more after it. The reward then arrives unexplained, which is how a good system reads as
+ * a random event.
+ *
+ * Every value here comes from the engine — `STREAK_MILESTONES` for the days and
+ * `streakMilestoneReward` for the payout, which reads the balance table. Nothing is
+ * typed in. There is genuinely no coin bonus at 365, on the recorded grounds that a
+ * year-long streak is a status reward rather than a shopping trip, so the coin chip is
+ * simply absent on that rung rather than showing a zero.
+ *
+ * Reached rungs are marked and dimmed, not hidden. A ladder that deletes its lower rungs
+ * is a ladder that gets shorter as you climb it, and the days already behind you are the
+ * evidence the rest are reachable.
+ *
+ * No countdown, no "don't lose it", nothing about what breaking costs. Same rule the
+ * repair window follows: this is a thing to look forward to.
+ */
+function MilestoneLadder({ current, broken }: { readonly current: number; readonly broken: boolean }) {
+  const t = useT()
+
+  // Nothing, on the day it broke. `MilestoneLine` already refuses to say "3 days to your
+  // next milestone" beside "Your streak ended" on the grounds that it reads as a taunt,
+  // and a whole ladder of what you no longer have is the same sentence at four times the
+  // length. The repair card is the only thing that should be asking for attention here.
+  if (broken) return null
+
+  return (
+    <View style={styles.ladder}>
+      <Text style={styles.sectionTitle} role="heading" aria-level={2}>
+        {t('streak:ladder.title')}
+      </Text>
+      {STREAK_MILESTONES.map((day) => {
+        const reward = streakMilestoneReward(day)
+        const reached = current >= day
+        return (
+          /* Not one `accessible` row with a composed label: composing "7 days" and
+             "pays 50 XP" into one string is the concatenation the i18n rules forbid,
+             and it is forbidden for a reason — the join word and the order differ by
+             language. Four self-contained announcements instead, which is chattier and
+             is what a table of rewards actually is. */
+          <View key={day} style={styles.rung}>
+            <Text style={reached ? styles.rungDayDone : styles.rungDay}>
+              {t('streak:ladder.day', { count: day })}
+            </Text>
+            <View style={styles.rungRewards}>
+              <Stat
+                kind="xp"
+                value={reward.xp}
+                accessibilityLabel={t('streak:ladder.xp', { amount: reward.xp })}
+              />
+              {/* There is genuinely no coin bonus at 365, on the recorded grounds that a
+                  year-long streak is a status reward rather than a shopping trip. Absent,
+                  not zero: a chip reading "0 coins" invents a disappointment. */}
+              {reward.coins > 0 && (
+                <Stat
+                  kind="coin"
+                  value={reward.coins}
+                  accessibilityLabel={t('streak:ladder.coins', { amount: reward.coins })}
+                />
+              )}
+              {/* Holds its slot whether or not it is filled, so four rungs line up rather
+                  than stepping in and out as a streak grows. */}
+              <View style={styles.rungMark}>
+                {reached && (
+                  <Icon
+                    name="check"
+                    size={LADDER_TICK}
+                    color={colors.status.progress}
+                    label={t('streak:ladder.reached')}
+                  />
+                )}
+              </View>
+            </View>
+          </View>
+        )
+      })}
+    </View>
+  )
+}
+
 export type StreakScreenProps = {
   readonly current: number
   readonly longest: number
   readonly freezesHeld: number
   readonly coins: number
   /** Straight from `repairAvailability` — the reason is what decides the copy. */
-  readonly repair: RepairAvailability
+  readonly repairOffer: RepairAvailability
   /** The length a repair would restore. Not `current`, which has already reset to 1. */
   readonly restoreTo: number
+  /**
+   * The last seven days, for the strip.
+   *
+   * Optional, because a caller with nothing to say is a real case and an all-zero week is
+   * a different one — the first draws nothing, the second draws seven empty channels,
+   * which is the shape of a week nobody learned in and is worth seeing.
+   */
+  readonly week?: WeekActivity | undefined
   /** Epoch ms, injected so the screen never reads a clock. */
   readonly now: number
   readonly onBuyFreeze?: (() => void) | undefined
@@ -128,6 +228,21 @@ export type StreakScreenProps = {
    */
   readonly freezeNotice?: 'at_cap' | 'insufficient_funds' | 'failed' | null | undefined
   readonly onRepair?: (() => void) | undefined
+  /**
+   * A repair is in flight. Same reasoning as `buyingFreeze`.
+   *
+   * `repair_streak` has no idempotency key either — a broken streak is not a thing with
+   * an id the client can mint — so the button refuses the second tap rather than charging
+   * 1,200 coins for one intended repair.
+   */
+  readonly repairing?: boolean | undefined
+  /**
+   * Why the last repair did not happen, if it did not.
+   *
+   * `cooldown` and `expired` are not here: those are decided before the tap and rendered
+   * as the card's own copy. These are the two the server can only answer afterwards.
+   */
+  readonly repairNotice?: 'insufficient_funds' | 'failed' | null | undefined
   /**
    * H7, scoped to the two actions that genuinely need a server.
    *
@@ -159,19 +274,22 @@ export function StreakScreen({
   longest,
   freezesHeld,
   coins,
-  repair,
+  week,
+  repairOffer,
   restoreTo,
   now,
   onBuyFreeze,
   buyingFreeze = false,
   freezeNotice = null,
+  repairing = false,
+  repairNotice = null,
   onRepair,
   offline = false,
 }: StreakScreenProps) {
   const t = useT()
 
-  const broken = !repair.available
-    ? repair.reason !== 'not-broken' && repair.reason !== 'nothing-to-restore'
+  const broken = !repairOffer.available
+    ? repairOffer.reason !== 'not-broken' && repairOffer.reason !== 'nothing-to-restore'
     : true
 
   const canAffordFreeze = coins >= FREEZE_PRICE
@@ -190,7 +308,11 @@ export function StreakScreen({
        The header goes INSIDE, as it does on Country, Collection and Achievements. Four
        screens with a back button should put it in the same place. */
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      {onBack !== undefined && <ScreenHeader onBack={onBack} />}
+      {/* Named. `ScreenHeader` was drawn with a back chevron and no title, so this was
+          the one screen with a back button that did not say where you were — Country,
+          Collection, Achievements and League all do. `streak:title` has existed since the
+          screen was written and had no reader. */}
+      {onBack !== undefined && <ScreenHeader title={t('streak:title')} onBack={onBack} />}
       <View style={styles.hero}>
         {/* The streak flame, as the delivered object rather than a 44pt line glyph.
             This is the hero of the screen — the number underneath it is the whole
@@ -222,6 +344,23 @@ export function StreakScreen({
         <MilestoneLine current={current} broken={broken} />
       </View>
 
+      {/* The week, from the same component Profile draws.
+          This screen's whole subject is consecutive days and it had no calendar on it —
+          the tab that links here showed more about the streak than the streak page did,
+          and the measurement agreed: after a real lesson Profile goes from 40 % ink to
+          86 % while this screen moved two points.
+
+          No `emptyLabel`. The heading above already reads "No days yet" and the line
+          under it already says how to start one; a third sentence saying the same
+          nothing is the thing `streak:longest` was silenced for. */}
+      {week !== undefined && (
+        <View style={styles.week}>
+          <WeekStrip week={week} />
+        </View>
+      )}
+
+      <MilestoneLadder current={current} broken={broken} />
+
       <View style={styles.balance}>
         <Stat kind="coin" value={coins} accessibilityLabel={t('streak:coins', { count: coins })} />
         {/* Standing reassurance, and a promise the code has to keep. */}
@@ -233,11 +372,13 @@ export function StreakScreen({
           <Text style={styles.cardTitle}>{t('streak:broken.title')}</Text>
           <Text style={styles.body}>{t('streak:broken.body')}</Text>
           <RepairAction
-            repair={repair}
+            repairOffer={repairOffer}
             restoreTo={restoreTo}
             coins={coins}
             now={now}
             onRepair={onRepair}
+            repairing={repairing}
+            repairNotice={repairNotice}
             offline={offline}
           />
         </Card>
@@ -314,32 +455,36 @@ export function StreakScreen({
 }
 
 function RepairAction({
-  repair,
+  repairOffer,
   restoreTo,
   coins,
   now,
   onRepair,
+  repairing,
+  repairNotice,
   offline,
 }: {
-  readonly repair: RepairAvailability
+  readonly repairOffer: RepairAvailability
   readonly restoreTo: number
   readonly coins: number
   readonly now: number
   readonly onRepair: (() => void) | undefined
+  readonly repairing: boolean
+  readonly repairNotice: 'insufficient_funds' | 'failed' | null
   readonly offline: boolean
 }) {
   const t = useT()
 
-  if (!repair.available) {
+  if (!repairOffer.available) {
     // Every rejection names WHICH, because "you can repair again in 12 days" and "the
     // window closed" are different facts and a generic "unavailable" invites tapping.
-    if (repair.reason === 'window-expired') {
+    if (repairOffer.reason === 'window-expired') {
       return <Text style={styles.note}>{t('streak:repair.expired')}</Text>
     }
-    if (repair.reason === 'cooldown') {
+    if (repairOffer.reason === 'cooldown') {
       return (
         <Text style={styles.note}>
-          {t('streak:repair.cooldown', { days: repair.availableInDays })}
+          {t('streak:repair.cooldown', { days: repairOffer.availableInDays })}
         </Text>
       )
     }
@@ -349,20 +494,34 @@ function RepairAction({
   const canAfford = coins >= REPAIR_PRICE
   // Whole hours, rounded up, and never seconds. A ticking clock on a purchase is
   // pressure, and pressure aimed at a ten-year-old is the thing we do not do.
-  const hoursLeft = Math.max(1, Math.ceil((repair.expiresAt - now) / 3_600_000))
+  const hoursLeft = Math.max(1, Math.ceil((repairOffer.expiresAt - now) / 3_600_000))
 
   return (
     <>
       <Text style={styles.note}>{t('streak:repair.expires', { hours: hoursLeft })}</Text>
       <Button
-        label={t('streak:repair.buy', { count: restoreTo, price: repair.price })}
+        label={t('streak:repair.buy', { count: restoreTo, price: repairOffer.price })}
         variant="secondary"
         disabled={offline || !canAfford || onRepair === undefined}
+        // `loading` rather than a third clause in `disabled`, exactly as the freeze does:
+        // it keeps the label mounted so the button does not change width, and it sets
+        // `aria-busy`, which is the whole of what a screen reader learns from a control
+        // that has gone inert.
+        loading={repairing}
         onPress={() => onRepair?.()}
       />
+      {repairNotice !== null && (
+        // `role="alert"`: inserted after the tap, so without it the refusal is silent for
+        // a screen-reader user — who has just been told nothing at all happened.
+        <Text style={styles.note} role="alert">
+          {repairNotice === 'insufficient_funds'
+            ? t('streak:repair.refused.funds')
+            : t('streak:repair.refused.failed')}
+        </Text>
+      )}
       {offline && <Text style={styles.note}>{t('common:offline.action')}</Text>}
       {!offline && !canAfford && (
-        <Text style={styles.note}>{t('streak:cantAfford', { short: repair.price - coins })}</Text>
+        <Text style={styles.note}>{t('streak:cantAfford', { short: repairOffer.price - coins })}</Text>
       )}
     </>
   )
@@ -385,6 +544,24 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: space[1],
   },
+  week: { paddingHorizontal: space[2] },
+
+  ladder: { gap: space[2] },
+  sectionTitle: { ...text('overline'), color: colors.text.tertiary },
+  rung: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: space[3],
+  },
+  rungDay: { ...text('bodyStrong'), color: colors.text.primary },
+  // Dimmed, not hidden. A ladder that deletes its lower rungs gets shorter as you climb
+  // it, and the days already behind you are the evidence the rest are reachable.
+  rungDayDone: { ...text('bodyStrong'), color: colors.text.tertiary },
+  rungRewards: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  // Holds its width whether or not a tick is in it, so the four rungs line up.
+  rungMark: { width: LADDER_TICK, alignItems: 'center' },
+
   balance: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   earned: { ...text('caption'), color: colors.text.tertiary, flex: 1 },
   card: { padding: space[4], gap: space[2] },

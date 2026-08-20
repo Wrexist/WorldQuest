@@ -122,8 +122,12 @@ second-opinion work — **only when the user has asked for agent/parallel work.*
   IDs, and analytics event names ship in user save data and dashboards — renaming one
   is a migration, not a rename.
 - **Migrations are forward-only.** Never edit a landed file in `supabase/migrations/`.
-- **Facts need sources.** Every fact in a content pack carries `source` and
-  `verifiedAt`. Population, currency, and capital data go stale; disputed territories
+- **Facts need sources, and now the values are checked too.** Every fact carries `source`
+  and `verifiedAt` — and `pnpm content:crosscheck` (in `pnpm verify`) compares 349 values
+  against `world-countries@5.1.0`, an independent dataset. Validation proves provenance;
+  only a second source proves correctness. Its first run found zero errors in the pack.
+  Six recorded differences are the reference being looser than ITU-T or ISO — never
+  resolve one by editing the pack to match it. Population, currency, and capital data go stale; disputed territories
   are handled per [`docs/systems/content-pipeline.md`](docs/systems/content-pipeline.md#sensitive-content)
   — do not improvise a political stance.
 - **Never invent numbers.** If you don't know a population, GDP, or competitor's
@@ -140,7 +144,7 @@ unless asked. Full rules: [`PROJECT.md §11`](PROJECT.md#11-git-workflow).
 
 - pnpm workspaces — install from the repo root, never inside a package.
 - `pnpm dev` (Expo) · `pnpm test` · `pnpm typecheck` · `pnpm content:validate` ·
-  `pnpm i18n:check`
+  `pnpm content:crosscheck` · `pnpm i18n:check`
 - **`pnpm verify` is the gate.** Typecheck, every test, content validation and preview,
   i18n, contrast, a11y lint, escape hatches, reachability, five states, and the economy
   simulation. It said "all of it" for months while `engines:simulate` and
@@ -153,10 +157,12 @@ unless asked. Full rules: [`PROJECT.md §11`](PROJECT.md#11-git-workflow).
   linter would carry are enforced by scripts instead: `pnpm escape-hatches` (`any`,
   `@ts-expect-error`, `eslint-disable`), `pnpm lint:a11y`, `pnpm design:contrast`,
   `pnpm reachability`, `pnpm five-states`, `pnpm scrollable`. All are in `pnpm verify`.
-- `pnpm design:shots` — renders 14 routes × 320(×568)/390/768, drives the onboarding and
-  lesson flows for the nine screens that are states rather than routes, and measures
-  what a picture cannot show (targets under 44 pt, sideways scroll, unlabelled
-  controls). Not a gate.
+- `pnpm design:shots` — renders every route × 320(×568)/390/768, drives the onboarding,
+  offline, pseudo-locale and lesson flows for the screens that are states rather than
+  routes, and measures what a picture cannot show: targets under 44 pt, sideways scroll,
+  unlabelled controls, and how full each screen is (`contentDensity`, `emptiestBand`,
+  `deadSpaceBelow` — see `docs/design/screen-polish-plan.md` for the baseline and how to
+  read them). Not a gate, deliberately: "mostly empty" is sometimes the design.
 - `pnpm design:measure <url>` — measures a reference in this repo's token shape.
 - `pnpm build:flags` — rasterises the country flags from `flag-icons` (MIT) and writes
   `src/lib/flags.generated.ts`. The PNGs are committed, so run it only when the country

@@ -78,7 +78,7 @@ security review.
 > typed into the collection search. When you verify the event, check the *absence* of a
 > message field, and do not "improve" the integration by adding one.
 >
-> **Analytics:** 18 of 28 declared events fire; the rest are blocked on a server, an
+> **Analytics:** 32 of 44 declared events fire (audited 2026-08-19); the rest are blocked on a server, an
 > account, or push. See `docs/engineering/analytics-spec.md` for the registry. Stand up
 > the backend, then build the dashboards the release checklist asks for. Note that
 > `lib/analytics.ts` no-ops for child accounts and treats an unknown age as a child —

@@ -21,6 +21,16 @@ import pack from '../../../../../packages/content/packs/achievements/core.v1.jso
  */
 export const CATALOGUE: readonly AchievementDef[] = pack.items as unknown as AchievementDef[]
 
+/**
+ * `ach.flags.collector` → `achievements:flags.collector.name`.
+ *
+ * The copy convention, in the module that owns the catalogue rather than in a screen.
+ * `AchievementsScreen` had it as a local const, and the lesson summary needs the same
+ * derivation — two copies of a key-building rule is one copy and one future mismatch.
+ */
+export const achievementNameKey = (id: string): string =>
+  `achievements:${id.slice('ach.'.length)}.name`
+
 export function useAchievements(
   progressById: ReadonlyMap<string, AchievementProgress> = new Map(),
 ): readonly AchievementRow[] {

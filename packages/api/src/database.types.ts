@@ -47,6 +47,67 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievement_progress: {
+        Row: {
+          progress: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          progress?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          progress?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'achievement_progress_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: true
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      achievement_unlocks: {
+        Row: {
+          achievement_id: string
+          coins: number
+          tier: string
+          unlocked_at: string
+          user_id: string
+          xp: number
+        }
+        Insert: {
+          achievement_id: string
+          coins?: number
+          tier: string
+          unlocked_at?: string
+          user_id: string
+          xp?: number
+        }
+        Update: {
+          achievement_id?: string
+          coins?: number
+          tier?: string
+          unlocked_at?: string
+          user_id?: string
+          xp?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'achievement_unlocks_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       coin_ledger: {
         Row: {
           amount: number
@@ -75,6 +136,41 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: 'coin_ledger_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      daily_quests: {
+        Row: {
+          bonus_paid: boolean
+          created_at: string
+          date: string
+          paid_slots: string[]
+          tasks: Json
+          user_id: string
+        }
+        Insert: {
+          bonus_paid?: boolean
+          created_at?: string
+          date: string
+          paid_slots?: string[]
+          tasks: Json
+          user_id: string
+        }
+        Update: {
+          bonus_paid?: boolean
+          created_at?: string
+          date?: string
+          paid_slots?: string[]
+          tasks?: Json
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'daily_quests_user_id_fkey'
             columns: ['user_id']
             isOneToOne: false
             referencedRelation: 'profiles'
@@ -730,11 +826,18 @@ export type Database = {
       }
     }
     Functions: {
+      continue_lesson: { Args: { p_continue_id: string }; Returns: Json }
       expire_streaks: { Args: never; Returns: number }
+      pin_daily_quest: {
+        Args: { p_date: string; p_tasks: Json; p_user_id: string }
+        Returns: Json
+      }
       purchase_freeze: { Args: { p_price?: number }; Returns: Json }
       purchase_item: { Args: { p_item_id: string }; Returns: Json }
       record_lesson: {
         Args: {
+          p_achievement_progress?: Json
+          p_achievement_unlocks?: Json
           p_client_version: string
           p_coins: number
           p_correct: number
@@ -744,6 +847,12 @@ export type Database = {
           p_kind: Database['public']['Enums']['lesson_kind']
           p_lesson_id: string
           p_max_per_hour: number
+          p_quest_bonus_coins?: number
+          p_quest_bonus_xp?: number
+          p_quest_complete?: boolean
+          p_quest_date?: string
+          p_quest_slots?: string[]
+          p_quest_task_xp?: number
           p_reviews: Json
           p_started_at: string
           p_streak: Json
@@ -767,6 +876,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      repair_streak: { Args: never; Returns: Json }
     }
     Enums: {
       lesson_kind: 'lesson' | 'quest' | 'review' | 'challenge' | 'event'

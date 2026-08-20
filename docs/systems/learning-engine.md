@@ -253,6 +253,42 @@ export function selectItems(input: SelectionInput): FactId[]
 export function rebuild(log: ReviewEvent[], targetRetention?: number): MemoryState[]
 ```
 
+## The scheduler is pinned to a reference, and it caught something
+
+**Verified 2026-08-19** against `ts-fsrs@4.7.1` — FSRS-5, whose default weight vector is
+this repo's `DEFAULT_WEIGHTS` followed by `0.51655, 0.6621`. Those two are the same-day
+review parameters; WorldQuest never asks a fact twice in one session, so seventeen of the
+nineteen is a deliberate subset. `packages/engines/src/learning/fsrs.reference.test.ts`
+pins the vector and four golden traces at fixed elapsed intervals, so it depends on no
+package and cannot drift with one.
+
+It found a real defect on its first run. `review()` computed the updated difficulty and
+then fed THAT into the stability formulas; FSRS uses the difficulty from before the
+answer. The error was invisible to everything already in the suite:
+
+- Difficulty does not depend on stability, so every D assertion matched exactly.
+- On a **Good** answer difficulty barely moves, so stability agreed to 0.16 %.
+- It showed only on **Hard** and **Easy**, where difficulty swings a whole point —
+  Easy inflated stability by up to **12.6 %** (intervals too long, the fact returns after
+  it has been forgotten), Hard suppressed it by up to **8.2 %** (intervals too short,
+  busywork on the items already hardest to face).
+
+**544 engine tests passed over it**, and they were not bad tests. Every one asserts a
+property — intervals grow, a lapse shortens them, retrievability meets the target at
+`dueAt` — and a subtly wrong scheduler has all of those properties too. Property tests
+prove a scheduler is *sane*; only a reference proves it is *this* scheduler.
+
+Two things follow for anyone changing the weights or the maths later:
+
+1. **Regenerate the golden traces from the reference**, and say so in the file. They are
+   not numbers to adjust until a test goes green.
+2. **The tolerance is relative, not absolute.** The values span 1 to 10 000; an absolute
+   tolerance is a different demand at each end, and the first version of that test failed
+   on the reference having printed eight decimals of a three-digit number.
+
+No user data is at risk from the correction and none needed migrating: nothing has
+shipped, and `rebuild()` would have repaired it from `review_log` if it had.
+
 `rebuild()` is not optional. `review_log` is append-only and authoritative;
 `user_facts` is a **derived cache**. If the weights change, a bug corrupts state, or
 we migrate the algorithm, we recompute from the log. Users never lose progress to an

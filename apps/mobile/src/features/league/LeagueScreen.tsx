@@ -40,6 +40,7 @@ import {
   Button,
   Card,
   colors,
+  EmptyState,
   layout,
   radius,
   Skeleton,
@@ -119,39 +120,41 @@ export function LeagueScreen({
           ))}
         </View>
       ) : status === 'error' ? (
-        <View style={styles.centered}>
-          <Art name="states/error-generic" size={ART} />
-          <Text style={styles.emptyTitle} role="heading">
-            {t('league:error.title')}
-          </Text>
-          <Text style={styles.emptyBody}>{t('league:error.body')}</Text>
-          <Button label={t('common:retry')} onPress={onRetry} fullWidth={false} />
-        </View>
+        <EmptyState
+          art={<Art name="states/error-generic" size={ART} />}
+          title={t('league:error.title')}
+          body={t('league:error.body')}
+          action={<Button label={t('common:retry')} onPress={onRetry} fullWidth={false} />}
+        />
       ) : offline === true && (rows === null || rows.length === 0) ? (
         /* Offline with nothing cached — there is genuinely nothing to draw, and this is
            the only branch where that is the network's fault rather than the ordinary
            "not placed yet". */
-        <View style={styles.centered}>
-          <Art name="states/offline" size={ART} />
-          <Text style={styles.emptyTitle} role="heading">
-            {t('league:offline.title')}
-          </Text>
-          <Text style={styles.emptyBody}>{t('league:offline.body')}</Text>
-        </View>
+        <EmptyState
+          art={<Art name="states/offline" size={ART} />}
+          title={t('league:offline.title')}
+          body={t('league:offline.body')}
+        />
       ) : rows === null || rank === null || rows.length === 0 ? (
         /* Not an error, and the ordinary state for most of this app's life: the server
            places people into cohorts weekly, so until that has happened for you there
            is no league. Said as a "next week" rather than as an absence. */
-        <View style={styles.centered}>
-          <Art name="rewards/globe" size={ART} />
-          <Text style={styles.emptyTitle} role="heading">
-            {t('league:empty.title')}
-          </Text>
-          <Text style={styles.emptyBody}>{t('league:empty.body')}</Text>
-          {onStartLesson !== undefined && (
-            <Button label={t('league:empty.action')} onPress={onStartLesson} fullWidth={false} />
-          )}
-        </View>
+        <EmptyState
+          art={<Art name="rewards/globe" size={ART} />}
+          title={t('league:empty.title')}
+          body={t('league:empty.body')}
+          {...(onStartLesson !== undefined
+            ? {
+                action: (
+                  <Button
+                    label={t('league:empty.action')}
+                    onPress={onStartLesson}
+                    fullWidth={false}
+                  />
+                ),
+              }
+            : {})}
+        />
       ) : (
         <Standings rows={rows} rank={rank} hoursLeft={hoursLeft} offline={offline === true} />
       )}
@@ -252,19 +255,21 @@ function Row({ row }: { readonly row: Standing }) {
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg.canvas },
+  /**
+   * No `backgroundColor`.
+   *
+   * It painted `bg.canvas` flat over the root gradient — which `ScreenBackground`'s own
+   * header calls out as the thing that made the token unreachable, "since a flat fill on
+   * top of a gradient is just a flat fill". This screen and the account form were the
+   * two stragglers, and it is why they read as flat black beside Home's atmosphere.
+   *
+   * It also broke the measurement. At 768 that fill is 600 × 1024 — full height, three
+   * quarters of the width — so the design harness counted it as content reaching the
+   * bottom and reported one of the emptiest screens in the app as completely full.
+   */
+  screen: { flex: 1 },
   content: { padding: space[4], gap: space[2] },
   /** Upper third rather than dead centre — same reasoning as ProfileScreen's `centered`. */
-  centered: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    gap: space[3],
-    // Shorthand before the override — see ProfileScreen's `centered`.
-    padding: space[4],
-    paddingTop: space[8],
-  },
-
   header: { gap: space[1], marginBottom: space[2] },
   tier: { ...text('h1'), color: colors.text.primary },
   division: { ...text('body'), color: colors.text.secondary },
@@ -301,6 +306,4 @@ const styles = StyleSheet.create({
   xp: { ...text('bodyStrong'), color: colors.text.primary },
   spacer: { flex: 1 },
 
-  emptyTitle: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
-  emptyBody: { ...text('body'), color: colors.text.secondary, textAlign: 'center', maxWidth: 320 },
 })

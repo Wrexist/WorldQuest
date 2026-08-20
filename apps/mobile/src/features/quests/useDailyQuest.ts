@@ -20,6 +20,7 @@ import {
   type MemoryState,
 } from '@worldquest/engines'
 import { useContent } from '../../lib/content.js'
+import { recentAccuracy, useRecentAccuracy } from '../lesson/useAccuracy.js'
 import { useQuestWithProgress } from './questProgress.js'
 
 /**
@@ -45,6 +46,15 @@ export function todaysQuest(
   index: ContentIndex,
   memory: ReadonlyMap<string, MemoryState>,
   now: number = Date.now(),
+  /**
+   * How the user has been doing, for the fifth slot alone.
+   *
+   * A parameter with a default rather than a call inside, so the two callers — this
+   * hook and the lesson runner — can be handed the SAME figure and cannot compose two
+   * different quests. `recentAccuracy` is already constant for a local day by
+   * construction (it excludes today's lessons), which is what makes the default safe.
+   */
+  accuracy: number = recentAccuracy(new Date(now)),
 ): DailyQuest {
   // The user's own midnight, not UTC. A quest that rolls over at 2 a.m. local is a
   // quest that resets in the middle of someone's evening.
@@ -58,9 +68,17 @@ export function todaysQuest(
     memory,
     now,
     rng: seededRng(seedFor(USER_ID, date)),
-    // Read from the user's recent lessons once history is synced. 0.8 puts a new
-    // user on the middle goal rather than the hardest one.
-    recentAccuracy: 0.8,
+    /**
+     * Real, at last. This was the literal `0.8` under a note saying to read it from
+     * lessons "once history is synced" — so `performTask` sent every user on earth the
+     * same goal, `speed_round`, every day: finish a lesson in under ninety seconds.
+     *
+     * For a confident learner that is easier than the goal they earned. For a slow
+     * reader, a child, or anyone using a screen reader it is the daily failure the
+     * scaling exists to prevent, and `streak_keeper` — finish one lesson, any accuracy —
+     * was unreachable by anybody.
+     */
+    recentAccuracy: accuracy,
   })
 }
 
@@ -81,10 +99,14 @@ export function useDailyQuest(): {
   reload: () => void
 } {
   const { index, memory, status, reload } = useContent()
+  // Subscribed rather than read once: finishing a lesson changes this, and a quest screen
+  // holding the figure from the render before it would draw a goal the runner is no
+  // longer scoring against.
+  const accuracy = useRecentAccuracy()
 
   const generated = useMemo<DailyQuest | null>(
-    () => (index === null ? null : todaysQuest(index.index, memory)),
-    [index, memory],
+    () => (index === null ? null : todaysQuest(index.index, memory, Date.now(), accuracy)),
+    [index, memory, accuracy],
   )
 
   return {

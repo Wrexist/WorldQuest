@@ -1,6 +1,9 @@
 {
   "achievements:title": "Utmärkelser",
   "achievements:progress": "{unlocked} av {total} upplåsta",
+  "achievements:group.earned": "Klarade",
+  "achievements:group.close": "Nära",
+  "achievements:group.rest": "Allt annat",
   "achievements:locked": "Inte än",
   "achievements:next": "{remaining} kvar",
   "achievements:empty.action": "Starta en lektion",

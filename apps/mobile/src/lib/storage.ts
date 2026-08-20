@@ -48,16 +48,74 @@ export const sessionStorage: SessionStorage = {
 
 // ── app storage ─────────────────────────────────────────────────────────────
 
-export const readJson = <T>(key: string): T | null => {
+/**
+ * A shape check for something that came off disk.
+ *
+ * `unknown` in, boolean out — deliberately not a `value is T` predicate, because the
+ * useful ones here are partial ("an object whose values are all numbers") and claiming
+ * to prove `T` would be the same unchecked assertion one level further from the read.
+ */
+export type Shape = (value: unknown) => boolean
+
+/**
+ * Is this a plain object we can index?
+ *
+ * `typeof x === 'object'` is true of `null` and of every array, and both reach code that
+ * expects to write a key. `recordLessonCompleted` did exactly that — `log[day] = ...`
+ * against a number is a TypeError in a module, which modules always are.
+ */
+export const isRecord: Shape = (value) =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
+/** An object whose every value is a finite number. The shape of every day-count log. */
+export const isNumberRecord: Shape = (value) =>
+  isRecord(value) &&
+  Object.values(value as Record<string, unknown>).every(
+    (n) => typeof n === 'number' && Number.isFinite(n),
+  )
+
+export const isNumberArray: Shape = (value) =>
+  Array.isArray(value) && value.every((n) => typeof n === 'number' && Number.isFinite(n))
+
+export const isFiniteNumber: Shape = (value) => typeof value === 'number' && Number.isFinite(value)
+
+/**
+ * Reads, parses and — given a shape — checks before handing the value over.
+ *
+ * ## Why the shape argument exists
+ *
+ * Every caller here used to cast: `readJson<SyncQueue>(...)`, `readJson<Record<string,
+ * number>>(...)`. `JSON.parse` guarantees the bytes are JSON and nothing else, so a value
+ * written by an older build, edited on a rooted device, or truncated by a full disk
+ * arrives as a lie with a type annotation on it. The failures are not theoretical:
+ * spreading a non-array throws, indexing `undefined` throws, and assigning a key to a
+ * number throws — and the two worst sites are the sync queue, which throws at the end of
+ * every lesson, and the quest log, which throws while rendering Home.
+ *
+ * ## Why a failed shape DELETES
+ *
+ * Same rule the parse failure already followed, for the same reason: an entry this build
+ * cannot use is not going to become usable, and keeping it means re-reading the same bad
+ * value on every launch for ever. Dropping it costs the user a cache and restores a
+ * working app. This is the one direction persistence may lose something, and it is
+ * bounded to values nothing could have read anyway.
+ */
+export const readJson = <T>(key: string, shape?: Shape): T | null => {
   const raw = appStore().getString(key)
   if (raw === undefined) return null
+  let parsed: unknown
   try {
-    return JSON.parse(raw) as T
+    parsed = JSON.parse(raw)
   } catch {
     // A corrupt cache entry is not worth crashing over. Drop it and refetch.
     appStore().delete(key)
     return null
   }
+  if (shape !== undefined && !shape(parsed)) {
+    appStore().delete(key)
+    return null
+  }
+  return parsed as T
 }
 
 /**
@@ -72,14 +130,19 @@ export const readJson = <T>(key: string): T | null => {
  * `corrupt` is reported rather than swallowed so the caller can repair it where repairs
  * belong: in an effect, after the render has committed.
  */
-export const peekJson = <T>(key: string): { value: T | null; corrupt: boolean } => {
+export const peekJson = <T>(key: string, shape?: Shape): { value: T | null; corrupt: boolean } => {
   const raw = appStore().getString(key)
   if (raw === undefined) return { value: null, corrupt: false }
+  let parsed: unknown
   try {
-    return { value: JSON.parse(raw) as T, corrupt: false }
+    parsed = JSON.parse(raw)
   } catch {
     return { value: null, corrupt: true }
   }
+  // A wrong shape is reported exactly as unparseable JSON is: this function's whole
+  // contract is that it repairs nothing, so the caller's effect does it.
+  if (shape !== undefined && !shape(parsed)) return { value: null, corrupt: true }
+  return { value: parsed as T, corrupt: false }
 }
 
 export const writeJson = (key: string, value: unknown): void =>

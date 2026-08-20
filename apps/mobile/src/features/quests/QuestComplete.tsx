@@ -33,11 +33,17 @@
  *
  * ## "Claim rewards" is a button that does not exist here
  *
- * The reference ends on one. The server awards the bonus when it re-derives the quest
- * while grading the lesson (ADR 0006) — by the time this screen draws, the XP and coins
- * are already granted. A button that claims something you have been given is the
- * dead-shell pattern this repo has removed twice; the action here is to leave, and it
- * says so.
+ * The reference ends on one. The server awards the bonus while grading the lesson that
+ * finished the quest (ADR 0006), from the pinned quest and its own `review_log` — so
+ * there is nothing here for a button to claim. A button that claims something you have
+ * been given is the dead-shell pattern this repo has removed twice; the action here is
+ * to leave, and it says so.
+ *
+ * That paragraph used to say the XP and coins were "already granted" and it was not
+ * true: nothing anywhere paid a quest, and this screen drew a "+50 XP" tile above a
+ * comment asserting it had landed. It is true now, with one honest qualification — a
+ * quest finished offline is paid when the sync queue drains, which is the same ordering
+ * the lesson's own XP has always had.
  *
  * ## Motion
  *

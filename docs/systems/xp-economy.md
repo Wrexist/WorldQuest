@@ -274,6 +274,50 @@ export const BALANCE = {
 
 ---
 
+## 5b. What is actually paid, 2026-08-18
+
+Every number in the table above is a decision. Not every one of them is a transaction,
+and the difference is invisible from the table — which is how three of these ran for
+months as prices and rewards nothing charged or granted. This section is the register.
+
+| Number | Paid by | State |
+|---|---|---|
+| `xp.*` and `coins.*` per answer, lesson, perfect, first-of-day | `record_lesson` | ✅ |
+| `xp.factMastered` | `gradeLesson`, in `record_lesson` | ✅ |
+| `xp/coins.streakMilestones` | `record_lesson`, `p_streak_xp` / `p_streak_coins` | ✅ |
+| `xp.dailyQuestTask`, `xp.dailyQuest`, `coins.dailyQuest` | `record_lesson`, from the pinned quest | ✅ **new** |
+| `prices.continueLesson` | `continue_lesson` RPC | ✅ **new** |
+| `prices.streakFreeze` | `purchase_freeze` RPC | ✅ |
+| `prices.streakRepair` | `repair_streak` RPC | ✅ **new** |
+| `prices.titleUnlock` | `purchase_item` RPC | ✅ |
+| `xp/coins.achievementByTier` | `record_lesson`, from `submit-lesson`'s evaluation | ✅ **new** |
+| `xp/coins.collectionComplete` | — | ⬜ no collection-complete producer |
+| `xp.friendActivated` | — | ⬜ no referral system |
+| `xp/coins.dailyChallenge` | — | ⬜ the daily challenge was removed |
+| `coins.leaguePodium` | — | ⬜ no weekly settlement job |
+| `prices.avatarItem`, `pet`, `mapSkin`, `theme`, `celebration` | — | ⬜ nothing to sell yet (see `shop/index.ts`) |
+| `prices.giftSurchargePct` | — | ⬜ no gifting |
+
+One thing that is not a number and belongs here anyway: **the daily rules above are
+per-user-local for the first time.** The soft cap, `isFirstLessonOfDay` and the streak
+day all read `profiles.timezone`, which defaulted to `'UTC'` and which nothing wrote
+until 2026-08-18 — so every "daily" figure in this document was a UTC figure for every
+user, whatever their phone said.
+
+The three unpaid REWARDS left are the ones worth watching, because a reward nobody grants
+is indistinguishable from a bug to the person who earned it. All three are unpaid because
+the thing that would produce them does not exist — there is no referral system, no
+collection-complete event and no weekly league settlement — rather than because a producer
+was forgotten, which is what the other four turned out to be.
+
+`§8`'s simulation models the lesson rewards, the quest and `factMastered`, and none of the
+⬜ rows. It does not model achievements either, and that is a deliberate omission rather
+than a stale one: the thirty pay once each and mostly land in the first weeks, so
+modelling them means modelling thirty distinct unlock curves, and a simulation that
+guessed at those would be a worse input to a balance decision than a known gap. The
+consequence is that the simulation now UNDERSTATES income slightly rather than describing
+a different economy.
+
 ## 6. Anti-cheat
 
 The client is not trusted with anything that produces a reward.

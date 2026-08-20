@@ -111,6 +111,20 @@ export function initialState(
 export const currentQuestion = (s: LessonState): Question | null =>
   s.questions[s.index] ?? null
 
+/**
+ * Is there a question left for a revive to resume at?
+ *
+ * `REVIVE` resumes at `index + 1`, so running out of hearts on the LAST question left
+ * the machine `presenting` with an index past the end. `currentQuestion` returned null,
+ * `LessonScreen` renders `<LoadingState />` for a null question, and the user sat on a
+ * spinner with no back gesture, no summary and no submission — the whole lesson lost,
+ * after paying for it. The transition below refuses that, and this predicate is what
+ * lets the screen decline to make the offer in the first place: a purchase that buys
+ * nothing must not be on screen, which is the half a defensive transition cannot fix.
+ */
+export const canRevive = (s: LessonState): boolean =>
+  s.outOfHearts && s.index + 1 < s.questions.length
+
 export const isFinished = (s: LessonState): boolean =>
   s.phase === 'summary' || s.phase === 'abandoned'
 
@@ -248,6 +262,11 @@ export function transition(state: LessonState, event: LessonEvent): LessonState 
       // Spending coins to finish the lesson you are in. The next lesson always
       // starts fresh regardless, so this buys the moment, not access.
       if (!state.outOfHearts) return state
+      // Nothing left to resume at. Running out on the final question means the lesson
+      // is over; `summary` is where `CONTINUE` would have sent it, and it is the only
+      // exit that keeps the answers. Resuming would set `index` past the end, which
+      // presents a question that does not exist.
+      if (!canRevive(state)) return { ...state, phase: 'summary' }
       return {
         ...state,
         hearts: BALANCE.hearts.max,

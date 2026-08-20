@@ -31,13 +31,18 @@ counts below look small and the work does not.
 | 9. Explore — continents | ✅ |
 | 10. Flags collection | ✅ — plus a countries twin, search, and three filters |
 | 11. Landmarks collection | ⬜ — blocked on photo licensing |
-| 12. Leagues | ⛔ **v2.0** — out of scope by the roadmap |
+| 12. Leagues | ✅ — built ahead of the roadmap once CI could prove the RLS. Standings, rank, week end in local time, and an honest "no league yet" for the days before the placement job runs |
 | 13. Profile | ✅ — level, earned title, band-relative XP bar, seven-day activity |
 | 14. Achievements | ✅ |
 | 15. Settings | ✅ |
 
 Hidden screens: H8 (crash) and H9 (404) done. H6/H11/H15 inline. **H1–H5, H7, H10,
-H12–H14, H16–H22 remain**, and most of the account ones are gated on auth existing.
+H12–H14, H16–H22 remain** — a snapshot, and one clause of it has since expired: the
+account screens are no longer "gated on auth existing", because auth exists (the
+email-code link and sign-in flow, `features/account`). Which of H16–H22 that closes has
+not been re-audited against `screen-catalog.md`, and writing a number here without
+doing that is how the two rows below this table came to say "not built" about things
+that were.
 
 ---
 
@@ -90,7 +95,7 @@ surface that shows a user what they have.
 
 | # | Work | Why now |
 |---|---|---|
-| 2.1 | **Flags collection** (#10) | ✅ Grid, `0 / 65`, uncollected tiles dimmed but **visible**. Each tile holds a 3:2 art slot, so the sourced SVGs drop in without a relayout. |
+| 2.1 | **Flags collection** (#10) | ✅ Grid, `0 / 65`, uncollected FLAGS dimmed but **visible** — the dimming moved off the whole tile on 2026-08-19, because `opacity: 0.45` over the card put the country name at 4.31:1, under the 4.5 a caption needs, and `pnpm design:contrast` compares token pairs and cannot see an opacity applied in a component. Dimming the collectible rather than the label is also the stronger signal. Each tile holds a 3:2 art slot, so the sourced SVGs drop in without a relayout. |
 | 2.2 | **Countries collection** | ✅ Same route, keyed on entity mastery from `packages/engines/progression`. `mastered` is the bar, not `burnished` — a collection you can only finish by overlearning every entry is one nobody finishes. |
 | 2.3 | **Favourites** | ✅ A star on the country page and a fourth collection filter, over one `useSyncExternalStore` so two screens can never disagree. It is a **star, not the mockup's heart** — red hearts are the lives you lose in a lesson, and one glyph meaning two things teaches a ten-year-old neither. It changes what you can *find*, never what you are *asked*: boosting starred countries in the scheduler would let a user starve their own review queue, and "study what you like" is the instinct spaced repetition exists to overrule. |
 | 2.4 | **Search** (+ H14 empty) | ✅ Diacritic-insensitive, with an empty state that offers a way onward. |
@@ -197,7 +202,7 @@ not fail the build: they are a backlog, not a regression.
 | 7.2 | ~~Quests are not wired~~ | ✅ **and my first note on this row was wrong.** Quests *were* generated — `generateDailyQuest` is called from the route, and the screen renders five real tasks. What never happened was progress: `applyQuestEvent` had no caller, so those five sat at 0/5 for ever however many lessons a user finished. A daily quest that cannot be completed is worse than none: it is a promise on the home screen the app quietly breaks every day. Progress is stored (the tasks are regenerated from the seed, so only what the user *did* needs saving), keyed by date so a new day starts clean without anything having to remember to clear it. One day only — a history would make "you completed 3 of 7 this week" possible, and the moment that number exists someone renders it. |
 | 7.3 | ~~The sync queue never backs off~~ | ✅ `backoffMs` had no caller, so a failing server got all five attempts back to back and the mutation parked in about a second — five immediate retries is a burst, not a retry policy, and parking at `MAX_ATTEMPTS` only means anything if the server had a fair chance first. Held in memory rather than on disk: a backoff exists to spare a server that is struggling *right now*, and persisting it would make a user who reopened the app wait out a delay aimed at a server that has probably recovered. |
 | 7.4 | ~~Parked mutations are invisible~~ | ✅ Settings → Waiting to sync, shown **only** when something actually is (a permanent "0 items waiting" row is anxiety with no cause). The engine parks work that exhausted its retries rather than dropping it, because "I lost my progress" is the most trust-destroying bug a learning app has — and nothing surfaced them, so the promise was half kept: preserved and unreachable. The copy never says *failed*: the work is safe, it just has not arrived, and a child reading "failed" hears "your lessons are gone". |
-| 7.5 | ~~No streak milestone is celebrated~~ | ✅ `isMilestone` had no caller, so 7, 30, 100 and 365 days passed unremarked — the XP arrived with no explanation and the goal that earned it was invisible. The streak screen now names it, in three states: the day you arrive it says so and stops, below one it counts the days remaining, and past the last one it says nothing. That last branch is the point of the new `nextMilestone` returning null rather than a fifth number — the balance table funds exactly four, and a target nothing pays for is a promise the user discovers is empty on the day they reach it. A count rather than a progress bar, because 100 → 365 is a sliver that moves imperceptibly for months and reads as no progress at all. Never a countdown and never a warning: the same rule the repair window follows. |
+| 7.5 | ~~No streak milestone is celebrated~~ | ✅ `isMilestone` had no caller, so 7, 30, 100 and 365 days passed unremarked — the XP arrived with no explanation and the goal that earned it was invisible. The streak screen now names it, in three states: the day you arrive it says so and stops, below one it counts the days remaining, and past the last one it says nothing. That last branch is the point of the new `nextMilestone` returning null rather than a fifth number — the balance table funds exactly four, and a target nothing pays for is a promise the user discovers is empty on the day they reach it. A count rather than a progress bar, because 100 → 365 is a sliver that moves imperceptibly for months and reads as no progress at all. Never a countdown and never a warning: the same rule the repair window follows. **Updated 2026-08-19:** the line is now joined by a four-rung LADDER, because a line saying "23 days to your next milestone" is a number with nothing behind it — you cannot tell what the milestone is, what it pays, or that there are three more after it. Every value is read from `STREAK_MILESTONES` and `streakMilestoneReward`, so the screen still invents nothing, and there is no coin chip at 365 because the balance table funds no coins there. Past the last milestone the LINE still says nothing and the ladder shows four ticks: a record of what was done is not a fifth target. On a broken streak the ladder hides entirely, for the reason the line already does — a list of what you no longer have, each with its price in days, is the same taunt at four times the length. |
 
 **Two of the original twelve entries were wrong, and that is worth recording.** I wrote
 "no quest is ever generated" and "the speed round uses its own constant" without
@@ -209,17 +214,25 @@ real, narrower gap turned up.
 | 7.6 | ~~`regionProgress`~~ | ✅ The region screen added up `factsLearned` and `factsTotal` across its rows beside an engine function built to do exactly that. The two agreed — same per-entity numbers, same addition — which is what makes a duplicate dangerous rather than obviously broken: it agrees until one side changes, and `regionProgress` is the side that knows non-quizzable facts are excluded (otherwise a disputed capital makes a country permanently incompletable). The screen now takes `RegionProgress` and reports it. That also made `entitiesComplete` free, which the reduce could not have produced without duplicating the "is this country finished?" rule too — so the header gained "1 of 2 countries finished", a number a user actually wants from a continent. The screen had **no component test at all**, which is why a reachability check rather than a failing assertion found this; it has six now, and the one guarding the regression asserts a completed-count the rendered rows could not produce. |
 
 Deliberately NOT in that list, because they are right: everything server-authoritative
-(`applyActivity`, `grantFreeze`, `markBroken`, the reward maths), everything Leagues
-(v2.0), and everything consumed by another engine.
+(`applyActivity`, `grantFreeze`, `markBroken`, `repair`, the reward maths), the half of
+Leagues the SERVER owns (placement, promotion, the weekly rollover), and everything
+consumed by another engine.
 
 ### Deliberately not built
 | Item | Why |
 |---|---|
-| **Leagues (#12)** | v2.0. The tile on Home stays a tile. |
 | **Explore globe (#8)** | Map geometry is an unresolved licensing decision, not an effort problem. The continent grid is the shipping fallback and is already the accessible one. |
 | **Landmarks (#11)** | Every photo needs a recorded licence before ship. Authoring 300 unlicensed photos is worse than shipping without the screen. |
-| **H16–H22 account screens** | Gated on real accounts. Anonymous sessions are all that exist today. |
 | **Friends / social** | v1.5. The Home tile is honest about being empty. |
+| **Achievement AWARDS** | The unlock is real, visible and evaluated from server-derived events; the XP and coins behind a tier are paid by nothing, because the server holds no achievement state. `balance.ts` beside the numbers says what building it costs and which shortcut must not be taken. |
+
+Two rows left this table, and the reason is worth keeping: both said "not built" about
+things that had been built. **Leagues** were shipped ahead of the roadmap once CI could
+run `supabase test db` against the RLS, and **the account screens** landed with the
+email-code flow — so "anonymous sessions are all that exist today" described a repo from
+several releases earlier. A file whose entire purpose is to hold true reasons is the
+worst possible place for a stale one, which this document already says about itself one
+section up.
 
 ---
 

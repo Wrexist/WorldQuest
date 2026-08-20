@@ -15,7 +15,7 @@
  */
 
 import { useCallback, useMemo, useState } from 'react'
-import { readJson, writeJson } from '../../lib/storage.js'
+import { isNumberRecord, readJson, writeJson } from '../../lib/storage.js'
 
 /** A week. Short enough to catch a lapse, long enough that a busy weekend is not one. */
 export const AWAY_DAYS = 7
@@ -36,11 +36,21 @@ export type ReturnVisit = {
   readonly acknowledge: () => void
 }
 
+/**
+ * `shownOn` is fed to `Date.parse`, and `undefined` parses to NaN.
+ *
+ * NaN compares false against everything, so a malformed ack read as "not yet
+ * acknowledged" — and the welcome-back screen would greet the same return on every
+ * launch, which is the app failing to notice they came back.
+ */
+const isAck = (value: unknown): boolean =>
+  typeof value === 'object' && value !== null && typeof (value as Ack).shownOn === 'string'
+
 export function useReturnVisit(today: Date = new Date()): ReturnVisit {
-  const [ack, setAck] = useState<Ack | null>(() => readJson<Ack>(ACK_KEY))
+  const [ack, setAck] = useState<Ack | null>(() => readJson<Ack>(ACK_KEY, isAck))
 
   const daysAway = useMemo(() => {
-    const log = readJson<Record<string, number>>(ACTIVITY_KEY) ?? {}
+    const log = readJson<Record<string, number>>(ACTIVITY_KEY, isNumberRecord) ?? {}
     const days = Object.keys(log).filter((day) => (log[day] ?? 0) > 0).sort()
     const last = days[days.length - 1]
 

@@ -39,7 +39,26 @@ begin;
 -- previous total. The count below is now derived the only way that cannot drift: the
 -- table list is qualified to `public` so it yields exactly as many rows as it names, and
 -- 13 + 22 standalone assertions is 35.
-select plan(35);
+--
+-- 35 → 40. `daily_quests` is a fourteenth table, and it is the one whose write path
+-- decides what a quest PAYS — so it gets the row above and a place in the no-client-write
+-- list. `pin_daily_quest` gets the service-role pair every writer here gets, and
+-- `continue_lesson` the client-callable pair `purchase_item` and `purchase_freeze` have:
+-- it spends coins on behalf of a signed-in user, which is exactly those two's shape.
+-- 14 + 26 standalone assertions is 40.
+--
+-- 40 → 42. `repair_streak`, the fourth and last function a signed-in client may call. It
+-- gets the same pair, and it is the one whose ARGUMENT LIST is the security property:
+-- taking a `p_restore_to` would let a modified client name any streak length and buy it
+-- for 600 coins, so the function takes nothing and reads `streaks.longest` itself.
+-- 14 + 28 standalone assertions is 42.
+--
+-- 42 → 45. The two achievement tables, plus one on the pair of them: `achievement_unlocks`
+-- is a LEDGER — a row in it is what says a tier was paid — so a client that could insert
+-- there could pay itself, and `achievement_progress` holds the counters those payments are
+-- justified by. Both are readable by their owner (the achievements screen has a reason to
+-- know) and writable by nobody. 16 + 29 standalone assertions is 45.
+select plan(45);
 
 -- Every table that holds user data must have RLS on. This catches the classic
 -- failure: a new table added months from now with RLS quietly left off.
@@ -58,7 +77,8 @@ where n.nspname = 'public'
   and c.relname in (
     'profiles','entitlements','user_facts','review_log','lessons',
     'xp_ledger','coin_ledger','wallets','inventory','streaks',
-    'subscriptions','subscription_events','shop_items'
+    'subscriptions','subscription_events','shop_items','daily_quests',
+    'achievement_progress','achievement_unlocks'
   );
 
 -- No client-facing write path may exist on a reward table. The absence of a
@@ -71,7 +91,8 @@ select is_empty(
   $$ select policyname from pg_policies
      where tablename in ('xp_ledger','coin_ledger','user_facts','review_log',
                          'league_members','entitlements','subscriptions',
-                         'subscription_events')
+                         'subscription_events','daily_quests',
+                         'achievement_progress','achievement_unlocks')
        and cmd in ('INSERT','UPDATE','DELETE') $$,
   'no client write policy on any reward or billing table'
 );
@@ -307,6 +328,95 @@ select is_empty(
         and p.proname = 'purchase_freeze'
         and has_function_privilege('anon', p.oid, 'EXECUTE') $$,
   'purchase_freeze is not callable by anon'
+);
+
+-- ── the paid continue ───────────────────────────────────────────────────────
+--
+-- The third function a signed-in client may call, and the same shape as the other two:
+-- it takes no user and no price, so the worst a modified client can do is spend its own
+-- coins on a continue it can afford. `OutOfHearts` printed a 250-coin price for as long
+-- as no endpoint existed to charge it, so this is the assertion that the button now
+-- reaches something.
+select ok(
+  (select has_function_privilege('authenticated', p.oid, 'EXECUTE')
+     from pg_proc p
+     join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public' and p.proname = 'continue_lesson'),
+  'continue_lesson is callable by a signed-in user'
+);
+
+select is_empty(
+  $$ select p.proname
+       from pg_proc p
+       join pg_namespace n on n.oid = p.pronamespace
+      where n.nspname = 'public'
+        and p.proname = 'continue_lesson'
+        and has_function_privilege('anon', p.oid, 'EXECUTE') $$,
+  'continue_lesson is not callable by anon'
+);
+
+-- ── the streak repair ───────────────────────────────────────────────────────
+--
+-- The fourth client-callable function, and the one whose signature is the control: it
+-- takes NO arguments. `StreakScreen` has a `restoreTo` prop so the button can name the
+-- streak being bought back, and a parameter for it here would be a leaderboard entry at
+-- cosmetic prices.
+select ok(
+  (select has_function_privilege('authenticated', p.oid, 'EXECUTE')
+     from pg_proc p
+     join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public' and p.proname = 'repair_streak'),
+  'repair_streak is callable by a signed-in user'
+);
+
+select is_empty(
+  $$ select p.proname
+       from pg_proc p
+       join pg_namespace n on n.oid = p.pronamespace
+      where n.nspname = 'public'
+        and p.proname = 'repair_streak'
+        and (has_function_privilege('anon', p.oid, 'EXECUTE')
+             or p.pronargs > 0) $$,
+  'repair_streak takes no arguments and is not callable by anon'
+);
+
+-- ── the achievement ledger ──────────────────────────────────────────────────
+--
+-- Readable by its owner and writable by nobody. The read matters — the achievements
+-- screen has a legitimate reason to know which tiers are banked — and the absence of a
+-- write policy is what stops a client paying itself: a row in `achievement_unlocks` IS
+-- the statement that a tier was awarded, and `record_lesson` pays from exactly the rows
+-- its insert created.
+select isnt_empty(
+  $$ select policyname from pg_policies
+      where tablename in ('achievement_progress','achievement_unlocks')
+        and cmd = 'SELECT' $$,
+  'a user can read their own achievement progress and unlocks'
+);
+
+-- ── the quest pin ───────────────────────────────────────────────────────────
+--
+-- The opposite case, and the higher-stakes one. `pin_daily_quest` records the five tasks
+-- a day's reward is measured against, so a client that could call it could pin a quest
+-- whose tasks were already satisfied — and `record_lesson` would then pay 100 XP and 25
+-- coins for a day nobody played.
+select is_empty(
+  $$ select p.proname
+       from pg_proc p
+       join pg_namespace n on n.oid = p.pronamespace
+      where n.nspname = 'public'
+        and p.proname = 'pin_daily_quest'
+        and (has_function_privilege('anon', p.oid, 'EXECUTE')
+             or has_function_privilege('authenticated', p.oid, 'EXECUTE')) $$,
+  'pin_daily_quest is not callable by a client over the REST API'
+);
+
+select ok(
+  (select has_function_privilege('service_role', p.oid, 'EXECUTE')
+     from pg_proc p
+     join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public' and p.proname = 'pin_daily_quest'),
+  'pin_daily_quest is callable by the edge function'
 );
 
 -- ── the streak expiry job ───────────────────────────────────────────────────

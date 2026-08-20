@@ -69,8 +69,21 @@ See `sample.capitals.v1.json` for a worked example (South Africa's three capital
 
 ```bash
 pnpm content:validate
+pnpm content:crosscheck         # every value against an INDEPENDENT dataset
 pnpm content:preview <packId>   # and READ the generated questions
 pnpm content:stats
 ```
+
+`validate` checks that a fact carries a source, a `verifiedAt` and a volatility window.
+It cannot check that the value is RIGHT — nothing inside this repo can, because the
+answer lives outside it. `crosscheck` asks `world-countries@5.1.0` the same questions:
+349 values across capitals, currencies, calling codes, languages, regions and the
+countries' own English names. It is in `pnpm verify`.
+
+Six differences are recorded in its `ACCEPTED` table with a reason, because a
+disagreement is not automatically a bug — the pack cites ITU-T E.164 and ISO 639-1 where
+the reference cites a community list, and on two of the six the pack is the
+better-sourced side. **Never resolve one by editing the pack to match the reference.**
+Read both sources; if the pack is right, add an entry saying why.
 
 Spec: [`../../docs/systems/content-pipeline.md`](../../docs/systems/content-pipeline.md)

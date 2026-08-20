@@ -140,13 +140,18 @@ export function useDailyGoal(): DailyGoal {
     midnight.setHours(24, 0, 1, 0)
     const timer = setTimeout(tick, midnight.getTime() - now.getTime())
 
+    // Optional-chained on removal for the reason `useLesson` and `screenReader` both
+    // state where they do the same: react-native-web has returned `undefined` from
+    // `addEventListener` before, and an unguarded `.remove()` throws on every unmount.
+    // This is Home — the screen mounted and unmounted more than any other — and it was
+    // the one of the three left unguarded.
     const subscription = AppState.addEventListener('change', (next: AppStateStatus) => {
       if (next === 'active') tick()
-    })
+    }) as { remove?: () => void } | undefined
 
     return () => {
       clearTimeout(timer)
-      subscription.remove()
+      subscription?.remove?.()
     }
   }, [day])
 

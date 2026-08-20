@@ -7,12 +7,11 @@
  * a notification cannot open.
  */
 
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { router, useLocalSearchParams } from 'expo-router'
 import { entityProgress, regionProgress } from '@worldquest/engines'
 import { REGIONS, type RegionCode } from '../../src/features/explore/ExploreScreen.js'
 import { RegionScreen, type CountryRow } from '../../src/features/explore/RegionScreen.js'
-import { recordRegionStarted } from '../../src/features/achievements/progress.js'
 import { ContentGate } from '../../src/components/ContentGate.js'
 import { useContent } from '../../src/lib/content.js'
 import { currentLocale, type TranslationKey } from '../../src/lib/i18n.js'
@@ -39,21 +38,18 @@ export default function RegionRoute() {
   const region: RegionCode = isRegion(code ?? '') ? (code as RegionCode) : 'EU'
 
   /**
-   * Opening a continent is what `region_started` means, and nothing emitted it.
+   * Opening a continent used to emit `region_started`, and no longer does.
    *
-   * `ach.explorer.continents` is a set-completion rule over the six regions and had no
-   * producer at all, so its single gold tier was permanently at zero — a visible,
-   * progress-barred goal that could not move. The engine deduplicates by member, so
-   * firing on every visit costs nothing and needs no "have I been here" bookkeeping.
+   * `ach.explorer.continents` had no producer at all, so its gold tier sat at zero, and
+   * firing on a page visit was the cheapest way to give it one. That was harmless while
+   * the tier paid nothing. It stopped being harmless the moment achievements started
+   * paying: six taps through the continent list for 100 XP and 50 coins, having learned
+   * nothing — and a server cannot see a navigation, so it could not have checked it.
    *
-   * Only for a code the app recognises: a deep link can carry anything, and `region` has
-   * already fallen back to EU by this point, so an unknown code would credit a continent
-   * the user never opened.
+   * `submit-lesson` emits it now, for a region the user answered something correctly in.
+   * That is what the copy has always said — "Start learning on every continent" — and it
+   * cannot be farmed by navigating.
    */
-  useEffect(() => {
-    if (!isRegion(code ?? '')) return
-    recordRegionStarted(region, Date.now())
-  }, [code, region])
 
   const countries = useMemo<readonly CountryRow[]>(() => {
     if (index === null) return []
@@ -105,7 +101,11 @@ export default function RegionRoute() {
         // continent the page is not showing. The lesson route omits an unknown region
         // rather than failing closed, so the result was a lesson about the whole world
         // under a heading saying Europe — the widening `focusFilter` exists to prevent.
-        onBack={() => router.back()}
+        // `canGoBack()` first, and a replace when there is nothing to go back to.
+        // Every one of these routes is deep-linkable — a notification, a shared link,
+        // a cold start straight onto it — and `router.back()` on an empty stack is a
+        // no-op, so the only control on the screen did nothing at all.
+        onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))}
         onStartLesson={() => router.push(`/lesson?region=${encodeURIComponent(region)}`)}
       />
     </ContentGate>

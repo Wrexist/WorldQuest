@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import { FREEZE_PRICE, MAX_FREEZES, REPAIR_PRICE } from '@worldquest/engines'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { FREEZE_PRICE, MAX_FREEZES, REPAIR_PRICE, STREAK_MILESTONES } from '@worldquest/engines'
 import { StreakScreen, type StreakScreenProps } from './StreakScreen.js'
 
 const NOW = Date.parse('2026-08-02T12:00:00Z')
@@ -10,7 +10,7 @@ const props = (over: Partial<StreakScreenProps> = {}): StreakScreenProps => ({
   longest: 40,
   freezesHeld: 0,
   coins: 5000,
-  repair: { available: false, reason: 'not-broken' },
+  repairOffer: { available: false, reason: 'not-broken' },
   restoreTo: 40,
   now: NOW,
   onBuyFreeze: vi.fn(),
@@ -72,11 +72,21 @@ describe('StreakScreen', () => {
     expect(screen.queryByText(/to your next milestone/)).toBeNull()
   })
 
-  it('says nothing past the last milestone the balance table funds', () => {
+  it('names no target past the last milestone the balance table funds', () => {
     // 7/30/100/365 and no more. A fifth target would promise a reward no ledger
     // honours, which the user finds out about on the day they reach it.
+    //
+    // This asserted "no text matching /milestone/i" and therefore also forbade the
+    // LADDER, which arrived later and shows the same four days as a list. Four rungs all
+    // ticked is a record of what somebody did, not a target dangled at them, so the
+    // assertion now says what the rule always meant: no fifth rung, and nothing counting
+    // down to one.
     render(<StreakScreen {...props({ current: 400, longest: 400 })} />)
-    expect(screen.queryByText(/milestone/i)).toBeNull()
+    expect(screen.queryByText(/to your next milestone/)).toBeNull()
+    for (const day of STREAK_MILESTONES) {
+      expect(screen.getByText(new RegExp(`^${day} days$`))).toBeTruthy()
+    }
+    expect(screen.getAllByLabelText(/Reached/)).toHaveLength(STREAK_MILESTONES.length)
   })
 
   it('does not dangle a milestone at someone whose streak just broke', () => {
@@ -85,11 +95,14 @@ describe('StreakScreen', () => {
       <StreakScreen
         {...props({
           current: 0,
-          repair: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 3_600_000 },
+          repairOffer: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 3_600_000 },
         })}
       />,
     )
     expect(screen.queryByText(/milestone/i)).toBeNull()
+    // The ladder goes with it. A list of the four things you no longer have, each with
+    // its price in days, is the same taunt at four times the length.
+    expect(screen.queryByText(/Milestones/)).toBeNull()
   })
 
   it('hides the repair card while the streak is intact', () => {
@@ -103,7 +116,7 @@ describe('StreakScreen', () => {
     const { container } = render(
       <StreakScreen
         {...props({
-          repair: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 10 * 3_600_000 },
+          repairOffer: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 10 * 3_600_000 },
         })}
       />,
     )
@@ -117,7 +130,7 @@ describe('StreakScreen', () => {
       <StreakScreen
         {...props({
           restoreTo: 40,
-          repair: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 10 * 3_600_000 },
+          repairOffer: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 10 * 3_600_000 },
         })}
       />,
     )
@@ -130,7 +143,7 @@ describe('StreakScreen', () => {
     const { container } = render(
       <StreakScreen
         {...props({
-          repair: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 10 * 3_600_000 },
+          repairOffer: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 10 * 3_600_000 },
         })}
       />,
     )
@@ -142,7 +155,7 @@ describe('StreakScreen', () => {
     // "Not available" makes a user tap again tomorrow. A number ends the question.
     render(
       <StreakScreen
-        {...props({ repair: { available: false, reason: 'cooldown', availableInDays: 12 } })}
+        {...props({ repairOffer: { available: false, reason: 'cooldown', availableInDays: 12 } })}
       />,
     )
     expect(screen.getByText(/available again in 12 days/i)).toBeTruthy()
@@ -176,7 +189,7 @@ describe('StreakScreen', () => {
     const { container } = render(
       <StreakScreen
         {...props({
-          repair: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 3_600_000 },
+          repairOffer: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 3_600_000 },
         })}
       />,
     )
@@ -187,6 +200,57 @@ describe('StreakScreen', () => {
     const { container } = render(<StreakScreen {...props()} />)
     expect(container.textContent).not.toMatch(/\bstreak:[a-z]/)
     expect(container.textContent).not.toMatch(/\{[a-zA-Z_]+[,}]/)
+  })
+})
+
+describe('StreakScreen — the repair actually happens', () => {
+  const broken = (over: Partial<StreakScreenProps> = {}): StreakScreenProps =>
+    props({
+      current: 1,
+      longest: 214,
+      restoreTo: 214,
+      repairOffer: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 10 * 3_600_000 },
+      ...over,
+    })
+
+  it('offers a button that can be pressed', () => {
+    // The whole reason this block exists. `app/streak.tsx` passed `onRepair={undefined}`,
+    // and once `expire_streaks()` started recording a break the card became reachable with
+    // a permanently disabled button naming a 600-coin price and no reason beside it. A
+    // control that refuses every tap is worse than no control, and worst on the screen a
+    // user reaches after losing a 214-day streak.
+    const onRepair = vi.fn()
+    render(<StreakScreen {...broken({ onRepair })} />)
+    const button = screen.getByRole('button', { name: new RegExp(String(REPAIR_PRICE)) })
+    expect(button.getAttribute('aria-disabled')).not.toBe('true')
+    fireEvent.click(button)
+    expect(onRepair).toHaveBeenCalledOnce()
+  })
+
+  it('refuses the second tap while one is in flight', () => {
+    // `repair_streak` has no idempotency key, so two taps are two purchases — 1,200 coins
+    // for one intended repair. The route guards it too; the button says so.
+    render(<StreakScreen {...broken({ repairing: true })} />)
+    const button = screen.getByRole('button', { name: new RegExp(String(REPAIR_PRICE)) })
+    expect(button.getAttribute('aria-busy')).toBe('true')
+  })
+
+  it('says why a repair did not happen, out loud', () => {
+    // Announced with `role="alert"`, because the text is inserted after the tap — without
+    // it a screen-reader user is told nothing at all happened.
+    render(<StreakScreen {...broken({ repairNotice: 'insufficient_funds' })} />)
+    const alert = screen.getByRole('alert')
+    expect(alert.textContent).toMatch(/not quite enough coins/i)
+  })
+
+  it('does not restate a refusal the card already explains', () => {
+    // `cooldown` and `window_expired` are decided before the tap and are the card's own
+    // copy. A notice for them would say the same thing twice.
+    const { container } = render(
+      <StreakScreen {...props({ repairOffer: { available: false, reason: 'window-expired' } })} />,
+    )
+    expect(screen.queryByRole('alert')).toBeNull()
+    expect(container.textContent).toMatch(/window for this one has closed/i)
   })
 })
 
@@ -203,7 +267,7 @@ describe('StreakScreen — offline (H7, scoped)', () => {
   })
 
   it('will not sell a repair it cannot deliver', () => {
-    render(<StreakScreen {...props({ offline: true, repair: REPAIRABLE })} />)
+    render(<StreakScreen {...props({ offline: true, repairOffer: REPAIRABLE })} />)
     const repair = screen.getByRole('button', { name: /Restore/i })
     expect(repair.getAttribute('aria-disabled')).toBe('true')
   })
@@ -245,7 +309,7 @@ describe('StreakScreen — offline (H7, scoped)', () => {
   it('and the same buttons are live when the connection is fine', () => {
     // Without this the two disabled assertions above prove nothing: a button that is
     // disabled for some other reason would satisfy them just as well.
-    render(<StreakScreen {...props({ repair: REPAIRABLE })} />)
+    render(<StreakScreen {...props({ repairOffer: REPAIRABLE })} />)
     expect(
       screen.getByRole('button', { name: new RegExp(`${FREEZE_PRICE}`) }).getAttribute('aria-disabled'),
     ).not.toBe('true')

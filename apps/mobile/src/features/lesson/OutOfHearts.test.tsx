@@ -5,10 +5,26 @@ import { OutOfHearts } from './OutOfHearts.js'
 
 const PRICE = BALANCE.prices.continueLesson
 
-const renderOut = (coins: number, over: { onRevive?: () => void; onFinish?: () => void } = {}) => {
+type Overrides = {
+  onRevive?: () => void
+  onFinish?: () => void
+  /** Defaults to true: the ordinary case is hearts running out mid-lesson. */
+  canRevive?: boolean
+  offline?: boolean
+}
+
+const renderOut = (coins: number, over: Overrides = {}) => {
   const onRevive = over.onRevive ?? vi.fn()
   const onFinish = over.onFinish ?? vi.fn()
-  const view = render(<OutOfHearts coins={coins} onRevive={onRevive} onFinish={onFinish} />)
+  const view = render(
+    <OutOfHearts
+      coins={coins}
+      canRevive={over.canRevive ?? true}
+      offline={over.offline ?? false}
+      onRevive={onRevive}
+      onFinish={onFinish}
+    />,
+  )
   return { ...view, onRevive, onFinish }
 }
 
@@ -35,8 +51,9 @@ describe('Out of hearts — the reassurance', () => {
 
 describe('Out of hearts — what it must never do', () => {
   it('shows no countdown', () => {
-    // Hearts regenerate on a timer elsewhere, but the next lesson does not wait for
-    // it. A clock here would be both a lie and pressure aimed at a ten-year-old.
+    // There is no regeneration clock in this product at all — the balance table deleted
+    // it — so a timer here would be a lie about a system that does not exist, as well as
+    // pressure aimed at a ten-year-old.
     const { container } = renderOut(PRICE)
     expect(container.textContent).not.toMatch(/\d+:\d\d|minutes?|hours?|refill|wait/i)
   })
@@ -87,6 +104,29 @@ describe('Out of hearts — the fork', () => {
       expect(onFinish).toHaveBeenCalledOnce()
       unmount()
     }
+  })
+
+  /**
+   * The last-question case. `REVIVE` resumes at the NEXT item, so on the final one there
+   * is nothing to resume to — the machine sends it to the summary, and the offer must not
+   * be made for something already over. Taking 250 coins for a question that does not
+   * exist is worse than not offering.
+   */
+  it('makes no offer when there is nothing left to continue to', () => {
+    renderOut(PRICE * 10, { canRevive: false })
+    expect(screen.queryByRole('button', { name: new RegExp(String(PRICE)) })).toBeNull()
+    // The reassurance and the way out both stay. Only the purchase goes.
+    expect(screen.getByText(/next lesson starts with a full set/i)).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Finish here' })).toBeTruthy()
+  })
+
+  it('withholds the offer offline, and says why', () => {
+    // A spend that cannot reach the server is a continue nobody pays for, and the lesson
+    // is over before any reconcile could correct it — so offline it is unlimited and free.
+    renderOut(PRICE * 10, { offline: true })
+    expect(screen.queryByRole('button', { name: new RegExp(String(PRICE)) })).toBeNull()
+    expect(screen.getByText(/needs a connection/i)).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Finish here' })).toBeTruthy()
   })
 
   it('leaves no raw key or unformatted placeholder on screen', () => {

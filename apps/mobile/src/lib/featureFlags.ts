@@ -97,10 +97,25 @@ let loadedFromDisk = false
 let lastFetchFailed = false
 const listeners = new Set<() => void>()
 
+const isFlagRows = (value: unknown): boolean =>
+  Array.isArray(value) &&
+  value.every(
+    (row) =>
+      typeof row === 'object' &&
+      row !== null &&
+      typeof (row as FeatureFlagRow).key === 'string' &&
+      typeof (row as FeatureFlagRow).enabled === 'boolean' &&
+      typeof (row as FeatureFlagRow).rolloutPercent === 'number',
+  )
+
 function diskCache(): Map<string, FeatureFlagRow> {
   if (!loadedFromDisk) {
     loadedFromDisk = true
-    const stored = readJson<readonly FeatureFlagRow[]>(CACHE_KEY)
+    // Shape-checked: `.map` on a stored object rather than an array is a TypeError, and
+    // this runs on the first flag read — which is early, and whose whole contract is that
+    // a failure here leaves flags closed rather than crashing. A row missing `key` would
+    // also index the cache under `undefined` and answer for every unknown flag.
+    const stored = readJson<readonly FeatureFlagRow[]>(CACHE_KEY, isFlagRows)
     cache = new Map((stored ?? []).map((row) => [row.key, row]))
   }
   return cache ?? new Map()

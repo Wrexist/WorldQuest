@@ -24,11 +24,43 @@ import { currentUser, isConfigured, supabase } from './supabase.js'
 import { isOnline, onConnectivityChange } from './connectivity.js'
 import { invalidateProgress } from './query.js'
 import { readJson, writeJson } from './storage.js'
-import { markAwardDelivered } from './awards.js'
+import { markAwardDelivered, peekAwards } from './awards.js'
 import { recordServerOutcome } from '../features/achievements/progress.js'
+import { queueUnlocks } from '../features/achievements/pending.js'
 import { track } from './analytics.js'
 
 const QUEUE_KEY = 'sync.queue.v1'
+
+/**
+ * Both halves must be arrays of things with an id and a kind.
+ *
+ * The cast this replaces was the most dangerous read in the app. `enqueue` calls
+ * `queue.pending.some(...)` and `nextBatch` spreads it, so a stored queue from an older
+ * shape — or one truncated by a full disk — threw a TypeError at the end of EVERY lesson,
+ * from inside the one function whose entire job is that a finished lesson survives. The
+ * queue would then be unrecoverable without reinstalling, which is the "I lost my
+ * progress" failure this file calls the most trust-destroying bug a learning app has.
+ *
+ * A mutation that fails this is dropped with the rest of the queue rather than filtered
+ * out of it, and that is the honest trade: a partially-readable queue is a queue whose
+ * ordering and idempotency keys we cannot vouch for, and replaying half of one is worse
+ * than losing it. In exchange the app starts.
+ */
+const isQueue = (value: unknown): boolean => {
+  if (typeof value !== 'object' || value === null) return false
+  const q = value as { pending?: unknown; parked?: unknown }
+  const list = (v: unknown): boolean =>
+    Array.isArray(v) &&
+    v.every(
+      (m) =>
+        typeof m === 'object' &&
+        m !== null &&
+        typeof (m as { id?: unknown }).id === 'string' &&
+        typeof (m as { kind?: unknown }).kind === 'string' &&
+        typeof (m as { attempts?: unknown }).attempts === 'number',
+    )
+  return list(q.pending) && list(q.parked)
+}
 
 /**
  * Restored from disk on first use.
@@ -37,7 +69,7 @@ const QUEUE_KEY = 'sync.queue.v1'
  * survive the app being killed on the walk home — an in-memory queue silently loses
  * the XP a user earned, and they never find out why their streak broke.
  */
-let queue: SyncQueue = readJson<SyncQueue>(QUEUE_KEY) ?? emptyQueue()
+let queue: SyncQueue = readJson<SyncQueue>(QUEUE_KEY, isQueue) ?? emptyQueue()
 
 function commit(next: SyncQueue): void {
   queue = next
@@ -92,6 +124,18 @@ export type LessonSubmission = {
    * makes trusting it acceptable.
    */
   heartsLost: number
+  /**
+   * Today's quest as this device composed it. Absent on a lesson that carried none.
+   *
+   * Queued with the lesson rather than sent separately, so a quest finished in a tunnel
+   * is paid when the queue drains — by the same idempotency key, in the same transaction
+   * as the lesson that finished it.
+   */
+  quest?: {
+    /** The local date the device composed it for; the server compares rather than uses it. */
+    date: string
+    tasks: readonly { slot: string; target: number; factIds: readonly string[]; goal?: string }[]
+  }
 }
 
 /**
@@ -252,6 +296,7 @@ async function send(mutation: QueuedMutation): Promise<void> {
     startedAt: submission.startedAt,
     answers: submission.answers,
     heartsLost: submission.heartsLost,
+    ...(submission.quest !== undefined ? { quest: submission.quest } : {}),
   })
 
   /**
@@ -334,13 +379,89 @@ function reconcile(result: SubmitLessonResponse): void {
      * on a prediction and taking it back, and a badge that is revoked is worse than one
      * that is late.
      */
-    for (const unlock of recordServerOutcome({
+    /**
+     * The three events the server's answer makes honest, fired where it arrives.
+     *
+     * All three were declared in the registry from the start and had no producer. Each
+     * was blocked on the same thing — the client cannot know a fact was mastered or a
+     * streak extended without being told, and a client that decides either is a client
+     * that can be edited. `submit-lesson` tells us now.
+     *
+     * Before the reconcile below rather than after, so a throw in a cache invalidation
+     * cannot cost the measurement. `track` is already a no-op on a child account.
+     */
+    for (const change of result.masteryChanges ?? []) {
+      if (change.to !== 'mastered' && change.to !== 'burnished') continue
+      // `days_to_master` and `total_reviews` are NOT sent. The registry declares them and
+      // the response does not carry them — they live in `review_log`, which is where this
+      // question is actually answerable, and inventing a number here to fill a property
+      // would put a wrong figure in the one dashboard that measures whether the product
+      // works. The event fires with what is true.
+      track('fact_mastered', { fact_id: change.factId })
+    }
+
+    /**
+     * `extended`, not `current > 0`.
+     *
+     * The first version of this fired whenever the streak was non-zero, which is every
+     * lesson of every active day — a second lesson on day 7 returns `extended: false` and
+     * a current of 7, so the chart would have counted lessons and called them streaks.
+     * The server already answers the question directly, and the type checker is what
+     * pointed at the field: `reset` and `freezeUsed` were sitting beside it unread.
+     *
+     * `streak_broken` comes from the same three booleans, with both of its declared
+     * properties real: the length that was lost and whether a freeze absorbed the miss.
+     * That distinction is the whole reason freezes exist, and no other event can report
+     * whether they work.
+     */
+    if (result.streak?.extended === true) {
+      track('streak_extended', { length: result.streak.current })
+    }
+    if (result.streak?.reset === true) {
+      track('streak_broken', {
+        length: result.streak.longest,
+        freeze_used: result.streak.freezeUsed,
+      })
+    }
+
+    /**
+     * The signal the rollback plan names and nothing produced.
+     *
+     * `docs/engineering/rollback-plan.md` step 1 lists `xp_reconciliation_failed` as one
+     * of the two ways to tell "our release" from "the internet" — and it had no caller,
+     * so that step was "wait for a user to complain" twice over rather than once.
+     *
+     * The client predicts an award before the lesson is sent; the server re-derives it
+     * from the answers. A disagreement is a grading bug, a stale balance table, or
+     * somebody editing the client — all three are worth knowing about, and none of them
+     * is visible any other way.
+     */
+    const predicted = peekAwards().find((award) => award.lessonId === result.lessonId)
+    if (predicted !== undefined && predicted.xp !== result.xpAwarded) {
+      track('xp_reconciliation_failed', { client_xp: predicted.xp, server_xp: result.xpAwarded })
+    }
+
+    const unlocked = recordServerOutcome({
       masteryChanges: result.masteryChanges ?? [],
       streak: result.streak?.current ?? null,
       overdueCleared: result.overdueCleared ?? 0,
       entityMastered: result.entityMastered ?? [],
+      regionsStarted: result.regionsStarted ?? [],
       at: Date.now(),
-    })) {
+    })
+
+    /**
+     * Held for the next screen that can celebrate them.
+     *
+     * This is the path that made a queue necessary rather than a callback. Most
+     * achievements are decided HERE, on a flush that may be happening in the background
+     * on the walk home from the tunnel where the lesson was finished — there is no screen
+     * mounted to tell, and firing a celebration at one would reach nobody. Before this,
+     * every one of these unlocks was an analytics event and nothing else.
+     */
+    queueUnlocks(unlocked.map((u) => ({ achievementId: u.achievementId, tier: u.tier })))
+
+    for (const unlock of unlocked) {
       track('achievement_unlocked', { achievement_id: unlock.achievementId, tier: unlock.tier })
     }
   } catch {
@@ -350,3 +471,12 @@ function reconcile(result: SubmitLessonResponse): void {
 }
 
 export const peekQueue = (): SyncQueue => queue
+
+/**
+ * Test seam for `reconcile`.
+ *
+ * Exported rather than making `reconcile` public: this module's job is a queue, and
+ * everything it exports is something another part of the app is meant to call. A helper
+ * that only a test uses should say so in its name, so nobody wires a screen to it.
+ */
+export const __testReconcile = (result: SubmitLessonResponse): void => reconcile(result)

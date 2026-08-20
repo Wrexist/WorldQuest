@@ -109,6 +109,21 @@ export type AccountSection = {
   readonly onLink: () => void
   readonly onSignIn: () => void
   readonly onSignOut: () => void
+  /**
+   * Finished lessons still waiting to reach the server.
+   *
+   * Sign-out calls `clearAll()` — deliberately, because a list of keys to clear is a list
+   * somebody forgets to add to, and the thing forgotten is the thing that leaks. The cost
+   * is that it also wipes the offline queue, so a lesson finished on a plane and never
+   * synced is gone for good.
+   *
+   * `hasUnsyncedProgress` has said "used to warn before sign-out or account deletion" in
+   * the engine since the queue was built, and had no caller: one tap on a plain row threw
+   * the work away in silence. Stated BEFORE the control rather than in a dialogue after
+   * it, and the control gets a different label so the destructive version is never the
+   * one somebody meant to press.
+   */
+  readonly unsyncedLessons: number
 }
 
 export type SettingsScreenProps = {
@@ -301,7 +316,19 @@ export function SettingsScreen({
         ) : account.email !== null ? (
           <>
             <LinkRow label={t('account:settings.email')} value={account.email} />
-            <LinkRow label={t('account:settings.signOut')} onPress={account.onSignOut} />
+            {account.unsyncedLessons > 0 ? (
+              <>
+                <Note
+                  body={t('account:settings.signOut.unsynced', { count: account.unsyncedLessons })}
+                />
+                <LinkRow
+                  label={t('account:settings.signOut.anyway')}
+                  onPress={account.onSignOut}
+                />
+              </>
+            ) : (
+              <LinkRow label={t('account:settings.signOut')} onPress={account.onSignOut} />
+            )}
           </>
         ) : (
           <>

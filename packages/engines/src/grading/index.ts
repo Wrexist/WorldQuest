@@ -358,8 +358,31 @@ export function gradeLesson(input: GradeInput): GradeResult {
  * (`MASTERY_ORDER`, in progression) and the server can compute the same figure.
  */
 export function factsStrengthened(result: GradeResult): number {
+  /**
+   * A wrong answer never strengthens anything, whatever the mastery ladder says.
+   *
+   * This counted every upward mastery change, and `unseen → learning` is an upward change
+   * that a WRONG answer produces: the scheduler creates a memory state on first contact
+   * regardless of the rating. So a lesson of twenty new items answered mostly wrong
+   * reported "20 Facts stronger" beside "15% Accuracy" — which is what a screenshot of the
+   * real summary showed, and the number is larger than the number of correct answers by an
+   * order of magnitude.
+   *
+   * The tile is described in `mockup-fidelity.md` as "the one number here a quiz app could
+   * not also show", and a count that equals the item count for every new user shows
+   * nothing. Worse, it is flattery on the screen where a struggling learner is most likely
+   * to notice the app disagreeing with their own experience of the last two minutes.
+   *
+   * Only the new-item case is affected in practice: a failed REVIEW lowers stability, so
+   * its mastery does not move up to begin with.
+   */
+  const answeredWell = new Set(
+    result.reviews.filter((review) => review.wasCorrect).map((review) => review.factId),
+  )
   return result.masteryChanges.filter(
-    (change) => MASTERY_ORDER.indexOf(change.to) > MASTERY_ORDER.indexOf(change.from),
+    (change) =>
+      answeredWell.has(change.factId) &&
+      MASTERY_ORDER.indexOf(change.to) > MASTERY_ORDER.indexOf(change.from),
   ).length
 }
 

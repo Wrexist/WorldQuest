@@ -192,6 +192,29 @@ describe('shop_items agrees with the pack and the balance table', () => {
     }
   })
 
+  /**
+   * The consumables the filter above deliberately drops.
+   *
+   * `SELLABLE_KINDS` is the cosmetics grid, so the streak freeze and the lesson continue
+   * are excluded from the pack comparison — correctly, they are in no pack. That left
+   * their prices checked by nothing: `consumable.continue-lesson` is what the server
+   * charges for the out-of-hearts button, `BALANCE.prices.continueLesson` is what the
+   * button prints, and until this test the two could disagree and the user would be
+   * quoted one price and charged another.
+   */
+  const consumables = new Map(
+    [...migration.matchAll(/\('([\w.-]+)',\s*'consumable',\s*(\d+)\)/g)].map((m) => [
+      m[1]!,
+      Number(m[2]!),
+    ]),
+  )
+
+  it('prices every seeded consumable from the balance table', () => {
+    expect(consumables.get('consumable.streak-freeze')).toBe(BALANCE.prices.streakFreeze)
+    expect(consumables.get('consumable.continue-lesson')).toBe(BALANCE.prices.continueLesson)
+    expect(consumables.get('consumable.streak-repair')).toBe(BALANCE.prices.streakRepair)
+  })
+
   it('never takes a price from the caller', () => {
     // The single property that makes this endpoint safe to expose to `authenticated`.
     expect(sql).not.toMatch(/p_price/)

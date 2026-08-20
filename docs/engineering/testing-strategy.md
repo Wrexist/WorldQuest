@@ -103,6 +103,39 @@ Against a **local Supabase**, reset between suites.
   correctness, distractor rules.
 - **Migrations**: apply cleanly to an empty database *and* to a seeded one.
 
+## 3b. The database, actually executed
+
+> **Added 2026-08-18, because it had never happened.** `supabase db reset` and
+> `supabase test db` both need Docker, and no environment this repo has been developed in
+> has had it. So `supabase/migrations/` — five hundred lines of PL/pgSQL that decides what
+> a user is paid — was the one part of the product nothing had ever *run*. `pnpm check:sql`
+> reads it as text; nothing had parsed it as SQL.
+
+`pnpm db:harness` applies all 33 migrations to a real Postgres 16, stands up the platform
+half Supabase provides (the `auth` schema, the three PostgREST roles, the default grants),
+and then asserts 26 properties: that a signup provisions three rows, that the quest and
+the achievement tiers pay the right amounts, that a **second lesson the same day pays
+neither again**, that the wallet equals the sum of its ledger, that all four purchases are
+once-only, and that a signed-in client can neither award itself an achievement nor mint XP
+nor call the lesson recorder — while still reading its own rows and nobody else's.
+
+Two things about it are worth knowing before trusting it.
+
+**The grants go on after the migrations, and the order is load-bearing.** Without
+Supabase's default table grants, every client write is refused at the GRANT layer and an
+RLS assertion passes without RLS ever being consulted. The first version of this harness
+"proved" six security properties that way and proved none of them.
+
+**It is not a replacement for `supabase test db`.** pgTAP is not installed, so
+`supabase/tests/rls.test.sql` is still the real suite — this checks the same properties in
+plain SQL, which is enough to catch a broken plan count, a missing revoke or a reward that
+pays twice, and not enough to retire that file. It is also not the platform: if Supabase
+changes what it provides, the scaffold diverges silently.
+
+It is not in `pnpm verify`, because it needs the postgresql-16 server binaries and a
+non-root user to run them. Proven to fail rather than assumed to work: removing the
+`on conflict do nothing` behind the achievement award turns it red.
+
 ## 4. E2E (Maestro)
 
 Fifteen flows. Not more — E2E is slow and brittle, and its job is to catch

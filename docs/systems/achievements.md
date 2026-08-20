@@ -99,6 +99,43 @@ The check runs in **both directions**, and the second is the half that keeps wor
 Omit `ceiling` when the achievement is genuinely unbounded — lessons completed, days of
 streak, level reached. It is skipped rather than guessed at.
 
+### `where: { attribute }` — the attribute the fact DECLARES
+
+The filter names the `attribute` field on the fact, **never a segment of its id.** These
+are not the same thing, and reading one for the other cost a whole achievement:
+
+```json
+{ "id": "geo.AR.continent", "entity": "AR", "attribute": "location" }
+```
+
+All 64 location facts are keyed `.continent` and declare `attribute: "location"`, which
+is what `ach.locations.collector` filters on. Both producers of `fact_mastered` — the app
+and `submit-lesson` — built the event's payload by splitting the fact id on dots, which is
+right for the pack's five other attributes and wrong for this one. So that achievement's
+four tiers were unreachable at any number, with `showProgress: true` drawing the bar the
+section above exists to forbid.
+
+Nothing caught it because every layer agreed with itself. The ceiling check counts the
+declared attribute and correctly reported 64 available. The rule engine's own tests pass
+`{ attribute: "flag" }` by hand and correctly prove the filter works. Only the join
+between them was wrong, and nothing executed the join.
+
+Three things changed, and it is worth knowing which does what:
+
+- both producers now read the attribute from a map generated from the packs
+  (`ATTRIBUTE_BY_FACT` on the server, `factEventFields` in the app), and refuse a fact
+  they have no entry for rather than inventing one from its name;
+- `_shared/achievement-events.test.ts` and `features/achievements/progress.test.ts` drive
+  the **real packs** through the real rule engine and assert every collector in the pack
+  actually moves — the join, executed;
+- `pnpm content:validate` fails a rule that filters on an attribute no quizzable fact
+  declares, which is the shape of a typo, and the shape of somebody fixing this from the
+  wrong end by editing the filter to match the id.
+
+A fact id is a permanent opaque key — [`PROJECT.md`](../../PROJECT.md) makes renaming one
+a migration, not a rename — so the fact that it usually ends in its own attribute is a
+convention nobody promised and nothing enforces.
+
 > The first run of this check found one more thing than it was written for: Switzerland's
 > capital is `quizzable: false` (Bern is not the constitutional capital), so the real
 > number of askable capitals is 63, not the 64 the pack file suggests. That is the
@@ -140,6 +177,34 @@ the new progress — it never rescans history. That's what makes 300 achievement
 to evaluate on every answer.
 
 ## 5. Where it runs
+
+> **Status, 2026-08-18: built.** `submit-lesson` evaluates the catalogue with the same
+> `evaluateAll` the device runs — vendored by `build.ts`, byte-identical to the source and
+> asserted by a bundle guard — over events the server produced, and `record_lesson` pays
+> the tier in the same transaction as the lesson that earned it.
+>
+> Two tables. `achievement_progress` is a cache of the engine's counters, one jsonb blob
+> per user. `achievement_unlocks` is the ledger, keyed on (user, achievement, tier), and
+> that key is what makes payment once: a replayed evaluation inserts nothing and pays
+> nothing — a stronger guarantee than checking the progress blob, because progress is
+> supplied by the caller and an unlock is a fact the table owns.
+>
+> The client still evaluates its own copy, and that is the optimistic half — the same
+> bargain the XP on the lesson summary makes. The device's map decides what the
+> achievements screen draws; the server's decides what moved a balance.
+>
+> **`ach.explorer.continents` changed meaning, and had to.** It counted `region_started`,
+> fired by opening a continent page — invisible to a server, and six taps for a gold tier
+> the moment gold started paying. It counts a region the user answered something correctly
+> in now, which is what §7's copy always said.
+>
+> **`ach.level.climber` had no producer at all.** The `threshold` rule reads a `level` off
+> an event payload, and nothing on the device ever put one there, so its single tier could
+> not move. The server emits it from the XP it has just awarded.
+>
+> What was deliberately NOT built is the shortcut named below: a client-claimed award
+> endpoint, at a tenth the work, handing the client the decision this section exists to
+> take away.
 
 **Server-side, in the same edge function that grades a lesson.** Achievements award XP
 and coins, so a client that could unlock them could mint currency.
@@ -184,6 +249,18 @@ Rules:
 **Unlock moment:** full-screen celebration (`motion.celebrate`, 900 ms), medal, name,
 reward, haptic, sound. Dismissible from frame one. If several unlock at once, queue
 them with a maximum of **2** celebrations, then a summary card.
+
+> **What is built, 2026-08-18: the medal appears on the lesson summary**, under a "New
+> badges" heading, not as a full-screen celebration. Before that an unlock produced an
+> analytics event and nothing else — the whole reward loop for thirty achievements was a
+> row in a dashboard nobody had built yet.
+>
+> The queue is the part worth keeping either way (`features/achievements/pending.ts`).
+> Most unlocks are decided by the SERVER and arrive when the sync queue drains, which for
+> a lesson finished in a tunnel is on the walk home with the app in the background — there
+> is no screen mounted to celebrate anything, so an unlock is recorded and shown at the
+> end of the next lesson. A full-screen celebration can be built on top of that queue
+> without changing anything that produces an unlock.
 
 ## 8. Design rules
 

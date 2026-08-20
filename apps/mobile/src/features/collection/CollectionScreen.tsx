@@ -333,8 +333,21 @@ function Tile({
       // the same information a sighted one gets from the opacity.
       accessibilityLabel={label}
       {...(onOpen !== undefined ? { onPress: () => onOpen(tile.id), role: 'button' as const } : {})}
-      style={[styles.tile, !tile.collected && styles.tileDim]}
+      style={styles.tile}
     >
+      {/* The DIMMING moved off the card and onto the thing being collected.
+          `opacity: 0.45` on the whole tile put the country name at 4.31:1 against its
+          own surface — under the 4.5 floor a 13 pt caption needs — while this file's
+          own header promises "dimmed, with its country name readable". It was not
+          quite, and `pnpm design:contrast` could never say so: it compares token PAIRS
+          and cannot see an opacity applied in a component, which is the same blind spot
+          that once left a paragraph on the paywall rendering near-black on navy.
+
+          Dimming the flag instead is the better signal as well as the legible one. The
+          flag IS the collectible; a name at half strength says the label is unimportant,
+          which is the opposite of true. The card's own level already differs — 1 unearned,
+          2 earned — so there are two signals now and the name is at full contrast in
+          both. */}
       {art ? (
         // The real flag, from the content pack's own asset path. `Flag` falls back to
         // the placeholder this used to be if the bundle has no file for it — never to
@@ -343,7 +356,9 @@ function Tile({
         // Decorative: the tile's accessibility label above already reads the country,
         // the flag's description and whether it is collected, so an announcing image
         // would say the same things a second time.
-        <Flag path={tile.assetPath} width={72} />
+        <View style={tile.collected ? undefined : styles.uncollected}>
+          <Flag path={tile.assetPath} width={72} />
+        </View>
       ) : (
         tile.subtitle !== undefined && (
           <Text style={styles.tileSub} numberOfLines={3}>
@@ -437,8 +452,16 @@ const styles = StyleSheet.create({
   // at 200 % text and will say so if this is wrong.
   tileCellWide: { width: '31%' },
   tile: { width: '100%', minHeight: 116, padding: space[3], alignItems: 'center', justifyContent: 'center', gap: space[1] },
-  // Dimmed, never hidden. See the header comment — this is the whole design.
-  tileDim: { opacity: 0.45 },
+  /**
+   * Dimmed, never hidden. See the header comment — this is the whole design.
+   *
+   * Lower than the 0.45 it used to be, because it no longer has any text under it: at
+   * 0.45 the WHOLE card was dimmed and the country name came out at 4.31:1, under the
+   * 4.5 a caption needs. Now only the collectible fades, so the number can say what it
+   * means — a flag at a third is plainly not yet yours — without costing anybody the
+   * label.
+   */
+  uncollected: { opacity: 0.35 },
   tileName: { ...text('caption', { weight: '700' }), color: colors.text.primary, textAlign: 'center' },
   // Absolute so a starred tile is exactly the same height as an unstarred one —
   // otherwise starring a country makes its row jump.

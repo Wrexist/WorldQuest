@@ -28,18 +28,49 @@ import {
   startOfLocalDay,
   streakMilestoneReward,
 } from '../../../packages/engines/src/time/index.ts'
-import { isFiniteMs, retimeLesson } from '../_shared/submission-time.ts'
-import { ANSWER_BY_FACT, QUIZZABLE_FACTS_BY_ENTITY } from './_content/answers.ts'
+import {
+  COMPLETION_BONUS,
+  TASK_XP,
+  replayQuest,
+  type DailyQuest,
+  type QuestEvent,
+  type QuestTask,
+} from '../../../packages/engines/src/quests/progress.ts'
+import {
+  emptyProgress,
+  evaluateAll,
+  type AchievementProgress,
+  type Unlock,
+} from '../../../packages/engines/src/achievements/index.ts'
+import { retimeLesson } from '../_shared/submission-time.ts'
+// The request parser lives in `_shared` so it can be TESTED — this module imports
+// `jsr:` specifiers and calls `Deno.serve`, so nothing in it is reachable by vitest.
+// See `_shared/parse-submission.ts`.
+import { parseBody, type SubmitBody } from '../_shared/parse-submission.ts'
+// Likewise, and for a bug rather than for tidiness: the events this produces decide which
+// achievements pay out, and the version inlined here derived a fact's attribute by
+// splitting its id — which is right for five of the pack's six attributes and wrong for
+// `location`. See `_shared/achievement-events.ts`.
+import { achievementEvents } from '../_shared/achievement-events.ts'
+import {
+  ANSWER_BY_FACT,
+  ATTRIBUTE_BY_FACT,
+  QUIZZABLE_FACTS_BY_ENTITY,
+} from './_content/answers.ts'
+import { ACHIEVEMENTS, REGION_BY_ENTITY } from './_content/achievements.ts'
 
-type SubmitBody = {
-  lessonId: string
-  kind: 'lesson' | 'quest' | 'review' | 'challenge' | 'event'
-  topicId?: string
-  startedAt: number
-  answers: AnsweredItem[]
-  heartsLost?: number
-  clientVersion?: string
-}
+/**
+ * The content packs, projected to the three questions the achievement events ask of them.
+ *
+ * Assembled here because `_shared` may not import `_content` — that directory is written
+ * by the bundler and gitignored, so a module importing it is a module vitest cannot load,
+ * which is the whole reason `achievementEvents` moved out of this file.
+ */
+const CONTENT = {
+  entityByFact: ANSWER_BY_FACT,
+  attributeByFact: ATTRIBUTE_BY_FACT,
+  regionByEntity: REGION_BY_ENTITY,
+} as const
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -67,52 +98,6 @@ function isKnownTimeZone(zone: string | null | undefined): zone is string {
 }
 
 /** Deliberately minimal. Anything not asserted here is not trusted. */
-function parseBody(raw: unknown): SubmitBody | null {
-  if (typeof raw !== 'object' || raw === null) return null
-  const b = raw as Record<string, unknown>
-
-  if (typeof b.lessonId !== 'string' || !/^[0-9a-f-]{36}$/i.test(b.lessonId)) return null
-  // `isFiniteMs`, not `typeof === 'number'`. The latter admits NaN, Infinity and 1e300,
-  // all three of which reach `new Date(x).toISOString()` further down and throw a
-  // RangeError there — an uncaught 500 any client could ask for.
-  if (!isFiniteMs(b.startedAt)) return null
-  if (!Array.isArray(b.answers) || b.answers.length === 0) return null
-  // `heartsLost` is NOT validated here, because like `wasCorrect` below it is no longer
-  // read. It used to be: range-checked, clamped, and written to `lessons.hearts_lost`.
-  //
-  // The defence for that was "a statistic, not a reward input — nothing is paid or
-  // withheld on it". Both halves were true and the conclusion did not follow.
-  // `docs/systems/xp-economy.md §7` reads heart-block rate per accuracy band to decide
-  // whether the mechanic is aimed the right way, and §3 stakes the entire design of
-  // hearts on that reading — so a caller who could choose the number could choose the
-  // evidence for the next balance change. Shape validation constrains a forged value to
-  // a plausible one, which is the harder kind to notice.
-  //
-  // `gradeLesson` derives it now, from the correctness the server itself decided and the
-  // memory record the server itself holds.
-  //
-  // A lesson longer than the documented maximum is a forged payload, not a session.
-  if (b.answers.length > 50) return null
-
-  for (const a of b.answers) {
-    if (typeof a !== 'object' || a === null) return null
-    const item = a as Record<string, unknown>
-    if (typeof item.factId !== 'string') return null
-    if (typeof item.templateId !== 'string') return null
-    // `wasCorrect` is deliberately NOT validated, because it is deliberately not
-    // read. The server decides correctness itself further down.
-    //
-    // `elapsedMs` and `answeredAt` are checked for shape here and CLAMPED below. Shape
-    // alone was never enough: `answeredAt` is the clock the scheduler runs on, and a
-    // client that could date an answer in the future could mint mastery. See
-    // _shared/submission-time.ts.
-    if (!isFiniteMs(item.elapsedMs)) return null
-    if (!isFiniteMs(item.answeredAt)) return null
-  }
-
-  return b as unknown as SubmitBody
-}
-
 async function handle(req: Request): Promise<Response> {
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405)
 
@@ -197,14 +182,21 @@ async function handle(req: Request): Promise<Response> {
 
   // XP already earned today, in the USER'S timezone — the soft cap is a daily
   // rule, and "today" is 23 or 25 hours long twice a year.
-  const [{ data: profile }, { data: streakRow }] = await Promise.all([
-    admin.from('profiles').select('timezone').eq('id', user.id).single(),
-    admin
-      .from('streaks')
-      .select('current, longest, last_active_date, freezes_held')
-      .eq('user_id', user.id)
-      .maybeSingle(),
-  ])
+  const [{ data: profile }, { data: streakRow }, { data: walletRow }, { data: achRow }] =
+    await Promise.all([
+      admin.from('profiles').select('timezone').eq('id', user.id).single(),
+      admin
+        .from('streaks')
+        .select('current, longest, last_active_date, freezes_held')
+        .eq('user_id', user.id)
+        .maybeSingle(),
+      // For `ach.level.climber`, which compares a LEVEL — so the total before this
+      // lesson, plus what this lesson is about to award, is the number the rule wants.
+      admin.from('wallets').select('xp_total').eq('user_id', user.id).maybeSingle(),
+      // The engine's counters. Absent for a user who has never finished a lesson, which
+      // `readProgress` reads as an empty map rather than as a failure.
+      admin.from('achievement_progress').select('progress').eq('user_id', user.id).maybeSingle(),
+    ])
 
   // A stored zone the app cannot read is a lesson nobody can submit: `Intl` throws a
   // RangeError on an unknown one, and `profiles.timezone` is a column its own owner can
@@ -343,6 +335,80 @@ async function handle(req: Request): Promise<Response> {
     ? streakMilestoneReward(outcome.current)
     : { xp: 0, coins: 0 }
 
+  // ── the daily quest ───────────────────────────────────────────────────────
+  //
+  // The reward the balance table has funded since the quest engine was written and
+  // nothing has ever paid. `applyQuestEvent` computes `xpAwarded`, the client drops it
+  // saying the server awards it, and this function had no idea quests existed —
+  // `QuestComplete` drew a "+50 XP" tile above a comment claiming it was already banked.
+  //
+  // The quest is composed on the device and cannot be recomposed here: it partitions
+  // facts by what was DUE at generation time, and the answers in this very submission
+  // have moved those dates. So the first submission of the day PINS it, and everything
+  // that pays is decided from the server's own tables — see the migration.
+  const questNow = Date.now()
+  const quest = await evaluateQuest(
+    admin,
+    user.id,
+    body.quest,
+    // `retimed.answers`, not `body.answers`: the correctness on those is this function's,
+    // decided from the vendored answer key.
+    retimed.answers,
+    { startedAt: retimed.startedAt, endedAt: questNow },
+    timeZone,
+    localMidnight,
+  )
+
+  // ── achievements ──────────────────────────────────────────────────────────
+  //
+  // The last reward in the balance table nothing paid. Evaluated with the SAME
+  // `evaluateAll` and the same catalogue the device runs — vendored, not reimplemented —
+  // over events this function decided rather than events it was told about.
+  //
+  // After the quest, because `daily_quest_completed` is one of them; before the write,
+  // because the write is where the tiers are banked and paid in the same transaction as
+  // the lesson that earned them.
+  const achievementsBefore = readProgress((achRow as { progress?: unknown } | null)?.progress)
+  const xpTotalAfter =
+    ((walletRow as { xp_total?: number } | null)?.xp_total ?? 0) +
+    result.xpAwarded +
+    milestone.xp
+
+  let achievementProgress = achievementsBefore
+  const achievementUnlocks: Unlock[] = []
+  const events = achievementEvents({
+    graded: retimed.answers,
+    masteryChanges: result.masteryChanges,
+    entityMastered,
+    overdueCleared: result.overdueCleared,
+    streak: streakChanged ? outcome.current : null,
+    accuracy: result.accuracy,
+    // Server-clamped, like everything else the session rules read. `ach.session.speedrun`
+    // asks for a perfect lesson under a minute, and a client-supplied duration would be a
+    // legendary tier for anyone who could edit a number.
+    durationMs: Math.max(0, Date.now() - retimed.startedAt),
+    questCompleted: quest?.allComplete === true && quest.bonusAlreadyPaid === false,
+    xpTotalAfter,
+    at: Date.now(),
+  }, CONTENT)
+  for (const event of events) {
+    const evaluated = evaluateAll(ACHIEVEMENTS, achievementProgress, event)
+    achievementProgress = evaluated.progress
+    achievementUnlocks.push(...evaluated.unlocked)
+  }
+
+  /**
+   * The regions the server credited, echoed so the device's own copy can agree.
+   *
+   * Read back off the event list rather than recomputed, so the two cannot drift: the
+   * client's optimistic map and the server's authoritative one advance on exactly the
+   * same members.
+   */
+  const regionsStarted = events
+    .filter((event) => event.name === 'region_started')
+    .map((event) => String(event.payload?.region ?? ''))
+    .filter((region) => region !== '')
+
   // ── persist, in ONE transaction ───────────────────────────────────────────
   //
   // This was five supabase-js calls — five transactions — and only the first one's error
@@ -400,6 +466,28 @@ async function handle(req: Request): Promise<Response> {
     p_hearts_lost: result.heartsLost,
     p_streak_xp: milestone.xp,
     p_streak_coins: milestone.coins,
+    // Null when this lesson carried no quest, which skips the whole block in the
+    // function. `p_quest_slots` is what the evidence COMPLETED, not what to pay for —
+    // `record_lesson` subtracts what it has already paid, under the same advisory lock
+    // as the insert, so two lessons finishing together cannot both pay a slot.
+    p_quest_date: quest?.date ?? null,
+    p_quest_slots: quest?.completedSlots ?? [],
+    p_quest_complete: quest?.allComplete ?? false,
+    // From `BALANCE`, like `p_max_per_hour`. The caller here is this function under the
+    // service role, not a device.
+    p_quest_task_xp: TASK_XP,
+    p_quest_bonus_xp: COMPLETION_BONUS,
+    p_quest_bonus_coins: BALANCE.coins.dailyQuest,
+    // The counters, as one blob, exactly as the device stores them.
+    p_achievement_progress: Object.fromEntries(achievementProgress),
+    // What the evaluation says was unlocked. NOT what to pay — the unique key on
+    // `achievement_unlocks` decides that, so a tier already banked inserts nothing and
+    // pays nothing however many times it is announced.
+    p_achievement_unlocks: achievementUnlocks.map((unlock) => ({
+      achievement_id: unlock.achievementId,
+      tier: unlock.tier,
+      ...tierReward(unlock.tier),
+    })),
   })
 
   // An error here means NOTHING was written — that is the point of the function — so the
@@ -462,12 +550,231 @@ async function handle(req: Request): Promise<Response> {
       milestoneXp: milestone.xp,
       milestoneCoins: milestone.coins,
     },
+    /**
+     * What the quest actually paid, so the summary can celebrate the real number.
+     *
+     * Zero is a normal answer and an informative one: it means every slot this lesson
+     * completed had already been paid for by an earlier lesson today, which is exactly
+     * what stops a five-slot quest paying five times over five lessons.
+     */
+    quest: {
+      xp: (recorded as { questXp?: number } | null)?.questXp ?? 0,
+      coins: (recorded as { questCoins?: number } | null)?.questCoins ?? 0,
+      slotsPaid: (recorded as { questSlotsPaid?: string[] } | null)?.questSlotsPaid ?? [],
+      bonusPaid: (recorded as { questBonusPaid?: boolean } | null)?.questBonusPaid ?? false,
+    },
+    /**
+     * The tiers this lesson banked, and what they paid.
+     *
+     * The SERVER's list, not the device's: the client evaluates its own copy for an
+     * immediate celebration, and this is the one that moved a balance. An empty list with
+     * a non-empty local one means the device was ahead of the truth, which is the same
+     * bargain every optimistic number here makes.
+     */
+    /** See `recordServerOutcome` — the device advances its own copy on these. */
+    regionsStarted,
+    achievements: {
+      xp: (recorded as { achievementXp?: number } | null)?.achievementXp ?? 0,
+      coins: (recorded as { achievementCoins?: number } | null)?.achievementCoins ?? 0,
+      unlocked:
+        (recorded as { achievementsPaid?: readonly { achievementId: string; tier: string }[] } | null)
+          ?.achievementsPaid ?? [],
+    },
     // Reported rather than swallowed, for the same reason `rejected` is: a spike in
     // either is the signal that a build is sending nonsense, and a number nobody
     // returns is a number nobody can graph.
     timingDiscarded: retimed.timingDiscarded,
     replayed: false,
   })
+}
+
+/**
+ * What the day's real evidence says the quest has completed.
+ *
+ * ## The division of labour
+ *
+ * The device composes the quest — it must, because a quest has to be playable on a plane
+ * and composing one needs the user's memory. The server pins the first composition it
+ * sees for a local day, and then decides everything that pays from `review_log` and
+ * `lessons`: its own tables, written by its own grader, from correctness it decided
+ * itself. The client chooses the questions; it gets no vote on the answers.
+ *
+ * ## Why this reads the day rather than this lesson
+ *
+ * A quest is a day's work and is normally finished across several lessons. Scoring only
+ * the current one would complete a slot in the rare case a single lesson covered it and
+ * never otherwise. Reading the day also makes the whole thing idempotent by construction:
+ * a replay recomputes the same completions, and `record_lesson` pays only for slots it
+ * has not already paid.
+ *
+ * The rows for THIS lesson are not in the tables yet — `record_lesson` writes them — so
+ * the answers just graded are folded in on top of what the day already holds.
+ *
+ * Returns null when there is nothing to score, which is the ordinary case for a review, a
+ * taster, or a client too old to send one.
+ */
+async function evaluateQuest(
+  admin: SupabaseClient,
+  userId: string,
+  quest: { date: string; tasks: QuestTask[] } | undefined,
+  /**
+   * The answers as THIS FUNCTION graded them, never the ones off the wire.
+   *
+   * The first version of this took `body` and read `answer.wasCorrect` from it, which is
+   * the client's field — the one the header of this file says is ignored because trusting
+   * it lets a modified client mint rewards. It would have been ignored for the lesson's
+   * XP and believed for the quest's.
+   */
+  graded: readonly { factId: string; wasCorrect: boolean }[],
+  /** Server-clamped, from `retimeLesson`. The `speed_round` goal is measured on it. */
+  lesson: { startedAt: number; endedAt: number },
+  timeZone: string,
+  localMidnight: Date,
+): Promise<{
+  date: string
+  completedSlots: string[]
+  allComplete: boolean
+  /**
+   * The pinned row had already paid the all-five bonus before this submission.
+   *
+   * Carried out for the achievement counter rather than for the award — `record_lesson`
+   * re-reads it under the lock to decide the payment. `ach.quest.regular` counts quests
+   * finished, and it must count the DAY the fifth slot lands, not every lesson after it.
+   */
+  bonusAlreadyPaid: boolean
+} | null> {
+  if (quest === undefined) return null
+
+  // The user's local date, decided here from `profiles.timezone` rather than taken from
+  // the payload: it is the primary key of the row that records what has been paid, and a
+  // caller who could choose it could collect a quest a day.
+  const date = new Intl.DateTimeFormat('en-CA', { timeZone }).format(new Date())
+
+  /**
+   * The device composed this for a different day, so it is not today's quest.
+   *
+   * A lesson that spans local midnight is submitted on the new day carrying the old
+   * day's five tasks. Pinning those would make the new day's quest unpayable for the
+   * rest of it — the pinned facts are yesterday's, and today's evidence will not name
+   * them. Skipping is the right answer: the next lesson pins the quest the user is
+   * actually looking at.
+   *
+   * A COMPARISON, never a use. The server still decides the date, from
+   * `profiles.timezone`, because the date is the primary key of the row recording what
+   * has been paid. The worst a client can do by lying here is have its own quest
+   * declined.
+   */
+  if (quest.date !== date) return null
+
+  const { data: pinned, error: pinError } = await admin.rpc('pin_daily_quest', {
+    p_user_id: userId,
+    p_date: date,
+    p_tasks: quest.tasks,
+  })
+  // A quest that could not be pinned is a quest nobody can be paid for. The lesson still
+  // records — a failed bonus must never cost somebody the lesson behind it.
+  if (pinError || !pinned) return null
+
+  const tasks = (pinned as { tasks?: QuestTask[] }).tasks
+  if (!Array.isArray(tasks) || tasks.length === 0) return null
+
+  // Every fact the pinned quest names. Bounded by the payload validator, and the query is
+  // filtered to them so a user with a long history still reads a small number of rows.
+  const wanted = [...new Set(tasks.flatMap((t) => t.factIds))]
+
+  const [{ data: dayReviews }, { data: dayLessons }] = await Promise.all([
+    wanted.length === 0
+      ? Promise.resolve({ data: [] as { fact_id: string }[] })
+      : admin
+          .from('review_log')
+          .select('fact_id')
+          .eq('user_id', userId)
+          .eq('was_correct', true)
+          .gte('created_at', localMidnight.toISOString())
+          .in('fact_id', wanted),
+    admin
+      .from('lessons')
+      .select('items, correct, started_at, completed_at')
+      .eq('user_id', userId)
+      .gte('completed_at', localMidnight.toISOString()),
+  ])
+
+  // Distinct, because a review slot asks for four FACTS and not four answers. `replayQuest`
+  // enforces that too; doing it here as well keeps the event list small.
+  const correctToday = new Set((dayReviews ?? []).map((r) => r.fact_id))
+  // This lesson's own rows are not written yet, so its answers are folded in on top —
+  // from the graded list, which is the one this function decided.
+  for (const answer of graded) {
+    if (answer.wasCorrect) correctToday.add(answer.factId)
+  }
+
+  const events: QuestEvent[] = [...correctToday].map((factId) => ({
+    type: 'fact_answered',
+    factId,
+    correct: true,
+  }))
+
+  // The `perform` slot asks about a LESSON rather than about facts, so every lesson
+  // finished today is replayed as one — including this one, which is not in the table.
+  for (const lesson of dayLessons ?? []) {
+    if (lesson.completed_at === null) continue
+    events.push({
+      type: 'lesson_completed',
+      accuracy: lesson.items === 0 ? 0 : lesson.correct / lesson.items,
+      durationMs: Math.max(0, Date.parse(lesson.completed_at) - Date.parse(lesson.started_at)),
+    })
+  }
+  // And this lesson, which has no row yet. Both numbers are the server's: the accuracy
+  // from the answers it graded, the duration from the timestamps it clamped.
+  events.push({
+    type: 'lesson_completed',
+    accuracy:
+      graded.length === 0 ? 0 : graded.filter((a) => a.wasCorrect).length / graded.length,
+    durationMs: Math.max(0, lesson.endedAt - lesson.startedAt),
+  })
+
+  const scored: DailyQuest = replayQuest(
+    { id: `${userId}:${date}`, date, tasks, complete: false, bonusClaimed: false },
+    events,
+  )
+
+  return {
+    date,
+    completedSlots: scored.tasks.filter((t) => t.complete).map((t) => t.slot),
+    allComplete: scored.tasks.every((t) => t.complete),
+    bonusAlreadyPaid: (pinned as { bonusPaid?: boolean }).bonusPaid === true,
+  }
+}
+
+
+/**
+ * The stored progress map, read back into the shape the engine wants.
+ *
+ * Shape-checked rather than cast, for the same reason the device checks its own copy: a
+ * row whose `value` came back as a string makes `"3" + 1` into `"31"` and awards a
+ * legendary tier on the fourth event. A bad row is dropped rather than the map — these
+ * are independent counters, and one malformed badge must not reset the other twenty-nine.
+ */
+function readProgress(stored: unknown): Map<string, AchievementProgress> {
+  const progress = new Map<string, AchievementProgress>()
+  if (typeof stored !== 'object' || stored === null || Array.isArray(stored)) return progress
+
+  for (const [id, row] of Object.entries(stored as Record<string, unknown>)) {
+    if (typeof row !== 'object' || row === null) continue
+    const candidate = row as AchievementProgress
+    if (typeof candidate.value !== 'number' || !Number.isFinite(candidate.value)) continue
+    if (candidate.seen !== undefined && !Array.isArray(candidate.seen)) continue
+    if (candidate.tier !== null && typeof candidate.tier !== 'string') continue
+    progress.set(id, { ...candidate, achievementId: id })
+  }
+  return progress
+}
+
+/** The tier rewards, from the balance table. Unknown tiers pay nothing rather than NaN. */
+function tierReward(tier: string): { xp: number; coins: number } {
+  const xp = (BALANCE.xp.achievementByTier as Record<string, number | undefined>)[tier]
+  const coins = (BALANCE.coins.achievementByTier as Record<string, number | undefined>)[tier]
+  return { xp: xp ?? 0, coins: coins ?? 0 }
 }
 
 /**

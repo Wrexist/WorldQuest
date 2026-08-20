@@ -41,7 +41,10 @@ import { factsStrengthened } from '@worldquest/engines'
 import type { GradeResult } from '@worldquest/engines'
 import { Art } from '../../components/Art.js'
 import { Flag } from '../../components/Flag.js'
-import { useT } from '../../lib/i18n.js'
+import { tContent, useT, type TranslationKey } from '../../lib/i18n.js'
+import { AchievementMedal } from '../achievements/AchievementMedal.js'
+import { achievementNameKey } from '../achievements/useAchievements.js'
+import type { PendingUnlock } from '../achievements/pending.js'
 
 /**
  * How a lesson ended, from the user's point of view rather than the machine's.
@@ -110,6 +113,7 @@ export function LessonSummary({
   result,
   practised = [],
   wasAbandoned,
+  unlocked = [],
   isOffline,
   onExit,
 }: {
@@ -125,6 +129,18 @@ export function LessonSummary({
   practised?: readonly PractisedCountry[]
   /** True when the user chose to stop rather than reaching the last question. */
   wasAbandoned: boolean
+  /**
+   * Achievements unlocked and not yet shown to anybody.
+   *
+   * Not only the ones this lesson earned. Three achievements are decided on the device
+   * and the rest by the SERVER, arriving through `recordServerOutcome` whenever the sync
+   * queue drains — which for a lesson finished in a tunnel is on the walk home with the
+   * app in the background, where no screen exists to celebrate anything. So unlocks are
+   * queued and shown at the end of the next lesson, which is where somebody is looking.
+   *
+   * Before this the entire reward loop for thirty achievements was an analytics event.
+   */
+  unlocked?: readonly PendingUnlock[]
   isOffline: boolean
   onExit: () => void
 }) {
@@ -266,6 +282,42 @@ export function LessonSummary({
           </>
         )}
 
+        {unlocked.length > 0 && (
+          // Above the practised flags, because a badge is the bigger event and the flags
+          // are context. Below the numbers, because the numbers are what the screen is
+          // for — a celebration that pushes the XP off a short phone has taken the
+          // headline away from the lesson to give it to a side effect.
+          <View style={styles.unlocked} testID="summary-unlocked">
+            <Text style={styles.practisedLabel} role="heading" aria-level={2}>
+              {t('lesson:summary.unlocked', { count: unlocked.length })}
+            </Text>
+            <View style={styles.medals}>
+              {unlocked.map((unlock) => (
+                <View key={`${unlock.achievementId}:${unlock.tier}`} style={styles.medal}>
+                  {/* The medal is the picture and the name is the fact. Grouped into one
+                      accessible element for the same reason `StatTile` is: a medal and a
+                      caption should read as one thing, not two fragments. */}
+                  <View
+                    accessibilityLabel={tContent(
+                      achievementNameKey(unlock.achievementId) as TranslationKey,
+                    )}
+                    style={styles.medalGroup}
+                  >
+                    <AchievementMedal
+                      achievementId={unlock.achievementId}
+                      tier={unlock.tier}
+                      size={UNLOCK_MEDAL}
+                    />
+                    <Text style={styles.medalName} numberOfLines={2} aria-hidden>
+                      {tContent(achievementNameKey(unlock.achievementId) as TranslationKey)}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+
         {practised.length > 0 && (
           <View style={styles.practised} testID="summary-practised">
             <Text style={styles.practisedLabel} role="heading" aria-level={2}>
@@ -300,6 +352,14 @@ export function LessonSummary({
     </View>
   )
 }
+
+/**
+ * The medal on the summary, smaller than on the achievements screen.
+ *
+ * That screen is a shelf and the medal is its subject; here it is one item in a row under
+ * a heading, beside an XP card that has to stay the headline.
+ */
+const UNLOCK_MEDAL = 64
 
 /**
  * One number and what it means.
@@ -389,6 +449,15 @@ const styles = StyleSheet.create({
   // so this one is on the caller to get right.
   practisedLabel: { ...text('overline'), color: colors.text.secondary },
   flags: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2], justifyContent: 'center' },
+
+  unlocked: { alignSelf: 'stretch', alignItems: 'center', gap: space[3], marginTop: space[2] },
+  medals: { flexDirection: 'row', flexWrap: 'wrap', gap: space[3], justifyContent: 'center' },
+  // A fixed width so two medals with names of very different lengths still sit on a grid
+  // rather than pushing each other around. Wide enough for two lines of `caption` at the
+  // 200 % the DoD requires, which is what `numberOfLines={2}` on the label is sized for.
+  medal: { width: UNLOCK_MEDAL + space[4] },
+  medalGroup: { alignItems: 'center', gap: space[1] },
+  medalName: { ...text('caption'), color: colors.text.primary, textAlign: 'center' },
 
   cta: { marginTop: space[2] },
   offline: {

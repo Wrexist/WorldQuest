@@ -42,6 +42,42 @@ for a bad migration is a **new** migration, written and reviewed like any other.
 for that: the fastest possible database rollback is as slow as writing a correct
 migration.
 
+### The quest-award migration, specifically
+
+`20260818100000_pay_daily_quest.sql` is the first one in this repo where the DEPLOY ORDER
+matters, so it is written down rather than left to be discovered.
+
+It adds `daily_quests`, adds `pin_daily_quest`, and **replaces `record_lesson` with a
+wider signature**, dropping the previous overload as the streak-milestone migration
+already established. The compatibility runs one way and not the other:
+
+- **Old function, new database: fine.** The six quest parameters all have defaults, and
+  supabase-js calls the RPC by NAME — so an edge function that does not know they exist
+  binds to the new definition and skips the whole quest block. Rule 1 holds.
+- **New function, old database: not fine.** PostgREST answers a call naming parameters
+  the function does not have with a `PGRST202`, which this endpoint reports as
+  `persist_failed` and a 500 — and the client's queue classifies a 5xx as retryable, so
+  every lesson submitted in that window burns five attempts and PARKS. Work the user
+  actually did, held until somebody presses retry in Settings.
+
+So: **apply the migration, then deploy `submit-lesson`.** Never the reverse. The same
+applies to `20260818090000_continue_lesson.sql` and `20260818110000_repair_streak.sql`,
+where the failure is milder — the client swallows a missing RPC and the purchase is
+simply not made, which shows up as a free continue and a repair button that does nothing.
+
+The undo is the easy kind, and no user data is at risk: `daily_quests` is a record of
+what has been PAID, and the payments themselves are rows in `xp_ledger` and `coin_ledger`
+like every other award. Dropping it would let one day's quest be paid a second time, so
+the undo is worth doing in the quiet hours rather than mid-day.
+
+```sql
+-- the undo, as a NEW migration — never by editing the landed file. `record_lesson` has
+-- to be restored to its previous body FIRST, or the deployed function calls a signature
+-- that no longer exists.
+drop function if exists public.pin_daily_quest(uuid, date, jsonb);
+drop table if exists public.daily_quests;
+```
+
 ### The league migration, specifically
 
 `20260813100000_create_leagues.sql` is add-only — three new tables, a view, a trigger and
@@ -150,7 +186,7 @@ One dependency named in the release checklist is still not built; the other reso
   gate code that was written to check it. New risky work should default to shipping
   behind a flag from now on, not because the checklist asks but because "we could not
   halt this" is a choice made at write time, not at incident time.
-- **No telemetry.** No Sentry DSN, no analytics backend, 18 of 28 events wired. Sentry
+- **No telemetry.** No Sentry DSN, no analytics backend, 32 of 44 events wired. `xp_reconciliation_failed` — named in step 1 above as one of the two signals that distinguish "our release" from "the internet" — now HAS a producer as of 2026-08-19, in `lib/sync.ts` where the server's answer meets the client's prediction. That closes half of step 1's dependency; the other half is a backend for the event to reach, which is the same missing thing as the crash reporter. Sentry
   was in fact built and then removed on 2026-08-09 to hold the 4 MiB bundle budget (see
   `docs/plan/cowork-handoff.md` §6) — so this is now "no telemetry, by a decision" where
   it was previously "no telemetry, not yet built". Step 1 is currently "wait for a user

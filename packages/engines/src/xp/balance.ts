@@ -46,6 +46,27 @@ export const BALANCE = {
     /** Paid only when the invitee completes 5 lessons across 3 days (anti-multi-account). */
     friendActivated: 100,
     streakMilestones: { 7: 50, 30: 200, 100: 500, 365: 1000 },
+    /**
+     * Paid by `record_lesson`, from an evaluation `submit-lesson` runs with the same
+     * engine and the same catalogue the device does.
+     *
+     * This note used to say NOT PAID BY ANYTHING, because it was not: an achievement
+     * unlocked, the summary showed the medal, and no XP and no coins moved. What made it
+     * real is what `achievements.md §5` asked for all along — the catalogue projected into
+     * the bundle, a progress row, and an unlock LEDGER whose primary key is (user,
+     * achievement, tier), so a tier already banked pays nothing however many times it is
+     * announced.
+     *
+     * What was deliberately not built is the shortcut: a `claim_achievement` endpoint at a
+     * tenth the work, which hands the client the decision the whole rule exists to take
+     * away.
+     *
+     * `engines:simulate` still does not model this income, which now UNDERSTATES the
+     * economy rather than describing a different one. The thirty achievements pay once
+     * each and mostly land in the first weeks; modelling them means modelling thirty
+     * distinct unlock curves, and a simulation that guessed at those would be a worse
+     * input to a balance decision than a known omission. Recorded in `xp-economy.md §5b`.
+     */
     achievementByTier: { bronze: 25, silver: 50, gold: 100, platinum: 250, legendary: 500 },
 
     /**
@@ -83,6 +104,7 @@ export const BALANCE = {
     dailyChallenge: 15,
     collectionComplete: 150,
     streakMilestones: { 7: 50, 30: 200, 100: 500 },
+    /** Paid alongside the XP above, in one ledger row per lesson rather than per tier. */
     achievementByTier: { bronze: 10, silver: 25, gold: 50, platinum: 100, legendary: 200 },
     leaguePodium: { 1: 300, 2: 200, 3: 100 },
   },

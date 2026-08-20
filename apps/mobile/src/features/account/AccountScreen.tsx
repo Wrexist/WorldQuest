@@ -38,10 +38,21 @@
  */
 
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
-import { Button, Card, colors, layout, radius, space, squircle, text } from '@worldquest/design'
+import {
+  Button,
+  Card,
+  colors,
+  layout,
+  ProgressBar,
+  radius,
+  space,
+  squircle,
+  text,
+} from '@worldquest/design'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { Art } from '../../components/Art.js'
-import { useT } from '../../lib/i18n.js'
+import { useT, type TranslationKey } from '../../lib/i18n.js'
+import { Icon } from '../../components/Icon.js'
 
 export type AccountMode = 'link' | 'signIn'
 
@@ -105,6 +116,46 @@ const CODE_LENGTH = 6
 
 const HERO = 140
 
+/**
+ * The picture on the form itself, which had none.
+ *
+ * This screen was a paragraph, a text field and a button on a bare canvas — 61 % of a
+ * 390-wide phone empty, the only screen the design harness flagged before it could
+ * measure properly, and the flow that protects everything the user has done. It looked
+ * like a debug page.
+ *
+ * Two poses, because the two modes are two different moments. `atlas/encouraging` is
+ * briefed as "leaning forward, offering an open hand — reassuring, patient, not
+ * pitying", which is the register of asking somebody for their address. `waving-back` is
+ * "greeting someone returning after a long time", which is what signing in on a new
+ * phone is. Neither is the celebration `Done` already uses.
+ *
+ * Smaller than `HERO`: the keyboard takes half the screen on this one, and the picture
+ * is the first thing that should give way.
+ */
+const FORM_ART = 96
+
+/** The tick beside each reassurance, at the size of the line it sits against. */
+const ASSURE_TICK = 18
+
+/**
+ * What linking an address actually gets you, as three lines rather than one paragraph.
+ *
+ * The old copy said all of this in a single 160-character sentence, and a wall of
+ * promises reads as a sales pitch where a short list reads as facts. Nothing new is
+ * claimed: these are the same two promises the paragraph made — your progress travels,
+ * and the address is used to sign you in and for nothing else — separated so each can be
+ * read on its own.
+ */
+const ASSURANCES: readonly TranslationKey[] = [
+  'account:link.assure.travels',
+  'account:link.assure.anyPhone',
+  'account:link.assure.onlyUse',
+]
+
+/** Address, then code. Two, and saying so is most of the reassurance. */
+const STEPS = 2
+
 export function AccountScreen({
   mode,
   stage,
@@ -150,9 +201,34 @@ export function AccountScreen({
             <Done mode={mode} onDone={onDone} />
           ) : stage === 'email' ? (
             <>
-              <Text style={styles.body}>
+              <Steps stage="email" />
+              {/* Reassuring, patient, not pitying — and on a screen that had no picture
+                  at all. See `FORM_ART`. Decorative: everything it says, the lines below
+                  say in words. */}
+              <View style={styles.formArt}>
+                <Art
+                  name={mode === 'link' ? 'atlas/encouraging' : 'atlas/waving-back'}
+                  size={FORM_ART}
+                />
+              </View>
+              <Text style={styles.lead}>
                 {t(mode === 'link' ? 'account:link.body' : 'account:signIn.body')}
               </Text>
+
+              {/* Only on the link path. Sign-in is somebody who has already decided —
+                  they are here BECAUSE they have an account — so three reasons to have
+                  one is an argument nobody asked for. */}
+              {mode === 'link' && (
+                <View style={styles.assurances}>
+                  {ASSURANCES.map((key) => (
+                    <View key={key} style={styles.assureRow}>
+                      {/* Decorative — the phrase beside it says the same thing. */}
+                      <Icon name="check" size={ASSURE_TICK} color={colors.status.progress} />
+                      <Text style={styles.assureText}>{t(key)}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
 
               {/* The trap, named before it is sprung. Only on the sign-in path, and only
                   when there is something here to strand — a warning that appears for
@@ -208,6 +284,7 @@ export function AccountScreen({
             </>
           ) : (
             <>
+              <Steps stage="code" />
               {/* Naming the address is what makes a typo findable. "We sent a code" over
                   a silent inbox is unresolvable; "we sent a code to jon@exmaple.com" is
                   solved by the user in one glance. */}
@@ -254,6 +331,31 @@ export function AccountScreen({
 }
 
 /**
+ * Address, then code — and saying which of the two you are on.
+ *
+ * A form that does not say how long it is feels longer than it is, and this one is two
+ * fields for something a person is already slightly wary of doing. `ProgressBar` rather
+ * than a second convention: onboarding already puts a bar under its header for exactly
+ * this, and the whole point of a design system is that a user meets the same thing twice.
+ *
+ * `showCount` stays on, as it is everywhere else — "1 / 2" over a half-filled bar is the
+ * same fact twice, and that is the point: the bar says how far and the fraction says how
+ * many, and "how many" is the reassuring half on a flow somebody is wary of starting.
+ * The spoken name is a sentence rather than a fraction, because "1 slash 2" is not one.
+ */
+function Steps({ stage }: { readonly stage: 'email' | 'code' }) {
+  const t = useT()
+  const current = stage === 'email' ? 1 : STEPS
+  return (
+    <ProgressBar
+      current={current}
+      total={STEPS}
+      accessibilityLabel={t('account:step', { current, total: STEPS })}
+    />
+  )
+}
+
+/**
  * The end of it.
  *
  * Says what is now true rather than "Success": the whole reason a person went through
@@ -279,10 +381,29 @@ function Done({ mode, onDone }: { readonly mode: AccountMode; readonly onDone: (
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg.canvas },
+  /**
+   * No `backgroundColor`.
+   *
+   * It painted `bg.canvas` flat over the root gradient, which `ScreenBackground`'s own
+   * header calls out as the thing that made the token unreachable — "a flat fill on top
+   * of a gradient is just a flat fill". This screen and League were the two stragglers,
+   * and it is why they read as flat black beside Home's atmosphere.
+   */
+  screen: { flex: 1 },
   fill: { flex: 1 },
   content: { padding: space[4], gap: space[4] },
   body: { ...text('body'), color: colors.text.secondary },
+  // Centred, unlike `body`. It sits under a centred picture and above a centred list,
+  // and a left-aligned sentence between them reads as a stray paragraph.
+  lead: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
+
+  formArt: { alignItems: 'center' },
+  // `alignSelf: 'center'`, so the block is centred while its lines stay left-aligned
+  // against each other — three centred phrases of different lengths make a ragged
+  // diamond, which is the shape of a poem rather than of a list of facts.
+  assurances: { alignSelf: 'center', gap: space[2] },
+  assureRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  assureText: { ...text('body'), color: colors.text.secondary, flexShrink: 1 },
 
   field: {
     ...text('body'),

@@ -100,6 +100,38 @@ export type SubmitLessonRequest = {
   /** Statistic, not a reward input — see the note in `apps/mobile/src/lib/sync.ts`. */
   heartsLost?: number
   clientVersion?: string
+  /**
+   * Today's quest as this device composed it, so the server can pay for it.
+   *
+   * A proposal rather than a claim, and the distinction is the whole design. The quest is
+   * composed on the device because it has to be playable offline, and the server cannot
+   * recompute it — generation partitions facts by what was DUE at that moment, and the
+   * answers in this very submission have moved those dates. So the first submission of a
+   * local day pins these tasks and every later one is scored against the pinned copy.
+   *
+   * Nothing here says what anything is WORTH, and nothing here says what was done. The
+   * server reads its own `review_log` and `lessons` for that.
+   */
+  quest?: {
+    /**
+     * The local date the DEVICE composed this quest for.
+     *
+     * Not the date anything is recorded under — the server decides that from
+     * `profiles.timezone`, because the date is the primary key of the row saying what has
+     * been paid and a caller who could choose it could collect a quest a day. This is a
+     * MATCH check: a lesson that spans local midnight is submitted on a new day carrying
+     * the old day's five tasks, and pinning those would make the new day's quest
+     * unpayable. The two disagreeing means "skip it, the next lesson will pin the right
+     * one", which is the only thing a client can cause here.
+     */
+    date: string
+    tasks: readonly {
+      slot: string
+      target: number
+      factIds: readonly string[]
+      goal?: string
+    }[]
+  }
 }
 
 export type SubmitLessonResponse = {
@@ -157,6 +189,42 @@ export type SubmitLessonResponse = {
     freezeUsed: boolean
     reset: boolean
   }
+  /**
+   * What the daily quest actually paid, decided and recorded server-side.
+   *
+   * Optional because a replayed submission returns the original lesson row without
+   * re-running the quest, and because a client too old to send a quest gets none back.
+   * Zero is a normal answer: it means every slot this lesson completed had already been
+   * paid for earlier today, which is what stops one quest paying five times.
+   */
+  quest?: {
+    xp: number
+    coins: number
+    slotsPaid: readonly string[]
+    bonusPaid: boolean
+  }
+  /**
+   * The achievement tiers this lesson actually banked, and what they paid.
+   *
+   * The SERVER's list. The device evaluates its own copy for an immediate celebration —
+   * that is the optimistic half, exactly like the XP on the summary — and this is the one
+   * that moved a balance. `unlocked` is empty when every tier announced had already been
+   * banked, which is the normal case for a replay.
+   */
+  achievements?: {
+    xp: number
+    coins: number
+    unlocked: readonly { achievementId: string; tier: string }[]
+  }
+  /**
+   * Continents this lesson earned something in.
+   *
+   * `ach.explorer.continents` used to count continent PAGES opened, which a server cannot
+   * see and six taps completed. It counts regions answered correctly in now, and the
+   * server sends back which ones so the device's optimistic copy advances on the same
+   * members rather than on a rule of its own.
+   */
+  regionsStarted?: readonly string[]
   replayed: boolean
 }
 
@@ -343,6 +411,67 @@ export async function buyStreakFreeze(client: WorldQuestClient): Promise<FreezeP
   const { data, error } = await client.rpc('purchase_freeze', {})
   if (error) throw error
   return (data ?? { status: 'unauthorized' }) as FreezePurchase
+}
+
+export type StreakRepair =
+  | { readonly status: 'repaired'; readonly spent: number; readonly current: number; readonly coins: number }
+  | { readonly status: 'cooldown'; readonly availableInDays: number }
+  | {
+      readonly status:
+        | 'insufficient_funds'
+        | 'not_for_sale'
+        | 'no_streak'
+        | 'not_broken'
+        | 'nothing_to_restore'
+        | 'window_expired'
+        | 'unauthorized'
+    }
+
+/**
+ * Buy a broken streak back.
+ *
+ * Takes NOTHING — not the length to restore, not the price, not the date. `StreakScreen`
+ * has a `restoreTo` prop so the button can say "restore your 214-day streak"; sending it
+ * would let a modified client name any number and buy it for 600 coins, which is a
+ * leaderboard entry at cosmetic prices. The server reads `streaks.longest`.
+ *
+ * Every refusal is a STATUS rather than an error, because each one needs different words:
+ * "the window closed yesterday" and "you can do this again in 12 days" are different
+ * facts, and a generic failure invites the user to keep tapping.
+ */
+export async function repairStreak(client: WorldQuestClient): Promise<StreakRepair> {
+  // No second argument: the function takes none, and the generated type for a
+  // zero-argument RPC is `never` — `{}` is not assignable to it. `purchase_freeze` above
+  // passes `{}` because it has an ignored `p_price` parameter; this one has nothing to
+  // ignore, and adding a parameter so the call site could look the same would be a
+  // signature shaped by a type error.
+  const { data, error } = await client.rpc('repair_streak')
+  if (error) throw error
+  return (data ?? { status: 'unauthorized' }) as StreakRepair
+}
+
+export type ContinuePurchase =
+  | { readonly status: 'purchased'; readonly spent: number; readonly coins: number }
+  | { readonly status: 'already_paid'; readonly coins: number }
+  | { readonly status: 'insufficient_funds' | 'not_for_sale' | 'unauthorized' }
+
+/**
+ * Pay to carry on after running out of hearts mid-lesson.
+ *
+ * `continueId` is a UUID the client mints per OFFER, not per lesson: a lesson can run
+ * out of hearts more than once, so keying on the lesson would classify a genuine second
+ * continue as a replay and hand it over free. Per-offer, a double-tap is a replay and a
+ * second continue is not.
+ *
+ * The price is `shop_items`', not the caller's, exactly as for a cosmetic or a freeze.
+ */
+export async function buyLessonContinue(
+  client: WorldQuestClient,
+  continueId: string,
+): Promise<ContinuePurchase> {
+  const { data, error } = await client.rpc('continue_lesson', { p_continue_id: continueId })
+  if (error) throw error
+  return (data ?? { status: 'unauthorized' }) as ContinuePurchase
 }
 
 // ── accounts ────────────────────────────────────────────────────────────────

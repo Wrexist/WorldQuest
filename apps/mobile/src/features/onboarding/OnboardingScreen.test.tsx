@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { CHILD_AGE, OnboardingScreen } from './OnboardingScreen.js'
+import { clearAll, writeJson } from '../../lib/storage.js'
+import { readOnboarding } from './useOnboarding.js'
 
 /** 2026 keeps the arithmetic obvious; the component never reads a clock itself. */
 const YEAR = 2026
@@ -454,5 +456,31 @@ describe('the third slide promises what the app actually ships', () => {
     getStarted()
     answer('English')
     expect(container.textContent).not.toMatch(/195/)
+  })
+})
+
+describe('readOnboarding — the flag that decides a privacy question', () => {
+  const KEY = 'onboarding.v1'
+
+  beforeEach(() => clearAll())
+
+  it('reads a real row', () => {
+    writeJson(KEY, { completed: true, birthYear: 2014, isChild: true })
+    expect(readOnboarding()).toEqual({ completed: true, birthYear: 2014, isChild: true })
+  })
+
+  it.each([
+    ['a non-boolean isChild', { completed: true, isChild: 'false' }],
+    ['a non-boolean completed', { completed: 'yes' }],
+    ['a birth year that is not a year', { completed: true, birthYear: 'nineteen' }],
+    ['not an object at all', 5],
+  ])('runs the age gate again rather than guessing, for %s', (_label, stored) => {
+    // `_layout` does `if (completed && isChild !== undefined) setChildAccount(isChild)`,
+    // and a cast let a non-boolean through that gate. The failure direction happened to
+    // be safe — `track()` tests `!== false` — but "happens to fail safe" is not the same
+    // claim as "cannot be wrong", and this decides whether a ten-year-old's device talks
+    // to a third party. Asking once more is the correct cost.
+    writeJson(KEY, stored)
+    expect(readOnboarding()).toEqual({ completed: false })
   })
 })

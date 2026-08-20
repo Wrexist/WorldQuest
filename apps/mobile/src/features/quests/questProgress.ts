@@ -23,8 +23,15 @@
  * ## The XP is still the server's
  *
  * `applyQuestEvent` returns `xpAwarded` and this deliberately drops it. The client
- * renders which tasks are done; the server re-derives the same quest when it grades
- * the lesson and awards the XP there (ADR 0006). Nothing here writes a balance.
+ * renders which tasks are done; the server pays (ADR 0006). Nothing here writes a balance.
+ *
+ * "The server re-derives the same quest when it grades the lesson" is what this said, and
+ * it was wrong twice over: the server had no quest logic at all, and it could not have
+ * re-derived one if it wanted to — generation partitions facts by what was DUE at that
+ * moment, and the answers in the submission have already moved those dates. What happens
+ * instead is that the quest goes UP with the lesson, the first submission of a local day
+ * pins it, and the award is decided from `review_log` and `lessons`. See
+ * `supabase/migrations/20260818100000_pay_daily_quest.sql`.
  */
 
 import { useSyncExternalStore } from 'react'
@@ -35,7 +42,7 @@ import {
   type QuestTask,
   type Slot,
 } from '@worldquest/engines'
-import { readJson, writeJson } from '../../lib/storage.js'
+import { isNumberRecord, readJson, writeJson } from '../../lib/storage.js'
 
 const KEY = 'quest.progress.v1'
 
@@ -52,13 +59,24 @@ const listeners = new Set<() => void>()
 
 const empty = (date: string): Stored => ({ date, done: {}, bonusClaimed: false })
 
+/**
+ * `date` was checked and `done` was not, which is the half that gets indexed.
+ *
+ * `withStoredProgress` reads `stored.done[task.slot]` as soon as the stored date matches
+ * today — so a row whose `done` is missing or is not an object threw a TypeError while
+ * RENDERING Home and Quests, with no way out but a reinstall. Checking one field of a
+ * record and casting the rest is the shape of most of these bugs.
+ */
+const isStored = (value: unknown): boolean =>
+  typeof value === 'object' &&
+  value !== null &&
+  typeof (value as Stored).date === 'string' &&
+  isNumberRecord((value as Stored).done) &&
+  typeof (value as Stored).bonusClaimed === 'boolean'
+
 const read = (): Stored => {
   if (snapshot !== null) return snapshot
-  const stored = readJson<Stored>(KEY)
-  snapshot =
-    stored !== null && typeof stored === 'object' && typeof stored.date === 'string'
-      ? stored
-      : empty('')
+  snapshot = readJson<Stored>(KEY, isStored) ?? empty('')
   return snapshot
 }
 

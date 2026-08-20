@@ -22,7 +22,7 @@ import {
   squircle,
   text,
 } from '@worldquest/design'
-import { deriveRating, lessonLength } from '@worldquest/engines'
+import { canRevive, deriveRating, lessonLength } from '@worldquest/engines'
 import type { LessonFocus } from '@worldquest/engines'
 import type { ContentIndex, GradeResult, LessonState, Question } from '@worldquest/engines'
 import { Art } from '../../components/Art.js'
@@ -32,11 +32,14 @@ import { useLesson } from './hooks/useLesson.js'
 import { LessonSummary, type PractisedCountry } from './LessonSummary.js'
 import { SPEED_SECONDS } from './modes.js'
 import { OutOfHearts } from './OutOfHearts.js'
+import { payForContinue } from './continuePurchase.js'
 import { Paused } from './Paused.js'
 import { recordPace, useItemPace } from './usePace.js'
+import { recordAccuracy, recentAccuracy } from './useAccuracy.js'
 import { hapticCelebrate, hapticCorrect, hapticWrong } from '../../lib/haptics.js'
 import { soundCorrect, soundLevelUp, soundWrong } from '../../lib/sound.js'
 import { recordLessonForAchievements, recordQuestCompleted } from '../achievements/progress.js'
+import { drainUnlocks, queueUnlocks, type PendingUnlock } from '../achievements/pending.js'
 import { todaysQuest } from '../quests/useDailyQuest.js'
 import { recordQuestEvent } from '../quests/questProgress.js'
 import { useContent } from '../../lib/content.js'
@@ -62,6 +65,16 @@ type ScreenState = 'loading' | 'error' | 'empty' | 'ready'
  * loudly, in the place someone is looking, rather than by crashing a lesson.
  */
 const BADGES = ['A', 'B', 'C', 'D'] as const
+
+/**
+ * The two phases that put the summary on screen.
+ *
+ * `isFinished` in the engine answers the same question, and is not imported here because
+ * it takes the whole state — this is used in a dependency array, where passing the state
+ * object would re-run the effect on every answer.
+ */
+const isFinishedPhase = (phase: LessonState['phase']): boolean =>
+  phase === 'summary' || phase === 'abandoned'
 
 /**
  * How many right in a row before the feedback is allowed to call it a roll.
@@ -381,6 +394,21 @@ export function LessonScreen({
   }, [status, index, itemMs, focus, length])
 
   const handleComplete = useCallback((state: LessonState, optimistic: GradeResult) => {
+    /**
+     * Today's quest, composed once and used twice.
+     *
+     * It goes UP with the submission as well as advancing the local copy below, because
+     * the reward is the server's to pay and the server cannot compose the quest itself:
+     * generation partitions facts by what was due at that moment, and these very answers
+     * have moved those dates. The first submission of a local day pins these five tasks
+     * server-side and everything that pays is decided from `review_log` and `lessons`.
+     *
+     * `memory` is the pre-lesson memory, which is exactly what the screen composed from —
+     * so what is sent is the quest the user was actually shown.
+     */
+    const quest =
+      index === null ? null : todaysQuest(index.index, memory, Date.now(), recentAccuracy())
+
     // Enqueue, never await. A lesson finishing must not depend on the network —
     // the queue replays it whenever connectivity returns.
     enqueueLesson({
@@ -389,6 +417,25 @@ export function LessonScreen({
       startedAt: state.startedAt ?? Date.now(),
       answers: state.answers,
       heartsLost: state.heartsLost,
+      ...(quest !== null
+        ? {
+            quest: {
+              // The day the device composed it for. The server decides which day to
+              // RECORD under and only compares this — a lesson that spans local midnight
+              // arrives on a new day carrying the old day's tasks, and pinning those
+              // would make the new day's quest unpayable.
+              date: quest.date,
+              tasks: quest.tasks.map((task) => ({
+                slot: task.slot,
+                target: task.target,
+                factIds: task.factIds,
+                // `exactOptionalPropertyTypes` — `goal` is only on the perform slot, and
+                // spreading an explicit `undefined` is not the same as omitting it.
+                ...(task.goal !== undefined ? { goal: task.goal } : {}),
+              })),
+            },
+          }
+        : {}),
     })
     // Local, immediate, and independent of the queue. The weekly chart on Profile
     // must be right the moment the lesson ends — waiting for the server round trip
@@ -423,16 +470,26 @@ export function LessonScreen({
     soundLevelUp()
     // The user's pace, from the answers just given. Sizes every later lesson.
     recordPace(state.answers)
+    // And how well they did, which scales the quest's fifth slot. Recorded AFTER the
+    // quest above was composed, deliberately: `recentAccuracy` excludes today so the
+    // figure cannot move mid-day, and taking the sample before composing would not
+    // change that but would make the ordering look like it mattered when it does not.
+    recordAccuracy(state.answers)
 
     // Achievements, evaluated on device. Optimistic like the XP above — the server
     // is still the authority on the coins an unlock pays out (ADR 0006). Without
     // this the achievements screen could never show a single unlock.
     const durationMs = Date.now() - (state.startedAt ?? Date.now())
-    for (const unlock of recordLessonForAchievements({
+    const unlocked = recordLessonForAchievements({
       accuracy: optimistic.accuracy,
       durationMs,
       at: Date.now(),
-    })) {
+    })
+    // Queued rather than announced. Until this line an unlock produced an analytics event
+    // and nothing a user could see — the whole reward loop for thirty achievements was a
+    // row in a dashboard. The summary below drains the queue.
+    queueUnlocks(unlocked.map((u) => ({ achievementId: u.achievementId, tier: u.tier })))
+    for (const unlock of unlocked) {
       // `days_to_unlock` is not sent. We would have to know when the user started,
       // and nothing records that — a number derived from "first lesson we happen to
       // have logged locally" would read as install-to-unlock and be wrong for every
@@ -440,12 +497,9 @@ export function LessonScreen({
       track('achievement_unlocked', { achievement_id: unlock.achievementId, tier: unlock.tier })
     }
 
-    // Today's quest, advanced. Regenerated rather than held: it is deterministic per
-    // (user, day), and a second copy of the seed logic would mean the screen showed
-    // one quest while the lesson ticked another.
-    if (index !== null) {
-      const quest = todaysQuest(index.index, memory)
-
+    // Today's quest, advanced locally so the screen moves in the same frame. The server
+    // decides what it PAYS; this is the prediction, like the XP above.
+    if (quest !== null) {
       // The answers first, because that is the order they happened in, and then the
       // lesson. Either path can be the one that finishes the quest — the last
       // outstanding requirement is often a fact answer, and that loop's result used to
@@ -540,6 +594,23 @@ export function LessonScreen({
   }, [lesson.state.phase, revealOptions])
 
   /**
+   * The badges to celebrate, taken once when the lesson ends.
+   *
+   * `drainUnlocks` clears the queue, so it has to run in an effect and land in state: a
+   * drain from the render body would empty the queue on a render React is allowed to
+   * throw away, and StrictMode would do it twice — the medals would be gone before
+   * anything drew them. The same rule `useLesson`'s completion effect exists for.
+   *
+   * Whatever is waiting, not only what this lesson earned: an unlock decided by the server
+   * during a background flush has no screen to appear on, and this is the next one.
+   */
+  const [unlockedToShow, setUnlockedToShow] = useState<readonly PendingUnlock[]>([])
+  useEffect(() => {
+    if (!isFinishedPhase(lesson.state.phase)) return
+    setUnlockedToShow((shown) => (shown.length > 0 ? shown : drainUnlocks()))
+  }, [lesson.state.phase])
+
+  /**
    * Watch this number. If it is high the mechanic is too punishing — which is the
    * whole reason the balance table caps hearts per lesson rather than per day.
    *
@@ -557,7 +628,7 @@ export function LessonScreen({
     if (questions.length === 0) return setScreen('empty')
     setScreen('ready')
     if (lesson.state.phase === 'idle') {
-      lesson.start(makeLessonId())
+      lesson.start(makeUuid())
       track('lesson_started', {
         lesson_id: 'pending',
         kind: 'lesson',
@@ -582,6 +653,7 @@ export function LessonScreen({
         // Running out of hearts is NOT one of them — the machine sends that to
         // `summary`, because the lesson ended rather than the user leaving it.
         wasAbandoned={lesson.state.phase === 'abandoned'}
+        unlocked={unlockedToShow}
         isOffline={isOffline}
         onExit={() =>
           onExit({
@@ -928,7 +1000,21 @@ export function LessonScreen({
           {lesson.state.outOfHearts ? (
             <OutOfHearts
               coins={coins}
-              onRevive={lesson.revive}
+              // False on the last item: `REVIVE` resumes at the NEXT question, and there
+              // is not one. The machine sends that case to the summary rather than
+              // presenting an index past the end, and this stops the offer being made
+              // for something already over.
+              canRevive={canRevive(lesson.state)}
+              offline={isOffline}
+              onRevive={() => {
+                // Paid FIRST, then resumed — the reverse of `useShop.buy()`, and for the
+                // opposite reason. A cosmetic that is owned but unpaid is recoverable on
+                // the next reconcile; a continue is consumed the instant it is taken and
+                // nothing can correct it afterwards. The call does not block the resume:
+                // it is fire-and-forget, so the next question still arrives in this frame.
+                void payForContinue(makeUuid())
+                lesson.revive()
+              }}
               onFinish={() => {
                 track('lesson_abandoned', {
                   lesson_id: lesson.state.lessonId,
@@ -1171,8 +1257,15 @@ function optionState(
 const chosenLabel = (q: Question, id: string | null | undefined): string =>
   q.options.find((o) => o.id === id)?.label ?? ''
 
-const makeLessonId = (): string =>
-  // Client-generated; doubles as the server's idempotency key.
+/**
+ * A v4 UUID, client-side.
+ *
+ * Two callers, both of them idempotency keys the server dedupes on: the lesson id, and
+ * the per-offer id behind a paid continue. Named for the shape rather than for the first
+ * caller — the second one is not a lesson, and a lesson-named factory minting a purchase
+ * key reads as a copy-paste rather than as a decision.
+ */
+const makeUuid = (): string =>
   'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0
     return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16)
