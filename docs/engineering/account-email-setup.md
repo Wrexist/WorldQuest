@@ -4,9 +4,10 @@ Decision prepared 13 September 2026. No domain or mailbox has been created yet.
 
 Use `learnworldquest.com`, with `accounts@learnworldquest.com` for verification
 and `support@learnworldquest.com` for account help. The logged-in Cloudflare
-registrar quoted $10.46 for one year and $10.46/year renewal. Registration is
-pending approval for a first-year total up to $15 including tax, with no add-ons.
-Check the final checkout amount and registrant details before purchase.
+registrar quoted $10.46 for one year and $10.46/year renewal. The owner explicitly
+deferred the purchase and asked development to continue with synthetic delivery.
+Do not register a domain or enable paid email services under the earlier proposal.
+Revisit real delivery when the owner resumes domain setup.
 
 For low-volume testing, prefer Resend Free for transactional delivery and
 Cloudflare Email Routing for inbound support forwarding. Resend currently allows

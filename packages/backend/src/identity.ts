@@ -1,6 +1,7 @@
 import { ApiError } from './contracts'
 import { hashToken, newToken, SESSION_MS } from './auth'
 import type { Challenge } from './email-challenges'
+import { DELETION_RECEIPT_MS } from './deletion-receipts'
 
 /** Commit identity ownership and the new session together, after mailbox proof. */
 export async function finishIdentity(db: D1Database, c: Challenge, subject: string, now: number) {
@@ -47,6 +48,8 @@ export async function deleteAccount(db: D1Database, owner: string, session: stri
     .bind(guard, session, owner, now, owner, c?.id ?? '', owner, session, now, owner)
   await db.batch([
     checks,
+    q('INSERT INTO deletion_receipts(token_hash,challenge_id,expires_at) VALUES (?,?,?)')
+      .bind(session, c?.id ?? null, now + DELETION_RECEIPT_MS),
     q(`DELETE FROM auth_verification WHERE identifier IN (SELECT id FROM email_challenges WHERE account_id=?
       OR email IN (SELECT u.email FROM auth_user u JOIN identities i ON i.subject_id=u.id WHERE i.account_id=?))`).bind(owner, owner),
     q(`DELETE FROM auth_user WHERE email IN (SELECT email FROM email_challenges WHERE account_id=?)

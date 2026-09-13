@@ -3,6 +3,8 @@ import { build } from 'esbuild'
 import { readdirSync, readFileSync } from 'node:fs'
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare'
 import type { VerificationMail } from './src/email-provider'
+import { pruneDeletionReceipts } from './src/deletion-receipts'
+import { createD1AuthClient, type AuthFetch } from '../api/src/d1-auth'
 
 type Session = { userId: string; token: string; expiresAt: number }
 let script: string, mf: Miniflare, db: D1Database
@@ -159,6 +161,7 @@ describe('D1 account gateway with real Better Auth and synthetic delivery', () =
     expect((await call('/v1/account', s.token)).status).toBe(200)
     expect((await db.prepare('SELECT * FROM identities').all()).results).toHaveLength(1)
     expect((await db.prepare('SELECT * FROM auth_user').all()).results).toHaveLength(1)
+    expect((await db.prepare('SELECT * FROM deletion_receipts').all()).results).toHaveLength(0)
     await db.prepare('DROP TRIGGER fail_delete').run()
     expect((await verify(s, id, code)).body).toEqual({ deleted: true })
   })
@@ -177,5 +180,69 @@ describe('D1 account gateway with real Better Auth and synthetic delivery', () =
     for (const table of ['auth_user','auth_verification','email_challenges','auth_budgets']) {
       expect((await db.prepare(`SELECT * FROM ${table}`).all()).results).toHaveLength(0)
     }
+  })
+  it('confirms a lost guest deletion response only to the deleting session', async () => {
+    const s = await guest(), other = await guest()
+    expect((await call('/v1/account/delete', s.token, {})).body).toEqual({ deleted: true })
+    expect(await call('/v1/account/delete', s.token, {})).toEqual({ status: 200, body: { deleted: true } })
+    expect((await call('/v1/account', s.token)).status).toBe(401)
+    expect((await call('/v1/account', other.token)).body.userId).toBe(other.userId)
+    expect((await call('/v1/account/delete', 'f'.repeat(64), {})).status).toBe(401)
+    expect((await call('/v1/auth/email/verify', s.token, { challengeId: 'e'.repeat(64), code: '12345678' })).status).toBe(401)
+    const records = (await db.prepare('SELECT * FROM deletion_receipts').all()).results
+    expect(records).toHaveLength(1)
+    expect(JSON.stringify(records)).not.toContain(s.token)
+    expect(JSON.stringify(records)).not.toContain(s.userId)
+    await db.prepare('UPDATE deletion_receipts SET expires_at=0').run()
+    expect((await call('/v1/account/delete', s.token, {})).status).toBe(401)
+    await pruneDeletionReceipts(db, Date.now())
+    expect((await db.prepare('SELECT * FROM deletion_receipts').all()).results).toHaveLength(0)
+  })
+  it('recovers a lost linked-deletion response after client restart against real D1', async () => {
+    const values = new Map<string, string>()
+    let loseDeletionResponse = true
+    const transport: AuthFetch = async (url, init) => {
+      const token = new Headers(init.headers).get('Authorization')?.slice(7)
+      const input: unknown = typeof init.body === 'string' ? JSON.parse(init.body) : undefined
+      const r = await call(new URL(url).pathname, token, input)
+      if (r.body.deleted === true && loseDeletionResponse) {
+        loseDeletionResponse = false
+        throw new Error('response lost after committed deletion')
+      }
+      return { status: r.status, ok: r.status >= 200 && r.status < 300, json: async () => r.body }
+    }
+    const client = () => createD1AuthClient({ baseURL: 'https://test.invalid', fetch: transport,
+      storage: { getItem: async key => values.get(key) ?? null, setItem: async (key, value) => { values.set(key, value) }, removeItem: async key => { values.delete(key) } },
+      clearCredentials: async () => { values.clear() } })
+    const a = client()
+    await a.startGuest(); await a.recordAudience(2000)
+    await a.requestEmail('learner@example.invalid', 'link', 'sv'); await a.verifyEmail(mail.at(-1)!.code)
+    const linked = await a.restore()
+    const challenge = await a.requestEmail('learner@example.invalid', 'delete', 'en'), code = mail.at(-1)!.code
+    await expect(a.verifyEmail(code)).rejects.toThrow('response lost')
+    expect(await client().restore()).toEqual(linked)
+    expect((await db.prepare('SELECT * FROM accounts').all()).results).toHaveLength(0)
+    expect((await call('/v1/account/delete', linked!.token, {})).status).toBe(401)
+    expect((await call('/v1/auth/email/verify', linked!.token, { challengeId: 'f'.repeat(64), code })).status).toBe(401)
+    expect((await call('/v1/auth/email/verify', 'f'.repeat(64), { challengeId: challenge.challengeId, code })).status).toBe(401)
+    expect(await client().verifyEmail(code)).toEqual({ deleted: true })
+    expect(await client().restore()).toBeNull()
+    expect((await db.prepare('SELECT * FROM identities').all()).results).toHaveLength(0)
+    const replacement = await link(await guest())
+    expect((await verify(linked!, challenge.challengeId, code)).body).toEqual({ deleted: true })
+    expect((await call('/v1/account', replacement.token)).body.userId).toBe(replacement.userId)
+  })
+  it('bounds expiry cleanup and preserves usable deletion receipts', async () => {
+    const now = Date.now()
+    // Seed in one SQLite statement instead of paying 1,001 worker RPC round trips.
+    await db.prepare(`WITH RECURSIVE rows(i) AS (
+      VALUES(0) UNION ALL SELECT i+1 FROM rows WHERE i<1000
+    ) INSERT INTO deletion_receipts(token_hash,expires_at) SELECT 'expired-' || i, ? FROM rows`)
+      .bind(now - 1).run()
+    await db.prepare('INSERT INTO deletion_receipts(token_hash,expires_at) VALUES (?,?)').bind('live', now + 1000).run()
+    await pruneDeletionReceipts(db, now)
+    expect((await db.prepare('SELECT * FROM deletion_receipts').all()).results).toHaveLength(2)
+    await pruneDeletionReceipts(db, now)
+    expect((await db.prepare('SELECT token_hash FROM deletion_receipts').all()).results).toEqual([{ token_hash: 'live' }])
   })
 })

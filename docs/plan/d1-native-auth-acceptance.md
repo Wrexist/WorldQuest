@@ -36,11 +36,12 @@ that integration. Sources: [Expo](https://better-auth.com/docs/integrations/expo
 The email sender needs a project-owned sender domain, verified delivery and a
 documented free/low-cost allowance. Use synthetic delivery in local tests; do not
 send real codes or adopt an unrelated Cloudflare domain as a shortcut. Sender setup
-is pending registration approval for `learnworldquest.com`, using
+is deferred by the owner. The candidate is `learnworldquest.com`, using
 `accounts@learnworldquest.com` and `support@learnworldquest.com`. These are planned
 addresses, not active mailboxes. Cloudflare quoted $10.46 registration and annual
-renewal; no domain has been purchased. The purchase request caps one year at $15
-including tax and excludes paid add-ons.
+renewal; no domain has been purchased. The owner chose to defer the purchase and
+continue development with synthetic delivery; the earlier spending proposal is
+not authorization to buy.
 
 ## Then continue Phase 2
 

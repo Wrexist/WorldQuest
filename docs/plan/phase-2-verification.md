@@ -356,3 +356,28 @@ three widths, plus 102 flow captures). The 320 pt account screen capture was
 inspected: labels and email field render, and the existing copy correctly says
 progress recovery is still being tested. These captures exercise the current app
 and do not prove the new D1 account UI or physical-device accessibility.
+
+## Native account acceptance and deletion retry
+
+The owner deferred domain purchase and asked development to continue with
+synthetic delivery. No domain, mailbox or paid subscription was created.
+
+Both native jobs at `29fa1f5` passed. iOS ran on iPhone 16 Pro / iOS 18.5 with
+Xcode 16.4; Android ran on API 35. The final screenshots were opened and show
+`PASS_RECOVERY_AND_DELETION`. This proves the isolated native credential/client
+lifecycle against local D1, including protected-guest refusal, pending-code restart,
+link/login with the same progress owner, reinstall recovery and current-data
+deletion. Three compiled Android SecureStore failure tests passed. Full Windows
+and Ubuntu CI at that revision also passed. See [retained evidence](phase-2-evidence/accounts/README.md).
+
+The next backend change closes deletion response loss. Migration 0004 stores a
+24-hour acknowledgment in the same transaction as erasure, bound to the original
+session hash and challenge. The old token can confirm only its deletion, never
+authenticate, read data or affect a newly created account. Expired acknowledgments
+are rejected and an hourly handler prunes at most 1,000 per invocation. This
+handler/configuration has not been deployed; hosted retention/backlog and backup
+restore acceptance remain open.
+
+B02 is still open for production account UI, expiry/rotation and real delivery.
+The active app backend is unchanged. The full learning/reward contract and offline
+replay remain prerequisites for mobile D1 cutover.

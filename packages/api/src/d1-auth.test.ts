@@ -78,6 +78,17 @@ describe('D1 native auth transport', () => {
     await expect(a.requestEmail('learner@example.invalid', 'link', 'en')).rejects.toMatchObject({ code: 'EMAIL_UNAVAILABLE', retryChallenge: expect.objectContaining(challenge) })
     expect(await h.create().pending()).toMatchObject(challenge)
   })
+  it('permits protected erasure retry after the server confirms deletion', async () => {
+    const h = harness(), a = h.create(); await a.startGuest()
+    await a.requestEmail('learner@example.invalid', 'delete', 'en')
+    h.fetch.mockResolvedValueOnce({ status: 200, ok: true, json: async () => ({ deleted: true }) })
+    h.clear.mockRejectedValueOnce(new Error('device locked'))
+    await expect(a.verifyEmail('12345678')).rejects.toThrow('device locked')
+    await expect(a.account()).rejects.toThrow('Account changed')
+    await a.signOut()
+    expect(h.clear).toHaveBeenCalledTimes(2)
+    expect(await h.create().restore()).toBeNull()
+  })
   it('rejects insecure endpoints and corrupted stored credentials', async () => {
     const h = harness()
     expect(() => createD1AuthClient({ baseURL: 'http://public.example.invalid', storage: h.storage, clearCredentials: h.clear, fetch: h.fetch })).toThrow('INSECURE_ENDPOINT')

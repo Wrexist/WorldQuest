@@ -29,7 +29,7 @@ The development Worker `worldquest-development-api` was deployed on 2026-09-13
 with version `dc8bd22b-f2ec-4ab1-9cb7-6915dd20bb87`. Cloudflare API readback
 confirmed the D1 binding, `API_ENABLED=false`, and disabled workers.dev/preview
 URLs. Remote migration inspection found no pending migrations at that deployment;
-the new identity migrations 0002/0003 have not been applied remotely. This verifies
+the new identity migrations 0002–0004 have not been applied remotely. This verifies
 deployment configuration; connected native behavior and hosted load are still open.
 Use `pnpm --filter @worldquest/backend run deploy` (the `run` is required because
 pnpm also has a built-in deploy command). Wrangler OAuth needs
@@ -61,6 +61,12 @@ The portable client in `@worldquest/api` uses one awaited protected session/chal
 envelope. `scripts/native-accounts` exercises it with the production credential
 vault in separate native proof apps. The loopback HTTP exceptions and synthetic
 fixture server are test-only; neither belongs in a store build or hosted Worker.
+
+Deletion now atomically stores a 24-hour acknowledgment bound to the deleting
+session hash and operation. Replays can confirm erasure after a lost response;
+the receipt cannot authenticate. It retains no owner or email. An hourly scheduled
+handler removes up to 1,000 expired receipts per run; hosted cleanup/backlog
+monitoring and backup retention still require acceptance before launch.
 
 Not yet accepted: native D1 auth, email linking/recovery,
 production ticket issuance, timezone/offline replay, complete progress hydration,

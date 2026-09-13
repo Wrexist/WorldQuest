@@ -2,8 +2,9 @@
 
 Date: 13 September 2026. Decision: use Better Auth 1.7.4's sessionless email-OTP
 verification behind a WorldQuest account gateway, with Drizzle 0.45.2 on D1.
-Local workerd tests pass; complete B02 native and real-delivery acceptance remain
-open. This serves Alex's recoverable progress and Priya's dependable daily practice.
+Local workerd tests and the isolated iOS/Android account lifecycle proofs pass;
+complete B02 account UI and real-delivery acceptance remain open. This serves
+Alex's recoverable progress and Priya's dependable daily practice.
 
 ## Ownership and provider boundary
 
@@ -47,6 +48,13 @@ WorldQuest bearer tokens remain random 256-bit values, stored as hashes in D1.
   sessions, verification records, learning rows and projections in one guarded
   D1 batch. Guest deletion requires no email. Backup retention and restore behavior
   remain separate B16/S07 acceptance work.
+- Migration 0004 adds a deletion acknowledgment keyed by the deleting token's hash
+  and original challenge ID (null for guest deletion). It stores no owner, email,
+  code or plaintext token. For 24 hours, replaying that exact deletion can confirm
+  completion even though the account/session is gone. It cannot authorize account
+  reads, another challenge or another session. The receipt and erasure commit in
+  the same batch. Hourly maintenance removes up to 1,000 expired receipts per run;
+  backlog monitoring and hosted retention acceptance remain B16 work.
 
 ## Deployment and evidence boundary
 

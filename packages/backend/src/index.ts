@@ -6,6 +6,7 @@ import { recordAudience } from './account-policy'
 import { requestCode, resendCode, verifyCode } from './email-challenges'
 import { deleteAccount, finishIdentity } from './identity'
 import type { MailDelivery } from './email-provider'
+import { deletionCompleted, pruneDeletionReceipts } from './deletion-receipts'
 
 const codeRequest = z.object({ email: z.string().trim().toLowerCase().email().max(254),
   purpose: z.enum(['link', 'login', 'delete']), locale: z.enum(['en', 'sv']) }).strict()
@@ -38,6 +39,9 @@ async function body(request: Request): Promise<unknown> {
 }
 
 export function createWorker(mail: MailDelivery = unavailableMail) { return {
+  async scheduled(_event: ScheduledController, env: Env): Promise<void> {
+    await pruneDeletionReceipts(env.DB, Date.now())
+  },
   async fetch(request: Request, env: Env): Promise<Response> {
     try {
       const path = new URL(request.url).pathname
@@ -49,6 +53,17 @@ export function createWorker(mail: MailDelivery = unavailableMail) { return {
         if (!input || typeof input !== 'object' || Array.isArray(input) || Object.keys(input).length !== 0) throw new ApiError('INVALID_BODY', 400)
         return json(await createGuest(env.DB, Date.now()), 201)
       }
+      // Deletion removes authentication too. Recognize only the exact completed
+      // operation before normal auth, so a lost response can be acknowledged.
+      let deletionBody: unknown
+      if (request.method === 'POST' && (path === '/v1/account/delete' || path === '/v1/auth/email/verify')) {
+        deletionBody = await body(request)
+        const parsed = path === '/v1/account/delete'
+          ? z.object({}).strict().safeParse(deletionBody) : verification.safeParse(deletionBody)
+        if (!parsed.success) throw new ApiError('INVALID_BODY', 400)
+        const id = 'challengeId' in parsed.data && typeof parsed.data.challengeId === 'string' ? parsed.data.challengeId : null
+        if (await deletionCompleted(env.DB, request, id, Date.now())) return json({ deleted: true })
+      }
       const { account, tokenHash } = await authenticate(env.DB, request, Date.now())
       const now = Date.now()
       if (request.method === 'POST' && path === '/v1/account/audience') {
@@ -59,7 +74,7 @@ export function createWorker(mail: MailDelivery = unavailableMail) { return {
       if (request.method === 'POST' && path.startsWith('/v1/auth/email/')) {
         if (!env.AUTH_SECRET || env.AUTH_SECRET.length < 32) throw new ApiError('EMAIL_UNAVAILABLE', 503)
         if (account.audience !== 'eligible') throw new ApiError('ACCOUNT_PROTECTED', 403)
-        const input = await body(request)
+        const input = path === '/v1/auth/email/verify' ? deletionBody : await body(request)
         if (path === '/v1/auth/email/request') {
           const parsed = codeRequest.safeParse(input)
           if (!parsed.success) throw new ApiError('INVALID_BODY', 400)
@@ -81,7 +96,7 @@ export function createWorker(mail: MailDelivery = unavailableMail) { return {
         throw new ApiError('NOT_FOUND', 404)
       }
       if (request.method === 'POST' && path === '/v1/account/delete') {
-        const input = z.object({}).strict().safeParse(await body(request))
+        const input = z.object({}).strict().safeParse(deletionBody)
         if (!input.success) throw new ApiError('INVALID_BODY', 400)
         return json(await deleteAccount(env.DB, account.id, tokenHash, now))
       }
