@@ -415,7 +415,12 @@ security check pass, with zero unexpected advisories.
 At implementation revision `512b046`, [D1 CI](https://github.com/Wrexist/WorldQuest/actions/runs/34780651322)
 passed. [Full platform CI](https://github.com/Wrexist/WorldQuest/actions/runs/34780651351)
 and [native renewal acceptance](https://github.com/Wrexist/WorldQuest/actions/runs/34780651323)
-have their own run results. The two extra readback-loss cases only change tests;
+have their own run results. Full CI passed on both Windows and Ubuntu. Android
+native passed. iOS passed renewal/restart but its reinstall assertion timed out
+while the simulator delayed app launch; a subsequent capture visibly shows the
+final recovery/deletion pass. A bounded simulator-wait correction and unchanged
+binary replay are required before accepting that job. See [renewal evidence](phase-2-evidence/accounts/renewal/README.md).
+The two extra readback-loss cases only change tests;
 they do not change the native binary or Worker under proof.
 
 The current app export passes 82 executed browser checks with the existing

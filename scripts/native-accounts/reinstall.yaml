@@ -9,5 +9,7 @@ appId: com.wrexist.worldquest.accountsproof
       - tapOn: Open
 - extendedWaitUntil:
     visible: PASS_RECOVERY_AND_DELETION
-    timeout: 60000
+    # A cold CI simulator queued the URL handoff for 68 seconds before the app
+    # process existed. API requests still time out at 15 seconds in the client.
+    timeout: 120000
 - takeScreenshot: account-deletion
