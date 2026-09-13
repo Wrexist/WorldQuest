@@ -45,7 +45,9 @@ Implemented: restricted guest sessions with hashed tokens, account-derived reads
 logout revocation, strict 16 KiB request limits, server grading, idempotent receipts,
 atomic reward/review/memory writes and bounded optimistic concurrency retries.
 
-Not yet accepted: native auth and secure credential storage, email linking/recovery,
+Protected native credential storage is accepted under [ADR 0014](../../docs/adr/0014-native-credential-storage.md); it does not provide D1 identity by itself.
+
+Not yet accepted: native D1 auth, email linking/recovery,
 production ticket issuance, timezone/offline replay, complete progress hydration,
 quests/streaks/achievements/purchases, export/restore/erasure, abuse budgets, and the
 mobile repository adapter. Keep the API disabled until those gates are met.

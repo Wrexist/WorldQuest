@@ -162,7 +162,7 @@ performance or the full release OS/device matrix. Those remain Phase 2/A11 gates
 2. Extend the selected D1 transaction slice to the complete canonical lesson/quest,
    streak, achievement and purchase contract before adding the mobile adapter.
 3. Implement revisioned per-fact history, late-event replay and offline hydration.
-4. Complete child policy, protected credential storage, abuse limits, erasure,
+4. Complete child policy, abuse limits, erasure,
    export/restore and measured hosted cost. Only then rehearse app cutover.
 
 The full 148-action [execution checklist](execution-plan.md) remains authoritative.
@@ -261,10 +261,60 @@ a durable erasure marker and an installation boundary for retained iOS Keychain
 entries. Browser credentials are memory-only. Logout awaits protected erasure
 before navigating; app caches remain separately scoped and preserved.
 
-Eleven failure-injection vault tests pass, alongside 18 existing storage/account
-tests in the focused run. Mobile TypeScript passes. Added an isolated native
-credential proof with a separate app ID and synthetic values; it tests actual
-Keychain/Keystore migration, restart, logout and reinstall. Full verification and
-native results will be appended when completed. S08 remains unchecked until that
-evidence is available. B02 remains open: native email linking/recovery and D1
-identity integration have not been completed by this storage change.
+Twelve failure-injection vault tests pass. Two logout-hook tests cover failure/retry
+and overlapping taps; all 45 Settings component tests pass, including the new
+announced error. The final focused run is 59/59. The full local verification passed
+1,544 Vitest tests plus nine Node tests (1,553 total). End-to-end: 82 executed steps
+passed; the existing randomized no-image-question case is the one skipped assertion.
+The dependency security check found no unexpected advisories.
+
+The Settings failure path now offers translated retry copy and suppresses overlapping
+logout. Its account email uses a wrapping block after the 200% preview exposed the
+old trailing-value clipping. `pnpm design:shots` passed its 18-route × three-width
+measurements plus 102 flow captures. The isolated static error fixture was inspected
+in English/Swedish at 320 pt and 100%/200% text, including the scrolled retry target.
+Saved captures are in `phase-2-evidence/credentials/`; reproduce with
+`node scripts/native-credentials/settings-shots.cjs`. The static renderer now resolves
+web module variants and removes the obsolete Settings tab from that fixture.
+These UI captures were seen in Chromium, not on a phone; physical screen-reader and
+device-matrix acceptance remain A11 work.
+
+The native proof uses a separate app ID, actual native modules and synthetic data.
+Initial Android migration/restart/logout/reinstall runs passed. The initial iOS
+assertion found a blank proof screen; the harness now explicitly hides the splash
+on layout and uses readable colors. Hidden Maestro diagnostics are now retained.
+Native-source inspection also found ignored persistence/deletion statuses in
+SecureStore 15.0.8. ADR 0014 records the narrow patch and Android cache rollback.
+Expo's prebuilt Android module would bypass that patch, so the production app now
+explicitly builds SecureStore from source. Native results for that final configuration
+are recorded below. S08 is complete; native D1 accounts and the full release-device
+matrix remain open.
+
+The [full CI run at 5afe3f6](https://github.com/Wrexist/WorldQuest/actions/runs/34765011092)
+passed Windows and Ubuntu `verify:full`, dependency security and source-database
+checks. The [Android native run at bcd6728](https://github.com/Wrexist/WorldQuest/actions/runs/34763927826)
+passed migration, restart, logout and uninstall/reinstall on API 35, with
+`PASS_REINSTALL_KEYCHAIN_EMPTY`. All three compiled Kotlin persistence-failure
+tests passed. The app implementation is unchanged between these revisions.
+
+The [iOS build at 5afe3f6](https://github.com/Wrexist/WorldQuest/actions/runs/34765011134)
+passed migration, process restart and logout on iPhone 16 Pro / iOS 18.5. Its
+reinstall flow stopped at the system's first-link Open confirmation, as confirmed
+by the saved screen hierarchy and screenshot. The updated flow accepts that dialog.
+Xcode now embeds the fixture's simulated entitlements at build time; the earlier
+unsigned and post-build signing approaches are rejected. The replay keeps the
+original compiled app and signature intact.
+
+The [final iOS replay at 33be56b](https://github.com/Wrexist/WorldQuest/actions/runs/34765806728)
+passed all migration/restart/logout/reinstall assertions using that unchanged
+`5afe3f6` binary. The final screenshot was inspected and reads
+`PASS_REINSTALL_KEYCHAIN_RETAINED`: the fixture survived in Keychain, while the
+reinstalled application rejected the previous identity. Native captures, the
+Android unit-test report, synthetic simulated entitlements and exact revision/run
+references are retained in [credential evidence](phase-2-evidence/credentials/README.md).
+S08 is checked; Phase 2 now has three of its 38 actions complete. These are
+simulator/emulator results, not a substitute for A11's full physical-device matrix.
+
+B02 remains open: native email linking/recovery, account deletion and D1 identity
+integration are not completed by credential storage. The [next implementation
+plan](d1-native-auth-acceptance.md) defines their order and acceptance conditions.

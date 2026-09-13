@@ -15,7 +15,8 @@ complete native identity and recovery before replacing the active app adapter.
 | Destination | ADR 0013; `packages/backend` now uses Workers/D1 | Legacy app adapter still active |
 | Hosted database | `worldquest-development`, EU jurisdiction; eight app tables and migration record verified in Chrome | Zero accounts; no connected app traffic |
 | Local execution | Pinned Wrangler/Miniflare; real workerd and SQLite integration tests | Local performance is not hosted performance |
-| Ownership | Worker derives account from a hashed, expiring bearer session | Email linking/recovery and native credential handling remain open |
+| Ownership | Worker derives account from a hashed, expiring bearer session | D1 native login, email linking and recovery remain open |
+| Credentials | S08: Keychain/Keystore-backed storage, legacy migration, restart/logout/reinstall proof on both platforms; ADR 0014 | D1 identity integration and physical-device matrix remain open |
 | Rewards | Shared pure grader; receipt, ledger, review history, memory and account revision in one batch | Full quest/streak/achievement/entitlement contract not ported |
 | Concurrency | Duplicate requests return one receipt; different lessons preserve both reviews and one daily bonus | Arrival-order/UTC proof, not late offline replay |
 | Failure handling | A failure after the ledger write rolls back everything; retry succeeds | Remote overload and quota behavior need connected testing |
@@ -29,9 +30,10 @@ that probe would permit unearned rewards. No Cloudflare credentials are in the a
 
 ## Ordered remaining work
 
-1. **Identity and recovery — B02, S08, B10.** Implement native guest, link, login,
-   recovery, logout and deletion flows. Replace the app's hardcoded MMKV credential
-   key with protected native credential storage. Preserve one stable owner across
+1. **Identity and recovery — B02, B10.** Implement native guest, link, login,
+   recovery, logout and deletion flows using S08's accepted protected credential
+   store. Follow the [native account acceptance plan](../../plan/d1-native-auth-acceptance.md).
+   Preserve one stable owner across
    guest linking and later sign-in. Unknown/protected users must not gain permission
    by submitting a client role. Test expired sessions, replayed verification codes,
    concurrent linking and account switching on both native platforms. Better Auth's

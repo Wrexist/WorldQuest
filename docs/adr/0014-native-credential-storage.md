@@ -65,6 +65,13 @@ readback, simultaneous writes, stale SDK writes, interrupted logout and reinstal
 An isolated native proof uses a separate application ID and no backend, tests the
 actual native modules, and is not reachable from the shipped router. It exercises
 migration, a process restart, logout and uninstall/reinstall on both platforms.
+Xcode signs the simulator proof and embeds its synthetic application identifier
+and Keychain access group in the simulated entitlements at build time. Leaving the
+app unsigned prevents Keychain access; adding iOS claims to the host signature
+after the build prevents simulator launch. Use the native credential workflow's
+build settings rather than re-signing an old unsigned binary.
+The fixture entitlement file is not part of the production app config. Physical and
+store builds use normal Apple signing. [Apple's access-group documentation](https://developer.apple.com/documentation/security/sharing-access-to-keychain-items-among-a-collection-of-apps).
 This does not accept email linking, server revocation, D1 account recovery, the full
 device/OS matrix or public API readiness. A new native binary is required; do not
 send this dependency change as an OTA update to older binaries.

@@ -24,6 +24,14 @@ The database has RLS and protected profile columns; sensitive SQL functions revo
 
 **S08 — Shared embedded storage encryption key (P1).** [storage.ts:33](../../../apps/mobile/src/lib/storage.ts) embeds the same MMKV encryption key in every app binary. This is not a per-device secret. Prefer platform Keychain/Keystore-backed credential storage or a random device key protected there. This finding is about protection when app files are extracted; it is not evidence of a remote compromise.
 
+**S08 resolution, 13 September 2026:** implemented platform-protected credentials
+under [ADR 0014](../../adr/0014-native-credential-storage.md). Legacy migration,
+restart, logout and reinstall pass in actual native modules on iOS and Android;
+failure injection also covers interrupted persistence and stale client writes.
+The embedded key remains only for reading/deleting legacy entries. See the
+[evidence record](../../plan/phase-2-evidence/credentials/README.md). D1 accounts
+and the physical-device release matrix remain separate open work.
+
 **S09 — Collection declarations need reconciliation (P0).** The app manifest lists no collected data, while hosted accounts, identifiers, learning events and subscriptions are part of the architecture. A privacy manifest is not the App Store privacy questionnaire, and neither is automatically satisfied by disabling tracking. Inventory the actual production flows and SDK behavior before filling either. [Apple privacy details](https://developer.apple.com/app-store/app-privacy-details/)
 
 **S10 — Analytics preference is not enforced at its sink (P1 before telemetry).** `track()` checks child status and declared event names, but does not read the adult `preferences.analytics` toggle. It currently only logs in development, so this is not evidence of current production tracking. Wire consent to the eventual transport before enabling it.
