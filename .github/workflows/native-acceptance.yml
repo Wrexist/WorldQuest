@@ -2,6 +2,11 @@ name: Native acceptance
 
 on:
   workflow_dispatch:
+    inputs:
+      ios_only:
+        description: 'Retry iOS acceptance using an already verified Android revision'
+        type: boolean
+        default: false
   push:
     branches: ['fix/**']
     paths: ['.github/workflows/native-acceptance.yml']
@@ -15,6 +20,7 @@ concurrency:
 
 jobs:
   android:
+    if: ${{ !inputs.ios_only }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -54,6 +60,13 @@ jobs:
         run: |
           set -o pipefail
           xcodebuild -workspace apps/mobile/ios/WorldQuest.xcworkspace -scheme WorldQuest -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath "$RUNNER_TEMP/wq-ios" CODE_SIGNING_ALLOWED=NO ARCHS="$(uname -m)" ONLY_ACTIVE_ARCH=YES 2>&1 | tee "$RUNNER_TEMP/ios-build.log"
+      - name: Preserve the simulator application for inspection
+        run: ditto -c -k --sequesterRsrc --keepParent "$RUNNER_TEMP/wq-ios/Build/Products/Release-iphonesimulator/WorldQuest.app" "$RUNNER_TEMP/ios-simulator-app.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulator-app
+          path: ${{ runner.temp }}/ios-simulator-app.zip
+          retention-days: 7
       - name: Launch and capture simulator
         run: |
           set -euo pipefail

@@ -5,9 +5,9 @@ appId: com.wrexist.worldquest
 - tapOn: "Get started"
 - tapOn: "English"
 - assertVisible: "Explore countries"
-- tapOn: "Continue"
+- tapOn: "Next"
 - assertVisible: "Practice daily"
-- tapOn: "Continue"
+- tapOn: "Next"
 - assertVisible: "Your world"
 - tapOn: "Continue"
 - scrollUntilVisible:
