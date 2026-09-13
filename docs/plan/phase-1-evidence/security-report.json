@@ -1,0 +1,49 @@
+{
+  "scannedAt": "2026-09-13T08:43:53.681Z",
+  "command": "pnpm audit --prod --json",
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 1,
+      "high": 2,
+      "critical": 0
+    },
+    "dependencies": 742,
+    "devDependencies": 0,
+    "optionalDependencies": 0,
+    "totalDependencies": 742
+  },
+  "findings": [
+    {
+      "id": "GHSA-w3rx-r6r6-pgpr",
+      "module": "image-size",
+      "severity": "high",
+      "versions": [
+        "1.2.1"
+      ],
+      "url": "https://github.com/advisories/GHSA-w3rx-r6r6-pgpr"
+    },
+    {
+      "id": "GHSA-5p2g-fcmc-qvqq",
+      "module": "image-size",
+      "severity": "high",
+      "versions": [
+        "1.2.1"
+      ],
+      "url": "https://github.com/advisories/GHSA-5p2g-fcmc-qvqq"
+    },
+    {
+      "id": "GHSA-vcc3-ghjq-m6fr",
+      "module": "decode-uri-component",
+      "severity": "moderate",
+      "versions": [
+        "0.2.2"
+      ],
+      "url": "https://github.com/advisories/GHSA-vcc3-ghjq-m6fr"
+    }
+  ],
+  "unexpected": [],
+  "reviewBefore": "2026-10-13T00:00:00Z",
+  "note": "Registry does not recognize local patches. Accepted findings require patch and installed-file hashes plus behavioral regressions."
+}

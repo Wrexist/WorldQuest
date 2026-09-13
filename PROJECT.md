@@ -123,14 +123,14 @@ Historical decisions and their alternatives are recorded as ADRs in [`docs/adr/`
 | Content | **JSON packs validated by AJV / JSON Schema** | Content is data; validation is CI | [0005](docs/adr/0005-content-as-data.md) |
 | Maps | **Bundled raster maps generated from Natural Earth** | Pack-derived assets; interactive map assessment remains later work | [0008](docs/adr/0008-vector-maps.md) |
 | Animation | **React Native Animated**; Reanimated/Lottie not installed | Native frame-time verification remains required | — |
-| i18n | **i18next** + ICU MessageFormat | Plurals/genders for sv/de/fr/pt | [0009](docs/adr/0009-localization.md) |
+| i18n | **i18next** + ICU MessageFormat | ICU plurals; shipped English/Swedish catalogues | [0009](docs/adr/0009-localization.md) |
 | Analytics | **Typed analytics port**; PostHog not installed | Consent and child-policy integration must precede production collection | [0010](docs/adr/0010-analytics-and-privacy.md) |
 | Errors | **Error-reporting port** | Sentry integration remains to be verified/implemented | — |
 | Payments | **Purchase port, currently unavailable** | SDK and store acceptance remain Phase 5; no live paid offering | — |
 | Testing | **Vitest** (engines/app) · **Testing Library + react-native-web** · **Playwright** (browser E2E) | See [`docs/engineering/testing-strategy.md`](docs/engineering/testing-strategy.md) | — |
 | CI | **GitHub Actions** + **EAS Build/Submit** | — | — |
 
-**Node 22 LTS · pnpm 9 · Expo SDK 52+.**
+**Node 22 · pnpm 9.15 · Expo SDK 54 / React Native 0.81.5.**
 
 ---
 

@@ -1,0 +1,241 @@
+{
+  "url": "https://github.com/Wrexist/WorldQuest/actions/runs/34749106906",
+  "headSha": "24d54eae6d9320fc82c7f1179f8e19d72b6314a6",
+  "conclusion": "success",
+  "tests": {
+    "ubuntu-latest": {
+      "suiteCounts": [
+        9,
+        6,
+        17,
+        43,
+        28,
+        557,
+        7,
+        676,
+        162
+      ],
+      "total": 1505
+    },
+    "windows-latest": {
+      "suiteCounts": [
+        9,
+        6,
+        43,
+        17,
+        28,
+        557,
+        7,
+        676,
+        162
+      ],
+      "total": 1505
+    }
+  },
+  "jobs": [
+    {
+      "name": "verify (ubuntu-latest)",
+      "conclusion": "success",
+      "startedAt": "2026-09-13T09:15:03Z",
+      "completedAt": "2026-09-13T09:23:18Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run pnpm/action-setup@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run pnpm install --frozen-lockfile",
+          "conclusion": "success"
+        },
+        {
+          "name": "Generate tokens and translation keys",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install Chromium for Playwright",
+          "conclusion": "success"
+        },
+        {
+          "name": "Dependency security",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify",
+          "conclusion": "success"
+        },
+        {
+          "name": "Upload E2E screenshots",
+          "conclusion": "success"
+        },
+        {
+          "name": "Upload dependency audit",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run pnpm/action-setup@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "verify (windows-latest)",
+      "conclusion": "success",
+      "startedAt": "2026-09-13T09:15:03Z",
+      "completedAt": "2026-09-13T09:25:46Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run pnpm/action-setup@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run pnpm install --frozen-lockfile",
+          "conclusion": "success"
+        },
+        {
+          "name": "Generate tokens and translation keys",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install Chromium for Playwright",
+          "conclusion": "success"
+        },
+        {
+          "name": "Dependency security",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify",
+          "conclusion": "success"
+        },
+        {
+          "name": "Upload E2E screenshots",
+          "conclusion": "success"
+        },
+        {
+          "name": "Upload dependency audit",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run pnpm/action-setup@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "database",
+      "conclusion": "success",
+      "startedAt": "2026-09-13T09:15:03Z",
+      "completedAt": "2026-09-13T09:17:46Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run pnpm/action-setup@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-node@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run supabase/setup-cli@v1",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run pnpm install --frozen-lockfile",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build the edge function bundle",
+          "conclusion": "success"
+        },
+        {
+          "name": "Start Supabase",
+          "conclusion": "success"
+        },
+        {
+          "name": "Migrations apply from empty",
+          "conclusion": "success"
+        },
+        {
+          "name": "RLS policy tests",
+          "conclusion": "success"
+        },
+        {
+          "name": "Generated database types are up to date",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-node@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run pnpm/action-setup@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ]
+}

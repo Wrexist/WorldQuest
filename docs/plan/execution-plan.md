@@ -2,13 +2,13 @@
 
 Updated 13 September 2026. **Active: Phase 1.** This is the current execution order and starts at 1; it supersedes the phase numbering in the earlier audit roadmap. All 148 audit actions appear exactly once below. Related actions should be implemented in shared workstreams, not estimated as 148 independent projects.
 
-Completed implementation evidence is in the [Phase 1 work log](phase-1-verification.md). E06 is fixed and verified on Windows; its Linux CI check remains open.
+Completed implementation evidence is in the [Phase 1 work log](phase-1-verification.md). E06 passed on the same revision in Windows and Ubuntu CI. Launch scope is worldwide English/Swedish. E18 has dependency fixes and automated checks; native compatibility acceptance is still being collected.
 
 **Status:** unchecked means unfinished or unverified; checked requires completion evidence. A phase is not complete just because its first batch is fixed. P0 blocks the affected release/feature; P1 precedes broad launch; P2/P3 work is gated by product evidence. Owner/effort estimates are inherited from the audits (S 1-2 days, M 3-5 days, L 1-2 engineer-weeks, XL split before scheduling). They exclude external review waits.
 
 [Audit findings and sources](../audits/2026-09-13/README.md) | [Original roadmap and release matrix](../audits/2026-09-13/09-prioritized-roadmap.md) | [Phase 1 work log](phase-1-verification.md)
 
-## Start here: the first implementation batch
+## First implementation batch (completed)
 
 1. Make `pnpm typecheck` and `pnpm test` select the actual workspaces and fail on an empty selection.
 2. Make existing header, documentation and code-size checks independent of LF/CRLF checkout settings.
@@ -23,7 +23,7 @@ These are the tasks started in this session. Backend migration, payment setup an
 
 | Phase | Outcome | Actions | Gate |
 |---|---|---:|---|
-| 1 | Reliable development baseline | 14 | In progress |
+| 1 | Reliable development baseline | 14 | 13/14 complete; E18 native acceptance open |
 | 2 | Backend, accounts and trustworthy progress | 38 | Required before broad paid launch |
 | 3 | A complete geography learning course | 23 | Required before broad paid launch |
 | 4 | Excellent UX, accessibility and device reliability | 17 | Required before broad paid launch |
@@ -40,20 +40,20 @@ Fix verification before relying on it, then triage dependencies and agree on lau
 
 **Exit gate:** Windows runs the intended workspace checks, original browser/native scripts work without audit-only patches, dependency exposure is triaged, and the first audience/course are recorded.
 
-- [ ] **E04** - Replace stale status claims with generated inventory and dated evidence; clean superseded implementation-history comments. *P1 / Engineering / M.* [Audit](../audits/2026-09-13/04-engineering-reliability.md)
+- [x] **E04** - Replace stale status claims with generated inventory and dated evidence; clean superseded implementation-history comments. *P1 / Engineering / M.* [Audit](../audits/2026-09-13/04-engineering-reliability.md)
 - [x] **E05** - Fix Windows workspace filter quoting; fail when expected packages are absent and print checked package count. *P1 / Tooling / M.* [Audit](../audits/2026-09-13/04-engineering-reliability.md)
-- [ ] **E06** - Normalize LF-sensitive fixtures/budget counts or enforce checkout EOL with `.gitattributes`; the same commit has equivalent results on Windows/Linux. *P1 / Tooling / S.* [Audit](../audits/2026-09-13/04-engineering-reliability.md)
+- [x] **E06** - Normalize LF-sensitive fixtures/budget counts or enforce checkout EOL with `.gitattributes`; the same commit has equivalent results on Windows/Linux. *P1 / Tooling / S.* [Audit](../audits/2026-09-13/04-engineering-reliability.md)
 - [x] **E07** - Use portable process spawning and expose actual errors in native bundle script; no generic “app cannot ship” for missing command. *P1 / Tooling / S.* [Audit](../audits/2026-09-13/04-engineering-reliability.md)
 - [x] **E08** - Sanitize screenshot filenames, set locale/timezone, assert onboarding success and route identity; wrong-route screenshots fail visibly. *P1 / Tooling / S.* [Audit](../audits/2026-09-13/04-engineering-reliability.md)
 - [x] **E09** - Investigate full-suite timeout under contention; retain meaningful timeout diagnostics and deterministic test isolation. *P1 / QA / M.* [Audit](../audits/2026-09-13/04-engineering-reliability.md)
 - [ ] **E18** - Triage the 30 high/eight moderate production-graph findings, map runtime/CI reachability, apply compatible fixes and automate scanning; verify native and supported Expo/OS behavior after updates. *P1; P0 for reachable severe exposure / Engineering / L.* [Audit](../audits/2026-09-13/04-engineering-reliability.md)
-- [ ] **G20** - Maintain one current release backlog and evidence log; archive stale claims and review competitor changes quarterly. *P1 / Product + Engineering / M.* [Audit](../audits/2026-09-13/08-growth-operations.md)
-- [ ] **P01** - Define the initial audience, countries of launch and job-to-be-done in one brief; use it to rank every backlog item. *P1 / Product / S.* [Audit](../audits/2026-09-13/01-product-competition.md)
-- [ ] **P02** - Make the product promise about observable geographic ability; remove unsupported “scientifically proven” or language-competitor claims. *P1 / Product / S.* [Audit](../audits/2026-09-13/01-product-competition.md)
-- [ ] **P05** - Prioritize one first-week geography course and one clear daily recommendation; no competing primary CTAs. *P1 / Product / S.* [Audit](../audits/2026-09-13/01-product-competition.md)
-- [ ] **P08** - Align home, onboarding, paywall and listing claims to current shipped capabilities and country counts. *P1 / Product / S.* [Audit](../audits/2026-09-13/01-product-competition.md)
+- [x] **G20** - Maintain one current release backlog and evidence log; archive stale claims and review competitor changes quarterly. *P1 / Product + Engineering / M.* [Audit](../audits/2026-09-13/08-growth-operations.md)
+- [x] **P01** - Define the initial audience, countries of launch and job-to-be-done in one brief; use it to rank every backlog item. *P1 / Product / S.* [Audit](../audits/2026-09-13/01-product-competition.md)
+- [x] **P02** - Make the product promise about observable geographic ability; remove unsupported “scientifically proven” or language-competitor claims. *P1 / Product / S.* [Audit](../audits/2026-09-13/01-product-competition.md)
+- [x] **P05** - Prioritize one first-week geography course and one clear daily recommendation; no competing primary CTAs. *P1 / Product / S.* [Audit](../audits/2026-09-13/01-product-competition.md)
+- [x] **P08** - Align home, onboarding, paywall and listing claims to current shipped capabilities and country counts. *P1 / Product / S.* [Audit](../audits/2026-09-13/01-product-competition.md)
 - [x] **P15** - Make the release backlog distinguish required fixes from experiments; owners can say no to scope without losing the idea. *P1 / Product / S.* [Audit](../audits/2026-09-13/01-product-competition.md)
-- [ ] **P18** - Reconcile README, PROJECT, roadmap and old audits with current code; preserve historical claims as dated history. *P1 / Product / S.* [Audit](../audits/2026-09-13/01-product-competition.md)
+- [x] **P18** - Reconcile README, PROJECT, roadmap and old audits with current code; preserve historical claims as dated history. *P1 / Product / S.* [Audit](../audits/2026-09-13/01-product-competition.md)
 
 ## Phase 2: Backend, accounts and trustworthy progress
 
