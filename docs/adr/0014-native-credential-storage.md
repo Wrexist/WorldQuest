@@ -25,6 +25,11 @@ retry cannot mistake a failed write for success. iOS deletion now rejects Keycha
 errors other than item-not-found instead of ignoring all status codes. The patch
 does not change encryption or key accessibility. Remove it only after an upstream
 version passes these acceptance checks. See the [upstream write issue](https://github.com/expo/expo/issues/48988).
+Android explicitly builds `expo-secure-store` from source in the app's autolinking
+configuration; otherwise Expo selects its precompiled AAR and ignores the local
+native patch. The native Java tests require that source module to exist, preventing
+this build configuration from silently bypassing the patch.
+[Expo precompiled modules](https://docs.expo.dev/guides/prebuilt-expo-modules/).
 
 This replaces the old MMKV store encrypted with a bundled shared key. A random
 MMKV key kept in SecureStore was considered, but direct credential storage avoids
