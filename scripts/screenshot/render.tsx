@@ -11,6 +11,7 @@
 
 import { AppRegistry, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { renderToStaticMarkup } from 'react-dom/server'
+import { setLocale } from '@worldquest/i18n'
 import { existsSync, readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
@@ -203,6 +204,11 @@ const answerMark = (state: string) =>
   ) : undefined
 
 /** Exactly the state the mockup depicts, so the two can be compared directly. */
+const PREVIEW_REMINDER = {
+  enabled: false, blocked: true, hour: 19, isChild: false,
+  earlier: () => {}, later: () => {}, onChange: () => {}, onOpenSystemSettings: () => {},
+}
+
 const MOCKUP_STATE = {
   xpTotal: 4820,
   coins: 430,
@@ -589,11 +595,19 @@ function Gallery() {
 
         <Phone label="More · settings" id="settings" tab="more">
           <SettingsScreen
+            reminder={PREVIEW_REMINDER}
             version="0.1.0"
             preferences={SETTINGS_DEFAULTS}
             onChange={() => {}}
             onOpenPrivacyPolicy={() => {}}
             onOpenTerms={() => {}}
+            account={{
+              email: 'learner@example.invalid',
+              onLink: () => {},
+              onSignIn: () => {},
+              onSignOut: () => {},
+              unsyncedLessons: 3,
+            }}
             premium={{
               isPremium: false,
               isTrialing: false,
@@ -613,6 +627,7 @@ function Gallery() {
             to break a real card to reach it. */}
         <Phone label="More · payment declined" id="settings-billing" tab="more">
           <SettingsScreen
+            reminder={PREVIEW_REMINDER}
             version="0.1.0"
             preferences={SETTINGS_DEFAULTS}
             onChange={() => {}}
@@ -909,30 +924,35 @@ function fontFaces(): string {
     .join('')
 }
 
-const body = renderToStaticMarkup(element as never)
+async function renderGallery(): Promise<void> {
+  await setLocale(process.env.WQ_SCREEN_LOCALE === 'sv' ? 'sv' : 'en')
+  const body = renderToStaticMarkup(element as never)
 
-/**
- * Fail rather than screenshot a broken string.
- *
- * ICU formatting has now silently regressed twice through module-interop differences
- * between Node, esbuild and Metro — each time rendering the raw pattern
- * (`{count, plural, one {# day streak} ...}`) instead of words. The library's default
- * behaviour is to swallow the error, so nothing failed; the only signal was a
- * screenshot nobody had looked at yet. This turns that into an exit code.
- */
-const leaked = body.match(/\{[a-zA-Z_]+(?:\s*,\s*(?:plural|select|selectordinal|number|date))?\s*[,}]/)
-if (leaked) {
-  process.stderr.write(
-    `\n✗ an unformatted i18n placeholder reached the markup: ${leaked[0]}\n` +
-      `  The ICU formatter is not running. See packages/i18n/src/icu.ts.\n\n`,
+  /**
+   * Fail rather than screenshot a broken string.
+   *
+   * ICU formatting has now silently regressed twice through module-interop differences
+   * between Node, esbuild and Metro — each time rendering the raw pattern
+   * (`{count, plural, one {# day streak} ...}`) instead of words. The library's default
+   * behaviour is to swallow the error, so nothing failed; the only signal was a
+   * screenshot nobody had looked at yet. This turns that into an exit code.
+   */
+  const leaked = body.match(/\{[a-zA-Z_]+(?:\s*,\s*(?:plural|select|selectordinal|number|date))?\s*[,}]/)
+  if (leaked) {
+    process.stderr.write(
+      `\n✗ an unformatted i18n placeholder reached the markup: ${leaked[0]}\n` +
+        `  The ICU formatter is not running. See packages/i18n/src/icu.ts.\n\n`,
+    )
+    process.exit(1)
+  }
+
+  process.stdout.write(
+    `<!doctype html><html><head><meta charset="utf-8">` +
+      `<title>WorldQuest</title>` +
+      `${renderToStaticMarkup(getStyleElement() as never)}` +
+      `<style>${fontFaces()}html,body,#root{margin:0;background:#00050F}</style>` +
+      `</head><body><div id="root">${body}</div></body></html>`,
   )
-  process.exit(1)
 }
 
-process.stdout.write(
-  `<!doctype html><html><head><meta charset="utf-8">` +
-    `<title>WorldQuest</title>` +
-    `${renderToStaticMarkup(getStyleElement() as never)}` +
-    `<style>${fontFaces()}html,body,#root{margin:0;background:#00050F}</style>` +
-    `</head><body><div id="root">${body}</div></body></html>`,
-)
+void renderGallery().catch(error => { console.error(error); process.exitCode = 1 })

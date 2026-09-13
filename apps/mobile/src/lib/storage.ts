@@ -34,6 +34,102 @@ const authStore = (): MMKV =>
 
 const appStore = (): MMKV => (app ??= new MMKV({ id: 'worldquest.app' }))
 
+type Scope = { userId: string | null; guest: number }
+const backendId = process.env.EXPO_PUBLIC_SUPABASE_URL || 'unconfigured'
+const SCOPE_KEY = `account.scope.v2.${encodeURIComponent(backendId)}`
+const TRANSITION_KEY = `account.transition.v2.${encodeURIComponent(backendId)}`
+let scope: Scope | null = null
+let generation = 0
+let treeGeneration = 0
+const scopeListeners = new Set<() => void>()
+
+function activeScope(): Scope {
+  if (scope) return scope
+  try {
+    const stored: unknown = appStore().getString(TRANSITION_KEY) === 'pending'
+      ? null : JSON.parse(appStore().getString(SCOPE_KEY) ?? 'null')
+    if (typeof stored === 'object' && stored !== null) {
+      const value = stored as Partial<Scope>
+      if ((value.userId === null || (typeof value.userId === 'string' && value.userId.length > 0)) &&
+          Number.isSafeInteger(value.guest) && value.guest! >= 0) {
+        return (scope = value as Scope)
+      }
+    }
+  } catch { /* The legacy store remains intact for explicit recovery. */ }
+  // An interrupted identity change must not reopen the old user's cache on launch.
+  let guest = 0
+  const keys = appStore().getAllKeys()
+  while (keys.some((key) => key.startsWith(prefixOf({ userId: null, guest })))) guest++
+  scope = { userId: null, guest }
+  appStore().set(SCOPE_KEY, JSON.stringify(scope))
+  return scope
+}
+
+const prefixOf = (value: Scope): string =>
+  `account.data.v2.${encodeURIComponent(JSON.stringify([backendId, value.userId, value.userId === null ? value.guest : null]))}.`
+const scopedKey = (key: string): string => prefixOf(activeScope()) + key
+
+/** Bound reads/writes cannot follow a delayed request into a different account. */
+export function captureStorage() {
+  const captured = activeScope()
+  const prefix = prefixOf(captured)
+  const capturedGeneration = generation
+  return {
+    id: prefix,
+    userId: captured.userId,
+    backendId,
+    isCurrent: () => generation === capturedGeneration,
+    get: (key: string) => appStore().getString(prefix + key) ?? null,
+    set: (key: string, value: string) => appStore().set(prefix + key, value),
+    remove: (key: string) => appStore().delete(prefix + key),
+  }
+}
+
+export const storageGeneration = (): number => generation
+export const storageTreeGeneration = (): number => treeGeneration
+export const onStorageScopeChange = (listener: () => void): (() => void) => {
+  scopeListeners.add(listener)
+  return () => scopeListeners.delete(listener)
+}
+
+function changeScope(next: Scope, preserveTree = false): void {
+  // Persist before publishing the identity. A full disk must not acknowledge a switch.
+  appStore().set(SCOPE_KEY, JSON.stringify(next))
+  scope = next
+  generation++
+  if (!preserveTree) treeGeneration++
+  for (const listener of scopeListeners) listener()
+}
+
+export function setStorageAccount(userId: string, adoptNewGuest = false): void {
+  const previous = activeScope()
+  if (previous.userId === userId) return
+  const next = { userId, guest: previous.guest }
+  if (adoptNewGuest && previous.userId === null) {
+    const source = prefixOf(previous)
+    const destination = prefixOf(next)
+    // Only a newly created anonymous identity may adopt this device's guest work.
+    // Legacy ownerless v1 records are deliberately outside these prefixes.
+    for (const key of appStore().getAllKeys().filter((key) => key.startsWith(source))) {
+      const value = appStore().getString(key)
+      if (value === undefined) continue
+      const target = destination + key.slice(source.length)
+      const existing = appStore().getString(target)
+      if (existing !== undefined && existing !== value) throw new Error('Guest adoption conflicts with account data')
+      appStore().set(target, value)
+    }
+  }
+  changeScope(next, adoptNewGuest && previous.userId === null)
+}
+
+/** Detached accounts keep their durable work; a fresh guest cannot read or send it. */
+export function startGuestStorage(): void {
+  let guest = activeScope().guest + 1
+  const keys = appStore().getAllKeys()
+  while (keys.some((key) => key.startsWith(prefixOf({ userId: null, guest })))) guest++
+  changeScope({ userId: null, guest })
+}
+
 /**
  * The session adapter supabase-js expects.
  *
@@ -101,18 +197,19 @@ export const isFiniteNumber: Shape = (value) => typeof value === 'number' && Num
  * bounded to values nothing could have read anyway.
  */
 export const readJson = <T>(key: string, shape?: Shape): T | null => {
-  const raw = appStore().getString(key)
+  const storedKey = scopedKey(key)
+  const raw = appStore().getString(storedKey)
   if (raw === undefined) return null
   let parsed: unknown
   try {
     parsed = JSON.parse(raw)
   } catch {
     // A corrupt cache entry is not worth crashing over. Drop it and refetch.
-    appStore().delete(key)
+    appStore().delete(storedKey)
     return null
   }
   if (shape !== undefined && !shape(parsed)) {
-    appStore().delete(key)
+    appStore().delete(storedKey)
     return null
   }
   return parsed as T
@@ -131,7 +228,7 @@ export const readJson = <T>(key: string, shape?: Shape): T | null => {
  * belong: in an effect, after the render has committed.
  */
 export const peekJson = <T>(key: string, shape?: Shape): { value: T | null; corrupt: boolean } => {
-  const raw = appStore().getString(key)
+  const raw = appStore().getString(scopedKey(key))
   if (raw === undefined) return { value: null, corrupt: false }
   let parsed: unknown
   try {
@@ -146,17 +243,20 @@ export const peekJson = <T>(key: string, shape?: Shape): { value: T | null; corr
 }
 
 export const writeJson = (key: string, value: unknown): void =>
-  appStore().set(key, JSON.stringify(value))
+  appStore().set(scopedKey(key), JSON.stringify(value))
 
-export const remove = (key: string): void => appStore().delete(key)
+export const remove = (key: string): void => appStore().delete(scopedKey(key))
 
-/**
- * Wipes everything. Used by "delete my account" and by sign-out.
- *
- * Both stores, not just one — leaving cached progress behind after a sign-out means
- * the next user on a shared family device sees someone else's streak.
- */
+/** Explicit full local reset. Ordinary logout detaches accounts without deleting work. */
 export function clearAll(): void {
   authStore().clearAll()
   appStore().clearAll()
+  scope = null
+  generation++
+  treeGeneration++
+  for (const listener of scopeListeners) listener()
 }
+
+export const clearSessionStorage = (): void => authStore().clearAll()
+export const beginStorageTransition = (): void => appStore().set(TRANSITION_KEY, 'pending')
+export const finishStorageTransition = (): void => appStore().delete(TRANSITION_KEY)

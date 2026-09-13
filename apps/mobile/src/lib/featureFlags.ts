@@ -1,3 +1,4 @@
+import { onStorageScopeChange } from './storage.js'
 /**
  * Feature flags — staged rollout, not a second source of truth.
  *
@@ -56,7 +57,8 @@
  */
 
 import { useEffect, useState } from 'react'
-import { supabase, currentUser } from './supabase.js'
+import { currentUser } from './supabase.js'
+import { withAccount } from './backend.js'
 import { readJson, writeJson } from './storage.js'
 import { onConnectivityChange } from './connectivity.js'
 
@@ -132,17 +134,11 @@ function notify(): void {
  */
 export async function refreshFeatureFlags(): Promise<void> {
   try {
-    const { data, error } = await supabase()
-      .from('feature_flags')
-      .select('key, enabled, rollout_percent')
-    if (error || data === null) {
-      lastFetchFailed = true
-      return
-    }
+    const data = await withAccount((account) => account.fetchFeatureFlags())
     const next = new Map<string, FeatureFlagRow>(
       data.map((row) => [
         row.key,
-        { key: row.key, enabled: row.enabled, rolloutPercent: row.rollout_percent },
+        { key: row.key, enabled: row.enabled, rolloutPercent: row.rolloutPercent },
       ]),
     )
     cache = next
@@ -289,3 +285,10 @@ export function __resetFeatureFlagsForTests(): void {
   lastFetchFailed = false
   listeners.clear()
 }
+
+onStorageScopeChange(() => {
+  cache = null
+  loadedFromDisk = false
+  lastFetchFailed = false
+  notify()
+})

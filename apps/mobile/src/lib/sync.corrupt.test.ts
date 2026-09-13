@@ -34,7 +34,7 @@ vi.mock('./analytics.js', () => ({ track: vi.fn() }))
  * mistake made this test pass against the unfixed code, which is the worst outcome a
  * regression test has.
  */
-const poison = (value: unknown): void => writeJson('sync.queue.v1', value)
+const poison = (value: unknown): void => writeJson('sync.queue.v2', value)
 
 describe('a queue that cannot be read', () => {
   it('starts empty and still accepts a lesson', async () => {

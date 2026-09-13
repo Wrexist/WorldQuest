@@ -1,3 +1,4 @@
+import { onStorageScopeChange } from './storage.js'
 /**
  * Telling the server which day the user is actually in.
  *
@@ -39,7 +40,8 @@
  * boundary.
  */
 
-import { currentUser, isConfigured, supabase } from './supabase.js'
+import { isConfigured } from './supabase.js'
+import { withAccount } from './backend.js'
 
 /**
  * The device's IANA zone, or null when the platform will not name one.
@@ -65,17 +67,14 @@ export async function syncTimeZone(): Promise<void> {
   if (zone === null || zone === lastWritten) return
 
   try {
-    const { userId } = await currentUser()
     // Only when it differs. A profile read is cheaper than a write that fires the guard
     // trigger, and this runs on every cold start for a value that changes when somebody
     // gets on a plane.
-    const { data } = await supabase().from('profiles').select('timezone').eq('id', userId).single()
-    if (data?.timezone === zone) {
-      lastWritten = zone
-      return
-    }
-    const { error } = await supabase().from('profiles').update({ timezone: zone }).eq('id', userId)
-    if (!error) lastWritten = zone
+    await withAccount(async (account) => {
+      const existing = await account.fetchTimeZone()
+      if (existing !== zone) await account.setTimeZone(zone)
+    })
+    lastWritten = zone
   } catch {
     // Swallowed. See the header: a device that could not reach the server keeps the zone
     // it had, which is exactly the behaviour that preceded this function.
@@ -86,3 +85,7 @@ export async function syncTimeZone(): Promise<void> {
 export function resetTimeZoneMemo(): void {
   lastWritten = null
 }
+
+onStorageScopeChange(() => {
+  resetTimeZoneMemo()
+})

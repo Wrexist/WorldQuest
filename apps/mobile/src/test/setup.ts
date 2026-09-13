@@ -26,8 +26,13 @@ afterEach(cleanup)
  * enough for anything that reads or writes a preference.
  */
 vi.mock('react-native-mmkv', () => {
+  const stores = new Map<string, Map<string, string>>()
   class MemoryMMKV {
-    private readonly store = new Map<string, string>()
+    private readonly store: Map<string, string>
+    constructor(options: { id: string }) {
+      this.store = stores.get(options.id) ?? new Map<string, string>()
+      stores.set(options.id, this.store)
+    }
     getString(key: string): string | undefined {
       return this.store.get(key)
     }
@@ -36,6 +41,9 @@ vi.mock('react-native-mmkv', () => {
     }
     delete(key: string): void {
       this.store.delete(key)
+    }
+    getAllKeys(): string[] {
+      return [...this.store.keys()]
     }
     clearAll(): void {
       this.store.clear()

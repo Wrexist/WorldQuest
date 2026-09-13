@@ -75,3 +75,6 @@ supabase/functions/_src/_shared/__fixtures__/.work/
 # did what it claims — see apps/mobile/plugins/without-push-entitlement.js.
 apps/mobile/ios/
 apps/mobile/android/
+
+# Isolated Convex development database and local deployment credentials.
+.convex/

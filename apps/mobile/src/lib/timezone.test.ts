@@ -9,7 +9,7 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const update = vi.fn(() => ({ eq: vi.fn(() => Promise.resolve({ error: null })) }))
+const update = vi.fn((_profile: { timezone: string }) => ({ eq: vi.fn(() => Promise.resolve({ error: null })) }))
 // Deliberately not 'UTC': the test runner's own zone IS UTC, so a fixture of 'UTC'
 // would agree with the device and never exercise the write.
 const single = vi.fn(() => Promise.resolve({ data: { timezone: 'Pacific/Auckland' } }))
@@ -25,6 +25,12 @@ vi.mock('./supabase.js', () => ({
   supabase: () => ({ from }),
   currentUser: () => Promise.resolve({ userId: 'u1' }),
   backendUrl: () => '',
+}))
+vi.mock('./backend.js', () => ({
+  withAccount: async (work: (account: { fetchTimeZone: () => Promise<string>; setTimeZone: (zone: string) => Promise<void> }) => Promise<unknown>) => work({
+    fetchTimeZone: async () => (await single()).data.timezone,
+    setTimeZone: async (zone) => { await update({ timezone: zone }).eq() },
+  }),
 }))
 
 const { deviceTimeZone, resetTimeZoneMemo, syncTimeZone } = await import('./timezone.js')

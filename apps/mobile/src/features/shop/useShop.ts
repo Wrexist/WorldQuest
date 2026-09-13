@@ -1,3 +1,4 @@
+import { onStorageScopeChange } from '../../lib/storage.js'
 /**
  * What the user owns, and what they are wearing.
  *
@@ -31,7 +32,8 @@
 import { useCallback, useSyncExternalStore } from 'react'
 import { readJson, writeJson } from '../../lib/storage.js'
 import { track } from '../../lib/analytics.js'
-import { currentUser, isConfigured, supabase } from '../../lib/supabase.js'
+import { isConfigured } from '../../lib/supabase.js'
+import { withAccount } from '../../lib/backend.js'
 import { invalidateProgress } from '../../lib/query.js'
 import type { ShopItem } from '@worldquest/engines'
 
@@ -111,9 +113,7 @@ export function setOwned(ids: readonly string[]): void {
 async function spend(itemId: string): Promise<void> {
   if (!isConfigured()) return
   try {
-    await currentUser()
-    const { data } = await supabase().rpc('purchase_item', { p_item_id: itemId })
-    const status = (data as { status?: string } | null)?.status
+    const { status } = await withAccount((account) => account.purchaseItem(itemId))
     // The wallet moved, so whatever is showing a coin balance is now wrong.
     if (status === 'purchased') invalidateProgress()
   } catch {
@@ -133,10 +133,8 @@ async function spend(itemId: string): Promise<void> {
 export async function reconcileOwned(): Promise<void> {
   if (!isConfigured()) return
   try {
-    await currentUser()
-    const { data, error } = await supabase().from('inventory').select('item_id')
-    if (error || !data) return
-    setOwned(data.map((row) => row.item_id))
+    const ids = await withAccount((account) => account.fetchInventory())
+    setOwned(ids)
   } catch {
     // Offline, or no session yet. The local list stands, which is the safe direction.
   }
@@ -174,3 +172,8 @@ export function useShop(): ShopState {
     }, []),
   }
 }
+
+onStorageScopeChange(() => {
+  cached = null
+  emit()
+})

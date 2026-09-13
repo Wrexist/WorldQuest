@@ -1,0 +1,5 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": { "noEmit": true, "module": "ESNext", "moduleResolution": "Bundler", "resolveJsonModule": true, "types": ["node", "vite/client"] },
+  "include": ["convex/**/*.ts", "scripts/**/*.ts", "*.ts"]
+}

@@ -1,8 +1,8 @@
 # WorldQuest execution checklist
 
-Updated 13 September 2026. **Active: Phase 1.** This is the current execution order and starts at 1; it supersedes the phase numbering in the earlier audit roadmap. All 148 audit actions appear exactly once below. Related actions should be implemented in shared workstreams, not estimated as 148 independent projects.
+Updated 13 September 2026. **Active: Phase 2, with E18 native acceptance carried forward.** This is the current execution order and starts at 1; it supersedes the phase numbering in the earlier audit roadmap. All 148 audit actions appear exactly once below. Related actions should be implemented in shared workstreams, not estimated as 148 independent projects.
 
-Completed implementation evidence is in the [Phase 1 work log](phase-1-verification.md). E06 passed on the same revision in Windows and Ubuntu CI. Launch scope is worldwide English/Swedish. E18 has dependency fixes and automated checks; native compatibility acceptance is still being collected.
+Evidence is in the [Phase 1 work log](phase-1-verification.md) and [Phase 2 work log](phase-2-verification.md). Launch scope is worldwide English/Swedish. Both native builds now pass; broader native compatibility acceptance remains open. Phase 2 has account isolation foundations and a real local Convex transaction proof; production auth and migration remain gated.
 
 **Status:** unchecked means unfinished or unverified; checked requires completion evidence. A phase is not complete just because its first batch is fixed. P0 blocks the affected release/feature; P1 precedes broad launch; P2/P3 work is gated by product evidence. Owner/effort estimates are inherited from the audits (S 1-2 days, M 3-5 days, L 1-2 engineer-weeks, XL split before scheduling). They exclude external review waits.
 
@@ -63,7 +63,7 @@ Prove Convex first, then implement safe identity, offline state, per-fact memory
 
 - [ ] **B01** - Inventory current tables, RPCs, functions, auth hooks, jobs and hosted drift; map every responsibility to a destination. *P1 / Backend / M.* [Audit](../audits/2026-09-13/07-backend-convex.md)
 - [ ] **B02** - Prove guest/link/login/logout/recovery/deletion on real Expo native builds with the chosen auth provider. *P0 / Mobile + Backend / L.* [Audit](../audits/2026-09-13/07-backend-convex.md)
-- [ ] **B03** - Extract backend-neutral ports; engines compile without backend SDK imports. *P1 / Engineering / M.* [Audit](../audits/2026-09-13/07-backend-convex.md)
+- [x] **B03** - Extract backend-neutral ports; engines compile without backend SDK imports. *P1 / Engineering / M.* [Audit](../audits/2026-09-13/07-backend-convex.md)
 - [ ] **B04** - Implement transactional lesson grading, receipt idempotency and reward invariants; conflicting lessons preserve both results. *P0 / Backend / L.* [Audit](../audits/2026-09-13/07-backend-convex.md)
 - [ ] **B05** - Enforce canonical quest slots, eligibility and payout uniqueness; the eight-slot probe is rejected. *P0 / Backend / M.* [Audit](../audits/2026-09-13/07-backend-convex.md)
 - [ ] **B06** - Design per-fact history hydration and offline event ordering; next-day reviews and multi-device replay are correct. *P0 / Mobile + Backend / L.* [Audit](../audits/2026-09-13/07-backend-convex.md)

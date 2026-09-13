@@ -1,0 +1,397 @@
+{
+  "notice": "Source inventory and proposed responsibility mapping. Hosted drift and user-data reconciliation remain unverified.",
+  "source": "packages/api/src/database.types.ts and forward SQL migrations",
+  "tables": [
+    {
+      "source": "public.achievement_progress",
+      "destination": "Convex collection/projection: achievement_progress",
+      "status": "port required"
+    },
+    {
+      "source": "public.achievement_unlocks",
+      "destination": "Convex collection/projection: achievement_unlocks",
+      "status": "port required"
+    },
+    {
+      "source": "public.coin_ledger",
+      "destination": "Convex collection/projection: coin_ledger",
+      "status": "port required"
+    },
+    {
+      "source": "public.daily_quests",
+      "destination": "Convex collection/projection: daily_quests",
+      "status": "port required"
+    },
+    {
+      "source": "public.entitlements",
+      "destination": "Convex collection/projection: entitlements",
+      "status": "port required"
+    },
+    {
+      "source": "public.feature_flags",
+      "destination": "Convex collection/projection: feature_flags",
+      "status": "port required"
+    },
+    {
+      "source": "public.inventory",
+      "destination": "Convex collection/projection: inventory",
+      "status": "port required"
+    },
+    {
+      "source": "public.league_cohorts",
+      "destination": "Convex collection/projection: league_cohorts",
+      "status": "port required"
+    },
+    {
+      "source": "public.league_members",
+      "destination": "Convex collection/projection: league_members",
+      "status": "port required"
+    },
+    {
+      "source": "public.league_opt_outs",
+      "destination": "Convex collection/projection: league_opt_outs",
+      "status": "port required"
+    },
+    {
+      "source": "public.lessons",
+      "destination": "Convex collection/projection: lessons",
+      "status": "port required"
+    },
+    {
+      "source": "public.profiles",
+      "destination": "Convex collection/projection: profiles",
+      "status": "port required"
+    },
+    {
+      "source": "public.review_log",
+      "destination": "Convex collection/projection: review_log",
+      "status": "port required"
+    },
+    {
+      "source": "public.shop_items",
+      "destination": "Convex collection/projection: shop_items",
+      "status": "port required"
+    },
+    {
+      "source": "public.streaks",
+      "destination": "Convex collection/projection: streaks",
+      "status": "port required"
+    },
+    {
+      "source": "public.subscription_events",
+      "destination": "Convex collection/projection: subscription_events",
+      "status": "port required"
+    },
+    {
+      "source": "public.subscriptions",
+      "destination": "Convex collection/projection: subscriptions",
+      "status": "port required"
+    },
+    {
+      "source": "public.user_facts",
+      "destination": "Convex collection/projection: user_facts",
+      "status": "port required"
+    },
+    {
+      "source": "public.wallets",
+      "destination": "Convex collection/projection: wallets",
+      "status": "port required"
+    },
+    {
+      "source": "public.xp_ledger",
+      "destination": "Convex collection/projection: xp_ledger",
+      "status": "port required"
+    }
+  ],
+  "views": [
+    {
+      "source": "public.league_standings",
+      "destination": "Owned, indexed Convex query projection",
+      "status": "port required"
+    }
+  ],
+  "rpcs": [
+    {
+      "source": "public.continue_lesson",
+      "destination": "Authenticated Convex mutation or internal scheduled job; preserve transaction boundary",
+      "status": "port required"
+    },
+    {
+      "source": "public.expire_streaks",
+      "destination": "Authenticated Convex mutation or internal scheduled job; preserve transaction boundary",
+      "status": "port required"
+    },
+    {
+      "source": "public.pin_daily_quest",
+      "destination": "Authenticated Convex mutation or internal scheduled job; preserve transaction boundary",
+      "status": "port required"
+    },
+    {
+      "source": "public.purchase_freeze",
+      "destination": "Authenticated Convex mutation or internal scheduled job; preserve transaction boundary",
+      "status": "port required"
+    },
+    {
+      "source": "public.purchase_item",
+      "destination": "Authenticated Convex mutation or internal scheduled job; preserve transaction boundary",
+      "status": "port required"
+    },
+    {
+      "source": "public.record_lesson",
+      "destination": "Authenticated Convex mutation or internal scheduled job; preserve transaction boundary",
+      "status": "port required"
+    },
+    {
+      "source": "public.record_subscription_event",
+      "destination": "Authenticated Convex mutation or internal scheduled job; preserve transaction boundary",
+      "status": "port required"
+    },
+    {
+      "source": "public.repair_streak",
+      "destination": "Authenticated Convex mutation or internal scheduled job; preserve transaction boundary",
+      "status": "port required"
+    }
+  ],
+  "migrationFiles": [
+    "20260801120000_create_identity.sql",
+    "20260801120100_create_learning.sql",
+    "20260801120200_create_economy.sql",
+    "20260801120300_harden_security_advisories.sql",
+    "20260801120400_provision_new_user.sql",
+    "20260802210000_wallet_totals_from_ledgers.sql",
+    "20260803180000_create_subscriptions.sql",
+    "20260803210000_record_subscription_event.sql",
+    "20260805090000_mastery_is_derived.sql",
+    "20260805110000_record_lesson.sql",
+    "20260805120000_purchase_item.sql",
+    "20260805130000_guard_profile_columns.sql",
+    "20260805140000_lesson_kind_enum.sql",
+    "20260805150000_hardening_pass.sql",
+    "20260805160000_subscription_transfer.sql",
+    "20260805170000_streak_milestones.sql",
+    "20260805180000_purchase_freeze.sql",
+    "20260805190000_expire_streaks.sql",
+    "20260805200000_review_log_append_only_statement.sql",
+    "20260805210000_review_corrections.sql",
+    "20260805220000_revoke_break_trigger_execute.sql",
+    "20260805230000_lock_subscription_transfer.sql",
+    "20260805240000_qualify_trigger_functions.sql",
+    "20260809090000_create_feature_flags.sql",
+    "20260813100000_create_leagues.sql",
+    "20260813110000_seed_quest_ceremony_flags.sql",
+    "20260813120000_seed_more_titles.sql",
+    "20260814230000_revoke_league_trigger_execute.sql",
+    "20260815080000_seed_league_flag.sql",
+    "20260818090000_continue_lesson.sql",
+    "20260818100000_pay_daily_quest.sql",
+    "20260818110000_repair_streak.sql",
+    "20260818120000_pay_achievements.sql"
+  ],
+  "sqlFunctionDeclarations": [
+    {
+      "name": "guard_protected_profile_columns",
+      "migration": "20260801120000_create_identity.sql"
+    },
+    {
+      "name": "handle_new_user",
+      "migration": "20260801120400_provision_new_user.sql"
+    },
+    {
+      "name": "public.apply_xp_to_wallet",
+      "migration": "20260802210000_wallet_totals_from_ledgers.sql"
+    },
+    {
+      "name": "public.apply_coins_to_wallet",
+      "migration": "20260802210000_wallet_totals_from_ledgers.sql"
+    },
+    {
+      "name": "touch_subscription_updated_at",
+      "migration": "20260803180000_create_subscriptions.sql"
+    },
+    {
+      "name": "record_subscription_event",
+      "migration": "20260803210000_record_subscription_event.sql"
+    },
+    {
+      "name": "public.derive_mastery",
+      "migration": "20260805090000_mastery_is_derived.sql"
+    },
+    {
+      "name": "public.record_lesson",
+      "migration": "20260805110000_record_lesson.sql"
+    },
+    {
+      "name": "public.purchase_item",
+      "migration": "20260805120000_purchase_item.sql"
+    },
+    {
+      "name": "public.guard_protected_profile_columns",
+      "migration": "20260805130000_guard_profile_columns.sql"
+    },
+    {
+      "name": "public.apply_xp_to_wallet",
+      "migration": "20260805150000_hardening_pass.sql"
+    },
+    {
+      "name": "public.apply_coins_to_wallet",
+      "migration": "20260805150000_hardening_pass.sql"
+    },
+    {
+      "name": "public.refuse_review_log_mutation",
+      "migration": "20260805150000_hardening_pass.sql"
+    },
+    {
+      "name": "public.record_subscription_event",
+      "migration": "20260805160000_subscription_transfer.sql"
+    },
+    {
+      "name": "public.record_lesson",
+      "migration": "20260805170000_streak_milestones.sql"
+    },
+    {
+      "name": "public.purchase_freeze",
+      "migration": "20260805180000_purchase_freeze.sql"
+    },
+    {
+      "name": "public.expire_streaks",
+      "migration": "20260805190000_expire_streaks.sql"
+    },
+    {
+      "name": "public.expire_streaks",
+      "migration": "20260805210000_review_corrections.sql"
+    },
+    {
+      "name": "public.clear_streak_break_on_activity",
+      "migration": "20260805210000_review_corrections.sql"
+    },
+    {
+      "name": "public.guard_protected_profile_columns",
+      "migration": "20260805210000_review_corrections.sql"
+    },
+    {
+      "name": "public.purchase_item",
+      "migration": "20260805210000_review_corrections.sql"
+    },
+    {
+      "name": "public.record_lesson",
+      "migration": "20260805210000_review_corrections.sql"
+    },
+    {
+      "name": "public.record_subscription_event",
+      "migration": "20260805230000_lock_subscription_transfer.sql"
+    },
+    {
+      "name": "foo",
+      "migration": "20260805240000_qualify_trigger_functions.sql"
+    },
+    {
+      "name": "public.handle_new_user",
+      "migration": "20260805240000_qualify_trigger_functions.sql"
+    },
+    {
+      "name": "public.touch_subscription_updated_at",
+      "migration": "20260805240000_qualify_trigger_functions.sql"
+    },
+    {
+      "name": "public.league_member_is_not_a_child",
+      "migration": "20260813100000_create_leagues.sql"
+    },
+    {
+      "name": "public.continue_lesson",
+      "migration": "20260818090000_continue_lesson.sql"
+    },
+    {
+      "name": "public.pin_daily_quest",
+      "migration": "20260818100000_pay_daily_quest.sql"
+    },
+    {
+      "name": "public.record_lesson",
+      "migration": "20260818100000_pay_daily_quest.sql"
+    },
+    {
+      "name": "public.repair_streak",
+      "migration": "20260818110000_repair_streak.sql"
+    },
+    {
+      "name": "public.record_lesson",
+      "migration": "20260818120000_pay_achievements.sql"
+    }
+  ],
+  "triggers": [
+    {
+      "name": "profiles_guard_protected",
+      "migration": "20260801120000_create_identity.sql"
+    },
+    {
+      "name": "on_auth_user_created",
+      "migration": "20260801120400_provision_new_user.sql"
+    },
+    {
+      "name": "xp_ledger_to_wallet",
+      "migration": "20260802210000_wallet_totals_from_ledgers.sql"
+    },
+    {
+      "name": "coin_ledger_to_wallet",
+      "migration": "20260802210000_wallet_totals_from_ledgers.sql"
+    },
+    {
+      "name": "subscriptions_touch_updated_at",
+      "migration": "20260803180000_create_subscriptions.sql"
+    },
+    {
+      "name": "user_facts_derive_mastery",
+      "migration": "20260805090000_mastery_is_derived.sql"
+    },
+    {
+      "name": "review_log_is_append_only",
+      "migration": "20260805150000_hardening_pass.sql"
+    },
+    {
+      "name": "review_log_is_append_only_stmt",
+      "migration": "20260805200000_review_log_append_only_statement.sql"
+    },
+    {
+      "name": "streaks_activity_clears_break",
+      "migration": "20260805210000_review_corrections.sql"
+    },
+    {
+      "name": "review_log_refuses_truncate",
+      "migration": "20260805210000_review_corrections.sql"
+    },
+    {
+      "name": "league_members_no_children",
+      "migration": "20260813100000_create_leagues.sql"
+    }
+  ],
+  "schedules": [
+    {
+      "name": "expire-streaks",
+      "migration": "20260805190000_expire_streaks.sql"
+    }
+  ],
+  "edgeFunctions": [
+    {
+      "name": "store-notifications",
+      "destination": "Verified HTTP webhook plus deduplicated internal transaction"
+    },
+    {
+      "name": "submit-lesson",
+      "destination": "Convex transactional grading mutation"
+    }
+  ],
+  "hostedInspection": {
+    "checkedOn": "2026-09-13",
+    "project": "worldquest-dev",
+    "region": "eu-north-1",
+    "status": "INACTIVE",
+    "schema": "Table and migration inspection timed out. Not restored or modified.",
+    "functionsListed": [
+      {
+        "name": "submit-lesson",
+        "version": 1,
+        "verifyJwt": true
+      }
+    ],
+    "liveUserData": "Owner confirmed only development/test data on 2026-09-13. No live-user migration required; no data deleted or migrated."
+  }
+}

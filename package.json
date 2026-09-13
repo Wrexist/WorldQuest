@@ -26,7 +26,7 @@
     "dev": "pnpm --filter @worldquest/mobile start",
     "generate": "pnpm design:tokens && pnpm i18n:types && pnpm edge:build",
     "prepare": "pnpm generate",
-    "verify": "pnpm generate && pnpm status:check && pnpm typecheck && pnpm test && pnpm content:validate && pnpm content:crosscheck && pnpm content:preview --quiet && pnpm i18n:check && pnpm design:contrast && pnpm lint:a11y && pnpm escape-hatches && pnpm reachability && pnpm check:sql && pnpm five-states && pnpm scrollable && pnpm engines:simulate && pnpm check:eas",
+    "verify": "pnpm generate && pnpm status:check && pnpm typecheck && pnpm check:backend-boundaries && pnpm test && pnpm content:validate && pnpm content:crosscheck && pnpm content:preview --quiet && pnpm i18n:check && pnpm design:contrast && pnpm lint:a11y && pnpm escape-hatches && pnpm reachability && pnpm check:sql && pnpm five-states && pnpm scrollable && pnpm engines:simulate && pnpm check:eas",
     "typecheck": "pnpm -r --filter \"./packages/*\" --filter \"./apps/*\" --fail-if-no-match typecheck && pnpm typecheck:edge",
     "typecheck:edge": "tsc --noEmit -p supabase/tsconfig.json",
     "test": "node --test scripts/lib/browser-harness.test.cjs scripts/security-regressions.test.cjs && pnpm -r --filter \"./packages/*\" --filter \"./apps/*\" --fail-if-no-match test && vitest run --config vitest.edge.config.ts",
@@ -73,7 +73,9 @@
     "verify:full": "pnpm verify && pnpm bundle:native && pnpm e2e && pnpm a11y:tree",
     "security:check": "node scripts/security-check.cjs",
     "status:generate": "node scripts/project-inventory.cjs",
-    "status:check": "node scripts/project-inventory.cjs --check"
+    "status:check": "node scripts/project-inventory.cjs --check",
+    "check:backend-boundaries": "node scripts/backend-boundaries.cjs",
+    "backend:inventory": "node scripts/backend-inventory.cjs"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

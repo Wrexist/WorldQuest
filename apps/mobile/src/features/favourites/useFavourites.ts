@@ -1,3 +1,4 @@
+import { onStorageScopeChange } from '../../lib/storage.js'
 /**
  * Countries the user has starred.
  *
@@ -91,3 +92,8 @@ export function useFavourites(): UseFavourites {
 export function resetFavouritesCache(): void {
   snapshot = null
 }
+
+onStorageScopeChange(() => {
+  resetFavouritesCache()
+  for (const listener of listeners) listener()
+})

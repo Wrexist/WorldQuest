@@ -14,11 +14,11 @@ the release foundations described below.
 
 ## Status
 
-**Phase 1: verification and release foundations.** The Expo app, geography content,
+**Phase 2: backend, accounts and trustworthy progress.** The Expo app, geography content,
 learning engines and backend code exist. The September audit identified learning-history,
 account, reward and purchase gaps that block a public paid release. Follow the
 [eight-phase execution checklist](docs/plan/execution-plan.md) and
-[current work log](docs/plan/phase-1-verification.md).
+[current work log](docs/plan/phase-2-verification.md). Phase 1 native acceptance is carried forward.
 
 ## What it is
 

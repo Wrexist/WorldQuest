@@ -44,6 +44,8 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @worldquest/mobile exec expo prebuild --platform ios --no-install
       - run: pod install
@@ -56,6 +58,9 @@ jobs:
         run: |
           set -euo pipefail
           DEVICE_ID=$(xcrun simctl list devices available -j | python3 -c 'import json,sys; print(next(d["udid"] for ds in json.load(sys.stdin)["devices"].values() for d in ds if d["name"].startswith("iPhone")))')
+          echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
+          xcodebuild -version
+          xcrun simctl list devices available
           xcrun simctl boot "$DEVICE_ID"
           xcrun simctl bootstatus "$DEVICE_ID" -b
           xcrun simctl install "$DEVICE_ID" "$RUNNER_TEMP/wq-ios/Build/Products/Release-iphonesimulator/WorldQuest.app"
@@ -63,6 +68,17 @@ jobs:
           sleep 10
           xcrun simctl io "$DEVICE_ID" screenshot "$RUNNER_TEMP/ios-startup.png"
           xcrun simctl spawn "$DEVICE_ID" launchctl list | grep com.wrexist.worldquest
+      - name: Exercise native storage, navigation and decoding
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/maestro"
+          cd "$RUNNER_TEMP/maestro"
+          curl --fail --location --retry 3 -o maestro.zip https://github.com/mobile-dev-inc/Maestro/releases/download/cli-2.10.0/maestro.zip
+          echo '29b675e10cc12080e445e9bfb2e2b4e4dfb9c0f2e30d5884120d258b5e1cd991  maestro.zip' | shasum -a 256 --check
+          unzip -q maestro.zip
+          export PATH="$RUNNER_TEMP/maestro/maestro/bin:$PATH"
+          cd "$GITHUB_WORKSPACE"
+          maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/native-flow" apps/mobile/e2e/native-smoke.yaml
       - name: Save native evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -71,5 +87,8 @@ jobs:
           path: |
             ${{ runner.temp }}/ios-build.log
             ${{ runner.temp }}/ios-startup.png
+            ${{ runner.temp }}/native-flow/
+            native-relaunch.png
+            native-country.png
           if-no-files-found: ignore
           retention-days: 7

@@ -1,3 +1,4 @@
+import { onStorageScopeChange } from '../../lib/storage.js'
 /**
  * How long this user takes to answer one item.
  *
@@ -114,3 +115,8 @@ export function recordPace(answers: readonly AnsweredItem[]): void {
 export function resetPaceCache(): void {
   snapshot = null
 }
+
+onStorageScopeChange(() => {
+  resetPaceCache()
+  for (const listener of listeners) listener()
+})

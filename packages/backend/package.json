@@ -1,0 +1,19 @@
+{
+  "name": "@worldquest/backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "dev": "convex dev",
+    "proof": "tsx scripts/local-proof.ts"
+  },
+  "dependencies": {
+    "@worldquest/engines": "workspace:*",
+    "convex": "1.45.0"
+  },
+  "devDependencies": {
+    "convex-test": "0.0.58"
+  }
+}

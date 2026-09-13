@@ -19,7 +19,8 @@ const store = new Map<string, string>()
 
 // The real module reaches for MMKV, which has no native side in jsdom. Mocking the
 // storage seam rather than MMKV itself keeps the test about the entitlement.
-vi.mock('../../lib/storage.js', () => ({
+vi.mock('../../lib/storage.js', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   readJson: (key: string) => {
     const raw = store.get(key)
     if (raw === undefined) return null

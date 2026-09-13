@@ -78,3 +78,12 @@ Expo also explicitly refused iOS prebuild on this Windows host; this attempt is 
 Next E18 acceptance work: build this lockfile on a compatible Android build host and a macOS/Xcode iOS host, then install and exercise startup, local storage, navigation/deep-link decoding and bundled assets. Keep the tested package versions and avoid treating a major Gradle/Expo upgrade as a routine cache fix. Record actual OS/build versions and repeat the affected native paths before checking E18.
 
 Native Android execution and iOS device compatibility remain unverified until a built application is installed and exercised. Broader supported-device, privacy, billing and production-release acceptance remain in their assigned later phases. No backend migration, store submission or production deployment has occurred.
+
+### Later native evidence
+
+The host blocker above was subsequently resolved with Linux Android compilation
+and macOS 15 iOS compilation. Both jobs passed in
+[run 34750705925](https://github.com/Wrexist/WorldQuest/actions/runs/34750705925).
+Android startup, onboarding and restart were exercised locally; the iOS simulator
+startup image was inspected. E18 journey acceptance is carried into the
+[Phase 2 work log](phase-2-verification.md), which records the newer evidence.
