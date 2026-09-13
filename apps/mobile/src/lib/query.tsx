@@ -31,8 +31,9 @@ import { captureStorage, onStorageScopeChange, storageGeneration, storageTreeGen
 const MAX_CACHE_AGE_MS = 24 * 60 * 60 * 1000
 
 function makePersister() {
-  const storage = captureStorage()
-  return createAsyncStoragePersister({
+  let storage = captureStorage()
+  let attached = true
+  const adapter = createAsyncStoragePersister({
     storage: {
       getItem: (key) => Promise.resolve(storage.get(key)),
       setItem: (key, value) => { storage.set(key, value); return Promise.resolve() },
@@ -40,6 +41,16 @@ function makePersister() {
     },
     key: 'query.cache.v2',
   })
+  const value = {
+    ...adapter,
+    persistClient: (snapshot: Parameters<typeof adapter.persistClient>[0]) =>
+      attached ? adapter.persistClient(snapshot) : Promise.resolve(),
+  }
+  return {
+    value,
+    adoptGuest: () => { storage = captureStorage() },
+    detach: () => { attached = false },
+  }
 }
 
 function makeClient(): QueryClient {
@@ -97,7 +108,19 @@ AppState.addEventListener('change', (status: AppStateStatus) => {
 let client: QueryClient | null = null
 export const queryClient = (): QueryClient => (client ??= makeClient())
 let persister: ReturnType<typeof makePersister> | null = null
+let treeGeneration = storageTreeGeneration()
 onStorageScopeChange(() => {
+  const nextTree = storageTreeGeneration()
+  if (treeGeneration === nextTree) {
+    // A new anonymous identity owns this same guest's work. Keep live observers
+    // and the active lesson mounted, and move future cache writes with that work.
+    persister?.adoptGuest()
+    return
+  }
+  treeGeneration = nextTree
+  // Disposing the old in-memory client must not persist an empty cache over its
+  // account's saved progress. Already accepted writes still use that account's store.
+  persister?.detach()
   const previous = client
   client = null
   if (previous) {
@@ -115,7 +138,7 @@ export function QueryProvider({ children }: { children: ReactNode }) {
     <PersistQueryClientProvider
       key={storageTreeGeneration()}
       client={instance}
-      persistOptions={{ persister: (persister ??= makePersister()), maxAge: MAX_CACHE_AGE_MS }}
+      persistOptions={{ persister: (persister ??= makePersister()).value, maxAge: MAX_CACHE_AGE_MS }}
     >
       {children}
     </PersistQueryClientProvider>
