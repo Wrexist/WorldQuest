@@ -18,7 +18,8 @@ import {
   ensureSession,
   type WorldQuestClient,
 } from '@worldquest/api'
-import { beginStorageTransition, captureStorage, finishStorageTransition, sessionStorage, setStorageAccount, startGuestStorage } from './storage.js'
+import { beginStorageTransition, captureStorage, finishStorageTransition, setStorageAccount, startGuestStorage } from './storage.js'
+import { createSessionStorage } from './credentials.js'
 
 let client: WorldQuestClient | null = null
 let session: Promise<{ userId: string }> | null = null
@@ -55,7 +56,7 @@ export const backendUrl = (): string => config().url
 
 export function supabase(): WorldQuestClient {
   if (!client) {
-    client = createWorldQuestClient({ ...config(), storage: sessionStorage })
+    client = createWorldQuestClient({ ...config(), storage: createSessionStorage() })
     const { data } = client.auth.onAuthStateChange((event, next) => {
       // This callback runs under the auth lock: no awaited SDK calls here.
       if (event === 'SIGNED_OUT') {

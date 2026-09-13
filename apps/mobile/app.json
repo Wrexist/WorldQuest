@@ -40,6 +40,7 @@
       }
     },
     "android": {
+      "allowBackup": false,
       "package": "com.wrexist.worldquest",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -60,7 +61,8 @@
       "expo-font",
       "expo-localization",
       "expo-audio",
-      "expo-notifications"
+      "expo-notifications",
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": false

@@ -47,8 +47,8 @@ const UNUSABLE = [
   [],
 ]
 
-beforeEach(() => {
-  clearAll()
+beforeEach(async () => {
+  await clearAll()
   resetQuestProgressCache()
 })
 

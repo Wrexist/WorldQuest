@@ -1,36 +1,21 @@
 /**
  * Device storage.
  *
- * MMKV rather than AsyncStorage (ADR 0007): it is synchronous, which matters because
- * the very first thing a cold start does is read a session, and an async read there
- * is a frame of "signed out" before a frame of "signed in".
- *
- * Two separate instances on purpose. The auth session is a credential and gets its
- * own encrypted store; cached progress and preferences are neither secret nor worth
- * the encryption cost on every read. Mixing them means either encrypting everything
- * or encrypting nothing, and both are wrong.
+ * MMKV keeps app caches synchronous. Credentials use the asynchronous protected
+ * vault in credentials.ts; session initialization waits for it before accepting
+ * an identity. App caches never contain session tokens.
  */
 
 import { MMKV } from 'react-native-mmkv'
-import type { SessionStorage } from '@worldquest/api'
+import { clearSessionStorage } from './credentials.js'
+export { clearSessionStorage } from './credentials.js'
 
 /**
  * Lazily constructed. The MMKV constructor reaches into a native module, and doing
  * that at import time makes any environment without one — a unit test, the screenshot
  * renderer — fail at the import rather than at the call.
  */
-let auth: MMKV | undefined
 let app: MMKV | undefined
-
-const authStore = (): MMKV =>
-  (auth ??= new MMKV({
-    id: 'worldquest.auth',
-    // Not a secret in itself — MMKV derives the key from it, and on a rooted device
-    // an attacker with the binary has this too. It raises the cost of a casual dump
-    // of another app's data, which is the realistic threat for a phone that gets
-    // lost. Real secrets stay server-side.
-    encryptionKey: 'worldquest.session.v1',
-  }))
 
 const appStore = (): MMKV => (app ??= new MMKV({ id: 'worldquest.app' }))
 
@@ -128,18 +113,6 @@ export function startGuestStorage(): void {
   const keys = appStore().getAllKeys()
   while (keys.some((key) => key.startsWith(prefixOf({ userId: null, guest })))) guest++
   changeScope({ userId: null, guest })
-}
-
-/**
- * The session adapter supabase-js expects.
- *
- * Its interface allows promises, and MMKV is synchronous — returning plain values is
- * valid and skips a microtask on the hot path.
- */
-export const sessionStorage: SessionStorage = {
-  getItem: (key) => authStore().getString(key) ?? null,
-  setItem: (key, value) => authStore().set(key, value),
-  removeItem: (key) => authStore().delete(key),
 }
 
 // ── app storage ─────────────────────────────────────────────────────────────
@@ -248,15 +221,15 @@ export const writeJson = (key: string, value: unknown): void =>
 export const remove = (key: string): void => appStore().delete(scopedKey(key))
 
 /** Explicit full local reset. Ordinary logout detaches accounts without deleting work. */
-export function clearAll(): void {
-  authStore().clearAll()
+export function clearAll(): Promise<void> {
+  const cleared = clearSessionStorage()
   appStore().clearAll()
   scope = null
   generation++
   treeGeneration++
   for (const listener of scopeListeners) listener()
+  return cleared
 }
 
-export const clearSessionStorage = (): void => authStore().clearAll()
 export const beginStorageTransition = (): void => appStore().set(TRANSITION_KEY, 'pending')
 export const finishStorageTransition = (): void => appStore().delete(TRANSITION_KEY)

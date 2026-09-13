@@ -20,6 +20,17 @@ import { cleanup } from '@testing-library/react'
  */
 afterEach(cleanup)
 
+// Native Keychain/Keystore itself is exercised by the isolated native proof build.
+vi.mock('expo-secure-store', () => {
+  const values = new Map<string, string>()
+  return {
+    WHEN_UNLOCKED_THIS_DEVICE_ONLY: 6,
+    getItemAsync: async (key: string) => values.get(key) ?? null,
+    setItemAsync: async (key: string, value: string) => { values.set(key, value) },
+    deleteItemAsync: async (key: string) => { values.delete(key) },
+  }
+})
+
 /**
  * MMKV is a JSI module — there is no JavaScript fallback, so importing it in jsdom
  * throws at construction. This in-memory stand-in has the same surface, which is

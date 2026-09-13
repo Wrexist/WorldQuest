@@ -7,8 +7,8 @@ vi.mock('./supabase.js', () => ({
 }))
 const { withAccount } = await import('./backend.js')
 
-beforeEach(() => {
-  clearAll()
+beforeEach(async () => {
+  await clearAll()
   setStorageAccount('A')
   calls.user.mockReset().mockResolvedValue({ userId: 'A' })
   calls.open.mockReset().mockResolvedValue({ identity: { userId: 'A', backendId: 'test' } })

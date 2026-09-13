@@ -11,9 +11,9 @@ vi.mock('@worldquest/api', async (importOriginal) => ({
 }))
 const { currentUser, acceptSignedInAccount, resetClient, withAccountTransition } = await import('./supabase.js')
 
-beforeEach(() => {
+beforeEach(async () => {
   resetClient()
-  clearAll()
+  await clearAll()
   auth.getSession.mockReset().mockResolvedValue({ error: null, data: { session: null } })
   auth.signInAnonymously.mockReset().mockResolvedValue({ error: null, data: { user: { id: 'A' } } })
 })

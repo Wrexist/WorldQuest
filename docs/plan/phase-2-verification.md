@@ -252,3 +252,19 @@ Validation for this deployment used the unchanged, previously passing source,
 a fresh Worker dry run, actual deployment, remote configuration readback and
 migration inspection. The earlier full test/CI evidence above remains applicable;
 the account, recovery, child policy and full native acceptance gates remain open.
+
+## Native credential protection (2026-09-13)
+
+Implemented ADR 0014: native credentials now use Expo SecureStore, with legacy
+MMKV migration, serialized operations, transport generation invalidation at logout,
+a durable erasure marker and an installation boundary for retained iOS Keychain
+entries. Browser credentials are memory-only. Logout awaits protected erasure
+before navigating; app caches remain separately scoped and preserved.
+
+Eleven failure-injection vault tests pass, alongside 18 existing storage/account
+tests in the focused run. Mobile TypeScript passes. Added an isolated native
+credential proof with a separate app ID and synthetic values; it tests actual
+Keychain/Keystore migration, restart, logout and reinstall. Full verification and
+native results will be appended when completed. S08 remains unchecked until that
+evidence is available. B02 remains open: native email linking/recovery and D1
+identity integration have not been completed by this storage change.

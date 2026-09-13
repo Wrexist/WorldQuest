@@ -13,9 +13,9 @@ export async function signOutEverywhere(): Promise<void> {
     } catch {
       // Local logout remains possible offline. Server session revocation may retry later.
     }
-    clearSessionStorage()
-    resetChildAccount()
     resetClient()
+    await clearSessionStorage()
+    resetChildAccount()
   })
   router.replace('/onboarding')
 }

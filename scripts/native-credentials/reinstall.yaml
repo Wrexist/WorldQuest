@@ -1,0 +1,7 @@
+appId: com.wrexist.worldquest.credentialsproof
+---
+- openLink: worldquestcredentialsproof://reinstall
+- extendedWaitUntil:
+    visible: 'PASS_REINSTALL_KEYCHAIN_.*'
+    timeout: 60000
+- takeScreenshot: credential-reinstall

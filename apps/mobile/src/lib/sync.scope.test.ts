@@ -24,7 +24,7 @@ const result: SubmitLessonResponse = {
 beforeEach(async () => {
   state.online = false
   await flush()
-  storage.clearAll()
+  await storage.clearAll()
   storage.setStorageAccount('A')
   state.submit.mockReset().mockResolvedValue(result)
   state.reconcile.mockClear()
