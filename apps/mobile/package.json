@@ -50,7 +50,7 @@
     "@worldquest/content": "workspace:*",
     "jsdom": "^25.0.1",
     "react-native-web": "^0.21.2",
-    "vitest": "^2.1.8"
+    "vitest": "4.1.11"
   },
   "expo": {
     "autolinking": {

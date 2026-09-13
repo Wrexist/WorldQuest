@@ -1,6 +1,6 @@
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { build } from 'esbuild'
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare'
 import { BALANCE } from '@worldquest/engines'
 import { hashToken } from './src/auth'
@@ -12,16 +12,18 @@ let script: string
 let mf: Miniflare
 let db: D1Database
 beforeAll(async () => {
-  const result = await build({ entryPoints: ['src/index.ts'], bundle: true, write: false, format: 'esm', platform: 'browser', target: 'es2022' })
+  const result = await build({ entryPoints: ['src/index.ts'], bundle: true, write: false, format: 'esm', platform: 'browser', target: 'es2022', external: ['node:*'] })
   script = result.outputFiles[0]!.text
 })
 beforeEach(async () => {
   mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script, compatibilityDate: '2026-09-13',
-    d1Databases: ['DB'], bindings: { API_ENABLED: 'true' } }))
+    compatibilityFlags: ['nodejs_compat'], d1Databases: ['DB'], bindings: { API_ENABLED: 'true' } }))
   db = await mf.getD1Database('DB') as unknown as D1Database
   // Statements contain no triggers or semicolons within literals. Run the real migration.
-  const sql = readFileSync('migrations/0001_accounts_and_lessons.sql', 'utf8').replace(/--[^\n]*/g, '')
-  await db.batch(sql.split(';').map(s => s.trim()).filter(Boolean).map(s => db.prepare(s)))
+  for (const file of readdirSync('migrations').sort()) {
+    const sql = readFileSync(`migrations/${file}`, 'utf8').replace(/--[^\n]*/g, '')
+    await db.batch(sql.split(';').map(s => s.trim()).filter(Boolean).map(s => db.prepare(s)))
+  }
 })
 afterEach(async () => { await mf.dispose() })
 async function call(path: string, token?: string, body?: unknown) {
@@ -55,7 +57,7 @@ async function state(owner: string) {
 }
 describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
   it('fails closed when the application API is disabled', async () => {
-    await mf.setOptions(convertV4MiniflareOptions({ modules: true, script, compatibilityDate: '2026-09-13', d1Databases: ['DB'], bindings: { API_ENABLED: 'false' } }))
+    await mf.setOptions(convertV4MiniflareOptions({ modules: true, script, compatibilityDate: '2026-09-13', compatibilityFlags: ['nodejs_compat'], d1Databases: ['DB'], bindings: { API_ENABLED: 'false' } }))
     expect((await call('/health')).status).toBe(200)
     expect((await call('/v1/auth/guest', undefined, {})).status).toBe(503)
   })

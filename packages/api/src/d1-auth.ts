@@ -1,0 +1,186 @@
+import { AccountChangedError } from './ports.js'
+
+export interface ProtectedStorage {
+  getItem(key: string): Promise<string | null>
+  setItem(key: string, value: string): Promise<void>
+  removeItem(key: string): Promise<void>
+}
+export interface D1Session { userId: string; token: string; expiresAt: number }
+export interface D1Challenge { challengeId: string; expiresAt: number; purpose: 'link' | 'login' | 'delete'; email: string }
+export interface D1Account { userId: string; audience: 'unknown' | 'protected' | 'eligible'; email: string | null; revision: number; xp: number; coins: number }
+export type AuthFetch = (url: string, init: RequestInit) => Promise<{ status: number; ok: boolean; json(): Promise<unknown> }>
+export class D1AuthError extends Error {
+  constructor(readonly code: string, readonly status = 0, readonly retryChallenge?: D1Challenge) { super(code); this.name = 'D1AuthError' }
+}
+const STATE_KEY = 'd1.auth.state.v1'
+const hex = (value: unknown): value is string => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value)
+const record = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object' && !Array.isArray(value)
+function session(value: unknown): D1Session {
+  if (!record(value) || typeof value.userId !== 'string' || !/^[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}$/.test(value.userId) || !hex(value.token)
+    || typeof value.expiresAt !== 'number' || !Number.isFinite(value.expiresAt)) throw new D1AuthError('INVALID_RESPONSE')
+  return { userId: value.userId, token: value.token, expiresAt: value.expiresAt }
+}
+
+/** Independent auth transport. The caller commits account/cache transitions only after these promises resolve. */
+export function createD1AuthClient(options: {
+  baseURL: string; storage: ProtectedStorage; clearCredentials: () => Promise<void>; fetch: AuthFetch
+}) {
+  const base = new URL(options.baseURL)
+  if (base.protocol !== 'https:' && !(base.protocol === 'http:' && ['localhost', '127.0.0.1', '10.0.2.2'].includes(base.hostname))) throw new D1AuthError('INSECURE_ENDPOINT')
+  if (base.username || base.password || base.search || base.hash) throw new D1AuthError('INVALID_ENDPOINT')
+  const origin = base.href.replace(/\/$/, '')
+  let closed = false, busy = false
+  const assertOpen = () => { if (closed) throw new AccountChangedError() }
+  async function load(): Promise<D1Session | null> {
+    assertOpen()
+    const raw = await options.storage.getItem(STATE_KEY)
+    assertOpen()
+    if (raw === null) return null
+    try {
+      const value: unknown = JSON.parse(raw)
+      if (!record(value) || value.version !== 1) throw new Error('Invalid state')
+      return session(value.session)
+    } catch { throw new D1AuthError('CREDENTIALS_INVALID') }
+  }
+  async function request(path: string, token: string | undefined, body?: unknown): Promise<Record<string, unknown>> {
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 15_000)
+    let result: Awaited<ReturnType<AuthFetch>>
+    let value: unknown
+    try { result = await options.fetch(origin + path, { method: body === undefined ? 'GET' : 'POST', signal: controller.signal,
+      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      ...(body === undefined ? {} : { body: JSON.stringify(body) }) })
+      value = await result.json()
+    }
+    finally { clearTimeout(timeout) }
+    if (!record(value)) throw new D1AuthError('INVALID_RESPONSE')
+    if (!result.ok) {
+      const error = new D1AuthError(typeof value.error === 'string' ? value.error : 'SERVICE_UNAVAILABLE', result.status)
+      // Only the email request wrapper may interpret the server's retry context.
+      throw Object.assign(error, { response: value })
+    }
+    return value
+  }
+  async function revoke(token: string): Promise<void> {
+    try { await request('/v1/auth/logout', token, {}) } catch { /* Local logout also works offline. */ }
+  }
+  async function accept(value: unknown, expectedOwner?: string): Promise<D1Session> {
+    const next = session(value)
+    try {
+      assertOpen()
+      if (expectedOwner && next.userId !== expectedOwner) throw new D1AuthError('OWNER_CHANGED')
+      // Session replacement and challenge removal are one protected write. A
+      // later cleanup failure must not leave an unacknowledged new account active.
+      await options.storage.setItem(STATE_KEY, JSON.stringify({ version: 1, session: next, challenge: null }))
+      assertOpen()
+      return next
+    } catch (error) {
+      // A failed protected write must never leave a usable but unacknowledged login.
+      await revoke(next.token)
+      throw error
+    }
+  }
+  async function transition<T>(operation: () => Promise<T>): Promise<T> {
+    assertOpen()
+    if (busy) throw new D1AuthError('AUTH_BUSY')
+    busy = true
+    try { return await operation() } finally { busy = false }
+  }
+  async function required(): Promise<D1Session> {
+    const s = await load()
+    if (!s) throw new D1AuthError('AUTH_REQUIRED', 401)
+    return s
+  }
+  async function saveChallenge(value: Record<string, unknown>, purpose: D1Challenge['purpose'], email: string) {
+    assertOpen()
+    if (!hex(value.challengeId) || typeof value.expiresAt !== 'number' || !Number.isFinite(value.expiresAt)) throw new D1AuthError('INVALID_RESPONSE')
+    const c: D1Challenge = { challengeId: value.challengeId, expiresAt: value.expiresAt, purpose, email }
+    const current = await required()
+    await options.storage.setItem(STATE_KEY, JSON.stringify({ version: 1, session: current, challenge: c }))
+    assertOpen()
+    return c
+  }
+  async function pending(): Promise<D1Challenge | null> {
+    assertOpen()
+    const raw = await options.storage.getItem(STATE_KEY)
+    assertOpen()
+    if (!raw) return null
+    try {
+      const value: unknown = JSON.parse(raw)
+      if (!record(value) || value.version !== 1) throw new Error('Invalid state')
+      if (value.challenge === null) return null
+      const c = value.challenge
+      if (!record(c) || !hex(c.challengeId) || typeof c.expiresAt !== 'number' || !Number.isFinite(c.expiresAt)
+        || typeof c.email !== 'string' || (c.purpose !== 'link' && c.purpose !== 'login' && c.purpose !== 'delete')) throw new Error('Invalid challenge')
+      return { challengeId: c.challengeId, expiresAt: c.expiresAt, email: c.email, purpose: c.purpose }
+    } catch { throw new D1AuthError('CREDENTIALS_INVALID') }
+  }
+  return {
+    restore: load, pending,
+    startGuest: () => transition(async () => {
+      const existing = await load()
+      if (existing) return existing
+      return accept(await request('/v1/auth/guest', undefined, {}))
+    }),
+    account: async (): Promise<D1Account> => {
+      const s = await required(), value = await request('/v1/account', s.token)
+      assertOpen()
+      if (value.userId !== s.userId || (value.audience !== 'unknown' && value.audience !== 'protected' && value.audience !== 'eligible')
+        || (value.email !== null && typeof value.email !== 'string')
+        || typeof value.revision !== 'number' || !Number.isFinite(value.revision)
+        || typeof value.xp !== 'number' || !Number.isFinite(value.xp)
+        || typeof value.coins !== 'number' || !Number.isFinite(value.coins)) throw new D1AuthError('INVALID_RESPONSE')
+      return { userId: s.userId, audience: value.audience, email: value.email,
+        revision: value.revision, xp: value.xp, coins: value.coins }
+    },
+    recordAudience: (birthYear: number) => transition(async () => {
+      const s = await required(), value = await request('/v1/account/audience', s.token, { birthYear })
+      assertOpen(); return value.audience
+    }),
+    requestEmail: (email: string, purpose: D1Challenge['purpose'], locale: 'en' | 'sv') => transition(async () => {
+      const s = await required(), address = email.trim().toLowerCase()
+      try { return await saveChallenge(await request('/v1/auth/email/request', s.token, { email: address, purpose, locale }), purpose, address) }
+      catch (error) {
+        if (error instanceof D1AuthError && error.code === 'EMAIL_UNAVAILABLE' && 'response' in error && record(error.response) && hex(error.response.challengeId)) {
+          const c = await saveChallenge(error.response, purpose, address)
+          throw new D1AuthError(error.code, error.status, c)
+        }
+        throw error
+      }
+    }),
+    resendEmail: () => transition(async () => {
+      const s = await required(), c = await pending()
+      if (!c) throw new D1AuthError('CHALLENGE_REQUIRED')
+      const value = await request('/v1/auth/email/resend', s.token, { challengeId: c.challengeId })
+      assertOpen(); return saveChallenge(value, c.purpose, c.email)
+    }),
+    verifyEmail: (code: string) => transition(async (): Promise<D1Session | { deleted: true }> => {
+      const s = await required(), c = await pending()
+      if (!c) throw new D1AuthError('CHALLENGE_REQUIRED')
+      const result = await request('/v1/auth/email/verify', s.token, { challengeId: c.challengeId, code })
+      if (c.purpose === 'delete') {
+        assertOpen()
+        if (result.deleted !== true) throw new D1AuthError('INVALID_RESPONSE')
+        closed = true; await options.clearCredentials(); return { deleted: true }
+      }
+      return accept(result, c.purpose === 'link' ? s.userId : undefined)
+    }),
+    deleteGuest: () => transition(async () => {
+      const s = await required(), value = await request('/v1/account/delete', s.token, {})
+      assertOpen()
+      if (value.deleted !== true) throw new D1AuthError('INVALID_RESPONSE')
+      closed = true; await options.clearCredentials(); return { deleted: true as const }
+    }),
+    signOut: async () => {
+      // Invalidate completions synchronously, before waiting for storage/network.
+      closed = true
+      let s: D1Session | null = null
+      try {
+        const raw = await options.storage.getItem(STATE_KEY), value: unknown = raw ? JSON.parse(raw) : null
+        if (record(value) && value.version === 1) s = session(value.session)
+      } catch { /* Erasure still runs after an unreadable credential. */ }
+      const results = await Promise.allSettled([options.clearCredentials(), s ? revoke(s.token) : Promise.resolve()])
+      if (results[0].status === 'rejected') throw results[0].reason
+    },
+  }
+}

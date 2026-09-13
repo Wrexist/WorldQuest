@@ -117,6 +117,7 @@ Historical decisions and their alternatives are recorded as ADRs in [`docs/adr/`
 | App | **Expo (React Native)** + **expo-router** | iOS + Android + web from one codebase; OTA updates for content/liveops | [0001](docs/adr/0001-tech-stack.md) |
 | Repo | **pnpm workspaces** monorepo | Engines must be importable by app, server, and tests | [0002](docs/adr/0002-monorepo.md) |
 | Backend | **Cloudflare D1 selected; legacy Supabase app adapter pending cutover** | Owner selected D1; separate EU development database and transaction acceptance slice | [0013](docs/adr/0013-cloudflare-d1-backend.md) |
+| D1 identity | **Better Auth 1.7.4 sessionless email OTP + Drizzle 0.45.2** | Separate stable progress owners and protected native sessions; local acceptance, real delivery/native proof still open | [0015](docs/adr/0015-d1-email-identity.md) |
 | Server logic | **Cloudflare Workers** for the new backend; legacy Deno source retained | Pure server grader; D1 atomic batches and ownership checks | [0013](docs/adr/0013-cloudflare-d1-backend.md) |
 | Scheduling | **FSRS** (Free Spaced Repetition Scheduler) | Modern, open, better retention/effort ratio than SM-2 | [0004](docs/adr/0004-spaced-repetition.md) |
 | Client state | **Zustand** (session/UI) + **TanStack Query** (server) + **MMKV** (persistence) | See [§6](#6-state-management-rules) | [0007](docs/adr/0007-state-management.md) |

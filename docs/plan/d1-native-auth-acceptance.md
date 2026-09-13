@@ -11,8 +11,8 @@ proof on both Expo native platforms. Reuse ADR 0014's protected storage port wit
 a distinct D1 key namespace. Do not switch the full app until the authoritative
 learning contract and offline replay are ready.
 
-Evaluate Better Auth's Expo, anonymous, email-OTP and SQLite/Drizzle integration
-against the actual Workers/D1 runtime. It is a candidate, not an accepted dependency.
+Better Auth 1.7.4's sessionless email-OTP and SQLite/Drizzle integration now pass
+local Workers/D1 tests; [ADR 0015](../adr/0015-d1-email-identity.md) records the choice.
 The anonymous plugin exposes old and new users when linking and deletes the
 anonymous user by default. Therefore provider user IDs must not implicitly become
 WorldQuest progress owner IDs. Prove the ownership transition in D1 before choosing
@@ -36,7 +36,11 @@ that integration. Sources: [Expo](https://better-auth.com/docs/integrations/expo
 The email sender needs a project-owned sender domain, verified delivery and a
 documented free/low-cost allowance. Use synthetic delivery in local tests; do not
 send real codes or adopt an unrelated Cloudflare domain as a shortcut. Sender setup
-is the owner input to obtain when the concrete email integration is ready.
+is pending registration approval for `learnworldquest.com`, using
+`accounts@learnworldquest.com` and `support@learnworldquest.com`. These are planned
+addresses, not active mailboxes. Cloudflare quoted $10.46 registration and annual
+renewal; no domain has been purchased. The purchase request caps one year at $15
+including tax and excludes paid add-ons.
 
 ## Then continue Phase 2
 

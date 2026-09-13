@@ -28,6 +28,7 @@ export interface Account {
   revision: number; xp: number; coins: number; day: string; daily_xp: number; lessons_today: number
 }
 export class ApiError extends Error {
-  constructor(readonly code: string, readonly status: number) { super(code) }
+  constructor(readonly code: string, readonly status: number,
+    readonly retryContext?: { challengeId: string; expiresAt: number }) { super(code) }
 }
-export interface Env { DB: D1Database; API_ENABLED: string }
+export interface Env { DB: D1Database; API_ENABLED: string; AUTH_SECRET?: string }

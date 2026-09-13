@@ -1,12 +1,15 @@
 import { ApiError, type Account } from './contracts'
 
-const SESSION_MS = 30 * 24 * 60 * 60 * 1000
+export const SESSION_MS = 30 * 24 * 60 * 60 * 1000
+export function newToken(): string {
+  return [...crypto.getRandomValues(new Uint8Array(32))].map(b => b.toString(16).padStart(2, '0')).join('')
+}
 export async function hashToken(token: string): Promise<string> {
   const bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token))
   return [...new Uint8Array(bytes)].map(b => b.toString(16).padStart(2, '0')).join('')
 }
 export async function createGuest(db: D1Database, now: number) {
-  const token = [...crypto.getRandomValues(new Uint8Array(32))].map(b => b.toString(16).padStart(2, '0')).join('')
+  const token = newToken()
   const userId = crypto.randomUUID()
   await db.batch([
     db.prepare('INSERT INTO accounts (id, created_at) VALUES (?, ?)').bind(userId, now),

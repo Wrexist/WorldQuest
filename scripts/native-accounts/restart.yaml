@@ -1,0 +1,13 @@
+appId: com.wrexist.worldquest.accountsproof
+---
+- launchApp
+- extendedWaitUntil:
+    visible: PASS_READY_EMAIL_RESTART
+    timeout: 60000
+- takeScreenshot: account-pending
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible: PASS_RECOVERY_READY_REINSTALL
+    timeout: 60000
+- takeScreenshot: account-recovery

@@ -28,7 +28,8 @@ or the app. Remote migrations and deployment require an authenticated CLI.
 The development Worker `worldquest-development-api` was deployed on 2026-09-13
 with version `dc8bd22b-f2ec-4ab1-9cb7-6915dd20bb87`. Cloudflare API readback
 confirmed the D1 binding, `API_ENABLED=false`, and disabled workers.dev/preview
-URLs. Remote migration inspection found no pending migrations. This verifies
+URLs. Remote migration inspection found no pending migrations at that deployment;
+the new identity migrations 0002/0003 have not been applied remotely. This verifies
 deployment configuration; connected native behavior and hosted load are still open.
 Use `pnpm --filter @worldquest/backend run deploy` (the `run` is required because
 pnpm also has a built-in deploy command). Wrangler OAuth needs
@@ -46,6 +47,20 @@ logout revocation, strict 16 KiB request limits, server grading, idempotent rece
 atomic reward/review/memory writes and bounded optimistic concurrency retries.
 
 Protected native credential storage is accepted under [ADR 0014](../../docs/adr/0014-native-credential-storage.md); it does not provide D1 identity by itself.
+
+The local account gateway now uses sessionless Better Auth email verification and
+separate stable progress owners ([ADR 0015](../../docs/adr/0015-d1-email-identity.md)).
+It supports age-band declaration, guest linking, existing-account login and fresh
+proof for linked deletion. Codes are challenge-scoped HMACs; WorldQuest sessions
+remain hashed bearer tokens. Provider HTTP/session APIs are not exposed.
+`AUTH_SECRET` must contain at least 32 characters. Real mail delivery is deliberately
+unconfigured; the default mail port returns `EMAIL_UNAVAILABLE`. Tests inject an
+isolated synthetic mailbox and apply every migration to fresh real local D1.
+
+The portable client in `@worldquest/api` uses one awaited protected session/challenge
+envelope. `scripts/native-accounts` exercises it with the production credential
+vault in separate native proof apps. The loopback HTTP exceptions and synthetic
+fixture server are test-only; neither belongs in a store build or hosted Worker.
 
 Not yet accepted: native D1 auth, email linking/recovery,
 production ticket issuance, timezone/offline replay, complete progress hydration,

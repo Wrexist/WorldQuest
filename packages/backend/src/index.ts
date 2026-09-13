@@ -1,6 +1,17 @@
 import { authenticate, createGuest } from './auth'
 import { ApiError, submissionSchema, type Env } from './contracts'
 import { submitLesson } from './lessons'
+import { z } from 'zod'
+import { recordAudience } from './account-policy'
+import { requestCode, resendCode, verifyCode } from './email-challenges'
+import { deleteAccount, finishIdentity } from './identity'
+import type { MailDelivery } from './email-provider'
+
+const codeRequest = z.object({ email: z.string().trim().toLowerCase().email().max(254),
+  purpose: z.enum(['link', 'login', 'delete']), locale: z.enum(['en', 'sv']) }).strict()
+const challengeId = z.string().regex(/^[a-f0-9]{64}$/)
+const verification = z.object({ challengeId, code: z.string().regex(/^\d{8}$/) }).strict()
+const unavailableMail: MailDelivery = { send: async () => { throw new ApiError('EMAIL_UNAVAILABLE', 503) } }
 
 function json(value: unknown, status = 200): Response {
   return Response.json(value, { status, headers: { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' } })
@@ -26,7 +37,7 @@ async function body(request: Request): Promise<unknown> {
   } finally { reader.releaseLock() }
 }
 
-export default {
+export function createWorker(mail: MailDelivery = unavailableMail) { return {
   async fetch(request: Request, env: Env): Promise<Response> {
     try {
       const path = new URL(request.url).pathname
@@ -39,8 +50,45 @@ export default {
         return json(await createGuest(env.DB, Date.now()), 201)
       }
       const { account, tokenHash } = await authenticate(env.DB, request, Date.now())
+      const now = Date.now()
+      if (request.method === 'POST' && path === '/v1/account/audience') {
+        const input = z.object({ birthYear: z.number().int() }).strict().safeParse(await body(request))
+        if (!input.success) throw new ApiError('INVALID_BODY', 400)
+        return json(await recordAudience(env.DB, account.id, tokenHash, input.data.birthYear, now))
+      }
+      if (request.method === 'POST' && path.startsWith('/v1/auth/email/')) {
+        if (!env.AUTH_SECRET || env.AUTH_SECRET.length < 32) throw new ApiError('EMAIL_UNAVAILABLE', 503)
+        if (account.audience !== 'eligible') throw new ApiError('ACCOUNT_PROTECTED', 403)
+        const input = await body(request)
+        if (path === '/v1/auth/email/request') {
+          const parsed = codeRequest.safeParse(input)
+          if (!parsed.success) throw new ApiError('INVALID_BODY', 400)
+          return json(await requestCode(env.DB, env.AUTH_SECRET, mail, account.id, tokenHash, parsed.data, now), 202)
+        }
+        if (path === '/v1/auth/email/resend') {
+          const parsed = z.object({ challengeId }).strict().safeParse(input)
+          if (!parsed.success) throw new ApiError('INVALID_BODY', 400)
+          return json(await resendCode(env.DB, env.AUTH_SECRET, mail, account.id, tokenHash, parsed.data.challengeId, now), 202)
+        }
+        if (path === '/v1/auth/email/verify') {
+          const parsed = verification.safeParse(input)
+          if (!parsed.success) throw new ApiError('INVALID_BODY', 400)
+          const verified = await verifyCode(env.DB, env.AUTH_SECRET, account.id, tokenHash, parsed.data.challengeId, parsed.data.code, now)
+          return json(verified.challenge.purpose === 'delete'
+            ? await deleteAccount(env.DB, account.id, tokenHash, Date.now(), verified.challenge)
+            : await finishIdentity(env.DB, verified.challenge, verified.subject, Date.now()))
+        }
+        throw new ApiError('NOT_FOUND', 404)
+      }
+      if (request.method === 'POST' && path === '/v1/account/delete') {
+        const input = z.object({}).strict().safeParse(await body(request))
+        if (!input.success) throw new ApiError('INVALID_BODY', 400)
+        return json(await deleteAccount(env.DB, account.id, tokenHash, now))
+      }
       if (request.method === 'GET' && path === '/v1/account') {
-        return json({ userId: account.id, audience: account.audience, revision: account.revision, xp: account.xp, coins: account.coins })
+        const identity = await env.DB.prepare(`SELECT u.email FROM identities i JOIN auth_user u ON u.id=i.subject_id WHERE i.account_id=?`)
+          .bind(account.id).first<{ email: string }>()
+        return json({ userId: account.id, audience: account.audience, email: identity?.email ?? null, revision: account.revision, xp: account.xp, coins: account.coins })
       }
       if (request.method === 'POST' && path === '/v1/auth/logout') {
         await env.DB.prepare('DELETE FROM sessions WHERE token_hash = ?').bind(tokenHash).run()
@@ -53,9 +101,10 @@ export default {
       }
       throw new ApiError('NOT_FOUND', 404)
     } catch (error) {
-      if (error instanceof ApiError) return json({ error: error.code }, error.status)
+      if (error instanceof ApiError) return json({ error: error.code, ...error.retryContext }, error.status)
       // Do not expose SQL, tokens, answer payloads or account identifiers in logs/errors.
       return json({ error: 'SERVICE_UNAVAILABLE' }, 503)
     }
   },
-}
+} }
+export default createWorker()

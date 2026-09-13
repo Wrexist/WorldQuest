@@ -43,15 +43,15 @@ export default defineConfig({
     // Many simultaneous jsdom/coverage workers starve cold module imports on Windows.
     // Bound contention instead of increasing the timeout for subscription behavior.
     maxWorkers: 4,
-    minWorkers: 1,
     /**
      * A floor, not a target.
      *
      * `packages/engines` has carried a 90% gate since it was written; the app had none,
      * so the one package where a screen can quietly stop being rendered by anything was
-     * the one nobody measured. 60/80/60 is just under today's 61.5/87.7/63.0 — close
-     * enough to catch a screen landing untested, loose enough not to fail on a
-     * refactor that moves ten lines.
+     * the one nobody measured. The original line/function/statement floors remain.
+     * Vitest 4's AST coverage measures the unchanged 710-test suite at 71.78%
+     * branches (the old remapper reported 86.49%). A 70% floor retains less headroom
+     * than the old 80% gate. See docs/engineering/testing-strategy.md for evidence.
      *
      * Deliberately lower than the engines'. These tests mount react-native-web in jsdom
      * and genuinely cannot reach the native paths — gestures, real font metrics,
@@ -71,7 +71,7 @@ export default defineConfig({
         'src/test/**',
         'src/lib/*.generated.ts',
       ],
-      thresholds: { lines: 60, functions: 60, branches: 80, statements: 60 },
+      thresholds: { lines: 60, functions: 60, branches: 70, statements: 60 },
     },
     environment: 'jsdom',
     globals: false,

@@ -318,3 +318,25 @@ simulator/emulator results, not a substitute for A11's full physical-device matr
 B02 remains open: native email linking/recovery, account deletion and D1 identity
 integration are not completed by credential storage. The [next implementation
 plan](d1-native-auth-acceptance.md) defines their order and acceptance conditions.
+
+## D1 email account gateway (implementation checkpoint)
+
+ADR 0015 selects sessionless Better Auth OTP verification with separate stable
+WorldQuest owners. Twelve new real workerd/D1 account tests cover linking,
+second-installation login, protected users, challenge isolation, concurrency,
+delivery failure, rollback/retry and current-data deletion. The existing ten D1
+reward/ownership tests also pass. Seven portable-client tests cover protected
+storage failure, restart recovery, offline logout and stale login completion.
+A local HTTP smoke journey ran this client through actual workerd/D1 and confirmed
+linking/recovery retained the seeded owner and progress before deletion.
+
+The isolated native account workflow is prepared for iOS/Android and uses synthetic
+delivery only. Native results are not accepted yet. The production mobile adapter
+is still legacy; real account UI integration, actual mail delivery, abuse controls,
+response-loss recovery and the wider release/device matrix remain open. B02 stays
+unchecked. Migrations 0002/0003 and the account Worker have not been deployed.
+
+Sender recommendation: `learnworldquest.com`, `accounts@learnworldquest.com` and
+`support@learnworldquest.com`. Cloudflare's logged-in registrar showed the domain
+available at $10.46 for registration and renewal. Registration approval is pending
+with a $15 first-year total cap, no paid add-ons; none of these addresses is active.

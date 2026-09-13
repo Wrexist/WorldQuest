@@ -3,6 +3,8 @@ import { defineConfig } from 'vitest/config'
 export default defineConfig({
   test: {
     environment: 'node',
+    // Bound CPU contention for the exhaustive content and 10,000-sequence tests.
+    maxWorkers: 4,
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts'],

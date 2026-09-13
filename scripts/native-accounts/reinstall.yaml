@@ -1,0 +1,13 @@
+appId: com.wrexist.worldquest.accountsproof
+---
+- openLink: worldquestaccountsproof://reinstall
+- runFlow:
+    when:
+      platform: ios
+      visible: 'Open in .*WorldQuest Account Proof.*'
+    commands:
+      - tapOn: Open
+- extendedWaitUntil:
+    visible: PASS_RECOVERY_AND_DELETION
+    timeout: 60000
+- takeScreenshot: account-deletion
