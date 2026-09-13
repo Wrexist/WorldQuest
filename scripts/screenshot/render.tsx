@@ -593,7 +593,7 @@ function Gallery() {
           />
         </Phone>
 
-        <Phone label="More · settings" id="settings" tab="more">
+        <Phone label="Settings" id="settings">
           <SettingsScreen
             reminder={PREVIEW_REMINDER}
             version="0.1.0"
@@ -606,6 +606,8 @@ function Gallery() {
               onLink: () => {},
               onSignIn: () => {},
               onSignOut: () => {},
+              // Isolated static screenshot fixture; never read by the shipped app.
+              signOutFailed: process.env.WQ_PREVIEW_SIGNOUT_ERROR === '1',
               unsyncedLessons: 3,
             }}
             premium={{

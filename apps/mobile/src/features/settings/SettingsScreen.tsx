@@ -304,9 +304,9 @@ export function SettingsScreen({
           <Note body={t('account:settings.child')} />
         ) : account.email !== null ? (
           <>
-            <LinkRow label={t('account:settings.email')} value={account.email} />
+            <Note title={t('account:settings.email')} body={account.email} />
             {account.signOutFailed && (
-              <View accessibilityRole="alert" accessibilityLiveRegion="polite">
+              <View role="alert" aria-live="polite">
                 <Note body={t('account:settings.signOut.failed')} />
               </View>
             )}
