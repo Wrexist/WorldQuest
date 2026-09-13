@@ -381,3 +381,11 @@ restore acceptance remain open.
 B02 is still open for production account UI, expiry/rotation and real delivery.
 The active app backend is unchanged. The full learning/reward contract and offline
 replay remain prerequisites for mobile D1 cutover.
+
+At `0ceb4e0`, the deletion changes pass full local `pnpm verify`: 1,567 Vitest
+tests plus nine Node tests (1,576 total). The backend suite is 25/25 and the API
+suite is 29/29; the Worker dry-run build passes. No production app UI changed,
+so the previously inspected browser/design captures remain applicable. New
+[full CI](https://github.com/Wrexist/WorldQuest/actions/runs/34773180441) and
+[D1 CI](https://github.com/Wrexist/WorldQuest/actions/runs/34773180436) were started
+for this revision; their final statuses are separate from the local pass.
