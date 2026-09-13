@@ -1,4 +1,5 @@
 name: iOS journey replay
+# Reuses a recorded native binary so selector fixes do not require recompilation.
 on:
   workflow_dispatch:
     inputs:
