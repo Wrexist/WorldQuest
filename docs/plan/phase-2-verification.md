@@ -340,3 +340,19 @@ Sender recommendation: `learnworldquest.com`, `accounts@learnworldquest.com` and
 `support@learnworldquest.com`. Cloudflare's logged-in registrar showed the domain
 available at $10.46 for registration and renewal. Registration approval is pending
 with a $15 first-year total cap, no paid add-ons; none of these addresses is active.
+
+At `29fa1f5`, local `pnpm verify` passed 1,563 Vitest tests plus nine Node tests
+(1,572 total). Browser E2E passed 82 executed steps with the existing randomized
+image-question skip. The security check has zero unexpected advisories. The
+[hosted D1 local-proof job](https://github.com/Wrexist/WorldQuest/actions/runs/34769929565)
+passed. The [native account builds](https://github.com/Wrexist/WorldQuest/actions/runs/34769929495)
+and [full platform CI](https://github.com/Wrexist/WorldQuest/actions/runs/34769929480)
+were started at that revision; their results must be inspected before accepting
+native accounts. The [sender setup note](../engineering/account-email-setup.md)
+records the free beta delivery option and paid Cloudflare alternative.
+
+The current exported app also passed all measured design checks (18 routes at
+three widths, plus 102 flow captures). The 320 pt account screen capture was
+inspected: labels and email field render, and the existing copy correctly says
+progress recovery is still being tested. These captures exercise the current app
+and do not prove the new D1 account UI or physical-device accessibility.
