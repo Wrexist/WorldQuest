@@ -81,9 +81,13 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
   it('deduplicates concurrent submissions and rejects changed payloads', async () => {
     const a = await guest()
     const answers = await seed(a.userId, ['one'])
-    const replies = await Promise.all(Array.from({ length: 4 }, () => call('/v1/lessons/submit', a.token, { lessonId: 'one', answers })))
-    for (const response of replies) expect(response.status).toBe(200)
-    const receipts = await Promise.all(replies.map(r => r.json()))
+    // Consume each workerd response immediately, before waiting for other requests.
+    // Avoid retaining live Response streams across concurrent request completion.
+    const receipts = await Promise.all(Array.from({ length: 4 }, async () => {
+      const response = await call('/v1/lessons/submit', a.token, { lessonId: 'one', answers })
+      expect(response.status).toBe(200)
+      return response.json()
+    }))
     for (const receipt of receipts) expect(receipt).toEqual(receipts[0])
     expect((await state(a.userId)).ledger).toHaveLength(1)
     const changed = answers.map(a => ({ ...a, elapsedMs: 5000 }))
@@ -93,9 +97,11 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
   it('preserves concurrent different lessons and pays the daily bonus once', async () => {
     const a = await guest()
     const answers = await seed(a.userId, ['one', 'two'])
-    const responses = await Promise.all(['one', 'two'].map(lessonId => call('/v1/lessons/submit', a.token, { lessonId, answers })))
-    for (const response of responses) expect(response.status).toBe(200)
-    const receipts = await Promise.all(responses.map(async r => await r.json() as Receipt))
+    const receipts = await Promise.all(['one', 'two'].map(async lessonId => {
+      const response = await call('/v1/lessons/submit', a.token, { lessonId, answers })
+      expect(response.status).toBe(200)
+      return await response.json() as Receipt
+    }))
     expect(Math.abs(receipts[0]!.xpAwarded - receipts[1]!.xpAwarded)).toBe(BALANCE.xp.firstLessonOfDay)
     const snapshot = await state(a.userId)
     expect(snapshot.account?.revision).toBe(2)
