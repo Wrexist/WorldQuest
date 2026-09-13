@@ -40,4 +40,5 @@ appId: com.wrexist.worldquest
           text: "Open"
           optional: true
 - assertVisible: "Sweden"
+- assertVisible: "Practise this country"
 - takeScreenshot: native-country

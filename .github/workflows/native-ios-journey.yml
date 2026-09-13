@@ -12,6 +12,10 @@ on:
         type: choice
         options: [macos-15, macos-26]
         default: macos-15
+      refresh_js:
+        description: 'Embed current JavaScript into the recorded simulator binary (identical native dependencies/config required)'
+        type: boolean
+        default: false
   push:
     branches: ['fix/**']
     paths: ['.github/workflows/native-ios-journey.yml']
@@ -27,18 +31,37 @@ jobs:
       MAESTRO_CLI_NO_ANALYTICS: '1'
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        if: inputs.refresh_js
+      - uses: actions/setup-node@v4
+        if: inputs.refresh_js
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+        if: inputs.refresh_js
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: '17' }
       - name: Install the recorded build
         env:
           GH_TOKEN: ${{ github.token }}
           BUILD_RUN: ${{ inputs.build_run_id }}
+          REFRESH_JS: ${{ inputs.refresh_js }}
         run: |
           set -euo pipefail
           test "$(uname -m)" = arm64
           [[ "$BUILD_RUN" =~ ^[0-9]+$ ]]
           gh run download "$BUILD_RUN" --name ios-simulator-app --dir "$RUNNER_TEMP/app"
           unzip -q "$RUNNER_TEMP/app/ios-simulator-app.zip" -d "$RUNNER_TEMP/app"
+          if [ "$REFRESH_JS" = true ]; then
+            BUILD_SHA=$(gh run view "$BUILD_RUN" --json headSha --jq .headSha)
+            [[ "$BUILD_SHA" =~ ^[0-9a-f]{40}$ ]]
+            git fetch --depth 1 origin "$BUILD_SHA"
+            for FILE in pnpm-lock.yaml apps/mobile/app.json apps/mobile/package.json; do
+              git show "$BUILD_SHA:$FILE" | cmp - "$FILE"
+            done
+            ENTRY_FILE=$(cd apps/mobile && node -p 'require.resolve("expo-router/entry")')
+            pnpm --filter @worldquest/mobile exec expo export:embed --entry-file "$ENTRY_FILE" --platform ios --dev false --bundle-output "$RUNNER_TEMP/app/WorldQuest.app/main.jsbundle" --assets-dest "$RUNNER_TEMP/app/WorldQuest.app"
+            echo "Native binary: $BUILD_SHA; JavaScript: $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+          fi
           xcodebuild -version
           xcrun simctl list devices available
           DEVICE_ID=$(xcrun simctl list devices available -j | python3 -c 'import json,sys; print(next(d["udid"] for ds in json.load(sys.stdin)["devices"].values() for d in ds if d["name"].startswith("iPhone")))')

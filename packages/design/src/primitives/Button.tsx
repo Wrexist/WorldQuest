@@ -240,6 +240,9 @@ const styles = StyleSheet.create({
   fullWidth: { alignSelf: 'stretch' },
   edge: { borderRadius: radius.lg, ...squircle },
   face: {
+    // Keep the label outside the rounded layer's clipping mask. The background
+    // already draws its own corners; clipping is unnecessary for this text-only face.
+    overflow: 'visible',
     borderRadius: radius.lg,
     ...squircle,
     paddingVertical: space[2],
