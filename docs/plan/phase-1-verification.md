@@ -33,7 +33,7 @@ Audit correction: reviewing the original saved logs showed that accessibility li
 
 ## Continuation: launch, dependency fixes and CI
 
-**13 of 14 Phase 1 actions have completion evidence. E18 remains open for native compatibility acceptance.** Its dependency triage, fixes and automated checks are implemented. The original first-batch results above are preserved as history; [continuation results](phase-1-evidence/continuation-results.json) record the later work.
+**13 of 14 Phase 1 actions have completion evidence.** Both native journeys pass, but a subsequent iOS 26.4 screenshot revealed a missing practice-button label. E18 stays open pending visual compatibility investigation; see the latest evidence below. The original first-batch results above are preserved as history; [continuation results](phase-1-evidence/continuation-results.json) record the earlier work.
 
 | Action | Completed work |
 |---|---|
@@ -87,3 +87,21 @@ and macOS 15 iOS compilation. Both jobs passed in
 Android startup, onboarding and restart were exercised locally; the iOS simulator
 startup image was inspected. E18 journey acceptance is carried into the
 [Phase 2 work log](phase-2-verification.md), which records the newer evidence.
+
+### E18 acceptance update - 13 September 2026
+
+The compatible dependency updates now have passing native build and journey evidence.
+Android 15 / Pixel 6 completed onboarding, lesson navigation, restart persistence
+and an encoded Sweden deep link using [build 34752521529](https://github.com/Wrexist/WorldQuest/actions/runs/34752521529).
+iPhone 16 Pro / iOS 18.5 passed the same journey in
+[replay 34753801839](https://github.com/Wrexist/WorldQuest/actions/runs/34753801839),
+using the recorded `f560dcc` simulator binary. Screenshots were inspected for bundled
+fonts, flags, art and maps. The Windows Gradle host failure above is historical,
+resolved by building on compatible CI hosts without a major Expo/Gradle upgrade.
+
+E18 remains open: the additional iOS 26.4 journey passed its assertions, but both
+country screenshots show a blank primary button. The same binary shows its label
+on iOS 18.5. The cause is unverified; an automated journey pass does not resolve
+this rendering difference. Connected backend/auth acceptance,
+the later query-cache fix on native devices, physical accessibility/performance
+and the full TestFlight device matrix remain separately tracked in Phase 2/A11.

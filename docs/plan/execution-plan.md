@@ -1,8 +1,8 @@
 # WorldQuest execution checklist
 
-Updated 13 September 2026. **Active: Phase 2, with E18 native acceptance carried forward.** This is the current execution order and starts at 1; it supersedes the phase numbering in the earlier audit roadmap. All 148 audit actions appear exactly once below. Related actions should be implemented in shared workstreams, not estimated as 148 independent projects.
+Updated 13 September 2026. **Active: Phase 2, with one E18 native visual acceptance gate carried forward.** This is the current execution order and starts at 1; it supersedes the phase numbering in the earlier audit roadmap. All 148 audit actions appear exactly once below. Related actions should be implemented in shared workstreams, not estimated as 148 independent projects.
 
-Evidence is in the [Phase 1 work log](phase-1-verification.md) and [Phase 2 work log](phase-2-verification.md). Launch scope is worldwide English/Swedish. Both native builds now pass; broader native compatibility acceptance remains open. Phase 2 has account isolation foundations and a real local Convex transaction proof; production auth and migration remain gated.
+Evidence is in the [Phase 1 work log](phase-1-verification.md) and [Phase 2 work log](phase-2-verification.md). Launch scope is worldwide English/Swedish. Both native builds and automated journeys pass. Manual review found a missing country-button label on iOS 26.4, so E18 remains open; the full release device matrix remains A11 work. Phase 2 has account isolation foundations and a real local Convex transaction proof; production auth and migration remain gated.
 
 **Status:** unchecked means unfinished or unverified; checked requires completion evidence. A phase is not complete just because its first batch is fixed. P0 blocks the affected release/feature; P1 precedes broad launch; P2/P3 work is gated by product evidence. Owner/effort estimates are inherited from the audits (S 1-2 days, M 3-5 days, L 1-2 engineer-weeks, XL split before scheduling). They exclude external review waits.
 
@@ -23,7 +23,7 @@ These are the tasks started in this session. Backend migration, payment setup an
 
 | Phase | Outcome | Actions | Gate |
 |---|---|---:|---|
-| 1 | Reliable development baseline | 14 | 13/14 complete; E18 native acceptance open |
+| 1 | Reliable development baseline | 14 | 13/14 complete; E18 iOS 26.4 visual finding open |
 | 2 | Backend, accounts and trustworthy progress | 38 | Required before broad paid launch |
 | 3 | A complete geography learning course | 23 | Required before broad paid launch |
 | 4 | Excellent UX, accessibility and device reliability | 17 | Required before broad paid launch |
@@ -33,6 +33,12 @@ These are the tasks started in this session. Backend migration, payment setup an
 | 8 | Long-term competitive expansion | 8 | Evidence-gated expansion |
 
 Execution notes: product/editorial research can run alongside engineering. Do not migrate live users before identity, replay and restore tests pass. If no live users exist, implement the corrected behavior directly in the selected backend after the proof. Do not enable leagues or sell unfinished benefits while their required safety work is open.
+
+**Confirmed launch data scope:** the owner reports development/test data only.
+There is no live-user import to build for the initial launch. B17/B18's live-user
+migration portions are conditional on that changing; fresh-backend reconciliation,
+restore, old-client handling and cutover recovery still need evidence. No test data
+has been deleted as part of this decision.
 
 ## Phase 1: Reliable development baseline
 

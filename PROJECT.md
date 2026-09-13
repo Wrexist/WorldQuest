@@ -8,7 +8,7 @@
 | | |
 |---|---|
 | **Product** | WorldQuest — learn the world in 5 minutes a day |
-| **Stage** | Phase 2: backend, accounts and trustworthy progress (E18 native acceptance carried); [current execution checklist](docs/plan/execution-plan.md) |
+| **Stage** | Phase 2: backend, accounts and trustworthy progress (E18 iOS visual acceptance open); [current execution checklist](docs/plan/execution-plan.md) |
 | **Repo** | `wrexist/worldquest` |
 | **Design source** | [`docs/design/assets/mockup-v1.png`](docs/design/assets/mockup-v1.png) (15 screens) |
 | **Original brief** | [`docs/product/mvp-brief-original.md`](docs/product/mvp-brief-original.md) |

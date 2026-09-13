@@ -1,0 +1,140 @@
+{
+  "checkedOn": "2026-09-13",
+  "applicationRevision": "8fc47d6b9f44da85e3389299159bb3523d4ad7c0",
+  "latestProofRevision": "cab287b",
+  "ownerScope": "Worldwide English/Swedish; development/test data only",
+  "local": {
+    "tests": 1533,
+    "mobileTests": 695,
+    "apiTests": 21,
+    "convexMockTests": 5,
+    "backendBoundary": {
+      "engineFiles": 33,
+      "contractFiles": 2,
+      "imports": 80
+    },
+    "verification": "Complete pnpm verify passed at 8fc47d6",
+    "security": "No unexpected advisories; existing three patched registry entries retained",
+    "browser": {
+      "passed": 82,
+      "skipped": 1,
+      "accessibilityRoutes": 10
+    },
+    "nativeBundlesMB": {
+      "ios": 4.56,
+      "android": 4.56,
+      "budget": 4.6
+    },
+    "design": {
+      "routeWidths": [
+        320,
+        390,
+        768
+      ],
+      "routes": 18,
+      "flowCaptures": 102,
+      "signOutFixtures": [
+        "en 320 normal",
+        "sv 320 normal",
+        "en 320 doubled text",
+        "sv 320 doubled text"
+      ],
+      "limitations": [
+        "Email row truncation and preview tab-label overlap at doubled text",
+        "No native screen-reader or physical-device certification"
+      ]
+    }
+  },
+  "convexCI": {
+    "url": "https://github.com/Wrexist/WorldQuest/actions/runs/34752588625",
+    "status": "success",
+    "backend": "real local Convex",
+    "auth": "synthetic admin impersonation",
+    "checks": [
+      "unauthenticated rejection",
+      "cross-account isolation",
+      "concurrent receipt deduplication",
+      "two-session different-lesson conflict retry",
+      "wallet/ledger reconciliation",
+      "review preservation",
+      "failure-after-write rollback",
+      "eight-duplicate-slot rejection",
+      "changed-payload rejection",
+      "safe retry",
+      "concurrent first-day bonus paid once"
+    ],
+    "committedLessons": 4,
+    "reviews": 20,
+    "facts": 5,
+    "countScope": "Reported counts describe the primary account; a separate account committed two first-day lessons with one daily bonus."
+  },
+  "nativeBaseline": {
+    "url": "https://github.com/Wrexist/WorldQuest/actions/runs/34750705925",
+    "builds": "Both passed",
+    "ios": "Simulator startup viewed",
+    "android": "Android 15 Pixel 6 onboarding, lesson navigation and retained onboarding after force-stop/relaunch"
+  },
+  "notPerformed": [
+    "Production cutover",
+    "Paid cloud backend provisioning",
+    "Store submission",
+    "Real-user migration"
+  ],
+  "verificationCI": {
+    "url": "https://github.com/Wrexist/WorldQuest/actions/runs/34754478764",
+    "revision": "8fc47d6b9f44da85e3389299159bb3523d4ad7c0",
+    "status": "success",
+    "jobs": [
+      "database",
+      "verify (ubuntu-latest)",
+      "verify (windows-latest)"
+    ]
+  },
+  "androidFinal": {
+    "buildRun": "https://github.com/Wrexist/WorldQuest/actions/runs/34752521529",
+    "device": "Pixel 6 Android 15 x86_64 emulator",
+    "checks": [
+      "onboarding",
+      "lesson entry, pause and exit",
+      "Premium dismissal",
+      "Home restored after force-stop/relaunch",
+      "encoded country deep link"
+    ],
+    "screenshots": [
+      "android-final-native-relaunch.png",
+      "android-final-native-country.png"
+    ]
+  },
+  "iosFinal": {
+    "journeyRun": "https://github.com/Wrexist/WorldQuest/actions/runs/34753801839",
+    "buildRun": "https://github.com/Wrexist/WorldQuest/actions/runs/34753062498",
+    "binaryRevision": "f560dcc",
+    "device": "iPhone 16 Pro iOS 18.5 arm64 simulator",
+    "status": "success",
+    "checks": [
+      "onboarding",
+      "lesson entry, pause and exit",
+      "Premium dismissal",
+      "Home restored after force-stop/relaunch",
+      "encoded country deep link"
+    ],
+    "screenshots": [
+      "ios-final-relaunch.png",
+      "ios-final-country.png"
+    ]
+  },
+  "nativeScope": "E18 open for iOS 26.4 label rendering. Automated journeys pass on Android 15, iOS 18.5 and iOS 26.4. Binaries predate 8fc47d6 query-cache fix; connected auth/account transitions and full release device matrix unverified.",
+  "iosAdditional": {
+    "journeyRun": "https://github.com/Wrexist/WorldQuest/actions/runs/34754127288",
+    "binaryRevision": "f560dcc",
+    "flowRevision": "44c2884",
+    "device": "iPhone 17 Pro iOS 26.4 arm64 simulator",
+    "tooling": "Xcode 26.6",
+    "automatedStatus": "success",
+    "visualFinding": "Country practice button label absent in flow and final screenshots; same binary renders it on iOS 18.5. Cause unverified.",
+    "screenshots": [
+      "ios-26-country-flow.png",
+      "ios-26-country-final.png"
+    ]
+  }
+}

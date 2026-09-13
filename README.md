@@ -18,7 +18,7 @@ the release foundations described below.
 learning engines and backend code exist. The September audit identified learning-history,
 account, reward and purchase gaps that block a public paid release. Follow the
 [eight-phase execution checklist](docs/plan/execution-plan.md) and
-[current work log](docs/plan/phase-2-verification.md). Phase 1 native acceptance is carried forward.
+[current work log](docs/plan/phase-2-verification.md). Phase 1 has one remaining gate: an iOS 26.4 button-label rendering finding.
 
 ## What it is
 

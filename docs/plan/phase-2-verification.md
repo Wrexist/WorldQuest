@@ -30,6 +30,10 @@ The source project was not restored, altered or migrated. No data was deleted.
   may be adopted only by its newly created anonymous identity.
 - Account transitions detach query clients, optimistic awards, entitlement,
   inventory, favourites, accuracy/pace, achievements, quests and audience caches.
+- Adopting a fresh guest identity keeps mounted query observers attached. Switching
+  people detaches the departing persister before clearing its in-memory cache,
+  so a delayed empty snapshot cannot overwrite that person's saved data. A mounted
+  provider regression verifies live updates, persisted data and subsequent isolation.
 - A persisted transition marker prevents an interrupted login from restoring the
   previous account's cache on restart before identity is reconciled.
 - Queue persistence precedes acknowledgment. Delayed responses are ignored after
@@ -55,8 +59,11 @@ HTTP clients proved concurrent duplicate receipt replay and different-lesson
 conflict handling. The run also checked unauthenticated and cross-account rejection,
 wallet/ledger reconciliation, retained reviews, failure-after-write rollback,
 duplicate/invented slots and changed-payload rejection, then a safe retry.
-The real run committed four lessons, twenty reviews and five fact memories; each
-fact retained four repetitions. No cloud account or paid deployment was created.
+The primary test account committed four lessons, twenty reviews and five fact
+memories; each fact retained four repetitions. A separate account submitted two
+first-day lessons concurrently and received the daily bonus only once. The same
+proof passed in [fresh Ubuntu CI](https://github.com/Wrexist/WorldQuest/actions/runs/34752588625).
+No cloud account or paid deployment was created.
 
 This is a deliberately bounded transaction prototype: server-held five-slot capital
 lessons and the existing pure grader. It does not yet implement quests, achievements,
@@ -66,13 +73,20 @@ slot check is not completion of the canonical-quest exploit action B05/S04.
 
 ## Verification
 
-The final local test pass contains 1,532 tests: 694 mobile, 21 API, five Convex,
+The final local `pnpm verify` pass at `8fc47d6` contains 1,533 tests: 695 mobile, 21 API, five Convex,
 557 engine, 43 design, 28 localization, seven content, six analytics, 162 edge/tool
 and nine Node regressions. Typecheck and provider boundaries passed. The full gate
 initially stopped on the CLI-generated declaration headers; three exact generated
-files are now documented in the checker, with no authored-code exemption. All
-remaining verification gates then passed. Security scanning reports no unexpected
-advisories. CI for the final revision is recorded separately when it finishes.
+files are now documented in the checker, with no authored-code exemption. The
+complete local gate subsequently passed. Security scanning reports no unexpected
+advisories. [CI revision f560dcc](https://github.com/Wrexist/WorldQuest/actions/runs/34753062750)
+passed `verify:full` on Windows and Ubuntu, plus the database job. The subsequent
+query-cache fix at `8fc47d6` also passed the entire Windows/Ubuntu `verify:full`
+matrix and database job in [final CI](https://github.com/Wrexist/WorldQuest/actions/runs/34754478764),
+including 82/82 browser steps with one existing skip on each platform.
+The fresh local browser export passed 82 checks with one skipped image-prompt
+branch, and the accessibility-tree check passed on ten routes. Native exports are
+4.56 MB per platform against the unchanged 4.6 MB gate.
 
 The design driver passed 18 routes at three widths plus 102 flow screenshots.
 The pending-sign-out component was additionally rendered in English and Swedish
@@ -102,14 +116,49 @@ finished it, and returned to Home after a force-stop/relaunch, retaining onboard
 Both captures show bundled fonts and art. The earlier Windows Gradle failure was a
 host limitation; no major Expo/Gradle upgrade was needed.
 
-Those binaries contain the Phase 1 application revision. The workflow now adds a
-Maestro iOS journey for onboarding, restart and encoded deep-link navigation, and
-will rebuild the Phase 2 application. E18 remains open until the new results are
-recorded; startup alone does not certify all affected native paths.
+Those baseline binaries contain the Phase 1 application revision. The Phase 2
+Android build from [run 34752521529](https://github.com/Wrexist/WorldQuest/actions/runs/34752521529)
+was subsequently installed on the Pixel 6 Android 15 emulator. Onboarding,
+lesson entry/pause/exit, first-run Premium dismissal, Home after force-stop/relaunch,
+and `worldquest://country/%53%45` opening Sweden all passed. The saved Home and
+Sweden screens were inspected; fonts, art, flag and map rendered.
+
+The iOS Phase 2 app also compiled. Its first automated journey stopped at language
+selection. The test flow was corrected for the actual Next/Continue controls and
+first-run Premium screen, and a replay workflow now preserves hidden Maestro
+debug output plus the final simulator screenshot. It reuses the recorded simulator
+binary rather than recompiling on every selector change.
+
+[Final iOS replay](https://github.com/Wrexist/WorldQuest/actions/runs/34753801839)
+passed on iPhone 16 Pro / iOS 18.5, using the `f560dcc` simulator binary from
+[build run 34753062498](https://github.com/Wrexist/WorldQuest/actions/runs/34753062498).
+It completed onboarding, lesson entry/pause/exit, Premium dismissal, retained Home
+after restart and the encoded Sweden deep link. The previous replay had passed
+through restart but stopped at the iOS "Open in WorldQuest?" confirmation; the flow
+now accepts that OS dialog. The final country screenshot was inspected: fonts,
+flag and map render correctly.
+
+An [additional replay](https://github.com/Wrexist/WorldQuest/actions/runs/34754127288)
+of the same binary passed on iPhone 17 Pro / iOS 26.4 with Xcode 26.6 tooling.
+Both replay flows and the native binary revision are recorded separately in the
+saved evidence; a newer runner image does not mean the app was rebuilt with it.
+
+**E18 remains open for visual compatibility.** Both native
+platforms compile and exercise the affected storage/navigation/asset paths with
+the updated lockfile. However, the iOS 26.4 screenshots show a blank country
+practice button, including the capture taken after the flow finished. The same
+binary renders the label on iOS 18.5. The cause is unverified; investigate this
+OS-specific rendering difference before closing E18. The native flow asserts the
+country heading and does not prove that the button label is painted.
+
+These binaries predate the `8fc47d6` query-cache fix; that
+fix has mounted component coverage and separate full CI verification. Neither
+native run proves connected account transitions, production auth, physical-device
+performance or the full release OS/device matrix. Those remain Phase 2/A11 gates.
 
 ## Remaining order
 
-1. Finish E18 native journey acceptance on the rebuilt revision.
+1. E18: reproduce and fix the iOS 26.4 country-button label, then inspect both OS captures.
 2. B02: choose and prove native guest/auth/link/recovery, including protected accounts.
 3. Extend the Convex transaction slice to the complete canonical lesson/quest,
    streak, achievement and purchase contract before adding the mobile adapter.

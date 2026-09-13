@@ -14,7 +14,7 @@ it is **a learning engine for visual knowledge** with geography as its first con
 pack. The mockup for v1.0 is [`docs/design/assets/mockup-v1.png`](docs/design/assets/mockup-v1.png)
 (15 screens). The app and backend code exist. Current work is **Phase 2: backend, accounts and trustworthy progress** after the September audit. Follow
 [`docs/plan/execution-plan.md`](docs/plan/execution-plan.md) for the complete order and
-[`docs/plan/phase-2-verification.md`](docs/plan/phase-2-verification.md) for current evidence. E18 native acceptance is carried from Phase 1.
+[`docs/plan/phase-2-verification.md`](docs/plan/phase-2-verification.md) for current evidence. E18 remains open for an iOS 26.4 visual compatibility finding; both native journeys otherwise pass.
 
 ---
 
