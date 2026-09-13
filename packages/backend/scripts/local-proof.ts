@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import { randomUUID } from 'node:crypto'
 import assert from 'node:assert/strict'
 import { ConvexHttpClient } from 'convex/browser'
+import { BALANCE } from '@worldquest/engines'
 import type { FunctionArgs, FunctionReference, FunctionReturnType } from 'convex/server'
 import { api, internal } from '../convex/_generated/api'
 
@@ -29,6 +30,19 @@ const admin = client()
 const a1 = client(`${run}-A`)
 const a2 = client(`${run}-A`)
 const b = client(`${run}-B`)
+const c1 = client(`${run}-C`)
+const c2 = client(`${run}-C`)
+const firstDayAnswers = await internalCall(admin, internal.fixtures.seed, {
+  owner: `https://proof.invalid|${run}-C`, lessonIds: ['first-day-one', 'first-day-two'],
+})
+const firstDay = await Promise.all([
+  c1.mutation(api.proof.submit, { lessonId: 'first-day-one', answers: firstDayAnswers }),
+  c2.mutation(api.proof.submit, { lessonId: 'first-day-two', answers: firstDayAnswers }),
+])
+// Both grade fresh/learning facts with the same timing and no speed or overdue bonus.
+// Exactly one transaction receives the daily bonus after Convex conflict retry.
+assert.equal(Math.abs(firstDay[0]!.xpAwarded - firstDay[1]!.xpAwarded), BALANCE.xp.firstLessonOfDay)
+assert.equal((await c1.query(api.proof.snapshot)).account?.lessonsToday, 2)
 const answers = await internalCall(admin, internal.fixtures.seed, {
   owner: `https://proof.invalid|${run}-A`, lessonIds: ['duplicate', 'parallel-one', 'parallel-two', 'rollback', 'forged'],
 })
@@ -73,6 +87,7 @@ console.log(JSON.stringify({
   backend: 'real local Convex', auth: 'synthetic admin impersonation',
   checks: ['unauthenticated rejection', 'cross-account isolation', 'concurrent receipt deduplication',
     'two-session different-lesson conflict retry', 'wallet/ledger reconciliation', 'review preservation',
-    'failure-after-write rollback', 'eight-duplicate-slot rejection', 'changed-payload rejection', 'safe retry'],
+    'failure-after-write rollback', 'eight-duplicate-slot rejection', 'changed-payload rejection', 'safe retry',
+    'concurrent first-day bonus paid once'],
   committedLessons: final.ledger.length, reviews: final.reviews.length, facts: final.memories.length,
 }, null, 2))

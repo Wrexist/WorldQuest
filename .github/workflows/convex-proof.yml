@@ -1,0 +1,51 @@
+name: Convex local proof
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, 'fix/**']
+    paths:
+      - '.github/workflows/convex-proof.yml'
+      - 'packages/backend/**'
+      - 'packages/engines/**'
+      - 'packages/content/packs/**'
+      - 'pnpm-lock.yaml'
+
+permissions:
+  contents: read
+
+jobs:
+  transactions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CONVEX_AGENT_MODE: anonymous
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - name: Exercise the real local backend
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm --filter @worldquest/backend exec convex dev --tail-logs disable > "$RUNNER_TEMP/convex-dev.log" 2>&1 &
+          CONVEX_PID=$!
+          trap 'kill "$CONVEX_PID" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 90); do
+            if grep -q 'Convex functions ready' "$RUNNER_TEMP/convex-dev.log"; then break; fi
+            if ! kill -0 "$CONVEX_PID" 2>/dev/null; then cat "$RUNNER_TEMP/convex-dev.log"; exit 1; fi
+            sleep 2
+          done
+          grep -q 'Convex functions ready' "$RUNNER_TEMP/convex-dev.log"
+          pnpm --filter @worldquest/backend exec tsx scripts/local-proof.ts > "$RUNNER_TEMP/convex-proof.json"
+          cat "$RUNNER_TEMP/convex-proof.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: convex-local-evidence
+          path: |
+            ${{ runner.temp }}/convex-dev.log
+            ${{ runner.temp }}/convex-proof.json
+          retention-days: 7
