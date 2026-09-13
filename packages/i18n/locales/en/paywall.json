@@ -1,8 +1,8 @@
 {
-  "paywall:title.value": "{count, plural, one {You just learned # country.} other {You just learned # countries.}}",
-  "paywall:title.value__note": "Page 1 headline, shown right after the taster lesson. States what the user DID, not what they could buy. ICU plural — a taster can legitimately cover one country.",
-  "paywall:body.value": "In a week of five-minute days, that's about thirty. WorldQuest keeps every one of them fresh.",
-  "paywall:body.value__note": "Page 1 body. Extrapolates the user's own result. Never a promise we cannot keep — thirty is arithmetic, not marketing.",
+  "paywall:title.value": "{count, plural, one {You practiced # country.} other {You practiced # countries.}}",
+  "paywall:title.value__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. ",
+  "paywall:body.value": "Keep exploring flags, capitals and locations at your own pace.",
+  "paywall:body.value__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. ",
   "paywall:title.more": "Premium adds the extras.",
   "paywall:title.more__note": "Page 2 headline. Deliberately modest: the learning is free and stays free, so this cannot claim to unlock it.",
   "paywall:body.free": "Every lesson stays free. Always.",
@@ -30,8 +30,8 @@
   "paywall:title.buy__note": "Page 3 headline when no trial is on offer — the user has spent theirs, or the store returned no prices. Must not promise a trial that will not appear at the till.",
   "paywall:plans.loading": "Checking prices with the store…",
   "paywall:plans.loading__note": "Shown while the store is being asked for prices. Prices are never guessed or hardcoded — they come from the store for the account actually being charged.",
-  "paywall:plans.offline": "Prices come from the App Store, so they need a connection. Everything you've learned works offline as usual.",
-  "paywall:plans.offline__note": "Shown on the plans page with no connection. Ends on what still works — being on a train is not an error and must not read like one.",
+  "paywall:plans.offline": "Store prices need a connection. You can return to your downloaded lessons.",
+  "paywall:plans.offline__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. ",
   "paywall:plans.failed": "We couldn't reach the store just now. Nothing was charged.",
   "paywall:plans.failed__note": "Shown when the store could not be reached. The second sentence matters more than the first: the immediate fear is being charged for nothing.",
   "paywall:plans.none": "There's nothing to buy here yet. Every lesson is free in the meantime.",
@@ -61,5 +61,7 @@
   "paywall:error.failed": "That didn't go through. Nothing was charged.",
   "paywall:error.failed__note": "Purchase failure. The second sentence matters more than the first — the immediate fear is being charged for nothing.",
   "paywall:plans.includes": "Every plan includes",
-  "paywall:plans.includes__note": "Small heading above the four Premium perks on the plans page, so the price has the value beside it instead of three pages away."
+  "paywall:plans.includes__note": "Small heading above the four Premium perks on the plans page, so the price has the value beside it instead of three pages away.",
+  "paywall:title.unavailable": "Premium is not available yet",
+  "paywall:title.unavailable__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. Shown when the store has no plans; keep short."
 }

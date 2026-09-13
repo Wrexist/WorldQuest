@@ -1,5 +1,7 @@
 # Competitive research
 
+> **13 September 2026 update:** Read the [current product/competition audit](../audits/2026-09-13/01-product-competition.md) and [implementation roadmap](../audits/2026-09-13/09-prioritized-roadmap.md) before using the historical synthesis below. Duolingo now spans languages, math, music and chess; broad subjects alone are not differentiation. WorldQuest already has email account flows and server-paid quest/achievement rewards, but saved fact memory is not connected to client selection. The new review uses current official pages and local execution; it does not claim a fresh native teardown or representative review sample. Earlier categorical assertions need revalidation, not just price updates.
+
 Fourteen teardowns, each answering the five questions from the founder brief:
 **What do they do well? What keeps users coming back? What do users complain about?
 How do they monetise? Where can WorldQuest be meaningfully different?**

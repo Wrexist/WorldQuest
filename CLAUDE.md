@@ -8,13 +8,14 @@ This file covers only how *you* (an AI agent) should operate here.
 
 ## What this project is, in one paragraph
 
-WorldQuest is a mobile learning app (Expo/React Native + TypeScript + Supabase) that
-teaches world geography in five-minute daily sessions — countries, flags, capitals,
-landmarks — with XP, coins, streaks, hearts, leagues, and achievements. Architecturally
+WorldQuest is a mobile learning app (Expo/React Native + TypeScript; existing Supabase backend, Convex evaluation next) that
+offers short geography practice — countries, flags, capitals and locations — with XP, coins, streaks, hearts, leagues, and achievements. Architecturally
 it is **a learning engine for visual knowledge** with geography as its first content
 pack. The mockup for v1.0 is [`docs/design/assets/mockup-v1.png`](docs/design/assets/mockup-v1.png)
-(15 screens). We are currently in **Phase 0 → Phase 1**: documentation and the walking
-skeleton. See [`docs/plan/build-order.md`](docs/plan/build-order.md) for what is next.
+(15 screens). The app and backend code exist. Current work is **Phase 1: verification
+and release foundations** after the September audit. Follow
+[`docs/plan/execution-plan.md`](docs/plan/execution-plan.md) for the complete order and
+[`docs/plan/phase-1-verification.md`](docs/plan/phase-1-verification.md) for evidence.
 
 ---
 

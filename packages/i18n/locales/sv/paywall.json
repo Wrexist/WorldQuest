@@ -1,6 +1,6 @@
 {
-  "paywall:title.value": "{count, plural, one {Du lärde dig just # land.} other {Du lärde dig just # länder.}}",
-  "paywall:body.value": "På en vecka med fem minuter om dagen blir det ungefär trettio. WorldQuest håller varenda ett färskt.",
+  "paywall:title.value": "{count, plural, one {Du övade på # land.} other {Du övade på # länder.}}",
+  "paywall:body.value": "Fortsätt upptäcka flaggor, huvudstäder och platser i din egen takt.",
   "paywall:title.more": "Premium lägger till extrafunktionerna.",
   "paywall:body.free": "Alla lektioner är gratis. Alltid.",
   "paywall:perk.hearts": "Obegränsat med hjärtan",
@@ -15,7 +15,7 @@
   "paywall:plan.save": "Spara {percent} %",
   "paywall:title.buy": "Allt som Premium lägger till.",
   "paywall:plans.loading": "Hämtar priser från butiken …",
-  "paywall:plans.offline": "Priserna kommer från App Store och behöver internet. Allt du har lärt dig fungerar offline som vanligt.",
+  "paywall:plans.offline": "Butikens priser kräver internet. Du kan gå tillbaka till dina nedladdade lektioner.",
   "paywall:plans.failed": "Vi nådde inte butiken just nu. Inget har dragits.",
   "paywall:plans.none": "Det finns inget att köpa här än. Alla lektioner är gratis så länge.",
   "paywall:cta.trial": "Starta min gratisvecka",
@@ -30,5 +30,10 @@
   "paywall:billing.body": "Ditt kort nekades, så Premiums extrafunktioner är pausade. Allt du har lärt dig är kvar — uppdatera betalningen så kommer de tillbaka direkt.",
   "paywall:billing.fix": "Uppdatera betalning",
   "paywall:error.failed": "Det gick inte igenom. Inget drogs.",
-  "paywall:plans.includes": "Alla planer innehåller"
+  "paywall:plans.includes": "Alla planer innehåller",
+  "paywall:title.value__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. ",
+  "paywall:body.value__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. ",
+  "paywall:title.unavailable": "Premium är inte tillgängligt än",
+  "paywall:title.unavailable__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. Shown when the store has no plans; keep short.",
+  "paywall:plans.offline__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. "
 }

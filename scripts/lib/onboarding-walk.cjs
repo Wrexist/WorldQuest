@@ -42,16 +42,11 @@ const AFTER_TAP = 400
 /**
  * True when the app is sitting on onboarding rather than already past it.
  *
- * Checked by CONTENT, not by route: every one of these harnesses may be run against a
- * profile that has already completed the flow, and the honest answer there is "nothing
- * to walk" rather than a timeout hunting for a button that will never exist.
+ * Check the route so a non-English welcome cannot silently skip the walk. Callers
+ * with an already-onboarded profile may continue without walking it again.
  */
 async function onOnboarding(page) {
-  const text = await page.evaluate(() => document.body.innerText)
-  // `Get started` is the welcome frame's button, which is now what first launch opens
-  // on — so the first alternative here is the one that fires in practice and the rest
-  // are what let this be called from part-way through the flow.
-  return /Get started|Choose your language|five minutes a day|Next/i.test(text)
+  return new URL(page.url()).pathname === '/onboarding'
 }
 
 /**
@@ -63,6 +58,9 @@ async function onOnboarding(page) {
  */
 async function walkOnboarding(page, at = async () => {}) {
   if (!(await onOnboarding(page))) return false
+  if (!(await page.getByText('Get started', { exact: true }).first().isVisible())) {
+    throw new Error('Onboarding walker requires a fresh welcome screen in an en-US browser context')
+  }
 
   // ── welcome ───────────────────────────────────────────────────────────────
   // The greeting, and the frame that carries the returning user's door. `Get started` is
@@ -133,6 +131,7 @@ async function walkOnboarding(page, at = async () => {}) {
   await at('taster')
   await page.getByText('Start learning', { exact: true }).first().click()
   await page.waitForTimeout(1200)
+  await page.waitForURL((url) => url.pathname === '/lesson', { timeout: 10_000 })
   return true
 }
 

@@ -109,6 +109,7 @@ describe('Account — copy', () => {
     // Two screens and a code, so that progress cannot be lost. That is the sentence
     // worth reading at the end of it.
     render(<AccountScreen {...props({ stage: 'done', mode: 'link' })} />)
-    expect(screen.getByText('Your progress is safe')).toBeTruthy()
+    expect(screen.getByText('Your email is linked')).toBeTruthy()
+    expect(screen.queryByText(/everything you have learned will be there/i)).toBeNull()
   })
 })

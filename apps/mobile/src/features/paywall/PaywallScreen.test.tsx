@@ -303,6 +303,17 @@ describe('Paywall — when there are no prices', () => {
 })
 
 describe('Paywall — never promises what the till will refuse', () => {
+  it('hides future Premium benefits throughout the no-product tour', () => {
+    const { container } = paywall({ plans: [] })
+    expect(container.textContent).not.toMatch(/thirty|fresh|just learned/i)
+    for (let page = 0; page < 2; page++) {
+      fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+      expect(screen.getByRole('heading').textContent).toMatch(/not available yet/i)
+      expect(container.textContent).not.toMatch(/Unlimited hearts|Offline packs|Deep stats|Exclusive cosmetics|Every plan includes/i)
+      expect(screen.getByRole('button', { name: 'Not now' })).toBeTruthy()
+    }
+  })
+
   it('drops the trial headline when the trial is spent', () => {
     paywall({ plans: SAMPLE_PLANS.map((p) => ({ ...p, trialEligible: false })), source: 'settings' })
     expect(screen.getByRole('heading').textContent).not.toMatch(/free for a week/i)

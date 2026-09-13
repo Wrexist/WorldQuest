@@ -44,6 +44,7 @@
 
 const { chromium } = require('playwright')
 const { launchOptions } = require('../../../scripts/chromium.cjs')
+const { browserContext } = require('../../../scripts/lib/browser-harness.cjs')
 const http = require('node:http')
 const fs = require('node:fs')
 const path = require('node:path')
@@ -109,7 +110,7 @@ const skip = (name, why) => {
   // what killed this step on CI for the first run that ever reached it.
   const browser = await chromium.launch(launchOptions())
   // iPhone 14-ish. The layout is phone-first and a desktop viewport hides overflow bugs.
-  const page = await browser.newPage({ viewport: { width: 390, height: 844 } })
+  const page = await browser.newPage({ ...browserContext, viewport: { width: 390, height: 844 } })
 
   /**
    * Any uncaught error fails the run. A screen that renders while throwing is a screen
@@ -853,12 +854,12 @@ const skip = (name, why) => {
   // `undefined`, and "I already have an account" was in onboarding the same way. A
   // screen that exists and cannot be reached is this repo's most-repeated defect, so
   // the walk opens it the way a user does rather than pushing the route.
-  step('Settings offers a way to save progress', /save your progress/i.test(settings))
-  if (/save your progress/i.test(settings)) {
+  step('Settings offers a way to link an email', /link your email/i.test(settings))
+  if (/link your email/i.test(settings)) {
     // By ROLE, not by text: `LinkRow` collapses to one accessible element with
     // `accessible`, so the Text inside it is not the click target — the same trap the
     // tab walk above documents at length.
-    await page.getByRole('button', { name: 'Save your progress' }).first().click()
+    await page.getByRole('button', { name: 'Link your email' }).first().click()
     await page.waitForTimeout(1000)
     const account = await body()
     step(
@@ -1199,7 +1200,7 @@ const skip = (name, why) => {
   //
   // A separate context because the main page has booted a dozen times by now and
   // everything is in its cache. A cold boot needs a cold context.
-  const cold = await browser.newContext({ viewport: { width: 390, height: 844 } })
+  const cold = await browser.newContext({ ...browserContext, viewport: { width: 390, height: 844 } })
   const boot = await cold.newPage()
   boot.on('pageerror', (e) => errors.push('cold boot: ' + String(e)))
 

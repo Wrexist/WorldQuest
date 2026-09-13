@@ -40,6 +40,10 @@ export default defineConfig({
     __DEV__: 'true',
   },
   test: {
+    // Many simultaneous jsdom/coverage workers starve cold module imports on Windows.
+    // Bound contention instead of increasing the timeout for subscription behavior.
+    maxWorkers: 4,
+    minWorkers: 1,
     /**
      * A floor, not a target.
      *

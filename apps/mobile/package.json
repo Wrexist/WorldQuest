@@ -43,7 +43,6 @@
     "react-native-safe-area-context": "5.6.2",
     "react-native-screens": "~4.16.0"
   },
-  "$comment": "Phase 1 is deliberately ugly. Design lands in weeks 3-6 — see docs/plan/build-order.md.",
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.1.0",

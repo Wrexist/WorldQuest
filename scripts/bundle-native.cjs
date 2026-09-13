@@ -54,6 +54,7 @@ const { join } = require('node:path')
 
 const OUT = join(process.cwd(), 'node_modules', '.cache', 'wq-native')
 const MOBILE = join(process.cwd(), 'apps', 'mobile')
+const EXPO_CLI = require.resolve('expo/bin/cli', { paths: [MOBILE] })
 
 /**
  * The ceiling for the Hermes bytecode bundle, per platform, in MiB (this script divides
@@ -348,7 +349,8 @@ for (const platform of ['ios', 'android']) {
   const dir = join(OUT, platform)
   rmSync(dir, { recursive: true, force: true })
   try {
-    execFileSync('npx', ['expo', 'export', '--platform', platform, '--output-dir', dir], {
+    // Invoke Node directly: npx is a .cmd shim on Windows, not an executable.
+    execFileSync(process.execPath, [EXPO_CLI, 'export', '--platform', platform, '--output-dir', dir], {
       cwd: MOBILE,
       stdio: 'pipe',
       maxBuffer: 1 << 26,
@@ -388,7 +390,7 @@ for (const platform of ['ios', 'android']) {
     }
   } catch (error) {
     failed++
-    const output = `${error.stdout ?? ''}${error.stderr ?? ''}`
+    const output = `${error.message}\n${error.stdout ?? ''}${error.stderr ?? ''}`
     console.log(`  ✗ ${platform.padEnd(8)} failed to bundle`)
     // The last lines are where Metro puts the unresolved module, which is the only
     // part anyone needs.

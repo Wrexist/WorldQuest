@@ -43,7 +43,7 @@ import { join } from 'node:path'
 
 const ROOT = join(import.meta.dirname, '../../..')
 const MIGRATIONS = join(ROOT, 'supabase/migrations')
-const TYPES = readFileSync(join(ROOT, 'packages/api/src/database.types.ts'), 'utf8')
+const TYPES = readFileSync(join(ROOT, 'packages/api/src/database.types.ts'), 'utf8').replace(/\r\n/g, '\n')
 
 const sql = readdirSync(MIGRATIONS)
   .filter((f) => f.endsWith('.sql'))

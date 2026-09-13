@@ -1,5 +1,7 @@
 # Phase 0 checklist
 
+> **Historical specification/status — superseded for release planning on 13 September 2026.** Use the [current execution checklist](execution-plan.md), [evidence log](phase-1-verification.md) and [launch brief](../product/launch-brief.md). Feature lists and checked boxes below describe earlier targets or checks, not current device, backend or store certification.
+
 **Live status.** Update it in the same PR that changes the state.
 
 Phase 0 exits when every line is ticked. Phase 1 does not start before that — this is

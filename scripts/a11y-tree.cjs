@@ -38,6 +38,7 @@
 
 const { chromium } = require('playwright')
 const { walkOnboarding } = require('./lib/onboarding-walk.cjs')
+const { browserContext, assertRoute } = require('./lib/browser-harness.cjs')
 const { launchOptions } = require('./chromium.cjs')
 const http = require('node:http')
 const fs = require('node:fs')
@@ -172,7 +173,7 @@ const finding = (route, kind, detail) => findings.push({ route, kind, detail })
 
   await new Promise((resolve) => server.listen(PORT, resolve))
   const browser = await chromium.launch(launchOptions())
-  const page = await browser.newPage({ viewport: { width: 390, height: 844 } })
+  const page = await browser.newPage({ ...browserContext, viewport: { width: 390, height: 844 } })
 
   // Same reason as design-shots: without this the whole tool audits the onboarding
   // screen ten times and reports one confident, uniform, wrong answer.
@@ -190,6 +191,7 @@ const finding = (route, kind, detail) => findings.push({ route, kind, detail })
     await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'networkidle' })
     await page.waitForTimeout(1200)
 
+    assertRoute(page, route)
     const nodes = await axTree(page)
     const controls = nodes.filter((n) => INTERACTIVE.has(n.role))
     for (const control of controls) {

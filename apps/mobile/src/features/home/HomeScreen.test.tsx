@@ -26,7 +26,7 @@ describe('Home — the five states', () => {
     // The card names the QUEST now, not whichever task came next. `questTitle` was a
     // prop nothing ever passed, so this used to assert a fixture value that only ever
     // appeared in this file.
-    expect(screen.getByText('Five things, about ten minutes')).toBeTruthy()
+    expect(screen.getByText('Five challenges at your own pace')).toBeTruthy()
     // The three facts under the greeting: streak, rank, and today's quest. The rank is
     // the earned TITLE and not a league position — leagues are v2.0, and the tile that
     // used to claim one is gone with the rest of the unbuilt furniture.
@@ -71,7 +71,7 @@ describe('Home — the five states', () => {
     const { container } = render(
       <HomeScreen progress={null} loading isOffline={false} onStartLesson={() => {}} />,
     )
-    expect(screen.queryByText('Five things, about ten minutes')).toBeNull()
+    expect(screen.queryByText('Five challenges at your own pace')).toBeNull()
     expect(container.querySelector('[aria-label="Loading"]')).toBeTruthy()
   })
 
@@ -169,7 +169,7 @@ describe('Home — today’s quest', () => {
     )
 
   it('says how much of the quest is left, in tasks', () => {
-    // Tasks, not lessons and not facts. "Five things, about ten minutes" is the promise
+    // Tasks, not lessons and not facts. "Five challenges at your own pace" is the promise
     // the Quests tab makes, and this card used to count a different quantity — lessons
     // against a target derived from the user's measured pace, which MOVED when the pace
     // estimate did. One card, one number.
@@ -186,7 +186,7 @@ describe('Home — today’s quest', () => {
     // quest" as well, which printed the card's own name twice six pixels apart — the
     // defect this repo has now fixed on four separate cards.
     const { container } = withQuest({ done: 0, total: 5, complete: false })
-    expect(container.textContent).toContain('Five things, about ten minutes')
+    expect(container.textContent).toContain('Five challenges at your own pace')
     expect(container.textContent).toContain('0 of 5 done')
   })
 

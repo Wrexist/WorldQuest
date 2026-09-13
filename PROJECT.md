@@ -8,7 +8,7 @@
 | | |
 |---|---|
 | **Product** | WorldQuest — learn the world in 5 minutes a day |
-| **Stage** | Phase 0 → Phase 1 (foundations, pre-code) |
+| **Stage** | Phase 1: verification and release foundations; [current execution checklist](docs/plan/execution-plan.md) |
 | **Repo** | `wrexist/worldquest` |
 | **Design source** | [`docs/design/assets/mockup-v1.png`](docs/design/assets/mockup-v1.png) (15 screens) |
 | **Original brief** | [`docs/product/mvp-brief-original.md`](docs/product/mvp-brief-original.md) |
@@ -48,8 +48,9 @@ knowledge**, and geography is the first subject loaded into it.
 That distinction drives every technical decision in this document. Content is
 **data**, not code. Questions are **generated from templates over structured facts**,
 not hand-written. Mastery is **modelled per-fact per-user**, not counted as a score.
-The consequence: adding astronomy, art history, anatomy, wildlife, or flags of
-football clubs is a *content* task — a JSON pack and a template — not a rewrite.
+New subjects can reuse this structure, but require subject-appropriate teaching,
+assessment, templates and editorial validation. A JSON pack alone does not prove
+that a subject is taught well.
 
 > If you are ever about to hardcode a question, a country name, an XP value, or a
 > user-facing string: **stop**. It belongs in data. See [§5.4](#54-nothing-is-hardcoded).
@@ -77,7 +78,10 @@ user for a wrong answer or a broken streak. Full voice guide:
 
 ### Target audience
 
-Primary 10–24, secondary 25–45 (self-improvers, parents), tertiary teachers.
+Launch scope: worldwide English/Swedish; initial audience: geography beginners
+aged 16–24. Preserve protections for younger users and the broader 10–24 / 25–45
+personas. The [launch brief](docs/product/launch-brief.md) records the first course,
+claim boundaries and priority rules.
 Eight personas in [`docs/product/personas.md`](docs/product/personas.md) — **every
 feature must serve at least one persona by name.**
 
@@ -101,26 +105,29 @@ or by dark patterns. Supporting metrics, guardrails, and the metric tree:
 
 ## 2. Tech stack
 
-Decisions and their alternatives are recorded as ADRs in [`docs/adr/`](docs/adr/).
+Current source inventory: [`project-inventory.generated.json`](docs/engineering/project-inventory.generated.json).
+This table describes source, not production acceptance. Per-fact history hydration,
+account isolation and purchase integration are open release blockers.
+Historical decisions and their alternatives are recorded as ADRs in [`docs/adr/`](docs/adr/).
 **Do not change a stack element without adding an ADR.**
 
 | Layer | Choice | Why | ADR |
 |---|---|---|---|
 | Language | **TypeScript 5.x**, `strict: true` everywhere | One language across app, engines, edge functions, scripts | [0001](docs/adr/0001-tech-stack.md) |
 | App | **Expo (React Native)** + **expo-router** | iOS + Android + web from one codebase; OTA updates for content/liveops | [0001](docs/adr/0001-tech-stack.md) |
-| Repo | **pnpm workspaces** monorepo + Turborepo | Engines must be importable by app, server, and tests | [0002](docs/adr/0002-monorepo.md) |
-| Backend | **Supabase** (Postgres + Auth + RLS + Edge Functions + Storage) | Postgres-first, row-level security fits multi-role, no server to run | [0003](docs/adr/0003-backend-supabase.md) |
+| Repo | **pnpm workspaces** monorepo | Engines must be importable by app, server, and tests | [0002](docs/adr/0002-monorepo.md) |
+| Backend | **Existing Supabase code; Convex candidate for Phase 2** | Preserve source during migration; choose destination after native auth/cost proof | [0003](docs/adr/0003-backend-supabase.md) |
 | Server logic | **Deno Edge Functions** for anything authoritative | XP, streaks, leagues, purchases must never be client-trusted | [0006](docs/adr/0006-server-authoritative-progress.md) |
 | Scheduling | **FSRS** (Free Spaced Repetition Scheduler) | Modern, open, better retention/effort ratio than SM-2 | [0004](docs/adr/0004-spaced-repetition.md) |
 | Client state | **Zustand** (session/UI) + **TanStack Query** (server) + **MMKV** (persistence) | See [§6](#6-state-management-rules) | [0007](docs/adr/0007-state-management.md) |
-| Content | **JSON packs validated by Zod + JSON Schema** | Content is data; validation is CI | [0005](docs/adr/0005-content-as-data.md) |
-| Maps | **react-native-svg** vector maps (not tiles) | Offline, themeable, tappable regions, tiny | [0008](docs/adr/0008-vector-maps.md) |
-| Animation | **Reanimated 3** + **Lottie** for celebrations | 60fps on the UI thread; mockup is motion-heavy | — |
+| Content | **JSON packs validated by AJV / JSON Schema** | Content is data; validation is CI | [0005](docs/adr/0005-content-as-data.md) |
+| Maps | **Bundled raster maps generated from Natural Earth** | Pack-derived assets; interactive map assessment remains later work | [0008](docs/adr/0008-vector-maps.md) |
+| Animation | **React Native Animated**; Reanimated/Lottie not installed | Native frame-time verification remains required | — |
 | i18n | **i18next** + ICU MessageFormat | Plurals/genders for sv/de/fr/pt | [0009](docs/adr/0009-localization.md) |
-| Analytics | **PostHog** (self-hostable, EU region) | GDPR/COPPA posture; product analytics + flags | [0010](docs/adr/0010-analytics-and-privacy.md) |
-| Errors | **Sentry** | Crash + performance | — |
-| Payments | **RevenueCat** over StoreKit/Play Billing | Cross-platform entitlements, no receipt server | — |
-| Testing | **Vitest** (engines) · **Jest + RNTL** (app) · **Maestro** (E2E) | See [`docs/engineering/testing-strategy.md`](docs/engineering/testing-strategy.md) | — |
+| Analytics | **Typed analytics port**; PostHog not installed | Consent and child-policy integration must precede production collection | [0010](docs/adr/0010-analytics-and-privacy.md) |
+| Errors | **Error-reporting port** | Sentry integration remains to be verified/implemented | — |
+| Payments | **Purchase port, currently unavailable** | SDK and store acceptance remain Phase 5; no live paid offering | — |
+| Testing | **Vitest** (engines/app) · **Testing Library + react-native-web** · **Playwright** (browser E2E) | See [`docs/engineering/testing-strategy.md`](docs/engineering/testing-strategy.md) | — |
 | CI | **GitHub Actions** + **EAS Build/Submit** | — | — |
 
 **Node 22 LTS · pnpm 9 · Expo SDK 52+.**
@@ -558,6 +565,10 @@ It must return in **< 50 ms at p95**. If it doesn't, the app feels dead.
 ---
 
 ## 10. Feature roadmap
+
+The current release order is the [eight-phase execution checklist](docs/plan/execution-plan.md),
+with the [worldwide English/Swedish launch brief](docs/product/launch-brief.md).
+The version targets below are historical scope; they do not certify delivered features.
 
 Full detail, exit criteria, and cut-lines: [`docs/product/roadmap.md`](docs/product/roadmap.md).
 

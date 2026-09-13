@@ -2,10 +2,11 @@
 
 # 🌍 WorldQuest
 
-**Learn the world in five minutes a day.**
+**Practice geography, five minutes at a time.**
 
-Become the smartest explorer on Earth — countries, flags, capitals and landmarks,
-taught by a spaced-repetition engine and wrapped in a game worth returning to.
+Practice recognizing countries, flags and capitals in short daily sessions.
+Worldwide English/Swedish launch is the target; this repository is still completing
+the release foundations described below.
 
 </div>
 
@@ -13,9 +14,11 @@ taught by a spaced-repetition engine and wrapped in a game worth returning to.
 
 ## Status
 
-**Phase 0 → Phase 1.** Foundations are written; the walking skeleton is next.
-There is no shippable app yet — and that is deliberate. See
-[`docs/plan/build-order.md`](docs/plan/build-order.md).
+**Phase 1: verification and release foundations.** The Expo app, geography content,
+learning engines and backend code exist. The September audit identified learning-history,
+account, reward and purchase gaps that block a public paid release. Follow the
+[eight-phase execution checklist](docs/plan/execution-plan.md) and
+[current work log](docs/plan/phase-1-verification.md).
 
 ## What it is
 
@@ -23,9 +26,9 @@ A mobile learning app (iOS + Android) that teaches visual world knowledge in sho
 daily sessions, with XP, coins, streaks, hearts, leagues, collections and
 achievements — designed for a 10-year-old and a 40-year-old to both enjoy.
 
-Under the hood it is **a learning engine for any visual knowledge**. Geography is
-content pack #1. History, wildlife, art and astronomy are supposed to be a JSON file,
-not a rewrite. That constraint shapes the whole codebase.
+Content is structured data, with geography as the first subject. New subjects may
+reuse the engines, but still require suitable teaching methods, templates, assets
+and validation. Expansion follows the geography release.
 
 <div align="center">
 
@@ -42,8 +45,8 @@ not a rewrite. That constraint shapes the whole codebase.
 | 📜 **[PROJECT.md](PROJECT.md)** | The constitution — stack, structure, standards, schema, DoD |
 | 🤖 **[CLAUDE.md](CLAUDE.md)** | How AI agents work in this repo |
 | 📚 **[docs/](docs/README.md)** | Product bible, personas, design system, engine specs |
-| 🗺️ **[docs/plan/build-order.md](docs/plan/build-order.md)** | What we build, in what order, and why |
-| ✅ **[docs/plan/phase-0-checklist.md](docs/plan/phase-0-checklist.md)** | Where Phase 0 stands |
+| 🗺️ **[docs/plan/execution-plan.md](docs/plan/execution-plan.md)** | What we build, in what order, and why |
+| ✅ **[docs/plan/phase-0-checklist.md](docs/plan/phase-0-checklist.md)** | Historical Phase 0 checklist |
 
 ## Repo map
 
@@ -65,9 +68,13 @@ docs/           product · design · systems · engineering · adr · plan
 
 ## Tech stack (short version)
 
-TypeScript · Expo / React Native · expo-router · Zustand + TanStack Query ·
-Supabase (Postgres, Auth, RLS, Edge Functions) · FSRS spaced repetition ·
-Reanimated 3 · i18next · PostHog · RevenueCat.
+Current code: TypeScript, Expo 54 / React Native 0.81, expo-router, Zustand,
+TanStack Query, MMKV, i18next and pure TypeScript learning engines. The existing
+backend uses Supabase; Phase 2 evaluates Convex as its replacement, with Workers/D1
+as fallback. Supabase is not the chosen future backend. Billing and analytics
+ports are preparatory; RevenueCat and PostHog are not installed integrations.
+See the [generated inventory](docs/engineering/project-inventory.generated.json),
+[launch brief](docs/product/launch-brief.md) and [security maintenance](docs/engineering/dependency-security.md).
 Full rationale and alternatives: [`PROJECT.md §2`](PROJECT.md#2-tech-stack) and
 [`docs/adr/`](docs/adr/).
 

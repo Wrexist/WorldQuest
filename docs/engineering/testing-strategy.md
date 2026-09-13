@@ -1,5 +1,7 @@
 # Testing strategy
 
+> Current execution, 13 September 2026: component tests use **Vitest + react-native-web/jsdom**, not the historical Jest proposal below. `pnpm verify` runs the workspace/edge checks and static gates; `pnpm verify:full` adds native exports, browser E2E and the accessibility tree. See the [Phase 1 results](../plan/phase-1-verification.md). Browser commands that export to `node_modules/.cache/wq-web` must run sequentially: a second export clears files that an active harness is serving. For read-only parallel browser checks, finish one export first and run the `.cjs` drivers directly against it, with separate output directories. Mobile test concurrency is capped at four workers to avoid starving cold module imports.
+
 > "Plan it now."
 
 The shape is unusual on purpose: **the engines get near-total coverage, the UI gets
