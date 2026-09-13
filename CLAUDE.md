@@ -73,12 +73,17 @@ the code.
 | Adding, renaming, or translating any string | `worldquest-i18n` |
 | Auditing or fixing accessibility | `worldquest-a11y` |
 | Adding or changing a tracked event | `worldquest-analytics` |
-| Writing SQL, RLS, or an edge function | `worldquest-supabase` |
+| Writing legacy Supabase SQL, RLS, or an edge function | `worldquest-supabase` |
 | Designing a daily/weekly/seasonal event | `worldquest-liveops` |
 | Writing push/notification copy | `worldquest-notifications` |
 | Judging whether a feature belongs | `worldquest-persona-check` |
 | Researching a competitor | `worldquest-competitor-teardown` |
 | Finishing anything | `worldquest-definition-of-done` |
+
+New backend work targets Cloudflare Workers/D1. Follow ADR 0013 and
+`packages/backend/README.md`; use its real workerd/D1 tests. Preserve forward-only
+migrations, ownership checks, atomic reward batches and the account revision guard.
+Do not apply PostgreSQL-only RLS or transaction syntax to D1.
 
 ### Design skills
 

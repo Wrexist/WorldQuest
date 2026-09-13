@@ -208,3 +208,17 @@ The deployment configuration disables public routes, preview URLs and the app AP
 The mobile adapter still uses the old backend until the full D1 contract is ready.
 The Worker bundle is prepared but has not been deployed. Wrangler CLI has no login;
 the existing Chrome session was sufficient to provision and verify the database.
+
+`pnpm verify` passed with 1,538 tests at the D1 implementation revision `e0325f3`.
+The dependency security check has no unexpected advisories. The subsequent
+`d68b2f5` change reads concurrent test response bodies as they arrive; its ten D1
+tests pass locally and in the [dedicated D1 CI run](https://github.com/Wrexist/WorldQuest/actions/runs/34757852417).
+The [full CI run at d68b2f5](https://github.com/Wrexist/WorldQuest/actions/runs/34757852507)
+passes Windows and Ubuntu `verify:full` plus the retained source-database checks.
+The [iOS replay](https://github.com/Wrexist/WorldQuest/actions/runs/34757666031)
+passed with the final retry/paint-check workflow on iPhone 17 Pro / iOS 26.4.
+It reused the `f560dcc` binary without rebundling JavaScript. The final screenshot
+was inspected at original resolution and the checker again counted 6,149 label
+pixels. This validates the native test changes; it is not a D1-connected app run.
+See the [D1 implementation audit](../audits/2026-09-13/10-cloudflare-d1-update.md)
+for the remaining order and cost/scale constraints.

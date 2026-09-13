@@ -79,6 +79,9 @@ See the [generated inventory](docs/engineering/project-inventory.generated.json)
 Full rationale and alternatives: [`PROJECT.md §2`](PROJECT.md#2-tech-stack) and
 [`docs/adr/`](docs/adr/).
 
+The [D1 implementation audit](docs/audits/2026-09-13/10-cloudflare-d1-update.md)
+lists what is running, the remaining migration order and the free-plan limits.
+
 ## Principles worth stating up front
 
 1. **Content is data.** Never hardcode a fact or a question.

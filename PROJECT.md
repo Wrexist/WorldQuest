@@ -482,23 +482,31 @@ and RTL support.
 
 ## 9. Database schema
 
-Postgres (Supabase). Full DDL, indexes, and RLS policies:
-[`docs/engineering/data-model.md`](docs/engineering/data-model.md).
-Migrations are **forward-only** and live in `supabase/migrations/`.
+Cloudflare D1 is the selected destination. Current development DDL is in
+`packages/backend/migrations/`; its eight-table acceptance slice is not complete
+application schema parity. The legacy Postgres DDL and policies remain in
+[`docs/engineering/data-model.md`](docs/engineering/data-model.md) and
+`supabase/migrations/` until app cutover. Migrations in both locations are
+**forward-only** after application. See [ADR 0013](docs/adr/0013-cloudflare-d1-backend.md).
 
 ### 9.1 Principles
 
 - **Content is not in the database.** Content packs ship with the app and via CDN;
   the DB stores only *references to content IDs* and *user state*.
-- **Every user table has RLS.** Default deny. A policy per role.
-- **All progress writes go through an Edge Function.** Clients have no `INSERT` on
-  `xp_ledger`, `user_facts`, or `league_members`.
-- Timestamps are `timestamptz`, always UTC. Streaks use the user's stored IANA
-  timezone, evaluated server-side.
-- Soft-delete users (`deleted_at`) then hard-purge via job — GDPR erasure with a
-  30-day undo.
+- **Ownership is default deny.** D1 has no PostgreSQL RLS: every Worker route must
+  derive the owner from a live session and have cross-account tests. Legacy user
+  tables retain their RLS policies until decommissioning.
+- **All progress writes go through the Worker.** Clients receive no database
+  credentials. Receipt, review, memory, ledger and account changes commit in one
+  revision-guarded D1 batch; retrying re-grades from a fresh snapshot.
+- D1 timestamps use UTC epoch milliseconds; legacy Postgres uses `timestamptz`.
+  Production streaks require the stored IANA timezone. The current UTC-day proof
+  does not yet satisfy travel and offline replay acceptance.
+- Account erasure must revoke access immediately and purge owned data through a
+  bounded, verified job. Retention/undo policy and restore safeguards remain open;
+  do not present an unimplemented 30-day undo as a shipped guarantee.
 
-### 9.2 Core tables
+### 9.2 Legacy schema responsibilities to port
 
 ```sql
 -- identity & roles ---------------------------------------------------------

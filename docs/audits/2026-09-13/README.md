@@ -2,6 +2,11 @@
 
 Implementation has started: use the [current eight-phase checklist](../../plan/execution-plan.md) and [Phase 1 work log](../../plan/phase-1-verification.md). The findings below remain the dated pre-fix audit baseline.
 
+**Backend decision updated:** the owner selected Cloudflare Workers/D1. See the
+[D1 implementation audit and remaining order](10-cloudflare-d1-update.md) and
+[ADR 0013](../../adr/0013-cloudflare-d1-backend.md). The Convex recommendation below
+is historical and no longer the active destination.
+
 Audited 13 September 2026 against commit `59d39032a0a5103f1914e63c6614a6b55bd86400` on Windows. Scope: repository, executable checks, browser-rendered app, current official backend documentation and competitor listings. This is an audit and implementation plan; it does not migrate the backend or fix application code.
 
 **Verdict: a substantial product foundation, but not ready for a public paid App Store release.** The highest-value work is connecting learning history, making account boundaries safe, enforcing rewards correctly, and finishing the purchase/privacy journeys. More illustrations and more gamification will not compensate for these gaps.

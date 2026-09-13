@@ -155,7 +155,8 @@
       "maximumLessonStatements": 11,
       "authenticationStatements": 1,
       "workerBundleGzipKiB": 30.8,
-      "security": "No unexpected advisories"
+      "security": "No unexpected advisories",
+      "verification": "pnpm verify passed: 1538 tests at e0325f3; ten D1 tests pass after response-stream test fix d68b2f5"
     },
     "deployment": {
       "worker": "not deployed",
@@ -170,6 +171,31 @@
       "child policy and abuse controls",
       "export, erasure and restore",
       "hosted cost and CPU/load measurements"
-    ]
+    ],
+    "ci": {
+      "proof": "https://github.com/Wrexist/WorldQuest/actions/runs/34757852417",
+      "proofStatus": "success",
+      "revision": "d68b2f5",
+      "nativeReplay": {
+        "run": "https://github.com/Wrexist/WorldQuest/actions/runs/34757666031",
+        "status": "success",
+        "workflowRevision": "e0325f3",
+        "nativeAndJavaScriptRevision": "f560dcc",
+        "device": "iPhone 17 Pro",
+        "os": "iOS 26.4",
+        "whiteLabelPixels": 6149,
+        "scope": "Final Maestro flow and PNG paint check; not a D1-connected native app"
+      },
+      "full": {
+        "run": "https://github.com/Wrexist/WorldQuest/actions/runs/34757852507",
+        "status": "success",
+        "revision": "d68b2f5",
+        "jobs": [
+          "verify:full Ubuntu",
+          "verify:full Windows",
+          "legacy source database"
+        ]
+      }
+    }
   }
 }
