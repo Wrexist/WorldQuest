@@ -68,6 +68,26 @@ describe('D1 native auth transport', () => {
     await a.signOut()
     expect(h.values.size).toBe(0)
   })
+  it('makes completed logout a no-op after a different account has started', async () => {
+    const h = harness(), old = h.create(); await old.startGuest(); await old.signOut()
+    const next = h.create(); await next.startGuest()
+    const saved = [...h.values.entries()], calls = h.fetch.mock.calls.length
+    await old.signOut()
+    expect([...h.values.entries()]).toEqual(saved)
+    expect(await next.restore()).toEqual(guest)
+    expect(h.clear).toHaveBeenCalledTimes(1)
+    expect(h.fetch).toHaveBeenCalledTimes(calls)
+  })
+  it('shares in-flight erasure across simultaneous logout calls', async () => {
+    const h = harness(), a = h.create(); await a.startGuest()
+    let release!: () => void
+    const wait = new Promise<void>(resolve => { release = resolve })
+    h.clear.mockImplementation(async () => { await wait; h.values.clear() })
+    const first = a.signOut(), second = a.signOut()
+    await vi.waitFor(() => expect(h.clear).toHaveBeenCalledTimes(1))
+    release(); await Promise.all([first, second])
+    expect(h.clear).toHaveBeenCalledTimes(1)
+  })
   it('refuses a changed owner on the link path and revokes the returned token', async () => {
     const h = harness(), a = h.create()
     await a.startGuest(); await a.requestEmail('learner@example.invalid', 'link', 'en')

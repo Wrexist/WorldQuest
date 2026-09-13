@@ -11,8 +11,9 @@ export function createD1AccountClient(baseURL: string, transport: AuthFetch = fe
     return active.client
   }
   const client = createD1AuthClient({ baseURL, storage: createSessionStorage(), clearCredentials: async () => {
+    if (active?.client !== client) return
     await clearSessionStorage()
-    active = null
+    if (active?.client === client) active = null
   }, fetch: transport, randomBytes: () => getRandomBytesAsync(32) })
   active = { baseURL, client }
   return client

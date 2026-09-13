@@ -38,7 +38,12 @@ it('keeps a failed logout closed until erasure succeeds, then gives the next acc
   await expect(a.signOut()).rejects.toThrow('device locked')
   await expect(createD1AccountClient(baseURL).startGuest()).rejects.toThrow('Account changed')
   await a.signOut()
-  expect(await createD1AccountClient(baseURL, transport).restore()).toBeNull()
+  const b = createD1AccountClient(baseURL, transport)
+  expect(await b.restore()).toBeNull()
+  await b.startGuest()
+  await a.signOut()
+  expect(await b.restore()).toEqual(session)
+  expect(createD1AccountClient(baseURL)).toBe(b)
   await expect(a.startGuest()).rejects.toThrow('Account changed')
 })
 

@@ -1,5 +1,5 @@
 name: Native account acceptance
-# Includes crash-safe token renewal through the actual mobile vault and OS RNG.
+# Includes interrupted renewal and repeated old-client logout after account recovery.
 on:
   workflow_dispatch:
     inputs:

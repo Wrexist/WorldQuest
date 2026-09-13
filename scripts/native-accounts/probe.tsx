@@ -81,6 +81,8 @@ async function run(): Promise<string> {
     await a.signOut()
     const b = client(); await b.startGuest(); await b.recordAudience(2000)
     await b.requestEmail(email, 'login', 'en'); await b.verifyEmail(await code())
+    // A retained callback from the discarded client must not erase this account.
+    await a.signOut()
     check((await b.account()).userId === proof.getString('owner'), 'login changed owner')
     proof.set('stage', 'reinstall')
     return 'PASS_RECOVERY_READY_REINSTALL'

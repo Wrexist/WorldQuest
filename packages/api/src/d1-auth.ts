@@ -34,8 +34,17 @@ export function createD1AuthClient(options: {
   if (base.username || base.password || base.search || base.hash) throw new D1AuthError('INVALID_ENDPOINT')
   const origin = base.href.replace(/\/$/, '')
   let closed = false, busy = false
+  let erased = false, erasing: Promise<void> | null = null
   const now = options.now ?? Date.now
   const assertOpen = () => { if (closed) throw new AccountChangedError() }
+  function erase(): Promise<void> {
+    if (erased) return Promise.resolve()
+    if (erasing) return erasing
+    const work = Promise.resolve().then(() => options.clearCredentials()).then(() => { erased = true })
+      .finally(() => { erasing = null })
+    erasing = work
+    return work
+  }
   async function load(): Promise<D1Session | null> {
     assertOpen()
     const raw = await options.storage.getItem(STATE_KEY)
@@ -230,7 +239,7 @@ export function createD1AuthClient(options: {
       if (c.purpose === 'delete') {
         assertOpen()
         if (result.deleted !== true) throw new D1AuthError('INVALID_RESPONSE')
-        closed = true; await options.clearCredentials(); return { deleted: true }
+        closed = true; await erase(); return { deleted: true }
       }
       return accept(result, c.purpose === 'link' ? s.userId : undefined)
     }),
@@ -238,11 +247,12 @@ export function createD1AuthClient(options: {
       const s = await resumeRenewal(), value = await request('/v1/account/delete', s.token, {})
       assertOpen()
       if (value.deleted !== true) throw new D1AuthError('INVALID_RESPONSE')
-      closed = true; await options.clearCredentials(); return { deleted: true as const }
+      closed = true; await erase(); return { deleted: true as const }
     }),
     signOut: async () => {
       // Invalidate completions synchronously, before waiting for storage/network.
       closed = true
+      if (erased) return
       let s: D1Session | null = null
       let replacement: string | null = null
       try {
@@ -252,7 +262,7 @@ export function createD1AuthClient(options: {
           if (hex(value.renewal)) replacement = value.renewal
         }
       } catch { /* Erasure still runs after an unreadable credential. */ }
-      const results = await Promise.allSettled([options.clearCredentials(), s ? revoke(s.token) : Promise.resolve(), replacement ? revoke(replacement) : Promise.resolve()])
+      const results = await Promise.allSettled([erase(), s ? revoke(s.token) : Promise.resolve(), replacement ? revoke(replacement) : Promise.resolve()])
       if (results[0].status === 'rejected') throw results[0].reason
     },
   }

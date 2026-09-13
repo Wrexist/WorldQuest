@@ -16,6 +16,9 @@ the old session, replacement token and pending email challenge **before** callin
 OS random-byte API; its synchronous debug fallback is deliberately avoided.
 All native consumers share one auth client until credential erasure succeeds,
 preventing concurrent writers from overwriting each other's prepared replacement.
+Expo Crypto is a native dependency: distribute a new native binary, not an OTA
+JavaScript update to a binary lacking that module. Minimum-client/downgrade
+handling remains part of B18 before public activation.
 
 A single D1 batch creates the new hashed session, records the old/new hash pair,
 rebinds the pending verification and removes the old session. A lost response can
@@ -48,6 +51,9 @@ rotation in D1; a delayed renewal cannot escape that revocation. Another device'
 independent family remains valid. Email linking revokes the old guest families;
 account deletion erases every family and rotation record. An expired rotation
 receipt cannot authorize a retry. It never authorizes account or learning access.
+Local erasure is shared across simultaneous logout calls. Once it succeeds, a
+retained old client cannot clear credentials again or discard the new native
+client. A failed erase remains retryable until it succeeds.
 
 Offline logout guarantees local erasure and makes a best-effort server request.
 It cannot promise remote revocation without network access; a remaining remote
