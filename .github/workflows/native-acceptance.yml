@@ -37,7 +37,7 @@ jobs:
           retention-days: 7
 
   ios:
-    runs-on: macos-14
+    runs-on: macos-15
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
@@ -46,7 +46,8 @@ jobs:
         with: { node-version: 22, cache: pnpm }
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @worldquest/mobile exec expo prebuild --platform ios --no-install
-      - run: pod install --project-directory=apps/mobile/ios
+      - run: pod install
+        working-directory: apps/mobile/ios
       - name: Compile unsigned simulator application
         run: |
           set -o pipefail
