@@ -389,3 +389,30 @@ so the previously inspected browser/design captures remain applicable. New
 [full CI](https://github.com/Wrexist/WorldQuest/actions/runs/34773180441) and
 [D1 CI](https://github.com/Wrexist/WorldQuest/actions/runs/34773180436) were started
 for this revision; their final statuses are separate from the local pass.
+
+Both runs at `0ceb4e0` subsequently passed: full Windows/Ubuntu CI and the separate
+D1 proof are green.
+
+## Recoverable session renewal
+
+Migration 0005 and [ADR 0016](../adr/0016-recoverable-session-renewal.md) add session
+rotation with a durably prepared replacement. The same owner, rewards and pending
+email challenge survive renewal. An exact retry acknowledges a committed swap;
+different simultaneous replacements cannot both succeed. Logout revokes the
+device family, including a successor whose response never reached the client.
+Deleting the account removes all rotation records. No remote migration or Worker
+deployment was made.
+
+The targeted backend suite passes 36 tests; the API suite passes 36. New tests
+restart the portable client against real D1 after both response loss and secure
+write failure. The mobile factory shares one client across consumers until
+erasure succeeds and uses the asynchronous OS cryptographic generator. Full
+verification and the expanded native restart proof must pass at the final
+implementation revision before this checkpoint is accepted.
+
+Production account screens still use the legacy flow. The next integration must
+support eight-digit D1 codes, restored pending verification, resend/error states,
+explicit expired-owner recovery and protected-account behavior. Do not connect
+D1 identities to the old learning adapter; account/queue isolation and the complete
+authoritative progress contract remain prerequisites for the full app cutover.
+The owner continues to defer domain purchase and real email delivery.

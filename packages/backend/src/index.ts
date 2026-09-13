@@ -7,6 +7,7 @@ import { requestCode, resendCode, verifyCode } from './email-challenges'
 import { deleteAccount, finishIdentity } from './identity'
 import type { MailDelivery } from './email-provider'
 import { deletionCompleted, pruneDeletionReceipts } from './deletion-receipts'
+import { renewSession, revokeSessionFamily, pruneSessionRotations } from './session-renewal'
 
 const codeRequest = z.object({ email: z.string().trim().toLowerCase().email().max(254),
   purpose: z.enum(['link', 'login', 'delete']), locale: z.enum(['en', 'sv']) }).strict()
@@ -41,6 +42,7 @@ async function body(request: Request): Promise<unknown> {
 export function createWorker(mail: MailDelivery = unavailableMail) { return {
   async scheduled(_event: ScheduledController, env: Env): Promise<void> {
     await pruneDeletionReceipts(env.DB, Date.now())
+    await pruneSessionRotations(env.DB, Date.now())
   },
   async fetch(request: Request, env: Env): Promise<Response> {
     try {
@@ -52,6 +54,15 @@ export function createWorker(mail: MailDelivery = unavailableMail) { return {
         const input = await body(request)
         if (!input || typeof input !== 'object' || Array.isArray(input) || Object.keys(input).length !== 0) throw new ApiError('INVALID_BODY', 400)
         return json(await createGuest(env.DB, Date.now()), 201)
+      }
+      if (request.method === 'POST' && path === '/v1/auth/renew') {
+        const parsed = z.object({ replacement: challengeId }).strict().safeParse(await body(request))
+        if (!parsed.success) throw new ApiError('INVALID_BODY', 400)
+        return json(await renewSession(env.DB, request, parsed.data.replacement, Date.now()))
+      }
+      if (request.method === 'POST' && path === '/v1/auth/logout') {
+        if (!z.object({}).strict().safeParse(await body(request)).success) throw new ApiError('INVALID_BODY', 400)
+        return json(await revokeSessionFamily(env.DB, request, Date.now()))
       }
       // Deletion removes authentication too. Recognize only the exact completed
       // operation before normal auth, so a lost response can be acknowledged.
@@ -104,10 +115,6 @@ export function createWorker(mail: MailDelivery = unavailableMail) { return {
         const identity = await env.DB.prepare(`SELECT u.email FROM identities i JOIN auth_user u ON u.id=i.subject_id WHERE i.account_id=?`)
           .bind(account.id).first<{ email: string }>()
         return json({ userId: account.id, audience: account.audience, email: identity?.email ?? null, revision: account.revision, xp: account.xp, coins: account.coins })
-      }
-      if (request.method === 'POST' && path === '/v1/auth/logout') {
-        await env.DB.prepare('DELETE FROM sessions WHERE token_hash = ?').bind(tokenHash).run()
-        return json({ signedOut: true })
       }
       if (request.method === 'POST' && path === '/v1/lessons/submit') {
         const parsed = submissionSchema.safeParse(await body(request))

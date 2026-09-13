@@ -1,4 +1,4 @@
-import type { SessionStorage } from '@worldquest/api'
+import type { ProtectedStorage } from '@worldquest/api'
 
 export type SecureValues = {
   get: (key: string) => Promise<string | null>
@@ -88,7 +88,7 @@ export function createCredentialVault(secure: SecureValues, legacy: LegacyCreden
     // Never discard the old credential until its protected replacement is readable.
     legacy.remove(key)
   }
-  function open(): SessionStorage {
+  function open(): ProtectedStorage {
     const captured = generation
     const current = (): void => {
       if (captured !== generation) throw new Error('Credential storage session changed')

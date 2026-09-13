@@ -11,10 +11,11 @@ export async function hashToken(token: string): Promise<string> {
 export async function createGuest(db: D1Database, now: number) {
   const token = newToken()
   const userId = crypto.randomUUID()
+  const tokenHash = await hashToken(token)
   await db.batch([
     db.prepare('INSERT INTO accounts (id, created_at) VALUES (?, ?)').bind(userId, now),
-    db.prepare('INSERT INTO sessions (token_hash, account_id, created_at, expires_at) VALUES (?, ?, ?, ?)')
-      .bind(await hashToken(token), userId, now, now + SESSION_MS),
+    db.prepare('INSERT INTO sessions (token_hash, account_id, created_at, expires_at, family_id) VALUES (?, ?, ?, ?, ?)')
+      .bind(tokenHash, userId, now, now + SESSION_MS, tokenHash),
   ])
   return { userId, token, expiresAt: now + SESSION_MS }
 }

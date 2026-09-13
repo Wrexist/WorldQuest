@@ -5,6 +5,8 @@ import { Miniflare, convertV4MiniflareOptions } from 'miniflare'
 import type { VerificationMail } from './src/email-provider'
 import { pruneDeletionReceipts } from './src/deletion-receipts'
 import { createD1AuthClient, type AuthFetch } from '../api/src/d1-auth'
+import { hashToken } from './src/auth'
+import { pruneSessionRotations } from './src/session-renewal'
 
 type Session = { userId: string; token: string; expiresAt: number }
 let script: string, mf: Miniflare, db: D1Database
@@ -62,6 +64,134 @@ async function link(s: Session): Promise<Session> {
   return r.body as unknown as Session
 }
 async function expireChallenge() { await db.prepare('UPDATE email_challenges SET expires_at=0').run() }
+
+async function due(s: Session) {
+  const expiresAt = Date.now() + 86_400_000
+  await db.prepare('UPDATE sessions SET expires_at=? WHERE token_hash=?').bind(expiresAt, await hashToken(s.token)).run()
+  return { ...s, expiresAt }
+}
+const rotate = (s: Session, replacement = 'd'.repeat(64)) => call('/v1/auth/renew', s.token, { replacement })
+
+describe('D1 session renewal and revocation', () => {
+  it('swaps hashes atomically, preserves owner/progress and carries a pending email verification', async () => {
+    const s = await due(await guest()), id = await request(s), code = mail.at(-1)!.code
+    await db.prepare('UPDATE accounts SET xp=42,coins=7 WHERE id=?').bind(s.userId).run()
+    const result = await rotate(s), token = result.body.token as string
+    expect(result).toMatchObject({ status: 200, body: { userId: s.userId } })
+    expect((await call('/v1/account', s.token)).status).toBe(401)
+    expect((await call('/v1/account', token)).body).toMatchObject({ userId: s.userId, xp: 42, coins: 7 })
+    expect(await rotate(s)).toEqual(result)
+    expect((await rotate(s, 'e'.repeat(64))).status).toBe(401)
+    const stored = JSON.stringify((await db.prepare('SELECT * FROM sessions UNION ALL SELECT next_hash,account_id,0,expires_at,family_id FROM session_rotations').all()).results)
+    expect(stored).not.toContain(token); expect(stored).not.toContain(s.token)
+    expect((await verify(s, id, code)).status).toBe(401)
+    expect((await verify({ ...s, token }, id, code)).status).toBe(200)
+    // Linking revoked the entire guest family, including retired acknowledgements.
+    expect((await db.prepare('SELECT * FROM session_rotations').all()).results).toHaveLength(0)
+    expect((await rotate(s)).status).toBe(401)
+  })
+  it('rejects early, expired, unchanged and malformed credentials without changing sessions', async () => {
+    const s = await guest()
+    expect((await rotate(s)).status).toBe(409)
+    expect((await rotate(s, s.token)).status).toBe(400)
+    expect((await rotate(s, 'bad')).status).toBe(400)
+    expect((await call('/v1/auth/renew', undefined, { replacement: 'd'.repeat(64) })).status).toBe(401)
+    expect((await call('/v1/account', s.token)).status).toBe(200)
+    await db.prepare('UPDATE sessions SET expires_at=0').run()
+    expect((await rotate(s)).status).toBe(401)
+    expect((await db.prepare('SELECT * FROM sessions').all()).results).toHaveLength(1)
+    expect((await db.prepare('SELECT * FROM session_rotations').all()).results).toHaveLength(0)
+  })
+  it.each([true, false])('serializes simultaneous renewals (same replacement: %s)', async same => {
+    const s = await due(await guest())
+    const results = await Promise.all([rotate(s), rotate(s, (same ? 'd' : 'e').repeat(64))])
+    expect(results.filter(r => r.status === 200)).toHaveLength(same ? 2 : 1)
+    if (same) expect(results[0]).toEqual(results[1])
+    else expect(results.find(r => r.status !== 200)?.status).toBe(401)
+    expect((await db.prepare('SELECT * FROM sessions').all()).results).toHaveLength(1)
+    expect((await db.prepare('SELECT * FROM session_rotations').all()).results).toHaveLength(1)
+  })
+  it('rolls the entire rotation back on D1 failure, leaving the old bearer and challenge usable', async () => {
+    const s = await due(await guest()), id = await request(s)
+    await db.prepare(`CREATE TRIGGER fail_rotation BEFORE DELETE ON sessions BEGIN SELECT RAISE(ABORT,'injected'); END`).run()
+    expect((await rotate(s)).status).toBe(503)
+    expect((await call('/v1/account', s.token)).status).toBe(200)
+    expect((await call('/v1/account', 'd'.repeat(64))).status).toBe(401)
+    expect((await db.prepare('SELECT session_hash FROM email_challenges WHERE id=?').bind(id).first())?.session_hash).toBe(await hashToken(s.token))
+    expect((await db.prepare('SELECT * FROM session_rotations').all()).results).toHaveLength(0)
+    await db.prepare('DROP TRIGGER fail_rotation').run()
+    expect((await rotate(s)).status).toBe(200)
+  })
+  it('does not let a concurrent logout leave a renewed bearer alive', async () => {
+    const s = await due(await guest())
+    const [renewed, logout] = await Promise.all([rotate(s), call('/v1/auth/logout', s.token, {})])
+    expect([200, 401]).toContain(renewed.status)
+    expect(logout.status).toBe(200)
+    expect((await call('/v1/account', 'd'.repeat(64))).status).toBe(401)
+    expect((await db.prepare('SELECT * FROM sessions').all()).results).toHaveLength(0)
+    expect((await db.prepare('SELECT * FROM session_rotations').all()).results).toHaveLength(0)
+    expect((await rotate(s)).status).toBe(401)
+  })
+  it('allows retired-token logout without revoking another device of the linked owner', async () => {
+    const first = await due(await link(await guest()))
+    const secondGuest = await guest(), id = await request(secondGuest, 'login')
+    const second = await verify(secondGuest, id)
+    expect(second.status).toBe(200)
+    expect((await rotate(first)).status).toBe(200)
+    expect((await call('/v1/auth/logout', first.token, {})).status).toBe(200)
+    expect((await call('/v1/account', 'd'.repeat(64))).status).toBe(401)
+    expect((await call('/v1/account', second.body.token as string)).body.userId).toBe(first.userId)
+    expect((await rotate(first)).status).toBe(401)
+  })
+  it('erases renewal records during deletion and cannot recreate the deleted owner by replay', async () => {
+    const s = await due(await guest(false)), rotated = await rotate(s)
+    expect(rotated.status).toBe(200)
+    expect((await call('/v1/account/delete', rotated.body.token as string, {})).status).toBe(200)
+    expect((await db.prepare('SELECT * FROM session_rotations').all()).results).toHaveLength(0)
+    expect((await rotate(s)).status).toBe(401)
+    expect((await db.prepare('SELECT * FROM accounts').all()).results).toHaveLength(0)
+  })
+  it.each(['response', 'storage'])('resumes native-client renewal against real D1 after a lost %s acknowledgement', async failure => {
+    const values = new Map<string, string>()
+    let loseResponse = false, loseStorage = false
+    const transport: AuthFetch = async (url, init) => {
+      const r = await call(new URL(url).pathname, new Headers(init.headers).get('Authorization')?.slice(7), init.body ? JSON.parse(String(init.body)) : undefined)
+      if (url.endsWith('/renew') && loseResponse) { loseResponse = false; throw new Error('response lost') }
+      return { status: r.status, ok: r.status < 400, json: async () => r.body }
+    }
+    const create = () => createD1AuthClient({ baseURL: 'http://localhost', fetch: transport, clearCredentials: async () => { values.clear() },
+      storage: { getItem: async key => values.get(key) ?? null, removeItem: async key => { values.delete(key) },
+        setItem: async (key, value) => {
+          const parsed: { renewal?: string | null } = JSON.parse(value)
+          if (loseStorage && parsed.renewal === null) { loseStorage = false; throw new Error('storage failed') }
+          values.set(key, value)
+        } } })
+    const a = create(), s = await a.startGuest()
+    await db.prepare('UPDATE accounts SET xp=42,coins=7 WHERE id=?').bind(s.userId).run()
+    const key = [...values.keys()][0]!, state = JSON.parse(values.get(key)!)
+    state.session = await due(s); values.set(key, JSON.stringify(state))
+    loseResponse = failure === 'response'; loseStorage = failure === 'storage'
+    await expect(a.ensureSession()).rejects.toThrow(failure)
+    expect((await call('/v1/account', s.token)).status).toBe(401)
+    const b = create()
+    expect(await b.sessionStatus()).toBe('renewal-pending')
+    expect((await b.ensureSession()).userId).toBe(s.userId)
+    expect(await b.account()).toMatchObject({ userId: s.userId, xp: 42, coins: 7 })
+    expect(await b.sessionStatus()).toBe('active')
+    await b.signOut()
+    expect((await db.prepare('SELECT * FROM sessions').all()).results).toHaveLength(0)
+  })
+  it('prunes expired acknowledgements without reviving old tokens or dropping active sessions', async () => {
+    const s = await due(await guest()), r = await rotate(s)
+    expect(r.status).toBe(200)
+    await pruneSessionRotations(db, Date.now())
+    expect((await rotate(s)).status).toBe(200)
+    await db.prepare('UPDATE session_rotations SET expires_at=0').run()
+    await pruneSessionRotations(db, Date.now())
+    expect((await rotate(s)).status).toBe(401)
+    expect((await call('/v1/account', r.body.token as string)).status).toBe(200)
+  })
+})
 
 describe('D1 account gateway with real Better Auth and synthetic delivery', () => {
   it('links a guest without changing owner or rewards, then recovers on a second installation', async () => {

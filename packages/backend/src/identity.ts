@@ -25,8 +25,11 @@ export async function finishIdentity(db: D1Database, c: Challenge, subject: stri
     q(`UPDATE transaction_guards SET valid=CASE WHEN EXISTS(SELECT 1 FROM identities WHERE subject_id=? AND account_id=?) THEN 1 ELSE 0 END WHERE id=?`).bind(subject, owner, guard),
     // Linking revokes every old guest session. Login revokes the invoking guest
     // session, preserving other legitimate sessions of the recovered account.
+    q(c.purpose === 'link' ? 'DELETE FROM session_rotations WHERE account_id=?'
+      : 'DELETE FROM session_rotations WHERE family_id=(SELECT COALESCE(family_id,token_hash) FROM sessions WHERE token_hash=?)')
+      .bind(c.purpose === 'link' ? owner : c.session_hash),
     q(c.purpose === 'link' ? 'DELETE FROM sessions WHERE account_id=?' : 'DELETE FROM sessions WHERE token_hash=?').bind(c.purpose === 'link' ? owner : c.session_hash),
-    q('INSERT INTO sessions(token_hash,account_id,created_at,expires_at) VALUES (?,?,?,?)').bind(tokenHash, owner, now, now + SESSION_MS),
+    q('INSERT INTO sessions(token_hash,account_id,created_at,expires_at,family_id) VALUES (?,?,?,?,?)').bind(tokenHash, owner, now, now + SESSION_MS, tokenHash),
     q(`UPDATE email_challenges SET state='consumed' WHERE id=?`).bind(c.id),
     q('DELETE FROM transaction_guards WHERE id=?').bind(guard),
   ])
@@ -56,7 +59,7 @@ export async function deleteAccount(db: D1Database, owner: string, session: stri
       AND NOT EXISTS (SELECT 1 FROM identities WHERE subject_id=auth_user.id)`).bind(owner),
     q(`DELETE FROM email_challenges WHERE account_id=? OR email IN (
       SELECT u.email FROM auth_user u JOIN identities i ON i.subject_id=u.id WHERE i.account_id=?)`).bind(owner, owner),
-    ...['tickets', 'receipts', 'reviews', 'memories', 'ledger', 'sessions', 'identities'].map(table => q(`DELETE FROM ${table} WHERE account_id=?`).bind(owner)),
+    ...['tickets', 'receipts', 'reviews', 'memories', 'ledger', 'sessions', 'session_rotations', 'identities'].map(table => q(`DELETE FROM ${table} WHERE account_id=?`).bind(owner)),
     ...(identity ? [q('DELETE FROM auth_user WHERE id=?').bind(identity.subject_id)] : []),
     q('DELETE FROM auth_budgets WHERE bucket=?').bind(`email-owner:${owner}`),
     q('DELETE FROM accounts WHERE id=?').bind(owner),

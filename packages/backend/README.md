@@ -29,7 +29,7 @@ The development Worker `worldquest-development-api` was deployed on 2026-09-13
 with version `dc8bd22b-f2ec-4ab1-9cb7-6915dd20bb87`. Cloudflare API readback
 confirmed the D1 binding, `API_ENABLED=false`, and disabled workers.dev/preview
 URLs. Remote migration inspection found no pending migrations at that deployment;
-the new identity migrations 0002–0004 have not been applied remotely. This verifies
+the new identity migrations 0002–0005 have not been applied remotely. This verifies
 deployment configuration; connected native behavior and hosted load are still open.
 Use `pnpm --filter @worldquest/backend run deploy` (the `run` is required because
 pnpm also has a built-in deploy command). Wrangler OAuth needs
@@ -68,7 +68,16 @@ the receipt cannot authenticate. It retains no owner or email. An hourly schedul
 handler removes up to 1,000 expired receipts per run; hosted cleanup/backlog
 monitoring and backup retention still require acceptance before launch.
 
-Not yet accepted: native D1 auth, email linking/recovery,
+Session rotation follows [ADR 0016](../../docs/adr/0016-recoverable-session-renewal.md):
+30-day sessions renew in their last seven days. The client saves both credentials
+before an atomic swap; exact replay acknowledges a lost response, and either
+bearer can revoke its device family. Pending email verification keeps the same
+owner. Expired credentials are retained locally for an explicit recovery choice.
+Migration 0005 and the expanded hourly cleanup are not deployed.
+
+Native synthetic link/login/reinstall/deletion proofs passed on both platforms;
+the expanded renewal proof has its own evidence gate.
+Not yet accepted: production account screens and real email delivery,
 production ticket issuance, timezone/offline replay, complete progress hydration,
 quests/streaks/achievements/purchases, export/restore/erasure, abuse budgets, and the
 mobile repository adapter. Keep the API disabled until those gates are met.

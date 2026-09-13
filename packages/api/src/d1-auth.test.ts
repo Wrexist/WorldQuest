@@ -6,21 +6,24 @@ const guest = { userId: owner, token: 'a'.repeat(64), expiresAt: 2_000_000_000_0
 const linked = { userId: owner, token: 'b'.repeat(64), expiresAt: 2_000_000_000_000 }
 const challenge = { challengeId: 'c'.repeat(64), expiresAt: 2_000_000_000_000 }
 function harness() {
+  let clock = guest.expiresAt - 30 * 86_400_000
   const values = new Map<string, string>(), events: string[] = []
   const storage: ProtectedStorage = {
     getItem: vi.fn(async key => values.get(key) ?? null),
     setItem: vi.fn(async (key, value) => { events.push('saved'); values.set(key, value) }),
     removeItem: vi.fn(async key => { values.delete(key) }),
   }
-  const fetch = vi.fn<AuthFetch>(async url => {
+  const fetch = vi.fn<AuthFetch>(async (url, init) => {
     events.push(url.split('/').at(-1)!)
     const value = url.endsWith('/guest') ? guest : url.endsWith('/request') ? challenge
-      : url.endsWith('/verify') ? linked : { signedOut: true }
+      : url.endsWith('/verify') ? linked : url.endsWith('/renew')
+        ? { ...guest, token: JSON.parse(String(init.body)).replacement, expiresAt: clock + 30 * 86_400_000 } : { signedOut: true }
     return { status: 200, ok: true, json: async () => value }
   })
   const clear = vi.fn(async () => { values.clear() })
-  const create = () => createD1AuthClient({ baseURL: 'https://api.example.invalid', storage, clearCredentials: clear, fetch })
-  return { create, values, storage, fetch, clear, events }
+  const create = () => createD1AuthClient({ baseURL: 'https://api.example.invalid', storage, clearCredentials: clear, fetch,
+    now: () => clock, randomBytes: async () => new Uint8Array(32).fill(0xdd) })
+  return { create, values, storage, fetch, clear, events, setTime: (time: number) => { clock = time } }
 }
 describe('D1 native auth transport', () => {
   it('restores guest and pending verification after restart and replaces both atomically', async () => {
@@ -96,5 +99,75 @@ describe('D1 native auth transport', () => {
     h.values.set([...h.values.keys()][0]!, '{broken')
     await expect(h.create().restore()).rejects.toThrow('CREDENTIALS_INVALID')
     expect(h.fetch).toHaveBeenCalledTimes(1)
+  })
+  it('durably prepares renewal before sending, preserves verification, and restores the new bearer', async () => {
+    const h = harness(), a = h.create(); await a.startGuest()
+    await a.requestEmail('learner@example.invalid', 'link', 'sv')
+    h.setTime(guest.expiresAt - 86_400_000)
+    expect(await a.sessionStatus()).toBe('renewal-due')
+    h.events.length = 0
+    const next = await a.ensureSession()
+    expect(next).toMatchObject({ userId: owner, token: 'd'.repeat(64) })
+    expect(h.events).toEqual(['saved', 'renew', 'saved'])
+    expect(await h.create().restore()).toEqual(next)
+    expect(await h.create().pending()).toMatchObject({ purpose: 'link', email: 'learner@example.invalid' })
+    expect(await a.sessionStatus()).toBe('active')
+  })
+  it('does not rotate on D1 when the preparatory secure write fails', async () => {
+    const h = harness(), a = h.create(); await a.startGuest(); h.setTime(guest.expiresAt - 1)
+    vi.mocked(h.storage.setItem).mockRejectedValueOnce(new Error('device locked'))
+    await expect(a.ensureSession()).rejects.toThrow('device locked')
+    expect(h.fetch).toHaveBeenCalledTimes(1)
+    expect(await h.create().restore()).toEqual(guest)
+    expect(await a.sessionStatus()).toBe('renewal-due')
+  })
+  it.each(['lost response', 'secure commit failure'])('resumes the same saved renewal after restart: %s', async failure => {
+    const h = harness(), a = h.create(); await a.startGuest(); h.setTime(guest.expiresAt - 1)
+    if (failure === 'lost response') h.fetch.mockRejectedValueOnce(new Error(failure))
+    else {
+      vi.mocked(h.storage.setItem).mockImplementationOnce(async (key, value) => { h.values.set(key, value) })
+        .mockRejectedValueOnce(new Error(failure))
+    }
+    await expect(a.ensureSession()).rejects.toThrow(failure)
+    const b = h.create()
+    expect(await b.sessionStatus()).toBe('renewal-pending')
+    const next = await b.ensureSession()
+    const calls = h.fetch.mock.calls.filter(([url]) => url.endsWith('/renew'))
+    expect(calls).toHaveLength(2)
+    expect(calls[0]![1].body).toEqual(calls[1]![1].body)
+    expect(await b.restore()).toEqual(next)
+    expect(h.fetch.mock.calls.some(([url]) => url.endsWith('/logout'))).toBe(false)
+  })
+  it('revokes both saved bearers when logout interrupts renewal', async () => {
+    const h = harness(), a = h.create(); await a.startGuest(); h.setTime(guest.expiresAt - 1)
+    let release!: () => void
+    const wait = new Promise<void>(resolve => { release = resolve })
+    h.fetch.mockImplementationOnce(async () => {
+      await wait
+      return { status: 200, ok: true, json: async () => ({ ...guest, token: 'd'.repeat(64) }) }
+    })
+    const promise = a.ensureSession()
+    const rejected = expect(promise).rejects.toThrow('Account changed')
+    await vi.waitFor(() => expect(h.fetch).toHaveBeenCalledTimes(2))
+    await a.signOut(); release(); await rejected
+    const logouts = h.fetch.mock.calls.filter(([url]) => url.endsWith('/logout'))
+    expect(logouts.map(([, init]) => init.headers)).toContainEqual(expect.objectContaining({ Authorization: `Bearer ${guest.token}` }))
+    expect(logouts.map(([, init]) => init.headers)).toContainEqual(expect.objectContaining({ Authorization: `Bearer ${'d'.repeat(64)}` }))
+    expect(await h.create().sessionStatus()).toBe('missing')
+  })
+  it('keeps an expired owner for explicit recovery and never silently replaces it with a guest', async () => {
+    const h = harness(), a = h.create(); await a.startGuest(); h.setTime(guest.expiresAt + 1)
+    expect(await a.sessionStatus()).toBe('expired')
+    h.fetch.mockResolvedValueOnce({ status: 401, ok: false, json: async () => ({ error: 'SESSION_EXPIRED' }) })
+    await expect(a.startGuest()).rejects.toMatchObject({ code: 'SESSION_EXPIRED' })
+    expect(await h.create().restore()).toEqual(guest)
+    expect(await a.sessionStatus()).toBe('expired')
+    expect(h.fetch.mock.calls.filter(([url]) => url.endsWith('/guest'))).toHaveLength(1)
+  })
+  it('uses server time when a device clock requests renewal too early', async () => {
+    const h = harness(), a = h.create(); await a.startGuest(); h.setTime(guest.expiresAt + 1)
+    h.fetch.mockResolvedValueOnce({ status: 409, ok: false, json: async () => ({ error: 'SESSION_NOT_DUE' }) })
+    expect(await a.ensureSession()).toEqual(guest)
+    expect(await a.sessionStatus()).not.toBe('renewal-pending')
   })
 })

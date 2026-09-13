@@ -6,6 +6,7 @@ export interface ProtectedStorage {
   removeItem(key: string): Promise<void>
 }
 export interface D1Session { userId: string; token: string; expiresAt: number }
+export type D1SessionStatus = 'missing' | 'active' | 'renewal-due' | 'renewal-pending' | 'expired'
 export interface D1Challenge { challengeId: string; expiresAt: number; purpose: 'link' | 'login' | 'delete'; email: string }
 export interface D1Account { userId: string; audience: 'unknown' | 'protected' | 'eligible'; email: string | null; revision: number; xp: number; coins: number }
 export type AuthFetch = (url: string, init: RequestInit) => Promise<{ status: number; ok: boolean; json(): Promise<unknown> }>
@@ -13,6 +14,7 @@ export class D1AuthError extends Error {
   constructor(readonly code: string, readonly status = 0, readonly retryChallenge?: D1Challenge) { super(code); this.name = 'D1AuthError' }
 }
 const STATE_KEY = 'd1.auth.state.v1'
+const RENEWAL_WINDOW_MS = 7 * 24 * 60 * 60 * 1000
 const hex = (value: unknown): value is string => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value)
 const record = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object' && !Array.isArray(value)
 function session(value: unknown): D1Session {
@@ -24,12 +26,15 @@ function session(value: unknown): D1Session {
 /** Independent auth transport. The caller commits account/cache transitions only after these promises resolve. */
 export function createD1AuthClient(options: {
   baseURL: string; storage: ProtectedStorage; clearCredentials: () => Promise<void>; fetch: AuthFetch
+  /** Native callers supply the OS cryptographic generator; never use Math.random. */
+  randomBytes?: () => Promise<Uint8Array>; now?: () => number
 }) {
   const base = new URL(options.baseURL)
   if (base.protocol !== 'https:' && !(base.protocol === 'http:' && ['localhost', '127.0.0.1', '10.0.2.2'].includes(base.hostname))) throw new D1AuthError('INSECURE_ENDPOINT')
   if (base.username || base.password || base.search || base.hash) throw new D1AuthError('INVALID_ENDPOINT')
   const origin = base.href.replace(/\/$/, '')
   let closed = false, busy = false
+  const now = options.now ?? Date.now
   const assertOpen = () => { if (closed) throw new AccountChangedError() }
   async function load(): Promise<D1Session | null> {
     assertOpen()
@@ -39,6 +44,7 @@ export function createD1AuthClient(options: {
     try {
       const value: unknown = JSON.parse(raw)
       if (!record(value) || value.version !== 1) throw new Error('Invalid state')
+      if (value.renewal !== undefined && value.renewal !== null && !hex(value.renewal)) throw new Error('Invalid renewal')
       return session(value.session)
     } catch { throw new D1AuthError('CREDENTIALS_INVALID') }
   }
@@ -91,6 +97,62 @@ export function createD1AuthClient(options: {
     if (!s) throw new D1AuthError('AUTH_REQUIRED', 401)
     return s
   }
+  async function renewal(): Promise<string | null> {
+    await required()
+    const raw = await options.storage.getItem(STATE_KEY)
+    assertOpen()
+    try {
+      const value: unknown = raw ? JSON.parse(raw) : null
+      if (!record(value) || value.version !== 1) throw new Error('Invalid state')
+      if (value.renewal === undefined || value.renewal === null) return null
+      if (!hex(value.renewal)) throw new Error('Invalid renewal')
+      return value.renewal
+    } catch { throw new D1AuthError('CREDENTIALS_INVALID') }
+  }
+  async function renew(): Promise<D1Session> {
+    const current = await required(), challenge = await pending()
+    let replacement = await renewal()
+    if (!replacement) {
+      if (current.expiresAt > now() + RENEWAL_WINDOW_MS) return current
+      const bytes = options.randomBytes ? await options.randomBytes() : crypto.getRandomValues(new Uint8Array(32))
+      assertOpen()
+      if (!(bytes instanceof Uint8Array) || bytes.length !== 32) throw new D1AuthError('RANDOM_UNAVAILABLE')
+      replacement = [...bytes].map(b => b.toString(16).padStart(2, '0')).join('')
+      if (replacement === current.token) throw new D1AuthError('RANDOM_UNAVAILABLE')
+      // The old bearer and its replacement survive a crash before OR after D1
+      // commits. Never send the replacement until protected storage accepts it.
+      await options.storage.setItem(STATE_KEY, JSON.stringify({ version: 1, session: current, challenge, renewal: replacement }))
+      assertOpen()
+    }
+    try {
+      const next = session(await request('/v1/auth/renew', current.token, { replacement }))
+      assertOpen()
+      if (next.userId !== current.userId || next.token !== replacement) throw new D1AuthError('INVALID_RESPONSE')
+      await options.storage.setItem(STATE_KEY, JSON.stringify({ version: 1, session: next, challenge, renewal: null }))
+      assertOpen()
+      return next
+    } catch (error) {
+      // Unlike first login, renewal has an already persisted retry credential.
+      // Keep it after network/secure-write failures; logout revokes the family.
+      if (closed) await revoke(replacement)
+      else if (error instanceof D1AuthError && (error.code === 'SESSION_NOT_DUE' || error.code === 'SESSION_EXPIRED')) {
+        await options.storage.setItem(STATE_KEY, JSON.stringify({ version: 1, session: current, challenge, renewal: null }))
+        assertOpen()
+        // Server time decides the window. An early device clock must not strand
+        // a valid session behind a pending renewal that was never committed.
+        if (error.code === 'SESSION_NOT_DUE') return current
+      }
+      throw error
+    }
+  }
+  async function ready(): Promise<D1Session> {
+    const current = await required()
+    const interrupted = await renewal()
+    return interrupted || current.expiresAt <= now() + RENEWAL_WINDOW_MS ? renew() : current
+  }
+  async function resumeRenewal(): Promise<D1Session> {
+    return await renewal() ? renew() : required()
+  }
   async function saveChallenge(value: Record<string, unknown>, purpose: D1Challenge['purpose'], email: string) {
     assertOpen()
     if (!hex(value.challengeId) || typeof value.expiresAt !== 'number' || !Number.isFinite(value.expiresAt)) throw new D1AuthError('INVALID_RESPONSE')
@@ -117,13 +179,20 @@ export function createD1AuthClient(options: {
   }
   return {
     restore: load, pending,
+    sessionStatus: async (): Promise<D1SessionStatus> => {
+      const current = await load()
+      if (!current) return 'missing'
+      if (await renewal()) return 'renewal-pending'
+      return current.expiresAt <= now() ? 'expired' : current.expiresAt <= now() + RENEWAL_WINDOW_MS ? 'renewal-due' : 'active'
+    },
+    ensureSession: () => transition(ready),
     startGuest: () => transition(async () => {
       const existing = await load()
-      if (existing) return existing
+      if (existing) return ready()
       return accept(await request('/v1/auth/guest', undefined, {}))
     }),
-    account: async (): Promise<D1Account> => {
-      const s = await required(), value = await request('/v1/account', s.token)
+    account: () => transition(async (): Promise<D1Account> => {
+      const s = await ready(), value = await request('/v1/account', s.token)
       assertOpen()
       if (value.userId !== s.userId || (value.audience !== 'unknown' && value.audience !== 'protected' && value.audience !== 'eligible')
         || (value.email !== null && typeof value.email !== 'string')
@@ -132,13 +201,13 @@ export function createD1AuthClient(options: {
         || typeof value.coins !== 'number' || !Number.isFinite(value.coins)) throw new D1AuthError('INVALID_RESPONSE')
       return { userId: s.userId, audience: value.audience, email: value.email,
         revision: value.revision, xp: value.xp, coins: value.coins }
-    },
+    }),
     recordAudience: (birthYear: number) => transition(async () => {
-      const s = await required(), value = await request('/v1/account/audience', s.token, { birthYear })
+      const s = await ready(), value = await request('/v1/account/audience', s.token, { birthYear })
       assertOpen(); return value.audience
     }),
     requestEmail: (email: string, purpose: D1Challenge['purpose'], locale: 'en' | 'sv') => transition(async () => {
-      const s = await required(), address = email.trim().toLowerCase()
+      const s = await ready(), address = email.trim().toLowerCase()
       try { return await saveChallenge(await request('/v1/auth/email/request', s.token, { email: address, purpose, locale }), purpose, address) }
       catch (error) {
         if (error instanceof D1AuthError && error.code === 'EMAIL_UNAVAILABLE' && 'response' in error && record(error.response) && hex(error.response.challengeId)) {
@@ -149,13 +218,13 @@ export function createD1AuthClient(options: {
       }
     }),
     resendEmail: () => transition(async () => {
-      const s = await required(), c = await pending()
+      const s = await ready(), c = await pending()
       if (!c) throw new D1AuthError('CHALLENGE_REQUIRED')
       const value = await request('/v1/auth/email/resend', s.token, { challengeId: c.challengeId })
       assertOpen(); return saveChallenge(value, c.purpose, c.email)
     }),
     verifyEmail: (code: string) => transition(async (): Promise<D1Session | { deleted: true }> => {
-      const s = await required(), c = await pending()
+      const s = await resumeRenewal(), c = await pending()
       if (!c) throw new D1AuthError('CHALLENGE_REQUIRED')
       const result = await request('/v1/auth/email/verify', s.token, { challengeId: c.challengeId, code })
       if (c.purpose === 'delete') {
@@ -166,7 +235,7 @@ export function createD1AuthClient(options: {
       return accept(result, c.purpose === 'link' ? s.userId : undefined)
     }),
     deleteGuest: () => transition(async () => {
-      const s = await required(), value = await request('/v1/account/delete', s.token, {})
+      const s = await resumeRenewal(), value = await request('/v1/account/delete', s.token, {})
       assertOpen()
       if (value.deleted !== true) throw new D1AuthError('INVALID_RESPONSE')
       closed = true; await options.clearCredentials(); return { deleted: true as const }
@@ -175,11 +244,15 @@ export function createD1AuthClient(options: {
       // Invalidate completions synchronously, before waiting for storage/network.
       closed = true
       let s: D1Session | null = null
+      let replacement: string | null = null
       try {
         const raw = await options.storage.getItem(STATE_KEY), value: unknown = raw ? JSON.parse(raw) : null
-        if (record(value) && value.version === 1) s = session(value.session)
+        if (record(value) && value.version === 1) {
+          s = session(value.session)
+          if (hex(value.renewal)) replacement = value.renewal
+        }
       } catch { /* Erasure still runs after an unreadable credential. */ }
-      const results = await Promise.allSettled([options.clearCredentials(), s ? revoke(s.token) : Promise.resolve()])
+      const results = await Promise.allSettled([options.clearCredentials(), s ? revoke(s.token) : Promise.resolve(), replacement ? revoke(replacement) : Promise.resolve()])
       if (results[0].status === 'rejected') throw results[0].reason
     },
   }

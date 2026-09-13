@@ -4,13 +4,21 @@ import { registerRootComponent } from 'expo'
 import { Linking, Platform, Text, View } from 'react-native'
 import { MMKV } from 'react-native-mmkv'
 import * as SplashScreen from 'expo-splash-screen'
-import { createD1AuthClient } from '../../packages/api/src/d1-auth'
-import { createSessionStorage, clearSessionStorage } from '../../apps/mobile/src/lib/credentials'
+import { createD1AccountClient } from '../../apps/mobile/src/lib/d1-auth'
+import { createSessionStorage } from '../../apps/mobile/src/lib/credentials'
 
 const baseURL = Platform.OS === 'android' ? 'http://10.0.2.2:8789' : 'http://127.0.0.1:8789'
 const email = 'native-proof@example.invalid'
 const proof = new MMKV({ id: 'worldquest.account-proof' })
-const client = () => createD1AuthClient({ baseURL, storage: createSessionStorage(), clearCredentials: clearSessionStorage, fetch })
+let loseRenewalResponse = false
+const client = () => createD1AccountClient(baseURL, async (url, init) => {
+  const response = await fetch(url, init)
+  if (url.endsWith('/renew') && loseRenewalResponse && response.ok) {
+    await response.json(); loseRenewalResponse = false
+    throw new Error('Synthetic lost renewal response')
+  }
+  return response
+})
 const check = (ok: boolean, message: string): void => { if (!ok) throw new Error(message) }
 const code = async (): Promise<string> => (await (await fetch(baseURL + '/__proof/mailbox')).json()).code
 async function run(): Promise<string> {
@@ -44,11 +52,28 @@ async function run(): Promise<string> {
     await a.recordAudience(2000)
     await fetch(baseURL + '/__proof/seed', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ owner: guest.userId }) })
     await a.requestEmail(email, 'link', 'sv')
+    // Age only this synthetic fixture. Both saved and server expiry use the same
+    // value; renewal itself runs the actual app transport, OS RNG and vault.
+    const aged = await (await fetch(baseURL + '/__proof/renewal-due', { method: 'POST',
+      headers: { Authorization: `Bearer ${guest.token}` } })).json()
+    const storage = createSessionStorage(), raw = await storage.getItem('d1.auth.state.v1')
+    check(raw !== null, 'missing fixture credential')
+    const state = JSON.parse(raw!)
+    state.session.expiresAt = aged.expiresAt
+    await storage.setItem('d1.auth.state.v1', JSON.stringify(state))
+    loseRenewalResponse = true
+    let interrupted = false
+    try { await a.ensureSession() } catch (error) { interrupted = error instanceof Error && error.message === 'Synthetic lost renewal response' }
+    check(interrupted && await a.sessionStatus() === 'renewal-pending', 'renewal did not preserve interrupted credentials')
     proof.set('owner', guest.userId); proof.set('stage', 'verification')
-    return 'PASS_READY_EMAIL_RESTART'
+    return 'PASS_RENEWAL_READY_RESTART'
   }
   if (stage === 'verification') {
     const a = client()
+    check(await a.sessionStatus() === 'renewal-pending', 'restart lost pending renewal')
+    const renewed = await a.ensureSession()
+    check(renewed.userId === proof.getString('owner') && await a.sessionStatus() === 'active', 'renewal changed owner or remained pending')
+    check((await a.account()).xp === 42, 'renewal lost progress')
     check((await a.pending())?.purpose === 'link', 'restart lost pending verification')
     const linked = await a.verifyEmail(await code())
     check('userId' in linked && linked.userId === proof.getString('owner'), 'link changed progress owner')

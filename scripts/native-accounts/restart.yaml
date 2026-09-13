@@ -2,7 +2,7 @@ appId: com.wrexist.worldquest.accountsproof
 ---
 - launchApp
 - extendedWaitUntil:
-    visible: PASS_READY_EMAIL_RESTART
+    visible: PASS_RENEWAL_READY_RESTART
     timeout: 60000
 - takeScreenshot: account-pending
 - stopApp

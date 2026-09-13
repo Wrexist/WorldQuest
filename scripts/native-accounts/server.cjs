@@ -2,6 +2,7 @@
 const fs = require('node:fs')
 const path = require('node:path')
 const http = require('node:http')
+const { createHash } = require('node:crypto')
 const { build } = require('esbuild')
 const { Miniflare, convertV4MiniflareOptions } = require('miniflare')
 if (process.env.CI !== 'true') throw new Error('Native account proof requires isolated CI')
@@ -42,6 +43,14 @@ async function main() {
         originalOwner = owner
         await db.prepare('UPDATE accounts SET xp=42,coins=7 WHERE id=?').bind(owner).run()
         result = Response.json({ seeded: true })
+      } else if (url.pathname === '/__proof/renewal-due' && incoming.method === 'POST') {
+        const token = incoming.headers.authorization?.match(/^Bearer ([a-f0-9]{64})$/)?.[1]
+        if (!token) throw new Error('Invalid fixture credential')
+        const expiresAt = Date.now() + 86400000
+        const updated = await db.prepare('UPDATE sessions SET expires_at=? WHERE token_hash=? AND account_id=?')
+          .bind(expiresAt, createHash('sha256').update(token).digest('hex'), originalOwner).run()
+        if (updated.meta.changes !== 1) throw new Error('Missing fixture session')
+        result = Response.json({ expiresAt })
       } else if (url.pathname === '/__proof/state') {
         result = Response.json({ originalOwner, remaining: await db.prepare('SELECT id FROM accounts WHERE id=?').bind(originalOwner).first(),
           identities: (await db.prepare('SELECT subject_id FROM identities').all()).results.length })

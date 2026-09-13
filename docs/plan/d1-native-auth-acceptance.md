@@ -33,6 +33,14 @@ that integration. Sources: [Expo](https://better-auth.com/docs/integrations/expo
 | 6 | Complete account deletion | Revoke sessions and erase identities, verification records, learning state and projections; retries complete interrupted erasure without recreating the account |
 | 7 | Native acceptance | English/Swedish journeys on iOS and Android; airplane mode, interrupted verification, replayed code, simultaneous requests, second installation and stale SDK completion |
 
+Session renewal is now implemented under [ADR 0016](../adr/0016-recoverable-session-renewal.md).
+The native client saves a replacement before rotation, resumes a lost response or
+failed final secure write, and revokes the device family on logout. Real D1 tests
+cover concurrency, rollback, deletion and challenge continuity. The extended
+native restart proof is a separate gate; consult the verification log for its
+actual result. Production account screens, explicit expired-owner recovery and
+queue isolation still need integration before B02 can close.
+
 The email sender needs a project-owned sender domain, verified delivery and a
 documented free/low-cost allowance. Use synthetic delivery in local tests; do not
 send real codes or adopt an unrelated Cloudflare domain as a shortcut. Sender setup
