@@ -123,7 +123,7 @@
       "ios-final-country.png"
     ]
   },
-  "nativeScope": "E18 open for iOS 26.4 label rendering. Automated journeys pass on Android 15, iOS 18.5 and iOS 26.4. Binaries predate 8fc47d6 query-cache fix; connected auth/account transitions and full release device matrix unverified.",
+  "nativeScope": "E18 dependency acceptance complete after correcting the original screenshot interpretation. Connected native auth/account transitions and the full release device matrix remain unverified.",
   "iosAdditional": {
     "journeyRun": "https://github.com/Wrexist/WorldQuest/actions/runs/34754127288",
     "binaryRevision": "f560dcc",
@@ -131,10 +131,45 @@
     "device": "iPhone 17 Pro iOS 26.4 arm64 simulator",
     "tooling": "Xcode 26.6",
     "automatedStatus": "success",
-    "visualFinding": "Country practice button label absent in flow and final screenshots; same binary renders it on iOS 18.5. Cause unverified.",
+    "visualFinding": "Superseded: full-resolution inspection and decoded pixels prove the original label was present (6149 light pixels within the button). Earlier preview-based finding was incorrect.",
     "screenshots": [
       "ios-26-country-flow.png",
       "ios-26-country-final.png"
+    ]
+  },
+  "d1": {
+    "checkedOn": "2026-09-13",
+    "decision": "Cloudflare Workers/D1 selected by owner; ADR 0013",
+    "database": {
+      "name": "worldquest-development",
+      "id": "4354bdf7-8e07-46d9-93d7-a0700f2f1096",
+      "jurisdiction": "eu",
+      "migration": "0001_accounts_and_lessons.sql",
+      "applicationTables": 8,
+      "accounts": 0,
+      "verification": "Created and queried through the signed-in Chrome dashboard"
+    },
+    "local": {
+      "runtime": "Wrangler 4.131.1 / Miniflare 5.20260911.0-alpha / workerd / real SQLite",
+      "testsPassed": 10,
+      "maximumLessonStatements": 11,
+      "authenticationStatements": 1,
+      "workerBundleGzipKiB": 30.8,
+      "security": "No unexpected advisories"
+    },
+    "deployment": {
+      "worker": "not deployed",
+      "publicApi": "disabled in configuration",
+      "mobileAdapter": "legacy; D1 cutover not yet accepted"
+    },
+    "open": [
+      "native guest/link/recovery/logout/deletion acceptance",
+      "secure native credential storage",
+      "canonical ticket issuance and full reward contract",
+      "offline history ordering and hydration",
+      "child policy and abuse controls",
+      "export, erasure and restore",
+      "hosted cost and CPU/load measurements"
     ]
   }
 }

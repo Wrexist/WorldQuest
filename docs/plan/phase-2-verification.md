@@ -143,7 +143,7 @@ of the same binary passed on iPhone 17 Pro / iOS 26.4 with Xcode 26.6 tooling.
 Both replay flows and the native binary revision are recorded separately in the
 saved evidence; a newer runner image does not mean the app was rebuilt with it.
 
-**E18 remains open for visual compatibility.** Both native
+**Historical finding, superseded by the full-resolution correction below.** Both native
 platforms compile and exercise the affected storage/navigation/asset paths with
 the updated lockfile. However, the iOS 26.4 screenshots show a blank country
 practice button, including the capture taken after the flow finished. The same
@@ -158,13 +158,53 @@ performance or the full release OS/device matrix. Those remain Phase 2/A11 gates
 
 ## Remaining order
 
-1. E18: reproduce and fix the iOS 26.4 country-button label, then inspect both OS captures.
-2. B02: choose and prove native guest/auth/link/recovery, including protected accounts.
-3. Extend the Convex transaction slice to the complete canonical lesson/quest,
+1. B02: choose and prove native guest/auth/link/recovery, including protected accounts.
+2. Extend the selected D1 transaction slice to the complete canonical lesson/quest,
    streak, achievement and purchase contract before adding the mobile adapter.
-4. Implement revisioned per-fact history, late-event replay and offline hydration.
-5. Complete child policy, protected credential storage, abuse limits, erasure,
+3. Implement revisioned per-fact history, late-event replay and offline hydration.
+4. Complete child policy, protected credential storage, abuse limits, erasure,
    export/restore and measured hosted cost. Only then rehearse app cutover.
 
 The full 148-action [execution checklist](execution-plan.md) remains authoritative.
 No store submission, production cutover or paid backend provisioning occurred.
+
+## Full-resolution native evidence correction (2026-09-13)
+
+The earlier missing-label finding was a preview-reading error. Inspection of the
+original full-resolution iOS 26.4 PNG shows the Practice button text. The new
+`scripts/check-native-button.cjs` finds 6,149 white label pixels inside that button.
+The clipping experiment was reverted; there is no final Button component change.
+The saved original iOS 18.5/26.4 and Android journeys therefore close E18 and Phase
+1 (14/14). A replay at 29ced6b also passed on iOS 26.4. Two iOS 18 replay attempts
+failed at driver startup/early tap; they do not invalidate the prior passing run.
+Maestro now retries a welcome tap if the screen does not change, and the replay
+workflow checks the final country screenshot pixels. This is not full A11 acceptance.
+
+## Cloudflare D1 selection (2026-09-13)
+
+The owner selected D1 instead of Convex. ADR 0013 supersedes the destination in
+ADR 0012. The unfinished Convex auth candidate was removed from active source;
+the committed transaction prototype remains recoverable from Git. The account
+ports and mobile isolation work are retained. B19 is complete as a product choice;
+B02/B04 remain open for their full application acceptance.
+
+Created `worldquest-development` in the existing Cloudflare account, with EU
+jurisdiction. Applied `0001_accounts_and_lessons.sql` through the signed-in Chrome
+dashboard; a subsequent SQL query confirmed eight application tables, zero accounts
+and the migration record. No plan upgrade. `packages/backend` now contains a Worker, D1 schema,
+hashed opaque guest sessions, immediate logout revocation, strict bounded input,
+account-derived ownership, authoritative grading and transactional receipts.
+An account revision CHECK guard makes conflicting D1 batches abort and re-grade.
+Bulk SQL keeps the worst-case bounded retry path below Free's 50-query invocation
+limit. No client can supply rewards or upload an answer key.
+
+Ten passing local workerd/SQLite integration tests exercise actual HTTP bearer sessions,
+concurrent duplicates, conflicting lessons, single first-day bonus, reconciliation,
+failure-after-ledger rollback, forged slots, oversize payloads and revoked/expired
+sessions. A maximum 20-slot lesson uses 11 SQL statements plus authentication;
+revocation between grading and commit aborts with no reward. These are development
+foundation tests, not email/native auth acceptance.
+The deployment configuration disables public routes, preview URLs and the app API.
+The mobile adapter still uses the old backend until the full D1 contract is ready.
+The Worker bundle is prepared but has not been deployed. Wrangler CLI has no login;
+the existing Chrome session was sufficient to provision and verify the database.

@@ -6,6 +6,8 @@ Current work: [eight-phase execution checklist](plan/execution-plan.md), coverin
 
 Latest evidence-based review: [13 September 2026 audit programme](audits/2026-09-13/README.md) — eight audits, prioritized actions, App Store readiness and a Convex/low-cost backend comparison. It distinguishes current code from older planning claims.
 
+Backend decision update: the owner selected [Cloudflare Workers/D1 (ADR 0013)](adr/0013-cloudflare-d1-backend.md). The [Phase 2 work log](plan/phase-2-verification.md) records the D1 implementation and remaining native-auth/cutover gates.
+
 Everything here is **living**. A code change that invalidates a doc updates the doc in
 the same PR. If a doc and the code disagree, that is a bug in one of them — decide
 which, and fix it the same day.

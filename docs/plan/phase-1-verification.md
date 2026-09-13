@@ -33,7 +33,7 @@ Audit correction: reviewing the original saved logs showed that accessibility li
 
 ## Continuation: launch, dependency fixes and CI
 
-**13 of 14 Phase 1 actions have completion evidence.** Both native journeys pass, but a subsequent iOS 26.4 screenshot revealed a missing practice-button label. E18 stays open pending visual compatibility investigation; see the latest evidence below. The original first-batch results above are preserved as history; [continuation results](phase-1-evidence/continuation-results.json) record the earlier work.
+**All 14 Phase 1 actions have completion evidence.** The earlier missing-label finding was incorrect: original-resolution inspection and decoded pixels prove the label was painted in the original iOS 26.4 screenshot. See the correction below. The original first-batch results above are preserved as history; [continuation results](phase-1-evidence/continuation-results.json) record the earlier work.
 
 | Action | Completed work |
 |---|---|
@@ -105,3 +105,13 @@ on iOS 18.5. The cause is unverified; an automated journey pass does not resolve
 this rendering difference. Connected backend/auth acceptance,
 the later query-cache fix on native devices, physical accessibility/performance
 and the full TestFlight device matrix remain separately tracked in Phase 2/A11.
+
+### Full-resolution correction - 13 September 2026
+
+The original iOS 26.4 screenshot was reopened at its native 1206 x 2622 pixels.
+The practice label is visible. Decoding the original PNG finds 6,149 light label
+pixels inside the green button; the newer candidate capture has the same count.
+The earlier preview-based finding was incorrect, not an application regression.
+The speculative clipping change was reverted. E18 is complete using the original
+native journey/build evidence, with a new paint check guarding future captures.
+The app's native account integration and full release device matrix remain open.

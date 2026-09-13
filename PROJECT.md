@@ -8,7 +8,7 @@
 | | |
 |---|---|
 | **Product** | WorldQuest — learn the world in 5 minutes a day |
-| **Stage** | Phase 2: backend, accounts and trustworthy progress (E18 iOS visual acceptance open); [current execution checklist](docs/plan/execution-plan.md) |
+| **Stage** | Phase 2: backend, accounts and trustworthy progress (Phase 1 complete); [current execution checklist](docs/plan/execution-plan.md) |
 | **Repo** | `wrexist/worldquest` |
 | **Design source** | [`docs/design/assets/mockup-v1.png`](docs/design/assets/mockup-v1.png) (15 screens) |
 | **Original brief** | [`docs/product/mvp-brief-original.md`](docs/product/mvp-brief-original.md) |
@@ -116,8 +116,8 @@ Historical decisions and their alternatives are recorded as ADRs in [`docs/adr/`
 | Language | **TypeScript 5.x**, `strict: true` everywhere | One language across app, engines, edge functions, scripts | [0001](docs/adr/0001-tech-stack.md) |
 | App | **Expo (React Native)** + **expo-router** | iOS + Android + web from one codebase; OTA updates for content/liveops | [0001](docs/adr/0001-tech-stack.md) |
 | Repo | **pnpm workspaces** monorepo | Engines must be importable by app, server, and tests | [0002](docs/adr/0002-monorepo.md) |
-| Backend | **Existing Supabase code; Convex candidate for Phase 2** | Preserve source during migration; choose destination after native auth/cost proof | [0003](docs/adr/0003-backend-supabase.md) |
-| Server logic | **Deno Edge Functions** for anything authoritative | XP, streaks, leagues, purchases must never be client-trusted | [0006](docs/adr/0006-server-authoritative-progress.md) |
+| Backend | **Cloudflare D1 selected; legacy Supabase app adapter pending cutover** | Owner selected D1; separate EU development database and transaction acceptance slice | [0013](docs/adr/0013-cloudflare-d1-backend.md) |
+| Server logic | **Cloudflare Workers** for the new backend; legacy Deno source retained | Pure server grader; D1 atomic batches and ownership checks | [0013](docs/adr/0013-cloudflare-d1-backend.md) |
 | Scheduling | **FSRS** (Free Spaced Repetition Scheduler) | Modern, open, better retention/effort ratio than SM-2 | [0004](docs/adr/0004-spaced-repetition.md) |
 | Client state | **Zustand** (session/UI) + **TanStack Query** (server) + **MMKV** (persistence) | See [§6](#6-state-management-rules) | [0007](docs/adr/0007-state-management.md) |
 | Content | **JSON packs validated by AJV / JSON Schema** | Content is data; validation is CI | [0005](docs/adr/0005-content-as-data.md) |

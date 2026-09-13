@@ -78,3 +78,8 @@ apps/mobile/android/
 
 # Isolated Convex development database and local deployment credentials.
 .convex/
+
+# Cloudflare local databases and development secrets.
+.wrangler/
+.dev.vars
+.dev.vars.*

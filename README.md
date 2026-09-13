@@ -18,7 +18,7 @@ the release foundations described below.
 learning engines and backend code exist. The September audit identified learning-history,
 account, reward and purchase gaps that block a public paid release. Follow the
 [eight-phase execution checklist](docs/plan/execution-plan.md) and
-[current work log](docs/plan/phase-2-verification.md). Phase 1 has one remaining gate: an iOS 26.4 button-label rendering finding.
+[current work log](docs/plan/phase-2-verification.md). Phase 1 is complete; full-resolution native evidence resolved the last compatibility gate.
 
 ## What it is
 
@@ -70,8 +70,9 @@ docs/           product · design · systems · engineering · adr · plan
 
 Current code: TypeScript, Expo 54 / React Native 0.81, expo-router, Zustand,
 TanStack Query, MMKV, i18next and pure TypeScript learning engines. The existing
-backend uses Supabase; Phase 2 evaluates Convex as its replacement, with Workers/D1
-as fallback. Supabase is not the chosen future backend. Billing and analytics
+mobile adapter still uses Supabase; Phase 2 implements Cloudflare Workers/D1 as
+the selected replacement. The D1 development package is in `packages/backend`;
+native auth and app cutover remain gated. Billing and analytics
 ports are preparatory; RevenueCat and PostHog are not installed integrations.
 See the [generated inventory](docs/engineering/project-inventory.generated.json),
 [launch brief](docs/product/launch-brief.md) and [security maintenance](docs/engineering/dependency-security.md).

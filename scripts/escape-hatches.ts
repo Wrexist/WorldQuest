@@ -75,12 +75,6 @@ import { relative } from 'node:path'
  * than no note, because the next reader believes it.
  */
 const ALLOWED: Record<string, string> = {
-  'packages/backend/convex/_generated/api.d.ts:eslint-disable':
-    'Unmodified Convex 1.45 CLI output. Generated SDK declarations remain typechecked; authored backend code has no exemption.',
-  'packages/backend/convex/_generated/dataModel.d.ts:eslint-disable':
-    'Unmodified Convex 1.45 CLI output. Generated SDK declarations remain typechecked; authored backend code has no exemption.',
-  'packages/backend/convex/_generated/server.d.ts:eslint-disable':
-    'Unmodified Convex 1.45 CLI output. Generated SDK declarations remain typechecked; authored backend code has no exemption.',
   'apps/mobile/src/lib/sound.ts:eslint-disable':
     'Six static `require`s for the sound files. Metro resolves assets at build time, ' +
     'so a computed path bundles nothing and fails at runtime on device only. There is ' +

@@ -1,8 +1,8 @@
 # WorldQuest execution checklist
 
-Updated 13 September 2026. **Active: Phase 2, with one E18 native visual acceptance gate carried forward.** This is the current execution order and starts at 1; it supersedes the phase numbering in the earlier audit roadmap. All 148 audit actions appear exactly once below. Related actions should be implemented in shared workstreams, not estimated as 148 independent projects.
+Updated 13 September 2026. **Active: Phase 2. Phase 1 complete (14/14).** This is the current execution order and starts at 1; it supersedes the phase numbering in the earlier audit roadmap. All 148 audit actions appear exactly once below. Related actions should be implemented in shared workstreams, not estimated as 148 independent projects.
 
-Evidence is in the [Phase 1 work log](phase-1-verification.md) and [Phase 2 work log](phase-2-verification.md). Launch scope is worldwide English/Swedish. Both native builds and automated journeys pass. Manual review found a missing country-button label on iOS 26.4, so E18 remains open; the full release device matrix remains A11 work. Phase 2 has account isolation foundations and a real local Convex transaction proof; production auth and migration remain gated.
+Evidence is in the [Phase 1 work log](phase-1-verification.md) and [Phase 2 work log](phase-2-verification.md). Launch scope is worldwide English/Swedish. Both native builds and automated journeys pass. Full-resolution inspection and decoded pixels confirm the country-button label was present in the original iOS 26.4 capture; E18 is complete. The full release device matrix remains A11 work. Phase 2 has account isolation foundations and a real local D1 transaction slice. Cloudflare Workers/D1 is selected; native auth and app cutover remain gated.
 
 **Status:** unchecked means unfinished or unverified; checked requires completion evidence. A phase is not complete just because its first batch is fixed. P0 blocks the affected release/feature; P1 precedes broad launch; P2/P3 work is gated by product evidence. Owner/effort estimates are inherited from the audits (S 1-2 days, M 3-5 days, L 1-2 engineer-weeks, XL split before scheduling). They exclude external review waits.
 
@@ -23,7 +23,7 @@ These are the tasks started in this session. Backend migration, payment setup an
 
 | Phase | Outcome | Actions | Gate |
 |---|---|---:|---|
-| 1 | Reliable development baseline | 14 | 13/14 complete; E18 iOS 26.4 visual finding open |
+| 1 | Reliable development baseline | 14 | 14/14 complete; native evidence recorded |
 | 2 | Backend, accounts and trustworthy progress | 38 | Required before broad paid launch |
 | 3 | A complete geography learning course | 23 | Required before broad paid launch |
 | 4 | Excellent UX, accessibility and device reliability | 17 | Required before broad paid launch |
@@ -52,7 +52,7 @@ Fix verification before relying on it, then triage dependencies and agree on lau
 - [x] **E07** - Use portable process spawning and expose actual errors in native bundle script; no generic “app cannot ship” for missing command. *P1 / Tooling / S.* [Audit](../audits/2026-09-13/04-engineering-reliability.md)
 - [x] **E08** - Sanitize screenshot filenames, set locale/timezone, assert onboarding success and route identity; wrong-route screenshots fail visibly. *P1 / Tooling / S.* [Audit](../audits/2026-09-13/04-engineering-reliability.md)
 - [x] **E09** - Investigate full-suite timeout under contention; retain meaningful timeout diagnostics and deterministic test isolation. *P1 / QA / M.* [Audit](../audits/2026-09-13/04-engineering-reliability.md)
-- [ ] **E18** - Triage the 30 high/eight moderate production-graph findings, map runtime/CI reachability, apply compatible fixes and automate scanning; verify native and supported Expo/OS behavior after updates. *P1; P0 for reachable severe exposure / Engineering / L.* [Audit](../audits/2026-09-13/04-engineering-reliability.md)
+- [x] **E18** - Triage the 30 high/eight moderate production-graph findings, map runtime/CI reachability, apply compatible fixes and automate scanning; verify native and supported Expo/OS behavior after updates. *P1; P0 for reachable severe exposure / Engineering / L.* [Audit](../audits/2026-09-13/04-engineering-reliability.md)
 - [x] **G20** - Maintain one current release backlog and evidence log; archive stale claims and review competitor changes quarterly. *P1 / Product + Engineering / M.* [Audit](../audits/2026-09-13/08-growth-operations.md)
 - [x] **P01** - Define the initial audience, countries of launch and job-to-be-done in one brief; use it to rank every backlog item. *P1 / Product / S.* [Audit](../audits/2026-09-13/01-product-competition.md)
 - [x] **P02** - Make the product promise about observable geographic ability; remove unsupported “scientifically proven” or language-competitor claims. *P1 / Product / S.* [Audit](../audits/2026-09-13/01-product-competition.md)
@@ -63,7 +63,7 @@ Fix verification before relying on it, then triage dependencies and agree on lau
 
 ## Phase 2: Backend, accounts and trustworthy progress
 
-Prove Convex first, then implement safe identity, offline state, per-fact memory and transactional rewards. Supabase is only a migration source.
+Cloudflare Workers/D1 is the owner's selected destination (ADR 0013). Prove safe identity, offline state, per-fact memory and transactional rewards. Supabase is only the legacy source; there is no live user data to migrate.
 
 **Exit gate:** A guest can learn, restart offline, reconnect, link an account and recover on another device without lost work, duplicate rewards or cross-account data. Native auth, real transaction tests and migration recovery are evidenced.
 
@@ -84,7 +84,7 @@ Prove Convex first, then implement safe identity, offline state, per-fact memory
 - [ ] **B16** - Build and test export, restore and erasure procedures with counts/checksums and access controls. *P0 / Operations / L.* [Audit](../audits/2026-09-13/07-backend-convex.md)
 - [ ] **B17** - Write reversible identity/data migration and reconciliation tooling; interrupted import resumes safely. *P1 / Backend / L.* [Audit](../audits/2026-09-13/07-backend-convex.md)
 - [ ] **B18** - Rehearse authoritative cutover, old-client compatibility and post-write rollback before moving live accounts. *P0 / Release + Backend / L.* [Audit](../audits/2026-09-13/07-backend-convex.md)
-- [ ] **B19** - Compare Convex proof with a minimal Workers/D1 alternative if auth or measured cost fails the gate; record an ADR. *P1 / Product + Engineering / M.* [Audit](../audits/2026-09-13/07-backend-convex.md)
+- [x] **B19** - Record backend selection: owner chose Workers/D1 instead of Convex; ADR 0013 and a real local D1 transaction slice replace the fallback evaluation. Native auth and hosted cost remain B02/B14/B15 gates. *P1 / Product + Engineering / M.* [Audit](../audits/2026-09-13/07-backend-convex.md)
 - [ ] **E03** - Fail required reads before writes; injected failures preserve previous state and retry once safely. *P0 / Backend / M.* [Audit](../audits/2026-09-13/04-engineering-reliability.md)
 - [ ] **E10** - Add multi-day connected journey test: guest → learn → sync → relaunch → due review → mastery → linked-account recovery. *P0 / QA + Backend / L.* [Audit](../audits/2026-09-13/04-engineering-reliability.md)
 - [ ] **E11** - Add two-session concurrency, replay, out-of-order and account-switch tests against a real local/staging backend. *P0 / QA + Backend / L.* [Audit](../audits/2026-09-13/04-engineering-reliability.md)
@@ -248,6 +248,6 @@ Add advanced geography assessment, richer content, proven social features and op
 
 - Attach test/build/device evidence before checking off an item; document explicit limitations.
 - Keep all P0s visible across phases. A later heading does not permit unsafe early release.
-- Re-estimate after the Convex/auth proof and the first connected multi-day journey.
+- Re-estimate after the D1/auth proof and the first connected multi-day journey.
 - Treat Phases 7-8 ideas as hypotheses; do not delay a trustworthy small course for every optional feature.
 - App Store submission, external accounts and native-device evidence remain explicit release work.

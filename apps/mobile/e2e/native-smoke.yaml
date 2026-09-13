@@ -2,7 +2,9 @@ appId: com.wrexist.worldquest
 ---
 # Fresh simulator only. Covers the native dependency paths carried in E18.
 - launchApp
-- tapOn: "Get started"
+- tapOn:
+    text: "Get started"
+    retryTapIfNoChange: true
 - tapOn: "English"
 - assertVisible: "Explore countries"
 - tapOn: "Next"

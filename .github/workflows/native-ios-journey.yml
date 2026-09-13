@@ -33,12 +33,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        if: inputs.refresh_js
       - uses: actions/setup-node@v4
-        if: inputs.refresh_js
         with: { node-version: 22, cache: pnpm }
       - run: pnpm install --frozen-lockfile
-        if: inputs.refresh_js
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: '17' }
       - name: Install the recorded build
@@ -81,6 +78,9 @@ jobs:
           export PATH="$RUNNER_TEMP/maestro/maestro/bin:$PATH"
           cd "$GITHUB_WORKSPACE"
           maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/native-flow" apps/mobile/e2e/native-smoke.yaml
+          COUNTRY_SHOT=$(find "$RUNNER_TEMP/native-flow" -name native-country.png -print -quit)
+          test -n "$COUNTRY_SHOT"
+          node scripts/check-native-button.cjs "$COUNTRY_SHOT"
       - name: Capture final simulator state
         if: always()
         run: xcrun simctl io "$DEVICE_ID" screenshot "$RUNNER_TEMP/native-current.png"

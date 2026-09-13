@@ -6,14 +6,19 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "dev": "convex dev",
-    "proof": "tsx scripts/local-proof.ts"
+    "dev": "wrangler dev",
+    "build": "wrangler deploy --dry-run --outdir dist",
+    "db:local": "wrangler d1 migrations apply DB --local",
+    "db:remote": "wrangler d1 migrations apply DB --remote",
+    "deploy": "wrangler deploy"
   },
   "dependencies": {
     "@worldquest/engines": "workspace:*",
-    "convex": "1.45.0"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
-    "convex-test": "0.0.58"
+    "@cloudflare/workers-types": "5.20260911.1",
+    "miniflare": "5.20260911.0-alpha",
+    "wrangler": "4.131.1"
   }
 }

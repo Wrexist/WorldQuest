@@ -1,6 +1,6 @@
 const fs = require('node:fs')
 const path = require('node:path')
-const walk = dir => fs.readdirSync(dir, { withFileTypes: true }).filter(e => !['node_modules', '.git', '.convex', 'coverage'].includes(e.name)).sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0).flatMap(e =>
+const walk = dir => fs.readdirSync(dir, { withFileTypes: true }).filter(e => !['node_modules', '.git', '.convex', '.wrangler', 'dist', 'coverage'].includes(e.name)).sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0).flatMap(e =>
   e.isDirectory() ? walk(path.join(dir, e.name)) : [path.join(dir, e.name).replace(/\\/g, '/')])
 const json = file => JSON.parse(fs.readFileSync(file, 'utf8'))
 const manifests = ['package.json', 'apps/mobile/package.json', ...fs.readdirSync('packages').map(p => `packages/${p}/package.json`)].filter(fs.existsSync)
