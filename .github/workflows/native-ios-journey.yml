@@ -1,0 +1,66 @@
+name: iOS journey replay
+on:
+  workflow_dispatch:
+    inputs:
+      build_run_id:
+        description: 'Native acceptance run containing ios-simulator-app'
+        required: true
+        type: string
+  push:
+    branches: ['fix/**']
+    paths: ['.github/workflows/native-ios-journey.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  journey:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: macos-15
+    timeout-minutes: 20
+    env:
+      MAESTRO_CLI_NO_ANALYTICS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - name: Install the recorded build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUILD_RUN: ${{ inputs.build_run_id }}
+        run: |
+          set -euo pipefail
+          [[ "$BUILD_RUN" =~ ^[0-9]+$ ]]
+          gh run download "$BUILD_RUN" --name ios-simulator-app --dir "$RUNNER_TEMP/app"
+          unzip -q "$RUNNER_TEMP/app/ios-simulator-app.zip" -d "$RUNNER_TEMP/app"
+          xcodebuild -version
+          xcrun simctl list devices available
+          DEVICE_ID=$(xcrun simctl list devices available -j | python3 -c 'import json,sys; print(next(d["udid"] for ds in json.load(sys.stdin)["devices"].values() for d in ds if d["name"].startswith("iPhone")))')
+          echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
+          xcrun simctl boot "$DEVICE_ID"
+          xcrun simctl bootstatus "$DEVICE_ID" -b
+          xcrun simctl install "$DEVICE_ID" "$RUNNER_TEMP/app/WorldQuest.app"
+      - name: Run the native journey
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/maestro"
+          cd "$RUNNER_TEMP/maestro"
+          curl --fail --location --retry 3 -o maestro.zip https://github.com/mobile-dev-inc/Maestro/releases/download/cli-2.10.0/maestro.zip
+          echo '29b675e10cc12080e445e9bfb2e2b4e4dfb9c0f2e30d5884120d258b5e1cd991  maestro.zip' | shasum -a 256 --check
+          unzip -q maestro.zip
+          export PATH="$RUNNER_TEMP/maestro/maestro/bin:$PATH"
+          cd "$GITHUB_WORKSPACE"
+          maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/native-flow" apps/mobile/e2e/native-smoke.yaml
+      - name: Capture final simulator state
+        if: always()
+        run: xcrun simctl io "$DEVICE_ID" screenshot "$RUNNER_TEMP/native-current.png"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-journey-evidence
+          include-hidden-files: true
+          path: |
+            ${{ runner.temp }}/native-flow/
+            ${{ runner.temp }}/native-current.png
+            native-relaunch.png
+            native-country.png
+          retention-days: 7

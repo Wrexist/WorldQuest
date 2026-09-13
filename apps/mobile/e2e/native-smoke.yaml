@@ -25,6 +25,7 @@ appId: com.wrexist.worldquest
 - tapOn: "Pause the lesson"
 - tapOn: "Finish here"
 - tapOn: "Continue"
+- tapOn: "Not now"
 - assertVisible: "Explorer!"
 - stopApp
 - launchApp
