@@ -155,6 +155,20 @@ describe('D1 native auth transport', () => {
     expect(logouts.map(([, init]) => init.headers)).toContainEqual(expect.objectContaining({ Authorization: `Bearer ${'d'.repeat(64)}` }))
     expect(await h.create().sessionStatus()).toBe('missing')
   })
+  it.each(['prepare', 'commit'])('recovers when secure storage writes successfully but loses its %s acknowledgement', async phase => {
+    const h = harness(), a = h.create(); await a.startGuest(); h.setTime(guest.expiresAt - 1)
+    let writes = 0
+    vi.mocked(h.storage.setItem).mockImplementation(async (key, value) => {
+      h.values.set(key, value)
+      if (++writes === (phase === 'prepare' ? 1 : 2)) throw new Error('readback failed')
+    })
+    await expect(a.ensureSession()).rejects.toThrow('readback failed')
+    const b = h.create()
+    expect(await b.sessionStatus()).toBe(phase === 'prepare' ? 'renewal-pending' : 'active')
+    expect(await b.ensureSession()).toMatchObject({ userId: owner, token: 'd'.repeat(64) })
+    expect(h.fetch.mock.calls.filter(([url]) => url.endsWith('/renew'))).toHaveLength(1)
+    expect(h.fetch.mock.calls.some(([url]) => url.endsWith('/logout'))).toBe(false)
+  })
   it('keeps an expired owner for explicit recovery and never silently replaces it with a guest', async () => {
     const h = harness(), a = h.create(); await a.startGuest(); h.setTime(guest.expiresAt + 1)
     expect(await a.sessionStatus()).toBe('expired')

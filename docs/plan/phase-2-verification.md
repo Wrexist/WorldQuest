@@ -403,12 +403,26 @@ device family, including a successor whose response never reached the client.
 Deleting the account removes all rotation records. No remote migration or Worker
 deployment was made.
 
-The targeted backend suite passes 36 tests; the API suite passes 36. New tests
+The targeted backend suite passes 36 tests; the API suite passes 38. New tests
 restart the portable client against real D1 after both response loss and secure
 write failure. The mobile factory shares one client across consumers until
-erasure succeeds and uses the asynchronous OS cryptographic generator. Full
-verification and the expanded native restart proof must pass at the final
-implementation revision before this checkpoint is accepted.
+erasure succeeds and uses the asynchronous OS cryptographic generator. Two further
+tests cover successful secure writes whose acknowledgement/readback fails, at
+both preparation and final commit. Full local `pnpm verify` passes 1,590 Vitest
+tests plus nine Node tests (1,599 total). The Worker dry-run build and dependency
+security check pass, with zero unexpected advisories.
+
+At implementation revision `512b046`, [D1 CI](https://github.com/Wrexist/WorldQuest/actions/runs/34780651322)
+passed. [Full platform CI](https://github.com/Wrexist/WorldQuest/actions/runs/34780651351)
+and [native renewal acceptance](https://github.com/Wrexist/WorldQuest/actions/runs/34780651323)
+have their own run results. The two extra readback-loss cases only change tests;
+they do not change the native binary or Worker under proof.
+
+The current app export passes 82 executed browser checks with the existing
+randomized image-question skip. Design checks pass 18 routes at three widths
+plus 102 state/flow captures. The 320 pt account capture was opened and inspected:
+the existing screen still states that recovery is being tested. These checks
+confirm the existing app; they do not prove D1 account UI integration.
 
 Production account screens still use the legacy flow. The next integration must
 support eight-digit D1 codes, restored pending verification, resend/error states,
