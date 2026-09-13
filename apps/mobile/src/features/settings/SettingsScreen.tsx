@@ -109,6 +109,8 @@ export type AccountSection = {
   readonly onLink: () => void
   readonly onSignIn: () => void
   readonly onSignOut: () => void
+  readonly signOutPending?: boolean
+  readonly signOutFailed?: boolean
   /** Pending work stays with its account and resumes syncing when that account returns. */
   readonly unsyncedLessons: number
 }
@@ -303,18 +305,26 @@ export function SettingsScreen({
         ) : account.email !== null ? (
           <>
             <LinkRow label={t('account:settings.email')} value={account.email} />
+            {account.signOutFailed && (
+              <View accessibilityRole="alert" accessibilityLiveRegion="polite">
+                <Note body={t('account:settings.signOut.failed')} />
+              </View>
+            )}
             {account.unsyncedLessons > 0 ? (
               <>
                 <Note
                   body={t('account:settings.signOut.unsynced', { count: account.unsyncedLessons })}
                 />
                 <LinkRow
-                  label={t('account:settings.signOut.anyway')}
-                  onPress={account.onSignOut}
+                  label={t(account.signOutPending ? 'account:settings.signOut.pending' : 'account:settings.signOut.anyway')}
+                  onPress={account.signOutPending ? undefined : account.onSignOut}
                 />
               </>
             ) : (
-              <LinkRow label={t('account:settings.signOut')} onPress={account.onSignOut} />
+              <LinkRow
+                label={t(account.signOutPending ? 'account:settings.signOut.pending' : 'account:settings.signOut')}
+                onPress={account.signOutPending ? undefined : account.onSignOut}
+              />
             )}
           </>
         ) : (

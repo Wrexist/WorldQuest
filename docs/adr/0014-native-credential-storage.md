@@ -24,8 +24,9 @@ remains only in read/delete migration code; it provides no protection guarantee.
 
 ## Migration, logout and reinstall
 
-- Read an existing protected credential first. Otherwise copy the requested legacy
-  credential to SecureStore, verify readback, then delete the legacy copy. A failure
+- Migrate all legacy entries, including unused verification keys. An existing
+  protected value takes precedence; otherwise copy the legacy value to SecureStore,
+  verify both index and value readback, then delete the legacy copy. A failure
   retains the source and fails the operation; it never acknowledges a new login.
 - Register protected entry names before writing values, so interrupted writes are
   still discoverable for cleanup. Entries contain backend-specific SDK keys. The

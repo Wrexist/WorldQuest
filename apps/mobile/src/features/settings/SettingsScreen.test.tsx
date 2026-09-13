@@ -45,6 +45,13 @@ const linkedAccount = (unsyncedLessons = 0) => ({
 })
 
 describe('Settings — signing out preserves pending work', () => {
+  it('announces failed cleanup and keeps sign-out available for retry', () => {
+    const account = { ...linkedAccount(), signOutFailed: true }
+    renderSettings({ account })
+    expect(screen.getByRole('alert').textContent).toContain('Sign-out could not finish')
+    fireEvent.click(screen.getByText('Sign out'))
+    expect(account.onSignOut).toHaveBeenCalledOnce()
+  })
   it('offers a plain sign-out when nothing is at risk', () => {
     renderSettings({ account: linkedAccount() })
     expect(screen.getByText('Sign out')).toBeTruthy()

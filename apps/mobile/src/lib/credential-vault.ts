@@ -6,6 +6,7 @@ export type SecureValues = {
   remove: (key: string) => Promise<void>
 }
 export type LegacyCredentials = {
+  keys: () => string[]
   get: (key: string) => string | null
   remove: (key: string) => void
   clear: () => void
@@ -63,6 +64,14 @@ export function createCredentialVault(secure: SecureValues, legacy: LegacyCreden
       await eraseProtected()
       lifecycle.markInstalled()
     }
+    // Migrate every credential, including a pending verification key that the SDK
+    // may never request again. No weakly protected leftovers remain after success.
+    for (const key of legacy.keys()) {
+      const protectedValue = await secure.get(physicalKey(key))
+      if (protectedValue !== null) { legacy.remove(key); continue }
+      const value = legacy.get(key)
+      if (value !== null) await write(key, value)
+    }
   }
   async function write(key: string, value: string): Promise<void> {
     const storedKey = physicalKey(key)
@@ -70,7 +79,9 @@ export function createCredentialVault(secure: SecureValues, legacy: LegacyCreden
     if (!index.includes(storedKey)) {
       if (index.length === 16) throw new Error('Credential storage capacity exceeded')
       // Register first: even a crash before the value write leaves a removable entry.
-      await secure.set(INDEX, JSON.stringify([...index, storedKey]))
+      const updated = JSON.stringify([...index, storedKey])
+      await secure.set(INDEX, updated)
+      if (await secure.get(INDEX) !== updated) throw new Error('Credential index write not confirmed')
     }
     await secure.set(storedKey, value)
     if (await secure.get(storedKey) !== value) throw new Error('Credential write not confirmed')

@@ -120,6 +120,7 @@ Historical decisions and their alternatives are recorded as ADRs in [`docs/adr/`
 | Server logic | **Cloudflare Workers** for the new backend; legacy Deno source retained | Pure server grader; D1 atomic batches and ownership checks | [0013](docs/adr/0013-cloudflare-d1-backend.md) |
 | Scheduling | **FSRS** (Free Spaced Repetition Scheduler) | Modern, open, better retention/effort ratio than SM-2 | [0004](docs/adr/0004-spaced-repetition.md) |
 | Client state | **Zustand** (session/UI) + **TanStack Query** (server) + **MMKV** (persistence) | See [§6](#6-state-management-rules) | [0007](docs/adr/0007-state-management.md) |
+| Native credentials | **Expo SecureStore** | Keychain/Keystore; awaited migration and logout, fresh-install identity boundary | [0014](docs/adr/0014-native-credential-storage.md) |
 | Content | **JSON packs validated by AJV / JSON Schema** | Content is data; validation is CI | [0005](docs/adr/0005-content-as-data.md) |
 | Maps | **Bundled raster maps generated from Natural Earth** | Pack-derived assets; interactive map assessment remains later work | [0008](docs/adr/0008-vector-maps.md) |
 | Animation | **React Native Animated**; Reanimated/Lottie not installed | Native frame-time verification remains required | — |

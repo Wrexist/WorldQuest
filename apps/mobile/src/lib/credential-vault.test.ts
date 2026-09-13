@@ -12,6 +12,7 @@ function fixture() {
     remove: vi.fn(async (key: string) => { protectedValues.delete(key) }),
   }
   const legacy = {
+    keys: () => [...oldValues.keys()],
     get: (key: string) => oldValues.get(key) ?? null,
     remove: vi.fn((key: string) => { oldValues.delete(key) }),
     clear: () => { oldValues.clear() },
@@ -59,7 +60,11 @@ describe('protected credential lifecycle', () => {
   it('finishes an interrupted migration without restoring an older token', async () => {
     const f = fixture()
     f.oldValues.set('session', 'old-A')
-    f.legacy.remove.mockImplementationOnce(() => { throw new Error('disk failure') })
+    await f.vault.open().getItem('session')
+    f.oldValues.set('session', 'old-A')
+    // The initial cleanup succeeds, but cleanup after the replacement write fails.
+    f.legacy.remove.mockImplementationOnce(key => { f.oldValues.delete(key) })
+      .mockImplementationOnce(() => { f.oldValues.set('session', 'old-A'); throw new Error('disk failure') })
     await expect(f.vault.open().setItem('session', 'new-A')).rejects.toThrow('disk failure')
     await expect(f.make().open().getItem('session')).resolves.toBe('new-A')
     expect(f.oldValues.size).toBe(0)
@@ -103,6 +108,14 @@ describe('protected credential lifecycle', () => {
     f.oldValues.set('session', 'A')
     await f.vault.open().removeItem('session')
     await expect(f.make().open().getItem('session')).resolves.toBeNull()
+  })
+  it('migrates unused verification entries alongside the requested session', async () => {
+    const f = fixture()
+    f.oldValues.set('session', 'A')
+    f.oldValues.set('verifier', 'old-verifier')
+    await f.vault.open().getItem('session')
+    expect(f.oldValues.size).toBe(0)
+    await expect(f.make().open().getItem('verifier')).resolves.toBe('old-verifier')
   })
   it('keeps the vault closed when its cleanup index is corrupt', async () => {
     const f = fixture()

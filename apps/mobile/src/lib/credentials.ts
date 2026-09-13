@@ -29,9 +29,10 @@ function legacyStore(): MMKV {
   return legacy ??= new MMKV({ id: 'worldquest.auth', encryptionKey: 'worldquest.session.v1' })
 }
 const vault = createCredentialVault(secure, {
+  keys: () => Platform.OS === 'web' ? [] : legacyStore().getAllKeys(),
   get: key => Platform.OS === 'web' ? null : legacyStore().getString(key) ?? null,
-  remove: key => { legacyStore().delete(key) },
-  clear: () => { legacyStore().clearAll() },
+  remove: key => { if (Platform.OS !== 'web') legacyStore().delete(key) },
+  clear: () => { if (Platform.OS !== 'web') legacyStore().clearAll() },
 }, {
   isInstalled: () => metadataStore().getString('installed') === 'v2',
   isClearing: () => metadataStore().getString('clearing') === 'yes',

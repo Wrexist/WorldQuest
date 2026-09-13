@@ -14,6 +14,7 @@ the usual cause of stale UI and impossible-to-debug sync bugs.
 - **TanStack Query** — all server state. It is the cache; nothing else copies it.
 - **Zustand** — session and UI state, one small slice per feature.
 - **MMKV** (via a typed, versioned repository) — durable local state.
+- **Expo SecureStore** — native credentials; see [ADR 0014](0014-native-credential-storage.md). Session reads are asynchronous and awaited before accepting identity.
 - **`useState`** — ephemeral component state.
 - **The lesson runner is an explicit state machine** in `packages/engines`.
 

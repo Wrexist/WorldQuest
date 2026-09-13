@@ -76,5 +76,9 @@
   "account:offline.title": "You are offline",
   "account:offline.title__note": "Shown on the account screen with no connection. This is the one flow in the app that cannot work offline. Max 24 characters.",
   "account:offline.body": "Linking an email needs a connection. Come back when you are online.",
-  "account:offline.body__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. "
+  "account:offline.body__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. ",
+  "account:settings.signOut.pending": "Signing out…",
+  "account:settings.signOut.pending__note": "Status while protected credentials are being removed. The action cannot be repeated until cleanup finishes.",
+  "account:settings.signOut.failed": "Sign-out could not finish on this device. Unlock your phone and tap Sign out to try again.",
+  "account:settings.signOut.failed__note": "Protected credential cleanup failed. Keep Settings open and offer the existing sign-out action as retry; never claim credentials were erased."
 }

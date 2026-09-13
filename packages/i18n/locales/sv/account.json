@@ -48,5 +48,9 @@
   "account:settings.link__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. ",
   "account:offline.body__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. ",
   "account:settings.signOut.unsynced__note": "Shown before sign-out when this account has queued lessons. Work stays on this device in its original account namespace. A different account cannot send it. ICU plural.",
-  "account:settings.signOut.anyway__note": "Sign-out button beside pending-work notice. Same action as ordinary sign-out; work is detached and preserved."
+  "account:settings.signOut.anyway__note": "Sign-out button beside pending-work notice. Same action as ordinary sign-out; work is detached and preserved.",
+  "account:settings.signOut.pending": "Loggar ut…",
+  "account:settings.signOut.pending__note": "Status while protected credentials are being removed. The action cannot be repeated until cleanup finishes.",
+  "account:settings.signOut.failed": "Det gick inte att slutföra utloggningen på den här enheten. Lås upp telefonen och tryck på Logga ut för att försöka igen.",
+  "account:settings.signOut.failed__note": "Protected credential cleanup failed. Keep Settings open and offer the existing sign-out action as retry; never claim credentials were erased."
 }

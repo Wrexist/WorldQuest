@@ -110,6 +110,7 @@
     "apps/mobile/src/components/Flag.test.tsx",
     "apps/mobile/src/components/WeekStrip.test.tsx",
     "apps/mobile/src/features/account/AccountScreen.test.tsx",
+    "apps/mobile/src/features/account/useSignOut.test.ts",
     "apps/mobile/src/features/achievements/AchievementsScreen.test.tsx",
     "apps/mobile/src/features/achievements/pending.test.ts",
     "apps/mobile/src/features/achievements/progress.test.ts",

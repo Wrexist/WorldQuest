@@ -52,7 +52,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "settings.signOut.anyway": "Sign out",
       "settings.child": "Progress on this phone stays on this phone. Ask a grown-up if you want to keep it somewhere safe.",
       "offline.title": "You are offline",
-      "offline.body": "Linking an email needs a connection. Come back when you are online."
+      "offline.body": "Linking an email needs a connection. Come back when you are online.",
+      "settings.signOut.pending": "Signing out…",
+      "settings.signOut.failed": "Sign-out could not finish on this device. Unlock your phone and tap Sign out to try again."
     },
     "achievements": {
       "title": "Achievements",
@@ -738,7 +740,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "settings.signOut.anyway": "Logga ut",
       "settings.child": "Framsteg på den här telefonen stannar på den här telefonen. Fråga en vuxen om du vill spara dem någonstans.",
       "offline.title": "Du är offline",
-      "offline.body": "Du behöver internet för att koppla en e-postadress. Kom tillbaka när du är online."
+      "offline.body": "Du behöver internet för att koppla en e-postadress. Kom tillbaka när du är online.",
+      "settings.signOut.pending": "Loggar ut…",
+      "settings.signOut.failed": "Det gick inte att slutföra utloggningen på den här enheten. Lås upp telefonen och tryck på Logga ut för att försöka igen."
     },
     "achievements": {
       "title": "Utmärkelser",
