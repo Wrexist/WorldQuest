@@ -32,5 +32,10 @@ appId: com.wrexist.worldquest
 - assertVisible: "Explorer!"
 - takeScreenshot: native-relaunch
 - openLink: "worldquest://country/%53%45"
+- runFlow:
+    when:
+      visible: "Open in.*WorldQuest.*"
+    commands:
+      - tapOn: "Open"
 - assertVisible: "Sweden"
 - takeScreenshot: native-country
