@@ -75,8 +75,9 @@ bearer can revoke its device family. Pending email verification keeps the same
 owner. Expired credentials are retained locally for an explicit recovery choice.
 Migration 0005 and the expanded hourly cleanup are not deployed.
 
-Native synthetic link/login/reinstall/deletion proofs passed on both platforms;
-the expanded renewal proof has its own evidence gate.
+Native synthetic link/login/reinstall/deletion and interrupted-renewal proofs
+pass on both platforms, including repeated old-client logout after recovery.
+See [the retained native evidence](../../docs/plan/phase-2-evidence/accounts/renewal/README.md).
 Not yet accepted: production account screens and real email delivery,
 production ticket issuance, timezone/offline replay, complete progress hydration,
 quests/streaks/achievements/purchases, export/restore/erasure, abuse budgets, and the

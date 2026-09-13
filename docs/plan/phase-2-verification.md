@@ -435,3 +435,32 @@ explicit expired-owner recovery and protected-account behavior. Do not connect
 D1 identities to the old learning adapter; account/queue isolation and the complete
 authoritative progress contract remain prerequisites for the full app cutover.
 The owner continues to defer domain purchase and real email delivery.
+
+The iOS [unchanged-binary replay](https://github.com/Wrexist/WorldQuest/actions/runs/34781662605)
+passed at `35e0b63`, resolving the simulator launch timeout with the original
+`512b046` binary. The signed archive hash matches, and its final pass capture was
+opened and inspected. Full CI at `35e0b63` was superseded by the next runtime fix;
+the Ubuntu/database jobs had passed and the Windows job was cancelled.
+
+Review then found that a retained old client's repeated logout could erase a new
+client's credentials. At `fadcfe5`, successful erasure becomes a permanent no-op
+for that old client; simultaneous logout calls share erasure, and failed erasure
+still permits retry. The native factory also refuses cleanup from a discarded
+client. Tests cover both concurrent cleanup and logout after a new client starts.
+The expanded native probe repeats old-client logout after recovery and asserts
+that the new session remains usable.
+
+Full local `pnpm verify` at `fadcfe5` passes 1,592 Vitest tests plus nine Node tests
+(1,601 total): API 40/40, backend 36/36, mobile 713/713. Fresh
+[native acceptance](https://github.com/Wrexist/WorldQuest/actions/runs/34782079778)
+and [full CI](https://github.com/Wrexist/WorldQuest/actions/runs/34782079757)
+cover this final runtime change. Full Windows/Ubuntu CI passed. The final iOS
+native job passed, and its recovery/deletion captures were inspected. Android's
+first attempt lost the emulator connection before app launch; only that job was
+restarted on a fresh runner. The Android retry passed at the same revision;
+both final native jobs are green. The final recovery and deletion captures for
+both platforms were opened and inspected, and the Android native failure suite
+again passed all three tests. [Retained evidence](phase-2-evidence/accounts/renewal/README.md)
+records the original failures and successful reruns. No production screen changed, so the already
+inspected browser/design captures remain applicable. The [next UI batch](d1-native-auth-acceptance.md#next-ui-batch)
+defines the integration work still required before B02 can close.

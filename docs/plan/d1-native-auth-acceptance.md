@@ -37,8 +37,9 @@ Session renewal is now implemented under [ADR 0016](../adr/0016-recoverable-sess
 The native client saves a replacement before rotation, resumes a lost response or
 failed final secure write, and revokes the device family on logout. Real D1 tests
 cover concurrency, rollback, deletion and challenge continuity. The extended
-native restart proof is a separate gate; consult the verification log for its
-actual result. Production account screens, explicit expired-owner recovery and
+native restart proof now passes on both platforms, including repeated logout
+from a discarded client after recovery; see the [retained evidence](phase-2-evidence/accounts/renewal/README.md).
+Production account screens, explicit expired-owner recovery and
 queue isolation still need integration before B02 can close.
 
 The email sender needs a project-owned sender domain, verified delivery and a
@@ -50,6 +51,37 @@ addresses, not active mailboxes. Cloudflare quoted $10.46 registration and annua
 renewal; no domain has been purchased. The owner chose to defer the purchase and
 continue development with synthetic delivery; the earlier spending proposal is
 not authorization to buy.
+
+## Next UI batch
+
+Use the existing account route and design system, serving Alex's recoverable
+progress and Priya's return-to-learning journey. Develop against the injected D1
+client and synthetic mailbox before enabling the production route's D1 cutover.
+
+1. Replace the legacy six-digit form with the eight-digit D1 contract. Restore
+   pending verification before rendering the email step. Add resend, cooldown,
+   expired-code and delivery-failure states from server results; never display
+   a successful-send claim after `EMAIL_UNAVAILABLE`.
+2. Map local session hints and authoritative `SESSION_EXPIRED` responses into a
+   recovery state. Keep the original owner and its local progress/queue until
+   an explicit choice. Explain that an unlinked guest has no email recovery;
+   do not silently reset that guest or request email from a protected account.
+3. Use the single native account client for link, sign-in and deletion. Unknown
+   audience requires the approved age flow; a client-side age flag cannot replace
+   the server policy. Add friendly English/Swedish errors, retryable protected
+   cleanup, and fresh email proof before deleting a linked account.
+4. Finish the owner-transition coordinator alongside the D1 learning adapter.
+   Stop/quarantine the previous owner's queued work before accepting another
+   owner. Renewing a bearer for the same owner must preserve its cache and queue.
+   Do not combine D1 identity with the legacy learning repository.
+5. Exercise the real screen through restart, offline/resume, denied email,
+   wrong/expired codes, resend, interrupted deletion, and account switching.
+   Review small-screen/large-text captures and complete native accessibility
+   acceptance; the white-screen transport proof is not a UI acceptance test.
+
+Real sender delivery, public abuse budgets and the full authoritative learning
+contract remain required before enabling the app's public D1 API. Domain deferral
+does not prevent this UI and local integration work.
 
 ## Then continue Phase 2
 
