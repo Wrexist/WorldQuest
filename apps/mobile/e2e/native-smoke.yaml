@@ -34,8 +34,10 @@ appId: com.wrexist.worldquest
 - openLink: "worldquest://country/%53%45"
 - runFlow:
     when:
-      visible: "Open in.*WorldQuest.*"
+      platform: iOS
     commands:
-      - tapOn: "Open"
+      - tapOn:
+          text: "Open"
+          optional: true
 - assertVisible: "Sweden"
 - takeScreenshot: native-country

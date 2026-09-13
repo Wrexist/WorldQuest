@@ -7,6 +7,11 @@ on:
         description: 'Native acceptance run containing ios-simulator-app'
         required: true
         type: string
+      runner:
+        description: 'Standard Apple Silicon runner image'
+        type: choice
+        options: [macos-15, macos-26]
+        default: macos-15
   push:
     branches: ['fix/**']
     paths: ['.github/workflows/native-ios-journey.yml']
@@ -16,7 +21,7 @@ permissions:
 jobs:
   journey:
     if: github.event_name == 'workflow_dispatch'
-    runs-on: macos-15
+    runs-on: ${{ inputs.runner || 'macos-15' }}
     timeout-minutes: 20
     env:
       MAESTRO_CLI_NO_ANALYTICS: '1'
@@ -30,6 +35,7 @@ jobs:
           BUILD_RUN: ${{ inputs.build_run_id }}
         run: |
           set -euo pipefail
+          test "$(uname -m)" = arm64
           [[ "$BUILD_RUN" =~ ^[0-9]+$ ]]
           gh run download "$BUILD_RUN" --name ios-simulator-app --dir "$RUNNER_TEMP/app"
           unzip -q "$RUNNER_TEMP/app/ios-simulator-app.zip" -d "$RUNNER_TEMP/app"
