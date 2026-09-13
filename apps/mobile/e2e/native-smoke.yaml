@@ -4,7 +4,6 @@ appId: com.wrexist.worldquest
 - launchApp
 - tapOn: "Get started"
 - tapOn: "English"
-- tapOn: "Continue"
 - assertVisible: "Explore countries"
 - tapOn: "Continue"
 - assertVisible: "Practice daily"
@@ -19,7 +18,6 @@ appId: com.wrexist.worldquest
 - tapOn: "Continue"
 - tapOn: "Continue"
 - tapOn: "Europe"
-- tapOn: "Continue"
 - tapOn: "Continue"
 - assertVisible: "Here is your plan."
 - tapOn: "Continue"
