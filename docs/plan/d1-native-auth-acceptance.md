@@ -54,6 +54,10 @@ not authorization to buy.
 
 ## Next UI batch
 
+Implementation and current UI evidence are recorded in
+[D1 account screens](d1-account-screens.md). The rendered local D1/browser flow
+passes; new native UI acceptance and the main learning integration remain open.
+
 Use the existing account route and design system, serving Alex's recoverable
 progress and Priya's return-to-learning journey. Develop against the injected D1
 client and synthetic mailbox before enabling the production route's D1 cutover.

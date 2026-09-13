@@ -6,6 +6,7 @@ const { createHash } = require('node:crypto')
 const { build } = require('esbuild')
 const { Miniflare, convertV4MiniflareOptions } = require('miniflare')
 if (process.env.CI !== 'true') throw new Error('Native account proof requires isolated CI')
+const port = Number(process.env.WQ_PROOF_PORT || 8789)
 
 async function main() {
   const mailbox = new Map()
@@ -32,7 +33,13 @@ async function main() {
   }
   const server = http.createServer(async (incoming, outgoing) => {
     try {
-      const url = new URL(incoming.url, 'http://127.0.0.1:8789')
+      const url = new URL(incoming.url, `http://127.0.0.1:${port}`)
+      if (incoming.method === 'GET' && ['/__proof/ui', '/__proof/ui.js'].includes(url.pathname)) {
+        const script = url.pathname.endsWith('.js')
+        outgoing.writeHead(200, { 'Content-Type': script ? 'text/javascript' : 'text/html', 'Cache-Control': 'no-store' })
+        outgoing.end(fs.readFileSync('node_modules/.cache/d1-account-ui/' + (script ? 'ui.js' : 'index.html')))
+        return
+      }
       let body = ''
       for await (const chunk of incoming) { body += chunk; if (body.length > 16384) throw new Error('Body too large') }
       let result
@@ -60,7 +67,7 @@ async function main() {
     } catch { outgoing.writeHead(500); outgoing.end('{"error":"PROOF_SERVER_FAILURE"}') }
   })
   // Android emulator's 10.0.2.2 maps to this runner loopback address.
-  server.listen(8789, '127.0.0.1', () => console.log('Synthetic account proof ready on loopback:8789'))
+  server.listen(port, '127.0.0.1', () => console.log(`Synthetic account proof ready on loopback:${port}`))
   for (const signal of ['SIGINT','SIGTERM']) process.on(signal, () => { server.close(); void mf.dispose().then(() => process.exit(0)) })
 }
 main().catch(error => { console.error(error); process.exitCode = 1 })

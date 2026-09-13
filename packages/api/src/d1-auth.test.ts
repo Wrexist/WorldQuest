@@ -106,7 +106,7 @@ describe('D1 native auth transport', () => {
     await a.requestEmail('learner@example.invalid', 'delete', 'en')
     h.fetch.mockResolvedValueOnce({ status: 200, ok: true, json: async () => ({ deleted: true }) })
     h.clear.mockRejectedValueOnce(new Error('device locked'))
-    await expect(a.verifyEmail('12345678')).rejects.toThrow('device locked')
+    await expect(a.verifyEmail('12345678')).rejects.toThrow('CREDENTIAL_CLEANUP_REQUIRED')
     await expect(a.account()).rejects.toThrow('Account changed')
     await a.signOut()
     expect(h.clear).toHaveBeenCalledTimes(2)

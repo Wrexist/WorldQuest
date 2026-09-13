@@ -1,5 +1,5 @@
 name: Native account acceptance
-# Includes interrupted renewal and repeated old-client logout after account recovery.
+# Includes rendered eight-digit account screens against the OS vault and local D1.
 on:
   workflow_dispatch:
     inputs:
@@ -93,6 +93,7 @@ jobs:
             adb uninstall com.wrexist.worldquest.accountsproof
             adb install apps/mobile/android/app/build/outputs/apk/release/app-release.apk
             maestro test --debug-output "$RUNNER_TEMP/account-reinstall" scripts/native-accounts/reinstall.yaml
+            maestro test --debug-output "$RUNNER_TEMP/account-ui" scripts/native-accounts/ui.yaml
       - name: Compile iOS proof
         if: matrix.platform == 'ios'
         run: |
@@ -122,6 +123,7 @@ jobs:
           xcrun simctl uninstall "$DEVICE_ID" com.wrexist.worldquest.accountsproof
           xcrun simctl install "$DEVICE_ID" "$APP"
           maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/account-reinstall" scripts/native-accounts/reinstall.yaml
+          maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/account-ui" scripts/native-accounts/ui.yaml
       - name: Capture iOS failure state
         if: failure() && matrix.platform == 'ios' && env.DEVICE_ID != ''
         run: |
@@ -141,6 +143,7 @@ jobs:
             ${{ runner.temp }}/account-runtime.log
             ${{ runner.temp }}/account-restart/
             ${{ runner.temp }}/account-reinstall/
+            ${{ runner.temp }}/account-ui/
             apps/mobile/android/app/src/main/AndroidManifest.xml
             apps/mobile/android/app/src/main/res/xml/*backup*.xml
             apps/mobile/android/app/src/main/res/xml/data_extraction_rules.xml

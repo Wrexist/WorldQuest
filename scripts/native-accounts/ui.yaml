@@ -1,0 +1,56 @@
+appId: com.wrexist.worldquest.accountsproof
+---
+- openLink: worldquestaccountsproof://ui
+- runFlow:
+    when:
+      platform: ios
+      visible: 'Open in .*WorldQuest Account Proof.*'
+    commands:
+      - tapOn: Open
+- extendedWaitUntil:
+    visible: Start as guest
+    timeout: 120000
+- tapOn: Start as guest
+- tapOn: Link your email
+- tapOn: Birth year
+- inputText: '2000'
+- hideKeyboard
+- tapOn: Continue
+- tapOn: Email
+- inputText: native-proof@example.invalid
+- hideKeyboard
+- tapOn: Send me a code
+- extendedWaitUntil:
+    visible: Eight-digit code
+    timeout: 30000
+- takeScreenshot: ui-code
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible: Eight-digit code
+    timeout: 60000
+- runScript: mailbox.js
+- tapOn: Eight-digit code
+- inputText: ${output.code}
+- hideKeyboard
+- tapOn: Confirm
+- extendedWaitUntil:
+    visible: Your email is linked
+    timeout: 30000
+- takeScreenshot: ui-linked
+- tapOn: Continue
+- tapOn: Delete account
+- takeScreenshot: ui-delete-confirmation
+- tapOn: Send me a code
+- extendedWaitUntil:
+    visible: Eight-digit code
+    timeout: 30000
+- runScript: mailbox.js
+- tapOn: Eight-digit code
+- inputText: ${output.code}
+- hideKeyboard
+- tapOn: Delete permanently
+- extendedWaitUntil:
+    visible: Your account is deleted
+    timeout: 30000
+- takeScreenshot: ui-deleted

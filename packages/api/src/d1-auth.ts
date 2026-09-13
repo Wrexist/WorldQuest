@@ -7,7 +7,7 @@ export interface ProtectedStorage {
 }
 export interface D1Session { userId: string; token: string; expiresAt: number }
 export type D1SessionStatus = 'missing' | 'active' | 'renewal-due' | 'renewal-pending' | 'expired'
-export interface D1Challenge { challengeId: string; expiresAt: number; purpose: 'link' | 'login' | 'delete'; email: string }
+export interface D1Challenge { challengeId: string; expiresAt: number; purpose: 'link' | 'login' | 'delete'; email: string; resendAt?: number }
 export interface D1Account { userId: string; audience: 'unknown' | 'protected' | 'eligible'; email: string | null; revision: number; xp: number; coins: number }
 export type AuthFetch = (url: string, init: RequestInit) => Promise<{ status: number; ok: boolean; json(): Promise<unknown> }>
 export class D1AuthError extends Error {
@@ -33,6 +33,8 @@ export function createD1AuthClient(options: {
   if (base.protocol !== 'https:' && !(base.protocol === 'http:' && ['localhost', '127.0.0.1', '10.0.2.2'].includes(base.hostname))) throw new D1AuthError('INSECURE_ENDPOINT')
   if (base.username || base.password || base.search || base.hash) throw new D1AuthError('INVALID_ENDPOINT')
   const origin = base.href.replace(/\/$/, '')
+  // Browser fetch checks its receiver; do not invoke it as a method of our options.
+  const transport = options.fetch
   let closed = false, busy = false
   let erased = false, erasing: Promise<void> | null = null
   const now = options.now ?? Date.now
@@ -62,7 +64,7 @@ export function createD1AuthClient(options: {
     const timeout = setTimeout(() => controller.abort(), 15_000)
     let result: Awaited<ReturnType<AuthFetch>>
     let value: unknown
-    try { result = await options.fetch(origin + path, { method: body === undefined ? 'GET' : 'POST', signal: controller.signal,
+    try { result = await transport(origin + path, { method: body === undefined ? 'GET' : 'POST', signal: controller.signal,
       headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       ...(body === undefined ? {} : { body: JSON.stringify(body) }) })
       value = await result.json()
@@ -165,7 +167,9 @@ export function createD1AuthClient(options: {
   async function saveChallenge(value: Record<string, unknown>, purpose: D1Challenge['purpose'], email: string) {
     assertOpen()
     if (!hex(value.challengeId) || typeof value.expiresAt !== 'number' || !Number.isFinite(value.expiresAt)) throw new D1AuthError('INVALID_RESPONSE')
-    const c: D1Challenge = { challengeId: value.challengeId, expiresAt: value.expiresAt, purpose, email }
+    if (value.resendAt !== undefined && (typeof value.resendAt !== 'number' || !Number.isFinite(value.resendAt))) throw new D1AuthError('INVALID_RESPONSE')
+    const c: D1Challenge = { challengeId: value.challengeId, expiresAt: value.expiresAt, purpose, email,
+      ...(typeof value.resendAt === 'number' ? { resendAt: value.resendAt } : {}) }
     const current = await required()
     await options.storage.setItem(STATE_KEY, JSON.stringify({ version: 1, session: current, challenge: c }))
     assertOpen()
@@ -183,7 +187,9 @@ export function createD1AuthClient(options: {
       const c = value.challenge
       if (!record(c) || !hex(c.challengeId) || typeof c.expiresAt !== 'number' || !Number.isFinite(c.expiresAt)
         || typeof c.email !== 'string' || (c.purpose !== 'link' && c.purpose !== 'login' && c.purpose !== 'delete')) throw new Error('Invalid challenge')
-      return { challengeId: c.challengeId, expiresAt: c.expiresAt, email: c.email, purpose: c.purpose }
+      if (c.resendAt !== undefined && (typeof c.resendAt !== 'number' || !Number.isFinite(c.resendAt))) throw new Error('Invalid cooldown')
+      return { challengeId: c.challengeId, expiresAt: c.expiresAt, email: c.email, purpose: c.purpose,
+        ...(typeof c.resendAt === 'number' ? { resendAt: c.resendAt } : {}) }
     } catch { throw new D1AuthError('CREDENTIALS_INVALID') }
   }
   return {
@@ -229,8 +235,16 @@ export function createD1AuthClient(options: {
     resendEmail: () => transition(async () => {
       const s = await ready(), c = await pending()
       if (!c) throw new D1AuthError('CHALLENGE_REQUIRED')
-      const value = await request('/v1/auth/email/resend', s.token, { challengeId: c.challengeId })
-      assertOpen(); return saveChallenge(value, c.purpose, c.email)
+      try {
+        const value = await request('/v1/auth/email/resend', s.token, { challengeId: c.challengeId })
+        assertOpen(); return await saveChallenge(value, c.purpose, c.email)
+      } catch (error) {
+        if (error instanceof D1AuthError && error.code === 'EMAIL_UNAVAILABLE' && 'response' in error && record(error.response)) {
+          const retry = await saveChallenge(error.response, c.purpose, c.email)
+          throw new D1AuthError(error.code, error.status, retry)
+        }
+        throw error
+      }
     }),
     verifyEmail: (code: string) => transition(async (): Promise<D1Session | { deleted: true }> => {
       const s = await resumeRenewal(), c = await pending()
@@ -239,7 +253,9 @@ export function createD1AuthClient(options: {
       if (c.purpose === 'delete') {
         assertOpen()
         if (result.deleted !== true) throw new D1AuthError('INVALID_RESPONSE')
-        closed = true; await erase(); return { deleted: true }
+        closed = true
+        try { await erase() } catch { throw new D1AuthError('CREDENTIAL_CLEANUP_REQUIRED') }
+        return { deleted: true }
       }
       return accept(result, c.purpose === 'link' ? s.userId : undefined)
     }),
@@ -247,7 +263,9 @@ export function createD1AuthClient(options: {
       const s = await resumeRenewal(), value = await request('/v1/account/delete', s.token, {})
       assertOpen()
       if (value.deleted !== true) throw new D1AuthError('INVALID_RESPONSE')
-      closed = true; await erase(); return { deleted: true as const }
+      closed = true
+      try { await erase() } catch { throw new D1AuthError('CREDENTIAL_CLEANUP_REQUIRED') }
+      return { deleted: true as const }
     }),
     signOut: async () => {
       // Invalidate completions synchronously, before waiting for storage/network.

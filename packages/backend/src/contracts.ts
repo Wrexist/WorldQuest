@@ -29,6 +29,6 @@ export interface Account {
 }
 export class ApiError extends Error {
   constructor(readonly code: string, readonly status: number,
-    readonly retryContext?: { challengeId: string; expiresAt: number }) { super(code) }
+    readonly retryContext?: { challengeId: string; expiresAt: number; resendAt?: number }) { super(code) }
 }
 export interface Env { DB: D1Database; API_ENABLED: string; AUTH_SECRET?: string }

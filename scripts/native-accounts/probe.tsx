@@ -6,6 +6,7 @@ import { MMKV } from 'react-native-mmkv'
 import * as SplashScreen from 'expo-splash-screen'
 import { createD1AccountClient } from '../../apps/mobile/src/lib/d1-auth'
 import { createSessionStorage } from '../../apps/mobile/src/lib/credentials'
+import { NativeAccountUI } from './native-ui'
 
 const baseURL = Platform.OS === 'android' ? 'http://10.0.2.2:8789' : 'http://127.0.0.1:8789'
 const email = 'native-proof@example.invalid'
@@ -96,4 +97,14 @@ function Probe() {
     <Text accessible accessibilityLabel={result} style={{ color: '#000000', fontSize: 18 }}>{result}</Text>
   </View>
 }
-registerRootComponent(Probe)
+function Root() {
+  const [ui, setUi] = useState(proof.getString('ui') === 'true')
+  useEffect(() => {
+    const open = (url: string | null) => { if (url?.includes('://ui')) { proof.set('ui', 'true'); setUi(true) } }
+    void Linking.getInitialURL().then(open)
+    const subscription = Linking.addEventListener('url', event => open(event.url))
+    return () => subscription.remove()
+  }, [])
+  return ui ? <NativeAccountUI /> : <Probe />
+}
+registerRootComponent(Root)

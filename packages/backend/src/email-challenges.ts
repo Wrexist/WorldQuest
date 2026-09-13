@@ -32,9 +32,9 @@ export async function requestCode(db: D1Database, secret: string, mail: MailDeli
     created_at=excluded.created_at, expires_at=excluded.expires_at, sent_at=excluded.sent_at
     WHERE email_challenges.expires_at <= ? OR email_challenges.state='consumed' RETURNING *`)
     .bind(id, email, owner, session, input.purpose, input.locale, now, now + 300_000, now, now).first<Challenge>()
-  if (!challenge) return { challengeId: id, expiresAt: now + 300_000 }
+  if (!challenge) return { challengeId: id, expiresAt: now + 300_000, resendAt: now + 60_000 }
   await deliver(db, secret, mail, challenge, now)
-  return { challengeId: id, expiresAt: challenge.expires_at }
+  return { challengeId: id, expiresAt: challenge.expires_at, resendAt: challenge.sent_at + 60_000 }
 }
 
 export async function resendCode(db: D1Database, secret: string, mail: MailDelivery, owner: string, session: string, id: string, now: number) {
@@ -44,7 +44,7 @@ export async function resendCode(db: D1Database, secret: string, mail: MailDeliv
     AND sent_at<=? AND expires_at>? RETURNING *`).bind(now, id, owner, session, now - 60_000, now).first<Challenge>()
   if (!c) throw new ApiError('RETRY_LATER', 429)
   await deliver(db, secret, mail, c, now)
-  return { challengeId: c.id, expiresAt: c.expires_at }
+  return { challengeId: c.id, expiresAt: c.expires_at, resendAt: c.sent_at + 60_000 }
 }
 
 async function deliver(db: D1Database, secret: string, mail: MailDelivery, c: Challenge, now: number) {
@@ -58,7 +58,7 @@ async function deliver(db: D1Database, secret: string, mail: MailDelivery, c: Ch
     await db.prepare(`UPDATE email_challenges SET state='pending' WHERE id=? AND state='sending'`).bind(c.id).run()
   } catch {
     await db.prepare(`UPDATE email_challenges SET state='pending' WHERE id=? AND state='sending'`).bind(c.id).run()
-    throw new ApiError('EMAIL_UNAVAILABLE', 503, { challengeId: c.id, expiresAt: c.expires_at })
+    throw new ApiError('EMAIL_UNAVAILABLE', 503, { challengeId: c.id, expiresAt: c.expires_at, resendAt: c.sent_at + 60_000 })
   }
 }
 
