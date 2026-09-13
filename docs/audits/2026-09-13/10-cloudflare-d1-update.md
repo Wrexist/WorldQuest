@@ -21,7 +21,7 @@ complete native identity and recovery before replacing the active app adapter.
 | Failure handling | A failure after the ledger write rolls back everything; retry succeeds | Remote overload and quota behavior need connected testing |
 | Revocation | Logout rejects the old token; revocation between grading and commit prevents payout | Full account erasure remains open |
 | Input limits | Strict answer shape, duplicate-slot rejection, 16 KiB stream cap | Public rate limiting is not implemented; API stays disabled |
-| Deployment | Validated Worker bundle and committed D1 binding | Worker not deployed; public routes and API disabled |
+| Deployment | Development Worker deployed; active version and D1 binding verified through Cloudflare API | Public routes and API disabled; native and hosted runtime acceptance remain open |
 
 The current proof has ten passing integration tests. It contains no public fixture
 or ticket-seeding endpoint. The eight-slot duplicate probe is rejected; accepting

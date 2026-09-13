@@ -206,8 +206,8 @@ revocation between grading and commit aborts with no reward. These are developme
 foundation tests, not email/native auth acceptance.
 The deployment configuration disables public routes, preview URLs and the app API.
 The mobile adapter still uses the old backend until the full D1 contract is ready.
-The Worker bundle is prepared but has not been deployed. Wrangler CLI has no login;
-the existing Chrome session was sufficient to provision and verify the database.
+The initial database provisioning used the existing Chrome session. Subsequent
+Wrangler authorization and development deployment are recorded below.
 
 `pnpm verify` passed with 1,538 tests at the D1 implementation revision `e0325f3`.
 The dependency security check has no unexpected advisories. The subsequent
@@ -222,3 +222,33 @@ was inspected at original resolution and the checker again counted 6,149 label
 pixels. This validates the native test changes; it is not a D1-connected app run.
 See the [D1 implementation audit](../audits/2026-09-13/10-cloudflare-d1-update.md)
 for the remaining order and cost/scale constraints.
+
+## Cloudflare setup and development deployment (2026-09-13)
+
+Fetched and applied the official `https://developers.cloudflare.com/agent-setup/prompt.md`
+Codex instructions. All 14 Cloudflare skills are installed under
+`C:/Users/IsacC/.codex/skills` (also copied to `.agents/skills`), and the five
+documented MCP servers are registered in the user's Codex config. After restart,
+the main Cloudflare connector successfully read the account's WorldQuest resources.
+The public docs connector requires no login; Bindings, Builds and Observability
+are registered and await their own first-use OAuth login.
+
+Wrangler credentials are encrypted with their key in Windows Credential Manager.
+The original `workers:write` scope allowed D1 work alongside `d1:write` but did
+not authorize Worker script deployment. The owner approved adding
+`workers_scripts:write`; no unrelated product scopes were added. An expired OAuth
+callback was discarded and a fresh login succeeded. The existing MCP grant also
+rejected script upload, so deployment used the approved Wrangler grant.
+
+`pnpm --filter @worldquest/backend run deploy` successfully uploaded and activated
+`worldquest-development-api`, version `dc8bd22b-f2ec-4ab1-9cb7-6915dd20bb87`.
+Cloudflare API readback confirmed this version at 100%, the exact development D1
+binding, `API_ENABLED=false`, and disabled workers.dev and preview URLs.
+`wrangler d1 migrations list DB --remote` reports no pending migrations.
+The deployment's reported startup time was 5 ms; this is not a request CPU/load
+measurement. No public endpoint was enabled or native adapter switched.
+
+Validation for this deployment used the unchanged, previously passing source,
+a fresh Worker dry run, actual deployment, remote configuration readback and
+migration inspection. The earlier full test/CI evidence above remains applicable;
+the account, recovery, child policy and full native acceptance gates remain open.

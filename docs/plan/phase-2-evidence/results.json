@@ -159,8 +159,14 @@
       "verification": "pnpm verify passed: 1538 tests at e0325f3; ten D1 tests pass after response-stream test fix d68b2f5"
     },
     "deployment": {
-      "worker": "not deployed",
-      "publicApi": "disabled in configuration",
+      "worker": "worldquest-development-api",
+      "version": "dc8bd22b-f2ec-4ab1-9cb7-6915dd20bb87",
+      "deploymentId": "bc4f7bb6-4a51-4a05-9237-ebe25c51c1fa",
+      "deployedAt": "2026-09-13T13:45:54.30747Z",
+      "verification": "Wrangler deploy succeeded; Cloudflare API readback confirmed active version at 100%, D1 binding and disabled API/workers.dev/preview URLs. Remote migration list has no pending migrations.",
+      "bundleSha256": "0f0c9e584e4b14c5384c7944250f45f36e278e560de896f10bb4aaab12af98a3",
+      "publicApi": "disabled; verified remotely",
+      "hostedRuntimeAcceptance": "not exercised; no public routes enabled",
       "mobileAdapter": "legacy; D1 cutover not yet accepted"
     },
     "open": [

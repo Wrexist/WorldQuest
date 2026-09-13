@@ -388,7 +388,9 @@
     "migration": "0001_accounts_and_lessons.sql",
     "applicationTables": 8,
     "accounts": 0,
-    "verification": "Chrome dashboard SQL result; source database untouched. Worker bundle is not deployed; API disabled in configuration.",
+    "verification": "Chrome dashboard SQL result; remote migration list has no pending migrations. Worker deployed; Cloudflare API confirmed D1 binding, API disabled and workers.dev/preview URLs disabled. Source database untouched.",
+    "worker": "worldquest-development-api",
+    "workerVersion": "dc8bd22b-f2ec-4ab1-9cb7-6915dd20bb87",
     "prototypeMappings": {
       "profiles": "accounts (partial)",
       "lessons": "tickets + receipts (partial)",

@@ -23,7 +23,8 @@ const data = {
     provider: 'Cloudflare Workers/D1', database: 'worldquest-development',
     databaseId: '4354bdf7-8e07-46d9-93d7-a0700f2f1096', jurisdiction: 'eu',
     verifiedOn: '2026-09-13', migration: '0001_accounts_and_lessons.sql', applicationTables: 8, accounts: 0,
-    verification: 'Chrome dashboard SQL result; source database untouched. Worker bundle is not deployed; API disabled in configuration.',
+    verification: 'Chrome dashboard SQL result; remote migration list has no pending migrations. Worker deployed; Cloudflare API confirmed D1 binding, API disabled and workers.dev/preview URLs disabled. Source database untouched.',
+    worker: 'worldquest-development-api', workerVersion: 'dc8bd22b-f2ec-4ab1-9cb7-6915dd20bb87',
     prototypeMappings: { profiles: 'accounts (partial)', lessons: 'tickets + receipts (partial)', user_facts: 'memories', review_log: 'reviews', xp_ledger: 'ledger.xp', coin_ledger: 'ledger.coins' },
   },
   hostedInspection: {

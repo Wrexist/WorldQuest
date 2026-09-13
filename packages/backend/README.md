@@ -25,6 +25,17 @@ Account/database IDs are configuration, not credentials. Local state is ignored.
 Use Wrangler login for deployment credentials; never put a token in this repository
 or the app. Remote migrations and deployment require an authenticated CLI.
 
+The development Worker `worldquest-development-api` was deployed on 2026-09-13
+with version `dc8bd22b-f2ec-4ab1-9cb7-6915dd20bb87`. Cloudflare API readback
+confirmed the D1 binding, `API_ENABLED=false`, and disabled workers.dev/preview
+URLs. Remote migration inspection found no pending migrations. This verifies
+deployment configuration; connected native behavior and hosted load are still open.
+Use `pnpm --filter @worldquest/backend run deploy` (the `run` is required because
+pnpm also has a built-in deploy command). Wrangler OAuth needs
+`workers_scripts:write` in addition to the existing account/user read, Workers
+write and D1 write permissions. Credentials use encrypted storage with a key in
+Windows Credential Manager.
+
 The checked-in configuration disables workers.dev, preview URLs, and API access.
 For isolated local API development only, pass `--var API_ENABLED:true` to Wrangler.
 Do not enable public API access before recovery, abuse controls, child policy and
