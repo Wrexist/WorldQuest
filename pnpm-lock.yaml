@@ -18,6 +18,9 @@ patchedDependencies:
   decode-uri-component@0.2.2:
     hash: jgbyntg7qfy4bix27jeqdplyza
     path: patches/decode-uri-component@0.2.2.patch
+  expo-secure-store@15.0.8:
+    hash: hrdhxqstixldti5ezvmysy5bp4
+    path: patches/expo-secure-store@15.0.8.patch
   image-size@1.2.1:
     hash: huyblk5ioxesfevhfxjjmmwrca
     path: patches/image-size@1.2.1.patch
@@ -173,7 +176,7 @@ importers:
         version: 6.0.24(@expo/metro-runtime@4.0.1(react-native@0.81.5(@babel/core@7.29.7)(@types/react@19.1.17)(react@19.1.0)))(@types/react-dom@19.2.4(@types/react@19.1.17))(@types/react@19.1.17)(expo-constants@18.0.13)(expo-linking@8.0.12)(expo@54.0.36)(react-dom@19.1.0(react@19.1.0))(react-native-safe-area-context@5.6.2(react-native@0.81.5(@babel/core@7.29.7)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native-screens@4.16.0(react-native@0.81.5(@babel/core@7.29.7)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native-web@0.21.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.29.7)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       expo-secure-store:
         specifier: ~15.0.8
-        version: 15.0.8(expo@54.0.36)
+        version: 15.0.8(patch_hash=hrdhxqstixldti5ezvmysy5bp4)(expo@54.0.36)
       expo-splash-screen:
         specifier: ~31.0.13
         version: 31.0.13(expo@54.0.36)(typescript@5.9.3)
@@ -7800,7 +7803,7 @@ snapshots:
       - '@types/react-dom'
       - supports-color
 
-  expo-secure-store@15.0.8(expo@54.0.36):
+  expo-secure-store@15.0.8(patch_hash=hrdhxqstixldti5ezvmysy5bp4)(expo@54.0.36):
     dependencies:
       expo: 54.0.36(@babel/core@7.29.7)(@expo/metro-runtime@4.0.1(react-native@0.81.5(@babel/core@7.29.7)(@types/react@19.1.17)(react@19.1.0)))(expo-router@6.0.24)(react-native@0.81.5(@babel/core@7.29.7)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)(typescript@5.9.3)
 

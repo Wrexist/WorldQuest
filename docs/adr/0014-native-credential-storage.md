@@ -17,6 +17,15 @@ locked, storage is full or a native module is unavailable. Native values may be
 large; write failures propagate, and readback is required before migration is
 acknowledged. The native proof includes a 5 KB synthetic session.
 
+The pinned dependency carries a narrow native patch. Android previously discarded
+the encrypted write's `SharedPreferences.commit()` result, and SharedPreferences
+can update its process cache even when persistence fails. Check the result and
+restore the prior cache/value on failure, including deletion, so a later read or
+retry cannot mistake a failed write for success. iOS deletion now rejects Keychain
+errors other than item-not-found instead of ignoring all status codes. The patch
+does not change encryption or key accessibility. Remove it only after an upstream
+version passes these acceptance checks. See the [upstream write issue](https://github.com/expo/expo/issues/48988).
+
 This replaces the old MMKV store encrypted with a bundled shared key. A random
 MMKV key kept in SecureStore was considered, but direct credential storage avoids
 another key lifecycle and MMKV's 16-byte encryption-key limit. The old shared key

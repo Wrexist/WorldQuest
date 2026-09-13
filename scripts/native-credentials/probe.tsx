@@ -4,6 +4,7 @@ import { registerRootComponent } from 'expo'
 import { Linking, Text, View } from 'react-native'
 import { MMKV } from 'react-native-mmkv'
 import * as SecureStore from 'expo-secure-store'
+import * as SplashScreen from 'expo-splash-screen'
 import { createSessionStorage, clearSessionStorage } from '../../apps/mobile/src/lib/credentials'
 
 const KEY = 'credential-proof.session'
@@ -61,8 +62,8 @@ function Probe() {
     // This binary holds synthetic fixtures only; expose the failing check for CI diagnosis.
     setResult('FAIL_CREDENTIAL_PROOF: ' + (error instanceof Error ? error.message : 'unknown'))
   }) }, [])
-  return <View style={{ flex: 1, justifyContent: 'center', padding: 24 }}>
-    <Text accessibilityLabel={result}>{result}</Text>
+  return <View onLayout={() => { void SplashScreen.hideAsync() }} style={{ flex: 1, justifyContent: 'center', padding: 24, backgroundColor: '#ffffff' }}>
+    <Text accessible accessibilityLabel={result} style={{ color: '#000000', fontSize: 18 }}>{result}</Text>
   </View>
 }
 registerRootComponent(Probe)

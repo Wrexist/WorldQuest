@@ -15,7 +15,8 @@
     },
     "patchedDependencies": {
       "image-size@1.2.1": "patches/image-size@1.2.1.patch",
-      "decode-uri-component@0.2.2": "patches/decode-uri-component@0.2.2.patch"
+      "decode-uri-component@0.2.2": "patches/decode-uri-component@0.2.2.patch",
+      "expo-secure-store@15.0.8": "patches/expo-secure-store@15.0.8.patch"
     }
   },
   "engines": {
