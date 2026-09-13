@@ -1,6 +1,6 @@
 {
-  "account:link.title": "Link your email",
-  "account:link.title__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. ",
+  "account:link.title": "Email",
+  "account:link.title__note": "Short email-linking screen header; must fit at 200% text. The body explains linking.",
   "account:link.body": "Add an email address to sign in to this account.",
   "account:link.body__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. ",
   "account:link.assure.travels": "Use a code sent to your email",

@@ -90,7 +90,7 @@ describe('OnboardingScreen', () => {
     getStarted()
     expect(screen.getByText(/Choose your language/i)).toBeTruthy()
     answer('English')
-    expect(screen.getByText(/five minutes at a time/i)).toBeTruthy()
+    expect(screen.getByText(/Explore countries/i)).toBeTruthy()
     expect(screen.queryByText(/sign up|create account/i)).toBeNull()
   })
 
@@ -336,9 +336,9 @@ describe('OnboardingScreen', () => {
     // Past the greeting and the language step, which are what the flow opens on.
     getStarted()
     answer('English')
-    expect(screen.getByText(/five minutes at a time/i)).toBeTruthy()
-    expect(screen.getByText(/A little practice each day/i)).toBeTruthy()
-    expect(screen.getByText(/Start exploring the world/i)).toBeTruthy()
+    expect(screen.getByText(/Explore countries/i)).toBeTruthy()
+    expect(screen.getByText(/Practice daily/i)).toBeTruthy()
+    expect(screen.getByText(/Your world/i)).toBeTruthy()
     expect(screen.getAllByRole('tab')).toHaveLength(3)
   })
 
@@ -382,7 +382,7 @@ describe('OnboardingScreen', () => {
     expect(screen.getByText(/When were you born/i)).toBeTruthy()
 
     fireEvent.click(screen.getByRole('button', { name: 'Back' })) // age → slides
-    expect(screen.getByText(/five minutes at a time/i)).toBeTruthy()
+    expect(screen.getByText(/Explore countries/i)).toBeTruthy()
 
     fireEvent.click(screen.getByRole('button', { name: 'Back' })) // slides → language
     expect(screen.getByText(/Choose your language/i)).toBeTruthy()

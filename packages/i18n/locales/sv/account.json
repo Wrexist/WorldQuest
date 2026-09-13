@@ -1,5 +1,5 @@
 {
-  "account:link.title": "Koppla din e-post",
+  "account:link.title": "E-post",
   "account:link.body": "Lägg till en e-postadress för att logga in på det här kontot.",
   "account:link.assure.travels": "Använd en kod som skickas till din e-post",
   "account:link.assure.anyPhone": "Återställning av framsteg testas fortfarande",
@@ -38,7 +38,7 @@
   "account:settings.child": "Framsteg på den här telefonen stannar på den här telefonen. Fråga en vuxen om du vill spara dem någonstans.",
   "account:offline.title": "Du är offline",
   "account:offline.body": "Du behöver internet för att koppla en e-postadress. Kom tillbaka när du är online.",
-  "account:link.title__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. ",
+  "account:link.title__note": "Short email-linking screen header; must fit at 200% text. The body explains linking.",
   "account:link.body__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. ",
   "account:link.assure.travels__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. ",
   "account:link.assure.anyPhone__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. ",

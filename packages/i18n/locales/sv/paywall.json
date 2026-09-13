@@ -33,7 +33,7 @@
   "paywall:plans.includes": "Alla planer innehåller",
   "paywall:title.value__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. ",
   "paywall:body.value__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. ",
-  "paywall:title.unavailable": "Premium är inte tillgängligt än",
-  "paywall:title.unavailable__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. Shown when the store has no plans; keep short.",
+  "paywall:title.unavailable": "Premium",
+  "paywall:title.unavailable__note": "Neutral heading when there are no products. The body explains availability; keep short at 200% text.",
   "paywall:plans.offline__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. "
 }

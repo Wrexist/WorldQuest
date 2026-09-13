@@ -62,6 +62,6 @@
   "paywall:error.failed__note": "Purchase failure. The second sentence matters more than the first — the immediate fear is being charged for nothing.",
   "paywall:plans.includes": "Every plan includes",
   "paywall:plans.includes__note": "Small heading above the four Premium perks on the plans page, so the price has the value beside it instead of three pages away.",
-  "paywall:title.unavailable": "Premium is not available yet",
-  "paywall:title.unavailable__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. Shown when the store has no plans; keep short."
+  "paywall:title.unavailable": "Premium",
+  "paywall:title.unavailable__note": "Neutral heading when there are no products. The body explains availability; keep short at 200% text."
 }

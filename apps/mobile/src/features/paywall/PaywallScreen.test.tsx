@@ -308,7 +308,7 @@ describe('Paywall — never promises what the till will refuse', () => {
     expect(container.textContent).not.toMatch(/thirty|fresh|just learned/i)
     for (let page = 0; page < 2; page++) {
       fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
-      expect(screen.getByRole('heading').textContent).toMatch(/not available yet/i)
+      expect(screen.getByRole('heading').textContent).toBe('Premium')
       expect(container.textContent).not.toMatch(/Unlimited hearts|Offline packs|Deep stats|Exclusive cosmetics|Every plan includes/i)
       expect(screen.getByRole('button', { name: 'Not now' })).toBeTruthy()
     }

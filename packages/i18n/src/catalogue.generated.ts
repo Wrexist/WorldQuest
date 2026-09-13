@@ -14,7 +14,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
 {
   "en": {
     "account": {
-      "link.title": "Link your email",
+      "link.title": "Email",
       "link.body": "Add an email address to sign in to this account.",
       "link.assure.travels": "Use a code sent to your email",
       "link.assure.anyPhone": "Progress recovery is still being tested",
@@ -384,12 +384,12 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "daily.anywhere": "The world"
     },
     "onboarding": {
-      "slide.1.title": "Explore countries, five minutes at a time",
-      "slide.1.body": "Practice flags, capitals and locations in short geography quizzes.",
-      "slide.2.title": "A little practice each day",
-      "slide.2.body": "Answer a few questions, check the answers and try again tomorrow.",
-      "slide.3.title": "Start exploring the world",
-      "slide.3.body": "{count, plural, one {# country to explore, with flags and capitals.} other {# countries to explore, with flags and capitals.}}",
+      "slide.1.title": "Explore countries",
+      "slide.1.body": "Flags and capitals.",
+      "slide.2.title": "Practice daily",
+      "slide.2.body": "Short quizzes, at your pace.",
+      "slide.3.title": "Your world",
+      "slide.3.body": "{count, plural, one {# country. Flags and capitals.} other {# countries. Flags and capitals.}}",
       "cta.next": "Next",
       "welcome.body": "I'm Atlas. Let's go and see the world.",
       "cta.start": "Get started",
@@ -469,7 +469,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "billing.fix": "Update payment",
       "error.failed": "That didn't go through. Nothing was charged.",
       "plans.includes": "Every plan includes",
-      "title.unavailable": "Premium is not available yet"
+      "title.unavailable": "Premium"
     },
     "profile": {
       "title": "Profile",
@@ -700,7 +700,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
   },
   "sv": {
     "account": {
-      "link.title": "Koppla din e-post",
+      "link.title": "E-post",
       "link.body": "Lägg till en e-postadress för att logga in på det här kontot.",
       "link.assure.travels": "Använd en kod som skickas till din e-post",
       "link.assure.anyPhone": "Återställning av framsteg testas fortfarande",
@@ -1070,12 +1070,12 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "daily.anywhere": "Världen"
     },
     "onboarding": {
-      "slide.1.title": "Upptäck länder, fem minuter i taget",
-      "slide.1.body": "Öva på flaggor, huvudstäder och platser i korta geografiquiz.",
-      "slide.2.title": "Lite övning varje dag",
-      "slide.2.body": "Svara på några frågor, se de rätta svaren och öva igen i morgon.",
-      "slide.3.title": "Börja upptäcka världen",
-      "slide.3.body": "{count, plural, one {# land att upptäcka, med flaggor och huvudstäder.} other {# länder att upptäcka, med flaggor och huvudstäder.}}",
+      "slide.1.title": "Upptäck länder",
+      "slide.1.body": "Flaggor och huvudstäder.",
+      "slide.2.title": "Öva varje dag",
+      "slide.2.body": "Korta quiz i din egen takt.",
+      "slide.3.title": "Din värld",
+      "slide.3.body": "{count, plural, one {# land. Flaggor och huvudstäder.} other {# länder. Flaggor och huvudstäder.}}",
       "cta.next": "Nästa",
       "welcome.body": "Jag heter Atlas. Nu ger vi oss ut i världen.",
       "cta.start": "Kom igång",
@@ -1155,7 +1155,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "billing.fix": "Uppdatera betalning",
       "error.failed": "Det gick inte igenom. Inget drogs.",
       "plans.includes": "Alla planer innehåller",
-      "title.unavailable": "Premium är inte tillgängligt än"
+      "title.unavailable": "Premium"
     },
     "profile": {
       "title": "Profil",

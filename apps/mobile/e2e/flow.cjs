@@ -109,6 +109,9 @@ const skip = (name, why) => {
   // Playwright's own download when there is not. Hardcoding the image's path here is
   // what killed this step on CI for the first run that ever reached it.
   const browser = await chromium.launch(launchOptions())
+  await require('../../../scripts/lib/onboarding-claims.cjs').checkOnboardingClaims(
+    browser, `http://localhost:${PORT}`, SHOTS, step,
+  )
   // iPhone 14-ish. The layout is phone-first and a desktop viewport hides overflow bugs.
   const page = await browser.newPage({ ...browserContext, viewport: { width: 390, height: 844 } })
 
