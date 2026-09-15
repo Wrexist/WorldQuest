@@ -464,3 +464,48 @@ again passed all three tests. [Retained evidence](phase-2-evidence/accounts/rene
 records the original failures and successful reruns. No production screen changed, so the already
 inspected browser/design captures remain applicable. The [next UI batch](d1-native-auth-acceptance.md#next-ui-batch)
 defines the integration work still required before B02 can close.
+
+## Green revision after the D1 account UI batch
+
+At `2a60dab`, local `pnpm verify` passes 1,620 Vitest tests plus nine Node tests
+(1,629 total): backend 40/40, API 48/48, mobile 729/729, engines 557/557. The two
+commits after it change only a Maestro flow file, which the gate does not read.
+Push [CI](https://github.com/Wrexist/WorldQuest/actions/runs/35021542992) passed
+at `2a60dab`, and both the push and pull-request
+[CI](https://github.com/Wrexist/WorldQuest/actions/runs/35025186194) runs passed at
+`80dcdd1`. The [D1 local proof](https://github.com/Wrexist/WorldQuest/actions/runs/35021543058)
+also passed there.
+
+The backend failure on the `2b654a8` push job was a timeout, not a product fault.
+`proof.test.ts:124` boots a real workerd instance, applies the real migrations and
+drives the bundled Worker over HTTP; the heaviest case takes about three seconds
+warm, and under a loaded Windows runner it crossed vitest's 5-second default
+*while the pull-request build of the same commit passed*. `packages/backend` had
+no vitest config, so it inherited that unit-test budget.
+[`packages/backend/vitest.config.ts`](../../packages/backend/vitest.config.ts) now
+sets a 30-second test and hook timeout, deliberately without retries — a retry
+would also hide a genuinely broken case, and the timeout exists to catch hangs,
+not to police how long real D1 work takes.
+
+The [native account acceptance](https://github.com/Wrexist/WorldQuest/actions/runs/35025186129)
+passes on both platforms at `80dcdd1`, and the unchanged-binary
+[iOS replay](https://github.com/Wrexist/WorldQuest/actions/runs/35028042727)
+replays that run's signed archive green. This is the first iOS run in which the
+rendered `D1AccountScreen` completed link → restart → confirm → delete. Two
+harness faults had to be fixed to get there, and the deleted-account fixture
+renders immediate permanent deletion rather than the obsolete 30-day copy: see
+[the evidence note](phase-2-evidence/accounts/ui/README.md). Android needed three
+attempts, all infra — a corrupted NDK download, then two pre-launch emulator
+losses — with no repository change between them.
+
+The three pushes at `2b654a8` left the iOS replay red on purpose: it refuses a
+recorded binary whose protected runtime paths have changed since, and that commit
+changed them. Its default recorded build is now `35025186129`, so the next
+unrelated run of that workflow replays the current accepted proof instead of a
+superseded one.
+
+Still open: `onSubmitEditing`/`returnKeyType="done"` are inert on the iOS
+number-pad fields, so the return key never submits the birth year or the code;
+the visible button covers the journey, but the keyboard cannot be dismissed
+without it. Production account screens, real delivery and the public D1 route
+remain required before B02 closes.
