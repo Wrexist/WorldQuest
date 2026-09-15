@@ -1,4 +1,4 @@
-import { D1AuthError } from '@worldquest/api'
+import { D1AuthError } from '@worldquest/api/d1-auth'
 import type { D1AccountClient, D1AccountHost } from '../features/account/useD1Account.js'
 
 export type D1LocalStore = { get: (key: string) => string | null; set: (key: string, value: string) => void; remove: (key: string) => void }
@@ -39,11 +39,11 @@ export function createD1AccountHost(options: {
       const version = generation, captured = active
       return { namespace: captured, isCurrent: () => active === captured && generation === version && options.store.get(key) === null }
     },
-    changeIdentity: operation => exclusive(async () => {
+    changeIdentity: (operation, deleting = false) => exclusive(async () => {
       const previous = await options.client().restore()
       if (!previous) throw new D1AuthError('AUTH_REQUIRED')
       // Marker precedes server mutations. Local work stays in its original namespace.
-      options.store.set(key, JSON.stringify({ version: 1, previousOwner: previous.userId }))
+      options.store.set(key, JSON.stringify({ version: 1, previousOwner: previous.userId, deleting }))
       await pause()
       const result = await operation()
       if (!('deleted' in result)) {
@@ -71,5 +71,11 @@ export function createD1AccountHost(options: {
       options.store.remove(key)
     }),
     resumeIdentity: () => exclusive(async () => { await pause(); await open() }),
+    deletionPending: () => {
+      const raw = options.store.get(key)
+      if (!raw) return false
+      const value: unknown = JSON.parse(raw)
+      return value !== null && typeof value === 'object' && 'deleting' in value && value.deleting === true
+    },
   }
 }

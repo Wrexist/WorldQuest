@@ -46,6 +46,16 @@ economy simulation. Browser screenshots selected for review are retained in
   Keychain/Keystore. Its new run must pass before claiming native UI acceptance.
   The existing transport-only proof is retained.
 
+Android's rendered form passed in run `34785597430` at `b0e8f39`. iOS passed the
+restart/renewal stage but stopped before the new UI flow: Safari's Open-app prompt
+appeared after the conditional prompt check. The retained hierarchy and screenshot
+show that dialog, not an account error. The workflow now uses `simctl openurl` for
+its iOS fixture launches; a fresh native run is required.
+
+The first CI run also identified a 4.61 MB main-app bundle. Explicit D1 package
+entry points remove unused migration runtime from the legacy app import graph;
+the local result is 4.59 MB on both platforms under the unchanged 4.6 MB budget.
+
 The browser review used actual rendered screenshots, including Swedish at 200%.
 No part of that browser review was seen on a phone. Native screen-reader task
 completion, physical-device keyboard/text scaling and haptics remain acceptance
@@ -62,3 +72,6 @@ offline/history protocol; connect real pause/activate/erase callbacks and test
 queued lessons across identity changes. Preserve the public API gate until real
 email delivery, abuse budgets and remaining operational acceptance pass. These
 screens alone do not close B02 or make the app launch-ready.
+
+See [D1 lessons and sync](d1-learning-sync.md) for the implemented ticket, queue and
+history slice and its remaining reward/offline integration gates.

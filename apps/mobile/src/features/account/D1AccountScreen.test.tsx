@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { createD1AuthClient, type D1Account, type D1Challenge, type AuthFetch } from '@worldquest/api'
+import { createD1AuthClient, type D1Account, type D1Challenge, type AuthFetch } from '@worldquest/api/d1-auth'
 import { D1AccountScreen } from './D1AccountScreen.js'
 import { useD1Account, type D1AccountHost, type D1AccountClient } from './useD1Account.js'
 
@@ -34,7 +34,7 @@ function harness(options: { audience?: D1Account['audience']; linked?: boolean; 
   const create = () => createD1AuthClient({ baseURL: 'https://api.example.invalid', storage: {
     getItem: async key => values.get(key) ?? null, setItem: async (key, value) => { values.set(key, value) }, removeItem: async key => { values.delete(key) },
   }, clearCredentials: clear, fetch, randomBytes: async () => new Uint8Array(32).fill(0xdd) })
-  const host: D1AccountHost = { changeIdentity: vi.fn(operation => operation()), recoverSession: vi.fn(async () => create()), finishDeletion: vi.fn(async () => {}), resumeIdentity: vi.fn(async () => {}) }
+  const host: D1AccountHost = { changeIdentity: vi.fn(operation => operation()), recoverSession: vi.fn(async () => create()), finishDeletion: vi.fn(async () => {}), resumeIdentity: vi.fn(async () => {}), deletionPending: () => false }
   return { create, host, fetch, values, clear, account }
 }
 function App({ client, host, online = true }: { client: D1AccountClient; host: D1AccountHost; online?: boolean }) {
@@ -133,5 +133,14 @@ describe('D1 account screens with the protected auth transport', () => {
     await screen.findByText('Start your account')
     expect(h.fetch).not.toHaveBeenCalled()
     click('Start as guest'); await screen.findByText('Your guest account')
+  })
+  it('finishes owner cleanup after restart when deletion already removed credentials', async () => {
+    const h = harness({ missing: true })
+    h.host.deletionPending = () => true
+    render(<App client={h.create()} host={h.host} />)
+    await screen.findByText('Finish removing account access')
+    expect(screen.queryByText('Start as guest')).toBeNull()
+    click('Try again'); await screen.findByText('Your account is deleted')
+    expect(h.host.finishDeletion).toHaveBeenCalledOnce()
   })
 })

@@ -122,7 +122,10 @@ jobs:
           maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/account-restart" scripts/native-accounts/restart.yaml
           xcrun simctl uninstall "$DEVICE_ID" com.wrexist.worldquest.accountsproof
           xcrun simctl install "$DEVICE_ID" "$APP"
+          # Direct simulator delivery avoids Safari's asynchronously appearing Open prompt.
+          xcrun simctl openurl "$DEVICE_ID" worldquestaccountsproof://reinstall
           maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/account-reinstall" scripts/native-accounts/reinstall.yaml
+          xcrun simctl openurl "$DEVICE_ID" worldquestaccountsproof://ui
           maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/account-ui" scripts/native-accounts/ui.yaml
       - name: Capture iOS failure state
         if: failure() && matrix.platform == 'ios' && env.DEVICE_ID != ''

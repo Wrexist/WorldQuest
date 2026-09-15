@@ -179,6 +179,7 @@
     "packages/analytics/src/events.test.ts",
     "packages/api/src/client.test.ts",
     "packages/api/src/d1-auth.test.ts",
+    "packages/api/src/d1-learning.test.ts",
     "packages/api/src/database.types.test.ts",
     "packages/api/src/supabase-adapter.test.ts",
     "packages/backend/identity.test.ts",

@@ -1,5 +1,5 @@
 import { getRandomBytesAsync } from 'expo-crypto'
-import { createD1AuthClient, D1AuthError, type AuthFetch } from '@worldquest/api'
+import { createD1AuthClient, D1AuthError, type AuthFetch } from '@worldquest/api/d1-auth'
 import { createSessionStorage, clearSessionStorage } from './credentials'
 
 let active: { baseURL: string; client: ReturnType<typeof createD1AuthClient> } | null = null

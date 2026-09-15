@@ -1,5 +1,5 @@
 import { beforeEach, expect, it, vi } from 'vitest'
-import type { AuthFetch } from '@worldquest/api'
+import type { AuthFetch } from '@worldquest/api/d1-auth'
 
 const fixture = vi.hoisted(() => ({ values: new Map<string, string>(), clear: vi.fn(async () => {}) }))
 vi.mock('expo-crypto', () => ({ getRandomBytesAsync: async () => new Uint8Array(32).fill(0xee) }))

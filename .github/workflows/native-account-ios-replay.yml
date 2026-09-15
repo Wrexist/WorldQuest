@@ -77,6 +77,7 @@ jobs:
           maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/account-restart" scripts/native-accounts/restart.yaml
           xcrun simctl uninstall "$DEVICE_ID" com.wrexist.worldquest.accountsproof
           xcrun simctl install "$DEVICE_ID" "$RUNNER_TEMP/proof/WorldQuestAccountProof.app"
+          xcrun simctl openurl "$DEVICE_ID" worldquestaccountsproof://reinstall
           maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/account-reinstall" scripts/native-accounts/reinstall.yaml
       - name: Capture final state
         if: always() && env.DEVICE_ID != ''

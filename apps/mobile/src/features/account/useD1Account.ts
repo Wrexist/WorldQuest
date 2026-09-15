@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { D1AuthError, type createD1AuthClient, type D1Account, type D1Challenge, type D1Session } from '@worldquest/api'
+import { D1AuthError, type createD1AuthClient, type D1Account, type D1Challenge, type D1Session } from '@worldquest/api/d1-auth'
 
 export type D1AccountClient = ReturnType<typeof createD1AuthClient>
 type IdentityResult = D1Session | { deleted: true }
 /** The host quarantines learning work before identity changes. Never inject the legacy adapter. */
 export type D1AccountHost = {
-  changeIdentity: (operation: () => Promise<IdentityResult>) => Promise<IdentityResult>
+  changeIdentity: (operation: () => Promise<IdentityResult>, deleting?: boolean) => Promise<IdentityResult>
   recoverSession: () => Promise<D1AccountClient>
   finishDeletion: () => Promise<void>
   resumeIdentity: () => Promise<void>
+  deletionPending: () => boolean
 }
 export type D1AccountStage = 'loading' | 'empty' | 'account' | 'audience' | 'protected' | 'email' | 'code' | 'recovery' | 'delete' | 'cleanup' | 'activation' | 'done' | 'error'
 export type D1AccountIntent = 'link' | 'login' | 'delete'
@@ -48,7 +49,7 @@ export function useD1Account(client: D1AccountClient, host: D1AccountHost, local
     try {
       const auth = currentClient.current
       const session = await auth.restore()
-      if (!session) { patch({ stage: 'empty', account: null, challenge: null }); return }
+      if (!session) { patch({ stage: host.deletionPending() ? 'cleanup' : 'empty', account: null, challenge: null }); return }
       // Restore the pending operation before offering another address or purpose.
       const challenge = await auth.pending()
       if (challenge) {
@@ -58,7 +59,7 @@ export function useD1Account(client: D1AccountClient, host: D1AccountHost, local
       const account = await auth.account()
       patch({ stage: 'account', account, challenge: null })
     } catch (error) { patch({ stage: 'error' }); throw error }
-  }), [patch, run])
+  }), [patch, run, host])
   useEffect(() => {
     mounted.current = true
     if (online && !opened.current) { opened.current = true; void load() }
@@ -97,7 +98,7 @@ export function useD1Account(client: D1AccountClient, host: D1AccountHost, local
     }),
     verify: () => run(async () => {
       if (!/^\d{8}$/.test(state.code)) { patch({ error: 'INVALID_CODE' }); return }
-      const result = await host.changeIdentity(() => currentClient.current.verifyEmail(state.code))
+      const result = await host.changeIdentity(() => currentClient.current.verifyEmail(state.code), state.intent === 'delete')
       if ('deleted' in result) await finishDeletion()
       patch({ stage: 'done', code: '', challenge: null, deleted: 'deleted' in result })
     }),
@@ -107,7 +108,7 @@ export function useD1Account(client: D1AccountClient, host: D1AccountHost, local
         const challenge = await currentClient.current.requestEmail(email, 'delete', locale)
         patch({ stage: 'code', challenge, code: '' })
       } else {
-        await host.changeIdentity(() => currentClient.current.deleteGuest())
+        await host.changeIdentity(() => currentClient.current.deleteGuest(), true)
         await finishDeletion()
         patch({ stage: 'done', deleted: true })
       }

@@ -8,6 +8,8 @@ import { deleteAccount, finishIdentity } from './identity'
 import type { MailDelivery } from './email-provider'
 import { deletionCompleted, pruneDeletionReceipts } from './deletion-receipts'
 import { renewSession, revokeSessionFamily, pruneSessionRotations } from './session-renewal'
+import { prepareLesson, prepareLessonSchema } from './lesson-tickets'
+import { learningState, learningHistory } from './learning-state'
 
 const codeRequest = z.object({ email: z.string().trim().toLowerCase().email().max(254),
   purpose: z.enum(['link', 'login', 'delete']), locale: z.enum(['en', 'sv']) }).strict()
@@ -120,6 +122,20 @@ export function createWorker(mail: MailDelivery = unavailableMail) { return {
         const parsed = submissionSchema.safeParse(await body(request))
         if (!parsed.success) throw new ApiError('INVALID_SUBMISSION', 400)
         return json(await submitLesson(env.DB, account.id, tokenHash, parsed.data))
+      }
+      if (request.method === 'POST' && path === '/v1/lessons/prepare') {
+        const parsed = prepareLessonSchema.safeParse(await body(request))
+        if (!parsed.success) throw new ApiError('INVALID_LESSON_REQUEST', 400)
+        return json(await prepareLesson(env.DB, account.id, tokenHash, parsed.data))
+      }
+      if (request.method === 'GET' && path === '/v1/learning/state') return json(await learningState(env.DB, account.id, tokenHash))
+      if (request.method === 'GET' && path === '/v1/learning/history') {
+        const params = new URL(request.url).searchParams
+        const parsed = z.object({ revision: z.coerce.number().int().min(0).max(Number.MAX_SAFE_INTEGER).default(0),
+          slot: z.coerce.number().int().min(-1).max(19).default(-1),
+          through: z.coerce.number().int().min(0).max(Number.MAX_SAFE_INTEGER).optional() }).strict().safeParse(Object.fromEntries(params))
+        if (!parsed.success) throw new ApiError('INVALID_CURSOR', 400)
+        return json(await learningHistory(env.DB, account.id, tokenHash, parsed.data))
       }
       throw new ApiError('NOT_FOUND', 404)
     } catch (error) {

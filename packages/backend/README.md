@@ -82,3 +82,9 @@ Not yet accepted: production account screens and real email delivery,
 production ticket issuance, timezone/offline replay, complete progress hydration,
 quests/streaks/achievements/purchases, export/restore/erasure, abuse budgets, and the
 mobile repository adapter. Keep the API disabled until those gates are met.
+
+The [account screens](../../docs/plan/d1-account-screens.md) now have rendered local
+D1/browser evidence and a passing Android UI journey; final iOS UI acceptance is
+pending. [Issued lessons, the durable queue and bounded review history](../../docs/plan/d1-learning-sync.md)
+are implemented locally under migration 0006. Canonical quests, the complete reward
+economy, offline date policy and the main-app repository cutover remain open.

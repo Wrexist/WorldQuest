@@ -1,12 +1,10 @@
 appId: com.wrexist.worldquest.accountsproof
 ---
-- openLink: worldquestaccountsproof://reinstall
 - runFlow:
     when:
-      platform: ios
-      visible: 'Open in .*WorldQuest Account Proof.*'
+      platform: android
     commands:
-      - tapOn: Open
+      - openLink: worldquestaccountsproof://reinstall
 - extendedWaitUntil:
     visible: PASS_RECOVERY_AND_DELETION
     # A cold CI simulator queued the URL handoff for 68 seconds before the app

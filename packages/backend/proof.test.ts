@@ -2,10 +2,13 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { build } from 'esbuild'
 import { readFileSync, readdirSync } from 'node:fs'
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare'
-import { BALANCE } from '@worldquest/engines'
+import { BALANCE, review, type MemoryState, type Rating } from '@worldquest/engines'
 import { hashToken } from './src/auth'
 import { submitLesson } from './src/lessons'
 import type { Receipt } from './src/contracts'
+import type { Question } from '@worldquest/engines'
+import { createD1AuthClient, type AuthFetch } from '../api/src/d1-auth'
+import { createD1LearningClient, createD1LessonQueue } from '../api/src/d1-learning'
 
 type Guest = { userId: string; token: string; expiresAt: number }
 let script: string
@@ -56,6 +59,93 @@ async function state(owner: string) {
   }
 }
 describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
+  it('issues immutable content-backed lessons and refuses client answers or changed retry preferences', async () => {
+    const a = await guest()
+    const input = { lessonId: 'issued', locale: 'sv', count: 5, screenReader: true }
+    const pair = await Promise.all([call('/v1/lessons/prepare', a.token, input), call('/v1/lessons/prepare', a.token, input)])
+    const [one, two] = await Promise.all(pair.map(async r => { expect(r.status).toBe(200); return r.json() }))
+    expect(one).toEqual(two)
+    const prepared = one as { questions: Question[] }
+    expect(prepared.questions).toHaveLength(5)
+    expect(prepared.questions.every(q => q.item.screenReaderSafe)).toBe(true)
+    expect(new Set(prepared.questions.map(q => q.item.factId)).size).toBe(5)
+    expect((await call('/v1/lessons/prepare', a.token, { ...input, count: 10 })).status).toBe(409)
+    expect((await call('/v1/lessons/prepare', a.token, { ...input, slots: [] })).status).toBe(400)
+    const b = await guest()
+    const answers = prepared.questions.map((q, slot) => ({ slot, chosenOptionId: q.options.find(o => o.isCorrect)!.id, elapsedMs: 9000 }))
+    expect((await call('/v1/lessons/submit', b.token, { lessonId: 'issued', answers })).status).toBe(400)
+    const result = await call('/v1/lessons/submit', a.token, { lessonId: 'issued', answers })
+    expect(result.status).toBe(200)
+    expect(await result.json()).toMatchObject({ correct: 5, reviews: 5 })
+  })
+  it('bounds outstanding offline tickets and frees capacity after an acknowledged lesson', async () => {
+    const a = await guest()
+    let first: { questions: Question[] } | undefined
+    for (let i = 0; i < 20; i++) {
+      const r = await call('/v1/lessons/prepare', a.token, { lessonId: `prefetch-${i}`, locale: 'en', count: 5 })
+      expect(r.status).toBe(200)
+      const value = await r.json() as { questions: Question[] }
+      if (i === 0) first = value
+    }
+    expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'too-many', locale: 'en' })).status).toBe(429)
+    const answers = first!.questions.map((q, slot) => ({ slot, chosenOptionId: q.options.find(o => o.isCorrect)!.id, elapsedMs: 9000 }))
+    expect((await call('/v1/lessons/submit', a.token, { lessonId: 'prefetch-0', answers })).status).toBe(200)
+    expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'after-sync', locale: 'en' })).status).toBe(200)
+  })
+  it('replays the durable mobile queue after a lost D1 reward response without paying twice', async () => {
+    const vault = new Map<string, string>(), local = new Map<string, string>()
+    const storage = (values: Map<string, string>) => ({ getItem: async (key: string) => values.get(key) ?? null,
+      setItem: async (key: string, value: string) => { values.set(key, value) }, removeItem: async (key: string) => { values.delete(key) } })
+    let loseResponse = true, current = true
+    const transport: AuthFetch = async (url, init) => {
+      const r = await mf.dispatchFetch(url, { method: init.method ?? 'GET', headers: Object.fromEntries(new Headers(init.headers).entries()),
+        ...(init.body ? { body: String(init.body) } : {}) })
+      const value: unknown = await r.json()
+      if (url.endsWith('/submit') && loseResponse && r.ok) { loseResponse = false; throw new Error('Synthetic lost response') }
+      return { status: r.status, ok: r.ok, json: async () => value }
+    }
+    const auth = createD1AuthClient({ baseURL: 'http://localhost', storage: storage(vault), clearCredentials: async () => { vault.clear() }, fetch: transport })
+    const a = await auth.startGuest()
+    const client = createD1LearningClient({ auth, owner: a.userId, isCurrent: () => current, fetch: transport })
+    const prepared = await client.prepare({ lessonId: 'offline', locale: 'en', count: 5, screenReader: false })
+    const answers = prepared.questions.map((q, slot) => ({ slot, chosenOptionId: q.options.find(o => o.isCorrect)!.id, elapsedMs: 9000 }))
+    const queue = () => createD1LessonQueue({ key: a.userId + '.queue', owner: a.userId, storage: storage(local), isCurrent: () => current, submit: client.submit, prepare: client.prepare })
+    await queue().enqueue({ lessonId: 'offline', answers })
+    await expect(queue().flush()).rejects.toThrow('Synthetic lost response')
+    const paid = await state(a.userId)
+    await queue().flush()
+    expect(await state(a.userId)).toEqual(paid)
+    expect((await queue().inspect()).entries).toHaveLength(0)
+    expect(paid.ledger).toHaveLength(1)
+    expect((await client.state()).memories).toHaveLength(5)
+    current = false
+    await expect(client.submit({ lessonId: 'offline', answers })).rejects.toThrow('Account changed')
+  })
+  it('rebuilds mastery from bounded history pages and isolates another account', async () => {
+    const a = await guest(), b = await guest()
+    const ids = Array.from({ length: 6 }, (_, i) => `history-${i}`)
+    const answers = await seed(a.userId, ids, 20)
+    for (const lessonId of ids) expect((await call('/v1/lessons/submit', a.token, { lessonId, answers })).status).toBe(200)
+    type Page = { throughRevision: number; events: { revision: number; slot: number; factId: string; rating: Rating; reviewedAt: number }[]; next: { revision: number; slot: number } | null }
+    const page = await (await call('/v1/learning/history', a.token)).json() as Page
+    expect(page.events).toHaveLength(100)
+    expect(page.next).not.toBeNull()
+    const rest = await (await call(`/v1/learning/history?revision=${page.next!.revision}&slot=${page.next!.slot}&through=${page.throughRevision}`, a.token)).json() as Page
+    expect(rest.events).toHaveLength(20)
+    expect(rest.next).toBeNull()
+    const rebuilt = new Map<string, MemoryState>()
+    for (const event of [...page.events, ...rest.events]) {
+      const updated = review({ factId: event.factId, state: rebuilt.get(event.factId) ?? null, rating: event.rating, now: event.reviewedAt })
+      rebuilt.set(event.factId, updated)
+    }
+    const snapshot = await (await call('/v1/learning/state', a.token)).json() as { revision: number; memories: MemoryState[] }
+    expect(snapshot.revision).toBe(6)
+    expect(snapshot.memories).toEqual([...rebuilt.values()].sort((a, b) => a.factId.localeCompare(b.factId)))
+    expect(await (await call('/v1/learning/history', b.token)).json()).toMatchObject({ events: [], throughRevision: 0 })
+    expect(await (await call('/v1/learning/state', b.token)).json()).toMatchObject({ memories: [] })
+    expect((await call('/v1/learning/history?through=99999', a.token)).status).toBe(400)
+    expect((await call('/v1/learning/history?slot=999', a.token)).status).toBe(400)
+  })
   it('fails closed when the application API is disabled', async () => {
     await mf.setOptions(convertV4MiniflareOptions({ modules: true, script, compatibilityDate: '2026-09-13', compatibilityFlags: ['nodejs_compat'], d1Databases: ['DB'], bindings: { API_ENABLED: 'false' } }))
     expect((await call('/health')).status).toBe(200)

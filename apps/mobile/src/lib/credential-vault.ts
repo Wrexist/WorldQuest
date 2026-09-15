@@ -1,4 +1,4 @@
-import type { ProtectedStorage } from '@worldquest/api'
+import type { ProtectedStorage } from '@worldquest/api/d1-auth'
 
 export type SecureValues = {
   get: (key: string) => Promise<string | null>

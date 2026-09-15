@@ -14,6 +14,7 @@ const errorKeys: Readonly<Record<string, TranslationKey>> = {
   ACCOUNT_PROTECTED: 'account:d1.protected.body', CREDENTIAL_CLEANUP_REQUIRED: 'account:d1.cleanup.body',
   CREDENTIALS_INVALID: 'account:d1.error.storage', INVALID_REQUEST: 'account:d1.error.input',
   INVALID_BODY: 'account:d1.error.input', RATE_LIMITED: 'account:d1.error.rate',
+  ACCOUNT_NOT_LINKED: 'account:error.noAccount', EMAIL_ALREADY_LINKED: 'account:error.taken',
 }
 
 /** H16–H18: Alex saves progress; Priya returns on another device. One action per step. */

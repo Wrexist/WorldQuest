@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { createD1AuthClient } from '@worldquest/api'
+import { createD1AuthClient } from '@worldquest/api/d1-auth'
 import { createD1AccountHost } from './d1-account-host.js'
 
 const first = { userId: '11111111-1111-4111-8111-111111111111', token: 'a'.repeat(64), expiresAt: Date.now() + 30 * 86400000 }
@@ -64,11 +64,13 @@ describe('D1 account transition isolation', () => {
   it('deletes only the departing owner namespace and keeps cleanup retryable', async () => {
     const h = harness(), host = h.create(); await host.resume()
     const old = host.capture(); h.data.set(old.namespace + 'queue', 'pending'); h.data.set('other-backend.queue', 'keep')
-    await host.changeIdentity(async () => ({ deleted: true }))
+    await host.changeIdentity(async () => ({ deleted: true }), true)
+    expect(h.create().deletionPending()).toBe(true)
     h.eraseOwner.mockRejectedValueOnce(new Error('disk busy'))
     await expect(host.finishDeletion()).rejects.toThrow('disk busy')
     expect(() => host.capture()).toThrow('ACCOUNT_TRANSITION_PENDING')
     await host.finishDeletion()
+    expect(h.create().deletionPending()).toBe(false)
     expect(h.data.get(old.namespace + 'queue')).toBeUndefined()
     expect(h.data.get('other-backend.queue')).toBe('keep')
   })

@@ -1,12 +1,10 @@
 appId: com.wrexist.worldquest.accountsproof
 ---
-- openLink: worldquestaccountsproof://ui
 - runFlow:
     when:
-      platform: ios
-      visible: 'Open in .*WorldQuest Account Proof.*'
+      platform: android
     commands:
-      - tapOn: Open
+      - openLink: worldquestaccountsproof://ui
 - extendedWaitUntil:
     visible: Start as guest
     timeout: 120000

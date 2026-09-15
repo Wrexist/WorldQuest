@@ -193,6 +193,7 @@ export function createD1AuthClient(options: {
     } catch { throw new D1AuthError('CREDENTIALS_INVALID') }
   }
   return {
+    endpoint: origin,
     restore: load, pending,
     sessionStatus: async (): Promise<D1SessionStatus> => {
       const current = await load()
