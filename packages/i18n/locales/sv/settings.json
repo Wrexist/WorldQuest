@@ -32,7 +32,7 @@
   "settings:privacy.analytics.label": "Hjälp oss förbättra WorldQuest",
   "settings:privacy.analytics.help": "Anonym användningsdata. Aldrig på för ett barnkonto, aldrig såld, aldrig delad.",
   "settings:privacy.account.title": "Dina uppgifter",
-  "settings:privacy.account.body": "Du lär dig utan konto, så inget här identifierar dig. När konton kommer hittar du export och radering av dina uppgifter här.",
+  "settings:privacy.account.body": "Det går ännu inte att exportera eller radera kontouppgifter här.",
   "settings:about.version": "Version",
   "settings:about.licences": "Öppen källkod-licenser",
   "settings:about.credits": "Kart- och flaggdata kommer från öppna källor och anges vid varje fakta.",

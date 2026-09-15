@@ -27,14 +27,14 @@
 import { useCallback, useMemo, useState } from 'react'
 import { router } from 'expo-router'
 import { currentStreak, repairAvailability, type RecoveryState } from '@worldquest/engines'
-import { buyStreakFreeze, repairStreak } from '@worldquest/api'
+import { withAccount } from '../src/lib/backend.js'
 import { StreakScreen } from '../src/features/streak/StreakScreen.js'
 import { useWeekActivity } from '../src/features/profile/useWeekActivity.js'
 import { ContentGate } from '../src/components/ContentGate.js'
 import { useOptimisticProgress } from '../src/features/home/useOptimisticProgress.js'
 import { useOnline } from '../src/lib/connectivity.js'
 import { invalidateProgress } from '../src/lib/query.js'
-import { isConfigured, supabase } from '../src/lib/supabase.js'
+import { isConfigured } from '../src/lib/supabase.js'
 
 export default function StreakRoute() {
   // `shown` carries the streak the server would compute once it sees the lessons still
@@ -103,7 +103,7 @@ export default function StreakRoute() {
     // overdraft, so showing it granted before the answer arrives is showing a purchase
     // that may not have happened — and unlike a cosmetic, a freeze that is not there is
     // discovered on the day it was supposed to save the run.
-    void buyStreakFreeze(supabase())
+    void withAccount((account) => account.buyStreakFreeze())
       .then((result) => {
         // Every refusal comes back as a STATUS rather than an error, and all of them
         // were being dropped — so "you already hold two" and "bought" were the same
@@ -134,7 +134,7 @@ export default function StreakRoute() {
     setRepairing(true)
     setRepairNotice(null)
 
-    void repairStreak(supabase())
+    void withAccount((account) => account.repairStreak())
       .then((result) => {
         if (result.status === 'repaired') {
           invalidateProgress()

@@ -37,6 +37,9 @@ vi.mock('../../lib/supabase.js', () => ({
 
 const fetchProgress = vi.fn(async () => PROGRESS)
 vi.mock('@worldquest/api', () => ({ fetchProgress: () => fetchProgress() }))
+vi.mock('../../lib/backend.js', () => ({
+  withAccount: (work: (account: { fetchProgress: typeof fetchProgress }) => Promise<unknown>) => work({ fetchProgress }),
+}))
 
 const { useProgress } = await import('./useProgress.js')
 

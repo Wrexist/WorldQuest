@@ -22,7 +22,8 @@ import {
   linkEmail,
   requestSignIn,
 } from '@worldquest/api'
-import { supabase } from '../../lib/supabase.js'
+import { acceptSignedInAccount, supabase, withAccountTransition } from '../../lib/supabase.js'
+import { router } from 'expo-router'
 import { useT } from '../../lib/i18n.js'
 import type { AccountMode, AccountStage } from './AccountScreen.js'
 import { track } from '../../lib/analytics.js'
@@ -111,7 +112,11 @@ export function useAccount(mode: AccountMode): UseAccount {
         if (mode === 'link') {
           await confirmEmail(supabase(), address, code)
         } else {
-          await confirmSignIn(supabase(), address, code)
+          await withAccountTransition(async () => {
+            const { userId } = await confirmSignIn(supabase(), address, code)
+            acceptSignedInAccount(userId)
+          })
+          router.replace('/')
         }
       },
       () => {

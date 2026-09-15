@@ -2,8 +2,12 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'fix/**']
   pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -11,79 +15,29 @@ concurrency:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-      # No `version:` here. `package.json` declares `packageManager: pnpm@9.15.0`, and
-      # action-setup v4 REFUSES to run when both are set:
-      #
-      #   Error: Multiple versions of pnpm specified:
-      #     - version 9 in the GitHub Action config with the key "version"
-      #     - version pnpm@9.15.0 in the package.json with the key "packageManager"
-      #
-      # It reads `packageManager` on its own, so one source of truth is also the fix.
-      # Corepack and this action both use that field; a `version:` beside it is the
-      # thing that can drift, and it drifted into a hard failure.
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm }
 
       - run: pnpm install --frozen-lockfile
 
-      # ── generated artefacts ──────────────────────────────────────────────
-      #
-      # `tokens.ts`, `tokens.css` and `keys.ts` are untracked and rebuilt here from
-      # `tokens.json` and `locales/`. They cannot be stale, so there is nothing to
-      # check — the earlier `git diff --exit-code` on them passed unconditionally,
-      # because git does not diff files it is not tracking.
-      #
-      # `database.types.ts` IS tracked, because generating it needs a running
-      # Postgres that this job does not have. Its freshness is checked in the
-      # `database` job below, where the diff has something to compare against.
       - name: Generate tokens and translation keys
         run: pnpm generate
 
-      # ONE step, not nine.
-      #
-      # This job listed typecheck, test, content:validate, content:preview, i18n:check,
-      # design:contrast and engines:simulate as separate steps — which is a nicer failure
-      # summary and a worse guarantee, because `pnpm verify` listed a DIFFERENT subset and
-      # nothing compared the two. `engines:simulate` and `content:preview` ran here and not
-      # there, so a reward number or a nonsense question could be pushed having met every
-      # local gate. CLAUDE.md called verify "all of it, and the gate that matters" while it
-      # was neither.
-      #
-      # Running the same command a developer runs is the only version of this that means
-      # anything — the same argument the db:types step below already makes.
-
-      # Chromium first, because `verify:full` runs `e2e` and `a11y:tree`, and both need
-      # one. The development container ships a Chromium at /opt/pw-browsers and sets
-      # PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD, so nothing there ever downloaded a browser. A
-      # runner has neither. `scripts/chromium.cjs` falls back to Playwright's own
-      # resolution when the image's browser is absent — this is what it resolves to.
       - name: Install Chromium for Playwright
         run: pnpm exec playwright install --with-deps chromium
 
-      # ONE command, not four. This step used to be `pnpm verify` followed by `e2e`,
-      # `a11y:tree` and `bundle:native` listed individually — which is the same command
-      # `verify:full` runs, spelled out a second time. That is exactly the drift the
-      # comment above describes and this pipeline has already been bitten by once: when
-      # CI enumerates its own list, a check added to the shared script runs nowhere, and
-      # nothing compares the two lists because nothing can.
-      #
-      # What it costs is per-step granularity in the Actions UI. What it buys is that
-      # CLAUDE.md's "CI runs verify:full" is a fact rather than a coincidence that holds
-      # until someone edits one of the two places. Each script prints its own name, so a
-      # failure still says which check failed.
-      #
-      # `verify:full` = `verify` + `bundle:native` + `e2e` + `a11y:tree`:
-      #   · bundle:native — Metro resolves per platform, and this repo shipped a year of
-      #     green pipelines having only ever bundled for web. Enforces a Hermes budget,
-      #     which caught a silent 50 % growth when Sentry landed.
-      #   · e2e — the only step that runs Metro and plays a real lesson in a real bundle.
-      #   · a11y:tree — walks Chromium's computed accessibility tree, which is what a
-      #     screen reader consumes. `lint:a11y` reads source and `design:shots` accepts
-      #     textContent as a label, so an emoji-only button passed both.
+      - name: Dependency security
+        run: pnpm security:check
+
       - name: Verify
         run: pnpm verify:full
 
@@ -91,106 +45,42 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-screens
+          name: e2e-screens-${{ matrix.os }}
           path: node_modules/.cache/wq-e2e-shots
           if-no-files-found: ignore
 
-  # ── the two checks that need more than Node ────────────────────────────────
+      - name: Upload dependency audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-audit-${{ matrix.os }}
+          path: node_modules/.cache/security-report.json
+          if-no-files-found: ignore
 
   database:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # No `version:` here. `package.json` declares `packageManager: pnpm@9.15.0`, and
-      # action-setup v4 REFUSES to run when both are set:
-      #
-      #   Error: Multiple versions of pnpm specified:
-      #     - version 9 in the GitHub Action config with the key "version"
-      #     - version pnpm@9.15.0 in the package.json with the key "packageManager"
-      #
-      # It reads `packageManager` on its own, so one source of truth is also the fix.
-      # Corepack and this action both use that field; a `version:` beside it is the
-      # thing that can drift, and it drifted into a hard failure.
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm }
-      # Pinned, for the same reason the `version:` above is absent — one source of truth
-      # and nothing that can drift under us — plus a second reason that is specific to
-      # this action.
-      #
-      # `version: latest` is not a constant, it is a REQUEST. `setup-cli` resolves it by
-      # asking the GitHub API which release is newest, unauthenticated, from a shared
-      # runner IP. On 2026-08-17 that call was refused and the job died 25 seconds in,
-      # before it had read a migration:
-      #
-      #   ##[error]Failed to resolve latest Supabase CLI release: rate limit exceeded
-      #
-      # Nothing was wrong with the PR. A pin removes the lookup entirely, so the job no
-      # longer has a dependency on an API quota it does not control.
-      #
-      # The drift is the worse half, though, and it is why this is not just a retry. This
-      # job applies twenty-nine migrations and runs the RLS suite — it is the gate that
-      # decides whether the database is correct — and `latest` let the tool doing the
-      # deciding change between two runs of the same commit, with no diff anywhere. A
-      # green run last week proved nothing about this week's CLI.
-      #
-      # 2.114.0 is the current release, read from the npm registry (`npm view supabase
-      # version`), which is Supabase's own distribution of this binary. Bump it
-      # deliberately, in a commit, the way every other version in this repo moves.
       - uses: supabase/setup-cli@v1
         with: { version: 2.114.0 }
 
       - run: pnpm install --frozen-lockfile
 
-      # `supabase/functions/submit-lesson/` IS the deploy bundle, written out, and it is
-      # gitignored — the tracked source is `supabase/functions/_src/`. `supabase start`
-      # reads the functions directory off disk, so it has to exist before the next step.
-      #
-      # The edge runtime is deliberately NOT excluded from `supabase start` below. It is
-      # the only thing in this pipeline that reads the deploy artefact as a deployment
-      # would, and the first two runs that reached it found two bugs that had been true
-      # since the code landed: a generated answer key that was never written anywhere,
-      # and an engine module `grading` imports that the bundle did not contain. Both are
-      # now caught earlier — `pnpm edge:build` refuses to write an unresolvable bundle,
-      # and `pnpm test` asserts every relative import resolves to a file being shipped —
-      # but the boot is what proved they were real.
       - name: Build the edge function bundle
         run: pnpm edge:build
 
-      # Against a LOCAL stack, never a hosted project. A migration that drops a
-      # column is a migration that drops a column, and CI must be free to find
-      # that out.
       - name: Start Supabase
         run: supabase start
 
-      # Every migration applied from scratch. Catches the class of bug where a
-      # migration only works against the schema that happens to be in staging.
       - name: Migrations apply from empty
         run: supabase db reset
 
-      # RLS is the entire authorisation model. A policy that is missing, or that
-      # is written to `USING (true)`, lets one user read another's progress — and
-      # nothing else in this pipeline would notice.
       - name: RLS policy tests
         run: supabase test db
 
-      # `pnpm db:types`, not the raw CLI command. This step used to inline
-      #
-      #   supabase gen types typescript --local > packages/api/src/database.types.ts
-      #
-      # which is not what `pnpm db:types` did once the committed file grew a
-      # "GENERATED — do not hand-edit" header and single-quoted literals. The check
-      # therefore compared a decorated file against an undecorated one and reported the
-      # types stale on every run, whatever their actual state. It went unnoticed for as
-      # long as this job had never reached the step.
-      #
-      # Running the same command the developer runs is the only version of this check
-      # that means anything.
-      #
-      # The failure PRINTS THE DIFF. Regenerating this file needs a running Postgres, and
-      # not every contributor — or agent — has Docker. "It is stale" without saying how
-      # is a failure you cannot act on from anywhere but the machine that can already
-      # reproduce it; the diff in the log is the fix, copyable.
       - name: Generated database types are up to date
         run: |
           pnpm db:types
@@ -200,15 +90,3 @@ jobs:
             git --no-pager diff packages/api/src/database.types.ts
             exit 1
           fi
-
-# The edge function VENDORS the grading, FSRS and balance modules, because Deno
-# cannot import from a pnpm workspace. Vendored code drifts silently, and the
-# result is a client and a server that disagree about what a user knows — the
-# worst bug this product can have.
-#
-# There is deliberately NO job for it here. The bundle is assembled in memory at
-# deploy time and never written to the repo, so a `git diff` check would pass
-# unconditionally and prove nothing. The real guard is
-# `supabase/functions/build.test.ts`, which asserts the vendored grading, FSRS
-# and balance modules are byte-identical to their source — and that runs in
-# `pnpm test` above.

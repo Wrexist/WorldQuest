@@ -1,3 +1,4 @@
+import { onStorageScopeChange } from '../../lib/storage.js'
 /**
  * What this user has paid for — read, never decided.
  *
@@ -108,11 +109,9 @@ export function useEntitlement(now: number = Date.now()): EntitlementView {
   }
 }
 
-/**
- * Sign-out and "delete my data" do NOT need their own reset here.
- *
- * `clearAll()` in lib/storage wipes the whole app store, and this row lives in it. A
- * second, subscription-specific clear would be one more thing to remember on a path
- * where forgetting means the next user on a shared family device inherits somebody
- * else's Premium.
- */
+
+
+onStorageScopeChange(() => {
+  cached = null
+  for (const listener of listeners) listener()
+})

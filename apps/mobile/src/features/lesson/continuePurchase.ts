@@ -35,15 +35,14 @@
  * continue as a replay and hand it over free.
  */
 
-import { buyLessonContinue } from '@worldquest/api'
-import { isConfigured, supabase, currentUser } from '../../lib/supabase.js'
+import { isConfigured } from '../../lib/supabase.js'
+import { withAccount } from '../../lib/backend.js'
 import { invalidateProgress } from '../../lib/query.js'
 
 export async function payForContinue(continueId: string): Promise<void> {
   if (!isConfigured()) return
   try {
-    await currentUser()
-    const result = await buyLessonContinue(supabase(), continueId)
+    const result = await withAccount((account) => account.buyLessonContinue(continueId))
     // The wallet moved, so whatever is showing a coin balance is now wrong. `already_paid`
     // counts: it means an earlier attempt landed, and this device may not have seen the
     // balance it produced.

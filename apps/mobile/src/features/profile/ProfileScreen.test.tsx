@@ -162,7 +162,7 @@ describe('Profile — the account prompt', () => {
     render(
       <ProfileScreen stats={stats} world={world} loading={false} onCreateAccount={() => {}} />,
     )
-    expect(screen.getByText(/keeps your streak safe/)).toBeTruthy()
+    expect(screen.getByText(/Progress recovery is still being tested/)).toBeTruthy()
   })
 
   it('disappears once there is nothing to prompt about', () => {

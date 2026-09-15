@@ -1,5 +1,7 @@
 # The WorldQuest Product Bible
 
+> **Historical specification/status — superseded for release planning on 13 September 2026.** Use the [current execution checklist](../plan/execution-plan.md), [evidence log](../plan/phase-1-verification.md) and [launch brief](../product/launch-brief.md). Feature lists and checked boxes below describe earlier targets or checks, not current device, backend or store certification.
+
 > One document. A vision that does not change.
 > When a decision is contested, this file settles it.
 > It changes only by deliberate amendment — with a dated entry at the bottom.

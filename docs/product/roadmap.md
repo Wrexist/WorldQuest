@@ -1,5 +1,7 @@
 # Roadmap
 
+> **Historical specification/status — superseded for release planning on 13 September 2026.** Use the [current execution checklist](../plan/execution-plan.md), [evidence log](../plan/phase-1-verification.md) and [launch brief](../product/launch-brief.md). Feature lists and checked boxes below describe earlier targets or checks, not current device, backend or store certification.
+
 Not a promise of dates — a promise of **order**, with an exit criterion for each
 phase. We do not start the next phase until the current one exits.
 

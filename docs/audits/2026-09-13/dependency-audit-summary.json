@@ -1,0 +1,822 @@
+{
+  "auditDate": "2026-09-13",
+  "command": "pnpm audit --prod --json",
+  "note": "Registry advisory output, not confirmed application exploitability. Duplicate advisory version entries and tooling dependency paths may be present. Full paths truncated to two examples per installed version.",
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 8,
+      "high": 30,
+      "critical": 0
+    },
+    "dependencies": 742,
+    "devDependencies": 0,
+    "optionalDependencies": 0,
+    "totalDependencies": 742
+  },
+  "advisoryEntries": 38,
+  "uniqueAdvisoryIDs": 28,
+  "byModule": {
+    "postcss": {
+      "advisoryEntries": 4,
+      "severities": [
+        "moderate",
+        "high"
+      ],
+      "versions": [
+        "8.4.49"
+      ]
+    },
+    "uuid": {
+      "advisoryEntries": 1,
+      "severities": [
+        "moderate"
+      ],
+      "versions": [
+        "7.0.3"
+      ]
+    },
+    "image-size": {
+      "advisoryEntries": 2,
+      "severities": [
+        "high"
+      ],
+      "versions": [
+        "1.2.1"
+      ]
+    },
+    "nanoid": {
+      "advisoryEntries": 1,
+      "severities": [
+        "high"
+      ],
+      "versions": [
+        "3.3.16"
+      ]
+    },
+    "decode-uri-component": {
+      "advisoryEntries": 1,
+      "severities": [
+        "moderate"
+      ],
+      "versions": [
+        "0.2.2"
+      ]
+    },
+    "@xmldom/xmldom": {
+      "advisoryEntries": 23,
+      "severities": [
+        "moderate",
+        "high"
+      ],
+      "versions": [
+        "0.9.10",
+        "0.8.13"
+      ]
+    },
+    "fast-uri": {
+      "advisoryEntries": 4,
+      "severities": [
+        "high"
+      ],
+      "versions": [
+        "3.1.5"
+      ]
+    },
+    "js-yaml": {
+      "advisoryEntries": 2,
+      "severities": [
+        "high"
+      ],
+      "versions": [
+        "3.15.1",
+        "4.3.1"
+      ]
+    }
+  },
+  "advisories": [
+    {
+      "id": "GHSA-qx2v-qp2m-jg93",
+      "module": "postcss",
+      "severity": "moderate",
+      "title": "PostCSS has XSS via Unescaped </style> in its CSS Stringify Output",
+      "vulnerable": "<8.5.10",
+      "patched": ">=8.5.10",
+      "url": "https://github.com/advisories/GHSA-qx2v-qp2m-jg93",
+      "findings": [
+        {
+          "version": "8.4.49",
+          "pathCount": 32,
+          "examplePaths": [
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/metro-config@54.0.17 > postcss@8.4.49",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/metro-config@54.0.17 > postcss@8.4.49"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-w5hq-g745-h8pq",
+      "module": "uuid",
+      "severity": "moderate",
+      "title": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+      "vulnerable": "<11.1.1",
+      "patched": ">=11.1.1",
+      "url": "https://github.com/advisories/GHSA-w5hq-g745-h8pq",
+      "findings": [
+        {
+          "version": "7.0.3",
+          "pathCount": 187,
+          "examplePaths": [
+            ". > uuid@7.0.3",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > uuid@7.0.3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-6g55-p6wh-862q",
+      "module": "postcss",
+      "severity": "high",
+      "title": "PostCSS: Arbitrary file read and information disclosure via attacker-controlled sourceMappingURL in CSS comments",
+      "vulnerable": "<=8.5.11",
+      "patched": ">=8.5.12",
+      "url": "https://github.com/advisories/GHSA-6g55-p6wh-862q",
+      "findings": [
+        {
+          "version": "8.4.49",
+          "pathCount": 32,
+          "examplePaths": [
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/metro-config@54.0.17 > postcss@8.4.49",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/metro-config@54.0.17 > postcss@8.4.49"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-fxqj-rqcc-2cmp",
+      "module": "postcss",
+      "severity": "moderate",
+      "title": "PostCSS: incomplete fix of GHSA-6g55-p6wh-862q — attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset",
+      "vulnerable": "<=8.5.22",
+      "patched": ">=8.5.23",
+      "url": "https://github.com/advisories/GHSA-fxqj-rqcc-2cmp",
+      "findings": [
+        {
+          "version": "8.4.49",
+          "pathCount": 32,
+          "examplePaths": [
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/metro-config@54.0.17 > postcss@8.4.49",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/metro-config@54.0.17 > postcss@8.4.49"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-w3rx-r6r6-pgpr",
+      "module": "image-size",
+      "severity": "high",
+      "title": "image-size: ICNS parser allows denial of service through an infinite loop",
+      "vulnerable": "<=2.0.2",
+      "patched": "<0.0.0",
+      "url": "https://github.com/advisories/GHSA-w3rx-r6r6-pgpr",
+      "findings": [
+        {
+          "version": "1.2.1",
+          "pathCount": 684,
+          "examplePaths": [
+            ". > @react-native-community/netinfo@11.4.1 > react-native@0.81.5 > @react-native/community-cli-plugin@0.81.5 > metro@0.83.3 > image-size@1.2.1",
+            ". > image-size@1.2.1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-5p2g-fcmc-qvqq",
+      "module": "image-size",
+      "severity": "high",
+      "title": "image-size: JXL and HEIF parsers allow denial of service through infinite loops",
+      "vulnerable": "<=2.0.2",
+      "patched": "<0.0.0",
+      "url": "https://github.com/advisories/GHSA-5p2g-fcmc-qvqq",
+      "findings": [
+        {
+          "version": "1.2.1",
+          "pathCount": 684,
+          "examplePaths": [
+            ". > @react-native-community/netinfo@11.4.1 > react-native@0.81.5 > @react-native/community-cli-plugin@0.81.5 > metro@0.83.3 > image-size@1.2.1",
+            ". > image-size@1.2.1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-2v37-7h3g-55p8",
+      "module": "nanoid",
+      "severity": "high",
+      "title": "nanoid: custom generators can loop indefinitely when size is zero",
+      "vulnerable": "<3.3.18",
+      "patched": ">=3.3.18",
+      "url": "https://github.com/advisories/GHSA-2v37-7h3g-55p8",
+      "findings": [
+        {
+          "version": "3.3.16",
+          "pathCount": 292,
+          "examplePaths": [
+            ". > nanoid@3.3.16",
+            "apps\\mobile > @react-navigation/native@7.3.14 > @react-navigation/core@7.21.11 > @react-navigation/routers@7.6.4 > nanoid@3.3.16"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-r28c-9q8g-f849",
+      "module": "postcss",
+      "severity": "high",
+      "title": "PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure",
+      "vulnerable": "<=8.5.17",
+      "patched": ">=8.5.18",
+      "url": "https://github.com/advisories/GHSA-r28c-9q8g-f849",
+      "findings": [
+        {
+          "version": "8.4.49",
+          "pathCount": 32,
+          "examplePaths": [
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/metro-config@54.0.17 > postcss@8.4.49",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/metro-config@54.0.17 > postcss@8.4.49"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-vcc3-ghjq-m6fr",
+      "module": "decode-uri-component",
+      "severity": "moderate",
+      "title": "decode-uri-component: Denial of service via exponential decoding of malformed percent-encoded input",
+      "vulnerable": "<=0.4.2",
+      "patched": ">=0.5.0",
+      "url": "https://github.com/advisories/GHSA-vcc3-ghjq-m6fr",
+      "findings": [
+        {
+          "version": "0.2.2",
+          "pathCount": 98,
+          "examplePaths": [
+            ". > decode-uri-component@0.2.2",
+            "apps\\mobile > @react-navigation/native@7.3.14 > @react-navigation/core@7.21.11 > query-string@7.1.3 > decode-uri-component@0.2.2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-6gmq-8vp8-gcm6",
+      "module": "@xmldom/xmldom",
+      "severity": "moderate",
+      "title": "xmldom: XML fragment injection via invalid EntityReference.nodeName during requireWellFormed serialization",
+      "vulnerable": ">=0.9.0 <=0.9.11",
+      "patched": ">=0.9.12",
+      "url": "https://github.com/advisories/GHSA-6gmq-8vp8-gcm6",
+      "findings": [
+        {
+          "version": "0.9.10",
+          "pathCount": 186,
+          "examplePaths": [
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-6gmq-8vp8-gcm6",
+      "module": "@xmldom/xmldom",
+      "severity": "moderate",
+      "title": "xmldom: XML fragment injection via invalid EntityReference.nodeName during requireWellFormed serialization",
+      "vulnerable": ">=0.7.0 <=0.8.14",
+      "patched": ">=0.8.15",
+      "url": "https://github.com/advisories/GHSA-6gmq-8vp8-gcm6",
+      "findings": [
+        {
+          "version": "0.8.13",
+          "pathCount": 203,
+          "examplePaths": [
+            ". > @xmldom/xmldom@0.8.13",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > @expo/plist@0.4.9 > @xmldom/xmldom@0.8.13"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-5jgf-p345-68v8",
+      "module": "fast-uri",
+      "severity": "high",
+      "title": "fast-uri vulnerable to host confusion via skipped IDN canonicalization on scheme-relative references",
+      "vulnerable": ">=3.1.3 <3.1.6",
+      "patched": ">=3.1.6",
+      "url": "https://github.com/advisories/GHSA-5jgf-p345-68v8",
+      "findings": [
+        {
+          "version": "3.1.5",
+          "pathCount": 3,
+          "examplePaths": [
+            ". > fast-uri@3.1.5",
+            "packages\\content > ajv@8.20.0 > fast-uri@3.1.5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-f65p-4m7j-42xc",
+      "module": "fast-uri",
+      "severity": "high",
+      "title": "fast-uri vulnerable to server-side request forgery via malformed IPv6 normalization",
+      "vulnerable": ">=3.0.0 <3.1.6",
+      "patched": ">=3.1.6",
+      "url": "https://github.com/advisories/GHSA-f65p-4m7j-42xc",
+      "findings": [
+        {
+          "version": "3.1.5",
+          "pathCount": 3,
+          "examplePaths": [
+            ". > fast-uri@3.1.5",
+            "packages\\content > ajv@8.20.0 > fast-uri@3.1.5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-fph4-wmhf-6fwf",
+      "module": "fast-uri",
+      "severity": "high",
+      "title": "fast-uri vulnerable to server-side request forgery via repeated hostname percent-decoding",
+      "vulnerable": ">=3.1.2 <3.1.6",
+      "patched": ">=3.1.6",
+      "url": "https://github.com/advisories/GHSA-fph4-wmhf-6fwf",
+      "findings": [
+        {
+          "version": "3.1.5",
+          "pathCount": 3,
+          "examplePaths": [
+            ". > fast-uri@3.1.5",
+            "packages\\content > ajv@8.20.0 > fast-uri@3.1.5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-jqff-g426-hqxp",
+      "module": "fast-uri",
+      "severity": "high",
+      "title": "fast-uri vulnerable to host confusion via percent-encoded scheme normalization",
+      "vulnerable": ">=3.0.0 <3.1.6",
+      "patched": ">=3.1.6",
+      "url": "https://github.com/advisories/GHSA-jqff-g426-hqxp",
+      "findings": [
+        {
+          "version": "3.1.5",
+          "pathCount": 3,
+          "examplePaths": [
+            ". > fast-uri@3.1.5",
+            "packages\\content > ajv@8.20.0 > fast-uri@3.1.5"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-6mj3-qw4j-hgrw",
+      "module": "@xmldom/xmldom",
+      "severity": "high",
+      "title": "xmldom: HTML raw-text closing-tag case mismatch causes output amplification",
+      "vulnerable": ">=0.9.0-beta.1 <=0.9.11",
+      "patched": ">=0.9.12",
+      "url": "https://github.com/advisories/GHSA-6mj3-qw4j-hgrw",
+      "findings": [
+        {
+          "version": "0.9.10",
+          "pathCount": 186,
+          "examplePaths": [
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-g53g-w8rj-fmg7",
+      "module": "@xmldom/xmldom",
+      "severity": "high",
+      "title": "xmldom PI grammar regex ReDoS: quadratic backtracking on unterminated processing instructions",
+      "vulnerable": ">=0.9.0-beta.9 <=0.9.10",
+      "patched": ">=0.9.11",
+      "url": "https://github.com/advisories/GHSA-g53g-w8rj-fmg7",
+      "findings": [
+        {
+          "version": "0.9.10",
+          "pathCount": 186,
+          "examplePaths": [
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-w2rr-34g9-rvrj",
+      "module": "@xmldom/xmldom",
+      "severity": "high",
+      "title": "xmldom: Element name injection via createElement() bypasses requireWellFormed",
+      "vulnerable": ">=0.7.0 <=0.8.13",
+      "patched": ">=0.8.14",
+      "url": "https://github.com/advisories/GHSA-w2rr-34g9-rvrj",
+      "findings": [
+        {
+          "version": "0.8.13",
+          "pathCount": 203,
+          "examplePaths": [
+            ". > @xmldom/xmldom@0.8.13",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > @expo/plist@0.4.9 > @xmldom/xmldom@0.8.13"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-w2rr-34g9-rvrj",
+      "module": "@xmldom/xmldom",
+      "severity": "high",
+      "title": "xmldom: Element name injection via createElement() bypasses requireWellFormed",
+      "vulnerable": ">=0.9.0 <=0.9.10",
+      "patched": ">=0.9.11",
+      "url": "https://github.com/advisories/GHSA-w2rr-34g9-rvrj",
+      "findings": [
+        {
+          "version": "0.9.10",
+          "pathCount": 186,
+          "examplePaths": [
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-4w3w-2rp5-g8jm",
+      "module": "@xmldom/xmldom",
+      "severity": "high",
+      "title": "xmldom: Attribute name injection via setAttribute() bypasses requireWellFormed",
+      "vulnerable": ">=0.7.0 <=0.8.13",
+      "patched": ">=0.8.14",
+      "url": "https://github.com/advisories/GHSA-4w3w-2rp5-g8jm",
+      "findings": [
+        {
+          "version": "0.8.13",
+          "pathCount": 203,
+          "examplePaths": [
+            ". > @xmldom/xmldom@0.8.13",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > @expo/plist@0.4.9 > @xmldom/xmldom@0.8.13"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-4w3w-2rp5-g8jm",
+      "module": "@xmldom/xmldom",
+      "severity": "high",
+      "title": "xmldom: Attribute name injection via setAttribute() bypasses requireWellFormed",
+      "vulnerable": ">=0.9.0 <=0.9.10",
+      "patched": ">=0.9.11",
+      "url": "https://github.com/advisories/GHSA-4w3w-2rp5-g8jm",
+      "findings": [
+        {
+          "version": "0.9.10",
+          "pathCount": 186,
+          "examplePaths": [
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-c7q8-3ch8-vqpv",
+      "module": "@xmldom/xmldom",
+      "severity": "high",
+      "title": "xmldom: Processing Instruction Target Injection Bypasses requireWellFormed",
+      "vulnerable": ">=0.9.0 <=0.9.11",
+      "patched": ">=0.9.12",
+      "url": "https://github.com/advisories/GHSA-c7q8-3ch8-vqpv",
+      "findings": [
+        {
+          "version": "0.9.10",
+          "pathCount": 186,
+          "examplePaths": [
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-c7q8-3ch8-vqpv",
+      "module": "@xmldom/xmldom",
+      "severity": "high",
+      "title": "xmldom: Processing Instruction Target Injection Bypasses requireWellFormed",
+      "vulnerable": ">=0.7.0 <=0.8.14",
+      "patched": ">=0.8.15",
+      "url": "https://github.com/advisories/GHSA-c7q8-3ch8-vqpv",
+      "findings": [
+        {
+          "version": "0.8.13",
+          "pathCount": 203,
+          "examplePaths": [
+            ". > @xmldom/xmldom@0.8.13",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > @expo/plist@0.4.9 > @xmldom/xmldom@0.8.13"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-27p8-2357-5qqv",
+      "module": "@xmldom/xmldom",
+      "severity": "high",
+      "title": "xmldom: DocType `name` Injection Bypasses requireWellFormed",
+      "vulnerable": ">=0.9.0 <=0.9.11",
+      "patched": ">=0.9.12",
+      "url": "https://github.com/advisories/GHSA-27p8-2357-5qqv",
+      "findings": [
+        {
+          "version": "0.9.10",
+          "pathCount": 186,
+          "examplePaths": [
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-27p8-2357-5qqv",
+      "module": "@xmldom/xmldom",
+      "severity": "high",
+      "title": "xmldom: DocType `name` Injection Bypasses requireWellFormed",
+      "vulnerable": ">=0.7.0 <=0.8.14",
+      "patched": ">=0.8.15",
+      "url": "https://github.com/advisories/GHSA-27p8-2357-5qqv",
+      "findings": [
+        {
+          "version": "0.8.13",
+          "pathCount": 203,
+          "examplePaths": [
+            ". > @xmldom/xmldom@0.8.13",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > @expo/plist@0.4.9 > @xmldom/xmldom@0.8.13"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-3px3-54cx-rmw9",
+      "module": "@xmldom/xmldom",
+      "severity": "high",
+      "title": "xmldom: Creation-time XML Name/QName validation is bypassable via an embedded line terminator, allowing injection on the default serialization path",
+      "vulnerable": ">=0.9.0 <=0.9.11",
+      "patched": ">=0.9.12",
+      "url": "https://github.com/advisories/GHSA-3px3-54cx-rmw9",
+      "findings": [
+        {
+          "version": "0.9.10",
+          "pathCount": 186,
+          "examplePaths": [
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-vr34-hp96-76pp",
+      "module": "@xmldom/xmldom",
+      "severity": "high",
+      "title": "xmldom: requireWellFormed DocType publicId/systemId validation is bypassable via an embedded line terminator",
+      "vulnerable": ">=0.9.10 <=0.9.11",
+      "patched": ">=0.9.12",
+      "url": "https://github.com/advisories/GHSA-vr34-hp96-76pp",
+      "findings": [
+        {
+          "version": "0.9.10",
+          "pathCount": 186,
+          "examplePaths": [
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-6h8r-xr42-gp59",
+      "module": "@xmldom/xmldom",
+      "severity": "moderate",
+      "title": "xmldom: Parser silently accepts a not-well-formed end tag whose name is followed by a line break and trailing content",
+      "vulnerable": ">=0.9.0 <=0.9.11",
+      "patched": ">=0.9.12",
+      "url": "https://github.com/advisories/GHSA-6h8r-xr42-gp59",
+      "findings": [
+        {
+          "version": "0.9.10",
+          "pathCount": 186,
+          "examplePaths": [
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-6h8r-xr42-gp59",
+      "module": "@xmldom/xmldom",
+      "severity": "moderate",
+      "title": "xmldom: Parser silently accepts a not-well-formed end tag whose name is followed by a line break and trailing content",
+      "vulnerable": ">=0.7.0 <=0.8.14",
+      "patched": ">=0.8.15",
+      "url": "https://github.com/advisories/GHSA-6h8r-xr42-gp59",
+      "findings": [
+        {
+          "version": "0.8.13",
+          "pathCount": 203,
+          "examplePaths": [
+            ". > @xmldom/xmldom@0.8.13",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > @expo/plist@0.4.9 > @xmldom/xmldom@0.8.13"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-8344-3jmq-59r6",
+      "module": "@xmldom/xmldom",
+      "severity": "high",
+      "title": "xmldom: Quadratic-time attribute deduplication",
+      "vulnerable": ">=0.9.0 <=0.9.11",
+      "patched": ">=0.9.12",
+      "url": "https://github.com/advisories/GHSA-8344-3jmq-59r6",
+      "findings": [
+        {
+          "version": "0.9.10",
+          "pathCount": 186,
+          "examplePaths": [
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-8344-3jmq-59r6",
+      "module": "@xmldom/xmldom",
+      "severity": "high",
+      "title": "xmldom: Quadratic-time attribute deduplication",
+      "vulnerable": ">=0.7.0 <=0.8.14",
+      "patched": ">=0.8.15",
+      "url": "https://github.com/advisories/GHSA-8344-3jmq-59r6",
+      "findings": [
+        {
+          "version": "0.8.13",
+          "pathCount": 203,
+          "examplePaths": [
+            ". > @xmldom/xmldom@0.8.13",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > @expo/plist@0.4.9 > @xmldom/xmldom@0.8.13"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-x4fp-j954-r2f4",
+      "module": "@xmldom/xmldom",
+      "severity": "high",
+      "title": "xmldom: End-tag Whitespace-Trim Regex ReDoS — quadratic backtracking in the 0.8.x end-tag parser",
+      "vulnerable": ">=0.7.0 <=0.8.14",
+      "patched": ">=0.8.15",
+      "url": "https://github.com/advisories/GHSA-x4fp-j954-r2f4",
+      "findings": [
+        {
+          "version": "0.8.13",
+          "pathCount": 203,
+          "examplePaths": [
+            ". > @xmldom/xmldom@0.8.13",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > @expo/plist@0.4.9 > @xmldom/xmldom@0.8.13"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-965w-775f-mr7g",
+      "module": "@xmldom/xmldom",
+      "severity": "high",
+      "title": "xmldom: Quadratic-memory consumption",
+      "vulnerable": ">=0.9.0 <=0.9.11",
+      "patched": ">=0.9.12",
+      "url": "https://github.com/advisories/GHSA-965w-775f-mr7g",
+      "findings": [
+        {
+          "version": "0.9.10",
+          "pathCount": 186,
+          "examplePaths": [
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-965w-775f-mr7g",
+      "module": "@xmldom/xmldom",
+      "severity": "high",
+      "title": "xmldom: Quadratic-memory consumption",
+      "vulnerable": ">=0.7.0 <=0.8.14",
+      "patched": ">=0.8.15",
+      "url": "https://github.com/advisories/GHSA-965w-775f-mr7g",
+      "findings": [
+        {
+          "version": "0.8.13",
+          "pathCount": 203,
+          "examplePaths": [
+            ". > @xmldom/xmldom@0.8.13",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > @expo/plist@0.4.9 > @xmldom/xmldom@0.8.13"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-93r5-fhx6-vmg9",
+      "module": "@xmldom/xmldom",
+      "severity": "high",
+      "title": "xmldom: Quadratic-time parsing via the malformed-input recovery path — `parseElementStartPart` re-scan and `normalize()` adjacent-text merge",
+      "vulnerable": ">=0.9.0 <=0.9.11",
+      "patched": ">=0.9.12",
+      "url": "https://github.com/advisories/GHSA-93r5-fhx6-vmg9",
+      "findings": [
+        {
+          "version": "0.9.10",
+          "pathCount": 186,
+          "examplePaths": [
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config-plugins@54.0.5 > xcode@3.0.1 > simple-plist@1.3.1 > plist@3.1.1 > @xmldom/xmldom@0.9.10"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-93r5-fhx6-vmg9",
+      "module": "@xmldom/xmldom",
+      "severity": "high",
+      "title": "xmldom: Quadratic-time parsing via the malformed-input recovery path — `parseElementStartPart` re-scan and `normalize()` adjacent-text merge",
+      "vulnerable": ">=0.7.0 <=0.8.14",
+      "patched": ">=0.8.15",
+      "url": "https://github.com/advisories/GHSA-93r5-fhx6-vmg9",
+      "findings": [
+        {
+          "version": "0.8.13",
+          "pathCount": 203,
+          "examplePaths": [
+            ". > @xmldom/xmldom@0.8.13",
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/config@12.0.14 > @expo/config-plugins@54.0.5 > @expo/plist@0.4.9 > @xmldom/xmldom@0.8.13"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-2883-xcg3-v3hh",
+      "module": "js-yaml",
+      "severity": "high",
+      "title": "js-yaml: maxTotalMergeKeys does not limit CPU use for empty merge sources",
+      "vulnerable": ">=3.0.0 <3.15.2",
+      "patched": ">=3.15.2",
+      "url": "https://github.com/advisories/GHSA-2883-xcg3-v3hh",
+      "findings": [
+        {
+          "version": "3.15.1",
+          "pathCount": 1239,
+          "examplePaths": [
+            ". > @react-native-community/netinfo@11.4.1 > react-native@0.81.5 > babel-jest@29.7.0 > @jest/transform@29.7.0 > babel-plugin-istanbul@6.1.1 > @istanbuljs/load-nyc-config@1.1.0 > js-yaml@3.15.1",
+            ". > @react-native-community/netinfo@11.4.1 > react-native@0.81.5 > babel-jest@29.7.0 > babel-plugin-istanbul@6.1.1 > @istanbuljs/load-nyc-config@1.1.0 > js-yaml@3.15.1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GHSA-2883-xcg3-v3hh",
+      "module": "js-yaml",
+      "severity": "high",
+      "title": "js-yaml: maxTotalMergeKeys does not limit CPU use for empty merge sources",
+      "vulnerable": ">=4.0.0 <4.3.2",
+      "patched": ">=4.3.2",
+      "url": "https://github.com/advisories/GHSA-2883-xcg3-v3hh",
+      "findings": [
+        {
+          "version": "4.3.1",
+          "pathCount": 16,
+          "examplePaths": [
+            "apps\\mobile > @worldquest/design@link:../../packages/design > expo-linear-gradient@15.0.8 > expo@54.0.36 > @expo/cli@54.0.26 > @expo/xcpretty@4.4.4 > js-yaml@4.3.1",
+            "apps\\mobile > expo@54.0.36 > @expo/cli@54.0.26 > @expo/xcpretty@4.4.4 > js-yaml@4.3.1"
+          ]
+        }
+      ]
+    }
+  ]
+}

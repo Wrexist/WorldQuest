@@ -36,6 +36,7 @@
 
 const { chromium } = require('playwright')
 const { walkOnboarding } = require('./lib/onboarding-walk.cjs')
+const { browserContext, routeSlug, assertRoute } = require('./lib/browser-harness.cjs')
 const { MEASURE } = require('./lib/measure-ink.cjs')
 const { launchOptions } = require('./chromium.cjs')
 const http = require('node:http')
@@ -470,6 +471,7 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
 
   for (const viewport of VIEWPORTS) {
     const page = await browser.newPage({
+      ...browserContext,
       viewport: { width: viewport.width, height: viewport.height },
       /**
        * Notifications GRANTED, because denied is not the state worth photographing.
@@ -531,9 +533,10 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
     await completeOnboarding(page, SHOOT_FLOWS ? shot : async () => {})
 
     for (const route of ROUTES) {
-      const slug = route === '/' ? 'home' : route.replace(/^\//, '').replace(/\//g, '-')
+      const slug = routeSlug(route)
       await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'networkidle' })
       await page.waitForTimeout(1200)
+      assertRoute(page, route)
       await page.screenshot({ path: path.join(OUT, `${slug}@${viewport.name}.png`) })
 
       /**
@@ -584,13 +587,14 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
       })
 
       for (const route of OFFLINE_ROUTES) {
-        const slug = route === '/' ? 'home' : route.replace(/^\//, '').replace(/\//g, '-')
+        const slug = routeSlug(route)
         // Load first, THEN pull the radio. `setOffline` blocks localhost too, so a
         // navigation made while offline serves nothing and photographs a blank page —
         // which is a picture of the harness, not of the app. Toggling per route costs a
         // few hundred milliseconds and is the only order that renders the screen.
         await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'networkidle' })
         await page.waitForTimeout(900)
+        assertRoute(page, route)
         await page.context().setOffline(true)
         await page.waitForTimeout(700)
         await shot(`offline-${slug}`)
@@ -632,9 +636,10 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
 
       {
         for (const route of PSEUDO_ROUTES) {
-          const slug = route === '/' ? 'home' : route.replace(/^\//, '').replace(/\//g, '-')
+          const slug = routeSlug(route)
           await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'networkidle' })
           await page.waitForTimeout(900)
+          assertRoute(page, route)
           const pseudo = await enablePseudo()
           if (pseudo !== 'on') {
             // Said out loud rather than skipped. A pass that silently did not happen is

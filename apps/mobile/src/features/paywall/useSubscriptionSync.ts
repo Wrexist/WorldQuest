@@ -28,9 +28,10 @@
 
 import { useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { fetchSubscription, type SubscriptionRow } from '@worldquest/api'
+import type { SubscriptionRow } from '@worldquest/api'
 import type { Subscription } from '@worldquest/engines'
-import { currentUser, isConfigured, supabase } from '../../lib/supabase.js'
+import { isConfigured } from '../../lib/supabase.js'
+import { withAccount } from '../../lib/backend.js'
 import { queryKeys } from '../../lib/query.js'
 import { setSubscription } from './useEntitlement.js'
 
@@ -46,8 +47,7 @@ export function useSubscriptionSync(): void {
   const { data } = useQuery({
     queryKey: queryKeys.subscription,
     queryFn: async (): Promise<SubscriptionRow> => {
-      await currentUser()
-      return fetchSubscription(supabase())
+      return withAccount((account) => account.fetchSubscription())
     },
     // No backend configured — a fresh checkout with no .env.local. Everything except
     // sync still works, and the free tier is the honest answer with no server to ask.

@@ -1,0 +1,37 @@
+name: D1 local proof
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, 'fix/**', 'feat/**']
+    paths:
+      - '.github/workflows/d1-proof.yml'
+      - 'packages/backend/**'
+      - 'packages/engines/**'
+      - 'pnpm-lock.yaml'
+
+permissions:
+  contents: read
+
+jobs:
+  transactions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @worldquest/backend typecheck
+      - run: pnpm --filter @worldquest/backend db:local
+      - run: pnpm --filter @worldquest/backend build
+      - run: pnpm --filter @worldquest/backend exec vitest run --reporter=default --reporter=json --outputFile=dist/d1-tests.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: d1-local-evidence
+          path: packages/backend/dist/d1-tests.json
+          retention-days: 7

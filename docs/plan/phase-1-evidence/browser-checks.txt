@@ -1,0 +1,91 @@
+  ✓ 320pt / 200% onboarding-en-slide-1: entire copy stays between navigation and dots  — {"box":{"y":80,"height":248},"back":{"x":4,"y":8,"width":44,"height":44},"dot":{"x":132,"y":372,"width":24,"height":8}}
+  ✓ 320pt / 200% onboarding-en-slide-2: entire copy stays between navigation and dots  — {"box":{"y":80,"height":248},"back":{"x":4,"y":8,"width":44,"height":44},"dot":{"x":148,"y":372,"width":24,"height":8}}
+  ✓ 320pt / 200% onboarding-en-slide-3: entire copy stays between navigation and dots  — {"box":{"y":56,"height":296},"back":{"x":4,"y":8,"width":44,"height":44},"dot":{"x":164,"y":372,"width":24,"height":8}}
+  ✓ 320pt / 200% onboarding-sv-slide-1: entire copy stays between navigation and dots  — {"box":{"y":104,"height":248},"back":{"x":4,"y":8,"width":44,"height":44},"dot":{"x":132,"y":372,"width":24,"height":8}}
+  ✓ 320pt / 200% onboarding-sv-slide-2: entire copy stays between navigation and dots  — {"box":{"y":104,"height":248},"back":{"x":4,"y":8,"width":44,"height":44},"dot":{"x":148,"y":372,"width":24,"height":8}}
+  ✓ 320pt / 200% onboarding-sv-slide-3: entire copy stays between navigation and dots  — {"box":{"y":116,"height":224},"back":{"x":4,"y":8,"width":44,"height":44},"dot":{"x":164,"y":372,"width":24,"height":8}}
+  ✓ first launch opens onboarding, not Home
+  ✓ age gate asks for a birth year, never "are you over 13?"
+  ✓ 200 % text on onboarding-age: nothing clipped, nothing overlapping  — overflow 0px
+  ✓ daily goal picker appears
+  ✓ back returns to the previous question
+  ✓ the goal slider answers to a tap on its track
+  ✓ continent picker appears
+  ✓ starting level appears
+  ✓ the difficulty slider answers to a drag
+  ✓ the plan reads the answers back
+  ✓ onboarding asks for no money before the first lesson
+  ✓ taster promises a lesson with no account
+  ✓ onboarding ends INSIDE a lesson, before any sign-up ask
+  ✓ a returning user goes straight to Home
+  ✓ Continue opens a lesson, the flag being off  — What does the flag of Romania look like?
+  ✓ the answers sit with the question, not flung to the bottom  — 24px below the prompt
+  ✓ answering produces feedback  — Perfect!
+  ✓ wrong-answer copy does not shame
+  ⊘ flag question renders its artwork  — skipped: no image question in this lesson
+  ✓ the five tab icons are real artwork, not blank rectangles  — 5/5 decoded
+  ✓ Explore tab navigates and renders its own screen
+  ✓ Quests tab navigates and renders its own screen
+  ✓ Profile tab navigates and renders its own screen
+  ✓ Shop tab navigates and renders its own screen
+  ✓ Settings is still reachable, through the gear on Profile  — Settings
+LEARNING
+Daily goal
+You can cha
+  ✓ Settings offers a way to link an email
+  ✓ and it opens the account screen, asking for an email  — Email
+1 / 2
+Add an email address to sign in to this account.
+  ✓ Explore opens the flag collection
+  ✓ uncollected tiles are shown rather than hidden  — 72 lines of tiles
+  ✓ search narrows the collection
+  ✓ a search with no match offers a way onward
+  ✓ streak screen renders
+  ✓ streak copy sells no advantage and applies no pressure
+  ✓ paywall renders
+  ✓ paywall promises learning stays free
+  ✓ paywall applies no urgency, scarcity or shame
+  ✓ paywall survives a store it cannot reach
+  ✓ paywall is escapable on the first frame, at full size
+  ✓ Settings has a Premium section
+  ✓ Settings offers restore, which both stores require
+  ✓ deep route /region/EU lists real countries  — France, Germany, Poland, Spain
+  ✓ speed round starts a timed lesson
+  ✓ a timeout says the clock ran out, never 'too slow'
+  ✓ welcome-back renders
+  ✓ welcome-back copy carries no guilt and no deadline
+  ✓ a new ATTRIBUTE reaches the country page with no screen change  — Currency
+  ✓ the star reports its state, not just its presence
+  ✓ starring flips the state a screen reader hears
+  ✓ a star set on one screen filters the collection on another
+  ✓ the lesson ends on a real headline, not a key  — Lesson complete.
+  ✓ the XP tally finishes on the figure the screen reader was given  — shown +65 · spoken 65
+  ✓ the summary reports facts moved forward, not just points
+  ✓ and draws real flags for where the user just was  — 9 flag(s)
+  ✓ finishing a lesson ticks a quest task  — 1 of 5
+  ✓ finishing a lesson moves an achievement off zero  — 30 locked before
+  ✓ a lesson can be paused
+  ✓ and pausing threatens nothing
+  ✓ and resuming returns to the question
+  ✓ the streak screen says nothing about connections while online
+  ✓ going offline names the reason the purchase is unavailable
+  ✓ and does not turn a tunnel into an emergency
+  ✓ and takes it back when the connection returns
+  ✓ a cold start paints something within 1.5s  — WorldQuest
+  ✓ and is not still on the splash
+  ✓ keyboard: a lesson opens  — Which country is highlighted?
+  ✓ keyboard: an answer option can be reached with Tab alone
+  ✓ keyboard: Enter scores it, with no pointer involved  — ACzechia
+  ✓ 200 % text on home: nothing clipped, nothing overlapping  — overflow 0px
+  ✓ 200 % text on lesson: nothing clipped, nothing overlapping  — overflow 0px
+  ✓ 200 % text on explore: nothing clipped, nothing overlapping  — overflow 0px
+  ✓ 200 % text on collection: nothing clipped, nothing overlapping  — overflow 0px
+  ✓ 200 % text on country: nothing clipped, nothing overlapping  — overflow 0px
+  ✓ 200 % text on profile: nothing clipped, nothing overlapping  — overflow 0px
+  ✓ 200 % text on paywall: nothing clipped, nothing overlapping  — overflow 0px
+  ✓ unknown route shows the 404, not a crash
+  ✓ no uncaught errors on any screen
+
+82/82 steps passed (1 skipped — see ⊘ above)
+screenshots → node_modules/.cache/wq-phase1-final-e2e
+

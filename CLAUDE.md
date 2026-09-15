@@ -8,13 +8,13 @@ This file covers only how *you* (an AI agent) should operate here.
 
 ## What this project is, in one paragraph
 
-WorldQuest is a mobile learning app (Expo/React Native + TypeScript + Supabase) that
-teaches world geography in five-minute daily sessions — countries, flags, capitals,
-landmarks — with XP, coins, streaks, hearts, leagues, and achievements. Architecturally
+WorldQuest is a mobile learning app (Expo/React Native + TypeScript; Cloudflare D1/Workers selected, legacy app adapter pending cutover) that
+offers short geography practice — countries, flags, capitals and locations — with XP, coins, streaks, hearts, leagues, and achievements. Architecturally
 it is **a learning engine for visual knowledge** with geography as its first content
 pack. The mockup for v1.0 is [`docs/design/assets/mockup-v1.png`](docs/design/assets/mockup-v1.png)
-(15 screens). We are currently in **Phase 0 → Phase 1**: documentation and the walking
-skeleton. See [`docs/plan/build-order.md`](docs/plan/build-order.md) for what is next.
+(15 screens). The app and backend code exist. Current work is **Phase 2: backend, accounts and trustworthy progress** after the September audit. Follow
+[`docs/plan/execution-plan.md`](docs/plan/execution-plan.md) for the complete order and
+[`docs/plan/phase-2-verification.md`](docs/plan/phase-2-verification.md) for current evidence. Phase 1 is complete (14/14); full-resolution native evidence corrects the earlier E18 visual finding.
 
 ---
 
@@ -73,12 +73,17 @@ the code.
 | Adding, renaming, or translating any string | `worldquest-i18n` |
 | Auditing or fixing accessibility | `worldquest-a11y` |
 | Adding or changing a tracked event | `worldquest-analytics` |
-| Writing SQL, RLS, or an edge function | `worldquest-supabase` |
+| Writing legacy Supabase SQL, RLS, or an edge function | `worldquest-supabase` |
 | Designing a daily/weekly/seasonal event | `worldquest-liveops` |
 | Writing push/notification copy | `worldquest-notifications` |
 | Judging whether a feature belongs | `worldquest-persona-check` |
 | Researching a competitor | `worldquest-competitor-teardown` |
 | Finishing anything | `worldquest-definition-of-done` |
+
+New backend work targets Cloudflare Workers/D1. Follow ADR 0013 and
+`packages/backend/README.md`; use its real workerd/D1 tests. Preserve forward-only
+migrations, ownership checks, atomic reward batches and the account revision guard.
+Do not apply PostgreSQL-only RLS or transaction syntax to D1.
 
 ### Design skills
 

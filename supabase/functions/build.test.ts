@@ -136,6 +136,7 @@ describe('submit-lesson bundle', () => {
    */
   const stripComments = (code: string): string =>
     code
+      .replace(/\r\n/g, '\n') // Checkout line endings must not change the code budget.
       .replace(/\/\*[\s\S]*?\*\//g, '')
       .replace(/^\s*\/\/.*$/gm, '')
       .replace(/\n{2,}/g, '\n')

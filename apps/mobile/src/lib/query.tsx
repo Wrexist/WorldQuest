@@ -20,34 +20,38 @@
  * long enough to render an empty state and then replace it.
  */
 
-import { useState, type ReactNode } from 'react'
+import { useSyncExternalStore, type ReactNode } from 'react'
 import { QueryClient, focusManager, onlineManager } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
 import { AppState, type AppStateStatus } from 'react-native'
-import { readJson, remove, writeJson } from './storage.js'
+import { captureStorage, onStorageScopeChange, storageGeneration, storageTreeGeneration } from './storage.js'
 
 /** Cached data older than this is not restored — a week-old streak is a lie. */
 const MAX_CACHE_AGE_MS = 24 * 60 * 60 * 1000
 
-const persister = createAsyncStoragePersister({
-  storage: {
-    getItem: (key) => Promise.resolve(readJson<string>(key)),
-    setItem: (key, value) => {
-      writeJson(key, value)
-      return Promise.resolve()
+function makePersister() {
+  let storage = captureStorage()
+  let attached = true
+  const adapter = createAsyncStoragePersister({
+    storage: {
+      getItem: (key) => Promise.resolve(storage.get(key)),
+      setItem: (key, value) => { storage.set(key, value); return Promise.resolve() },
+      removeItem: (key) => { storage.remove(key); return Promise.resolve() },
     },
-    removeItem: (key) => {
-      remove(key)
-      return Promise.resolve()
-    },
-  },
-  key: 'query.cache.v1',
-  // The values are already JSON — `readJson` parses and `writeJson` stringifies, so
-  // the persister's own serialisation would double-encode them.
-  serialize: (client) => client as unknown as string,
-  deserialize: (cached) => cached as never,
-})
+    key: 'query.cache.v2',
+  })
+  const value = {
+    ...adapter,
+    persistClient: (snapshot: Parameters<typeof adapter.persistClient>[0]) =>
+      attached ? adapter.persistClient(snapshot) : Promise.resolve(),
+  }
+  return {
+    value,
+    adoptGuest: () => { storage = captureStorage() },
+    detach: () => { attached = false },
+  }
+}
 
 function makeClient(): QueryClient {
   return new QueryClient({
@@ -103,14 +107,38 @@ AppState.addEventListener('change', (status: AppStateStatus) => {
  */
 let client: QueryClient | null = null
 export const queryClient = (): QueryClient => (client ??= makeClient())
+let persister: ReturnType<typeof makePersister> | null = null
+let treeGeneration = storageTreeGeneration()
+onStorageScopeChange(() => {
+  const nextTree = storageTreeGeneration()
+  if (treeGeneration === nextTree) {
+    // A new anonymous identity owns this same guest's work. Keep live observers
+    // and the active lesson mounted, and move future cache writes with that work.
+    persister?.adoptGuest()
+    return
+  }
+  treeGeneration = nextTree
+  // Disposing the old in-memory client must not persist an empty cache over its
+  // account's saved progress. Already accepted writes still use that account's store.
+  persister?.detach()
+  const previous = client
+  client = null
+  if (previous) {
+    void previous.cancelQueries()
+    previous.clear()
+  }
+  persister = null
+})
 
 export function QueryProvider({ children }: { children: ReactNode }) {
-  const [instance] = useState(queryClient)
+  useSyncExternalStore(onStorageScopeChange, storageGeneration, storageGeneration)
+  const instance = queryClient()
 
   return (
     <PersistQueryClientProvider
+      key={storageTreeGeneration()}
       client={instance}
-      persistOptions={{ persister, maxAge: MAX_CACHE_AGE_MS }}
+      persistOptions={{ persister: (persister ??= makePersister()).value, maxAge: MAX_CACHE_AGE_MS }}
     >
       {children}
     </PersistQueryClientProvider>

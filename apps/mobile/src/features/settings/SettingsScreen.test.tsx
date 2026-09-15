@@ -44,33 +44,37 @@ const linkedAccount = (unsyncedLessons = 0) => ({
   unsyncedLessons,
 })
 
-describe('Settings — signing out is destructive and now says so', () => {
+describe('Settings — signing out preserves pending work', () => {
+  it('announces failed cleanup and keeps sign-out available for retry', () => {
+    const account = { ...linkedAccount(), signOutFailed: true }
+    renderSettings({ account })
+    expect(screen.getByRole('alert').textContent).toContain('Sign-out could not finish')
+    fireEvent.click(screen.getByText('Sign out'))
+    expect(account.onSignOut).toHaveBeenCalledOnce()
+  })
   it('offers a plain sign-out when nothing is at risk', () => {
     renderSettings({ account: linkedAccount() })
     expect(screen.getByText('Sign out')).toBeTruthy()
     expect(screen.queryByText(/have not reached the server/i)).toBeNull()
   })
 
-  it('names what would be lost, before the control rather than after it', () => {
-    // `signOutEverywhere` calls `clearAll()` — deliberately, because a list of keys to
-    // clear is a list somebody forgets to add to. The cost is that it wipes the offline
-    // queue too, so a lesson finished on a plane and never synced is gone for good, and
-    // one tap on a row labelled "Sign out" did it in silence. `hasUnsyncedProgress` has
-    // said "used to warn before sign-out" in the engine since the queue was built.
+  it('explains how pending work resumes before signing out', () => {
+    // Pending work is retained under the original account, so explain how it resumes.
     const { container } = renderSettings({ account: linkedAccount(3) })
     const body = container.textContent ?? ''
     expect(body).toMatch(/3 lessons have not reached the server yet/i)
+    expect(body).toMatch(/Sign back into this account on this device to sync/i)
     // The warning comes first. A risk stated after the button is a risk stated too late.
     expect(body.indexOf('have not reached the server')).toBeLessThan(
-      body.indexOf('Sign out anyway'),
+      body.indexOf('Sign out'),
     )
   })
 
-  it('relabels the control, so the destructive one is never the one you meant', () => {
+  it('offers one sign-out action beside the pending-work notice', () => {
     const account = linkedAccount(1)
     renderSettings({ account })
-    expect(screen.queryByText('Sign out')).toBeNull()
-    fireEvent.click(screen.getByText('Sign out anyway'))
+    expect(screen.getAllByText('Sign out')).toHaveLength(1)
+    fireEvent.click(screen.getByText('Sign out'))
     expect(account.onSignOut).toHaveBeenCalledOnce()
   })
 })
@@ -180,15 +184,13 @@ describe('Settings', () => {
     expect(onOpenPrivacyPolicy).toHaveBeenCalledOnce()
   })
 
-  it('has no export or delete button while there is no account to act on', () => {
-    // Both are GDPR obligations that arrive with accounts. A button that cannot work
-    // is worse than an explanation of why it is not there yet.
+  it('states that export and deletion are unavailable without offering dead controls', () => {
     renderSettings()
     // Assert on CONTROLS, not on text. The explanatory copy legitimately contains
     // the word "exporting", so matching text made this pass for the wrong reason.
     expect(screen.queryByRole('button', { name: /export/i })).toBeNull()
     expect(screen.queryByRole('button', { name: /delete/i })).toBeNull()
-    expect(screen.getByText(/learning without an account/i)).toBeTruthy()
+    expect(screen.getByText(/Exporting and deleting account data are not available here yet/i)).toBeTruthy()
   })
 
   it('leaves no raw key or unformatted placeholder on screen', () => {

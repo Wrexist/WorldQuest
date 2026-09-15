@@ -1,34 +1,7 @@
-/**
- * The paywall — three pages, shown once, immediately after the taster lesson.
- *
- * ## Where it sits, and why there
- *
- * Two benchmarks appear to disagree about paywall placement:
- *
- * - Hard paywalls convert installs to paid **5× better** than freemium (10.7 % vs 2.1 %).
- * - Paywalls after a measurable value moment get **2.1× the trial starts** of an
- *   immediate hard gate (65 % vs 31 %).
- *
- * They only disagree for products whose value moment is far from the front door. Ours
- * is three minutes in: the taster lesson is real, scored, and ends on a summary showing
- * the countries you just placed. Asking straight after it is *both* "at the start" and
- * "after the value" — so we take the 5× and the 2.1× at once.
- *
- * Three pages rather than one, because multi-page onboarding paywalls convert
- * **12.41 % vs 9.07 %** — a 37 % gap for the cost of two more `View`s.
- *
- * ## What it may not do
- *
- * - **Never shown to a child account.** Under-13 gets the parental gate instead. Apple
- *   requires commerce to sit behind one; more to the point, a ten-year-old has no card,
- *   so a paywall aimed at them earns nothing and costs the listing.
- * - **Never blocks a lesson.** Dismiss is on every page, visible, full-size, from the
- *   first frame. No delayed close button, no faint X. If this screen ever gates
- *   learning, the paywall has moved to the wrong place and takes the North Star with it.
- * - **No countdown, no scarcity, no "3 spots left".** Banned by the Product Bible, and
- *   a fast route to review attention on a child-facing app.
- *
- * Spec: docs/systems/monetization.md
+/** Optional Premium presentation. Current runtime has no products.
+ * Priced layouts are preparatory; Phase 5 must verify every benefit before enablement.
+ * Dismiss remains available on every page. Child accounts use the parental gate.
+ * Spec: docs/systems/monetization.md; current claims: docs/product/launch-brief.md.
  */
 
 import { useEffect, useState } from 'react'
@@ -355,10 +328,10 @@ export function PaywallScreen({
         {page === 1 && (
           <>
             <Text style={styles.title} role="heading" aria-level={1}>
-              {t('paywall:title.more')}
+              {t(plans.length > 0 ? 'paywall:title.more' : 'paywall:title.unavailable')}
             </Text>
             <View style={styles.perks}>
-              {PERKS.map((key) => (
+              {plans.length > 0 && PERKS.map((key) => (
                 <View key={key} style={styles.perk}>
                   {/* Decorative — the row already reads as its own text, and a
                       reader saying "check mark" four times is noise. */}
@@ -380,7 +353,7 @@ export function PaywallScreen({
                 above a button that says "Get Premium", which is the kind of small lie
                 that costs a refund and a review. */}
             <Text style={styles.title} role="heading" aria-level={1}>
-              {trial ? t('paywall:title.plans') : t('paywall:title.buy')}
+              {plans.length === 0 ? t('paywall:title.unavailable') : trial ? t('paywall:title.plans') : t('paywall:title.buy')}
             </Text>
 
             {/* The four ways page 3 can have no prices on it, each said differently.
@@ -481,9 +454,9 @@ export function PaywallScreen({
                 the one screen where a person decides had the number and none of the
                 value on it. Nothing new is claimed: the same `paywall:perk.*` strings,
                 moved to where the decision happens. */}
-            <Text style={styles.includesTitle}>{t('paywall:plans.includes')}</Text>
+            {plans.length > 0 && <Text style={styles.includesTitle}>{t('paywall:plans.includes')}</Text>}
             <View style={styles.includes}>
-              {PERKS.map((perk) => (
+              {plans.length > 0 && PERKS.map((perk) => (
                 <View key={perk} style={styles.includesRow}>
                   {/* An icon, not a `✓`. A literal character renders in whatever typeface
                       the device has for it — the defect `pnpm build:icons` was written

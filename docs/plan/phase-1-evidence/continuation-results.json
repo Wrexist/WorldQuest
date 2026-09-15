@@ -1,0 +1,326 @@
+{
+  "date": "2026-09-13",
+  "applicationRevision": "24d54eae6d9320fc82c7f1179f8e19d72b6314a6",
+  "localVerify": {
+    "revision": "59f1be705fa17afdaa50602171aa9b635baf3494",
+    "exitCode": 0,
+    "workspaceTests": 1334,
+    "edgeAndToolTests": 162,
+    "nodeRegressions": 9,
+    "totalTests": 1505
+  },
+  "finalCopyTests": {
+    "exitCode": 0,
+    "files": 4,
+    "tests": 87
+  },
+  "finalBrowser": {
+    "exitCode": 0,
+    "reportedChecks": 82,
+    "skippedImageBranch": 1,
+    "addedChecks": "All three onboarding slides in en/sv at 320x568 and 200% text; whole text bounds checked against navigation and dots"
+  },
+  "security": {
+    "rawAdvisoriesBefore": 38,
+    "rawAdvisoriesAfter": 3,
+    "unexpected": 0,
+    "patchedLocally": 3,
+    "reviewBefore": "2026-10-13"
+  },
+  "nativeExports": {
+    "revision": "24d54eae6d9320fc82c7f1179f8e19d72b6314a6",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "exitCode": 0,
+    "budgetMiB": 4.6,
+    "verifiedOn": [
+      "ubuntu-latest",
+      "windows-latest"
+    ]
+  },
+  "accessibilityTree": {
+    "exitCode": 0,
+    "routes": 10,
+    "nativeScreenReader": false
+  },
+  "design": {
+    "routes": 18,
+    "widths": [
+      320,
+      390,
+      768
+    ],
+    "flowCaptures": 102,
+    "measurableFindings": 0,
+    "scope": "Full driver before final shorter copy; independent en/sv 100%/200% route recaptures and fresh-context committed onboarding checks after final copy. Selected images manually inspected."
+  },
+  "remaining": [
+    "E18 native compatibility acceptance",
+    "Image-mode determinism E16",
+    "Full device, VoiceOver/TalkBack, performance and release acceptance in later phases"
+  ],
+  "finalCI": {
+    "url": "https://github.com/Wrexist/WorldQuest/actions/runs/34749106906",
+    "headSha": "24d54eae6d9320fc82c7f1179f8e19d72b6314a6",
+    "conclusion": "success",
+    "tests": {
+      "ubuntu-latest": {
+        "suiteCounts": [
+          9,
+          6,
+          17,
+          43,
+          28,
+          557,
+          7,
+          676,
+          162
+        ],
+        "total": 1505
+      },
+      "windows-latest": {
+        "suiteCounts": [
+          9,
+          6,
+          43,
+          17,
+          28,
+          557,
+          7,
+          676,
+          162
+        ],
+        "total": 1505
+      }
+    },
+    "jobs": [
+      {
+        "name": "verify (ubuntu-latest)",
+        "conclusion": "success",
+        "startedAt": "2026-09-13T09:15:03Z",
+        "completedAt": "2026-09-13T09:23:18Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run pnpm/action-setup@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run pnpm install --frozen-lockfile",
+            "conclusion": "success"
+          },
+          {
+            "name": "Generate tokens and translation keys",
+            "conclusion": "success"
+          },
+          {
+            "name": "Install Chromium for Playwright",
+            "conclusion": "success"
+          },
+          {
+            "name": "Dependency security",
+            "conclusion": "success"
+          },
+          {
+            "name": "Verify",
+            "conclusion": "success"
+          },
+          {
+            "name": "Upload E2E screenshots",
+            "conclusion": "success"
+          },
+          {
+            "name": "Upload dependency audit",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run pnpm/action-setup@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "name": "verify (windows-latest)",
+        "conclusion": "success",
+        "startedAt": "2026-09-13T09:15:03Z",
+        "completedAt": "2026-09-13T09:25:46Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run pnpm/action-setup@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run pnpm install --frozen-lockfile",
+            "conclusion": "success"
+          },
+          {
+            "name": "Generate tokens and translation keys",
+            "conclusion": "success"
+          },
+          {
+            "name": "Install Chromium for Playwright",
+            "conclusion": "success"
+          },
+          {
+            "name": "Dependency security",
+            "conclusion": "success"
+          },
+          {
+            "name": "Verify",
+            "conclusion": "success"
+          },
+          {
+            "name": "Upload E2E screenshots",
+            "conclusion": "success"
+          },
+          {
+            "name": "Upload dependency audit",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run pnpm/action-setup@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "name": "database",
+        "conclusion": "success",
+        "startedAt": "2026-09-13T09:15:03Z",
+        "completedAt": "2026-09-13T09:17:46Z",
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run pnpm/action-setup@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/setup-node@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run supabase/setup-cli@v1",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run pnpm install --frozen-lockfile",
+            "conclusion": "success"
+          },
+          {
+            "name": "Build the edge function bundle",
+            "conclusion": "success"
+          },
+          {
+            "name": "Start Supabase",
+            "conclusion": "success"
+          },
+          {
+            "name": "Migrations apply from empty",
+            "conclusion": "success"
+          },
+          {
+            "name": "RLS policy tests",
+            "conclusion": "success"
+          },
+          {
+            "name": "Generated database types are up to date",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run actions/setup-node@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run pnpm/action-setup@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success"
+          }
+        ]
+      }
+    ]
+  },
+  "nativeExecution": {
+    "android": {
+      "prebuild": "passed",
+      "build": "failed",
+      "installed": false,
+      "emulatorOS": "Android 15",
+      "gradle": "8.14.3",
+      "lastTask": ":app:checkDebugAarMetadata",
+      "error": "Cache rename AccessDeniedException",
+      "mitigations": [
+        "isolated task cache",
+        "single worker and no daemon",
+        "scoped cache-workspace recovery after Gradle exited"
+      ]
+    },
+    "ios": {
+      "prebuild": "refused on Windows",
+      "executed": false
+    },
+    "acceptance": "E18 remains open"
+  }
+}

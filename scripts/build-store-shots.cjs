@@ -39,6 +39,7 @@
 
 const { chromium } = require('playwright')
 const { walkOnboarding } = require('./lib/onboarding-walk.cjs')
+const { browserContext } = require('./lib/browser-harness.cjs')
 const { launchOptions } = require('./chromium.cjs')
 const { token } = require('./tokens.cjs')
 const { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } = require('node:fs')
@@ -360,6 +361,7 @@ async function compose(page, screenshot, size, headline) {
     const captureWidth = Math.round(size.width / size.scale)
     const captureHeight = Math.round(size.height / size.scale)
     const page = await browser.newPage({
+      ...browserContext,
       viewport: { width: captureWidth, height: captureHeight },
       deviceScaleFactor: size.scale,
     })

@@ -1,5 +1,24 @@
 # Testing strategy
 
+The account gateway upgrade uses Vitest/coverage-v8 4.1.11 and Vite 7.3.6,
+pinned together in the lockfile. Better Auth's optional Vitest peer brought the
+old runner into the production dependency audit; upgrading resolves its reviewed
+advisories instead of adding exceptions. The mobile package must use the same
+runner version as the root coverage provider. Three exhaustive engine tests retain
+all generated cases with explicit 15-second limits; other test timeouts are unchanged.
+See the [Vitest 4 migration guide](https://github.com/vitest-dev/vitest/blob/v4.1.11/docs/guide/migration.md).
+
+The mobile coverage baseline was recalibrated for the new AST remapper. Before
+upgrading, the same 72 files / 710 passing tests reported 86.49% branch coverage
+with Vitest 2.1.9. With no app source/test edits or new exclusions, Vitest 4.1.11
+reports 1,486 of 2,070 branches (71.78%) across 105 source files. The branch floor
+is now 70%, leaving 1.78 percentage points of headroom versus the old 6.49. This
+records an instrumentation change, not extra tested behavior. Line/function/statement
+floors and all engine floors remain unchanged; both tools' reports must not be
+compared as a coverage trend. The current gaps remain visible in coverage output.
+
+> Current execution, 13 September 2026: component tests use **Vitest + react-native-web/jsdom**, not the historical Jest proposal below. `pnpm verify` runs the workspace/edge checks and static gates; `pnpm verify:full` adds native exports, browser E2E and the accessibility tree. See the [Phase 1 results](../plan/phase-1-verification.md). Browser commands that export to `node_modules/.cache/wq-web` must run sequentially: a second export clears files that an active harness is serving. For read-only parallel browser checks, finish one export first and run the `.cjs` drivers directly against it, with separate output directories. Mobile test concurrency is capped at four workers to avoid starving cold module imports.
+
 > "Plan it now."
 
 The shape is unusual on purpose: **the engines get near-total coverage, the UI gets

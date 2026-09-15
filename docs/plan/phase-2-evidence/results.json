@@ -1,0 +1,207 @@
+{
+  "checkedOn": "2026-09-13",
+  "applicationRevision": "8fc47d6b9f44da85e3389299159bb3523d4ad7c0",
+  "latestProofRevision": "cab287b",
+  "ownerScope": "Worldwide English/Swedish; development/test data only",
+  "local": {
+    "tests": 1533,
+    "mobileTests": 695,
+    "apiTests": 21,
+    "convexMockTests": 5,
+    "backendBoundary": {
+      "engineFiles": 33,
+      "contractFiles": 2,
+      "imports": 80
+    },
+    "verification": "Complete pnpm verify passed at 8fc47d6",
+    "security": "No unexpected advisories; existing three patched registry entries retained",
+    "browser": {
+      "passed": 82,
+      "skipped": 1,
+      "accessibilityRoutes": 10
+    },
+    "nativeBundlesMB": {
+      "ios": 4.56,
+      "android": 4.56,
+      "budget": 4.6
+    },
+    "design": {
+      "routeWidths": [
+        320,
+        390,
+        768
+      ],
+      "routes": 18,
+      "flowCaptures": 102,
+      "signOutFixtures": [
+        "en 320 normal",
+        "sv 320 normal",
+        "en 320 doubled text",
+        "sv 320 doubled text"
+      ],
+      "limitations": [
+        "Email row truncation and preview tab-label overlap at doubled text",
+        "No native screen-reader or physical-device certification"
+      ]
+    }
+  },
+  "convexCI": {
+    "url": "https://github.com/Wrexist/WorldQuest/actions/runs/34752588625",
+    "status": "success",
+    "backend": "real local Convex",
+    "auth": "synthetic admin impersonation",
+    "checks": [
+      "unauthenticated rejection",
+      "cross-account isolation",
+      "concurrent receipt deduplication",
+      "two-session different-lesson conflict retry",
+      "wallet/ledger reconciliation",
+      "review preservation",
+      "failure-after-write rollback",
+      "eight-duplicate-slot rejection",
+      "changed-payload rejection",
+      "safe retry",
+      "concurrent first-day bonus paid once"
+    ],
+    "committedLessons": 4,
+    "reviews": 20,
+    "facts": 5,
+    "countScope": "Reported counts describe the primary account; a separate account committed two first-day lessons with one daily bonus."
+  },
+  "nativeBaseline": {
+    "url": "https://github.com/Wrexist/WorldQuest/actions/runs/34750705925",
+    "builds": "Both passed",
+    "ios": "Simulator startup viewed",
+    "android": "Android 15 Pixel 6 onboarding, lesson navigation and retained onboarding after force-stop/relaunch"
+  },
+  "notPerformed": [
+    "Production cutover",
+    "Paid cloud backend provisioning",
+    "Store submission",
+    "Real-user migration"
+  ],
+  "verificationCI": {
+    "url": "https://github.com/Wrexist/WorldQuest/actions/runs/34754478764",
+    "revision": "8fc47d6b9f44da85e3389299159bb3523d4ad7c0",
+    "status": "success",
+    "jobs": [
+      "database",
+      "verify (ubuntu-latest)",
+      "verify (windows-latest)"
+    ]
+  },
+  "androidFinal": {
+    "buildRun": "https://github.com/Wrexist/WorldQuest/actions/runs/34752521529",
+    "device": "Pixel 6 Android 15 x86_64 emulator",
+    "checks": [
+      "onboarding",
+      "lesson entry, pause and exit",
+      "Premium dismissal",
+      "Home restored after force-stop/relaunch",
+      "encoded country deep link"
+    ],
+    "screenshots": [
+      "android-final-native-relaunch.png",
+      "android-final-native-country.png"
+    ]
+  },
+  "iosFinal": {
+    "journeyRun": "https://github.com/Wrexist/WorldQuest/actions/runs/34753801839",
+    "buildRun": "https://github.com/Wrexist/WorldQuest/actions/runs/34753062498",
+    "binaryRevision": "f560dcc",
+    "device": "iPhone 16 Pro iOS 18.5 arm64 simulator",
+    "status": "success",
+    "checks": [
+      "onboarding",
+      "lesson entry, pause and exit",
+      "Premium dismissal",
+      "Home restored after force-stop/relaunch",
+      "encoded country deep link"
+    ],
+    "screenshots": [
+      "ios-final-relaunch.png",
+      "ios-final-country.png"
+    ]
+  },
+  "nativeScope": "E18 dependency acceptance complete after correcting the original screenshot interpretation. Connected native auth/account transitions and the full release device matrix remain unverified.",
+  "iosAdditional": {
+    "journeyRun": "https://github.com/Wrexist/WorldQuest/actions/runs/34754127288",
+    "binaryRevision": "f560dcc",
+    "flowRevision": "44c2884",
+    "device": "iPhone 17 Pro iOS 26.4 arm64 simulator",
+    "tooling": "Xcode 26.6",
+    "automatedStatus": "success",
+    "visualFinding": "Superseded: full-resolution inspection and decoded pixels prove the original label was present (6149 light pixels within the button). Earlier preview-based finding was incorrect.",
+    "screenshots": [
+      "ios-26-country-flow.png",
+      "ios-26-country-final.png"
+    ]
+  },
+  "d1": {
+    "checkedOn": "2026-09-13",
+    "decision": "Cloudflare Workers/D1 selected by owner; ADR 0013",
+    "database": {
+      "name": "worldquest-development",
+      "id": "4354bdf7-8e07-46d9-93d7-a0700f2f1096",
+      "jurisdiction": "eu",
+      "migration": "0001_accounts_and_lessons.sql",
+      "applicationTables": 8,
+      "accounts": 0,
+      "verification": "Created and queried through the signed-in Chrome dashboard"
+    },
+    "local": {
+      "runtime": "Wrangler 4.131.1 / Miniflare 5.20260911.0-alpha / workerd / real SQLite",
+      "testsPassed": 10,
+      "maximumLessonStatements": 11,
+      "authenticationStatements": 1,
+      "workerBundleGzipKiB": 30.8,
+      "security": "No unexpected advisories",
+      "verification": "pnpm verify passed: 1538 tests at e0325f3; ten D1 tests pass after response-stream test fix d68b2f5"
+    },
+    "deployment": {
+      "worker": "worldquest-development-api",
+      "version": "dc8bd22b-f2ec-4ab1-9cb7-6915dd20bb87",
+      "deploymentId": "bc4f7bb6-4a51-4a05-9237-ebe25c51c1fa",
+      "deployedAt": "2026-09-13T13:45:54.30747Z",
+      "verification": "Wrangler deploy succeeded; Cloudflare API readback confirmed active version at 100%, D1 binding and disabled API/workers.dev/preview URLs. Remote migration list has no pending migrations.",
+      "bundleSha256": "0f0c9e584e4b14c5384c7944250f45f36e278e560de896f10bb4aaab12af98a3",
+      "publicApi": "disabled; verified remotely",
+      "hostedRuntimeAcceptance": "not exercised; no public routes enabled",
+      "mobileAdapter": "legacy; D1 cutover not yet accepted"
+    },
+    "open": [
+      "native guest/link/recovery/logout/deletion acceptance",
+      "secure native credential storage",
+      "canonical ticket issuance and full reward contract",
+      "offline history ordering and hydration",
+      "child policy and abuse controls",
+      "export, erasure and restore",
+      "hosted cost and CPU/load measurements"
+    ],
+    "ci": {
+      "proof": "https://github.com/Wrexist/WorldQuest/actions/runs/34757852417",
+      "proofStatus": "success",
+      "revision": "d68b2f5",
+      "nativeReplay": {
+        "run": "https://github.com/Wrexist/WorldQuest/actions/runs/34757666031",
+        "status": "success",
+        "workflowRevision": "e0325f3",
+        "nativeAndJavaScriptRevision": "f560dcc",
+        "device": "iPhone 17 Pro",
+        "os": "iOS 26.4",
+        "whiteLabelPixels": 6149,
+        "scope": "Final Maestro flow and PNG paint check; not a D1-connected native app"
+      },
+      "full": {
+        "run": "https://github.com/Wrexist/WorldQuest/actions/runs/34757852507",
+        "status": "success",
+        "revision": "d68b2f5",
+        "jobs": [
+          "verify:full Ubuntu",
+          "verify:full Windows",
+          "legacy source database"
+        ]
+      }
+    }
+  }
+}

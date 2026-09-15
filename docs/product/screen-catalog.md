@@ -1,5 +1,7 @@
 # Screen catalogue
 
+> **Historical specification/status — superseded for release planning on 13 September 2026.** Use the [current execution checklist](../plan/execution-plan.md), [evidence log](../plan/phase-1-verification.md) and [launch brief](../product/launch-brief.md). Feature lists and checked boxes below describe earlier targets or checks, not current device, backend or store certification.
+
 Two lists: the **15 designed screens** from
 [`../design/assets/mockup-v1.png`](../design/assets/mockup-v1.png), and the **22
 hidden screens** that teams forget until launch week. Both are required for v1.0

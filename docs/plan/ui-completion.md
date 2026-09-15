@@ -1,5 +1,7 @@
 # Finishing the app — every screen, every feature
 
+> **Historical specification/status — superseded for release planning on 13 September 2026.** Use the [current execution checklist](execution-plan.md), [evidence log](phase-1-verification.md) and [launch brief](../product/launch-brief.md). Feature lists and checked boxes below describe earlier targets or checks, not current device, backend or store certification.
+
 The companion to [`asset-independent-work.md`](asset-independent-work.md), which is now
 largely done. That list asked *"what can ship before any artwork exists?"* This one asks
 the harder question: **what is still missing between here and a v1.0 someone would pay

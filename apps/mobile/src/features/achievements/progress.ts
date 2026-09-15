@@ -1,3 +1,4 @@
+import { onStorageScopeChange } from '../../lib/storage.js'
 /**
  * Achievement progress, evaluated on the device.
  *
@@ -282,3 +283,8 @@ export function useProgressById(): {
   )
   return { progressById, progressFor }
 }
+
+onStorageScopeChange(() => {
+  resetAchievementCache()
+  for (const listener of listeners) listener()
+})

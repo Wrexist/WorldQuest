@@ -90,7 +90,7 @@ describe('OnboardingScreen', () => {
     getStarted()
     expect(screen.getByText(/Choose your language/i)).toBeTruthy()
     answer('English')
-    expect(screen.getByText(/five minutes a day/i)).toBeTruthy()
+    expect(screen.getByText(/Explore countries/i)).toBeTruthy()
     expect(screen.queryByText(/sign up|create account/i)).toBeNull()
   })
 
@@ -336,9 +336,9 @@ describe('OnboardingScreen', () => {
     // Past the greeting and the language step, which are what the flow opens on.
     getStarted()
     answer('English')
-    expect(screen.getByText(/five minutes a day/i)).toBeTruthy()
-    expect(screen.getByText(/Remembers what you forget/i)).toBeTruthy()
-    expect(screen.getByText(/Collect the whole world/i)).toBeTruthy()
+    expect(screen.getByText(/Explore countries/i)).toBeTruthy()
+    expect(screen.getByText(/Practice daily/i)).toBeTruthy()
+    expect(screen.getByText(/Your world/i)).toBeTruthy()
     expect(screen.getAllByRole('tab')).toHaveLength(3)
   })
 
@@ -382,7 +382,7 @@ describe('OnboardingScreen', () => {
     expect(screen.getByText(/When were you born/i)).toBeTruthy()
 
     fireEvent.click(screen.getByRole('button', { name: 'Back' })) // age → slides
-    expect(screen.getByText(/five minutes a day/i)).toBeTruthy()
+    expect(screen.getByText(/Explore countries/i)).toBeTruthy()
 
     fireEvent.click(screen.getByRole('button', { name: 'Back' })) // slides → language
     expect(screen.getByText(/Choose your language/i)).toBeTruthy()
@@ -439,7 +439,7 @@ describe('the third slide promises what the app actually ships', () => {
     // that chooses the language they are in. Reached the way a user reaches them.
     getStarted()
     answer('English')
-    expect(screen.getByText(new RegExp(`${COUNTRY_COUNT} flags`))).toBeTruthy()
+    expect(screen.getByText(new RegExp(`${COUNTRY_COUNT} countries`))).toBeTruthy()
   })
 
   it('names no country count the packs cannot back', () => {

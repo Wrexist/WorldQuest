@@ -13,8 +13,8 @@
   "profile:stats.countries": "Länder",
   "profile:world.title": "Din värld",
   "profile:world.summary": "{learned} av {total} fakta inlärda",
-  "profile:account.title": "Spara dina framsteg",
-  "profile:account.body": "Du lär dig utan konto. Skapar du ett stannar din svit kvar även om du byter telefon.",
+  "profile:account.title": "Koppla din e-post",
+  "profile:account.body": "Lägg till en e-postadress för att logga in på ditt konto. Återställning av framsteg testas fortfarande.",
   "profile:account.cta": "Skapa ett konto",
   "profile:empty.title": "Inget att visa ännu",
   "profile:empty.body": "Gör din första lektion så börjar dina siffror här.",
@@ -29,5 +29,6 @@
   "profile:badges.title": "Senaste märken",
   "profile:stats.longest.short": "bäst {days}",
   "profile:league.title": "Liga",
-  "profile:league.body": "Se hur du ligger till mot 29 andra utforskare den här veckan."
+  "profile:league.body": "Se hur du ligger till mot 29 andra utforskare den här veckan.",
+  "profile:account.body__note": "Current account capability. Do not promise full recovery before second-device verification."
 }

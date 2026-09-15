@@ -29,8 +29,8 @@ const answer = (wasCorrect: boolean, answered = true): AnsweredItem => ({
   answeredAt: 1_800_000_000_000,
 })
 
-beforeEach(() => {
-  clearAll()
+beforeEach(async () => {
+  await clearAll()
   resetAccuracyCache()
 })
 

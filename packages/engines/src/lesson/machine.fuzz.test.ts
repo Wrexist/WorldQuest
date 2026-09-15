@@ -161,7 +161,8 @@ function assertInvariants(state: LessonState, trail: string): void {
 }
 
 describe('the lesson machine survives sequences nobody wrote', () => {
-  it('never reaches an impossible state, over 400 random runs', () => {
+  // Preserve all generated runs when synchronous timeout enforcement is enabled.
+  it('never reaches an impossible state, over 400 random runs', { timeout: 15_000 }, () => {
     for (let seed = 1; seed <= 400; seed++) {
       const rng = seededRng(seed)
       let state = initialState({

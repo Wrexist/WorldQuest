@@ -1,3 +1,4 @@
+import { onStorageScopeChange } from './storage.js'
 /**
  * The local record of what finished lessons are expected to be worth.
  *
@@ -129,3 +130,8 @@ export const peekAwards = (): readonly PredictedAward[] => read()
 export function resetAwardsCache(): void {
   snapshot = null
 }
+
+onStorageScopeChange(() => {
+  resetAwardsCache()
+  for (const listener of listeners) listener()
+})

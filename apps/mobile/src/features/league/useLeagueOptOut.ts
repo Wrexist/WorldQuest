@@ -12,8 +12,8 @@
  */
 
 import { useCallback, useEffect, useState } from 'react'
-import { fetchLeagueOptOut, setLeagueOptOut } from '@worldquest/api'
-import { currentUser, isConfigured, supabase } from '../../lib/supabase.js'
+import { isConfigured } from '../../lib/supabase.js'
+import { withAccount } from '../../lib/backend.js'
 import { queryClient, queryKeys } from '../../lib/query.js'
 
 export type UseLeagueOptOut = {
@@ -28,7 +28,7 @@ export function useLeagueOptOut(): UseLeagueOptOut {
   useEffect(() => {
     if (!isConfigured()) return
     let cancelled = false
-    void fetchLeagueOptOut(supabase())
+    void withAccount((account) => account.fetchLeagueOptOut())
       .then((value) => {
         if (!cancelled) setOptedOut(value)
       })
@@ -47,8 +47,7 @@ export function useLeagueOptOut(): UseLeagueOptOut {
     setOptedOut(!value)
     void (async () => {
       try {
-        const { userId } = await currentUser()
-        await setLeagueOptOut(supabase(), userId, !value)
+        await withAccount((account) => account.setLeagueOptOut(!value))
         // The standings belong to a different answer now.
         void queryClient().invalidateQueries({ queryKey: queryKeys.league })
       } catch {

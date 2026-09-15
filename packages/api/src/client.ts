@@ -10,16 +10,13 @@
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from './database.types.js'
+import type { SessionStorage, SubmitLessonRequest, SubmitLessonResponse, Progress, SubscriptionRow, FreezePurchase, StreakRepair, ContinuePurchase, LeagueCohort } from './contracts.js'
+export type { SessionStorage, SubmitLessonRequest, SubmitLessonResponse, Progress, SubscriptionRow, FreezePurchase, StreakRepair, ContinuePurchase, LeagueRow, LeagueCohort } from './contracts.js'
+
 
 /** Every query in the app is checked against the real schema, not against `any`. */
 export type WorldQuestClient = SupabaseClient<Database>
 
-/** The three methods supabase-js needs to persist a session. Not the DOM `Storage`. */
-export type SessionStorage = {
-  getItem: (key: string) => string | null | Promise<string | null>
-  setItem: (key: string, value: string) => void | Promise<void>
-  removeItem: (key: string) => void | Promise<void>
-}
 
 export type WorldQuestConfig = {
   readonly url: string
@@ -78,155 +75,25 @@ export function createWorldQuestClient(config: WorldQuestConfig): WorldQuestClie
  * mid-signup ends up with an auth record and no profile, after which every query
  * returns empty for reasons nobody can reproduce.
  */
-export async function ensureSession(client: WorldQuestClient): Promise<{ userId: string }> {
-  const { data: existing } = await client.auth.getSession()
-  if (existing.session?.user) return { userId: existing.session.user.id }
+export async function ensureSession(
+  client: WorldQuestClient,
+  resolved?: (userId: string, created: boolean) => void,
+): Promise<{ userId: string }> {
+  const { data: existing, error: sessionError } = await client.auth.getSession()
+  if (sessionError) throw sessionError
+  if (existing.session?.user) {
+    resolved?.(existing.session.user.id, false)
+    return { userId: existing.session.user.id }
+  }
 
   const { data, error } = await client.auth.signInAnonymously()
   if (error) throw error
   if (!data.user) throw new Error('signInAnonymously returned no user')
-
+  resolved?.(data.user.id, true)
   return { userId: data.user.id }
 }
 
-// ── lesson submission ───────────────────────────────────────────────────────
 
-export type SubmitLessonRequest = {
-  lessonId: string
-  kind: 'lesson' | 'quest' | 'review' | 'challenge' | 'event'
-  topicId?: string
-  startedAt: number
-  answers: readonly unknown[]
-  /** Statistic, not a reward input — see the note in `apps/mobile/src/lib/sync.ts`. */
-  heartsLost?: number
-  clientVersion?: string
-  /**
-   * Today's quest as this device composed it, so the server can pay for it.
-   *
-   * A proposal rather than a claim, and the distinction is the whole design. The quest is
-   * composed on the device because it has to be playable offline, and the server cannot
-   * recompute it — generation partitions facts by what was DUE at that moment, and the
-   * answers in this very submission have moved those dates. So the first submission of a
-   * local day pins these tasks and every later one is scored against the pinned copy.
-   *
-   * Nothing here says what anything is WORTH, and nothing here says what was done. The
-   * server reads its own `review_log` and `lessons` for that.
-   */
-  quest?: {
-    /**
-     * The local date the DEVICE composed this quest for.
-     *
-     * Not the date anything is recorded under — the server decides that from
-     * `profiles.timezone`, because the date is the primary key of the row saying what has
-     * been paid and a caller who could choose it could collect a quest a day. This is a
-     * MATCH check: a lesson that spans local midnight is submitted on a new day carrying
-     * the old day's five tasks, and pinning those would make the new day's quest
-     * unpayable. The two disagreeing means "skip it, the next lesson will pin the right
-     * one", which is the only thing a client can cause here.
-     */
-    date: string
-    tasks: readonly {
-      slot: string
-      target: number
-      factIds: readonly string[]
-      goal?: string
-    }[]
-  }
-}
-
-export type SubmitLessonResponse = {
-  lessonId: string
-  items: number
-  correct: number
-  accuracy: number
-  xpAwarded: number
-  coinsAwarded: number
-  perfect: boolean
-  rejected: number
-  /**
-   * Which facts changed mastery level, as the SERVER computed it.
-   *
-   * The field that makes `fact_mastered` achievements possible. It was already returned
-   * and nothing on the client read it, so the flag and capital collectors — 40 and 63
-   * countries of content — could never move off zero.
-   */
-  masteryChanges?: readonly { readonly factId: string; readonly from: string; readonly to: string }[]
-  /**
-   * Overdue reviews cleared in this lesson.
-   *
-   * `ach.review.faithful` counts these — 25 / 250 / 1000 — and it is the only achievement
-   * in the catalogue that measures the behaviour the product exists to produce rather
-   * than volume. The grader computed the number and threw it away.
-   */
-  overdueCleared?: number
-  /**
-   * Countries whose every quizzable fact is now mastered.
-   *
-   * The last achievement event with no producer, and one only the server can answer: it
-   * is a question about facts the lesson did not touch. `ach.countries.complete` and
-   * `ach.set.nordics` both count it.
-   */
-  entityMastered?: readonly string[]
-  /**
-   * The session was too short to contain the answers it claimed, so its timing was
-   * discarded and every answer graded as average. Not shown to the user — a real client
-   * cannot produce it, and telling someone their clock looked forged is a conversation
-   * for a support ticket, not a summary screen. It exists so a spike is graphable.
-   */
-  timingDiscarded: boolean
-  /**
-   * The streak as the server now has it — the first time this endpoint has had one to
-   * report, because until `record_lesson` nothing wrote `streaks` at all.
-   *
-   * Optional because a replayed submission returns the original row and does not
-   * recompute it: awarding a streak day twice for one lesson is the same class of bug as
-   * awarding XP twice.
-   */
-  streak?: {
-    current: number
-    longest: number
-    extended: boolean
-    freezeUsed: boolean
-    reset: boolean
-  }
-  /**
-   * What the daily quest actually paid, decided and recorded server-side.
-   *
-   * Optional because a replayed submission returns the original lesson row without
-   * re-running the quest, and because a client too old to send a quest gets none back.
-   * Zero is a normal answer: it means every slot this lesson completed had already been
-   * paid for earlier today, which is what stops one quest paying five times.
-   */
-  quest?: {
-    xp: number
-    coins: number
-    slotsPaid: readonly string[]
-    bonusPaid: boolean
-  }
-  /**
-   * The achievement tiers this lesson actually banked, and what they paid.
-   *
-   * The SERVER's list. The device evaluates its own copy for an immediate celebration —
-   * that is the optimistic half, exactly like the XP on the summary — and this is the one
-   * that moved a balance. `unlocked` is empty when every tier announced had already been
-   * banked, which is the normal case for a replay.
-   */
-  achievements?: {
-    xp: number
-    coins: number
-    unlocked: readonly { achievementId: string; tier: string }[]
-  }
-  /**
-   * Continents this lesson earned something in.
-   *
-   * `ach.explorer.continents` used to count continent PAGES opened, which a server cannot
-   * see and six taps completed. It counts regions answered correctly in now, and the
-   * server sends back which ones so the device's optimistic copy advances on the same
-   * members rather than on a rule of its own.
-   */
-  regionsStarted?: readonly string[]
-  replayed: boolean
-}
 
 /**
  * Submit a finished lesson for authoritative grading.
@@ -247,46 +114,6 @@ export async function submitLesson(
   return data
 }
 
-// ── progress ────────────────────────────────────────────────────────────────
-
-/**
- * What Home needs to render, in one round trip.
- *
- * `gems` used to be here. Nothing grants one, nothing spends one, no screen renders one,
- * and the column has been 0 on every row this product ever created — a third currency
- * that existed only as a field being fetched and thrown away. Fetching it made the app
- * look like it had a gem economy to anyone reading this type. The COLUMN stays: dropping
- * it is a migration for no benefit, and a premium currency is a plausible v2 decision.
- * Pretending to have one today is not.
- */
-export type Progress = {
-  readonly xpTotal: number
-  readonly coins: number
-  readonly hearts: number
-  readonly streak: number
-  readonly longestStreak: number
-  readonly factsMastered: number
-  /**
-   * The recovery fields, which the streak screen stubbed to their defaults because they
-   * "do NOT exist in the progress payload yet". They existed in the table the whole time.
-   *
-   * `lastActiveDate` is what makes the displayed streak honest between lessons —
-   * `streaks.current` is only written when a lesson lands, so a user who missed two days
-   * was still being shown the number they had before they missed them.
-   */
-  readonly lastActiveDate: string | null
-  readonly freezesHeld: number
-  /**
-   * The local date the streak broke, or null while it is intact.
-   *
-   * `repairAvailability` opens on this and returns `not-broken` when it is null, so the
-   * whole repair feature — a 600-coin sink with a 48-hour window and a 30-day cooldown,
-   * written and tested — could never be offered to anyone. Nothing wrote the column,
-   * because a break is the ABSENCE of activity and only a scheduled job notices one.
-   */
-  readonly brokenOn: string | null
-  readonly lastRepairAt: number | null
-}
 
 /** Mastery levels that count as learned for the progress ring. */
 const MASTERED: readonly Database['public']['Enums']['mastery_level'][] = [
@@ -334,30 +161,6 @@ export async function fetchProgress(client: WorldQuestClient): Promise<Progress>
   }
 }
 
-/**
- * Read this user's subscription, as the server understands it.
- *
- * The shape is `Subscription` from `packages/engines/src/entitlements` — not converted
- * to it, but the same field names and the same enum values, so this is a rename of
- * `expires_at` and nothing more. A mapping layer here is somewhere for `in_grace` to
- * quietly become `active`, which is the one mistake in this file nobody would notice
- * until a support ticket.
- *
- * The types are declared structurally rather than imported, because `packages/api` must
- * not depend on `packages/engines` — the dependency rule in PROJECT.md §3 runs the other
- * way. `entitlementOf` accepts this object as-is.
- *
- * **No row means no subscription**, which is why it is `maybeSingle` and why the
- * fallback is the free tier rather than an error. Most users will never have a row, and
- * a first launch must not fail on the absence of one.
- */
-export type SubscriptionRow = {
-  readonly status: Database['public']['Enums']['subscription_status']
-  readonly tier: Database['public']['Enums']['plan_tier']
-  readonly expiresAt: number | null
-  readonly willRenew: boolean
-  readonly hasUsedTrial: boolean
-}
 
 const NO_SUBSCRIPTION: SubscriptionRow = {
   status: 'none',
@@ -389,12 +192,6 @@ export async function fetchSubscription(
   }
 }
 
-// ── consumables ─────────────────────────────────────────────────────────────
-
-export type FreezePurchase =
-  | { readonly status: 'purchased'; readonly freezesHeld: number; readonly coins: number }
-  | { readonly status: 'at_cap'; readonly freezesHeld: number }
-  | { readonly status: 'insufficient_funds' | 'not_for_sale' | 'no_streak' | 'unauthorized' }
 
 /**
  * Buy a streak freeze.
@@ -413,19 +210,6 @@ export async function buyStreakFreeze(client: WorldQuestClient): Promise<FreezeP
   return (data ?? { status: 'unauthorized' }) as FreezePurchase
 }
 
-export type StreakRepair =
-  | { readonly status: 'repaired'; readonly spent: number; readonly current: number; readonly coins: number }
-  | { readonly status: 'cooldown'; readonly availableInDays: number }
-  | {
-      readonly status:
-        | 'insufficient_funds'
-        | 'not_for_sale'
-        | 'no_streak'
-        | 'not_broken'
-        | 'nothing_to_restore'
-        | 'window_expired'
-        | 'unauthorized'
-    }
 
 /**
  * Buy a broken streak back.
@@ -450,10 +234,6 @@ export async function repairStreak(client: WorldQuestClient): Promise<StreakRepa
   return (data ?? { status: 'unauthorized' }) as StreakRepair
 }
 
-export type ContinuePurchase =
-  | { readonly status: 'purchased'; readonly spent: number; readonly coins: number }
-  | { readonly status: 'already_paid'; readonly coins: number }
-  | { readonly status: 'insufficient_funds' | 'not_for_sale' | 'unauthorized' }
 
 /**
  * Pay to carry on after running out of hearts mid-lesson.
@@ -566,49 +346,7 @@ export async function signOut(client: WorldQuestClient): Promise<void> {
   if (error) throw error
 }
 
-// ── the league ──────────────────────────────────────────────────────────────
 
-/**
- * Reading the week's cohort.
- *
- * ## Why this waited
- *
- * The engine and the migration have been done and unreachable since they were written,
- * with the reason recorded in `scripts/reachability.ts`: the environment they were
- * written in has no Docker, so the migration could not be applied to a real Postgres,
- * `pnpm db:types` could not regenerate the types from it, and `supabase test db` could
- * not prove the RLS policies do what they claim. Shipping an unproven policy on a
- * children's leaderboard was the one thing not worth guessing at.
- *
- * CI has now done all three. All 35 RLS tests pass against this schema, and
- * `database.types.ts` carries the tables and the view. So the client half is buildable
- * on evidence rather than on hope, and this is it.
- *
- * ## One read, through the view
- *
- * `league_standings` is `security_invoker` and carries no `user_id` column — it joins
- * the cohort and computes `is_you` server-side. That is the whole privacy design: a
- * client cannot ask "who is user X", because the answer is not in the shape it receives.
- * The row policy on `league_members` restricts SELECT to cohorts the reader belongs to,
- * so a reader outside a cohort gets nothing rather than a filtered nothing.
- *
- * Nothing here writes. `league_members` has no client write policy, deliberately —
- * weekly XP is the server's, and a client that can write it is a client that can win.
- */
-
-/** One row of the standings view, in the engine's shape. */
-export type LeagueRow = {
-  readonly handle: string
-  readonly weeklyXp: number
-  readonly isYou: boolean
-}
-
-export type LeagueCohort = {
-  readonly weekId: string
-  readonly tier: string
-  readonly division: number
-  readonly members: readonly LeagueRow[]
-}
 
 /**
  * This week's cohort, or null when the reader is in none.

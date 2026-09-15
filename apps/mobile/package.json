@@ -26,6 +26,7 @@
     "expo": "~54.0.0",
     "expo-audio": "~1.1.1",
     "expo-constants": "~18.0.13",
+    "expo-crypto": "15.0.9",
     "expo-font": "~14.0.12",
     "expo-haptics": "~15.0.8",
     "expo-linear-gradient": "~15.0.8",
@@ -33,6 +34,7 @@
     "expo-localization": "~17.0.9",
     "expo-notifications": "~0.32.17",
     "expo-router": "~6.0.24",
+    "expo-secure-store": "~15.0.8",
     "expo-splash-screen": "~31.0.13",
     "expo-store-review": "~9.0.9",
     "react": "19.1.0",
@@ -43,13 +45,21 @@
     "react-native-safe-area-context": "5.6.2",
     "react-native-screens": "~4.16.0"
   },
-  "$comment": "Phase 1 is deliberately ugly. Design lands in weeks 3-6 — see docs/plan/build-order.md.",
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.1.0",
     "@worldquest/content": "workspace:*",
     "jsdom": "^25.0.1",
     "react-native-web": "^0.21.2",
-    "vitest": "^2.1.8"
+    "vitest": "4.1.11"
+  },
+  "expo": {
+    "autolinking": {
+      "android": {
+        "buildFromSource": [
+          "expo-secure-store"
+        ]
+      }
+    }
   }
 }

@@ -438,7 +438,8 @@ describe('rebuild', () => {
 })
 
 describe('properties', () => {
-  it('never produces NaN, negative stability, or a due date in the past', () => {
+  // Keep all 10,000 sequences under coverage; this is not a latency assertion.
+  it('never produces NaN, negative stability, or a due date in the past', { timeout: 15_000 }, () => {
     // 10,000 random review sequences. Scheduling bugs are silent — nobody files a
     // ticket saying "your scheduler is miscalibrated", they just leave.
     let seed = 12345

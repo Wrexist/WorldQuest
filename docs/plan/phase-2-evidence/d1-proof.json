@@ -1,0 +1,49 @@
+{
+  "source": "https://github.com/Wrexist/WorldQuest/actions/runs/34757852417",
+  "revision": "d68b2f518a60fb41d8e926df83750fb071961d45",
+  "backend": "Cloudflare Workers/D1 local runtime",
+  "passed": 10,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "D1 Worker acceptance slice (real workerd and SQLite) fails closed when the application API is disabled",
+      "status": "passed"
+    },
+    {
+      "name": "D1 Worker acceptance slice (real workerd and SQLite) creates restricted guests, stores only token hashes and rejects identity injection",
+      "status": "passed"
+    },
+    {
+      "name": "D1 Worker acceptance slice (real workerd and SQLite) rejects another account using a ticket or reading a receipt",
+      "status": "passed"
+    },
+    {
+      "name": "D1 Worker acceptance slice (real workerd and SQLite) deduplicates concurrent submissions and rejects changed payloads",
+      "status": "passed"
+    },
+    {
+      "name": "D1 Worker acceptance slice (real workerd and SQLite) preserves concurrent different lessons and pays the daily bonus once",
+      "status": "passed"
+    },
+    {
+      "name": "D1 Worker acceptance slice (real workerd and SQLite) rolls back every write after an injected database failure and retries safely",
+      "status": "passed"
+    },
+    {
+      "name": "D1 Worker acceptance slice (real workerd and SQLite) rejects forged, duplicated, oversized and malformed answers without paying",
+      "status": "passed"
+    },
+    {
+      "name": "D1 Worker acceptance slice (real workerd and SQLite) revokes logout immediately and rejects expired sessions",
+      "status": "passed"
+    },
+    {
+      "name": "D1 Worker acceptance slice (real workerd and SQLite) fits a maximum-size lesson into a bounded number of real D1 statements",
+      "status": "passed"
+    },
+    {
+      "name": "D1 Worker acceptance slice (real workerd and SQLite) rejects a session revoked between the grading read and transaction commit",
+      "status": "passed"
+    }
+  ]
+}

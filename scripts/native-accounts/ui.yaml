@@ -1,0 +1,86 @@
+appId: com.wrexist.worldquest.accountsproof
+---
+# The birth-year and code fields use a numeric keypad, and the two platforms need
+# opposite handling. On Android a tap while the keyboard is open is consumed
+# dismissing it, so the keyboard is hidden first (without this the "Send me a
+# code" tap landed but the app never advanced past the email step). On iOS a
+# number pad has no dismiss key at all, so Maestro's hideKeyboard fails with the
+# keyboard legitimately on screen; the primary button sits above the keypad, so
+# the flow taps it directly instead.
+- runFlow:
+    when:
+      platform: android
+    commands:
+      - openLink: worldquestaccountsproof://ui
+# Same iOS scheme-handoff prompt as in reinstall.yaml: the app cannot render
+# the account screens while the system is still asking whether to open it.
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          text: 'Open'
+          optional: true
+- extendedWaitUntil:
+    visible: Start as guest
+    timeout: 120000
+- tapOn: Start as guest
+- tapOn: Link your email
+- tapOn: Birth year
+- inputText: '2000'
+- runFlow:
+    when:
+      platform: android
+    commands:
+      - hideKeyboard
+- tapOn: Continue
+- tapOn: Email
+- inputText: native-proof@example.invalid
+- runFlow:
+    when:
+      platform: android
+    commands:
+      - hideKeyboard
+- tapOn: Send me a code
+- extendedWaitUntil:
+    visible: Eight-digit code
+    timeout: 30000
+- takeScreenshot: ui-code
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible: Eight-digit code
+    timeout: 60000
+- runScript: mailbox.js
+- tapOn: Eight-digit code
+- inputText: ${output.code}
+- runFlow:
+    when:
+      platform: android
+    commands:
+      - hideKeyboard
+- tapOn: Confirm
+- extendedWaitUntil:
+    visible: Your email is linked
+    timeout: 30000
+- takeScreenshot: ui-linked
+- tapOn: Continue
+- tapOn: Delete account
+- takeScreenshot: ui-delete-confirmation
+- tapOn: Send me a code
+- extendedWaitUntil:
+    visible: Eight-digit code
+    timeout: 30000
+- runScript: mailbox.js
+- tapOn: Eight-digit code
+- inputText: ${output.code}
+- runFlow:
+    when:
+      platform: android
+    commands:
+      - hideKeyboard
+- tapOn: Delete permanently
+- extendedWaitUntil:
+    visible: Your account is deleted
+    timeout: 30000
+- takeScreenshot: ui-deleted

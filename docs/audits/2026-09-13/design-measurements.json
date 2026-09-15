@@ -1,0 +1,2872 @@
+{
+  "routes": {
+    "home": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 94,
+        "emptiestBand": {
+          "px": 16,
+          "percentOfViewport": 3,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Explorer!"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 95,
+        "emptiestBand": {
+          "px": 16,
+          "percentOfViewport": 2,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Explorer!"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 120,
+          "percentOfViewport": 12
+        },
+        "contentDensity": 84,
+        "emptiestBand": {
+          "px": 116,
+          "percentOfViewport": 11,
+          "startsAtPercent": 81
+        },
+        "headings": [
+          "Explorer!"
+        ]
+      }
+    },
+    "lesson": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 86,
+        "emptiestBand": {
+          "px": 28,
+          "percentOfViewport": 5,
+          "startsAtPercent": 11
+        },
+        "headings": [
+          "Which country is highlighted?"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 113,
+          "percentOfViewport": 13
+        },
+        "contentDensity": 65,
+        "emptiestBand": {
+          "px": 128,
+          "percentOfViewport": 15,
+          "startsAtPercent": 85
+        },
+        "headings": [
+          "Which country is highlighted?"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 203,
+          "percentOfViewport": 20
+        },
+        "contentDensity": 54,
+        "emptiestBand": {
+          "px": 216,
+          "percentOfViewport": 21,
+          "startsAtPercent": 79
+        },
+        "headings": [
+          "Which country is highlighted?"
+        ]
+      }
+    },
+    "explore": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 87,
+        "emptiestBand": {
+          "px": 28,
+          "percentOfViewport": 5,
+          "startsAtPercent": 11
+        },
+        "headings": [
+          "Explore"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 86,
+        "emptiestBand": {
+          "px": 28,
+          "percentOfViewport": 3,
+          "startsAtPercent": 7
+        },
+        "headings": [
+          "Explore"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 92,
+        "emptiestBand": {
+          "px": 28,
+          "percentOfViewport": 3,
+          "startsAtPercent": 6
+        },
+        "headings": [
+          "Explore"
+        ]
+      }
+    },
+    "quests": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 92,
+        "emptiestBand": {
+          "px": 16,
+          "percentOfViewport": 3,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Today's Quest"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 93,
+        "emptiestBand": {
+          "px": 16,
+          "percentOfViewport": 2,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Today's Quest"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 90,
+        "emptiestBand": {
+          "px": 24,
+          "percentOfViewport": 2,
+          "startsAtPercent": 86
+        },
+        "headings": [
+          "Today's Quest"
+        ]
+      }
+    },
+    "profile": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 65,
+        "emptiestBand": {
+          "px": 92,
+          "percentOfViewport": 16,
+          "startsAtPercent": 8
+        },
+        "headings": [
+          "Nothing to show yet"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 44,
+        "emptiestBand": {
+          "px": 228,
+          "percentOfViewport": 27,
+          "startsAtPercent": 5
+        },
+        "headings": [
+          "Nothing to show yet"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 36,
+        "emptiestBand": {
+          "px": 320,
+          "percentOfViewport": 31,
+          "startsAtPercent": 4
+        },
+        "headings": [
+          "Nothing to show yet"
+        ]
+      }
+    },
+    "settings": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 80,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 8,
+          "startsAtPercent": 11
+        },
+        "headings": [
+          "Settings",
+          "Learning",
+          "Daily goal",
+          "Account"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 81,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 5,
+          "startsAtPercent": 8
+        },
+        "headings": [
+          "Settings",
+          "Learning",
+          "Daily goal",
+          "Account"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 81,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 4,
+          "startsAtPercent": 6
+        },
+        "headings": [
+          "Settings",
+          "Learning",
+          "Daily goal",
+          "Account"
+        ]
+      }
+    },
+    "collection-flags": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 81,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 6,
+          "startsAtPercent": 8
+        },
+        "headings": [
+          "Flags"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 86,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 4,
+          "startsAtPercent": 6
+        },
+        "headings": [
+          "Flags"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 88,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 4,
+          "startsAtPercent": 5
+        },
+        "headings": [
+          "Flags"
+        ]
+      }
+    },
+    "country-SE": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 77,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 6,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Sweden",
+          "What to know"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 85,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 4,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Sweden",
+          "What to know"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 171,
+          "percentOfViewport": 17
+        },
+        "contentDensity": 71,
+        "emptiestBand": {
+          "px": 168,
+          "percentOfViewport": 16,
+          "startsAtPercent": 75
+        },
+        "headings": [
+          "Sweden",
+          "What to know"
+        ]
+      }
+    },
+    "region-EU": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 82,
+        "emptiestBand": {
+          "px": 24,
+          "percentOfViewport": 4,
+          "startsAtPercent": 65
+        },
+        "headings": [
+          "Europe"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 80,
+        "emptiestBand": {
+          "px": 24,
+          "percentOfViewport": 3,
+          "startsAtPercent": 44
+        },
+        "headings": [
+          "Europe"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 83,
+        "emptiestBand": {
+          "px": 24,
+          "percentOfViewport": 2,
+          "startsAtPercent": 36
+        },
+        "headings": [
+          "Europe"
+        ]
+      }
+    },
+    "achievements": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 83,
+        "emptiestBand": {
+          "px": 32,
+          "percentOfViewport": 6,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Achievements",
+          "Close",
+          "Everything else"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 87,
+        "emptiestBand": {
+          "px": 32,
+          "percentOfViewport": 4,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Achievements",
+          "Close",
+          "Everything else"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 88,
+        "emptiestBand": {
+          "px": 32,
+          "percentOfViewport": 3,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Achievements",
+          "Close",
+          "Everything else"
+        ]
+      }
+    },
+    "streak": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 75,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 8,
+          "startsAtPercent": 49
+        },
+        "headings": [
+          "Your streak",
+          "No days yet",
+          "Milestones"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 82,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 5,
+          "startsAtPercent": 33
+        },
+        "headings": [
+          "Your streak",
+          "No days yet",
+          "Milestones"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 104,
+          "percentOfViewport": 10
+        },
+        "contentDensity": 75,
+        "emptiestBand": {
+          "px": 104,
+          "percentOfViewport": 10,
+          "startsAtPercent": 90
+        },
+        "headings": [
+          "Your streak",
+          "No days yet",
+          "Milestones"
+        ]
+      }
+    },
+    "account-mode-link": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 82,
+        "emptiestBand": {
+          "px": 32,
+          "percentOfViewport": 6,
+          "startsAtPercent": 9
+        },
+        "headings": [
+          "Save your progress"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 256,
+          "percentOfViewport": 30
+        },
+        "contentDensity": 58,
+        "emptiestBand": {
+          "px": 256,
+          "percentOfViewport": 30,
+          "startsAtPercent": 70
+        },
+        "headings": [
+          "Save your progress"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 508,
+          "percentOfViewport": 50
+        },
+        "contentDensity": 41,
+        "emptiestBand": {
+          "px": 508,
+          "percentOfViewport": 50,
+          "startsAtPercent": 50
+        },
+        "headings": [
+          "Save your progress"
+        ]
+      }
+    },
+    "league": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 67,
+        "emptiestBand": {
+          "px": 76,
+          "percentOfViewport": 13,
+          "startsAtPercent": 9
+        },
+        "headings": [
+          "League",
+          "No league yet"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 43,
+        "emptiestBand": {
+          "px": 224,
+          "percentOfViewport": 27,
+          "startsAtPercent": 6
+        },
+        "headings": [
+          "League",
+          "No league yet"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 35,
+        "emptiestBand": {
+          "px": 316,
+          "percentOfViewport": 31,
+          "startsAtPercent": 5
+        },
+        "headings": [
+          "League",
+          "No league yet"
+        ]
+      }
+    },
+    "paywall-source-settings": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 77,
+        "emptiestBand": {
+          "px": 32,
+          "percentOfViewport": 6,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Everything Premium adds."
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 108,
+          "percentOfViewport": 13
+        },
+        "contentDensity": 52,
+        "emptiestBand": {
+          "px": 132,
+          "percentOfViewport": 16,
+          "startsAtPercent": 72
+        },
+        "headings": [
+          "Everything Premium adds."
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 198,
+          "percentOfViewport": 19
+        },
+        "contentDensity": 46,
+        "emptiestBand": {
+          "px": 220,
+          "percentOfViewport": 21,
+          "startsAtPercent": 68
+        },
+        "headings": [
+          "Everything Premium adds."
+        ]
+      }
+    },
+    "shop": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 82,
+        "emptiestBand": {
+          "px": 24,
+          "percentOfViewport": 4,
+          "startsAtPercent": 11
+        },
+        "headings": [
+          "Shop",
+          "Titles",
+          "More to come"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 85,
+        "emptiestBand": {
+          "px": 24,
+          "percentOfViewport": 3,
+          "startsAtPercent": 7
+        },
+        "headings": [
+          "Shop",
+          "Titles",
+          "More to come"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 86,
+        "emptiestBand": {
+          "px": 24,
+          "percentOfViewport": 2,
+          "startsAtPercent": 6
+        },
+        "headings": [
+          "Shop",
+          "Titles",
+          "More to come"
+        ]
+      }
+    },
+    "quest": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 84,
+        "emptiestBand": {
+          "px": 32,
+          "percentOfViewport": 6,
+          "startsAtPercent": 81
+        },
+        "headings": [
+          "Daily Quest",
+          "Answer 5 questions"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 55,
+        "emptiestBand": {
+          "px": 168,
+          "percentOfViewport": 20,
+          "startsAtPercent": 71
+        },
+        "headings": [
+          "Daily Quest",
+          "Answer 5 questions"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 46,
+        "emptiestBand": {
+          "px": 260,
+          "percentOfViewport": 25,
+          "startsAtPercent": 67
+        },
+        "headings": [
+          "Daily Quest",
+          "Answer 5 questions"
+        ]
+      }
+    },
+    "quest-complete": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 77,
+        "emptiestBand": {
+          "px": 48,
+          "percentOfViewport": 8,
+          "startsAtPercent": 78
+        },
+        "headings": [
+          "Quest complete"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 51,
+        "emptiestBand": {
+          "px": 188,
+          "percentOfViewport": 22,
+          "startsAtPercent": 69
+        },
+        "headings": [
+          "Quest complete"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 40,
+        "emptiestBand": {
+          "px": 288,
+          "percentOfViewport": 28,
+          "startsAtPercent": 64
+        },
+        "headings": [
+          "Quest complete"
+        ]
+      }
+    },
+    "welcome-back": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 31,
+          "percentOfViewport": 5
+        },
+        "contentDensity": 72,
+        "emptiestBand": {
+          "px": 64,
+          "percentOfViewport": 11,
+          "startsAtPercent": 65
+        },
+        "headings": [
+          "The world missed you"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 31,
+          "percentOfViewport": 4
+        },
+        "contentDensity": 45,
+        "emptiestBand": {
+          "px": 364,
+          "percentOfViewport": 43,
+          "startsAtPercent": 41
+        },
+        "headings": [
+          "The world missed you"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 31,
+          "percentOfViewport": 3
+        },
+        "contentDensity": 35,
+        "emptiestBand": {
+          "px": 568,
+          "percentOfViewport": 55,
+          "startsAtPercent": 31
+        },
+        "headings": [
+          "The world missed you"
+        ]
+      }
+    }
+  },
+  "states": {
+    "onboarding-welcome": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 73,
+        "emptiestBand": {
+          "px": 68,
+          "percentOfViewport": 12,
+          "startsAtPercent": 64
+        },
+        "headings": []
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 46,
+        "emptiestBand": {
+          "px": 216,
+          "percentOfViewport": 26,
+          "startsAtPercent": 58
+        },
+        "headings": []
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 38,
+        "emptiestBand": {
+          "px": 308,
+          "percentOfViewport": 30,
+          "startsAtPercent": 57
+        },
+        "headings": []
+      }
+    },
+    "onboarding-language": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 44,
+          "percentOfViewport": 8
+        },
+        "contentDensity": 73,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 8,
+          "startsAtPercent": 92
+        },
+        "headings": []
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 172,
+          "percentOfViewport": 20
+        },
+        "contentDensity": 52,
+        "emptiestBand": {
+          "px": 172,
+          "percentOfViewport": 20,
+          "startsAtPercent": 80
+        },
+        "headings": []
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 262,
+          "percentOfViewport": 26
+        },
+        "contentDensity": 43,
+        "emptiestBand": {
+          "px": 260,
+          "percentOfViewport": 25,
+          "startsAtPercent": 75
+        },
+        "headings": []
+      }
+    },
+    "onboarding-slide-1": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [
+          {
+            "label": "Slide 1 of 3",
+            "size": "24×8"
+          },
+          {
+            "label": "Slide 2 of 3",
+            "size": "8×8"
+          },
+          {
+            "label": "Slide 3 of 3",
+            "size": "8×8"
+          }
+        ],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 80,
+        "emptiestBand": {
+          "px": 40,
+          "percentOfViewport": 7,
+          "startsAtPercent": 69
+        },
+        "headings": []
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [
+          {
+            "label": "Slide 1 of 3",
+            "size": "24×8"
+          },
+          {
+            "label": "Slide 2 of 3",
+            "size": "8×8"
+          },
+          {
+            "label": "Slide 3 of 3",
+            "size": "8×8"
+          }
+        ],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 75,
+        "emptiestBand": {
+          "px": 116,
+          "percentOfViewport": 14,
+          "startsAtPercent": 64
+        },
+        "headings": []
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [
+          {
+            "label": "Slide 1 of 3",
+            "size": "24×8"
+          },
+          {
+            "label": "Slide 2 of 3",
+            "size": "8×8"
+          },
+          {
+            "label": "Slide 3 of 3",
+            "size": "8×8"
+          }
+        ],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 79,
+        "emptiestBand": {
+          "px": 124,
+          "percentOfViewport": 12,
+          "startsAtPercent": 70
+        },
+        "headings": []
+      }
+    },
+    "onboarding-slide-2": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [
+          {
+            "label": "Slide 1 of 3",
+            "size": "8×8"
+          },
+          {
+            "label": "Slide 2 of 3",
+            "size": "24×8"
+          },
+          {
+            "label": "Slide 3 of 3",
+            "size": "8×8"
+          }
+        ],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 80,
+        "emptiestBand": {
+          "px": 40,
+          "percentOfViewport": 7,
+          "startsAtPercent": 69
+        },
+        "headings": []
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [
+          {
+            "label": "Slide 1 of 3",
+            "size": "8×8"
+          },
+          {
+            "label": "Slide 2 of 3",
+            "size": "24×8"
+          },
+          {
+            "label": "Slide 3 of 3",
+            "size": "8×8"
+          }
+        ],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 75,
+        "emptiestBand": {
+          "px": 116,
+          "percentOfViewport": 14,
+          "startsAtPercent": 64
+        },
+        "headings": []
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [
+          {
+            "label": "Slide 1 of 3",
+            "size": "8×8"
+          },
+          {
+            "label": "Slide 2 of 3",
+            "size": "24×8"
+          },
+          {
+            "label": "Slide 3 of 3",
+            "size": "8×8"
+          }
+        ],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 79,
+        "emptiestBand": {
+          "px": 124,
+          "percentOfViewport": 12,
+          "startsAtPercent": 70
+        },
+        "headings": []
+      }
+    },
+    "onboarding-slide-3": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [
+          {
+            "label": "Slide 1 of 3",
+            "size": "8×8"
+          },
+          {
+            "label": "Slide 2 of 3",
+            "size": "8×8"
+          },
+          {
+            "label": "Slide 3 of 3",
+            "size": "24×8"
+          }
+        ],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 77,
+        "emptiestBand": {
+          "px": 40,
+          "percentOfViewport": 7,
+          "startsAtPercent": 69
+        },
+        "headings": []
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [
+          {
+            "label": "Slide 1 of 3",
+            "size": "8×8"
+          },
+          {
+            "label": "Slide 2 of 3",
+            "size": "8×8"
+          },
+          {
+            "label": "Slide 3 of 3",
+            "size": "24×8"
+          }
+        ],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 73,
+        "emptiestBand": {
+          "px": 136,
+          "percentOfViewport": 16,
+          "startsAtPercent": 62
+        },
+        "headings": []
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [
+          {
+            "label": "Slide 1 of 3",
+            "size": "8×8"
+          },
+          {
+            "label": "Slide 2 of 3",
+            "size": "8×8"
+          },
+          {
+            "label": "Slide 3 of 3",
+            "size": "24×8"
+          }
+        ],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 79,
+        "emptiestBand": {
+          "px": 124,
+          "percentOfViewport": 12,
+          "startsAtPercent": 70
+        },
+        "headings": []
+      }
+    },
+    "onboarding-age": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 94,
+        "emptiestBand": {
+          "px": 8,
+          "percentOfViewport": 1,
+          "startsAtPercent": 60
+        },
+        "headings": []
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 16,
+          "percentOfViewport": 2
+        },
+        "contentDensity": 89,
+        "emptiestBand": {
+          "px": 16,
+          "percentOfViewport": 2,
+          "startsAtPercent": 9
+        },
+        "headings": []
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 0,
+          "percentOfViewport": 0
+        },
+        "contentDensity": 82,
+        "emptiestBand": {
+          "px": 20,
+          "percentOfViewport": 2,
+          "startsAtPercent": 7
+        },
+        "headings": []
+      }
+    },
+    "onboarding-goal": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 27,
+          "percentOfViewport": 5
+        },
+        "contentDensity": 72,
+        "emptiestBand": {
+          "px": 40,
+          "percentOfViewport": 7,
+          "startsAtPercent": 80
+        },
+        "headings": []
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 155,
+          "percentOfViewport": 18
+        },
+        "contentDensity": 54,
+        "emptiestBand": {
+          "px": 168,
+          "percentOfViewport": 20,
+          "startsAtPercent": 71
+        },
+        "headings": []
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 245,
+          "percentOfViewport": 24
+        },
+        "contentDensity": 45,
+        "emptiestBand": {
+          "px": 256,
+          "percentOfViewport": 25,
+          "startsAtPercent": 68
+        },
+        "headings": []
+      }
+    },
+    "onboarding-region": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 77,
+        "emptiestBand": {
+          "px": 24,
+          "percentOfViewport": 4,
+          "startsAtPercent": 43
+        },
+        "headings": []
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 106,
+          "percentOfViewport": 13
+        },
+        "contentDensity": 68,
+        "emptiestBand": {
+          "px": 104,
+          "percentOfViewport": 12,
+          "startsAtPercent": 88
+        },
+        "headings": []
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 286,
+          "percentOfViewport": 28
+        },
+        "contentDensity": 56,
+        "emptiestBand": {
+          "px": 284,
+          "percentOfViewport": 28,
+          "startsAtPercent": 72
+        },
+        "headings": []
+      }
+    },
+    "onboarding-level": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 76,
+        "emptiestBand": {
+          "px": 32,
+          "percentOfViewport": 6,
+          "startsAtPercent": 61
+        },
+        "headings": []
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 143,
+          "percentOfViewport": 17
+        },
+        "contentDensity": 54,
+        "emptiestBand": {
+          "px": 156,
+          "percentOfViewport": 18,
+          "startsAtPercent": 73
+        },
+        "headings": []
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 245,
+          "percentOfViewport": 24
+        },
+        "contentDensity": 42,
+        "emptiestBand": {
+          "px": 256,
+          "percentOfViewport": 25,
+          "startsAtPercent": 68
+        },
+        "headings": []
+      }
+    },
+    "onboarding-plan": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 78,
+        "emptiestBand": {
+          "px": 48,
+          "percentOfViewport": 8,
+          "startsAtPercent": 40
+        },
+        "headings": []
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 103,
+          "percentOfViewport": 12
+        },
+        "contentDensity": 63,
+        "emptiestBand": {
+          "px": 116,
+          "percentOfViewport": 14,
+          "startsAtPercent": 77
+        },
+        "headings": []
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 193,
+          "percentOfViewport": 19
+        },
+        "contentDensity": 52,
+        "emptiestBand": {
+          "px": 204,
+          "percentOfViewport": 20,
+          "startsAtPercent": 73
+        },
+        "headings": []
+      }
+    },
+    "onboarding-taster": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 80,
+        "emptiestBand": {
+          "px": 32,
+          "percentOfViewport": 6,
+          "startsAtPercent": 70
+        },
+        "headings": []
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 51,
+        "emptiestBand": {
+          "px": 184,
+          "percentOfViewport": 22,
+          "startsAtPercent": 62
+        },
+        "headings": []
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 42,
+        "emptiestBand": {
+          "px": 272,
+          "percentOfViewport": 27,
+          "startsAtPercent": 60
+        },
+        "headings": []
+      }
+    },
+    "offline-home": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 92,
+        "emptiestBand": {
+          "px": 16,
+          "percentOfViewport": 3,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Explorer!"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 93,
+        "emptiestBand": {
+          "px": 16,
+          "percentOfViewport": 2,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Explorer!"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 66,
+          "percentOfViewport": 6
+        },
+        "contentDensity": 88,
+        "emptiestBand": {
+          "px": 64,
+          "percentOfViewport": 6,
+          "startsAtPercent": 86
+        },
+        "headings": [
+          "Explorer!"
+        ]
+      }
+    },
+    "offline-shop": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 80,
+        "emptiestBand": {
+          "px": 24,
+          "percentOfViewport": 4,
+          "startsAtPercent": 11
+        },
+        "headings": [
+          "Shop",
+          "Titles",
+          "More to come"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 84,
+        "emptiestBand": {
+          "px": 24,
+          "percentOfViewport": 3,
+          "startsAtPercent": 7
+        },
+        "headings": [
+          "Shop",
+          "Titles",
+          "More to come"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 87,
+        "emptiestBand": {
+          "px": 24,
+          "percentOfViewport": 2,
+          "startsAtPercent": 6
+        },
+        "headings": [
+          "Shop",
+          "Titles",
+          "More to come"
+        ]
+      }
+    },
+    "offline-streak": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 75,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 8,
+          "startsAtPercent": 49
+        },
+        "headings": [
+          "Your streak",
+          "No days yet",
+          "Milestones"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 82,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 5,
+          "startsAtPercent": 33
+        },
+        "headings": [
+          "Your streak",
+          "No days yet",
+          "Milestones"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 104,
+          "percentOfViewport": 10
+        },
+        "contentDensity": 75,
+        "emptiestBand": {
+          "px": 104,
+          "percentOfViewport": 10,
+          "startsAtPercent": 90
+        },
+        "headings": [
+          "Your streak",
+          "No days yet",
+          "Milestones"
+        ]
+      }
+    },
+    "offline-settings": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 80,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 8,
+          "startsAtPercent": 11
+        },
+        "headings": [
+          "Settings",
+          "Learning",
+          "Daily goal",
+          "Account"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 81,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 5,
+          "startsAtPercent": 8
+        },
+        "headings": [
+          "Settings",
+          "Learning",
+          "Daily goal",
+          "Account"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 81,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 4,
+          "startsAtPercent": 6
+        },
+        "headings": [
+          "Settings",
+          "Learning",
+          "Daily goal",
+          "Account"
+        ]
+      }
+    },
+    "offline-paywall-source-settings": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 77,
+        "emptiestBand": {
+          "px": 32,
+          "percentOfViewport": 6,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Everything Premium adds."
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 108,
+          "percentOfViewport": 13
+        },
+        "contentDensity": 52,
+        "emptiestBand": {
+          "px": 132,
+          "percentOfViewport": 16,
+          "startsAtPercent": 72
+        },
+        "headings": [
+          "Everything Premium adds."
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 198,
+          "percentOfViewport": 19
+        },
+        "contentDensity": 46,
+        "emptiestBand": {
+          "px": 220,
+          "percentOfViewport": 21,
+          "startsAtPercent": 68
+        },
+        "headings": [
+          "Everything Premium adds."
+        ]
+      }
+    },
+    "pseudo-home": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 93,
+        "emptiestBand": {
+          "px": 16,
+          "percentOfViewport": 3,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Éxplórér!····"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 95,
+        "emptiestBand": {
+          "px": 16,
+          "percentOfViewport": 2,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Éxplórér!····"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 120,
+          "percentOfViewport": 12
+        },
+        "contentDensity": 84,
+        "emptiestBand": {
+          "px": 116,
+          "percentOfViewport": 11,
+          "startsAtPercent": 81
+        },
+        "headings": [
+          "Éxplórér!····"
+        ]
+      }
+    },
+    "pseudo-settings": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 80,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 8,
+          "startsAtPercent": 11
+        },
+        "headings": [
+          "Šéttíñgš···",
+          "Léárñíñg···",
+          "Dáílý góál····",
+          "Áççóúñt···"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 79,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 5,
+          "startsAtPercent": 8
+        },
+        "headings": [
+          "Šéttíñgš···",
+          "Léárñíñg···",
+          "Dáílý góál····",
+          "Áççóúñt···"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 81,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 4,
+          "startsAtPercent": 6
+        },
+        "headings": [
+          "Šéttíñgš···",
+          "Léárñíñg···",
+          "Dáílý góál····",
+          "Áççóúñt···"
+        ]
+      }
+    },
+    "pseudo-account-mode-link": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 84,
+        "emptiestBand": {
+          "px": 32,
+          "percentOfViewport": 6,
+          "startsAtPercent": 9
+        },
+        "headings": [
+          "Šávé ýóúr prógréšš······"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 256,
+          "percentOfViewport": 30
+        },
+        "contentDensity": 58,
+        "emptiestBand": {
+          "px": 256,
+          "percentOfViewport": 30,
+          "startsAtPercent": 70
+        },
+        "headings": [
+          "Šávé ýóúr prógréšš······"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 484,
+          "percentOfViewport": 47
+        },
+        "contentDensity": 43,
+        "emptiestBand": {
+          "px": 484,
+          "percentOfViewport": 47,
+          "startsAtPercent": 53
+        },
+        "headings": [
+          "Šávé ýóúr prógréšš······"
+        ]
+      }
+    },
+    "pseudo-paywall-source-settings": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 77,
+        "emptiestBand": {
+          "px": 32,
+          "percentOfViewport": 6,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Évérýthíñg Prémíúm áddš.·········"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 90,
+          "percentOfViewport": 11
+        },
+        "contentDensity": 60,
+        "emptiestBand": {
+          "px": 112,
+          "percentOfViewport": 13,
+          "startsAtPercent": 74
+        },
+        "headings": [
+          "Évérýthíñg Prémíúm áddš.·········"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 198,
+          "percentOfViewport": 19
+        },
+        "contentDensity": 46,
+        "emptiestBand": {
+          "px": 220,
+          "percentOfViewport": 21,
+          "startsAtPercent": 68
+        },
+        "headings": [
+          "Évérýthíñg Prémíúm áddš.·········"
+        ]
+      }
+    },
+    "pseudo-streak": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 75,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 8,
+          "startsAtPercent": 49
+        },
+        "headings": [
+          "Ýóúr štréák····",
+          "Ñó dáýš ýét····",
+          "Míléštóñéš····"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 82,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 5,
+          "startsAtPercent": 33
+        },
+        "headings": [
+          "Ýóúr štréák····",
+          "Ñó dáýš ýét····",
+          "Míléštóñéš····"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 104,
+          "percentOfViewport": 10
+        },
+        "contentDensity": 75,
+        "emptiestBand": {
+          "px": 104,
+          "percentOfViewport": 10,
+          "startsAtPercent": 90
+        },
+        "headings": [
+          "Ýóúr štréák····",
+          "Ñó dáýš ýét····",
+          "Míléštóñéš····"
+        ]
+      }
+    },
+    "pseudo-lesson": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 86,
+        "emptiestBand": {
+          "px": 28,
+          "percentOfViewport": 5,
+          "startsAtPercent": 11
+        },
+        "headings": [
+          "Whíçh çóúñtrý íš híghlíghtéd?··········"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 98,
+          "percentOfViewport": 12
+        },
+        "contentDensity": 69,
+        "emptiestBand": {
+          "px": 112,
+          "percentOfViewport": 13,
+          "startsAtPercent": 87
+        },
+        "headings": [
+          "Whíçh çóúñtrý íš híghlíghtéd?··········"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 203,
+          "percentOfViewport": 20
+        },
+        "contentDensity": 54,
+        "emptiestBand": {
+          "px": 216,
+          "percentOfViewport": 21,
+          "startsAtPercent": 79
+        },
+        "headings": [
+          "Whíçh çóúñtrý íš híghlíghtéd?··········"
+        ]
+      }
+    },
+    "pseudo-quests": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 90,
+        "emptiestBand": {
+          "px": 24,
+          "percentOfViewport": 4,
+          "startsAtPercent": 11
+        },
+        "headings": [
+          "Tódáý'š Qúéšt·····"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 93,
+        "emptiestBand": {
+          "px": 16,
+          "percentOfViewport": 2,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Tódáý'š Qúéšt·····"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 90,
+        "emptiestBand": {
+          "px": 24,
+          "percentOfViewport": 2,
+          "startsAtPercent": 86
+        },
+        "headings": [
+          "Tódáý'š Qúéšt·····"
+        ]
+      }
+    },
+    "lesson-flags": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 46,
+          "percentOfViewport": 8
+        },
+        "contentDensity": 75,
+        "emptiestBand": {
+          "px": 60,
+          "percentOfViewport": 11,
+          "startsAtPercent": 89
+        },
+        "headings": [
+          "What does the flag of Poland look like?"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 153,
+          "percentOfViewport": 18
+        },
+        "contentDensity": 57,
+        "emptiestBand": {
+          "px": 168,
+          "percentOfViewport": 20,
+          "startsAtPercent": 80
+        },
+        "headings": [
+          "What does the flag of Poland look like?"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 258,
+          "percentOfViewport": 25
+        },
+        "contentDensity": 44,
+        "emptiestBand": {
+          "px": 272,
+          "percentOfViewport": 27,
+          "startsAtPercent": 73
+        },
+        "headings": [
+          "What does the flag of Poland look like?"
+        ]
+      }
+    },
+    "lesson-flags-answered": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 96,
+        "emptiestBand": {
+          "px": 8,
+          "percentOfViewport": 1,
+          "startsAtPercent": 11
+        },
+        "headings": [
+          "What does the flag of Poland look like?"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 86,
+        "emptiestBand": {
+          "px": 68,
+          "percentOfViewport": 8,
+          "startsAtPercent": 57
+        },
+        "headings": [
+          "What does the flag of Poland look like?"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 135,
+          "percentOfViewport": 13
+        },
+        "contentDensity": 74,
+        "emptiestBand": {
+          "px": 116,
+          "percentOfViewport": 11,
+          "startsAtPercent": 6
+        },
+        "headings": [
+          "What does the flag of Poland look like?"
+        ]
+      }
+    },
+    "lesson-paused": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 66,
+        "emptiestBand": {
+          "px": 96,
+          "percentOfViewport": 17,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Paused"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 45,
+        "emptiestBand": {
+          "px": 232,
+          "percentOfViewport": 27,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Paused"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 37,
+        "emptiestBand": {
+          "px": 324,
+          "percentOfViewport": 32,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Paused"
+        ]
+      }
+    },
+    "lesson-feedback-wrong": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 94,
+        "emptiestBand": {
+          "px": 12,
+          "percentOfViewport": 2,
+          "startsAtPercent": 13
+        },
+        "headings": [
+          "Which country is highlighted?"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 87,
+        "emptiestBand": {
+          "px": 48,
+          "percentOfViewport": 6,
+          "startsAtPercent": 68
+        },
+        "headings": [
+          "Which country is highlighted?"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 104,
+          "percentOfViewport": 10
+        },
+        "contentDensity": 84,
+        "emptiestBand": {
+          "px": 84,
+          "percentOfViewport": 8,
+          "startsAtPercent": 6
+        },
+        "headings": [
+          "Which country is highlighted?"
+        ]
+      }
+    },
+    "lesson-feedback-correct": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 86,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 6,
+          "startsAtPercent": 35
+        },
+        "headings": [
+          "Dialling +34 calls which country?"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 109,
+          "percentOfViewport": 13
+        },
+        "contentDensity": 65,
+        "emptiestBand": {
+          "px": 124,
+          "percentOfViewport": 15,
+          "startsAtPercent": 55
+        },
+        "headings": [
+          "Dialling +34 calls which country?"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 199,
+          "percentOfViewport": 19
+        },
+        "contentDensity": 59,
+        "emptiestBand": {
+          "px": 180,
+          "percentOfViewport": 18,
+          "startsAtPercent": 6
+        },
+        "headings": [
+          "Dialling +34 calls which country?"
+        ]
+      }
+    },
+    "lesson-summary": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 80,
+        "emptiestBand": {
+          "px": 32,
+          "percentOfViewport": 6,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Lesson complete.",
+          "Where you just were"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 149,
+          "percentOfViewport": 18
+        },
+        "contentDensity": 51,
+        "emptiestBand": {
+          "px": 168,
+          "percentOfViewport": 20,
+          "startsAtPercent": 71
+        },
+        "headings": [
+          "Lesson complete.",
+          "Where you just were"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 248,
+          "percentOfViewport": 24
+        },
+        "contentDensity": 40,
+        "emptiestBand": {
+          "px": 268,
+          "percentOfViewport": 26,
+          "startsAtPercent": 66
+        },
+        "headings": [
+          "Lesson complete.",
+          "Where you just were"
+        ]
+      }
+    },
+    "played-profile": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [
+          {
+            "label": "League",
+            "size": "288×18"
+          }
+        ],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 88,
+        "emptiestBand": {
+          "px": 28,
+          "percentOfViewport": 5,
+          "startsAtPercent": 11
+        },
+        "headings": [
+          "Explorer",
+          "This week",
+          "League"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [
+          {
+            "label": "League",
+            "size": "358×18"
+          }
+        ],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 86,
+        "emptiestBand": {
+          "px": 28,
+          "percentOfViewport": 3,
+          "startsAtPercent": 7
+        },
+        "headings": [
+          "Explorer",
+          "This week",
+          "League"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [
+          {
+            "label": "League",
+            "size": "568×18"
+          }
+        ],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 24,
+          "percentOfViewport": 2
+        },
+        "contentDensity": 87,
+        "emptiestBand": {
+          "px": 28,
+          "percentOfViewport": 3,
+          "startsAtPercent": 6
+        },
+        "headings": [
+          "Explorer",
+          "This week",
+          "League"
+        ]
+      }
+    },
+    "played-streak": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 73,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 6,
+          "startsAtPercent": 12
+        },
+        "headings": [
+          "Your streak",
+          "1 day",
+          "Milestones"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 78,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 4,
+          "startsAtPercent": 8
+        },
+        "headings": [
+          "Your streak",
+          "1 day",
+          "Milestones"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 82,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 4,
+          "startsAtPercent": 7
+        },
+        "headings": [
+          "Your streak",
+          "1 day",
+          "Milestones"
+        ]
+      }
+    },
+    "played-home": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 93,
+        "emptiestBand": {
+          "px": 16,
+          "percentOfViewport": 3,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Explorer!"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 95,
+        "emptiestBand": {
+          "px": 16,
+          "percentOfViewport": 2,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Explorer!"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 120,
+          "percentOfViewport": 12
+        },
+        "contentDensity": 84,
+        "emptiestBand": {
+          "px": 116,
+          "percentOfViewport": 11,
+          "startsAtPercent": 81
+        },
+        "headings": [
+          "Explorer!"
+        ]
+      }
+    },
+    "played-quests": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 92,
+        "emptiestBand": {
+          "px": 16,
+          "percentOfViewport": 3,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Today's Quest"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 93,
+        "emptiestBand": {
+          "px": 16,
+          "percentOfViewport": 2,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Today's Quest"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 90,
+        "emptiestBand": {
+          "px": 24,
+          "percentOfViewport": 2,
+          "startsAtPercent": 86
+        },
+        "headings": [
+          "Today's Quest"
+        ]
+      }
+    },
+    "played-settings": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 80,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 8,
+          "startsAtPercent": 11
+        },
+        "headings": [
+          "Settings",
+          "Learning",
+          "Daily goal",
+          "Account"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 81,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 5,
+          "startsAtPercent": 8
+        },
+        "headings": [
+          "Settings",
+          "Learning",
+          "Daily goal",
+          "Account"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 81,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 4,
+          "startsAtPercent": 6
+        },
+        "headings": [
+          "Settings",
+          "Learning",
+          "Daily goal",
+          "Account"
+        ]
+      }
+    }
+  },
+  "generatedAt": null,
+  "pseudo": {
+    "320": {
+      "home": {
+        "sidewaysScroll": 0,
+        "untranslated": []
+      },
+      "settings": {
+        "sidewaysScroll": 0,
+        "untranslated": []
+      },
+      "account-mode-link": {
+        "sidewaysScroll": 0,
+        "untranslated": []
+      },
+      "paywall-source-settings": {
+        "sidewaysScroll": 0,
+        "untranslated": []
+      },
+      "streak": {
+        "sidewaysScroll": 0,
+        "untranslated": []
+      },
+      "lesson": {
+        "sidewaysScroll": 0,
+        "untranslated": [
+          "Belgium",
+          "Switzerland",
+          "Germany",
+          "Austria"
+        ]
+      },
+      "quests": {
+        "sidewaysScroll": 0,
+        "untranslated": []
+      }
+    },
+    "390": {
+      "home": {
+        "sidewaysScroll": 0,
+        "untranslated": []
+      },
+      "settings": {
+        "sidewaysScroll": 0,
+        "untranslated": []
+      },
+      "account-mode-link": {
+        "sidewaysScroll": 0,
+        "untranslated": []
+      },
+      "paywall-source-settings": {
+        "sidewaysScroll": 0,
+        "untranslated": []
+      },
+      "streak": {
+        "sidewaysScroll": 0,
+        "untranslated": []
+      },
+      "lesson": {
+        "sidewaysScroll": 0,
+        "untranslated": [
+          "Belgium",
+          "Switzerland",
+          "Germany",
+          "Austria"
+        ]
+      },
+      "quests": {
+        "sidewaysScroll": 0,
+        "untranslated": []
+      }
+    },
+    "768": {
+      "home": {
+        "sidewaysScroll": 0,
+        "untranslated": []
+      },
+      "settings": {
+        "sidewaysScroll": 0,
+        "untranslated": []
+      },
+      "account-mode-link": {
+        "sidewaysScroll": 0,
+        "untranslated": []
+      },
+      "paywall-source-settings": {
+        "sidewaysScroll": 0,
+        "untranslated": []
+      },
+      "streak": {
+        "sidewaysScroll": 0,
+        "untranslated": []
+      },
+      "lesson": {
+        "sidewaysScroll": 0,
+        "untranslated": [
+          "Belgium",
+          "Switzerland",
+          "Germany",
+          "Austria"
+        ]
+      },
+      "quests": {
+        "sidewaysScroll": 0,
+        "untranslated": []
+      }
+    }
+  },
+  "flowShots": {
+    "320": 34,
+    "390": 34,
+    "768": 34
+  }
+}

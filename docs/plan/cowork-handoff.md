@@ -1,5 +1,7 @@
 # Handoff — the work that cannot be done in a container
 
+> **Historical specification/status — superseded for release planning on 13 September 2026.** Use the [current execution checklist](execution-plan.md), [evidence log](phase-1-verification.md) and [launch brief](../product/launch-brief.md). Feature lists and checked boxes below describe earlier targets or checks, not current device, backend or store certification.
+
 Everything in the release checklist that a coding agent in this repo genuinely cannot
 close, written as prompts you can hand to Claude Cowork (or a person) without needing this
 conversation's context. One prompt per task, self-contained, with the evidence trail

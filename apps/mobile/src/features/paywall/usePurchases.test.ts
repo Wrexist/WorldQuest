@@ -1,9 +1,8 @@
 /**
  * Prices, and the four ways there are none.
  *
- * The port ships as a stub that *fails*, so the unhappy path is the one that runs
- * today and on every device in a tunnel. These tests exist because the failure a
- * paywall usually ships with is a spinner that never stops.
+ * The unconfigured port returns no products. Network failures are a distinct,
+ * retryable state; neither may leave loading stuck or invent a price.
  */
 
 import { describe, expect, it, vi } from 'vitest'
@@ -28,12 +27,12 @@ describe('usePurchases', () => {
     expect(result.current.plans).toHaveLength(2)
   })
 
-  it('shows no prices rather than invented ones when the store will not answer', async () => {
+  it('reports no products without a network error when billing is not installed', async () => {
     // A paywall that guesses a price is a paywall that charges a different number
     // than the one it showed.
     const { result } = renderHook(() => usePurchases(UNAVAILABLE))
     await waitFor(() => expect(result.current.loading).toBe(false))
-    expect(result.current.failed).toBe(true)
+    expect(result.current.failed).toBe(false)
     expect(result.current.plans).toEqual([])
   })
 
