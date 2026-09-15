@@ -5,6 +5,19 @@ appId: com.wrexist.worldquest.accountsproof
       platform: android
     commands:
       - openLink: worldquestaccountsproof://reinstall
+# iOS 18.5 does not always deliver a custom scheme straight to a freshly
+# reinstalled app: instead of the app launching, the home screen shows
+# "Open in WorldQuest Account Proof?" and waits. Nothing in the app can run
+# until that is dismissed, so the wait below would sit out its full timeout and
+# report a missing result that the app never had the chance to print. Optional,
+# because on a run where the handoff went straight through there is no prompt.
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          text: 'Open'
+          optional: true
 - extendedWaitUntil:
     visible: PASS_RECOVERY_AND_DELETION
     # A cold CI simulator queued the URL handoff for 68 seconds before the app

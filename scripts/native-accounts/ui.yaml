@@ -5,6 +5,15 @@ appId: com.wrexist.worldquest.accountsproof
       platform: android
     commands:
       - openLink: worldquestaccountsproof://ui
+# Same iOS scheme-handoff prompt as in reinstall.yaml: the app cannot render
+# the account screens while the system is still asking whether to open it.
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          text: 'Open'
+          optional: true
 - extendedWaitUntil:
     visible: Start as guest
     timeout: 120000
