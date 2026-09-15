@@ -1,9 +1,12 @@
 appId: com.wrexist.worldquest.accountsproof
 ---
-# No `hideKeyboard` anywhere below. The birth-year and code fields use a numeric
-# keypad, which on iOS has no dismiss key, so Maestro's hideKeyboard fails there
-# with the keyboard legitimately on screen. The primary button on every step sits
-# above the keypad, so each tap targets the button directly instead.
+# The birth-year and code fields use a numeric keypad, and the two platforms need
+# opposite handling. On Android a tap while the keyboard is open is consumed
+# dismissing it, so the keyboard is hidden first (without this the "Send me a
+# code" tap landed but the app never advanced past the email step). On iOS a
+# number pad has no dismiss key at all, so Maestro's hideKeyboard fails with the
+# keyboard legitimately on screen; the primary button sits above the keypad, so
+# the flow taps it directly instead.
 - runFlow:
     when:
       platform: android
@@ -25,9 +28,19 @@ appId: com.wrexist.worldquest.accountsproof
 - tapOn: Link your email
 - tapOn: Birth year
 - inputText: '2000'
+- runFlow:
+    when:
+      platform: android
+    commands:
+      - hideKeyboard
 - tapOn: Continue
 - tapOn: Email
 - inputText: native-proof@example.invalid
+- runFlow:
+    when:
+      platform: android
+    commands:
+      - hideKeyboard
 - tapOn: Send me a code
 - extendedWaitUntil:
     visible: Eight-digit code
@@ -41,6 +54,11 @@ appId: com.wrexist.worldquest.accountsproof
 - runScript: mailbox.js
 - tapOn: Eight-digit code
 - inputText: ${output.code}
+- runFlow:
+    when:
+      platform: android
+    commands:
+      - hideKeyboard
 - tapOn: Confirm
 - extendedWaitUntil:
     visible: Your email is linked
@@ -56,6 +74,11 @@ appId: com.wrexist.worldquest.accountsproof
 - runScript: mailbox.js
 - tapOn: Eight-digit code
 - inputText: ${output.code}
+- runFlow:
+    when:
+      platform: android
+    commands:
+      - hideKeyboard
 - tapOn: Delete permanently
 - extendedWaitUntil:
     visible: Your account is deleted
