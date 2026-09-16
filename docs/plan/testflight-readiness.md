@@ -1,5 +1,7 @@
 # What is left before a TestFlight build
 
+> **Historical specification/status — superseded for release planning on 13 September 2026.** Use the [current execution checklist](execution-plan.md), [evidence log](phase-1-verification.md) and [launch brief](../product/launch-brief.md). Feature lists and checked boxes below describe earlier targets or checks, not current device, backend or store certification.
+
 Written 2026-08-11, against `main` at `5e2f048`; revised the same day after review, with
 the bundle figures re-measured on this branch.
 

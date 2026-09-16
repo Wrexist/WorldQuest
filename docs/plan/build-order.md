@@ -1,5 +1,7 @@
 # Build order
 
+> **Historical specification/status — superseded for release planning on 13 September 2026.** Use the [current execution checklist](execution-plan.md), [evidence log](phase-1-verification.md) and [launch brief](../product/launch-brief.md). Feature lists and checked boxes below describe earlier targets or checks, not current device, backend or store certification.
+
 What to build, in what order, and — more importantly — **why that order**.
 
 The principle throughout: **build the thing that would most change your plan if it

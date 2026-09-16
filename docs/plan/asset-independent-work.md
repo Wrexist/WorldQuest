@@ -1,5 +1,7 @@
 # Work that doesn't need artwork
 
+> **Historical specification/status — superseded for release planning on 13 September 2026.** Use the [current execution checklist](execution-plan.md), [evidence log](phase-1-verification.md) and [launch brief](../product/launch-brief.md). Feature lists and checked boxes below describe earlier targets or checks, not current device, backend or store certification.
+
 Commissioning the assets in [`../design/asset-prompts.md`](../design/asset-prompts.md)
 is a separate track that runs on its own clock. This is everything that can ship
 **before a single illustration exists** — ordered so that each item unblocks the next

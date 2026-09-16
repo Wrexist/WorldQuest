@@ -17,7 +17,8 @@ const store = new Map<string, string>()
 const fetchSubscription = vi.fn<() => Promise<SubscriptionRow>>()
 let configured = true
 
-vi.mock('../../lib/storage.js', () => ({
+vi.mock('../../lib/storage.js', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   readJson: (key: string) => {
     const raw = store.get(key)
     if (raw === undefined) return null
@@ -28,6 +29,10 @@ vi.mock('../../lib/storage.js', () => ({
     }
   },
   writeJson: (key: string, value: unknown) => void store.set(key, JSON.stringify(value)),
+}))
+
+vi.mock('../../lib/backend.js', () => ({
+  withAccount: (work: (account: { fetchSubscription: typeof fetchSubscription }) => Promise<unknown>) => work({ fetchSubscription }),
 }))
 
 vi.mock('@worldquest/api', async (importOriginal) => ({
@@ -87,7 +92,7 @@ describe('useSubscriptionSync', () => {
     )
 
     await waitFor(() => expect(result.current.isPremium).toBe(true))
-    expect(result.current.subscription.status).toBe('active')
+    await waitFor(() => expect(result.current.subscription.status).toBe('active'))
   })
 
   it('leaves the user free when there is no backend configured', async () => {
@@ -141,7 +146,7 @@ describe('useSubscriptionSync', () => {
     )
 
     await waitFor(() => expect(fetchSubscription).toHaveBeenCalled())
-    expect(result.current.subscription.status).toBe('active')
+    await waitFor(() => expect(result.current.subscription.status).toBe('active'))
     expect(result.current.isPremium).toBe(false)
   })
 })

@@ -57,8 +57,8 @@ const usedFor = (days: number): void => {
   writeJson('activity.byDay.v1', log)
 }
 
-beforeEach(() => {
-  clearAll()
+beforeEach(async () => {
+  await clearAll()
   vi.clearAllMocks()
   isAvailableAsync.mockResolvedValue(true)
   requestReview.mockResolvedValue(undefined)

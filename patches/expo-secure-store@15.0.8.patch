@@ -1,0 +1,84 @@
+diff --git a/android/src/main/java/expo/modules/securestore/SecureStoreModule.kt b/android/src/main/java/expo/modules/securestore/SecureStoreModule.kt
+index 0fef884af8f4c8a201d4a9c9e7e6ecd6bfe45bfb..10aea151af71833a273287598ee3ee522c0ea215 100644
+--- a/android/src/main/java/expo/modules/securestore/SecureStoreModule.kt
++++ b/android/src/main/java/expo/modules/securestore/SecureStoreModule.kt
+@@ -180,7 +180,7 @@ open class SecureStoreModule : Module() {
+     val prefs: SharedPreferences = getSharedPreferences()
+ 
+     if (value == null) {
+-      val success = prefs.edit().putString(keychainAwareKey, null).commit()
++      val success = commitWithRollback(prefs, keychainAwareKey, null)
+       if (!success) {
+         throw WriteException("Could not write a null value to SecureStore", key, options.keychainService)
+       }
+@@ -203,7 +203,9 @@ open class SecureStoreModule : Module() {
+       val secretKeyEntry: SecretKeyEntry = getOrCreateKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, options.requireAuthentication)
+       val encryptedItem = mAESEncryptor.createEncryptedItem(value, secretKeyEntry, options.requireAuthentication, options.authenticationPrompt, authenticationHelper)
+       encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.NAME)
+-      saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)
++      if (!saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)) {
++        throw WriteException("Could not persist encrypted value to SecureStore", key, options.keychainService)
++      }
+ 
+       // If a legacy value exists under this key we remove it to avoid unexpected errors in the future
+       if (prefs.contains(key)) {
+@@ -237,7 +239,19 @@ open class SecureStoreModule : Module() {
+       throw WriteException("Could not JSON-encode the encrypted item for SecureStore - the string $encryptedItemString is null or empty", key, keychainService)
+     }
+ 
+-    return prefs.edit().putString(key, encryptedItemString).commit()
++    return commitWithRollback(prefs, key, encryptedItemString)
++  }
++
++  // SharedPreferences updates its in-memory map even if disk commit fails. Restore
++  // the prior map as well as attempting disk rollback, so a later read or no-op
++  // retry cannot acknowledge a value that was never persisted.
++  private fun commitWithRollback(prefs: SharedPreferences, key: String, value: String?): Boolean {
++    val previous = prefs.getString(key, null)
++    val success = prefs.edit().putString(key, value).commit()
++    if (!success) {
++      prefs.edit().putString(key, previous).commit()
++    }
++    return success
+   }
+ 
+   private fun deleteItemImpl(key: String, options: SecureStoreOptions) {
+@@ -247,15 +261,15 @@ open class SecureStoreModule : Module() {
+     val legacyPrefs = PreferenceManager.getDefaultSharedPreferences(reactContext)
+ 
+     if (prefs.contains(keychainAwareKey)) {
+-      success = prefs.edit().remove(keychainAwareKey).commit()
++      success = commitWithRollback(prefs, keychainAwareKey, null)
+     }
+ 
+     if (prefs.contains(key)) {
+-      success = prefs.edit().remove(key).commit() && success
++      success = commitWithRollback(prefs, key, null) && success
+     }
+ 
+     if (legacyPrefs.contains(key)) {
+-      success = legacyPrefs.edit().remove(key).commit() && success
++      success = commitWithRollback(legacyPrefs, key, null) && success
+     }
+ 
+     if (!success) {
+diff --git a/ios/SecureStoreModule.swift b/ios/SecureStoreModule.swift
+index 584df218365e2ebf176f6d332970a3ba64d7a12e..3ffaf382db5f43707fbd18eb0e3686cedbead679 100644
+--- a/ios/SecureStoreModule.swift
++++ b/ios/SecureStoreModule.swift
+@@ -45,9 +45,12 @@ public final class SecureStoreModule: Module {
+       let authSearchDictionary = query(with: key, options: options, requireAuthentication: true)
+       let legacySearchDictionary = query(with: key, options: options)
+ 
+-      SecItemDelete(legacySearchDictionary as CFDictionary)
+-      SecItemDelete(authSearchDictionary as CFDictionary)
+-      SecItemDelete(noAuthSearchDictionary as CFDictionary)
++      for query in [legacySearchDictionary, authSearchDictionary, noAuthSearchDictionary] {
++        let status = SecItemDelete(query as CFDictionary)
++        if status != errSecSuccess && status != errSecItemNotFound {
++          throw KeyChainException(status)
++        }
++      }
+     }
+ 
+     Function("canUseBiometricAuthentication") {() -> Bool in

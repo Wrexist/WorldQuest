@@ -30,7 +30,7 @@ import { useReminder } from '../src/features/settings/useReminder.js'
 import { useAccountStatus } from '../src/features/account/useAccountStatus.js'
 import { useLeagueOptOut } from '../src/features/league/useLeagueOptOut.js'
 import { useLeagueEnabled } from '../src/features/league/flag.js'
-import { signOutEverywhere } from '../src/features/account/signOut.js'
+import { useSignOut } from '../src/features/account/useSignOut.js'
 import { useT } from '../src/lib/i18n.js'
 
 /**
@@ -56,6 +56,7 @@ export default function SettingsRoute() {
   const { state } = useOnboarding()
   const t = useT()
   const account = useAccountStatus()
+  const signOut = useSignOut()
   const leagueOn = useLeagueEnabled()
   const league = useLeagueOptOut()
 
@@ -132,7 +133,9 @@ export default function SettingsRoute() {
               email: account.email,
               onLink: () => router.push('/account?mode=link'),
               onSignIn: () => router.push('/account?mode=signIn'),
-              onSignOut: () => void signOutEverywhere(),
+              onSignOut: () => void signOut.run(),
+              signOutPending: signOut.pending,
+              signOutFailed: signOut.failed,
               // The number the warning above the control puts a name on. Both counts, because
               // sign-out throws away the parked work AND the lesson finished thirty seconds
               // ago that is still trying — `clearAll()` does not distinguish, so neither may

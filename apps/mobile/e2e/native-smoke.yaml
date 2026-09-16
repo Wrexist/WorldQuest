@@ -1,0 +1,46 @@
+appId: com.wrexist.worldquest
+---
+# Fresh simulator only. Covers the native dependency paths carried in E18.
+- launchApp
+- tapOn:
+    text: "Get started"
+    retryTapIfNoChange: true
+- tapOn: "English"
+- assertVisible: "Explore countries"
+- tapOn: "Next"
+- assertVisible: "Practice daily"
+- tapOn: "Next"
+- assertVisible: "Your world"
+- tapOn: "Continue"
+- scrollUntilVisible:
+    element: "2002"
+    direction: DOWN
+    timeout: 30000
+- tapOn: "2002"
+- tapOn: "Continue"
+- tapOn: "Continue"
+- tapOn: "Europe"
+- tapOn: "Continue"
+- assertVisible: "Here is your plan."
+- tapOn: "Continue"
+- tapOn: "Start learning"
+- tapOn: "Pause the lesson"
+- tapOn: "Finish here"
+- tapOn: "Continue"
+- tapOn: "Not now"
+- assertVisible: "Explorer!"
+- stopApp
+- launchApp
+- assertVisible: "Explorer!"
+- takeScreenshot: native-relaunch
+- openLink: "worldquest://country/%53%45"
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          text: "Open"
+          optional: true
+- assertVisible: "Sweden"
+- assertVisible: "Practise this country"
+- takeScreenshot: native-country

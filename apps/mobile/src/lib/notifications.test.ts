@@ -21,8 +21,8 @@ const cancelScheduledNotificationAsync = vi.mocked(Notifications.cancelScheduled
 const source = readFileSync(join(import.meta.dirname, 'notifications.ts'), 'utf8')
 const COPY = { title: 'Ready to explore?', body: 'Europe is waiting. 5 minutes?' }
 
-beforeEach(() => {
-  clearAll()
+beforeEach(async () => {
+  await clearAll()
   vi.clearAllMocks()
   getPermissionsAsync.mockResolvedValue({ granted: true } as never)
 })

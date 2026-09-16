@@ -62,21 +62,10 @@ export type PurchasePort = {
   readonly manageBilling: () => Promise<void>
 }
 
-/**
- * The stand-in used until the SDK lands.
- *
- * Deliberately NOT a fake that succeeds. It reports the store as unreachable, which is
- * the same path a real device takes with no network, so every caller has to handle the
- * failure branch from the first day rather than discovering it in review.
- *
- * The prices are the Product Bible's targets, formatted as the store would for one
- * locale, so the layout can be built and screenshotted against realistic strings —
- * a paywall laid out around "€39" breaks the moment somebody sees "1 234,56 kr".
- */
+/** No billing adapter is installed. Report no products, rather than a network
+ * failure that invites endless retries. Never grants purchases or entitlements. */
 export const UNAVAILABLE: PurchasePort = {
-  plans: async () => {
-    throw new Error('purchases: no billing SDK is installed yet')
-  },
+  plans: async () => [],
   purchase: async () => ({ kind: 'failed', reason: 'no-sdk' }),
   restore: async () => ({ kind: 'failed', reason: 'no-sdk' }),
   manageBilling: async () => {},

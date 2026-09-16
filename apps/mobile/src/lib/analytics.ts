@@ -1,3 +1,4 @@
+import { onStorageScopeChange } from './storage.js'
 /**
  * Analytics adapter for Phase 1.
  *
@@ -52,3 +53,7 @@ export function track<N extends EventName>(name: N, properties: Props): void {
 }
 
 declare const __DEV__: boolean
+
+onStorageScopeChange(() => {
+  resetChildAccount()
+})

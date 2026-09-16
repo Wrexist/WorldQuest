@@ -1,3 +1,4 @@
+import { onStorageScopeChange } from '../../lib/storage.js'
 /**
  * How well this user has been doing lately, for the one thing that scales to it.
  *
@@ -135,3 +136,8 @@ export function recordAccuracy(answers: readonly AnsweredItem[], now: Date = new
 export function resetAccuracyCache(): void {
   snapshot = null
 }
+
+onStorageScopeChange(() => {
+  resetAccuracyCache()
+  for (const listener of listeners) listener()
+})

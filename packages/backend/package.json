@@ -1,0 +1,26 @@
+{
+  "name": "@worldquest/backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "dev": "wrangler dev",
+    "build": "wrangler deploy --dry-run --outdir dist",
+    "db:local": "wrangler d1 migrations apply DB --local",
+    "db:remote": "wrangler d1 migrations apply DB --remote",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "@worldquest/engines": "workspace:*",
+    "better-auth": "1.7.4",
+    "drizzle-orm": "0.45.2",
+    "zod": "^4.6.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20260911.1",
+    "miniflare": "5.20260911.0-alpha",
+    "wrangler": "4.131.1"
+  }
+}

@@ -1,0 +1,104 @@
+name: iOS account proof replay
+on:
+  workflow_dispatch:
+    inputs:
+      build_run:
+        description: 'Native account run containing the compiled iOS proof'
+        required: true
+        type: string
+  push:
+    branches: ['fix/**']
+    paths: ['.github/workflows/native-account-ios-replay.yml']
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: account-ios-replay-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  replay:
+    runs-on: macos-15
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+      # 34780651323 recorded 512b046, which engine and path changes have since
+      # superseded, so the guard refused it. 35025186129 is the next accepted
+      # native account run: both platforms passed at 80dcdd1 and this workflow
+      # replayed its signed archive green.
+      BUILD_RUN: ${{ inputs.build_run || '35025186129' }}
+      MAESTRO_CLI_NO_ANALYTICS: '1'
+      MAESTRO_DRIVER_STARTUP_TIMEOUT: '300000'
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - run: pnpm install --frozen-lockfile
+      - name: Install the unchanged recorded simulator proof
+        run: |
+          set -euo pipefail
+          [[ "$BUILD_RUN" =~ ^[0-9]+$ ]]
+          BUILD_SHA=$(gh run view "$BUILD_RUN" --json headSha --jq .headSha)
+          # Refuse stale binary evidence after any runtime or dependency change.
+          git diff --exit-code "$BUILD_SHA" HEAD -- packages/backend/src packages/backend/migrations packages/api/src/d1-auth.ts apps/mobile/src/lib/credentials.ts apps/mobile/src/lib/credential-vault.ts apps/mobile/src/lib/d1-auth.ts scripts/native-accounts/probe.tsx scripts/native-accounts/server.cjs scripts/native-accounts/prepare.cjs scripts/native-accounts/simulator.entitlements apps/mobile/package.json pnpm-lock.yaml
+          gh run download "$BUILD_RUN" --name account-evidence-ios --dir "$RUNNER_TEMP/recorded"
+          ZIP=$(find "$RUNNER_TEMP/recorded" -name account-ios-app.zip -print -quit)
+          shasum -a 256 "$ZIP" > "$RUNNER_TEMP/account-binary-sha256.txt"
+          unzip -q "$ZIP" -d "$RUNNER_TEMP/proof"
+          APP="$RUNNER_TEMP/proof/WorldQuestAccountProof.app"
+          test "$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' "$APP/Info.plist")" = com.wrexist.worldquest.accountsproof
+          codesign --verify --deep --strict "$APP"
+          codesign -d --entitlements - "$APP" > "$RUNNER_TEMP/account-signed-entitlements.plist"
+          echo "Native binary and JavaScript: $BUILD_SHA; no rebundling" >> "$GITHUB_STEP_SUMMARY"
+          DEVICE_ID=$(xcrun simctl list devices available -j | python3 -c 'import json,sys; print(next(d["udid"] for ds in json.load(sys.stdin)["devices"].values() for d in ds if d["name"].startswith("iPhone")))')
+          echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
+          xcodebuild -version
+          xcrun simctl boot "$DEVICE_ID"
+          xcrun simctl bootstatus "$DEVICE_ID" -b
+          xcrun simctl install "$DEVICE_ID" "$APP"
+      - name: Install pinned Maestro
+        run: |
+          mkdir -p "$RUNNER_TEMP/maestro" && cd "$RUNNER_TEMP/maestro"
+          curl --fail --location --retry 3 -o maestro.zip https://github.com/mobile-dev-inc/Maestro/releases/download/cli-2.10.0/maestro.zip
+          echo '29b675e10cc12080e445e9bfb2e2b4e4dfb9c0f2e30d5884120d258b5e1cd991  maestro.zip' | shasum -a 256 --check
+          unzip -q maestro.zip
+          echo "$RUNNER_TEMP/maestro/maestro/bin" >> "$GITHUB_PATH"
+      - name: Start local synthetic D1 server
+        run: |
+          node scripts/native-accounts/server.cjs > "$RUNNER_TEMP/account-server.log" 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl --silent --fail http://127.0.0.1:8789/health; then exit 0; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/account-server.log"
+          exit 1
+      - name: Verify interrupted renewal, restart, recovery and deletion
+        run: |
+          set -euo pipefail
+          maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/account-restart" scripts/native-accounts/restart.yaml
+          xcrun simctl uninstall "$DEVICE_ID" com.wrexist.worldquest.accountsproof
+          xcrun simctl install "$DEVICE_ID" "$RUNNER_TEMP/proof/WorldQuestAccountProof.app"
+          xcrun simctl openurl "$DEVICE_ID" worldquestaccountsproof://reinstall
+          maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/account-reinstall" scripts/native-accounts/reinstall.yaml
+      - name: Capture final state
+        if: always() && env.DEVICE_ID != ''
+        run: |
+          xcrun simctl io "$DEVICE_ID" screenshot "$RUNNER_TEMP/account-ios-final.png"
+          xcrun simctl spawn "$DEVICE_ID" log show --last 10m --predicate 'process == "WorldQuestAccountProof"' > "$RUNNER_TEMP/account-runtime.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: account-ios-replay-evidence
+          path: |
+            ${{ runner.temp }}/account-binary-sha256.txt
+            ${{ runner.temp }}/account-signed-entitlements.plist
+            ${{ runner.temp }}/account-ios-final.png
+            ${{ runner.temp }}/account-runtime.log
+            ${{ runner.temp }}/account-server.log
+            ${{ runner.temp }}/account-restart/
+            ${{ runner.temp }}/account-reinstall/
+          include-hidden-files: true
+          retention-days: 7

@@ -1,0 +1,8 @@
+const fs = require('node:fs')
+const path = require('node:path')
+if (process.env.CI !== 'true') throw new Error('Native fault tests require an isolated CI checkout')
+const root = path.dirname(require.resolve('expo-secure-store/package.json'))
+const dir = path.join(root, 'android/src/test/java/expo/modules/securestore')
+fs.mkdirSync(dir, { recursive: true })
+fs.copyFileSync('scripts/native-credentials/SecureStoreCommitTest.java', path.join(dir, 'SecureStoreCommitTest.java'))
+fs.appendFileSync(path.join(root, 'android/build.gradle'), '\ndependencies { testImplementation "junit:junit:4.13.2" }\n')

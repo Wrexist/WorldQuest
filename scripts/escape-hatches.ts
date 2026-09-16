@@ -129,7 +129,7 @@ const stripComments = (source: string): string =>
 // ── walk ─────────────────────────────────────────────────────────────────────
 
 const files = globSync('{packages,apps,supabase}/**/*.{ts,tsx}', {
-  exclude: (p) => /node_modules|\/dist\/|\/\.expo\/|\/build\//.test(p),
+  exclude: (p) => /node_modules|\/dist\/|\/\.expo\/|\/build\//.test(p.replace(/\\/g, '/')),
 })
 
 const isTest = (file: string): boolean => /\.(test|spec)\.tsx?$/.test(file)
@@ -141,7 +141,7 @@ const inTests: Violation[] = []
 const used = new Set<string>()
 
 for (const file of files.sort()) {
-  const rel = relative(process.cwd(), file)
+  const rel = relative(process.cwd(), file).replace(/\\/g, '/')
   const raw = readFileSync(file, 'utf8')
 
   // `any` — against code only.

@@ -1,0 +1,32 @@
+{
+  "owner": "Repository maintainer",
+  "reviewBefore": "2026-10-13T00:00:00Z",
+  "patches": [
+    {
+      "package": "image-size@1.2.1",
+      "module": "image-size",
+      "file": "patches/image-size@1.2.1.patch",
+      "sha256": "79fbc783bc55088abf351d2b53ea68f1de88cdbc92e389ed38db2903b1ccb71f",
+      "advisories": [
+        "GHSA-w3rx-r6r6-pgpr",
+        "GHSA-5p2g-fcmc-qvqq"
+      ],
+      "installedFiles": {
+        "dist/types/icns.js": "72a7677937526274973a113d9bf64134da5854f9bf27b42857399f1dd0b2818e",
+        "dist/types/utils.js": "87e259dc7c2c89b17ba0f7d225d582e52662c8358357ccbc3e1a6c5e6145b181"
+      }
+    },
+    {
+      "package": "decode-uri-component@0.2.2",
+      "module": "decode-uri-component",
+      "file": "patches/decode-uri-component@0.2.2.patch",
+      "sha256": "773fc1fcd06ec6e22c6ea96fc5dacc659a26427cdcef45d9631dc5cc55dd11c2",
+      "advisories": [
+        "GHSA-vcc3-ghjq-m6fr"
+      ],
+      "installedFiles": {
+        "index.js": "fcfdea52a878c4043be927b2fb83cc43e506c39652d0ff4c6f39db035dbe968b"
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+appId: com.wrexist.worldquest.credentialsproof
+---
+- launchApp
+- extendedWaitUntil:
+    visible: PASS_MIGRATION_READY_RESTART
+    timeout: 60000
+- takeScreenshot: credential-migration
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible: PASS_LOGOUT_READY_REINSTALL
+    timeout: 60000
+- takeScreenshot: credential-logout

@@ -1,3 +1,4 @@
+import { onStorageScopeChange } from '../../lib/storage.js'
 /**
  * Today's quest progress, on the device.
  *
@@ -165,3 +166,8 @@ export function recordQuestEvent(quest: DailyQuest, event: QuestEvent): QuestOut
 export function resetQuestProgressCache(): void {
   snapshot = null
 }
+
+onStorageScopeChange(() => {
+  resetQuestProgressCache()
+  for (const listener of listeners) listener()
+})

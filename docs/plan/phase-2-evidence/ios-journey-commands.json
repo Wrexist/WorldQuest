@@ -1,0 +1,507 @@
+{
+  "run": "https://github.com/Wrexist/WorldQuest/actions/runs/34753801839",
+  "flowRevision": "ec94df9",
+  "binaryRevision": "f560dcc",
+  "steps": [
+    {
+      "command": {
+        "applyConfigurationCommand": {
+          "config": {
+            "appId": "com.wrexist.worldquest"
+          },
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 5
+    },
+    {
+      "command": {
+        "launchAppCommand": {
+          "appId": "com.wrexist.worldquest",
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 4850
+    },
+    {
+      "command": {
+        "tapOnElement": {
+          "selector": {
+            "textRegex": "Get started",
+            "optional": false
+          },
+          "retryIfNoChange": false,
+          "waitUntilVisible": false,
+          "longPress": false,
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 7973
+    },
+    {
+      "command": {
+        "tapOnElement": {
+          "selector": {
+            "textRegex": "English",
+            "optional": false
+          },
+          "retryIfNoChange": false,
+          "waitUntilVisible": false,
+          "longPress": false,
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 1949
+    },
+    {
+      "command": {
+        "assertConditionCommand": {
+          "condition": {
+            "visible": {
+              "textRegex": "Explore countries",
+              "optional": false
+            }
+          },
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 237
+    },
+    {
+      "command": {
+        "tapOnElement": {
+          "selector": {
+            "textRegex": "Next",
+            "optional": false
+          },
+          "retryIfNoChange": false,
+          "waitUntilVisible": false,
+          "longPress": false,
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 1720
+    },
+    {
+      "command": {
+        "assertConditionCommand": {
+          "condition": {
+            "visible": {
+              "textRegex": "Practice daily",
+              "optional": false
+            }
+          },
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 276
+    },
+    {
+      "command": {
+        "tapOnElement": {
+          "selector": {
+            "textRegex": "Next",
+            "optional": false
+          },
+          "retryIfNoChange": false,
+          "waitUntilVisible": false,
+          "longPress": false,
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 1742
+    },
+    {
+      "command": {
+        "assertConditionCommand": {
+          "condition": {
+            "visible": {
+              "textRegex": "Your world",
+              "optional": false
+            }
+          },
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 261
+    },
+    {
+      "command": {
+        "tapOnElement": {
+          "selector": {
+            "textRegex": "Continue",
+            "optional": false
+          },
+          "retryIfNoChange": false,
+          "waitUntilVisible": false,
+          "longPress": false,
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 1636
+    },
+    {
+      "command": {
+        "scrollUntilVisible": {
+          "selector": {
+            "textRegex": "2002",
+            "optional": false
+          },
+          "direction": "DOWN",
+          "scrollDuration": "40",
+          "visibilityPercentage": 100,
+          "timeout": "30000",
+          "centerElement": false,
+          "originalSpeedValue": "40",
+          "optional": false,
+          "visibilityPercentageNormalized": 1
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 609
+    },
+    {
+      "command": {
+        "tapOnElement": {
+          "selector": {
+            "textRegex": "2002",
+            "optional": false
+          },
+          "retryIfNoChange": false,
+          "waitUntilVisible": false,
+          "longPress": false,
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 2013
+    },
+    {
+      "command": {
+        "tapOnElement": {
+          "selector": {
+            "textRegex": "Continue",
+            "optional": false
+          },
+          "retryIfNoChange": false,
+          "waitUntilVisible": false,
+          "longPress": false,
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 1768
+    },
+    {
+      "command": {
+        "tapOnElement": {
+          "selector": {
+            "textRegex": "Continue",
+            "optional": false
+          },
+          "retryIfNoChange": false,
+          "waitUntilVisible": false,
+          "longPress": false,
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 2140
+    },
+    {
+      "command": {
+        "tapOnElement": {
+          "selector": {
+            "textRegex": "Europe",
+            "optional": false
+          },
+          "retryIfNoChange": false,
+          "waitUntilVisible": false,
+          "longPress": false,
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 2238
+    },
+    {
+      "command": {
+        "tapOnElement": {
+          "selector": {
+            "textRegex": "Continue",
+            "optional": false
+          },
+          "retryIfNoChange": false,
+          "waitUntilVisible": false,
+          "longPress": false,
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 1704
+    },
+    {
+      "command": {
+        "assertConditionCommand": {
+          "condition": {
+            "visible": {
+              "textRegex": "Here is your plan.",
+              "optional": false
+            }
+          },
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 303
+    },
+    {
+      "command": {
+        "tapOnElement": {
+          "selector": {
+            "textRegex": "Continue",
+            "optional": false
+          },
+          "retryIfNoChange": false,
+          "waitUntilVisible": false,
+          "longPress": false,
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 2035
+    },
+    {
+      "command": {
+        "tapOnElement": {
+          "selector": {
+            "textRegex": "Start learning",
+            "optional": false
+          },
+          "retryIfNoChange": false,
+          "waitUntilVisible": false,
+          "longPress": false,
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 2368
+    },
+    {
+      "command": {
+        "tapOnElement": {
+          "selector": {
+            "textRegex": "Pause the lesson",
+            "optional": false
+          },
+          "retryIfNoChange": false,
+          "waitUntilVisible": false,
+          "longPress": false,
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 1923
+    },
+    {
+      "command": {
+        "tapOnElement": {
+          "selector": {
+            "textRegex": "Finish here",
+            "optional": false
+          },
+          "retryIfNoChange": false,
+          "waitUntilVisible": false,
+          "longPress": false,
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 1639
+    },
+    {
+      "command": {
+        "tapOnElement": {
+          "selector": {
+            "textRegex": "Continue",
+            "optional": false
+          },
+          "retryIfNoChange": false,
+          "waitUntilVisible": false,
+          "longPress": false,
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 1950
+    },
+    {
+      "command": {
+        "tapOnElement": {
+          "selector": {
+            "textRegex": "Not now",
+            "optional": false
+          },
+          "retryIfNoChange": false,
+          "waitUntilVisible": false,
+          "longPress": false,
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 2396
+    },
+    {
+      "command": {
+        "assertConditionCommand": {
+          "condition": {
+            "visible": {
+              "textRegex": "Explorer!",
+              "optional": false
+            }
+          },
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 352
+    },
+    {
+      "command": {
+        "stopAppCommand": {
+          "appId": "com.wrexist.worldquest",
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 1084
+    },
+    {
+      "command": {
+        "launchAppCommand": {
+          "appId": "com.wrexist.worldquest",
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 6898
+    },
+    {
+      "command": {
+        "assertConditionCommand": {
+          "condition": {
+            "visible": {
+              "textRegex": "Explorer!",
+              "optional": false
+            }
+          },
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 3640
+    },
+    {
+      "command": {
+        "takeScreenshotCommand": {
+          "path": "native-relaunch",
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 297
+    },
+    {
+      "command": {
+        "openLinkCommand": {
+          "link": "worldquest://country/%53%45",
+          "autoVerify": false,
+          "browser": false,
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 2074
+    },
+    {
+      "command": {
+        "runFlowCommand": {
+          "commands": [
+            {
+              "tapOnElement": {
+                "selector": {
+                  "textRegex": "Open",
+                  "optional": false
+                },
+                "retryIfNoChange": false,
+                "waitUntilVisible": false,
+                "longPress": false,
+                "optional": false
+              }
+            }
+          ],
+          "condition": {
+            "visible": {
+              "textRegex": "Open in.*WorldQuest.*",
+              "optional": false
+            }
+          },
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 9158
+    },
+    {
+      "command": {
+        "tapOnElement": {
+          "selector": {
+            "textRegex": "Open",
+            "optional": false
+          },
+          "retryIfNoChange": false,
+          "waitUntilVisible": false,
+          "longPress": false,
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 2455
+    },
+    {
+      "command": {
+        "assertConditionCommand": {
+          "condition": {
+            "visible": {
+              "textRegex": "Sweden",
+              "optional": false
+            }
+          },
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 548
+    },
+    {
+      "command": {
+        "takeScreenshotCommand": {
+          "path": "native-country",
+          "optional": false
+        }
+      },
+      "status": "COMPLETED",
+      "durationMs": 207
+    }
+  ]
+}

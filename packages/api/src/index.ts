@@ -1,4 +1,6 @@
 export * from './client.js'
+export * from './ports.js'
+export { createSupabaseBackend } from './supabase-adapter.js'
 export type {
   Database,
   Enums,

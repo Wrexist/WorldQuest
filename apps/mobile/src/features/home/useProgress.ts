@@ -10,8 +10,9 @@
  */
 
 import { useQuery } from '@tanstack/react-query'
-import { fetchProgress, type Progress } from '@worldquest/api'
-import { currentUser, isConfigured, supabase } from '../../lib/supabase.js'
+import type { Progress } from '@worldquest/api'
+import { isConfigured } from '../../lib/supabase.js'
+import { withAccount } from '../../lib/backend.js'
 import { queryKeys } from '../../lib/query.js'
 
 export type ProgressStatus = 'loading' | 'ready' | 'error'
@@ -37,8 +38,7 @@ export function useProgress(): UseProgress {
   const query = useQuery({
     queryKey: queryKeys.progress,
     queryFn: async (): Promise<Progress> => {
-      await currentUser()
-      return fetchProgress(supabase())
+      return withAccount((account) => account.fetchProgress())
     },
     // No backend configured — a fresh checkout with no .env.local. The app still runs
     // lessons; it just cannot sync them, and a spinner that never resolves is a worse

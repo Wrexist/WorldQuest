@@ -109,20 +109,9 @@ export type AccountSection = {
   readonly onLink: () => void
   readonly onSignIn: () => void
   readonly onSignOut: () => void
-  /**
-   * Finished lessons still waiting to reach the server.
-   *
-   * Sign-out calls `clearAll()` — deliberately, because a list of keys to clear is a list
-   * somebody forgets to add to, and the thing forgotten is the thing that leaks. The cost
-   * is that it also wipes the offline queue, so a lesson finished on a plane and never
-   * synced is gone for good.
-   *
-   * `hasUnsyncedProgress` has said "used to warn before sign-out or account deletion" in
-   * the engine since the queue was built, and had no caller: one tap on a plain row threw
-   * the work away in silence. Stated BEFORE the control rather than in a dialogue after
-   * it, and the control gets a different label so the destructive version is never the
-   * one somebody meant to press.
-   */
+  readonly signOutPending?: boolean
+  readonly signOutFailed?: boolean
+  /** Pending work stays with its account and resumes syncing when that account returns. */
   readonly unsyncedLessons: number
 }
 
@@ -315,19 +304,27 @@ export function SettingsScreen({
           <Note body={t('account:settings.child')} />
         ) : account.email !== null ? (
           <>
-            <LinkRow label={t('account:settings.email')} value={account.email} />
+            <Note title={t('account:settings.email')} body={account.email} />
+            {account.signOutFailed && (
+              <View role="alert" aria-live="polite">
+                <Note body={t('account:settings.signOut.failed')} />
+              </View>
+            )}
             {account.unsyncedLessons > 0 ? (
               <>
                 <Note
                   body={t('account:settings.signOut.unsynced', { count: account.unsyncedLessons })}
                 />
                 <LinkRow
-                  label={t('account:settings.signOut.anyway')}
-                  onPress={account.onSignOut}
+                  label={t(account.signOutPending ? 'account:settings.signOut.pending' : 'account:settings.signOut.anyway')}
+                  onPress={account.signOutPending ? undefined : account.onSignOut}
                 />
               </>
             ) : (
-              <LinkRow label={t('account:settings.signOut')} onPress={account.onSignOut} />
+              <LinkRow
+                label={t(account.signOutPending ? 'account:settings.signOut.pending' : 'account:settings.signOut')}
+                onPress={account.signOutPending ? undefined : account.onSignOut}
+              />
             )}
           </>
         ) : (

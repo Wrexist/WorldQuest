@@ -42,8 +42,9 @@
 
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const ROOT = new URL('..', import.meta.url).pathname
+const ROOT = fileURLToPath(new URL('..', import.meta.url))
 const ENGINE_SRC = join(ROOT, 'packages/engines/src')
 /**
  * Everything that legitimately calls the engine.
@@ -248,7 +249,8 @@ const PLUMBING = [
   'engines/src/learning/types.ts',
 ]
 
-const isPlumbing = (file: string): boolean => PLUMBING.some((part) => file.includes(part))
+const isPlumbing = (file: string): boolean =>
+  PLUMBING.some((part) => file.replace(/\\/g, '/').includes(part))
 
 const walk = (dir: string): string[] =>
   readdirSync(dir).flatMap((entry) => {

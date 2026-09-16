@@ -1,5 +1,7 @@
 # Definition of Done — where this actually stands
 
+> **Historical specification/status — superseded for release planning on 13 September 2026.** Use the [current execution checklist](execution-plan.md), [evidence log](phase-1-verification.md) and [launch brief](../product/launch-brief.md). Feature lists and checked boxes below describe earlier targets or checks, not current device, backend or store certification.
+
 > **Status update, 2026-08-09.** Three things resolved by Isac directly (not inferred
 > from the repo — see `docs/plan/cowork-handoff.md`): the bundle-budget contradiction is
 > settled at **4 MiB**, with `@sentry/react-native` removed to fit it (no Sentry account

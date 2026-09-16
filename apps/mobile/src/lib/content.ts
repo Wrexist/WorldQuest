@@ -172,8 +172,8 @@ export function useContent() {
   // and the next lesson they start should already describe flags rather than show them.
   const screenReaderOn = useScreenReader()
 
-  // Real memory state arrives from Supabase in week 3. Empty here means every fact
-  // reads as new, which is the correct cold-start behaviour anyway.
+  // Release blocker L01/B06: this is empty even for returning learners. Phase 2
+  // must hydrate account-scoped memory before due reviews/mastery can be trusted.
   const memory = useMemo(() => new Map<string, MemoryState>(), [])
 
   const index = useMemo<LoadedContent | null>(() => {

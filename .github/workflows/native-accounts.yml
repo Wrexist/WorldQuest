@@ -1,0 +1,157 @@
+name: Native account acceptance
+# Includes rendered eight-digit account screens against the OS vault and local D1.
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Native platform to verify; workflow-file pushes verify both platforms'
+        type: choice
+        options: [both, android, ios]
+        default: both
+  push:
+    branches: ['fix/**']
+    paths: ['.github/workflows/native-accounts.yml']
+permissions:
+  contents: read
+concurrency:
+  group: native-accounts-${{ github.ref }}-${{ inputs.platform || 'both' }}
+  cancel-in-progress: true
+env:
+  MAESTRO_CLI_NO_ANALYTICS: '1'
+  MAESTRO_DRIVER_STARTUP_TIMEOUT: '300000'
+jobs:
+  accounts:
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON((inputs.platform == 'both' || inputs.platform == '') && '[{"os":"ubuntu-latest","platform":"android"},{"os":"macos-15","platform":"ios"}]' || inputs.platform == 'android' && '[{"os":"ubuntu-latest","platform":"android"}]' || '[{"os":"macos-15","platform":"ios"}]') }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - run: pnpm install --frozen-lockfile
+      - run: node scripts/native-accounts/prepare.cjs
+      - run: pnpm --filter @worldquest/mobile exec expo prebuild --platform ${{ matrix.platform }} --no-install
+      - name: Allow loopback HTTP in isolated Android proof
+        if: matrix.platform == 'android'
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path('apps/mobile/android/app/src/main/AndroidManifest.xml')
+          s = p.read_text()
+          s = re.sub(r'\sandroid:usesCleartextTraffic="[^"]*"', '', s)
+          s = s.replace('<application ', '<application android:usesCleartextTraffic="true" ', 1)
+          p.write_text(s)
+          PY
+      - name: Install pinned Maestro
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/maestro"
+          cd "$RUNNER_TEMP/maestro"
+          curl --fail --location --retry 3 -o maestro.zip https://github.com/mobile-dev-inc/Maestro/releases/download/cli-2.10.0/maestro.zip
+          echo '29b675e10cc12080e445e9bfb2e2b4e4dfb9c0f2e30d5884120d258b5e1cd991  maestro.zip' | shasum -a 256 --check
+          unzip -q maestro.zip
+          echo "$RUNNER_TEMP/maestro/maestro/bin" >> "$GITHUB_PATH"
+      - name: Compile Android proof
+        if: matrix.platform == 'android'
+        working-directory: apps/mobile/android
+        run: |
+          cd ../../.. && node scripts/native-credentials/prepare-native-tests.cjs && cd apps/mobile/android
+          ./gradlew assembleRelease :expo-secure-store:testReleaseUnitTest --no-daemon --max-workers=2 -PreactNativeArchitectures=x86_64 -Dorg.gradle.jvmargs=-Xmx4g
+      - name: Enable KVM
+        if: matrix.platform == 'android'
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Start local synthetic D1 account server
+        run: |
+          node scripts/native-accounts/server.cjs > "$RUNNER_TEMP/account-server.log" 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl --silent --fail http://127.0.0.1:8789/health; then exit 0; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/account-server.log"
+          exit 1
+      - name: Exercise Android Keystore, restart and reinstall
+        if: matrix.platform == 'android'
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          script: |
+            adb install apps/mobile/android/app/build/outputs/apk/release/app-release.apk
+            maestro test --debug-output "$RUNNER_TEMP/account-restart" scripts/native-accounts/restart.yaml
+            adb uninstall com.wrexist.worldquest.accountsproof
+            adb install apps/mobile/android/app/build/outputs/apk/release/app-release.apk
+            maestro test --debug-output "$RUNNER_TEMP/account-reinstall" scripts/native-accounts/reinstall.yaml
+            maestro test --debug-output "$RUNNER_TEMP/account-ui" scripts/native-accounts/ui.yaml
+      - name: Compile iOS proof
+        if: matrix.platform == 'ios'
+        run: |
+          cd apps/mobile/ios && pod install && cd ../../..
+          set -o pipefail
+          WORKSPACE=$(find apps/mobile/ios -maxdepth 1 -name '*.xcworkspace' -print -quit)
+          cp scripts/native-accounts/simulator.entitlements apps/mobile/ios/WorldQuestAccountProof/WorldQuestAccountProof.entitlements
+          # Xcode embeds simulated iOS entitlements at link time, separate from the
+          # host code signature. Post-build signing with iOS claims is insufficient.
+          xcodebuild -workspace "$WORKSPACE" -scheme WorldQuestAccountProof -configuration Release -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath "$RUNNER_TEMP/wq-accounts" CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM="" ARCHS="$(uname -m)" ONLY_ACTIVE_ARCH=YES 2>&1 | tee "$RUNNER_TEMP/account-build.log"
+          APP=$(find "$RUNNER_TEMP/wq-accounts/Build/Products/Release-iphonesimulator" -maxdepth 1 -name '*.app' -print -quit)
+          codesign --verify --deep --strict "$APP"
+          codesign -d --entitlements - "$APP" > "$RUNNER_TEMP/account-signed-entitlements.plist"
+          ditto -c -k --sequesterRsrc --keepParent "$APP" "$RUNNER_TEMP/account-ios-app.zip"
+      - name: Exercise iOS Keychain, restart and reinstall
+        if: matrix.platform == 'ios'
+        run: |
+          set -euo pipefail
+          DEVICE_ID=$(xcrun simctl list devices available -j | python3 -c 'import json,sys; print(next(d["udid"] for ds in json.load(sys.stdin)["devices"].values() for d in ds if d["name"].startswith("iPhone")))')
+          echo "DEVICE_ID=$DEVICE_ID" >> "$GITHUB_ENV"
+          APP=$(find "$RUNNER_TEMP/wq-accounts/Build/Products/Release-iphonesimulator" -maxdepth 1 -name '*.app' -print -quit)
+          xcodebuild -version
+          xcrun simctl boot "$DEVICE_ID"
+          xcrun simctl bootstatus "$DEVICE_ID" -b
+          xcrun simctl install "$DEVICE_ID" "$APP"
+          maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/account-restart" scripts/native-accounts/restart.yaml
+          xcrun simctl uninstall "$DEVICE_ID" com.wrexist.worldquest.accountsproof
+          xcrun simctl install "$DEVICE_ID" "$APP"
+          # The reinstall.yaml and ui.yaml flows dismiss the iOS "Open in ...?"
+          # prompt if this handoff leaves one; direct delivery is not enough.
+          xcrun simctl openurl "$DEVICE_ID" worldquestaccountsproof://reinstall
+          maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/account-reinstall" scripts/native-accounts/reinstall.yaml
+          xcrun simctl openurl "$DEVICE_ID" worldquestaccountsproof://ui
+          maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/account-ui" scripts/native-accounts/ui.yaml
+      - name: Capture iOS failure state
+        if: failure() && matrix.platform == 'ios' && env.DEVICE_ID != ''
+        run: |
+          xcrun simctl io "$DEVICE_ID" screenshot "$RUNNER_TEMP/account-failure.png"
+          xcrun simctl spawn "$DEVICE_ID" log show --last 10m --predicate 'process == "WorldQuestAccountProof"' > "$RUNNER_TEMP/account-runtime.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: account-evidence-${{ matrix.platform }}
+          path: |
+            ${{ runner.temp }}/account-server.log
+            ${{ runner.temp }}/account-build.log
+            ${{ runner.temp }}/account-ios-app.zip
+            ${{ runner.temp }}/account-signed-entitlements.plist
+            ${{ runner.temp }}/wq-accounts/Build/Intermediates.noindex/WorldQuestAccountProof.build/Release-iphonesimulator/WorldQuestAccountProof.build/*.xcent
+            ${{ runner.temp }}/account-failure.png
+            ${{ runner.temp }}/account-runtime.log
+            ${{ runner.temp }}/account-restart/
+            ${{ runner.temp }}/account-reinstall/
+            ${{ runner.temp }}/account-ui/
+            apps/mobile/android/app/src/main/AndroidManifest.xml
+            apps/mobile/android/app/src/main/res/xml/*backup*.xml
+            apps/mobile/android/app/src/main/res/xml/data_extraction_rules.xml
+            node_modules/expo-secure-store/android/build/test-results/
+          if-no-files-found: ignore
+          include-hidden-files: true
+          retention-days: 7

@@ -18,18 +18,17 @@ import {
   retryParked,
 } from '@worldquest/engines'
 import type { AnsweredItem } from '@worldquest/engines'
-import { submitLesson } from '@worldquest/api'
 import type { SubmitLessonResponse } from '@worldquest/api'
-import { currentUser, isConfigured, supabase } from './supabase.js'
+import { accountRepository, currentUser, isConfigured } from './supabase.js'
 import { isOnline, onConnectivityChange } from './connectivity.js'
 import { invalidateProgress } from './query.js'
-import { readJson, writeJson } from './storage.js'
+import { captureStorage, onStorageScopeChange, writeJson } from './storage.js'
 import { markAwardDelivered, peekAwards } from './awards.js'
 import { recordServerOutcome } from '../features/achievements/progress.js'
 import { queueUnlocks } from '../features/achievements/pending.js'
 import { track } from './analytics.js'
 
-const QUEUE_KEY = 'sync.queue.v1'
+const QUEUE_KEY = 'sync.queue.v2'
 
 /**
  * Both halves must be arrays of things with an id and a kind.
@@ -41,10 +40,8 @@ const QUEUE_KEY = 'sync.queue.v1'
  * queue would then be unrecoverable without reinstalling, which is the "I lost my
  * progress" failure this file calls the most trust-destroying bug a learning app has.
  *
- * A mutation that fails this is dropped with the rest of the queue rather than filtered
- * out of it, and that is the honest trade: a partially-readable queue is a queue whose
- * ordering and idempotency keys we cannot vouch for, and replaying half of one is worse
- * than losing it. In exchange the app starts.
+ * Unreadable queues are preserved in a separate recovery record. They are never
+ * partially replayed because their ordering and idempotency keys are unverified.
  */
 const isQueue = (value: unknown): boolean => {
   if (typeof value !== 'object' || value === null) return false
@@ -57,7 +54,9 @@ const isQueue = (value: unknown): boolean => {
         m !== null &&
         typeof (m as { id?: unknown }).id === 'string' &&
         typeof (m as { kind?: unknown }).kind === 'string' &&
-        typeof (m as { attempts?: unknown }).attempts === 'number',
+        Number.isSafeInteger((m as { attempts?: unknown }).attempts) &&
+        (m as { attempts: number }).attempts >= 0 &&
+        Number.isFinite((m as { clientTs?: unknown }).clientTs),
     )
   return list(q.pending) && list(q.parked)
 }
@@ -69,11 +68,24 @@ const isQueue = (value: unknown): boolean => {
  * survive the app being killed on the walk home — an in-memory queue silently loses
  * the XP a user earned, and they never find out why their streak broke.
  */
-let queue: SyncQueue = readJson<SyncQueue>(QUEUE_KEY, isQueue) ?? emptyQueue()
+function loadQueue(): SyncQueue {
+  const storage = captureStorage()
+  const raw = storage.get(QUEUE_KEY)
+  if (raw === null) return emptyQueue()
+  try {
+    const value: unknown = JSON.parse(raw)
+    if (isQueue(value)) return value as SyncQueue
+  } catch { /* Preserve unreadable work below, never replay a partial queue. */ }
+  storage.set(`sync.queue.corrupt.v2.${Date.now()}`, raw)
+  storage.remove(QUEUE_KEY)
+  return emptyQueue()
+}
+
+let queue: SyncQueue = loadQueue()
 
 function commit(next: SyncQueue): void {
+  writeJson(QUEUE_KEY, next)
   queue = next
-  writeJson(QUEUE_KEY, queue)
   for (const listener of listeners) listener()
 }
 
@@ -179,6 +191,15 @@ let inFlight: Promise<void> | null = null
  * duplicate-send race closed and still sends the work.
  */
 let rerun = false
+let retryTimer: ReturnType<typeof setTimeout> | undefined
+
+onStorageScopeChange(() => {
+  clearTimeout(retryTimer)
+  nextAttemptAt.clear()
+  queue = loadQueue()
+  for (const listener of listeners) listener()
+  void flush()
+})
 
 export function flush(): Promise<void> {
   if (inFlight !== null) {
@@ -202,6 +223,7 @@ async function run(): Promise<void> {
   // Nothing to talk to. Leave the queue intact rather than failing every item and
   // burning their retry budget against a backend that was never configured.
   if (!isConfigured()) return
+  if (queue.pending.length === 0) return
 
   // Offline is not a failure, it is a "not yet". Sending anyway would spend an attempt
   // per queued lesson on a request that cannot succeed, and after enough tunnels the
@@ -209,23 +231,40 @@ async function run(): Promise<void> {
   // hammering a broken server, not to punish a commute.
   if (!isOnline()) return
 
+  // Session creation may adopt the local guest's work. An existing account may not.
+  try { await currentUser() } catch { scheduleRetry(); return }
+  const storage = captureStorage()
+  if (storage.userId === null) return
+
   const now = Date.now()
   for (const mutation of nextBatch(queue)) {
+    if (!storage.isCurrent()) return
     // Still cooling off from its last failure. Skipped rather than delayed, so one
     // slow item cannot hold up the rest of the batch behind it.
     if (!ready(mutation, now)) continue
 
     try {
-      await send(mutation)
+      await send(mutation, storage)
+      if (!storage.isCurrent()) return
       nextAttemptAt.delete(mutation.id)
       commit(acknowledge(queue, mutation.id))
     } catch (error) {
+      if (!storage.isCurrent()) return
       const permanent = __isPermanent(error)
       commit(fail(queue, mutation.id, String(error), permanent))
       if (permanent) nextAttemptAt.delete(mutation.id)
       else nextAttemptAt.set(mutation.id, Date.now() + backoffMs(mutation.attempts, Math.random()))
     }
   }
+  if (queue.pending.length > 0) scheduleRetry()
+}
+
+function scheduleRetry(): void {
+  clearTimeout(retryTimer)
+  if (!isConfigured() || !isOnline()) return
+  const due = [...nextAttemptAt.values()]
+  const delay = due.length ? Math.max(100, Math.min(...due) - Date.now()) : 1000
+  retryTimer = setTimeout(() => { void flush() }, delay)
 }
 
 /**
@@ -280,17 +319,19 @@ export function __isPermanent(error: unknown): boolean {
   return status >= 400 && status < 500 && !RETRYABLE.has(status)
 }
 
-async function send(mutation: QueuedMutation): Promise<void> {
+async function send(mutation: QueuedMutation, storage: ReturnType<typeof captureStorage>): Promise<void> {
   if (mutation.kind !== 'lesson_complete') {
     throw new Error(`unknown mutation kind: ${mutation.kind}`)
   }
 
   // Awaited here rather than at enqueue time: on a first launch offline, there is no
   // session to create yet, and this correctly fails and retries later.
-  await currentUser()
+  if (storage.userId === null || !storage.isCurrent()) return
+  const account = await accountRepository(storage.userId)
+  if (!storage.isCurrent()) return
 
   const submission = mutation.payload as LessonSubmission
-  const result = await submitLesson(supabase(), {
+  const result = await account.submitLesson({
     lessonId: submission.lessonId,
     kind: submission.kind,
     startedAt: submission.startedAt,
@@ -298,6 +339,7 @@ async function send(mutation: QueuedMutation): Promise<void> {
     heartsLost: submission.heartsLost,
     ...(submission.quest !== undefined ? { quest: submission.quest } : {}),
   })
+  if (!storage.isCurrent()) return
 
   /**
    * The prediction stops being a prediction — but it does NOT stop counting here.

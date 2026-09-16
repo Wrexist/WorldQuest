@@ -1,0 +1,52 @@
+{
+  "date": "2026-09-13",
+  "branch": "fix/phase-1-verification",
+  "platform": "Windows, Node 22.18.0, pnpm 9.15.0",
+  "verify": {
+    "command": "pnpm verify",
+    "exitCode": 0,
+    "workspaceTestsPassed": 1333,
+    "edgeAndToolTestsPassed": 162,
+    "browserHarnessRegressionsPassed": 4,
+    "total": 1499
+  },
+  "native": {
+    "command": "pnpm bundle:native",
+    "exitCode": 0,
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "budgetMiB": 4.6
+  },
+  "e2e": {
+    "command": "node apps/mobile/e2e/flow.cjs node_modules/.cache/wq-web node_modules/.cache/wq-e2e-shots",
+    "exitCode": 0,
+    "reportedChecksPassed": 76,
+    "additionalImageBranchSkipped": 1
+  },
+  "accessibility": {
+    "command": "pnpm a11y:tree",
+    "exitCode": 0,
+    "routes": 10
+  },
+  "design": {
+    "command": "node scripts/design-shots.cjs",
+    "exitCode": 0,
+    "routes": 18,
+    "viewportWidths": [
+      320,
+      390,
+      768
+    ],
+    "flowCaptures": 102,
+    "standardMeasurableFindings": 0
+  },
+  "limitations": [
+    "Linux CI not run",
+    "No native device or live-backend validation",
+    "Store compositor only syntax checked",
+    "Only selected screenshots manually viewed",
+    "Initial overlapping browser exports invalidated earlier runs; final checks used a completed stable export"
+  ]
+}

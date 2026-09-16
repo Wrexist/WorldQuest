@@ -13,13 +13,19 @@
 
 import {
   createWorldQuestClient,
+  createSupabaseBackend,
+  AccountChangedError,
   ensureSession,
   type WorldQuestClient,
 } from '@worldquest/api'
-import { sessionStorage } from './storage.js'
+import { beginStorageTransition, captureStorage, finishStorageTransition, setStorageAccount, startGuestStorage } from './storage.js'
+import { createSessionStorage } from './credentials.js'
 
 let client: WorldQuestClient | null = null
 let session: Promise<{ userId: string }> | null = null
+let initializing = 0
+let unsubscribe: (() => void) | null = null
+let transitioning = false
 
 /**
  * `EXPO_PUBLIC_` is not a naming convention — it is the prefix Expo uses to decide
@@ -49,7 +55,19 @@ export function isConfigured(): boolean {
 export const backendUrl = (): string => config().url
 
 export function supabase(): WorldQuestClient {
-  client ??= createWorldQuestClient({ ...config(), storage: sessionStorage })
+  if (!client) {
+    client = createWorldQuestClient({ ...config(), storage: createSessionStorage() })
+    const { data } = client.auth.onAuthStateChange((event, next) => {
+      // This callback runs under the auth lock: no awaited SDK calls here.
+      if (event === 'SIGNED_OUT') {
+        session = null
+        if (captureStorage().userId !== null) startGuestStorage()
+      } else if (next && initializing === 0 && !transitioning) {
+        acceptSignedInAccount(next.user.id)
+      }
+    })
+    unsubscribe = () => data.subscription.unsubscribe()
+  }
   return client
 }
 
@@ -61,26 +79,50 @@ export function supabase(): WorldQuestClient {
  * produces several orphaned users per install and a wallet the user cannot see.
  */
 export function currentUser(): Promise<{ userId: string }> {
-  session ??= ensureSession(supabase()).catch((error: unknown) => {
+  if (transitioning) return Promise.reject(new AccountChangedError())
+  if (session) return session
+  const store = captureStorage()
+  initializing++
+  const pending = Promise.resolve().then(() => ensureSession(supabase(), (userId, created) => {
+    if (transitioning || !store.isCurrent()) throw new AccountChangedError()
+    setStorageAccount(userId, created)
+  })).catch((error: unknown) => {
     // Clear the memo so a later attempt can retry — a failed sign-in on a plane must
     // not poison the session for the rest of the process's life.
-    session = null
+    if (session === pending) session = null
     throw error
-  })
-  return session
+  }).finally(() => { initializing-- })
+  session = pending
+  return pending
 }
 
-/**
- * Drops the memoised client and session.
- *
- * Named for what it does rather than for who calls it. It was `__resetSupabaseForTests`,
- * "not for app code" — and then sign-out needed exactly this: after `clearAll()` empties
- * the storage the client was constructed around, the in-memory client is holding a token
- * for a session that no longer exists anywhere else, and `currentUser()` would hand it
- * back rather than minting the fresh anonymous one. A seam whose name forbids the one
- * real use it has is a seam somebody works around.
- */
+/** Open an immutable, owner-bound transport for the account visible to the caller. */
+export async function accountRepository(userId: string) {
+  if (transitioning) throw new AccountChangedError()
+  return createSupabaseBackend(config(), supabase()).forAccount(userId)
+}
+
+export async function withAccountTransition<T>(work: () => Promise<T>): Promise<T> {
+  if (transitioning) throw new AccountChangedError()
+  beginStorageTransition()
+  transitioning = true
+  session = null
+  try { return await work() } finally {
+    transitioning = false
+    finishStorageTransition()
+  }
+}
+
+export function acceptSignedInAccount(userId: string): void {
+  setStorageAccount(userId)
+  session = Promise.resolve({ userId })
+}
+
+/** Drop transport state after clearing local credentials. */
 export function resetClient(): void {
+  unsubscribe?.()
+  unsubscribe = null
+  if (client) void client.auth.stopAutoRefresh()
   client = null
   session = null
 }

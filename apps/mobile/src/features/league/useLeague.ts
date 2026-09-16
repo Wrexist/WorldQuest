@@ -16,7 +16,7 @@
  */
 
 import { useQuery } from '@tanstack/react-query'
-import { fetchLeague, type LeagueCohort } from '@worldquest/api'
+import type { LeagueCohort } from '@worldquest/api'
 import {
   DIVISIONS,
   LEAGUE_TIERS,
@@ -25,7 +25,8 @@ import {
   type LeagueRank,
   type Standing,
 } from '@worldquest/engines'
-import { currentUser, isConfigured, supabase } from '../../lib/supabase.js'
+import { isConfigured } from '../../lib/supabase.js'
+import { withAccount } from '../../lib/backend.js'
 import { queryKeys } from '../../lib/query.js'
 import { readOnboarding } from '../onboarding/useOnboarding.js'
 
@@ -63,8 +64,7 @@ export function useLeague(): UseLeague {
   const query = useQuery({
     queryKey: queryKeys.league,
     queryFn: async (): Promise<LeagueCohort | null> => {
-      await currentUser()
-      return fetchLeague(supabase())
+      return withAccount((account) => account.fetchLeague())
     },
     enabled: isConfigured() && !isChild,
     // A leaderboard from ten minutes ago is a different set of numbers presented as

@@ -60,7 +60,7 @@
   "settings:privacy.analytics.help": "Anonymous usage data. Never on for a child account, never sold, never shared.",
   "settings:privacy.account.title": "Your data",
   "settings:privacy.account.title__note": "Heading of a short explanation, not a link. Max 14 characters.",
-  "settings:privacy.account.body": "You are learning without an account, so nothing here identifies you. When accounts arrive, exporting and deleting your data will live here.",
+  "settings:privacy.account.body": "Exporting and deleting account data are not available here yet.",
   "settings:about.version": "Version",
   "settings:about.version__note": "Row label next to the app version number. Max 12 characters.",
   "settings:about.licences": "Open source licences",

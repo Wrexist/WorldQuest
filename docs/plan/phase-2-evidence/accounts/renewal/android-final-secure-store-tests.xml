@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="expo.modules.securestore.SecureStoreCommitTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-09-13T21:10:38.435Z" hostname="runnervmlun5p" time="0.013">
+  <properties/>
+  <testcase name="failedNewWriteDoesNotBecomeReadableOrMakeRetryANoop" classname="expo.modules.securestore.SecureStoreCommitTest" time="0.012"/>
+  <testcase name="failedDeletionRemainsDiscoverableForLogoutRetry" classname="expo.modules.securestore.SecureStoreCommitTest" time="0.001"/>
+  <testcase name="failedReplacementRestoresPriorValueEvenIfRollbackDiskWriteFails" classname="expo.modules.securestore.SecureStoreCommitTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

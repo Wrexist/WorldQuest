@@ -30,7 +30,7 @@
   "home:world.facts": "{learned} av {total} fakta",
   "home:world.due": "{count, plural, one {# fakta redo att repetera} other {# fakta redo att repetera}}",
   "home:world.open": "Utforska världen",
-  "home:quest.play": "Fem saker, ungefär tio minuter",
+  "home:quest.play": "Fem utmaningar i din egen takt",
   "home:quest.done": "Uppdraget klart",
   "home:quest.doneBody": "Din svit är säkrad. Fortsätt gärna om du vill.",
   "home:quest.more": "Öva ändå",
@@ -43,5 +43,6 @@
   "home:reminder.title": "Vill du ha en knuff?",
   "home:reminder.body": "En påminnelse om dagen, vid en tid du väljer. Inget annat, någonsin.",
   "home:reminder.yes": "Välj en tid",
-  "home:reminder.later": "Inte nu"
+  "home:reminder.later": "Inte nu",
+  "home:quest.play__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. "
 }

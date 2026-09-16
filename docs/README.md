@@ -2,6 +2,12 @@
 
 Start with [`../PROJECT.md`](../PROJECT.md). These documents are the depth behind it.
 
+Current work: [eight-phase execution checklist](plan/execution-plan.md), covering all 148 audit actions. [Phase 1 work log](plan/phase-1-verification.md).
+
+Latest evidence-based review: [13 September 2026 audit programme](audits/2026-09-13/README.md) — eight audits, prioritized actions, App Store readiness and a Convex/low-cost backend comparison. It distinguishes current code from older planning claims.
+
+Backend decision update: the owner selected [Cloudflare Workers/D1 (ADR 0013)](adr/0013-cloudflare-d1-backend.md). The [Phase 2 work log](plan/phase-2-verification.md) records the D1 implementation and remaining native-auth/cutover gates.
+
 Everything here is **living**. A code change that invalidates a doc updates the doc in
 the same PR. If a doc and the code disagree, that is a bug in one of them — decide
 which, and fix it the same day.
@@ -87,3 +93,5 @@ with the alternatives we rejected and what would make us reconsider.
 `roadmap.md` → `metrics.md`
 
 **AI agent** → [`../CLAUDE.md`](../CLAUDE.md), then the skill for the task
+
+Current release references: [launch brief](product/launch-brief.md), [release governance](plan/release-governance.md), [generated inventory](engineering/project-inventory.generated.json), [dependency security](engineering/dependency-security.md).

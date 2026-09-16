@@ -34,7 +34,7 @@ const DOC = join(repoRoot, 'docs', 'systems', 'xp-economy.md')
 
 /** The one fenced block that claims to be `BALANCE` itself. */
 function balanceExcerpt(markdown: string): string {
-  const fences = markdown.match(/```ts\n([\s\S]*?)```/g) ?? []
+  const fences = markdown.match(/```ts\r?\n([\s\S]*?)```/g) ?? []
   const block = fences.find((f) => f.includes('export const BALANCE'))
   if (!block) throw new Error('no BALANCE excerpt found in xp-economy.md')
   return block
