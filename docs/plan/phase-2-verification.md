@@ -509,3 +509,34 @@ number-pad fields, so the return key never submits the birth year or the code;
 the visible button covers the journey, but the keyboard cannot be dismissed
 without it. Production account screens, real delivery and the public D1 route
 remain required before B02 closes.
+
+## Eight-digit code lifecycle on device
+
+At `4383e3e`, [native account acceptance](https://github.com/Wrexist/WorldQuest/actions/runs/35225680635)
+passes on both platforms including a new `codes.yaml` scenario, and push
+[CI](https://github.com/Wrexist/WorldQuest/actions/runs/35225672011) passes. The
+scenario drives the three outcomes B02 asks for against the real server:
+
+- a resend inside the 60-second floor is refused with the rate error, after the
+  flow waits the *client's* countdown out and restarts the *server's* floor. The
+  first attempt tapped a disabled button — while the client countdown runs, Resend
+  cannot reach the server at all (`D1AccountScreen.tsx:98`) — so the earlier
+  version asserted nothing.
+- a code past its five minutes is refused (`INVALID_CODE`) even though the device
+  still holds it, which a client-side countdown cannot prove.
+- an ended session opens the recovery choice with the sentence that local progress
+  stays with its original account, and recovering continues on a fresh guest.
+
+The proof server gains three GET endpoints (`recent-send`, `expire-challenge`,
+`expire-session`) because a device proof cannot wait out a five-minute code or a
+day-long session, and the expiry that matters is the server's. They sit behind the
+existing CI-only guard and were exercised locally against the same server before
+the device run. Captures and the two harness faults are recorded in
+[the evidence note](phase-2-evidence/accounts/ui/README.md).
+
+This run also found, and did not fix, a user-facing copy fault: the recovery
+screen shows "That didn't work. Check your connection and try again." because
+`SESSION_EXPIRED` and `AUTH_REQUIRED` are missing from `errorKeys`
+(`D1AccountScreen.tsx:11-18`), so a normal session ending is reported as a network
+failure, under copy that has just explained what happened. It needs a copy
+decision and a screen change, not a silent patch.
