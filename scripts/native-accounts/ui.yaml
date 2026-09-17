@@ -23,7 +23,7 @@ appId: com.wrexist.worldquest.accountsproof
           optional: true
 - extendedWaitUntil:
     visible: Start as guest
-    timeout: 120000
+    timeout: 300000
 - tapOn: Start as guest
 - tapOn: Link your email
 - tapOn: Birth year

@@ -22,5 +22,9 @@ appId: com.wrexist.worldquest.accountsproof
     visible: PASS_RECOVERY_AND_DELETION
     # A cold CI simulator queued the URL handoff for 68 seconds before the app
     # process existed. API requests still time out at 15 seconds in the client.
-    timeout: 120000
+    # 120 seconds then proved too tight: the run at 1abc497 failed the assertion
+    # at 12:54:08 and the retained capture taken 15 seconds later shows the whole
+    # proof on screen. The proof is bounded by its own network timeouts, so this
+    # only has to outlast a cold boot, and the job budget has room.
+    timeout: 300000
 - takeScreenshot: account-deletion

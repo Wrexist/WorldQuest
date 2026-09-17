@@ -5,9 +5,11 @@ appId: com.wrexist.worldquest.accountsproof
 # re-reads the stored UI flag and starts from an empty account.
 - stopApp
 - launchApp
+# Cold start plus the URL handoff the previous flow left behind; see the timeout
+# note in reinstall.yaml.
 - extendedWaitUntil:
     visible: Start as guest
-    timeout: 120000
+    timeout: 300000
 - tapOn: Start as guest
 - tapOn: Link your email
 - tapOn: Birth year
@@ -32,10 +34,10 @@ appId: com.wrexist.worldquest.accountsproof
 # A resend inside the floor is refused by the server. The floor is restamped
 # first so this asserts the rule, not how fast the emulator reached the button.
 - runScript: recent-send.js
-- assertVisible: Resend available in
+- assertVisible: 'Resend available in .*'
 - tapOn: Resend code
 - extendedWaitUntil:
-    visible: Please wait before trying again.
+    visible: 'Please wait before trying again. If the code has expired, request a new one.'
     timeout: 30000
 - takeScreenshot: codes-resend-refused
 # A code past its five minutes is refused even though the device still holds it.
@@ -50,7 +52,7 @@ appId: com.wrexist.worldquest.accountsproof
       - hideKeyboard
 - tapOn: Confirm
 - extendedWaitUntil:
-    visible: That code is invalid or expired.
+    visible: 'That code is invalid or expired. Check the code, or request a new one when its time runs out.'
     timeout: 30000
 - takeScreenshot: codes-expired
 # An ended session opens the recovery choice, and says where local progress stays,
@@ -60,7 +62,7 @@ appId: com.wrexist.worldquest.accountsproof
 - extendedWaitUntil:
     visible: Sign in again
     timeout: 30000
-- assertVisible: Your local progress stays with its original account
+- assertVisible: 'Your session has ended. Your local progress stays with its original account while you choose what to do.'
 - assertVisible: Recover with email
 - takeScreenshot: codes-recovery
 - tapOn: Recover with email
