@@ -7,6 +7,7 @@ const { build } = require('esbuild')
 const { Miniflare, convertV4MiniflareOptions } = require('miniflare')
 if (process.env.CI !== 'true') throw new Error('Native account proof requires isolated CI')
 const port = Number(process.env.WQ_PROOF_PORT || 8789)
+const fixtureEmail = 'native-proof@example.invalid'
 
 async function main() {
   const mailbox = new Map()
@@ -22,7 +23,7 @@ async function main() {
     bindings: { API_ENABLED: 'true', AUTH_SECRET: 'synthetic-ci-only-native-account-proof-secret' },
     serviceBindings: { MAILBOX: async request => {
       const message = await request.json()
-      if (message.email !== 'native-proof@example.invalid') return new Response(null, { status: 400 })
+      if (message.email !== fixtureEmail) return new Response(null, { status: 400 })
       mailbox.set(message.email, message.code)
       return new Response(null, { status: 204 })
     } } }))
@@ -43,8 +44,28 @@ async function main() {
       let body = ''
       for await (const chunk of incoming) { body += chunk; if (body.length > 16384) throw new Error('Body too large') }
       let result
-      if (url.pathname === '/__proof/mailbox') result = Response.json({ code: mailbox.get('native-proof@example.invalid') })
-      else if (url.pathname === '/__proof/seed' && incoming.method === 'POST') {
+      if (url.pathname === '/__proof/mailbox') result = Response.json({ code: mailbox.get(fixtureEmail) })
+      // Codes live five minutes and sessions for a day or more. A device proof
+      // cannot wait either out, and the expiry that matters is the server's, not
+      // the copy the client kept. These age the real rows; they are GET because
+      // Maestro's host-side http.get is the only call the flows already use.
+      // One fixture mailbox and one live account exist per run, so no filter
+      // beyond that is needed — this server refuses to start outside CI.
+      else if (url.pathname === '/__proof/recent-send' && incoming.method === 'GET') {
+        // The resend floor is 60 seconds from sent_at. Re-stamping it keeps the
+        // cooldown check from depending on how fast the flow reached the button.
+        const updated = await db.prepare(`UPDATE email_challenges SET sent_at=? WHERE email=? AND state='pending'`)
+          .bind(Date.now(), fixtureEmail).run()
+        result = Response.json({ restamped: updated.meta.changes })
+      } else if (url.pathname === '/__proof/expire-challenge' && incoming.method === 'GET') {
+        const updated = await db.prepare(`UPDATE email_challenges SET expires_at=? WHERE email=? AND state IN ('pending','verifying')`)
+          .bind(Date.now() - 1000, fixtureEmail).run()
+        result = Response.json({ expired: updated.meta.changes })
+      } else if (url.pathname === '/__proof/expire-session' && incoming.method === 'GET') {
+        const updated = await db.prepare(`UPDATE sessions SET expires_at=? WHERE account_id IN (SELECT id FROM accounts WHERE deleted_at IS NULL)`)
+          .bind(Date.now() - 1000).run()
+        result = Response.json({ expired: updated.meta.changes })
+      } else if (url.pathname === '/__proof/seed' && incoming.method === 'POST') {
         const { owner } = JSON.parse(body)
         if (!/^[a-f0-9-]{36}$/.test(owner) || originalOwner !== null) throw new Error('Invalid fixture')
         originalOwner = owner
