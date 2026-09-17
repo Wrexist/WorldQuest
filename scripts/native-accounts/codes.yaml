@@ -31,10 +31,16 @@ appId: com.wrexist.worldquest.accountsproof
 - extendedWaitUntil:
     visible: Eight-digit code
     timeout: 30000
-# A resend inside the floor is refused by the server. The floor is restamped
-# first so this asserts the rule, not how fast the emulator reached the button.
-- runScript: recent-send.js
+# The countdown is the client's copy, and while it runs the Resend button is
+# disabled — a tap would never reach the server. So wait the client's floor out,
+# then restart the server's own floor and tap. That asserts the rule that matters:
+# the server refuses an early resend even when the device believes the floor has
+# passed, and the screen shows the rate error rather than a success.
 - assertVisible: 'Resend available in .*'
+- extendedWaitUntil:
+    notVisible: 'Resend available in .*'
+    timeout: 120000
+- runScript: recent-send.js
 - tapOn: Resend code
 - extendedWaitUntil:
     visible: 'Please wait before trying again. If the code has expired, request a new one.'
