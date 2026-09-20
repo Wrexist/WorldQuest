@@ -410,5 +410,76 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
         .bind(a.userId).first<{ n: number }>()
       expect(Number(claims?.n)).toBe(first.questSlots.length)
     })
+
+  describe('streak freeze purchase', () => {
+    const price = BALANCE.prices.streakFreeze
+    const fund = (owner: string, coins: number) =>
+      db.prepare('UPDATE accounts SET coins = ? WHERE id = ?').bind(coins, owner).run()
+    const buy = (token: string, purchaseId: string) => call('/v1/shop/freeze', token, { purchaseId })
+    const wallet = async (owner: string) => ({
+      account: await db.prepare('SELECT coins, revision FROM accounts WHERE id = ?').bind(owner).first<{ coins: number; revision: number }>(),
+      inventory: await db.prepare('SELECT count FROM inventory WHERE account_id = ?').bind(owner).first<{ count: number }>(),
+      receipts: await db.prepare('SELECT purchase_id FROM inventory_receipts WHERE account_id = ?').bind(owner).all(),
+    })
+
+    it('sells one freeze at the balance table price', async () => {
+      const a = await guest()
+      await fund(a.userId, 1000)
+      const response = await buy(a.token, 'p1')
+      expect(response.status).toBe(200)
+      expect(await response.json()).toMatchObject({ itemId: 'utility.streak_freeze', count: 1, spent: price, coinBalance: 1000 - price })
+      expect(await wallet(a.userId)).toMatchObject({ account: { coins: 1000 - price }, inventory: { count: 1 } })
+    })
+
+    it('charges a retried purchase once', async () => {
+      const a = await guest()
+      await fund(a.userId, 1000)
+      await buy(a.token, 'p1')
+      // The retry a lost response produces: same purchase id, same answer, no second debit.
+      const again = await buy(a.token, 'p1')
+      expect(again.status).toBe(200)
+      expect(await again.json()).toMatchObject({ count: 1, spent: 0, coinBalance: 1000 - price })
+      expect(await wallet(a.userId)).toMatchObject({ account: { coins: 1000 - price }, inventory: { count: 1 } })
+    })
+
+    it('charges once when two retries arrive together', async () => {
+      const a = await guest()
+      await fund(a.userId, 1000)
+      const [one, two] = await Promise.all([buy(a.token, 'p1'), buy(a.token, 'p1')])
+      expect([one.status, two.status]).toEqual([200, 200])
+      const spent = (await Promise.all([one.json(), two.json()]))
+        .reduce<number>((sum, body) => sum + Number((body as { spent: number }).spent), 0)
+      expect(spent).toBe(price)
+      expect(await wallet(a.userId)).toMatchObject({ account: { coins: 1000 - price }, inventory: { count: 1 } })
+    })
+
+    it('buys two freezes with two purchases', async () => {
+      const a = await guest()
+      await fund(a.userId, 1000)
+      await buy(a.token, 'p1')
+      await buy(a.token, 'p2')
+      expect(await wallet(a.userId)).toMatchObject({ account: { coins: 1000 - price * 2 }, inventory: { count: 2 } })
+    })
+
+    it('refuses a purchase the balance cannot cover, and changes nothing', async () => {
+      const a = await guest()
+      await fund(a.userId, price - 1)
+      const response = await buy(a.token, 'p1')
+      expect(response.status).toBe(409)
+      expect(await response.json()).toMatchObject({ error: 'CANNOT_AFFORD' })
+      const after = await wallet(a.userId)
+      expect(after.account?.coins).toBe(price - 1)
+      expect(after.inventory).toBeNull()
+      expect(after.receipts.results).toHaveLength(0)
+    })
+
+    it('does not let a caller name the price', async () => {
+      const a = await guest()
+      await fund(a.userId, 1000)
+      const response = await call('/v1/shop/freeze', a.token, { purchaseId: 'p1', price: 1 })
+      expect(response.status).toBe(400)
+      expect((await wallet(a.userId)).account?.coins).toBe(1000)
+    })
+  })
   })
 })

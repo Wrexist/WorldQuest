@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>WorldQuest — app screens</title>
+<style>
+  :root { color-scheme: dark }
+  body { margin: 0; padding: 32px; background: #0B1220; color: #E8EEF7;
+         font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif }
+  h1 { font-size: 22px; margin: 0 0 6px }
+  p.lede { color: #93A4BF; margin: 0 0 28px; max-width: 76ch }
+  .grid { display: grid; gap: 28px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) }
+  figure { margin: 0 }
+  img { width: 100%; border-radius: 14px; border: 1px solid #1E2B44; background: #0B1220 }
+  figcaption { margin-top: 10px; color: #93A4BF; font-size: 13px }
+  figcaption b { color: #E8EEF7; display: block; font-size: 14px; margin-bottom: 2px }
+</style>
+</head>
+<body>
+  <h1>WorldQuest — app screens</h1>
+  <p class="lede">
+    Rendered from the real bundle at 390 pt by <code>pnpm design:shots</code>
+    (156 route shots at 320/390/768, plus 102 flow shots for the screens that are
+    states rather than routes). These are a web render, so they show layout, copy
+    and tokens — not physical-device behaviour. Native evidence is the iOS/Android
+    account proof run.
+  </p>
+  <div class="grid">
+    <figure><img src="home.png" alt="Home"><figcaption><b>Home</b>Coins, rank, today's quest card, world progress. The quest is the primary action; shop is last.</figcaption></figure>
+    <figure><img src="lesson.png" alt="Lesson"><figcaption><b>Lesson</b>Map question, four options, hearts and 1/20 progress. One primary action, answers at thumb height.</figcaption></figure>
+    <figure><img src="played-quests.png" alt="Today's Quest"><figcaption><b>Today's Quest</b>The five canonical slots, +10 XP each and +50 for all five — the numbers the server-side payout now pays from.</figcaption></figure>
+    <figure><img src="played-streak.png" alt="Streak"><figcaption><b>Streak</b>Day count, week strip, milestones and the freeze panel. Milestones are the only place coins are shown before the shop.</figcaption></figure>
+    <figure><img src="played-profile.png" alt="Profile"><figcaption><b>Profile</b>Level and XP curve, the week strip, facts/countries/streak, and the league line.</figcaption></figure>
+    <figure><img src="shop.png" alt="Shop"><figcaption><b>Shop</b>Titles bought with earned coins, with the standing promise that nothing here makes the learning easier.</figcaption></figure>
+    <figure><img src="explore.png" alt="Explore"><figcaption><b>Explore</b>Browse the geography content by region.</figcaption></figure>
+    <figure><img src="collection-flags.png" alt="Collection"><figcaption><b>Collection</b>Flags collected so far — the completion surface.</figcaption></figure>
+    <figure><img src="onboarding-welcome.png" alt="Onboarding"><figcaption><b>Onboarding</b>The welcome step. One decision per screen, mandatory privacy choices kept out of the way.</figcaption></figure>
+    <figure><img src="lesson-feedback-wrong.png" alt="Wrong answer"><figcaption><b>Wrong answer</b>A gentle settle, the right answer, no red flash and no buzzer — the lesson feedback state.</figcaption></figure>
+  </div>
+</body>
+</html>

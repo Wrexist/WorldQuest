@@ -1,4 +1,4 @@
-import { authenticate, createGuest } from './auth'
+﻿import { authenticate, createGuest } from './auth'
 import { ApiError, submissionSchema, type Env } from './contracts'
 import { submitLesson } from './lessons'
 import { z } from 'zod'
@@ -10,6 +10,7 @@ import { deletionCompleted, pruneDeletionReceipts } from './deletion-receipts'
 import { renewSession, revokeSessionFamily, pruneSessionRotations } from './session-renewal'
 import { prepareLesson, prepareLessonSchema } from './lesson-tickets'
 import { pinQuest } from './quests'
+import { buyStreakFreeze } from './shop'
 import { learningState, learningHistory } from './learning-state'
 
 const codeRequest = z.object({ email: z.string().trim().toLowerCase().email().max(254),
@@ -118,6 +119,11 @@ export function createWorker(mail: MailDelivery = unavailableMail) { return {
         // The client composed it; the server refuses anything that is not a real quest
         // and returns the day's pinned one on every later call.
         return json(await pinQuest(env.DB, account.id, tokenHash, await body(request), now))
+      }
+      if (request.method === 'POST' && path === '/v1/shop/freeze') {
+        // The price is the balance table's; the client only names the purchase it is
+        // retrying, so a lost response cannot be charged twice.
+        return json(await buyStreakFreeze(env.DB, account.id, tokenHash, await body(request), now))
       }
       if (request.method === 'GET' && path === '/v1/account') {
         const identity = await env.DB.prepare(`SELECT u.email FROM identities i JOIN auth_user u ON u.id=i.subject_id WHERE i.account_id=?`)
