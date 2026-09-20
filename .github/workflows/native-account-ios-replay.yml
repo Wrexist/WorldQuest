@@ -22,10 +22,9 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       # 34780651323 recorded 512b046, which engine and path changes have since
-      # superseded, so the guard refused it. 35025186129 is the next accepted
-      # native account run: both platforms passed at 80dcdd1 and this workflow
-      # replayed its signed archive green.
-      BUILD_RUN: ${{ inputs.build_run || '35025186129' }}
+      # superseded, so the guard refused it. 35507202098 is the next accepted
+      # native account run: both platforms passed at fe8fdbf.
+      BUILD_RUN: ${{ inputs.build_run || '35507202098' }}
       MAESTRO_CLI_NO_ANALYTICS: '1'
       MAESTRO_DRIVER_STARTUP_TIMEOUT: '300000'
     steps:
@@ -43,7 +42,10 @@ jobs:
           [[ "$BUILD_RUN" =~ ^[0-9]+$ ]]
           BUILD_SHA=$(gh run view "$BUILD_RUN" --json headSha --jq .headSha)
           # Refuse stale binary evidence after any runtime or dependency change.
-          git diff --exit-code "$BUILD_SHA" HEAD -- packages/backend/src packages/backend/migrations packages/api/src/d1-auth.ts apps/mobile/src/lib/credentials.ts apps/mobile/src/lib/credential-vault.ts apps/mobile/src/lib/d1-auth.ts scripts/native-accounts/probe.tsx scripts/native-accounts/server.cjs scripts/native-accounts/prepare.cjs scripts/native-accounts/simulator.entitlements apps/mobile/package.json pnpm-lock.yaml
+          # The guard used to omit apps/mobile/src/features/account and the two lib
+          # files the proof renders through, so a change to the account screens —
+          # exactly what this job replays — would have passed unnoticed.
+          git diff --exit-code "$BUILD_SHA" HEAD -- packages/backend/src packages/backend/migrations packages/api/src/d1-auth.ts apps/mobile/src/lib/credentials.ts apps/mobile/src/lib/credential-vault.ts apps/mobile/src/lib/d1-auth.ts apps/mobile/src/lib/d1-account-host.ts apps/mobile/src/features/account scripts/native-accounts/probe.tsx scripts/native-accounts/native-ui.tsx scripts/native-accounts/server.cjs scripts/native-accounts/prepare.cjs scripts/native-accounts/simulator.entitlements apps/mobile/package.json pnpm-lock.yaml
           gh run download "$BUILD_RUN" --name account-evidence-ios --dir "$RUNNER_TEMP/recorded"
           ZIP=$(find "$RUNNER_TEMP/recorded" -name account-ios-app.zip -print -quit)
           shasum -a 256 "$ZIP" > "$RUNNER_TEMP/account-binary-sha256.txt"

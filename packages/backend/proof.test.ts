@@ -140,7 +140,23 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
     }
     const snapshot = await (await call('/v1/learning/state', a.token)).json() as { revision: number; memories: MemoryState[] }
     expect(snapshot.revision).toBe(6)
-    expect(snapshot.memories).toEqual([...rebuilt.values()].sort((a, b) => a.factId.localeCompare(b.factId)))
+    const ordered = [...rebuilt.values()].sort((a, b) => a.factId.localeCompare(b.factId))
+    // The replayed history must reconstruct the same state the Worker stored. The
+    // integers, ids and ordering are exact. The three derived floats are not:
+    // FSRS computes them through Math.exp/Math.pow, and workerd's engine and Node's
+    // need not round those identically in the last ULPs. Comparing them exactly made
+    // this fail on the Linux runner while passing on Windows for the same commit —
+    // `stability: 3.173002106635083` against `3.1730021066350997`. A tolerance keeps
+    // the invariant (a wrong replay drifts by far more than an ULP) without claiming
+    // bit equality between two engines.
+    const exact = (m: MemoryState) => ({ factId: m.factId, reps: m.reps, lapses: m.lapses, suspended: m.suspended, lastReviewAt: m.lastReviewAt })
+    expect(snapshot.memories.map(exact)).toEqual(ordered.map(exact))
+    for (const [index, memory] of snapshot.memories.entries()) {
+      const want = ordered[index]!
+      const drift = Math.max(...(['stability', 'difficulty', 'dueAt'] as const)
+        .map(field => Math.abs(memory[field] - want[field]) / Math.max(1, Math.abs(want[field]))))
+      expect(drift, `${memory.factId} drifted by ${drift}`).toBeLessThan(1e-12)
+    }
     expect(await (await call('/v1/learning/history', b.token)).json()).toMatchObject({ events: [], throughRevision: 0 })
     expect(await (await call('/v1/learning/state', b.token)).json()).toMatchObject({ memories: [] })
     expect((await call('/v1/learning/history?through=99999', a.token)).status).toBe(400)
