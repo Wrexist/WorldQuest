@@ -36,8 +36,15 @@ export function useD1Account(client: D1AccountClient, host: D1AccountHost, local
     try { await work() }
     catch (error) {
       const code = error instanceof D1AuthError ? error.code : 'SERVICE_UNAVAILABLE'
-      patch({ error: code,
-        ...(code === 'SESSION_EXPIRED' || code === 'AUTH_REQUIRED' ? { stage: 'recovery' as const } : {}),
+      // An ended session is the recovery screen's own subject: its copy already
+      // explains that the session ended and what happens to local progress.
+      // Falling through to the error banner printed "That didn't work. Check your
+      // connection and try again." under that explanation, blaming the network for
+      // the one outcome this screen exists to describe. Found on device at
+      // 4383e3e. Every other failure, including a failed recovery, still shows it.
+      const ended = code === 'SESSION_EXPIRED' || code === 'AUTH_REQUIRED'
+      patch({ error: ended ? null : code,
+        ...(ended ? { stage: 'recovery' as const } : {}),
         ...(code === 'ACCOUNT_PROTECTED' ? { stage: 'protected' as const } : {}),
         ...(code === 'CREDENTIAL_CLEANUP_REQUIRED' ? { stage: 'cleanup' as const } : {}),
         ...(code === 'ACCOUNT_ACTIVATION_REQUIRED' ? { stage: 'activation' as const } : {}),

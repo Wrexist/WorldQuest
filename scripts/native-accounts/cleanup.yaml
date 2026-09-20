@@ -1,0 +1,39 @@
+appId: com.wrexist.worldquest.accountsproof
+---
+# Continues from codes.yaml, which left a protected guest on "Keep learning as a
+# guest". Nothing here relaunches first, so the stored UI flag and the guest's
+# identity are the ones the previous scenario produced.
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          text: 'Open'
+          optional: true
+- tapOn: Go back
+- extendedWaitUntil:
+    visible: Your guest account
+    timeout: 30000
+- tapOn: Delete account
+- runScript: arm-cleanup.js
+- tapOn: Delete permanently
+# The server has already erased the account; the device-side erase fails once.
+# Nothing may silently reset or resurrect the account at this point.
+- extendedWaitUntil:
+    visible: Finish removing account access
+    timeout: 30000
+- assertVisible: 'Your account was deleted, but this device could not finish removing its saved sign-in details. Unlock your phone and try again.'
+- takeScreenshot: cleanup-interrupted
+- tapOn: Try again
+- extendedWaitUntil:
+    visible: Your account is deleted
+    timeout: 30000
+- takeScreenshot: cleanup-completed
+# The retry finished the job, so no ghost account and no stored credential survive
+# a restart.
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible: Start as guest
+    timeout: 300000
+- takeScreenshot: cleanup-no-ghost

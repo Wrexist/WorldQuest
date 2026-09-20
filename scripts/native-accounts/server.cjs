@@ -12,6 +12,7 @@ const fixtureEmail = 'native-proof@example.invalid'
 async function main() {
   const mailbox = new Map()
   let originalOwner = null
+  let cleanupFailureArmed = false
   const compiled = await build({ stdin: { contents: `import {createWorker} from './src/index';
     export default {fetch(request,env){return createWorker({send:async message=>{
       const result=await env.MAILBOX.fetch('https://fixture.invalid',{method:'POST',body:JSON.stringify(message)});
@@ -65,6 +66,17 @@ async function main() {
         const updated = await db.prepare(`UPDATE sessions SET expires_at=? WHERE account_id IN (SELECT id FROM accounts WHERE deleted_at IS NULL)`)
           .bind(Date.now() - 1000).run()
         result = Response.json({ expired: updated.meta.changes })
+      } else if (url.pathname === '/__proof/arm-cleanup-failure' && incoming.method === 'GET') {
+        // The roadmap's interruption is "server erased, device cleanup failed". The
+        // real vault cannot be made to fail on demand from a test, and a production
+        // client must not grow a test-only storage seam for it, so the proof harness
+        // asks here and fails its own erase once. Arm, then consume on read.
+        cleanupFailureArmed = true
+        result = Response.json({ armed: true })
+      } else if (url.pathname === '/__proof/cleanup-failure' && incoming.method === 'GET') {
+        const armed = cleanupFailureArmed
+        cleanupFailureArmed = false
+        result = Response.json({ armed })
       } else if (url.pathname === '/__proof/seed' && incoming.method === 'POST') {
         const { owner } = JSON.parse(body)
         if (!/^[a-f0-9-]{36}$/.test(owner) || originalOwner !== null) throw new Error('Invalid fixture')

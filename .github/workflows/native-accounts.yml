@@ -95,6 +95,7 @@ jobs:
             maestro test --debug-output "$RUNNER_TEMP/account-reinstall" scripts/native-accounts/reinstall.yaml
             maestro test --debug-output "$RUNNER_TEMP/account-ui" scripts/native-accounts/ui.yaml
             maestro test --debug-output "$RUNNER_TEMP/account-codes" scripts/native-accounts/codes.yaml
+            maestro test --debug-output "$RUNNER_TEMP/account-cleanup" scripts/native-accounts/cleanup.yaml
       - name: Compile iOS proof
         if: matrix.platform == 'ios'
         run: |
@@ -130,6 +131,7 @@ jobs:
           xcrun simctl openurl "$DEVICE_ID" worldquestaccountsproof://ui
           maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/account-ui" scripts/native-accounts/ui.yaml
           maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/account-codes" scripts/native-accounts/codes.yaml
+          maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/account-cleanup" scripts/native-accounts/cleanup.yaml
       - name: Capture iOS failure state
         if: failure() && matrix.platform == 'ios' && env.DEVICE_ID != ''
         run: |
@@ -151,6 +153,7 @@ jobs:
             ${{ runner.temp }}/account-reinstall/
             ${{ runner.temp }}/account-ui/
             ${{ runner.temp }}/account-codes/
+            ${{ runner.temp }}/account-cleanup/
             apps/mobile/android/app/src/main/AndroidManifest.xml
             apps/mobile/android/app/src/main/res/xml/*backup*.xml
             apps/mobile/android/app/src/main/res/xml/data_extraction_rules.xml

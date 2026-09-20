@@ -76,3 +76,23 @@ appId: com.wrexist.worldquest.accountsproof
     visible: Your year of birth
     timeout: 30000
 - takeScreenshot: codes-recovered
+# A younger user reaches the age step through a route that already asked for a
+# login, and still gets no email field. The API half of this is asserted in
+# probe.tsx against the same synthetic server; this is the screen half.
+- tapOn: Birth year
+- inputText: '2016'
+- runFlow:
+    when:
+      platform: android
+    commands:
+      - hideKeyboard
+- tapOn: Continue
+- extendedWaitUntil:
+    visible: Keep learning as a guest
+    timeout: 30000
+- assertVisible: 'Email accounts are unavailable for your age group. You can keep learning without sharing an email address.'
+# The field's placeholder, not the word "Email": the protected body legitimately
+# starts with that word, so a negative on it would be meaningless.
+- assertNotVisible: you@example.com
+- assertNotVisible: Send me a code
+- takeScreenshot: codes-protected

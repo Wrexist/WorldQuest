@@ -100,10 +100,21 @@ describe('D1 account screens with the protected auth transport', () => {
     const h = harness({ expired: true })
     render(<App client={h.create()} host={h.host} />)
     await screen.findByText('Sign in again')
+    // The screen's own copy is the message. A banner here said the connection had
+    // failed, which is a lie about the one outcome this screen describes.
+    expect(screen.queryByText(/Check your connection/)).toBeNull()
     expect(h.host.recoverSession).not.toHaveBeenCalled()
     expect(h.values.size).toBe(1)
     click('Recover with email')
     await waitFor(() => expect(h.host.recoverSession).toHaveBeenCalledOnce())
+  })
+  it('still reports a failure that is not the session ending', async () => {
+    const h = harness({ expired: true })
+    render(<App client={h.create()} host={h.host} />)
+    await screen.findByText('Sign in again')
+    h.fetch.mockResolvedValue({ ok: false, status: 503, json: async () => ({ error: 'SERVICE_UNAVAILABLE' }) })
+    click('Recover with email')
+    await screen.findByText(/Check your connection/)
   })
   it('asks for fresh proof before linked deletion and retries failed credential cleanup', async () => {
     const h = harness({ linked: true })
