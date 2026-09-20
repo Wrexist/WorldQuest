@@ -29,6 +29,7 @@ import type { ContentIndex } from '../content/types.js'
 import type { FactId, MemoryState } from '../learning/types.js'
 import type { IsoDate } from '../time/index.js'
 import type { DailyQuest, PerformGoal, QuestTask, Slot } from './progress.js'
+import { DISCOVER_TARGET, REVIEW_TARGET } from './canonical.js'
 
 /**
  * The progress half, re-exported so `@worldquest/engines` still has one quest surface.
@@ -39,14 +40,21 @@ import type { DailyQuest, PerformGoal, QuestTask, Slot } from './progress.js'
 export * from './progress.js'
 
 /**
+ * What a canonical quest is, re-exported for the same reason: the server validates
+ * against the same definition the generator above builds to.
+ */
+export * from './canonical.js'
+
+/**
  * Facts per review slot.
  *
  * Three review slots × four facts, plus two new ones and a performance goal, lands
  * around eight minutes for a median learner — inside the ten-minute ceiling with room
  * for a slow day.
+ *
+ * Declared in `canonical.ts` so the server's validator and this generator cannot
+ * disagree about the size of a real task.
  */
-const REVIEW_TARGET = 4
-const DISCOVER_TARGET = 2
 
 export type GenerateInput = {
   readonly userId: string

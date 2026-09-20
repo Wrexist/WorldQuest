@@ -6,12 +6,16 @@ import { seededRng } from '../shared/index.js'
 import { BALANCE } from '../xp/balance.js'
 import {
   COMPLETION_BONUS,
+  DISCOVER_TARGET,
+  REVIEW_TARGET,
   SLOTS,
   SPEED_ROUND_MS,
   TASK_XP,
   applyQuestEvent,
+  canonicalTarget,
   generateDailyQuest,
   hasExpired,
+  questProblems,
   questProgress,
   replayQuest,
   type DailyQuest,
@@ -356,5 +360,94 @@ describe('replayQuest — what the server pays for', () => {
       correct: false,
     }))
     expect(replayQuest(pinned, wrong).tasks[0]!.progress).toBe(0)
+  })
+})
+
+describe('canonical shape - what the server may pin', () => {
+  const context = { owner: 'u1', day: '2026-08-01', knownFacts: new Set(index.facts.keys()) }
+  const today = (seed = 1): DailyQuest => generate(memoryFor([], 0), 0.8, seed)
+  const swap = (quest: DailyQuest, index0: number, change: Partial<DailyQuest['tasks'][number]>): DailyQuest => ({
+    ...quest,
+    tasks: quest.tasks.map((task, i) => (i === index0 ? { ...task, ...change } : task)),
+  })
+
+  it('accepts what the generator produces', () => {
+    // The strongest statement available: the composer's output is canonical by definition.
+    for (let seed = 1; seed <= 8; seed++) expect(questProblems(today(seed), context)).toEqual([])
+  })
+
+  it('accepts the degraded tasks a finished corpus produces', () => {
+    // Every fact known and none due: the generator still returns five tasks and leaves
+    // the review slots it cannot fill. Those are uncompletable, not cheap — no answer
+    // can advance them — so the shape stays valid and the pin does not fail the learner
+    // who has learned everything.
+    const quest = generate(memoryFor([...index.facts.keys()], 10), 0.8, 3)
+    const unfillable = quest.tasks.filter((t) => t.factIds.length === 0)
+    expect(unfillable.length, 'fixture no longer produces an unfillable slot').toBeGreaterThan(0)
+    for (const task of unfillable) expect(task.target).toBe(canonicalTarget(task.slot, 0))
+    expect(questProblems(quest, context)).toEqual([])
+  })
+
+  it('rejects an eight-slot quest', () => {
+    const quest = today()
+    const extra = { ...quest.tasks[0]!, slot: 'locate' as const }
+    const problems = questProblems({ ...quest, tasks: [...quest.tasks, extra] }, context)
+    expect(problems.join(' ')).toContain('5 slots, got 6')
+  })
+
+  it('rejects a duplicated or invented slot', () => {
+    expect(questProblems(swap(today(), 1, { slot: 'locate' }), context).join(' ')).toContain('slot 2 must be recognise')
+    expect(questProblems(swap(today(), 4, { slot: 'invented' as never }), context).join(' ')).toContain('slot 5 must be perform')
+  })
+
+  it('rejects a fact that is not content', () => {
+    const quest = today()
+    const target = quest.tasks.find((t) => t.factIds.length > 0)!
+    const at = quest.tasks.indexOf(target)
+    expect(questProblems(swap(quest, at, { factIds: ['not.a.fact'] }), context).join(' '))
+      .toContain('unknown fact not.a.fact')
+  })
+
+  it('rejects a task listing more facts than its slot has, which would make any answers do', () => {
+    const quest = today()
+    const at = quest.tasks.findIndex((t) => t.slot === 'locate')
+    const everyFact = [...context.knownFacts]
+    const problems = questProblems(swap(quest, at, { factIds: everyFact, target: REVIEW_TARGET }), context)
+    expect(problems.join(' ')).toContain(`lists ${everyFact.length} facts`)
+  })
+
+  it('rejects a cheaper target and an unreachable one', () => {
+    const quest = today()
+    const at = quest.tasks.findIndex((t) => t.slot === 'recognise')
+    const facts = quest.tasks[at]!.factIds
+    expect(questProblems(swap(quest, at, { target: 1 }), context).join(' ')).toContain('is not the canonical')
+    expect(questProblems(swap(quest, at, { target: facts.length + 3 }), context).join(' ')).toContain('is not the canonical')
+  })
+
+  it('rejects a goal on a review slot and a perform slot without one', () => {
+    const quest = today()
+    expect(questProblems(swap(quest, 0, { goal: 'perfect_lesson' }), context).join(' ')).toContain('must not carry a goal')
+    const stripped = quest.tasks.map((task, i) => {
+      if (i !== 4) return task
+      const { goal, ...rest } = task
+      void goal
+      return rest
+    })
+    expect(questProblems({ ...quest, tasks: stripped }, context).join(' ')).toContain('perform must carry a goal')
+    expect(questProblems(swap(quest, 4, { factIds: ['C0.capital'] }), context).join(' ')).toContain('perform must not carry facts')
+  })
+
+  it('rejects a quest composed for another account or another day', () => {
+    const quest = today()
+    expect(questProblems(quest, { ...context, owner: 'u2' }).join(' ')).toContain('does not belong to this account')
+    expect(questProblems(quest, { ...context, day: '2026-08-02' }).join(' ')).toContain('quest date is not the day')
+    expect(questProblems({ ...quest, id: 'u2:2026-08-01' }, context).join(' ')).toContain('does not belong to this account')
+  })
+
+  it('sizes the discover slot separately from the review slots', () => {
+    expect(canonicalTarget('discover', DISCOVER_TARGET)).toBe(DISCOVER_TARGET)
+    expect(canonicalTarget('discover', 5)).toBe(DISCOVER_TARGET)
+    expect(canonicalTarget('recall', 10)).toBe(REVIEW_TARGET)
+    expect(canonicalTarget('perform', 0)).toBe(1)
   })
 })

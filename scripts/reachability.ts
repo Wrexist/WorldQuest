@@ -119,6 +119,26 @@ const ALLOWED: Record<string, string> = {
   LESSONS_BEFORE_ASK: 'the ask threshold is applied inside `shouldAskForReminder`',
   REASK_AFTER_DAYS: 'the ninety-day retry is applied inside `shouldAskForReminder`',
 
+  /**
+   * ── the canonical quest's shape, which belongs to the engine and the server ──
+   *
+   * The device composes the daily quest; the server pins it and pays for it. That
+   * makes the shape of a quest something crossing a trust boundary, so it is defined
+   * once in `quests/canonical.ts` and both sides call it. No screen may hold a second
+   * opinion about how many facts a review slot has, for the same reason no screen may
+   * hold a second opinion about quiet hours: the day a Home widget decides a task is
+   * "close enough", the payout and the promise have already diverged.
+   *
+   * They are exported at all so the engine's own tests can assert against the named
+   * value rather than re-typing 4 and 2 — a test that hardcodes the number it is
+   * checking passes when somebody changes the number.
+   */
+  REVIEW_TARGET: 'facts per review slot, asserted by the engine and enforced at the server pin',
+  DISCOVER_TARGET: 'facts per discover slot, asserted by the engine and enforced at the server pin',
+  canonicalTarget: 'the target rule the server validates a pinned quest against',
+  maxTaskFacts: 'the per-slot fact cap the server validates a pinned quest against',
+  questProblems: 'the canonical-shape check; the server refuses to pin a quest that fails it',
+
   // ── roadmapped, and deliberately not built during v1.0
 
   markBroken:
