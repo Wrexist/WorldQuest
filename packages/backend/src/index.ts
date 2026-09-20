@@ -9,6 +9,7 @@ import type { MailDelivery } from './email-provider'
 import { deletionCompleted, pruneDeletionReceipts } from './deletion-receipts'
 import { renewSession, revokeSessionFamily, pruneSessionRotations } from './session-renewal'
 import { prepareLesson, prepareLessonSchema } from './lesson-tickets'
+import { pinQuest } from './quests'
 import { learningState, learningHistory } from './learning-state'
 
 const codeRequest = z.object({ email: z.string().trim().toLowerCase().email().max(254),
@@ -112,6 +113,11 @@ export function createWorker(mail: MailDelivery = unavailableMail) { return {
         const input = z.object({}).strict().safeParse(deletionBody)
         if (!input.success) throw new ApiError('INVALID_BODY', 400)
         return json(await deleteAccount(env.DB, account.id, tokenHash, now))
+      }
+      if (request.method === 'POST' && path === '/v1/quests/pin') {
+        // The client composed it; the server refuses anything that is not a real quest
+        // and returns the day's pinned one on every later call.
+        return json(await pinQuest(env.DB, account.id, tokenHash, await body(request), now))
       }
       if (request.method === 'GET' && path === '/v1/account') {
         const identity = await env.DB.prepare(`SELECT u.email FROM identities i JOIN auth_user u ON u.id=i.subject_id WHERE i.account_id=?`)

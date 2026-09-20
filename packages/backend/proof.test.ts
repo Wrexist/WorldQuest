@@ -1,10 +1,11 @@
-import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+﻿import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { build } from 'esbuild'
 import { readFileSync, readdirSync } from 'node:fs'
 import { Miniflare, convertV4MiniflareOptions } from 'miniflare'
-import { BALANCE, review, type MemoryState, type Rating } from '@worldquest/engines'
+import { BALANCE, generateDailyQuest, review, seededRng, type DailyQuest, type MemoryState, type Rating } from '@worldquest/engines'
 import { hashToken } from './src/auth'
 import { submitLesson } from './src/lessons'
+import { learningContent } from './src/learning-content'
 import type { Receipt } from './src/contracts'
 import type { Question } from '@worldquest/engines'
 import { createD1AuthClient, type AuthFetch } from '../api/src/d1-auth'
@@ -145,7 +146,7 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
     // integers, ids and ordering are exact. The three derived floats are not:
     // FSRS computes them through Math.exp/Math.pow, and workerd's engine and Node's
     // need not round those identically in the last ULPs. Comparing them exactly made
-    // this fail on the Linux runner while passing on Windows for the same commit —
+    // this fail on the Linux runner while passing on Windows for the same commit â€”
     // `stability: 3.173002106635083` against `3.1730021066350997`. A tolerance keeps
     // the invariant (a wrong replay drifts by far more than an ULP) without claiming
     // bit equality between two engines.
@@ -288,5 +289,86 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
       .rejects.toThrow('SESSION_EXPIRED')
     expect((await state(a.userId)).ledger).toHaveLength(0)
     expect((await state(a.userId)).account?.revision).toBe(0)
+  })
+
+  describe('daily quest pinning', () => {
+    const today = (): string => new Date().toISOString().slice(0, 10)
+    // Composed exactly as the device composes it: the real index, an empty memory (so
+    // every fact is unseen), and the engine's own generator. A hand-built quest here
+    // would test my reading of the shape rather than the shape both sides share.
+    const compose = (owner: string, seed = 1): DailyQuest => generateDailyQuest({
+      userId: owner, date: today(), index: learningContent, memory: new Map(),
+      now: Date.now(), rng: seededRng(seed), recentAccuracy: 0.8,
+    })
+    const swap = (quest: DailyQuest, at: number, change: Record<string, unknown>): DailyQuest => ({
+      ...quest, tasks: quest.tasks.map((task, i) => (i === at ? { ...task, ...change } : task)),
+    })
+    const realFact = (): string => [...learningContent.facts.keys()][0]!
+
+    it('pins the composed quest and hands the same five back afterwards', async () => {
+      const a = await guest()
+      const quest = compose(a.userId)
+      const first = await call('/v1/quests/pin', a.token, quest)
+      expect(first.status).toBe(200)
+      expect(await first.json()).toEqual(quest)
+      // A retry, a reroll and a second device all get the pinned quest, not a fresh set
+      // to farm â€” the same five tasks the first device saw.
+      const again = await call('/v1/quests/pin', a.token, quest)
+      expect(again.status).toBe(200)
+      expect(await again.json()).toEqual(quest)
+    })
+
+    it('rejects an eight-slot quest and leaves the day unpinned', async () => {
+      const a = await guest()
+      const quest = compose(a.userId)
+      const eight = { ...quest, tasks: [...quest.tasks, quest.tasks[0]!] }
+      expect((await call('/v1/quests/pin', a.token, eight)).status).toBe(400)
+      // Refusing must not burn the day: the real quest still pins.
+      expect((await call('/v1/quests/pin', a.token, quest)).status).toBe(200)
+    })
+
+    it('rejects a cheaper target than the slot canonically has', async () => {
+      const a = await guest()
+      const quest = compose(a.userId)
+      const at = quest.tasks.findIndex(task => task.slot === 'recognise')
+      expect(quest.tasks[at]!.factIds.length).toBeGreaterThan(1)
+      expect((await call('/v1/quests/pin', a.token, swap(quest, at, { target: 1 }))).status).toBe(400)
+    })
+
+    it('rejects a fact that is not content', async () => {
+      const a = await guest()
+      const quest = compose(a.userId)
+      const at = quest.tasks.findIndex(task => task.slot === 'locate')
+      expect((await call('/v1/quests/pin', a.token, swap(quest, at, { factIds: ['not.a.fact'], target: 1 }))).status).toBe(400)
+    })
+
+    it('rejects a review slot naming a fact the learner knows and is not due', async () => {
+      const a = await guest()
+      const factId = realFact()
+      const quest = compose(a.userId)
+      const at = quest.tasks.findIndex(task => task.slot === 'locate')
+      // Known and not due until tomorrow: the device could not have drawn this fact for a
+      // review slot, so a quest naming it is inventing work that does not exist.
+      await db.prepare('INSERT INTO memories (account_id, fact_id, state, revision) VALUES (?,?,?,?)')
+        .bind(a.userId, factId, JSON.stringify({ factId, stability: 10, difficulty: 5, reps: 3, lapses: 0,
+          lastReviewAt: Date.now(), dueAt: Date.now() + 86_400_000, suspended: false }), 0).run()
+      expect((await call('/v1/quests/pin', a.token, swap(quest, at, { factIds: [factId], target: 1 }))).status).toBe(400)
+    })
+
+    it('accepts the same fact once it is due', async () => {
+      const a = await guest()
+      const factId = realFact()
+      const quest = compose(a.userId)
+      const at = quest.tasks.findIndex(task => task.slot === 'locate')
+      await db.prepare('INSERT INTO memories (account_id, fact_id, state, revision) VALUES (?,?,?,?)')
+        .bind(a.userId, factId, JSON.stringify({ factId, stability: 10, difficulty: 5, reps: 3, lapses: 0,
+          lastReviewAt: Date.now(), dueAt: Date.now() - 1000, suspended: false }), 0).run()
+      expect((await call('/v1/quests/pin', a.token, swap(quest, at, { factIds: [factId], target: 1 }))).status).toBe(200)
+    })
+
+    it('does not pin a quest for another account', async () => {
+      const a = await guest(), b = await guest()
+      expect((await call('/v1/quests/pin', b.token, compose(a.userId))).status).toBe(400)
+    })
   })
 })
