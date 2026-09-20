@@ -267,7 +267,12 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
     const result = await submitLesson(observed, a.userId, await hashToken(a.token), { lessonId: 'maximum', answers })
     expect(result.reviews).toBe(20)
     expect((await state(a.userId)).reviews).toHaveLength(20)
-    expect(statementCount).toBe(11)
+    // A budget, not a coincidence: 8 reads (account, receipt, ticket, memory, pinned quest,
+    // today's claims, today's reviews, today's receipts) plus 7 writes (guard, lesson
+    // ledger, reviews, memories, account, receipt, guard delete). Two more writes appear
+    // once a quest actually pays a slot — max 6 claims in one statement plus the quest
+    // ledger — so the ceiling this protects is 17 against Free's 50 per query.
+    expect(statementCount).toBe(15)
   })
   it('rejects a session revoked between the grading read and transaction commit', async () => {
     const a = await guest()
@@ -369,6 +374,41 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
     it('does not pin a quest for another account', async () => {
       const a = await guest(), b = await guest()
       expect((await call('/v1/quests/pin', b.token, compose(a.userId))).status).toBe(400)
+    })
+
+    it('pays the quest from the server own evidence, and only once', async () => {
+      const a = await guest()
+      const quest = generateDailyQuest({ userId: a.userId, date: today(), index: learningContent,
+        memory: new Map(), now: Date.now(), rng: seededRng(2), recentAccuracy: 0.8 })
+      expect((await call('/v1/quests/pin', a.token, quest)).status).toBe(200)
+
+      // A ticket whose questions are exactly the facts the first review slot asked for,
+      // plus one more to reach the minimum lesson size. The client does not get to name
+      // the facts in a real lesson either â€” the ticket does.
+      const task = quest.tasks.find(t => t.slot === 'locate')!
+      const extra = [...learningContent.facts.keys()].find(id => !task.factIds.includes(id))!
+      const facts = [...task.factIds, extra]
+      const slots = facts.map((factId, i) => ({ itemId: `q-${i}`, factId, templateId: 'flag-mcq',
+        options: ['a', 'b'], correctOptionId: 'a' }))
+      await db.prepare('INSERT INTO tickets (account_id, lesson_id, slots) VALUES (?, ?, ?)')
+        .bind(a.userId, 'quest-lesson', JSON.stringify(slots)).run()
+      const answers = facts.map((_, i) => ({ slot: i, chosenOptionId: 'a', elapsedMs: 5000 }))
+      const token = await hashToken(a.token)
+
+      const first = await submitLesson(db, a.userId, token, { lessonId: 'quest-lesson', answers })
+      expect(first.questSlots).toContain('locate')
+      expect(first.questXpAwarded).toBe(BALANCE.xp.dailyQuestTask * first.questSlots.length)
+      const ledger = await db.prepare("SELECT lesson_id FROM ledger WHERE account_id = ? AND lesson_id LIKE 'quest:%'")
+        .bind(a.userId).all()
+      expect(ledger.results).toHaveLength(first.questSlots.length)
+
+      // The retry a lost response produces: the receipt is returned as written, so the
+      // slot count and the XP are the ones already paid rather than a second payment.
+      const again = await submitLesson(db, a.userId, token, { lessonId: 'quest-lesson', answers })
+      expect(again.questXpAwarded).toBe(first.questXpAwarded)
+      const claims = await db.prepare('SELECT COUNT(*) AS n FROM quest_claims WHERE account_id = ?')
+        .bind(a.userId).first<{ n: number }>()
+      expect(Number(claims?.n)).toBe(first.questSlots.length)
     })
   })
 })

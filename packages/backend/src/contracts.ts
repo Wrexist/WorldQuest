@@ -22,6 +22,8 @@ export type Submission = z.infer<typeof submissionSchema>
 export interface Receipt {
   lessonId: string; revision: number; xpAwarded: number; coinsAwarded: number
   xpTotal: number; coinBalance: number; correct: number; reviews: number
+  /** XP from today's quest, and the slot keys it came from — the celebration list. */
+  questXpAwarded: number; questSlots: string[]
 }
 export interface Account {
   id: string; audience: 'unknown' | 'protected' | 'eligible'; deleted_at: number | null

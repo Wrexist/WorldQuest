@@ -1,4 +1,4 @@
-import { SLOTS, questProblems, type DailyQuest } from '@worldquest/engines'
+import { COMPLETION_BONUS, RATING, SLOTS, TASK_XP, questProblems, replayQuest, type DailyQuest, type QuestEvent } from '@worldquest/engines'
 import { z } from 'zod'
 import { ApiError } from './contracts'
 import { learningContent } from './learning-content'
@@ -97,4 +97,58 @@ export async function pinQuest(db: D1Database, owner: string, tokenHash: string,
   const stored = await db.prepare('SELECT payload FROM quests WHERE account_id = ? AND day = ?').bind(owner, day).first<{ payload: string }>()
   if (!stored) throw new ApiError('RETRY_LATER', 503)
   return JSON.parse(stored.payload) as DailyQuest
+}
+
+/** The all-five bonus is claimed under its own slot key, so uniqueness covers it too. */
+export const BONUS_SLOT = '*'
+
+export type QuestEvidence = {
+  /** The day's reviews, from the server's own rows plus the lesson being submitted. */
+  readonly reviews: readonly { readonly factId: string; readonly rating: number }[]
+  /** The day's finished lessons: how they went, and how long they took. */
+  readonly lessons: readonly { readonly correct: number; readonly reviews: number; readonly elapsedMs: number }[]
+}
+
+/**
+ * What today's quest has newly earned, given what the account has already been paid.
+ *
+ * Pure, and deliberately so: this is the function that decides how much XP leaves the
+ * building, and it is the one thing here worth testing without a database in the way.
+ *
+ * `claimed` is the set of slot keys already in `quest_claims`. The replay itself cannot
+ * answer that question — `replayQuest` derives what the day's evidence *adds up to*, and
+ * that sum keeps growing as the day goes on — so the payment is the difference between
+ * what the evidence supports and what has already been paid. The primary key on
+ * `quest_claims` is the second line of defence, for two submissions racing.
+ *
+ * A wrong answer is `RATING.again`; every correct rating is at least `hard`. That mapping
+ * matters more than it looks: if it inverts, the quest pays for guesses.
+ */
+export function questPayout(quest: DailyQuest | null, claimed: ReadonlySet<string>, evidence: QuestEvidence) {
+  if (!quest) return { claims: [] as { slot: string; xp: number }[], payout: { xp: 0, slots: [] as string[] } }
+
+  const events: QuestEvent[] = [
+    ...evidence.reviews.map(review => ({
+      type: 'fact_answered' as const, factId: review.factId, correct: review.rating >= RATING.hard,
+    })),
+    ...evidence.lessons.map(lesson => ({
+      type: 'lesson_completed' as const,
+      accuracy: lesson.reviews === 0 ? 0 : lesson.correct / lesson.reviews,
+      durationMs: lesson.elapsedMs,
+    })),
+  ]
+  // From zero every time, over the whole day's evidence: progress is a projection, so
+  // there is nothing to drift and nothing a device can lose locally and lose the reward
+  // with. `replayQuest` also counts one fact once, which is what stops four lessons
+  // naming the same fact from satisfying a four-fact slot.
+  const replayed = replayQuest(quest, events)
+
+  const claims: { slot: string; xp: number }[] = []
+  for (const task of replayed.tasks) {
+    if (!task.complete || claimed.has(task.slot)) continue
+    claims.push({ slot: task.slot, xp: TASK_XP })
+  }
+  if (replayed.complete && !claimed.has(BONUS_SLOT)) claims.push({ slot: BONUS_SLOT, xp: COMPLETION_BONUS })
+
+  return { claims, payout: { xp: claims.reduce((sum, claim) => sum + claim.xp, 0), slots: claims.map(claim => claim.slot) } }
 }

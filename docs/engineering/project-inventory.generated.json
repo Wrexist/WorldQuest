@@ -184,6 +184,7 @@
     "packages/api/src/supabase-adapter.test.ts",
     "packages/backend/identity.test.ts",
     "packages/backend/proof.test.ts",
+    "packages/backend/quests.test.ts",
     "packages/content/src/packs.test.ts",
     "packages/design/src/motion.test.ts",
     "packages/design/src/tally.test.ts",
