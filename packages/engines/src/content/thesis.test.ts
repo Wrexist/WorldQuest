@@ -178,7 +178,12 @@ describe('the platform thesis', () => {
 
 describe('question construction', () => {
   // Exhaustive corpus × 40 seeds; Vitest 4 also enforces synchronous timeouts.
-  it('never offers the same label twice', { timeout: 15_000 }, () => {
+  // Cost is items × seeds, and both sides grow: the corpus with content, the
+  // multiplier with v8 coverage instrumentation, which is why this bound has had to
+  // move twice — 5s default, then 15s, and 15s still lost on a loaded Windows
+  // runner. If it needs moving again, split or sample the sweep deliberately rather
+  // than raising it a third time; a bound is not the thing that is wrong here.
+  it('never offers the same label twice', { timeout: 30_000 }, () => {
     for (let seed = 0; seed < 40; seed++) {
       for (const item of index.items) {
         const q = buildQuestion(index, item, 'en', seededRng(seed))
