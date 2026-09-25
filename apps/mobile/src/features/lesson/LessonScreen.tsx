@@ -64,10 +64,14 @@ import { recordSessionHour } from '../../lib/notifications.js'
 import { localDay } from '../../lib/day.js'
 import { recordPredictedAward } from '../../lib/awards.js'
 import { enqueueLesson } from '../../lib/sync.js'
+import { isD1 } from '../../lib/backendConfig.js'
+import { prefetchLessons, submitLesson as submitD1Lesson } from '../../lib/d1-lessons.js'
+import { useScreenReader } from '../../lib/screenReader.js'
+import { useD1Lesson } from './hooks/useD1Lesson.js'
 import { Icon } from '../../components/Icon.js'
 import { Stat } from '../../components/Stat.js'
 
-type ScreenState = 'loading' | 'error' | 'empty' | 'ready'
+type ScreenState = 'loading' | 'error' | 'empty' | 'offline-start' | 'ready'
 
 /**
  * The rail down the leading edge of the answers.
@@ -422,13 +426,29 @@ export function LessonScreen({
   // two-minute lesson so that "five minutes a day" is a real promise rather than a
   // number in Settings — see features/lesson/usePace.ts for why this was inert.
   const itemMs = useItemPace()
+  /**
+   * Where the questions come from.
+   *
+   * A D1 build plays a lesson the server issued, because the Worker grades only lessons
+   * it issued (the answer key never has to be trusted from a device). A legacy build
+   * composes its own. Decided at bundle time, so it cannot change under a lesson.
+   */
+  const remoteLessons = isD1()
+  const screenReaderOn = useScreenReader()
+  const remote = useD1Lesson(remoteLessons, {
+    count: length ?? lessonLength(itemMs),
+    locale: currentLocale() === 'sv' ? 'sv' : 'en',
+    screenReader: screenReaderOn,
+    focus,
+  })
   const questions = useMemo<readonly Question[]>(() => {
+    if (remoteLessons) return remote.lesson?.questions ?? []
     if (status !== 'ready' || !index) return []
     return index.compose({
       count: length ?? lessonLength(itemMs),
       ...(focus ? { focus } : {}),
     })
-  }, [status, index, itemMs, focus, length])
+  }, [remoteLessons, remote.lesson, status, index, itemMs, focus, length])
 
   const handleComplete = useCallback((state: LessonState, optimistic: GradeResult) => {
     /**
@@ -446,34 +466,46 @@ export function LessonScreen({
     const quest =
       index === null ? null : todaysQuest(index.index, memory, Date.now(), recentAccuracy())
 
-    // Enqueue, never await. A lesson finishing must not depend on the network —
-    // the queue replays it whenever connectivity returns.
-    enqueueLesson({
-      lessonId: state.lessonId,
-      kind: 'lesson',
-      startedAt: state.startedAt ?? Date.now(),
-      answers: state.answers,
-      heartsLost: state.heartsLost,
-      ...(quest !== null
-        ? {
-            quest: {
-              // The day the device composed it for. The server decides which day to
-              // RECORD under and only compares this — a lesson that spans local midnight
-              // arrives on a new day carrying the old day's tasks, and pinning those
-              // would make the new day's quest unpayable.
-              date: quest.date,
-              tasks: quest.tasks.map((task) => ({
-                slot: task.slot,
-                target: task.target,
-                factIds: task.factIds,
-                // `exactOptionalPropertyTypes` — `goal` is only on the perform slot, and
-                // spreading an explicit `undefined` is not the same as omitting it.
-                ...(task.goal !== undefined ? { goal: task.goal } : {}),
-              })),
-            },
-          }
-        : {}),
-    })
+    if (remoteLessons) {
+      // The Worker grades what it issued: the answers go to the D1 queue under the
+      // ticket's id — durably before this returns, never waiting on the network — and a
+      // few more lessons are fetched for the next offline start. An early exit sends
+      // the answered prefix; the server decides whether it was a finished lesson.
+      if (remote.lesson) {
+        void submitD1Lesson(remote.lesson, state.answers).then(() =>
+          prefetchLessons({ count: remote.lesson!.request.count, locale: remote.lesson!.request.locale, screenReader: screenReaderOn }),
+        )
+      }
+    } else {
+      // Enqueue, never await. A lesson finishing must not depend on the network —
+      // the queue replays it whenever connectivity returns.
+      enqueueLesson({
+        lessonId: state.lessonId,
+        kind: 'lesson',
+        startedAt: state.startedAt ?? Date.now(),
+        answers: state.answers,
+        heartsLost: state.heartsLost,
+        ...(quest !== null
+          ? {
+              quest: {
+                // The day the device composed it for. The server decides which day to
+                // RECORD under and only compares this — a lesson that spans local midnight
+                // arrives on a new day carrying the old day's tasks, and pinning those
+                // would make the new day's quest unpayable.
+                date: quest.date,
+                tasks: quest.tasks.map((task) => ({
+                  slot: task.slot,
+                  target: task.target,
+                  factIds: task.factIds,
+                  // `exactOptionalPropertyTypes` — `goal` is only on the perform slot, and
+                  // spreading an explicit `undefined` is not the same as omitting it.
+                  ...(task.goal !== undefined ? { goal: task.goal } : {}),
+                })),
+              },
+            }
+          : {}),
+      })
+    }
     // Local, immediate, and independent of the queue. The weekly chart on Profile
     // must be right the moment the lesson ends — waiting for the server round trip
     // would show an empty week to anyone who finishes a lesson offline.
@@ -599,7 +631,7 @@ export function LessonScreen({
         duration_ms: Date.now() - (state.startedAt ?? Date.now()),
       })
     }
-  }, [isOffline, index, memory, isTaster])
+  }, [isOffline, index, memory, isTaster, remoteLessons, remote.lesson, screenReaderOn])
 
   const timeLimitMs = mode === 'speed' ? SPEED_SECONDS * 1000 : null
   const lesson = useLesson({ questions, memory, timeLimitMs, onComplete: handleComplete })
@@ -706,12 +738,19 @@ export function LessonScreen({
   }, [lesson.state.outOfHearts, lesson.state.index])
 
   useEffect(() => {
-    if (status === 'loading') return setScreen('loading')
-    if (status === 'error') return setScreen('error')
-    if (questions.length === 0) return setScreen('empty')
+    // On D1 the screen's state is the issued lesson's: waiting for it, offline with none
+    // saved, a focus too narrow for a lesson (the empty state), or ready.
+    const source = remoteLessons
+      ? remote.status === 'ready' ? 'ready' : remote.status === 'idle' ? 'loading' : remote.status
+      : status
+    if (source === 'loading') return setScreen('loading')
+    if (source === 'error') return setScreen('error')
+    if (source === 'offline') return setScreen('offline-start')
+    if (source === 'too-narrow' || questions.length === 0) return setScreen('empty')
     setScreen('ready')
     if (lesson.state.phase === 'idle') {
-      lesson.start(makeUuid())
+      // The ticket's id on D1: it is the idempotency key the server issued under.
+      lesson.start(remoteLessons && remote.lesson ? remote.lesson.lessonId : makeUuid())
       track('lesson_started', {
         lesson_id: 'pending',
         kind: 'lesson',
@@ -720,10 +759,11 @@ export function LessonScreen({
         was_offline: isOffline,
       })
     }
-  }, [status, questions, lesson, isOffline])
+  }, [status, questions, lesson, isOffline, remoteLessons, remote.status, remote.lesson])
 
   if (screen === 'loading') return <LoadingState />
-  if (screen === 'error') return <ErrorState onRetry={reload} />
+  if (screen === 'error') return <ErrorState onRetry={remoteLessons ? remote.retry : reload} />
+  if (screen === 'offline-start') return <OfflineStartState onRetry={remote.retry} />
   if (screen === 'empty') return <EmptyState />
 
   if (lesson.state.phase === 'summary' || lesson.state.phase === 'abandoned') {
@@ -1481,6 +1521,26 @@ function EmptyState() {
       <Art name="states/empty-caught-up" size={160} />
       <Text style={styles.prompt}>{t('lesson:empty.title')}</Text>
       <Text style={styles.feedbackBody}>{t('lesson:empty.body')}</Text>
+    </View>
+  )
+}
+
+/**
+ * Offline, on a D1 build, with no lesson saved for offline use.
+ *
+ * The one lesson this device cannot start: lessons are issued by the server, and a few
+ * are kept for offline starts once there has been a connection. Says what to do and
+ * offers the retry; answers already given are safe in the queue either way.
+ */
+function OfflineStartState({ onRetry }: { onRetry: () => void }) {
+  const t = useT()
+
+  return (
+    <View style={[styles.screen, styles.centered]}>
+      <Art name="states/offline" size={160} />
+      <Text style={styles.prompt}>{t('lesson:offlineStart.title')}</Text>
+      <Text style={styles.feedbackBody}>{t('lesson:offlineStart.body')}</Text>
+      <Button label={t('common:retry')} onPress={onRetry} style={styles.retry} />
     </View>
   )
 }

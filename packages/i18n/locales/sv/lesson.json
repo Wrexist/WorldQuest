@@ -63,5 +63,7 @@
   "lesson:prompt.language_of": "Vilket språk talar man i {entityName}?",
   "lesson:prompt.language_reverse": "Vilket av de här länderna talar {valueName}?",
   "lesson:prompt.calling_code_of": "Vilket riktnummer ringer till {entityName}?",
-  "lesson:prompt.calling_code_reverse": "Att ringa {valueName} går till vilket land?"
+  "lesson:prompt.calling_code_reverse": "Att ringa {valueName} går till vilket land?",
+  "lesson:offlineStart.title": "Du är offline",
+  "lesson:offlineStart.body": "Lektionerna kommer från ditt konto. Anslut en gång så fungerar de närmaste lektionerna offline också."
 }

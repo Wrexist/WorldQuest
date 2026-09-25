@@ -415,7 +415,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "prompt.language_of": "What language do people speak in {entityName}?",
       "prompt.language_reverse": "Which of these countries speaks {valueName}?",
       "prompt.calling_code_of": "Which dialling code calls {entityName}?",
-      "prompt.calling_code_reverse": "Dialling {valueName} calls which country?"
+      "prompt.calling_code_reverse": "Dialling {valueName} calls which country?",
+      "offlineStart.title": "You're offline",
+      "offlineStart.body": "Lessons come from your account. Connect once and the next few will work offline too."
     },
     "nav": {
       "home": "Home",
@@ -1158,7 +1160,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "prompt.language_of": "Vilket språk talar man i {entityName}?",
       "prompt.language_reverse": "Vilket av de här länderna talar {valueName}?",
       "prompt.calling_code_of": "Vilket riktnummer ringer till {entityName}?",
-      "prompt.calling_code_reverse": "Att ringa {valueName} går till vilket land?"
+      "prompt.calling_code_reverse": "Att ringa {valueName} går till vilket land?",
+      "offlineStart.title": "Du är offline",
+      "offlineStart.body": "Lektionerna kommer från ditt konto. Anslut en gång så fungerar de närmaste lektionerna offline också."
     },
     "nav": {
       "home": "Hem",

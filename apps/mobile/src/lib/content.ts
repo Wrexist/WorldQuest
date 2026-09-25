@@ -8,6 +8,8 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import { useOnline } from './connectivity.js'
+import { isD1 } from './backendConfig.js'
+import { cachedMemory } from './d1-memory.js'
 import { useScreenReader } from './screenReader.js'
 import { currentLocale } from './i18n.js'
 import {
@@ -172,9 +174,12 @@ export function useContent() {
   // and the next lesson they start should already describe flags rather than show them.
   const screenReaderOn = useScreenReader()
 
-  // Release blocker L01/B06: this is empty even for returning learners. Phase 2
-  // must hydrate account-scoped memory before due reviews/mastery can be trusted.
-  const memory = useMemo(() => new Map<string, MemoryState>(), [])
+  // L01. On a D1 build this is the server's memory as last seen by this account, so a
+  // returning learner's optimistic grading and quest composition start from what they
+  // actually know; the server composes every issued lesson from its own copy anyway.
+  // Still empty on a legacy build, which has no memory read-back (L01/B06 stays open
+  // there, and D1 is the release path).
+  const memory = useMemo(() => (isD1() ? cachedMemory() : new Map<string, MemoryState>()), [])
 
   const index = useMemo<LoadedContent | null>(() => {
     try {

@@ -126,5 +126,9 @@
   "lesson:prompt.calling_code_of": "Which dialling code calls {entityName}?",
   "lesson:prompt.calling_code_of__note": "Country calling code question. The answer is a string like \"+46\". {entityName} is a localised country name from the content pack.",
   "lesson:prompt.calling_code_reverse": "Dialling {valueName} calls which country?",
-  "lesson:prompt.calling_code_reverse__note": "Reverse calling-code question. {valueName} is a code like \"+46\". Safe as a reverse question because E.164 gives each of these countries its own code."
+  "lesson:prompt.calling_code_reverse__note": "Reverse calling-code question. {valueName} is a code like \"+46\". Safe as a reverse question because E.164 gives each of these countries its own code.",
+  "lesson:offlineStart.title": "You're offline",
+  "lesson:offlineStart.title__note": "Shown when a lesson cannot start: no connection, and no lesson saved for offline use yet. A fact, not an apology. Max 30 characters.",
+  "lesson:offlineStart.body": "Lessons come from your account. Connect once and the next few will work offline too.",
+  "lesson:offlineStart.body__note": "Under the title above. Explains why and what fixes it; never implies anything was lost (queued answers are safe)."
 }

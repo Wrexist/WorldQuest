@@ -166,6 +166,7 @@
     "apps/mobile/src/lib/d1-account-host.test.ts",
     "apps/mobile/src/lib/d1-app-host.test.ts",
     "apps/mobile/src/lib/d1-auth.test.ts",
+    "apps/mobile/src/lib/d1-lessons.test.ts",
     "apps/mobile/src/lib/featureFlags.test.ts",
     "apps/mobile/src/lib/haptics.test.ts",
     "apps/mobile/src/lib/locale.test.ts",

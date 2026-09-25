@@ -224,10 +224,21 @@ async function run(): Promise<void> {
   // Nothing to talk to. Leave the queue intact rather than failing every item and
   // burning their retry budget against a backend that was never configured.
   //
-  // Also nothing to talk to on the D1 Worker: it grades only lessons it issued, so a
-  // device-composed lesson cannot be sent there at all. Kept, not failed, until the
-  // ticketed D1 lesson path replaces this queue for that backend.
-  if (!isConfigured() || isD1()) return
+  if (!isConfigured()) return
+  // On the D1 Worker lessons travel in the ticketed D1 queue (`d1-lessons.ts`), so the
+  // same wake-ups — reconnect, account change, retry — drain that queue instead. This
+  // queue holds nothing on a D1 build: the Worker grades only lessons it issued, so a
+  // device-composed lesson is never sent there. Loaded lazily, so a legacy build never
+  // loads the D1 client at all.
+  if (isD1()) {
+    const [{ flushLessons, prefetchLessons }, { currentLocale }] = await Promise.all([import('./d1-lessons.js'), import('./i18n.js')])
+    await flushLessons()
+    // Keep a few lessons ready for the next offline start. Ten questions is the Worker's
+    // own default; a lesson screen tops these up with the learner's measured length and
+    // screen-reader state after every lesson.
+    await prefetchLessons({ count: 10, locale: currentLocale() === 'sv' ? 'sv' : 'en', screenReader: false })
+    return
+  }
   if (queue.pending.length === 0) return
 
   // Offline is not a failure, it is a "not yet". Sending anyway would spend an attempt
