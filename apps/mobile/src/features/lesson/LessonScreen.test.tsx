@@ -39,6 +39,21 @@ function choose(option: HTMLElement): void {
 }
 
 /**
+ * Which option of the (deterministic) first question is right, from ONE throwaway
+ * render: whatever was chosen, grading labels the correct option "…, correct answer".
+ */
+function correctIndex(): number {
+  render(<LessonScreen onExit={() => {}} />)
+  choose(answerButtons()[0]!)
+  const index = answerButtons().findIndex((o) =>
+    /correct answer$/.test(o.getAttribute('aria-label') ?? ''),
+  )
+  cleanup()
+  expect(index, 'no option was labelled as the correct answer').toBeGreaterThanOrEqual(0)
+  return index
+}
+
+/**
  * Click the right answer and return what the screen then said.
  *
  * The screen composes from the real shipped packs, so the test cannot know the answer
@@ -140,20 +155,13 @@ describe('Lesson', () => {
 
   it('never punishes a wrong answer', () => {
     // No "Wrong!", no shame. The voice guide forbids it and the i18n gate bans the
-    // words; this asserts the rendered screen too.
-    // Every option, each in a fresh lesson, so whichever are wrong get graded and read.
-    const count = (() => {
-      render(<LessonScreen onExit={() => {}} />)
-      const n = answerButtons().length
-      cleanup()
-      return n
-    })()
-    for (let index = 0; index < count; index++) {
-      const { container } = render(<LessonScreen onExit={() => {}} />)
-      choose(answerButtons()[index]!)
-      expect(container.textContent).not.toMatch(/wrong!|incorrect|oops|failed/i)
-      cleanup()
-    }
+    // words; this asserts the rendered screen too — on a GRADED wrong answer, which
+    // clicking every option in one lesson never produced: only the first click graded.
+    const wrong = correctIndex() === 0 ? 1 : 0
+    const { container } = render(<LessonScreen onExit={() => {}} />)
+    choose(answerButtons()[wrong]!)
+    expect(container.textContent).toMatch(/You picked/)
+    expect(container.textContent).not.toMatch(/wrong!|incorrect|oops|failed/i)
   })
 
   it('labels every answer with the country it names, and never with its badge letter', () => {
@@ -313,20 +321,12 @@ describe('Lesson — select, then check', () => {
   })
 
   it('grades the FINAL choice, not the first tap', () => {
-    // Find which option is correct with a throwaway lesson — composition is deterministic.
-    let correctIndex = -1
-    for (let index = 0; index < 4 && correctIndex < 0; index++) {
-      const { container } = render(<LessonScreen onExit={() => {}} />)
-      choose(answerButtons()[index]!)
-      if ((container.textContent ?? '').includes('Perfect!')) correctIndex = index
-      cleanup()
-    }
-    expect(correctIndex, 'no option graded as correct').toBeGreaterThanOrEqual(0)
-    const wrongIndex = correctIndex === 0 ? 1 : 0
+    const right = correctIndex()
+    const wrongIndex = right === 0 ? 1 : 0
 
     const { container } = render(<LessonScreen onExit={() => {}} />)
     fireEvent.click(answerButtons()[wrongIndex]!)
-    fireEvent.click(answerButtons()[correctIndex]!)
+    fireEvent.click(answerButtons()[right]!)
     fireEvent.click(checkButton())
     expect(container.textContent).toContain('Perfect!')
   })
