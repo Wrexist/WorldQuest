@@ -233,16 +233,16 @@ async function waitFor(check, ms) {
     await shot('lesson-issued')
 
     let reported = false
-    const playLesson = async (report = false) => {
+    const playLesson = async (report = false, on = page) => {
       // Up to 45: twenty questions at most, then the review round re-asks each miss.
       for (let i = 0; i < 45; i++) {
-        const options = await page.getByTestId('answer-option').all()
+        const options = await on.getByTestId('answer-option').all()
         if (options.length === 0) break
-        await page.waitForTimeout(600) // credible think time; faster answers are discarded
+        await on.waitForTimeout(600) // credible think time; faster answers are discarded
         await options[0].click()
-        await page.waitForTimeout(200)
-        await page.getByRole('button', { name: 'Check' }).first().click()
-        await page.waitForTimeout(300)
+        await on.waitForTimeout(200)
+        await on.getByRole('button', { name: 'Check' }).first().click()
+        await on.waitForTimeout(300)
         // "Report a problem" from the answer sheet, once, on the first question.
         if (report && i === 0) {
           await page.getByText('Report a problem', { exact: true }).first().click()
@@ -254,11 +254,23 @@ async function waitFor(check, ms) {
           await page.getByText('Continue', { exact: true }).first().click()
           await page.waitForTimeout(400)
         }
-        const next = page.getByRole('button', { name: 'Continue' })
+        const next = on.getByRole('button', { name: 'Continue' })
         if (await next.count()) await next.first().click()
-        await page.waitForTimeout(250)
+        await on.waitForTimeout(250)
       }
-      return waitFor(async () => (await page.getByTestId('summary-continue').count()) > 0, 8000)
+      return waitFor(async () => (await on.getByTestId('summary-continue').count()) > 0, 8000)
+    }
+    // Whatever beats a lesson earned, walked until the tab bar: the streak beat, badge
+    // cards, a finished quest. Each is left by its own visible onward button.
+    const walkHome = async (on) => {
+      for (let i = 0; i < 8; i++) {
+        if ((await on.getByRole('tab', { name: 'Home' }).count()) > 0) return true
+        for (const onward of await on.getByRole('button', { name: /^(Continue|Nice)$/ }).all()) {
+          if (await onward.isVisible()) { await onward.click(); break }
+        }
+        await on.waitForTimeout(1200)
+      }
+      return (await on.getByRole('tab', { name: 'Home' }).count()) > 0
     }
 
     step('the lesson reaches its summary', await playLesson(true))
@@ -406,6 +418,7 @@ async function waitFor(check, ms) {
     await phone.waitForTimeout(1500)
     step('"I already have an account" opens sign-in on a new phone', new URL(phone.url()).pathname === '/account',
       new URL(phone.url()).pathname)
+    const signIn = async () => {
     const seen = []
     let welcomed = false
     for (let i = 0; i < 10 && !welcomed; i++) {
@@ -428,6 +441,9 @@ async function waitFor(check, ms) {
       } else break
       await phone.waitForTimeout(1500)
     }
+    return { welcomed, seen }
+    }
+    const { welcomed, seen } = await signIn()
     step('the returning learner signs in with the emailed code', welcomed, seen.join(' → '))
     await phone.screenshot({ path: path.join(SHOTS, 'second-phone-welcome.png') })
     const sessions = await one('SELECT count(*) AS n FROM sessions WHERE account_id = ?', guest.id)
@@ -438,11 +454,104 @@ async function waitFor(check, ms) {
     step('and lands in the app, not back in onboarding', landed !== '/onboarding', landed)
     await phone.getByRole('tab', { name: /Profile/ }).first().click().catch(() => {})
     await phone.waitForTimeout(2500)
-    const wallet2 = await one('SELECT xp FROM accounts WHERE id = ?', guest.id)
-    const profileText = await phone.evaluate(() => document.body.innerText)
-    step('the second phone shows the progress earned on the first', profileText.includes(String(wallet2.xp)),
-      `server ${wallet2.xp} XP`)
+    // The coin balance, by its spoken label: Profile shows XP inside the current level
+    // ("3 / 216 XP"), so the total only appears on screen by coincidence at level one.
+    const wallet2 = await one('SELECT xp, coins FROM accounts WHERE id = ?', guest.id)
+    const coinsShown = await waitFor(async () =>
+      (await phone.getByLabel(`${wallet2.coins} coins`, { exact: true }).count()) > 0, 8000)
+    step('the second phone shows the progress earned on the first', coinsShown && wallet2.coins > 0,
+      `server ${wallet2.coins} coins, ${wallet2.xp} XP`)
     await phone.screenshot({ path: path.join(SHOTS, 'second-phone-profile.png') })
+
+    // ── both phones learning on one account (E11, a slice) ────────────────────
+    //
+    // The second phone plays a lesson, then the first does. By then the first phone's
+    // copy of the account is a revision behind; its lesson must still land exactly once,
+    // and every reward must still be in the ledger.
+    const receiptsNow = async () => (await one('SELECT count(*) AS n FROM receipts WHERE account_id = ?', guest.id)).n
+    const before = await receiptsNow()
+    await phone.getByRole('tab', { name: /Home/ }).first().click()
+    await phone.waitForTimeout(1500)
+    await phone.getByText('Continue', { exact: true }).first().click()
+    const phoneStarted = await waitFor(async () => (await phone.getByTestId('answer-option').count()) > 0, 20000)
+    if (phoneStarted && await playLesson(false, phone)) await phone.getByTestId('summary-continue').click()
+    await walkHome(phone)
+    const phoneLanded = await waitFor(async () => (await receiptsNow()) === before + 1, 20000)
+    step('a lesson on the second phone lands on the shared account', phoneLanded, `${(await receiptsNow()) - before} new receipt(s)`)
+
+    await page.bringToFront()
+    await page.getByRole('tab', { name: /Home/ }).first().click()
+    await page.waitForTimeout(1500)
+    await page.getByText('Continue', { exact: true }).first().click()
+    const firstStarted = await waitFor(async () => (await page.getByTestId('answer-option').count()) > 0, 20000)
+    if (firstStarted && await playLesson(false, page)) await page.getByTestId('summary-continue').click()
+    await walkHome(page)
+    const bothLanded = await waitFor(async () => (await receiptsNow()) === before + 2, 20000)
+    step("and the first phone's lesson, a revision behind, lands too, once", bothLanded, `${(await receiptsNow()) - before} new receipt(s)`)
+    const ledgerBoth = await one('SELECT sum(xp) AS xp, sum(coins) AS coins FROM ledger WHERE account_id = ?', guest.id)
+    const walletBoth = await one('SELECT xp, coins FROM accounts WHERE id = ?', guest.id)
+    step('every XP and coin from both phones is in the ledger', ledgerBoth.xp === walletBoth.xp && ledgerBoth.coins === walletBoth.coins,
+      `wallet ${walletBoth.xp} XP · ledger ${ledgerBoth.xp} XP`)
+    await phone.bringToFront()
+
+    // ── out, back in, and gone (B02, web part) ────────────────────────────────
+    //
+    // On the second phone: Settings › Sign out ends this phone's session and starts over
+    // as a new guest; "I already have an account" signs back in; then Settings › Privacy
+    // › Delete account erases the account, confirmed by a code from the email, and the
+    // Worker keeps nothing that names it.
+    const openSettings = async () => {
+      await phone.getByRole('tab', { name: /Profile/ }).first().click()
+      await phone.waitForTimeout(1200)
+      await phone.getByRole('button', { name: 'More' }).first().click()
+      await phone.waitForTimeout(1500)
+    }
+    await openSettings()
+    await phone.getByRole('button', { name: 'Sign out' }).first().click()
+    const signedOut = await waitFor(async () => new URL(phone.url()).pathname === '/onboarding', 15000)
+    const afterOut = await one('SELECT count(*) AS n FROM sessions WHERE account_id = ?', guest.id)
+    step('signing out returns the phone to the start and ends only its own session', signedOut && afterOut.n === 1,
+      `${afterOut.n} session(s) left for the account`)
+    await phone.waitForTimeout(1500)
+    await phone.getByRole('button', { name: 'I already have an account' }).first().click()
+    await phone.waitForTimeout(1500)
+    const again = await signIn()
+    step('and signs back in with a new code', again.welcomed, again.seen.join(' → '))
+    if (again.welcomed) await phone.getByRole('button', { name: 'Continue' }).first().click()
+    await phone.waitForTimeout(2500)
+
+    await openSettings()
+    await phone.getByRole('button', { name: 'Delete account' }).first().click()
+    await phone.waitForTimeout(1500)
+    const deleting = []
+    let deleted = false
+    for (let i = 0; i < 8 && !deleted; i++) {
+      const heading = ((await phone.getByRole('heading').allTextContents()).map((h) => h.trim()).filter(Boolean).at(-1)) ?? ''
+      deleting.push(heading)
+      if (heading === 'Your account is deleted') { deleted = true; break }
+      if ((await phone.getByLabel('Eight-digit code').count()) > 0) {
+        const code = await waitFor(async () => codeFor(EMAIL, since), 10000)
+        await phone.getByLabel('Eight-digit code').fill(code ?? '')
+        await phone.getByRole('button', { name: 'Delete permanently' }).click()
+      } else if ((await phone.getByRole('button', { name: 'Send me a code' }).count()) > 0) {
+        since = Date.now()
+        await phone.getByRole('button', { name: 'Send me a code' }).click()
+      } else if ((await phone.getByRole('button', { name: 'Delete account' }).count()) > 0) {
+        await phone.getByRole('button', { name: 'Delete account' }).last().click()
+      } else break
+      await phone.waitForTimeout(1500)
+    }
+    await phone.screenshot({ path: path.join(SHOTS, 'second-phone-deleted.png') })
+    const gone = await one(`SELECT
+      (SELECT count(*) FROM sessions WHERE account_id = ?) AS sessions,
+      (SELECT count(*) FROM auth_user WHERE email = ?) AS emails,
+      (SELECT count(*) FROM accounts WHERE id = ? AND deleted_at IS NULL) AS live`, guest.id, EMAIL, guest.id)
+    step('deleting the account, confirmed by a code, leaves the Worker nothing that names it',
+      deleted && gone.sessions === 0 && gone.emails === 0 && gone.live === 0,
+      `${deleting.join(' → ')} · sessions ${gone.sessions}, email rows ${gone.emails}, live ${gone.live}`)
+    if (deleted) await phone.getByRole('button', { name: 'Continue' }).first().click()
+    await phone.waitForTimeout(2000)
+    step('and the phone starts over', new URL(phone.url()).pathname === '/onboarding', new URL(phone.url()).pathname)
     await second.close()
 
     step('no uncaught errors in the page', errors.length === 0, errors.slice(0, 3).join(' | '))

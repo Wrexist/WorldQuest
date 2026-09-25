@@ -584,7 +584,17 @@ Resend adapter switched on (local stand-in secret and sender), and Miniflare's o
 service plays Resend: it keeps each message, so the journey types the code from the
 email the learner would have received. Nothing leaves the machine.
 
-It passes 24/24 at the batch's revision. Getting there found four defects, all fixed:
+It then goes on with both phones on the one account: the second plays a lesson and
+the first plays one while its copy of the account is a revision behind; both land
+exactly once and the ledger still sums to the balances (a sequential slice of E11,
+not concurrent submission). Last, on the second phone: Settings › Sign out ends only
+that phone's session and returns it to onboarding; "I already have an account" signs
+back in with a new code; and Settings › Privacy › Delete account, confirmed by a code
+from the email, leaves the Worker no session, email row or account for it, and the
+phone starts over. That is guest, link, login, logout, recovery and deletion (B02) on
+the web build, end to end.
+
+It passes 31/31 at the batch's revision. Getting there found four defects, all fixed:
 
 1. **"I already have an account" was a dead end on a new phone.** The onboarding gate
    redirects every unfinished install to `/onboarding`, including `/account`, so the
