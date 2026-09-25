@@ -202,28 +202,32 @@ async function waitFor(check, ms) {
 
   try {
     // ── onboarding, as a new adult learner ────────────────────────────────────
-    await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' })
-    await page.waitForTimeout(1500)
-    await page.getByRole('button', { name: 'Get started' }).first().click()
-    await page.waitForTimeout(400)
-    const language = page.getByRole('radio', { name: 'English' }).first()
-    if ((await language.count()) > 0) { await language.click(); await page.waitForTimeout(700) }
-    for (let i = 0; i < 2; i++) { await page.getByText('Next', { exact: true }).first().click(); await page.waitForTimeout(400) }
-    await page.getByText('Continue', { exact: true }).first().click()
-    await page.waitForTimeout(600)
-    await page.getByRole('radio', { name: String(new Date().getFullYear() - 30) }).click()
-    await page.waitForTimeout(300)
-    await page.getByText('Continue', { exact: true }).first().click()
-    await page.waitForTimeout(600)
-    await page.getByText('Continue', { exact: true }).first().click()
-    await page.waitForTimeout(600)
-    await page.getByRole('radio', { name: 'Europe' }).first().click()
-    await page.waitForTimeout(700)
-    await page.getByText('Continue', { exact: true }).first().click()
-    await page.waitForTimeout(600)
-    await page.getByText('Continue', { exact: true }).first().click()
-    await page.waitForTimeout(600)
-    await page.getByText('Start learning', { exact: true }).first().click()
+    // A walk any phone can take, at any age: the child's phone below takes it too.
+    const onboard = async (on, age) => {
+      await on.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' })
+      await on.waitForTimeout(1500)
+      await on.getByRole('button', { name: 'Get started' }).first().click()
+      await on.waitForTimeout(400)
+      const language = on.getByRole('radio', { name: 'English' }).first()
+      if ((await language.count()) > 0) { await language.click(); await on.waitForTimeout(700) }
+      for (let i = 0; i < 2; i++) { await on.getByText('Next', { exact: true }).first().click(); await on.waitForTimeout(400) }
+      await on.getByText('Continue', { exact: true }).first().click()
+      await on.waitForTimeout(600)
+      await on.getByRole('radio', { name: String(new Date().getFullYear() - age) }).click()
+      await on.waitForTimeout(300)
+      await on.getByText('Continue', { exact: true }).first().click()
+      await on.waitForTimeout(600)
+      await on.getByText('Continue', { exact: true }).first().click()
+      await on.waitForTimeout(600)
+      await on.getByRole('radio', { name: 'Europe' }).first().click()
+      await on.waitForTimeout(700)
+      await on.getByText('Continue', { exact: true }).first().click()
+      await on.waitForTimeout(600)
+      await on.getByText('Continue', { exact: true }).first().click()
+      await on.waitForTimeout(600)
+      await on.getByText('Start learning', { exact: true }).first().click()
+    }
+    await onboard(page, 30)
 
     // ── the first lesson: issued by the Worker ────────────────────────────────
     const issued = await waitFor(async () => (await page.getByTestId('answer-option').count()) > 0, 20000)
@@ -254,6 +258,10 @@ async function waitFor(check, ms) {
           await page.getByText('Continue', { exact: true }).first().click()
           await page.waitForTimeout(400)
         }
+        // Out of hearts: an account with history gets reviews, and a wrong review costs a
+        // heart (a new fact never does), so always tapping the first option can run out.
+        const finish = on.getByRole('button', { name: 'Finish here' })
+        if (await finish.count()) { await finish.first().click(); await on.waitForTimeout(400); break }
         const next = on.getByRole('button', { name: 'Continue' })
         if (await next.count()) await next.first().click()
         await on.waitForTimeout(250)
@@ -553,6 +561,40 @@ async function waitFor(check, ms) {
     await phone.waitForTimeout(2000)
     step('and the phone starts over', new URL(phone.url()).pathname === '/onboarding', new URL(phone.url()).pathname)
     await second.close()
+
+    // ── a child's phone (S02, S03) ────────────────────────────────────────────
+    //
+    // A ten-year-old onboards and plays the taster. From the age gate alone the Worker
+    // must hold the account as protected, which refuses every email flow server-side,
+    // and nothing on the phone may ask for an email: no account card on Profile, and no
+    // link, sign-in or deletion rows in Settings.
+    const known = new Set((await db.prepare('SELECT id FROM accounts').all()).results.map((r) => r.id))
+    const kidContext = await browser.newContext({ ...browserContext, viewport: { width: 390, height: 844 } })
+    const kid = await kidContext.newPage()
+    kid.on('pageerror', (e) => errors.push('child phone: ' + String(e)))
+    await onboard(kid, 10)
+    const kidStarted = await waitFor(async () => (await kid.getByTestId('answer-option').count()) > 0, 20000)
+    const kidBand = await waitFor(async () => {
+      const rows = (await db.prepare('SELECT id, audience FROM accounts WHERE deleted_at IS NULL').all()).results
+      const mine = rows.filter((r) => !known.has(r.id))
+      return mine.length > 0 && mine.every((r) => r.audience === 'protected') ? mine.length : 0
+    }, 10000)
+    step("a child's account is protected on the server from the age gate alone", kidStarted && kidBand > 0,
+      `${kidBand} new account(s), all protected`)
+    if (kidStarted && await playLesson(false, kid)) await kid.getByTestId('summary-continue').click()
+    await walkHome(kid)
+    await kid.getByRole('tab', { name: /Profile/ }).first().click()
+    await kid.waitForTimeout(1500)
+    const kidProfileAsks = await kid.getByRole('button', { name: 'Create an account' }).count()
+    await kid.getByRole('button', { name: 'More' }).first().click()
+    await kid.waitForTimeout(1500)
+    // Reached first, so a count of zero means "not offered" rather than "not there yet".
+    const kidInSettings = (await kid.getByRole('heading', { name: 'Settings' }).count()) > 0
+    const kidSettingsAsks = await kid.getByRole('button', { name: /^(Link your email|Sign in|Delete account)$/ }).count()
+    await kid.screenshot({ path: path.join(SHOTS, 'child-settings.png') })
+    step('and nothing on the phone asks a child for an email', kidInSettings && kidProfileAsks === 0 && kidSettingsAsks === 0,
+      `profile ${kidProfileAsks}, settings ${kidInSettings ? kidSettingsAsks : 'not reached'}`)
+    await kidContext.close()
 
     step('no uncaught errors in the page', errors.length === 0, errors.slice(0, 3).join(' | '))
   } catch (error) {

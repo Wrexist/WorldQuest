@@ -592,9 +592,11 @@ that phone's session and returns it to onboarding; "I already have an account" s
 back in with a new code; and Settings › Privacy › Delete account, confirmed by a code
 from the email, leaves the Worker no session, email row or account for it, and the
 phone starts over. That is guest, link, login, logout, recovery and deletion (B02) on
-the web build, end to end.
+the web build, end to end. Last of all, a third phone onboards as a ten-year-old: the
+Worker holds the account as `protected` from the age gate alone, and neither Profile nor
+Settings offers the child an email, a sign-in or a deletion (S02, S03).
 
-It passes 31/31 at the batch's revision. Getting there found four defects, all fixed:
+It passes 33/33 at the batch's revision. Getting there found four defects, all fixed:
 
 1. **"I already have an account" was a dead end on a new phone.** The onboarding gate
    redirects every unfinished install to `/onboarding`, including `/account`, so the
