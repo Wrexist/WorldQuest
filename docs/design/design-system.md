@@ -94,6 +94,8 @@ color.action.disabled      surface.3 · text on text.3
 color.feedback.correct     green.500
 color.feedback.wrong       #3A2130      (muted, NOT red — see §7)
 color.feedback.neutral     surface.2
+color.feedback.correctEdge #2E6B32      ring on the correct answer sheet
+color.feedback.wrongEdge   #6B3245      ring on the wrong answer sheet (plum, not red)
 
 color.reward.xp            gold.500
 color.reward.coin          gold.400
@@ -261,6 +263,8 @@ alone is never a control unless it is universally understood (back, close, setti
 - Things **scale and spring**; they do not fade in place. Fade is for disappearing.
 - Entrance is staggered by 40 ms per item, max 6 items, then all at once.
 - Celebration never blocks input — `Continue` is tappable from frame one.
+- Bottom sheets rise from below by their own measured height (`useRiseIn`, `motion.base`,
+  transform only). The lesson's answer sheet is the first user.
 - **Wrong answers get no punishing motion**: no shake, no red flash, no buzzer. A
   gentle settle, the correct answer revealed, a soft haptic. See
   [`voice-and-tone.md`](voice-and-tone.md).

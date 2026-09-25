@@ -19,7 +19,7 @@
  */
 
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { withFullMotion } from '../../test/setup.js'
 import { LessonScreen } from './LessonScreen.js'
 import { LessonSummary } from './LessonSummary.js'
@@ -42,6 +42,20 @@ describe('the animated branch mounts', () => {
     withFullMotion(() => {
       render(<LessonScreen onExit={() => {}} />)
       expect(screen.getAllByTestId('answer-option').length).toBeGreaterThanOrEqual(4)
+    })
+  })
+
+  it('grades an answer with motion on, and the sheet that rises has its content', () => {
+    // The answer sheet rewinds below the screen before its first paint and rises from
+    // there; this is the branch that does it. The content must be in the tree whatever
+    // the transform is doing — a sheet that "rose" with nothing in it would pass a
+    // screenshot taken mid-flight.
+    withFullMotion(() => {
+      render(<LessonScreen onExit={() => {}} />)
+      fireEvent.click(screen.getAllByTestId('answer-option')[0]!)
+      fireEvent.click(screen.getByTestId('lesson-check'))
+      expect(screen.getByTestId('answer-sheet')).toBeTruthy()
+      expect(screen.getByRole('button', { name: 'Continue' })).toBeTruthy()
     })
   })
 

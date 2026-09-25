@@ -31,6 +31,8 @@
   "lesson:hearts.out.revive": "Fortsätt · {price}",
   "lesson:hearts.out.cantAfford": "{short} mynt kvar — men nästa lektion är gratis ändå.",
   "lesson:hearts.out.finish": "Avsluta här",
+  "lesson:check.label": "Kontrollera",
+  "lesson:check.needsAnswer": "Välj ett svar först",
   "lesson:close": "Pausa lektionen",
   "lesson:paused.title": "Pausad",
   "lesson:paused.body": "Ta den tid du behöver. Inget försvinner.",

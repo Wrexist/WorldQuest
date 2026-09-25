@@ -157,6 +157,21 @@ const PAIRS: Pair[] = [
     bg: p.feedback.correctSurface,
     min: 4.5,
   },
+  // The answer sheet is tinted with the same two surfaces now, and the wrong sheet is the
+  // one carrying a full explanatory sentence in the secondary colour.
+  {
+    name: 'text.secondary on feedback.wrong (answer sheet body)',
+    fg: p.text['2'],
+    bg: p.feedback.wrongSurface,
+    min: 4.5,
+  },
+  {
+    name: 'feedback.correct on feedback.correctSurface (sheet verdict, h2)',
+    fg: p.green['400'],
+    bg: p.feedback.correctSurface,
+    min: 3.0,
+    note: 'large bold heading only — the verdict word, never body copy',
+  },
 
   // The favourite star. It lands at 4.42:1 — under the 4.5 small-text floor and over
   // the 3:1 large-text one, which is why both places that draw it use an ≥18px step.

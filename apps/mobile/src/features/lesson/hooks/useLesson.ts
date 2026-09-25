@@ -95,6 +95,16 @@ export function useLesson({
     dispatch({ type: 'ANSWER', optionId, now: now() })
   }, [])
 
+  /** Pick an option. Nothing is graded and the clock keeps running. */
+  const select = useCallback((optionId: string) => {
+    dispatch({ type: 'SELECT', optionId, now: now() })
+  }, [])
+
+  /** Grade the selection. This is the moment the answer timer stops. */
+  const check = useCallback(() => {
+    dispatch({ type: 'CHECK', now: now() })
+  }, [])
+
   const advance = useCallback(() => {
     dispatch({ type: 'CONTINUE', now: now() })
   }, [])
@@ -238,6 +248,8 @@ export function useLesson({
     optimistic,
     start,
     answer,
+    select,
+    check,
     advance,
     abandon,
     revive,

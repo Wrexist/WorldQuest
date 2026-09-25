@@ -27,8 +27,8 @@ Status: ✅ done on this branch · ⏳ in progress · ☐ open.
 | 9 | P0 | App: D1 repository adapter + backend switch; route `D1AccountScreen` | B07/S01/B02 (code part) | ⏳ repository, `EXPO_PUBLIC_BACKEND=d1` switch, D1 account route + storage host done; lessons still need the ticket path |
 | 10 | P0 | App: hydrate memory from `/v1/learning/state`, replay queue on top | L01/L06/B06 | ☐ |
 | 11 | P0 | Connected multi-day journey test on real workerd | E10/E11 | ☐ |
-| 12 | P1 | Lesson player: select-then-CHECK | Duolingo parity, L05 | ☐ |
-| 13 | P1 | Answer sheet slides up with calm tint (motion tokens, Reduce Motion) | Duolingo parity | ☐ |
+| 12 | P1 | Lesson player: select-then-CHECK | Duolingo parity, L05 (timer now stops at Check; L05 itself stays open) | ✅ `feat/lesson-check-sheet`; SELECT/CHECK in the engine machine, e2e asserted |
+| 13 | P1 | Answer sheet slides up with calm tint (motion tokens, Reduce Motion) | Duolingo parity | ✅ `feat/lesson-check-sheet`; `useRiseIn`, `feedback.*Edge` tokens; device pass for VoiceOver focus still owed |
 | 14 | P1 | "Report a problem" on the answer sheet | G08, content-pipeline §report | ☐ |
 | 15 | P1 | Mistake review at lesson end (needs learning-science sign-off) | Duolingo parity, L03 | ☐ |
 | 16 | P1 | "Create a profile" sheet after lesson 1–2, adults only, max twice | Duolingo parity | ☐ |

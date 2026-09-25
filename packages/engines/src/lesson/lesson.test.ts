@@ -134,6 +134,104 @@ describe('lesson state machine', () => {
   })
 })
 
+describe('select, then check', () => {
+  const select = (s: LessonState, optionId: string, now: number): LessonState =>
+    transition(s, { type: 'SELECT', optionId, now })
+  const check = (s: LessonState, now: number): LessonState =>
+    transition(s, { type: 'CHECK', now })
+
+  it('selecting scores nothing', () => {
+    // A selection is a thought, not an answer: no phase change, no record, no heart.
+    const before = started(makeQuestions(2))
+    const s = select(before, 'wrong-0', T0 + 1_000)
+    expect(s.phase).toBe('presenting')
+    expect(s.selectedOptionId).toBe('wrong-0')
+    expect(s.answers).toHaveLength(0)
+    expect(s.hearts).toBe(before.hearts)
+  })
+
+  it('lets the user change their mind, and grades only the final choice', () => {
+    let s = started(makeQuestions(2))
+    s = select(s, 'wrong-0', T0 + 1_000)
+    s = select(s, 'right-0', T0 + 2_000)
+    expect(s.selectedOptionId).toBe('right-0')
+    s = check(s, T0 + 3_000)
+    expect(s.phase).toBe('answered')
+    expect(s.answers).toHaveLength(1)
+    expect(s.answers[0]!.chosenOptionId).toBe('right-0')
+    expect(s.answers[0]!.wasCorrect).toBe(true)
+    expect(s.selectedOptionId).toBeNull()
+  })
+
+  it('stops the clock at CHECK, not at the selection', () => {
+    // L05: `elapsedMs` feeds the rating and the pace estimate. Selecting at 1s and
+    // checking at 4.2s took 4.2s of thinking.
+    let s = started(makeQuestions(2))
+    s = select(s, 'right-0', T0 + 1_000)
+    s = check(s, T0 + 4_200)
+    expect(s.answers[0]!.elapsedMs).toBe(4_200)
+    expect(s.answers[0]!.answeredAt).toBe(T0 + 4_200)
+  })
+
+  it('ignores CHECK with nothing selected', () => {
+    const s = started(makeQuestions(2))
+    expect(check(s, T0 + 1_000)).toBe(s)
+  })
+
+  it('ignores a selection that belongs to no option of this question', () => {
+    // A stray tap on the previous question's option must not become this one's answer.
+    let s = started(makeQuestions(2))
+    s = answerCorrectly(s, T0 + 1_000)
+    s = transition(s, { type: 'CONTINUE', now: T0 + 2_000 })
+    expect(select(s, 'right-0', T0 + 2_100)).toBe(s)
+    expect(select(s, 'nonsense', T0 + 2_100)).toBe(s)
+  })
+
+  it('ignores selecting and checking once answered', () => {
+    let s = started(makeQuestions(2))
+    s = select(s, 'right-0', T0 + 1_000)
+    s = check(s, T0 + 2_000)
+    expect(select(s, 'wrong-0', T0 + 2_100)).toBe(s)
+    expect(check(s, T0 + 2_200)).toBe(s)
+  })
+
+  it('charges hearts exactly as a one-step answer does', () => {
+    const viaCheck = check(select(started(makeQuestions(2)), 'wrong-0', T0 + 1_000), T0 + 2_000)
+    const viaAnswer = transition(started(makeQuestions(2)), {
+      type: 'ANSWER',
+      optionId: 'wrong-0',
+      now: T0 + 2_000,
+    })
+    expect(viaCheck).toEqual(viaAnswer)
+  })
+
+  it('keeps the selection across a pause, but not the paused time', () => {
+    let s = started(makeQuestions(2))
+    s = select(s, 'right-0', T0 + 1_000)
+    s = transition(s, { type: 'PAUSE', now: T0 + 2_000 })
+    s = transition(s, { type: 'RESUME', now: T0 + 60_000 })
+    expect(s.selectedOptionId).toBe('right-0')
+    s = check(s, T0 + 61_500)
+    expect(s.answers[0]!.elapsedMs).toBe(1_500)
+  })
+
+  it('starts every question with nothing selected', () => {
+    let s = started(makeQuestions(2))
+    s = check(select(s, 'right-0', T0 + 1_000), T0 + 2_000)
+    s = transition(s, { type: 'CONTINUE', now: T0 + 3_000 })
+    expect(s.phase).toBe('presenting')
+    expect(s.selectedOptionId).toBeNull()
+  })
+
+  it('drops an unchecked selection when the lesson is abandoned', () => {
+    let s = started(makeQuestions(2))
+    s = select(s, 'right-0', T0 + 1_000)
+    s = transition(s, { type: 'ABANDON', now: T0 + 2_000 })
+    expect(s.answers).toHaveLength(0)
+    expect(s.selectedOptionId).toBeNull()
+  })
+})
+
 describe('hearts', () => {
   it('does not charge a heart for a new item', () => {
     // You cannot lose a life for not knowing something you have never been taught.
@@ -799,5 +897,32 @@ describe('the timed mode', () => {
     )
     expect(s.phase).toBe('presenting')
     expect(s.index).toBe(1)
+  })
+
+  describe('with an option selected but not checked', () => {
+    const selected = (optionId: string): LessonState =>
+      transition(timed(), { type: 'SELECT', optionId, now: T0 + 4_000 })
+
+    it('submits the selection, so the extra tap never costs a right answer', () => {
+      const s = transition(selected('right-0'), { type: 'TIMEOUT', now: T0 + 10_000 })
+      expect(s.phase).toBe('answered')
+      expect(s.answers[0]!.chosenOptionId).toBe('right-0')
+      expect(s.answers[0]!.wasCorrect).toBe(true)
+      expect(s.correctRun).toBe(1)
+    })
+
+    it('times it at the limit, never past it', () => {
+      // The timer can fire late; lateness is not thinking time.
+      const s = transition(selected('right-0'), { type: 'TIMEOUT', now: T0 + 10_250 })
+      expect(s.answers[0]!.elapsedMs).toBe(10_000)
+    })
+
+    it('grades a wrong selection exactly as CHECK would', () => {
+      // The grader sees only the chosen option; the machine must agree with it.
+      const viaTimeout = transition(selected('wrong-0'), { type: 'TIMEOUT', now: T0 + 10_000 })
+      const viaCheck = transition(selected('wrong-0'), { type: 'CHECK', now: T0 + 10_000 })
+      expect(viaTimeout).toEqual(viaCheck)
+      expect(viaTimeout.answers[0]!.chosenOptionId).toBe('wrong-0')
+    })
   })
 })

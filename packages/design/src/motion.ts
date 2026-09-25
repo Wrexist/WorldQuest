@@ -23,10 +23,19 @@
  */
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { AccessibilityInfo, Animated, Easing } from 'react-native'
+import {
+  AccessibilityInfo,
+  Animated,
+  Easing,
+  useWindowDimensions,
+  type LayoutChangeEvent,
+} from 'react-native'
 import { motion } from './tokens.js'
 
 export type MotionStep = keyof typeof motion
+
+/** The most recent reduced-motion answer from the platform. See `useReducedMotion`. */
+let lastKnownReduced = false
 
 /**
  * Whether the user has asked for less movement.
@@ -35,11 +44,17 @@ export type MotionStep = keyof typeof motion
  * user who turns it on mid-session has told us they need it NOW.
  */
 export function useReducedMotion(): boolean {
-  const [reduced, setReduced] = useState(false)
+  // Seeded with the last answer any instance received, not with `false`. The read below
+  // is async, so a component that mounts mid-session and animates on mount — the
+  // lesson's feedback sheet, once per answer — would otherwise spend its first frames
+  // believing motion is allowed and slide for a user who asked it not to. Only the very
+  // first reader in the app still has to wait.
+  const [reduced, setReduced] = useState(lastKnownReduced)
 
   useEffect(() => {
     let alive = true
     void AccessibilityInfo.isReduceMotionEnabled().then((value) => {
+      lastKnownReduced = value
       if (alive) setReduced(value)
     })
 
@@ -54,7 +69,10 @@ export function useReducedMotion(): boolean {
     // renderer we have not met yet.
     const subscription = AccessibilityInfo.addEventListener(
       'reduceMotionChanged',
-      (value: boolean) => setReduced(value),
+      (value: boolean) => {
+        lastKnownReduced = value
+        setReduced(value)
+      },
     ) as { remove?: () => void } | undefined
 
     return () => {
@@ -292,5 +310,75 @@ export function staggerStyle(value: Animated.Value) {
         translateY: value.interpolate({ inputRange: [0, 1], outputRange: [8, 0] }),
       },
     ],
+  }
+}
+
+/**
+ * A bottom sheet's entrance: it rises from below its own resting place into it.
+ *
+ * Travel is the sheet's own measured height, so it starts exactly out of sight whatever
+ * its content is — a two-line verdict and a 200 %-text one with a revealed flag differ by
+ * hundreds of points, and a fixed distance would either leave the top of a tall sheet
+ * showing at the start or make a short one appear late and fast. Until the first layout
+ * arrives the window height stands in, which is always enough to be out of sight.
+ *
+ * Seeded at REST, like `useCountUp`: a render with no effects — the screenshot harness —
+ * draws the sheet where it belongs rather than below the screen. The rewind to the start
+ * happens in a layout effect, before the first paint, so a device never sees the rest
+ * position flash first.
+ *
+ * `motion.base`, which the design system names for sheets. Under reduced motion the
+ * sheet is simply there: no rewind, no travel — it still appears, it just does not move.
+ * Transform only, on the native driver; nothing fades.
+ */
+export function useRiseIn(step: MotionStep = 'base'): {
+  readonly style: { transform: { translateY: Animated.AnimatedInterpolation<number> }[] }
+  readonly onLayout: (event: LayoutChangeEvent) => void
+} {
+  const reduced = useReducedMotion()
+  const timing = useTiming(step)
+  const { height: windowHeight } = useWindowDimensions()
+  const progress = useRef(new Animated.Value(1)).current
+  const [travel, setTravel] = useState<number | null>(null)
+
+  useIsomorphicLayoutEffect(() => {
+    if (!reduced) progress.setValue(0)
+    // Mount only. A later change to `reduced` is handled below, by landing, not rewinding.
+  }, [])
+
+  useEffect(() => {
+    if (reduced) {
+      progress.setValue(1)
+      return
+    }
+    // Held until the sheet has measured itself, so the journey is the right length.
+    if (travel === null) return
+    const animation = Animated.timing(progress, {
+      toValue: 1,
+      duration: timing.duration,
+      easing: timing.easing,
+      useNativeDriver: true,
+    })
+    animation.start()
+    return () => animation.stop()
+  }, [travel, reduced, progress, timing.duration, timing.easing])
+
+  const onLayout = (event: LayoutChangeEvent) => {
+    const measured = event.nativeEvent.layout.height
+    setTravel((previous) => previous ?? measured)
+  }
+
+  return {
+    style: {
+      transform: [
+        {
+          translateY: progress.interpolate({
+            inputRange: [0, 1],
+            outputRange: [travel ?? windowHeight, 0],
+          }),
+        },
+      ],
+    },
+    onLayout,
   }
 }

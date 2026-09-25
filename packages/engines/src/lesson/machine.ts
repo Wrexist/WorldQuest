@@ -4,6 +4,11 @@
  *   idle → loading → presenting → answered → feedback → presenting … → summary
  *                                                     ↘ paused / abandoned
  *
+ * Inside `presenting`, an answer is two steps: SELECT (as often as the user likes —
+ * changing your mind is allowed) and then CHECK, which grades whatever is selected.
+ * `ANSWER` is the same grading in one step and stays, because it is the primitive the
+ * other two are built from.
+ *
  * PROJECT.md §6 requires this to be a machine rather than a pile of booleans, and
  * the reason is concrete: the lesson screen is where double-taps, mid-animation
  * input, back-gesture races, and heart depletion all collide. Every one of those is
@@ -72,12 +77,26 @@ export type LessonState = {
    * mark, which is the wrong axis entirely.
    */
   readonly timeLimitMs: number | null
+  /**
+   * The option the user has picked but not yet checked, or null.
+   *
+   * Only ever non-null while a question is on screen (`presenting`, or `paused` on top
+   * of one), and only ever an option of the CURRENT question — grading, advancing,
+   * reviving and abandoning all clear it. Selecting is not answering: nothing is scored,
+   * no clock stops and no heart moves until CHECK.
+   */
+  readonly selectedOptionId: string | null
 }
 
 export type LessonEvent =
   | { type: 'LOAD'; lessonId: string; now: number }
   | { type: 'LOADED'; questions: readonly Question[]; now: number }
+  /** Select and check in one step. */
   | { type: 'ANSWER'; optionId: string; now: number }
+  /** Pick an option without committing to it. Repeatable, to change the choice. */
+  | { type: 'SELECT'; optionId: string; now: number }
+  /** Grade the selected option. Ignored while nothing is selected. */
+  | { type: 'CHECK'; now: number }
   | { type: 'CONTINUE'; now: number }
   | { type: 'PAUSE'; now: number }
   | { type: 'RESUME'; now: number }
@@ -105,6 +124,7 @@ export function initialState(
     heartsEnabled: options.heartsEnabled ?? true,
     outOfHearts: false,
     timeLimitMs: options.timeLimitMs ?? null,
+    selectedOptionId: null,
   }
 }
 
@@ -151,62 +171,29 @@ export function transition(state: LessonState, event: LessonEvent): LessonState 
       return { ...state, phase: 'presenting', questions: event.questions, shownAt: event.now }
     }
 
-    case 'ANSWER': {
+    case 'ANSWER':
       // Only answerable while presenting. This single guard is what makes
       // double-taps and taps during the feedback animation harmless.
       if (state.phase !== 'presenting') return state
+      return grade(state, event.optionId, event.now)
+
+    case 'SELECT': {
+      if (state.phase !== 'presenting') return state
+      // An id from another question — a stray tap landing after the index moved — is
+      // ignored rather than remembered, so a later CHECK can never grade it.
       const question = currentQuestion(state)
-      if (!question) return state
-
-      const chosen = question.options.find((o) => o.id === event.optionId)
-      if (!chosen) return state
-
-      const elapsedMs = state.shownAt === null ? 0 : Math.max(0, event.now - state.shownAt)
-      const answer: AnsweredItem = {
-        itemId: question.item.id,
-        factId: question.item.factId,
-        templateId: question.item.templateId,
-        chosenOptionId: event.optionId,
-        wasCorrect: chosen.isCorrect,
-        elapsedMs,
-        answeredAt: event.now,
-      }
-
-      let hearts = state.hearts
-      let heartsLost = state.heartsLost
-      let correctRun = state.correctRun
-
-      if (chosen.isCorrect) {
-        correctRun += 1
-        // A run of correct answers earns a heart back — rewards recovery and
-        // breaks the death spiral. See docs/systems/xp-economy.md §3.
-        if (
-          state.heartsEnabled &&
-          correctRun % BALANCE.hearts.restoreEveryCorrectStreak === 0
-        ) {
-          hearts = Math.min(BALANCE.hearts.max, hearts + 1)
-        }
-      } else {
-        correctRun = 0
-        // New items never cost a heart: you cannot lose a life for not knowing
-        // something you have never been taught.
-        const isReview = !question.isNew
-        if (state.heartsEnabled && (isReview || BALANCE.hearts.newItemsCostHearts)) {
-          if (hearts > 0) heartsLost += 1
-          hearts = Math.max(0, hearts - 1)
-        }
-      }
-
-      return {
-        ...state,
-        phase: 'answered',
-        answers: [...state.answers, answer],
-        hearts,
-        heartsLost,
-        correctRun,
-        outOfHearts: state.heartsEnabled && hearts === 0,
-      }
+      if (!question?.options.some((o) => o.id === event.optionId)) return state
+      if (state.selectedOptionId === event.optionId) return state
+      return { ...state, selectedOptionId: event.optionId }
     }
+
+    case 'CHECK':
+      if (state.phase !== 'presenting') return state
+      if (state.selectedOptionId === null) return state
+      // The clock stops HERE, not at selection: `grade` measures from `shownAt` to this
+      // event's `now`. Time spent changing your mind is thinking time, and scoring it as
+      // faster than it was would hand the scheduler confidence the user did not have.
+      return grade(state, state.selectedOptionId, event.now)
 
     case 'TIMEOUT': {
       // Only in a timed lesson, and only while a question is on screen. Firing this
@@ -216,6 +203,24 @@ export function transition(state: LessonState, event: LessonEvent): LessonState 
       if (state.timeLimitMs === null) return state
       const timedOut = currentQuestion(state)
       if (!timedOut) return state
+
+      /**
+       * At the buzzer, what is selected is the answer.
+       *
+       * Select-then-check adds a tap, and under a clock that tap must not be the
+       * difference between a right answer and a miss: a user who found the answer at
+       * nine seconds and reached for Check at ten did answer. So a selection is graded
+       * exactly as CHECK would grade it, hearts included — the authoritative grader
+       * sees only the chosen option and cannot tell the two apart, so the machine must
+       * not either. Elapsed time is capped at the limit: a timer that fires a few
+       * milliseconds late is not thinking time.
+       *
+       * Nothing selected is the miss it always was, below.
+       */
+      if (state.selectedOptionId !== null) {
+        const deadline = (state.shownAt ?? event.now) + state.timeLimitMs
+        return grade(state, state.selectedOptionId, Math.min(event.now, deadline))
+      }
 
       /**
        * A timeout is recorded as unanswered, not as a wrong guess.
@@ -294,7 +299,66 @@ export function transition(state: LessonState, event: LessonEvent): LessonState 
     case 'ABANDON':
       if (isFinished(state)) return state
       // Answers so far are kept and still submitted — leaving a lesson must never
-      // cost someone the work they already did.
-      return { ...state, phase: 'abandoned' }
+      // cost someone the work they already did. An unchecked selection is not an
+      // answer, so it is not kept.
+      return { ...state, phase: 'abandoned', selectedOptionId: null }
+  }
+}
+
+/**
+ * Score one option against the current question.
+ *
+ * Shared by ANSWER, CHECK and a TIMEOUT with a selection, so the three can never
+ * disagree about hearts, runs or timing. The caller has already checked the phase.
+ */
+function grade(state: LessonState, optionId: string, now: number): LessonState {
+  const question = currentQuestion(state)
+  if (!question) return state
+
+  const chosen = question.options.find((o) => o.id === optionId)
+  if (!chosen) return state
+
+  const elapsedMs = state.shownAt === null ? 0 : Math.max(0, now - state.shownAt)
+  const answer: AnsweredItem = {
+    itemId: question.item.id,
+    factId: question.item.factId,
+    templateId: question.item.templateId,
+    chosenOptionId: optionId,
+    wasCorrect: chosen.isCorrect,
+    elapsedMs,
+    answeredAt: now,
+  }
+
+  let hearts = state.hearts
+  let heartsLost = state.heartsLost
+  let correctRun = state.correctRun
+
+  if (chosen.isCorrect) {
+    correctRun += 1
+    // A run of correct answers earns a heart back — rewards recovery and
+    // breaks the death spiral. See docs/systems/xp-economy.md §3.
+    if (state.heartsEnabled && correctRun % BALANCE.hearts.restoreEveryCorrectStreak === 0) {
+      hearts = Math.min(BALANCE.hearts.max, hearts + 1)
+    }
+  } else {
+    correctRun = 0
+    // New items never cost a heart: you cannot lose a life for not knowing
+    // something you have never been taught.
+    const isReview = !question.isNew
+    if (state.heartsEnabled && (isReview || BALANCE.hearts.newItemsCostHearts)) {
+      if (hearts > 0) heartsLost += 1
+      hearts = Math.max(0, hearts - 1)
+    }
+  }
+
+  return {
+    ...state,
+    phase: 'answered',
+    answers: [...state.answers, answer],
+    hearts,
+    heartsLost,
+    correctRun,
+    outOfHearts: state.heartsEnabled && hearts === 0,
+    selectedOptionId: null,
   }
 }

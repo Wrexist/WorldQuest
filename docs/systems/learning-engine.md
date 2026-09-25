@@ -117,6 +117,13 @@ treating every correct answer identically.
 **Guard:** cap `elapsedMs` at 30 s so a user who put the phone down isn't scored as
 having forgotten. Reviews longer than 60 s are logged but excluded from scheduling.
 
+**What `elapsedMs` measures.** From the question appearing (or the lesson resuming
+from a pause) to the user pressing **Check** — not to the tap that selected an option.
+Answering is select-then-check (`SELECT`/`CHECK` in `packages/engines/src/lesson/machine.ts`),
+and time spent changing one's mind is thinking time. In a speed round, a selection still
+unchecked when the clock runs out is graded as if checked at the limit; nothing selected
+is recorded as a timeout (`chosenOptionId: null`).
+
 ---
 
 ## 3. Item selection — what the user actually sees next

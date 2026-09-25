@@ -132,6 +132,7 @@
     "apps/mobile/src/features/lesson/Paused.test.tsx",
     "apps/mobile/src/features/lesson/afterLesson.test.ts",
     "apps/mobile/src/features/lesson/focusParams.test.ts",
+    "apps/mobile/src/features/lesson/hooks/useAnswerCues.test.ts",
     "apps/mobile/src/features/lesson/motion.test.tsx",
     "apps/mobile/src/features/lesson/useAccuracy.test.ts",
     "apps/mobile/src/features/lesson/usePace.test.ts",
