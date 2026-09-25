@@ -62,8 +62,17 @@ and stores it on first sight (`GET /v1/quest/today` or the day's first lesson).
 Submissions carry answers only, so there is no slot for a client to duplicate.
 Progress is derived from the distinct quest facts answered correctly that day
 plus slot five's goal; task XP, the all-five bonus and its coins are paid in the
-lesson's own ledger row, once. Hearts, achievements, freezes and repair
-purchases are not yet server-side here.
+lesson's own ledger row, once.
+
+Coin spending (migration 0009, S06/A04): `POST /v1/shop/freeze`,
+`/v1/streak/repair`, `/v1/lessons/continue` and `/v1/shop/item` take a client
+request id, are decided by the engines' streak-recovery and shop rules, and
+record each spend once in `spends` plus a negative `ledger` row, under the same
+revision guard as lessons. Replays return the stored result (a continue replay
+reports `already_paid`); refusals write nothing. `GET /v1/progress` projects the
+app's `Progress` shape, showing a lapsed streak as zero and deriving the repair
+window at read time, so no nightly job is needed. Hearts reset per lesson and
+are not stored. Achievements and entitlements are not yet server-side here.
 
 Protected native credential storage is accepted under [ADR 0014](../../docs/adr/0014-native-credential-storage.md); it does not provide D1 identity by itself.
 

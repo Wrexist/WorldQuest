@@ -5,6 +5,7 @@ import { Miniflare, convertV4MiniflareOptions } from 'miniflare'
 import { BALANCE, review, type MemoryState, type Rating } from '@worldquest/engines'
 import { hashToken } from './src/auth'
 import { submitLesson } from './src/lessons'
+import { spend } from './src/economy'
 import type { Receipt } from './src/contracts'
 import type { Question } from '@worldquest/engines'
 import { createD1AuthClient, type AuthFetch } from '../api/src/d1-auth'
@@ -374,5 +375,111 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
       .rejects.toThrow('SESSION_EXPIRED')
     expect((await state(a.userId)).ledger).toHaveLength(0)
     expect((await state(a.userId)).account?.revision).toBe(0)
+  })
+})
+
+describe('D1 coin spending (real workerd and SQLite)', () => {
+  // Coins granted the way the ledger invariant requires: a ledger row and the balance together.
+  async function grant(owner: string, coins: number) {
+    await db.batch([
+      db.prepare("INSERT INTO ledger (account_id, lesson_id, xp, coins) VALUES (?, 'test-grant', 0, ?)").bind(owner, coins),
+      db.prepare('UPDATE accounts SET coins = coins + ? WHERE id = ?').bind(coins, owner),
+    ])
+  }
+  async function invariant(owner: string) {
+    const s = await state(owner)
+    expect(s.account?.coins).toBe(s.ledger.reduce((sum, row) => sum + Number(row.coins), 0))
+    expect(s.account?.xp).toBe(s.ledger.reduce((sum, row) => sum + Number(row.xp), 0))
+  }
+  const post = async (path: string, token: string, body: unknown) => {
+    const r = await call(path, token, body)
+    return { status: r.status, body: await r.json() as Record<string, unknown> }
+  }
+
+  it('sells a freeze once per request id, refuses without writing, and stops at the cap', async () => {
+    const a = await guest()
+    expect((await post('/v1/shop/freeze', a.token, { requestId: 'freeze-0001' })).body).toEqual({ status: 'no_streak' })
+    const answers = await seed(a.userId, ['first'])
+    expect((await call('/v1/lessons/submit', a.token, { lessonId: 'first', answers })).status).toBe(200)
+    const poor = await post('/v1/shop/freeze', a.token, { requestId: 'freeze-0001' })
+    expect(poor.body).toEqual({ status: 'insufficient_funds' })
+    await grant(a.userId, 2000)
+    const before = (await state(a.userId)).account!.coins as number
+    const bought = await post('/v1/shop/freeze', a.token, { requestId: 'freeze-0001' })
+    expect(bought.body).toEqual({ status: 'purchased', freezesHeld: 1, coins: before - BALANCE.prices.streakFreeze })
+    expect((await post('/v1/shop/freeze', a.token, { requestId: 'freeze-0001' })).body).toEqual(bought.body)
+    expect((await post('/v1/lessons/continue', a.token, { requestId: 'freeze-0001' })).status).toBe(409)
+    expect((await post('/v1/shop/freeze', a.token, { requestId: 'freeze-0002' })).body).toMatchObject({ status: 'purchased', freezesHeld: 2 })
+    expect((await post('/v1/shop/freeze', a.token, { requestId: 'freeze-0003' })).body).toEqual({ status: 'at_cap', freezesHeld: 2 })
+    expect((await state(a.userId)).account?.coins).toBe(before - 2 * BALANCE.prices.streakFreeze)
+    await invariant(a.userId)
+  })
+
+  it('keeps both a freeze bought during a lesson submission and the lesson (S06)', async () => {
+    const a = await guest()
+    const answers = await seed(a.userId, ['warm', 'racing'])
+    expect((await call('/v1/lessons/submit', a.token, { lessonId: 'warm', answers })).status).toBe(200)
+    await grant(a.userId, 1000)
+    const [lesson, freeze] = await Promise.all([
+      post('/v1/lessons/submit', a.token, { lessonId: 'racing', answers }),
+      post('/v1/shop/freeze', a.token, { requestId: 'freeze-race' }),
+    ])
+    expect(lesson.status).toBe(200)
+    expect(freeze.body).toMatchObject({ status: 'purchased', freezesHeld: 1 })
+    const s = await state(a.userId)
+    expect(s.receipts).toHaveLength(2)
+    expect(s.ledger.some(row => row.lesson_id === 'spend:freeze-race')).toBe(true)
+    expect((await db.prepare('SELECT freezes_held FROM accounts WHERE id = ?').bind(a.userId).first())?.freezes_held).toBe(1)
+    await invariant(a.userId)
+  })
+
+  it('charges a continue once per offer and says so on a replay', async () => {
+    const a = await guest()
+    expect((await post('/v1/lessons/continue', a.token, { requestId: 'offer-0001' })).body).toEqual({ status: 'insufficient_funds' })
+    await grant(a.userId, 600)
+    expect((await post('/v1/lessons/continue', a.token, { requestId: 'offer-0001' })).body)
+      .toEqual({ status: 'purchased', spent: BALANCE.prices.continueLesson, coins: 600 - BALANCE.prices.continueLesson })
+    expect((await post('/v1/lessons/continue', a.token, { requestId: 'offer-0001' })).body)
+      .toEqual({ status: 'already_paid', coins: 600 - BALANCE.prices.continueLesson })
+    expect((await post('/v1/lessons/continue', a.token, { requestId: 'offer-0002' })).body).toMatchObject({ status: 'purchased' })
+    expect((await post('/v1/lessons/continue', a.token, { requestId: 'offer-0003' })).body).toEqual({ status: 'insufficient_funds' })
+    await invariant(a.userId)
+  })
+
+  it('sells only catalogue titles at the balance-table price, once each', async () => {
+    const a = await guest(), b = await guest()
+    await grant(a.userId, 2500)
+    expect((await post('/v1/shop/item', a.token, { requestId: 'item-00001', itemId: 'title.not-real' })).body).toEqual({ status: 'not_for_sale' })
+    expect((await post('/v1/shop/item', a.token, { requestId: 'item-00002' })).status).toBe(400)
+    expect((await post('/v1/shop/item', a.token, { requestId: 'item-00003', itemId: 'title.flag-fanatic' })).body)
+      .toEqual({ status: 'purchased', coins: 2500 - BALANCE.prices.titleUnlock })
+    expect((await post('/v1/shop/item', a.token, { requestId: 'item-00004', itemId: 'title.flag-fanatic' })).body).toEqual({ status: 'owned' })
+    const progress = await (await call('/v1/progress', a.token)).json() as { inventory: string[]; coins: number }
+    expect(progress).toMatchObject({ inventory: ['title.flag-fanatic'], coins: 2500 - BALANCE.prices.titleUnlock })
+    expect(await (await call('/v1/progress', b.token)).json()).toMatchObject({ inventory: [], coins: 0 })
+    await invariant(a.userId)
+  })
+
+  it('shows a lapsed streak as zero and repairs it within the window, then enforces the cooldown', async () => {
+    const a = await guest()
+    const tokenHash = await hashToken(a.token)
+    const now = Date.now()
+    const day = (offset: number) => new Date(now + offset * 86_400_000).toISOString().slice(0, 10)
+    // Ten days, last active two days ago, no freeze: yesterday broke it.
+    await db.prepare('UPDATE accounts SET streak_current = 10, streak_longest = 10, streak_last_day = ?, day = ? WHERE id = ?')
+      .bind(day(-2), day(-2), a.userId).run()
+    const lapsed = await (await call('/v1/progress', a.token)).json() as { streak: number; brokenOn: string }
+    expect(lapsed).toMatchObject({ streak: 0, brokenOn: day(-1) })
+    expect((await post('/v1/streak/repair', a.token, { requestId: 'repair-0001' })).body).toEqual({ status: 'insufficient_funds' })
+    await grant(a.userId, 1500)
+    expect((await post('/v1/streak/repair', a.token, { requestId: 'repair-0001' })).body)
+      .toMatchObject({ status: 'repaired', current: 10, spent: BALANCE.prices.streakRepair })
+    expect(await (await call('/v1/progress', a.token)).json()).toMatchObject({ streak: 10, brokenOn: null })
+    expect((await post('/v1/streak/repair', a.token, { requestId: 'repair-0002' })).body).toEqual({ status: 'not_broken' })
+    // Broken again later: the cooldown answers with a number of days, not a bare no.
+    await db.prepare('UPDATE accounts SET streak_last_day = ? WHERE id = ?').bind(day(3), a.userId).run()
+    const later = () => now + 5 * 86_400_000
+    expect(await spend(db, a.userId, tokenHash, 'repair', { requestId: 'repair-0003' }, later)).toMatchObject({ status: 'cooldown' })
+    await invariant(a.userId)
   })
 })

@@ -23,7 +23,7 @@ Status: ✅ done on this branch · ⏳ in progress · ☐ open.
 | 5 | P0 | Account link/sign-in without in-app deletion on the shipping route | A06/S07, 5.1.1(v) | ☐ |
 | 6 | P0 | Worker: injected clock + stored IANA time zone + local-day rules | S14, prerequisite for E10 | ✅ migration 0007; DST + time-zone-move proof on workerd |
 | 7 | P0 | Worker: streaks, hearts, canonical quests, achievements in the revision-guarded batch | B04/B05/S04/S05/E03/S12 | ⏳ streak, milestones, server-composed quests done (workerd proofs); hearts/achievements open |
-| 8 | P0 | Worker: freeze/repair/continue/shop spending with idempotency keys | S06/B09/A04 | ☐ |
+| 8 | P0 | Worker: freeze/repair/continue/shop spending with idempotency keys | S06/B09/A04 | ✅ migration 0009; S06 race, replay and cooldown proofs |
 | 9 | P0 | App: D1 repository adapter + backend switch; route `D1AccountScreen` | B07/S01/B02 (code part) | ☐ |
 | 10 | P0 | App: hydrate memory from `/v1/learning/state`, replay queue on top | L01/L06/B06 | ☐ |
 | 11 | P0 | Connected multi-day journey test on real workerd | E10/E11 | ☐ |

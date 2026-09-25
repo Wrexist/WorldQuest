@@ -39,6 +39,7 @@ export interface Account {
   revision: number; xp: number; coins: number; day: string; daily_xp: number; lessons_today: number
   time_zone: string; streak_current: number; streak_longest: number; streak_last_day: string | null; freezes_held: number
   recent_accuracy: number
+  streak_broken_on: string | null; streak_restorable: number; last_repair_at: number | null
 }
 /** Injected so day rules are testable across midnights and DST; production passes `Date.now`. */
 export type Clock = () => number

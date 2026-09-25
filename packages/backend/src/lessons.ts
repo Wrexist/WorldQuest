@@ -18,6 +18,20 @@ export function dayRule(account: Pick<Account, 'day' | 'time_zone'>, now: number
   return { day: opensDay ? local : account.day, opensDay }
 }
 
+/**
+ * What a lesson does to the repair window. A reset records the first missed day and
+ * the length that was lost, so a repair can restore it; a normal extension closes any
+ * old window; a second lesson on the same day leaves it as it was.
+ */
+function brokenFields(account: Account, streak: { reset: boolean; extended: boolean }): [string | null, number] {
+  if (streak.reset && account.streak_last_day) {
+    const [y, m, d] = account.streak_last_day.split('-').map(Number) as [number, number, number]
+    return [new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10), account.streak_current]
+  }
+  if (streak.extended) return [null, 0]
+  return [account.streak_broken_on, account.streak_restorable]
+}
+
 /** Every writer of learning state must hold this account revision guard. */
 export async function submitLesson(db: D1Database, owner: string, tokenHash: string, input: Submission,
   clock: Clock = Date.now): Promise<Receipt> {
@@ -126,10 +140,12 @@ export async function submitLesson(db: D1Database, owner: string, tokenHash: str
         ON CONFLICT (account_id, fact_id) DO UPDATE SET state = excluded.state, revision = excluded.revision`)
         .bind(owner, revision, JSON.stringify([...graded.updatedMemory.values()])),
       db.prepare(`UPDATE accounts SET revision = ?, xp = ?, coins = ?, day = ?, daily_xp = ?, lessons_today = ?,
-        streak_current = ?, streak_longest = ?, streak_last_day = ?, freezes_held = ?, recent_accuracy = ? WHERE id = ?`)
+        streak_current = ?, streak_longest = ?, streak_last_day = ?, freezes_held = ?, recent_accuracy = ?,
+        streak_broken_on = ?, streak_restorable = ? WHERE id = ?`)
         .bind(revision, result.xpTotal, result.coinBalance, day,
           (sameDay ? account.daily_xp : 0) + graded.xpAwarded, (sameDay ? account.lessons_today : 0) + 1,
-          streak.current, streak.longest, streak.lastActiveDate, streak.freezesHeld, graded.accuracy, owner),
+          streak.current, streak.longest, streak.lastActiveDate, streak.freezesHeld, graded.accuracy,
+          ...brokenFields(account, streak), owner),
       db.prepare(`INSERT INTO quest_days (account_id, day, quest, credited, perform_done) VALUES (?, ?, ?, ?, ?)
         ON CONFLICT (account_id, day) DO UPDATE SET credited = excluded.credited, perform_done = excluded.perform_done`)
         .bind(owner, day, JSON.stringify(quest.next.base), JSON.stringify(quest.next.credited), quest.next.performDone ? 1 : 0),
