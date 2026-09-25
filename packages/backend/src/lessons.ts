@@ -3,6 +3,7 @@ import { ApiError, ticketSchema, type Account, type Clock, type Receipt, type Su
 import { knownTimeZone } from './time-zone'
 import { applyLesson, composeQuest, readQuestRow, type QuestRow } from './quests'
 import { learningContent } from './learning-content'
+import { applyAchievements } from './achievements'
 
 /**
  * The learner's local date for the day rules, and whether it opens a new day.
@@ -124,8 +125,20 @@ export async function submitLesson(db: D1Database, owner: string, tokenHash: str
       durationMs: ordered.reduce((sum, a) => sum + a.elapsedMs, 0),
       finished,
     })
-    const xpAwarded = graded.xpAwarded + milestone.xp + quest.xp
-    const coinsAwarded = graded.coinsAwarded + milestone.coins + quest.coins
+    // Achievements last, because the quest and the streak are among their events. The
+    // memory they read is this lesson's result laid over everything the account knew.
+    const memoryAfter = new Map(allMemory)
+    for (const [id, state] of graded.updatedMemory) memoryAfter.set(id, state)
+    const achievements = applyAchievements({
+      stored: account.achievements, answers, masteryChanges: graded.masteryChanges, memoryAfter,
+      overdueCleared: graded.overdueCleared, finished, streak: streak.extended ? streak.current : null,
+      accuracy: graded.accuracy, durationMs: ordered.reduce((sum, a) => sum + a.elapsedMs, 0),
+      // Its coins are paid only on the lesson that finished the quest.
+      questCompleted: quest.coins > 0,
+      xpTotalAfter: account.xp + graded.xpAwarded + milestone.xp + quest.xp, now,
+    })
+    const xpAwarded = graded.xpAwarded + milestone.xp + quest.xp + achievements.xp
+    const coinsAwarded = graded.coinsAwarded + milestone.coins + quest.coins + achievements.coins
     const revision = account.revision + 1
     const result: Receipt = { lessonId: input.lessonId, revision, xpAwarded,
       coinsAwarded, xpTotal: account.xp + xpAwarded,
@@ -133,7 +146,9 @@ export async function submitLesson(db: D1Database, owner: string, tokenHash: str
       day, finished, streak: { current: streak.current, longest: streak.longest, extended: streak.extended,
         freezeUsed: streak.freezeUsed, reset: streak.reset, milestoneXp: milestone.xp, milestoneCoins: milestone.coins },
       quest: { completedSlots: quest.completedSlots, complete: quest.complete, done: quest.done, total: quest.total,
-        xp: quest.xp, coins: quest.coins } }
+        xp: quest.xp, coins: quest.coins },
+      achievements: { unlocked: achievements.unlocked.map(u => ({ achievementId: u.achievementId, tier: u.tier })),
+        xp: achievements.xp, coins: achievements.coins } }
     const guardId = crypto.randomUUID()
     const statements = [
       db.prepare(`INSERT INTO transaction_guards (id, valid) VALUES (?, CASE WHEN EXISTS (
@@ -154,11 +169,11 @@ export async function submitLesson(db: D1Database, owner: string, tokenHash: str
         .bind(owner, revision, JSON.stringify([...graded.updatedMemory.values()])),
       db.prepare(`UPDATE accounts SET revision = ?, xp = ?, coins = ?, day = ?, daily_xp = ?, lessons_today = ?,
         streak_current = ?, streak_longest = ?, streak_last_day = ?, freezes_held = ?, recent_accuracy = ?,
-        streak_broken_on = ?, streak_restorable = ? WHERE id = ?`)
+        streak_broken_on = ?, streak_restorable = ?, achievements = ? WHERE id = ?`)
         .bind(revision, result.xpTotal, result.coinBalance, day,
           (sameDay ? account.daily_xp : 0) + graded.xpAwarded, (sameDay ? account.lessons_today : 0) + (finished ? 1 : 0),
           streak.current, streak.longest, streak.lastActiveDate, streak.freezesHeld, graded.accuracy,
-          ...brokenFields(account, streak), owner),
+          ...brokenFields(account, streak), achievements.stored, owner),
       db.prepare(`INSERT INTO quest_days (account_id, day, quest, credited, perform_done) VALUES (?, ?, ?, ?, ?)
         ON CONFLICT (account_id, day) DO UPDATE SET credited = excluded.credited, perform_done = excluded.perform_done`)
         .bind(owner, day, JSON.stringify(quest.next.base), JSON.stringify(quest.next.credited), quest.next.performDone ? 1 : 0),

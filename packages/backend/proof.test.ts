@@ -198,7 +198,7 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
     }))
     // Lesson XP differs by exactly the first-lesson bonus, and the quest's fifth task
     // (finish a lesson) is paid to exactly one of the two concurrent lessons.
-    const lessonXp = receipts.map(r => r.xpAwarded - r.quest.xp)
+    const lessonXp = receipts.map(r => r.xpAwarded - r.quest.xp - r.achievements.xp)
     expect(Math.abs(lessonXp[0]! - lessonXp[1]!)).toBe(BALANCE.xp.firstLessonOfDay)
     expect(receipts.map(r => r.quest.xp).sort()).toEqual([0, BALANCE.xp.dailyQuestTask])
     const snapshot = await state(a.userId)
@@ -241,7 +241,7 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
     expect([r1, r2, r3, r4, r5].map(r => r.streak.extended)).toEqual([true, true, false, false, true])
     const bonus = BALANCE.xp.firstLessonOfDay
     // Lesson XP only: each new local day also pays its own quest's fifth task.
-    const [x1, x2, x3, x4, x5] = [r1, r2, r3, r4, r5].map(r => r.xpAwarded - r.quest.xp)
+    const [x1, x2, x3, x4, x5] = [r1, r2, r3, r4, r5].map(r => r.xpAwarded - r.quest.xp - r.achievements.xp)
     expect(x1).toBe(x2)
     expect(x2! - x3!).toBe(bonus)
     expect(x2! - x4!).toBe(bonus)
@@ -577,5 +577,32 @@ describe('lessons that end before the last question (real workerd and SQLite)', 
     expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'nowhere', locale: 'en', count: 5, focus: { entities: [] } })).status).toBe(409)
     expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'bad', locale: 'en', count: 5, focus: { entities: ['sweden'] } })).status).toBe(400)
     expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'bad2', locale: 'en', count: 5, focus: { planet: 'Mars' } })).status).toBe(400)
+  })
+})
+
+describe('achievements the server decides and pays (real workerd and SQLite)', () => {
+  const answersFor = (count: number, choice: 'a' | 'b') =>
+    Array.from({ length: count }, (_, slot) => ({ slot, chosenOptionId: choice, elapsedMs: 9000 }))
+
+  it('unlocks a perfect lesson once, pays its tier in the lesson row, and ignores a perfect quit', async () => {
+    const a = await guest()
+    await seed(a.userId, ['quit', 'perfect', 'again'], 10)
+    // Three right answers and a quit is not a flawless lesson.
+    const quit = await (await call('/v1/lessons/submit', a.token, { lessonId: 'quit', answers: answersFor(3, 'a') })).json() as Receipt
+    expect(quit.achievements).toEqual({ unlocked: [], xp: 0, coins: 0 })
+    const perfect = await (await call('/v1/lessons/submit', a.token, { lessonId: 'perfect', answers: answersFor(10, 'a') })).json() as Receipt
+    expect(perfect.achievements.unlocked).toContainEqual({ achievementId: 'ach.session.perfect', tier: 'bronze' })
+    expect(perfect.achievements.xp).toBeGreaterThanOrEqual(BALANCE.xp.achievementByTier.bronze)
+    expect(perfect.achievements.coins).toBeGreaterThanOrEqual(BALANCE.coins.achievementByTier.bronze)
+    // A replay is the stored receipt; another perfect lesson does not re-cross bronze.
+    expect(await (await call('/v1/lessons/submit', a.token, { lessonId: 'perfect', answers: answersFor(10, 'a') })).json()).toEqual(perfect)
+    const again = await (await call('/v1/lessons/submit', a.token, { lessonId: 'again', answers: answersFor(10, 'a') })).json() as Receipt
+    expect(again.achievements.unlocked.map(u => u.achievementId)).not.toContain('ach.session.perfect')
+    const stored = JSON.parse(String((await db.prepare('SELECT achievements FROM accounts WHERE id = ?').bind(a.userId).first())?.achievements)) as
+      Record<string, { tier: string | null; value: number }>
+    expect(stored['ach.session.perfect']).toMatchObject({ tier: 'bronze', value: 2 })
+    const snapshot = await state(a.userId)
+    expect(snapshot.account?.xp).toBe(snapshot.ledger.reduce((sum, row) => sum + Number(row.xp), 0))
+    expect(snapshot.account?.coins).toBe(snapshot.ledger.reduce((sum, row) => sum + Number(row.coins), 0))
   })
 })

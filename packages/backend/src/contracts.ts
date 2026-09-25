@@ -32,6 +32,8 @@ export interface Receipt {
   /** Every slot answered, or hearts ran out. Only a finished lesson is the day's activity. */
   finished: boolean
   streak: StreakReceipt; quest: QuestReceipt
+  /** Tiers this lesson unlocked. Their XP and coins are inside the totals above. */
+  achievements: { unlocked: { achievementId: string; tier: string }[]; xp: number; coins: number }
 }
 export interface QuestReceipt {
   /** Slots this lesson completed. Their XP (and the all-five bonus) is inside the totals. */
@@ -43,6 +45,7 @@ export interface Account {
   time_zone: string; streak_current: number; streak_longest: number; streak_last_day: string | null; freezes_held: number
   recent_accuracy: number
   streak_broken_on: string | null; streak_restorable: number; last_repair_at: number | null
+  achievements: string
 }
 /** Injected so day rules are testable across midnights and DST; production passes `Date.now`. */
 export type Clock = () => number

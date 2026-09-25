@@ -83,7 +83,15 @@ revision guard as lessons. Replays return the stored result (a continue replay
 reports `already_paid`); refusals write nothing. `GET /v1/progress` projects the
 app's `Progress` shape, showing a lapsed streak as zero and deriving the repair
 window at read time, so no nightly job is needed. Hearts reset per lesson and
-are not stored. Achievements and entitlements are not yet server-side here.
+are not stored. Entitlements are not yet server-side here.
+
+Achievements (migration 0010): the Worker runs the engines' `evaluateAll` over the
+shipped catalogue (`packs/achievements/core.v1.json`) with events it derived from its
+own grading, via the same `achievementEvents` helper the legacy function uses (it
+moves into the engines when that function is retired, B20). A lesson ended early is
+not a lesson for the session rules. Tier XP and coins come from the balance table and
+land in the lesson's ledger row inside the revision guard; receipts list the tiers
+unlocked.
 
 Protected native credential storage is accepted under [ADR 0014](../../docs/adr/0014-native-credential-storage.md); it does not provide D1 identity by itself.
 

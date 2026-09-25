@@ -6,8 +6,9 @@ export type D1Submission = { lessonId: string; answers: readonly { slot: number;
 export type D1StreakReceipt = { current: number; longest: number; extended: boolean; freezeUsed: boolean; reset: boolean; milestoneXp: number; milestoneCoins: number }
 /** `day`/`streak` arrive from migration 0007 on; receipts queued before it carry neither. */
 export type D1QuestReceipt = { completedSlots: string[]; complete: boolean; done: number; total: number; xp: number; coins: number }
+export type D1AchievementReceipt = { unlocked: { achievementId: string; tier: string }[]; xp: number; coins: number }
 export type D1Receipt = { lessonId: string; revision: number; xpAwarded: number; coinsAwarded: number; xpTotal: number; coinBalance: number; correct: number; reviews: number
-  day?: string; finished?: boolean; streak?: D1StreakReceipt; quest?: D1QuestReceipt }
+  day?: string; finished?: boolean; streak?: D1StreakReceipt; quest?: D1QuestReceipt; achievements?: D1AchievementReceipt }
 export type D1StreakState = { current: number; longest: number; lastActiveDate: string | null; freezesHeld: number }
 /** The engines' `LessonFocus`, as the Worker bounds it. Each field only removes facts. */
 export type D1Focus = { factIds?: string[]; attributes?: string[]; entities?: string[]; difficulty?: { min?: number; max?: number } }
@@ -46,6 +47,17 @@ function questReceipt(value: unknown): D1QuestReceipt {
     || !integer(value.done) || !integer(value.total) || value.done > value.total || !integer(value.xp) || !integer(value.coins)) throw new D1AuthError('INVALID_RESPONSE')
   return { completedSlots: value.completedSlots as string[], complete: value.complete, done: value.done, total: value.total, xp: value.xp, coins: value.coins }
 }
+const TIER_NAMES = ['bronze', 'silver', 'gold', 'platinum', 'legendary']
+function achievementReceipt(value: unknown): D1AchievementReceipt {
+  if (!object(value) || !Array.isArray(value.unlocked) || value.unlocked.length > 50 || !integer(value.xp) || !integer(value.coins)) throw new D1AuthError('INVALID_RESPONSE')
+  const unlocked = value.unlocked.map((u: unknown) => {
+    if (!object(u) || typeof u.achievementId !== 'string' || u.achievementId.length > 120 || typeof u.tier !== 'string' || !TIER_NAMES.includes(u.tier)) {
+      throw new D1AuthError('INVALID_RESPONSE')
+    }
+    return { achievementId: u.achievementId, tier: u.tier }
+  })
+  return { unlocked, xp: value.xp, coins: value.coins }
+}
 function receipt(value: unknown): D1Receipt {
   if (!object(value) || typeof value.lessonId !== 'string' || !integer(value.revision) || !integer(value.xpAwarded)
     || !integer(value.coinsAwarded) || !integer(value.xpTotal) || !integer(value.coinBalance) || !integer(value.correct) || !integer(value.reviews)) throw new D1AuthError('INVALID_RESPONSE')
@@ -54,7 +66,8 @@ function receipt(value: unknown): D1Receipt {
     xpTotal: value.xpTotal, coinBalance: value.coinBalance, correct: value.correct, reviews: value.reviews,
     ...(isoDay(value.day) ? { day: value.day, streak: streakReceipt(value.streak) } : {}),
     ...(typeof value.finished === 'boolean' ? { finished: value.finished } : {}),
-    ...(value.quest === undefined ? {} : { quest: questReceipt(value.quest) }) }
+    ...(value.quest === undefined ? {} : { quest: questReceipt(value.quest) }),
+    ...(value.achievements === undefined ? {} : { achievements: achievementReceipt(value.achievements) }) }
 }
 const strings = (v: unknown, pattern: RegExp, max: number): string[] => {
   if (!Array.isArray(v) || v.length > max || !v.every((s: unknown) => typeof s === 'string' && pattern.test(s))) throw new D1AuthError('INVALID_LESSON_REQUEST')
