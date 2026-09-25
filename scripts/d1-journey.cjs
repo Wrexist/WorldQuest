@@ -263,12 +263,32 @@ async function waitFor(check, ms) {
     step('the after-lesson chain ends on Home', (await page.getByRole('tab', { name: 'Home' }).count()) > 0,
       `${asked.badges} badge card(s)${asked.profile ? ', the profile ask' : ''}`)
 
+    // ── the course path is Home's primary action ──────────────────────────────
+    // Laid-out steps only: expo-router keeps Home mounted, at zero size, under a lesson.
+    const pathSteps = () => page.evaluate(() => Array.from(document.querySelectorAll('[data-testid^="path-node-"]'))
+      .filter((el) => el.getBoundingClientRect().height > 0)
+      .map((el) => ({ state: (el.getAttribute('data-testid') ?? '').slice('path-node-'.length), label: el.getAttribute('aria-label') ?? '' })))
+    await waitFor(async () => (await pathSteps()).length > 0, 5000)
+    const firstPath = await pathSteps()
+    step('Home shows the course path with one current step, the first',
+      firstPath.length === 7 && firstPath.filter((s) => s.state === 'current').length === 1 && firstPath[0]?.state === 'current',
+      firstPath.map((s) => s.state[0]).join(''))
+    await shot('home-path')
+
     const prefetched = await waitFor(async () => {
       const row = await one(`SELECT count(*) AS n FROM tickets t WHERE account_id = ? AND NOT EXISTS
         (SELECT 1 FROM receipts r WHERE r.account_id = t.account_id AND r.lesson_id = t.lesson_id)`, guest.id)
       return row.n >= 3 ? row.n : 0
     }, 15000)
     step('lessons are saved ahead for an offline start', prefetched >= 3, `${prefetched} unanswered ticket(s)`)
+    // The current step is an explicit focus — no other saved lesson may stand in for it
+    // offline — so Home keeps one ticket issued for exactly that step. The Worker stores
+    // the request as it parsed it: attributes before entities.
+    const STEP_ONE_FOCUS = '"focus":{"attributes":["flag"],"entities":["SE","NO","US","JP","BR","KE"]}'
+    const stepSaved = await waitFor(async () => (await one(`SELECT count(*) AS n FROM tickets t WHERE account_id = ?
+      AND instr(request_json, ?) > 0 AND NOT EXISTS
+      (SELECT 1 FROM receipts r WHERE r.account_id = t.account_id AND r.lesson_id = t.lesson_id)`, guest.id, STEP_ONE_FOCUS)).n >= 1, 15000)
+    step('and the current step\'s own lesson is saved ahead too', stepSaved)
 
     // ── the Quests tab shows the server's quest ───────────────────────────────
     await page.getByRole('tab', { name: /Quests/ }).first().click()
@@ -293,7 +313,8 @@ async function waitFor(check, ms) {
     offline = true
     await context.setOffline(true)
     await page.waitForTimeout(1500)
-    await page.getByText('Continue', { exact: true }).first().click()
+    // Home's one primary action — the course path's current step — on a plane.
+    await page.getByTestId('path-node-current').first().click()
     const offlineStart = await waitFor(async () => (await page.getByTestId('answer-option').count()) > 0, 10000)
     step('a lesson starts offline from a saved ticket', offlineStart, new URL(page.url()).pathname + new URL(page.url()).search.slice(0, 40))
     await shot('lesson-offline')
@@ -302,10 +323,34 @@ async function waitFor(check, ms) {
     step('nothing reached the Worker while offline', stillOne)
     await page.getByTestId('summary-continue').click()
     await page.waitForTimeout(2500)
+    // A finished lesson counts towards the step it was started from, offline too: the step
+    // needs two, so it stays current, one lesson on.
+    const afterOffline = await pathSteps()
+    step('finishing it offline moves the path on: the step is one lesson from done',
+      afterOffline[0]?.state === 'current' && /Lesson 2 of 2/.test(afterOffline[0]?.label ?? ''),
+      afterOffline[0]?.label ?? 'no path')
+
+    // Its saved ticket is spent, and two unfocused ones are still saved. The step must NOT
+    // quietly play one of those under its own name: it says it needs a connection, and
+    // offers the way back.
+    await page.getByTestId('path-node-current').first().click()
+    const refused = await waitFor(async () => (await page.getByTestId('lesson-offline-start').count()) > 0, 10000)
+    step('with its own lesson spent, the step says it needs a connection rather than playing another',
+      refused && (await page.getByTestId('answer-option').count()) === 0)
+    await shot('lesson-offline-start')
+    if (refused) await page.getByTestId('lesson-leave').click()
+    await page.waitForTimeout(1200)
+    step('and its way back leads Home', new URL(page.url()).pathname === '/' && (await pathSteps()).length > 0,
+      new URL(page.url()).pathname)
+
     await context.setOffline(false)
     offline = false
     const synced = await waitFor(async () => (await one('SELECT count(*) AS n FROM receipts WHERE account_id = ?', guest.id)).n === 2, 30000)
     step('the offline lesson syncs once the connection returns', synced)
+    // Graded by the Worker as the lesson it issued for the step — not a stand-in.
+    const graded = await one(`SELECT count(*) AS n FROM receipts r JOIN tickets t ON t.account_id = r.account_id
+      AND t.lesson_id = r.lesson_id WHERE r.account_id = ? AND instr(t.request_json, ?) > 0`, guest.id, STEP_ONE_FOCUS)
+    step('and the lesson the Worker graded was the step\'s own', graded?.n === 1, `${graded?.n ?? 0} graded for the step`)
     const after = await one('SELECT xp, streak_current AS streak, lessons_today AS lessons FROM accounts WHERE id = ?', guest.id)
     step('a second lesson the same day keeps the streak at one day', after.streak === 1 && after.lessons === 2 && after.xp > account.xp,
       `xp ${account.xp} → ${after.xp}, lessons ${after.lessons}`)

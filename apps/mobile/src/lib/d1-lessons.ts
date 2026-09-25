@@ -105,6 +105,18 @@ function wireFocus(focus: LessonFocus): D1Focus {
 
 const clampCount = (count: number): number => Math.max(5, Math.min(20, Math.round(count)))
 
+/** The same focus, in the wire shape — the comparison `take` already makes on a resumed preparation. */
+const sameFocus = (a: D1Focus | undefined, b: D1Focus | undefined): boolean => JSON.stringify(a) === JSON.stringify(b)
+
+/**
+ * Whether a saved ticket can be played by this learner in this language.
+ *
+ * A lesson issued for a screen reader (every question describable) suits anyone; one
+ * issued without may show a flag or a map a VoiceOver user cannot answer.
+ */
+const fitsRequest = (request: Pick<LessonRequest, 'locale' | 'screenReader'>) => (t: D1PreparedLesson) =>
+  t.request.locale === request.locale && (t.request.screenReader || !request.screenReader)
+
 /**
  * One preparation at a time. The queue holds a single persisted "preparing" slot, and a
  * lesson start racing a background prefetch would otherwise meet it busy.
@@ -127,8 +139,10 @@ export type TakeResult =
  * A lesson to play now.
  *
  * Unfocused: a pre-fetched ticket in this language and presentation if there is one,
- * otherwise a fresh one. Focused (a country, a region, the quest): always fresh, since
- * the server has to choose which of those facts are due.
+ * otherwise a fresh one. Focused (a country, a region, the quest, a step on the course
+ * path): a ticket saved for EXACTLY that focus if there is one — the course path keeps
+ * one ready for its current step (`prefetchFocused`) so the step starts offline —
+ * otherwise a fresh one, since the server has to choose which of those facts are due.
  */
 export function takeLesson(request: LessonRequest): Promise<TakeResult> {
   return serially(() => take(request))
@@ -140,11 +154,18 @@ async function take(request: LessonRequest): Promise<TakeResult> {
   const wanted = focused ? wireFocus(request.focus!) : undefined
   // A focus the app implied (onboarding's start region and level, the daily quest's
   // facts) is a preference: offline, a saved lesson is the right answer. A place or
-  // topic the learner chose is not, so that still needs a connection.
+  // topic the learner chose is not, so that still needs a connection — or a ticket
+  // saved for that very focus, which is the same lesson and so no substitution at all.
   const flexible = !request.explicitFocus
-  // A lesson issued for a screen reader (every question describable) suits anyone; one
-  // issued without may show a flag or a map a VoiceOver user cannot answer.
-  const fits = (t: D1PreparedLesson) => t.request.locale === request.locale && (t.request.screenReader || !request.screenReader)
+  const fits = fitsRequest(request)
+  if (focused) {
+    // Online or not: the ticket was issued for this focus after the last receipt, so
+    // playing it is playing what was asked for. It also retires a ticket a learner took
+    // and left before answering anything, which would otherwise hold one of the
+    // server's twenty slots for good.
+    const exact = (await queue.inspect()).tickets.find((t) => fits(t) && sameFocus(t.request.focus, wanted))
+    if (exact) return { kind: 'ready', lesson: exact }
+  }
   /**
    * A saved lesson for this request: an unfocused one first, and for an implied focus
    * any other left over (a lesson prepared for a focus and then not played, which would
@@ -220,6 +241,43 @@ async function prefetch(request: Omit<LessonRequest, 'focus'>): Promise<void> {
     }
   } catch {
     // Next time. Nothing the learner did is at stake here.
+  }
+}
+
+/**
+ * Keep ONE lesson ready for exactly this focus — the course path's current step.
+ *
+ * The step is the learner's own next task, so it is an explicit focus and `take` will
+ * not trade it for some other saved lesson offline (that would be the app quietly
+ * playing a different lesson from the one on the button). Without this, Home's one
+ * primary action could not start on a plane on a D1 build, which is the thing
+ * `PROJECT.md §5.5` says an offline lesson start must do. One ticket, not three: the
+ * step changes every couple of lessons, and `take` spends this one when the step starts.
+ *
+ * Quiet like `prefetchLessons`: a failure only means the next start needs a network.
+ */
+export function prefetchFocused(request: LessonRequest & { readonly focus: LessonFocus }): Promise<void> {
+  return serially(() => prefetchFor(request))
+}
+
+async function prefetchFor(request: LessonRequest & { readonly focus: LessonFocus }): Promise<void> {
+  if (!isOnline()) return
+  try {
+    const { queue } = await open()
+    await queue.prepare()
+    const wanted = wireFocus(request.focus)
+    const fits = fitsRequest(request)
+    const { tickets } = await queue.inspect()
+    if (tickets.some((t) => fits(t) && sameFocus(t.request.focus, wanted))) return
+    await queue.prepare({
+      lessonId: lessonId(),
+      locale: request.locale,
+      count: clampCount(request.count),
+      screenReader: request.screenReader,
+      focus: wanted,
+    })
+  } catch {
+    // Next time. The step still starts online, and offline it says so plainly.
   }
 }
 

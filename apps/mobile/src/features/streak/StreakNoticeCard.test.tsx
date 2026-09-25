@@ -64,7 +64,7 @@ describe('Home, with and without the card', () => {
     render(
       <HomeScreen
         {...home}
-        onStartLesson={() => {}}
+        onPlayQuest={() => {}}
         streakNotice={{ notice: freeze, onDismiss: () => {} }}
       />,
     )
@@ -72,7 +72,7 @@ describe('Home, with and without the card', () => {
   })
 
   it('is simply absent otherwise — no placeholder, no empty card', () => {
-    render(<HomeScreen {...home} onStartLesson={() => {}} />)
+    render(<HomeScreen {...home} onPlayQuest={() => {}} />)
     expect(screen.queryByTestId('streak-notice-freeze')).toBeNull()
     expect(screen.queryByTestId('streak-notice-repair')).toBeNull()
   })

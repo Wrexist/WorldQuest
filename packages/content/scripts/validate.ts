@@ -8,8 +8,9 @@
  * Run: pnpm content:validate
  */
 
-import { isQuizzable } from '@worldquest/engines'
+import { isQuizzable, type Entity, type Fact, type Template } from '@worldquest/engines'
 import ajvModule from 'ajv/dist/2020.js'
+import { checkCourses } from './courses.js'
 import ajvFormatsModule from 'ajv-formats'
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { dirname, join, relative } from 'node:path'
@@ -104,6 +105,7 @@ const difficultyByRegion = new Map<string, Map<string, number[]>>()
 let factCount = 0
 let sensitiveCount = 0
 let todoCount = 0
+let courseCount = 0
 
 for (const file of packFiles) {
   const rel = relative(repoRoot, file)
@@ -654,8 +656,53 @@ for (const [rel, perRegion] of difficultyByRegion) {
   }
 }
 
+// ── 13. A course is a path somebody can actually walk ───────────────────────
+//
+// The Home path plays each course step as a lesson focused on the step's entities and
+// attributes, and a step that names content the packs do not have, or holds fewer
+// questions than a lesson needs, is a button that opens an empty lesson — on the D1
+// Worker, which refuses a focus under five questions, for every learner at once. The
+// brief's own day 1 was such a step: four flags, four questions.
+//
+// So every step is composed here by the real engine, in every shipped language, with and
+// without a screen reader, and every copy key is looked up in every shipped locale. The
+// rules are the engine's (`validateCourse`); `courses.ts` answers them from the packs.
+{
+  const loadedPacks = packFiles.map((file) => ({
+    rel: relative(repoRoot, file),
+    pack: stripComments(JSON.parse(readFileSync(file, 'utf8'))) as { kind?: string; items?: unknown[] },
+  }))
+  const itemsOf = (kind: string) => loadedPacks.filter((p) => p.pack.kind === kind).flatMap((p) => p.pack.items ?? [])
+
+  const localesDir = join(repoRoot, 'packages', 'i18n', 'locales')
+  const strings: Record<string, Record<string, string>> = {}
+  for (const locale of readdirSync(localesDir)) {
+    const dir = join(localesDir, locale)
+    if (!statSync(dir).isDirectory()) continue
+    strings[locale] = Object.assign(
+      {},
+      ...readdirSync(dir)
+        .filter((f) => f.endsWith('.json'))
+        .map((f) => JSON.parse(readFileSync(join(dir, f), 'utf8')) as Record<string, string>),
+    )
+  }
+
+  const courses = loadedPacks.filter((p) => p.pack.kind === 'course').map((p) => ({ file: p.rel, pack: p.pack }))
+  for (const problem of checkCourses({
+    courses,
+    entities: itemsOf('entities') as Entity[],
+    facts: itemsOf('facts') as Fact[],
+    templates: itemsOf('templates') as Template[],
+    strings,
+  })) {
+    errors.push(problem)
+  }
+  courseCount = courses.length
+}
+
 console.log(`Content validation\n`)
 console.log(`  packs      ${packFiles.length}`)
+console.log(`  courses    ${courseCount}`)
 console.log(`  facts      ${factCount}`)
 console.log(`  unique ids ${seenIds.size}`)
 console.log(`  sensitive  ${sensitiveCount} (flagged for human review)`)

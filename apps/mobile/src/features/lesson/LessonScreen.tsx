@@ -305,6 +305,7 @@ export type LessonExit = {
 
 export function LessonScreen({
   onExit,
+  onLeave,
   mode = 'normal',
   coins = 0,
   isTaster = false,
@@ -313,6 +314,16 @@ export function LessonScreen({
   length,
 }: {
   onExit: (summary: LessonExit) => void
+  /**
+   * Leave a lesson that never started — offline with nothing saved, a failure, or a focus
+   * with nothing in it.
+   *
+   * The route is a full-screen modal with the back gesture off (so a swipe cannot discard
+   * answers), which left those three screens with no way out on iOS but Retry. A course
+   * step is an explicit focus, so pressing Home's primary action on a plane before its
+   * lesson was saved lands on one of them; it has to lead back. Absent draws no button.
+   */
+  onLeave?: (() => void) | undefined
   /** `speed` runs the same items against a clock. Scoring is unchanged. */
   mode?: 'normal' | 'speed'
   /**
@@ -758,9 +769,9 @@ export function LessonScreen({
   }, [status, questions, lesson, isOffline, remoteLessons, remote.status, remote.lesson])
 
   if (screen === 'loading') return <LoadingState />
-  if (screen === 'error') return <ErrorState onRetry={remoteLessons ? remote.retry : reload} />
-  if (screen === 'offline-start') return <OfflineStartState onRetry={remote.retry} />
-  if (screen === 'empty') return <EmptyState />
+  if (screen === 'error') return <ErrorState onRetry={remoteLessons ? remote.retry : reload} onLeave={onLeave} />
+  if (screen === 'offline-start') return <OfflineStartState onRetry={remote.retry} onLeave={onLeave} />
+  if (screen === 'empty') return <EmptyState onLeave={onLeave} />
 
   if (lesson.state.phase === 'summary' || lesson.state.phase === 'abandoned') {
     const practised = practisedCountries(index?.index, lesson.state.answers)
@@ -1511,7 +1522,7 @@ function practisedCountries(
   return out
 }
 
-function ErrorState({ onRetry }: { onRetry: () => void }) {
+function ErrorState({ onRetry, onLeave }: { onRetry: () => void; onLeave: (() => void) | undefined }) {
   const t = useT()
 
   return (
@@ -1519,12 +1530,23 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
       <Text style={styles.prompt}>{t('common:error.generic.title')}</Text>
       <Text style={styles.feedbackBody}>{t('common:error.generic.body')}</Text>
       <Button label={t('common:retry')} onPress={onRetry} style={styles.retry} />
+      <LeaveButton onLeave={onLeave} />
     </View>
   )
 }
 
+/**
+ * The quiet way back from a lesson that never started. Ghost, not a second primary: the
+ * screen's own action (Retry) is still the thing it recommends.
+ */
+function LeaveButton({ onLeave }: { onLeave: (() => void) | undefined }) {
+  const t = useT()
+  if (onLeave === undefined) return null
+  return <Button label={t('common:back')} variant="ghost" onPress={onLeave} testID="lesson-leave" />
+}
+
 /** Never a dead end — an empty queue is celebrated, then offers what is next. */
-function EmptyState() {
+function EmptyState({ onLeave }: { onLeave: (() => void) | undefined }) {
   const t = useT()
 
   return (
@@ -1536,6 +1558,7 @@ function EmptyState() {
       <Art name="states/empty-caught-up" size={160} />
       <Text style={styles.prompt}>{t('lesson:empty.title')}</Text>
       <Text style={styles.feedbackBody}>{t('lesson:empty.body')}</Text>
+      <LeaveButton onLeave={onLeave} />
     </View>
   )
 }
@@ -1547,15 +1570,16 @@ function EmptyState() {
  * are kept for offline starts once there has been a connection. Says what to do and
  * offers the retry; answers already given are safe in the queue either way.
  */
-function OfflineStartState({ onRetry }: { onRetry: () => void }) {
+function OfflineStartState({ onRetry, onLeave }: { onRetry: () => void; onLeave: (() => void) | undefined }) {
   const t = useT()
 
   return (
-    <View style={[styles.screen, styles.centered]}>
+    <View style={[styles.screen, styles.centered]} testID="lesson-offline-start">
       <Art name="states/offline" size={160} />
       <Text style={styles.prompt}>{t('lesson:offlineStart.title')}</Text>
       <Text style={styles.feedbackBody}>{t('lesson:offlineStart.body')}</Text>
       <Button label={t('common:retry')} onPress={onRetry} style={styles.retry} />
+      <LeaveButton onLeave={onLeave} />
     </View>
   )
 }

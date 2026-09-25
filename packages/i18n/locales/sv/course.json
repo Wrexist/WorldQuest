@@ -1,0 +1,14 @@
+{
+  "course:firstWeek.title": "Världen från grunden",
+  "course:firstWeek.unit.first.title": "Första länderna",
+  "course:firstWeek.unit.first.objective": "Känn igen vart och ett på flagga, plats och huvudstad.",
+  "course:firstWeek.unit.continents.title": "Över kontinenterna",
+  "course:firstWeek.unit.continents.objective": "Lägg till nya länder och blanda sedan allt du kan.",
+  "course:firstWeek.node.flags": "{count, plural, one {Para ihop # flagga med sitt land.} other {Para ihop # flaggor med sina länder.}}",
+  "course:firstWeek.node.locations": "{count, plural, one {Hitta var i världen # land ligger.} other {Hitta var i världen # länder ligger.}}",
+  "course:firstWeek.node.capitals": "{count, plural, one {Para ihop # land med sin huvudstad.} other {Para ihop # länder med sina huvudstäder.}}",
+  "course:firstWeek.node.newCountries": "{count, plural, one {Känn igen # nytt land på flagga och plats.} other {Känn igen # nya länder på flagga och plats.}}",
+  "course:firstWeek.node.allCapitals": "{count, plural, one {Para ihop # land med sin huvudstad.} other {Para ihop alla # länder med sina huvudstäder.}}",
+  "course:firstWeek.node.mixed": "{count, plural, one {Blanda flagga, plats och huvudstad för # land.} other {Blanda flaggor, platser och huvudstäder för alla # länder.}}",
+  "course:firstWeek.node.check": "Se vad som har fastnat, med det som är dags först."
+}

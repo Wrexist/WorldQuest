@@ -22,7 +22,7 @@ vi.mock('@worldquest/api/d1-learning', async (importOriginal) => ({
   createD1LearningClient: () => ({ prepare, submit, state: async () => ({ memories: [] }) }),
 }))
 
-const { takeLesson, toSubmission, submitLesson, receiptSoon } = await import('./d1-lessons.js')
+const { takeLesson, toSubmission, submitLesson, receiptSoon, prefetchFocused } = await import('./d1-lessons.js')
 
 const question = (id: string) => ({ item: { id, factId: `fact-${id}`, entityId: 'SE', templateId: 't', difficulty: 1, screenReaderSafe: true },
   promptKey: 'q', promptParams: {}, modality: 'text' as const, isNew: true, timeLimitMs: null,
@@ -80,6 +80,54 @@ describe('takeLesson', () => {
     online = false
     expect(await takeLesson({ count: 10, locale: 'en', screenReader: false })).toEqual({ kind: 'offline' })
     // It asked, and the failed request is what said offline.
+  })
+})
+
+describe('a course step, kept ready', () => {
+  const STEP = { entities: ['SE', 'NO', 'US', 'JP', 'BR', 'KE'], attributes: ['flag'] }
+  const request = { count: 10, locale: 'en' as const, screenReader: false, focus: STEP }
+
+  it('starts offline from the ticket saved for exactly that step', async () => {
+    await prefetchFocused(request)
+    online = false
+    const result = await takeLesson({ ...request, explicitFocus: true })
+    expect(result.kind).toBe('ready')
+    // The step itself, not some other saved lesson: the learner pressed THIS step.
+    if (result.kind === 'ready') expect(result.lesson.request.focus).toEqual({ attributes: ['flag'], entities: STEP.entities })
+  })
+
+  it('still refuses to swap in a different lesson for a chosen step', async () => {
+    await takeLesson({ count: 10, locale: 'en', screenReader: false })
+    await prefetchFocused(request)
+    online = false
+    expect(await takeLesson({ ...request, focus: { entities: ['CA'], attributes: ['flag'] }, explicitFocus: true }))
+      .toEqual({ kind: 'offline' })
+  })
+
+  it('spends the saved ticket online too, rather than issuing another', async () => {
+    await prefetchFocused(request)
+    expect(prepare).toHaveBeenCalledTimes(1)
+    const result = await takeLesson({ ...request, explicitFocus: true })
+    expect(result.kind).toBe('ready')
+    expect(prepare).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps one ticket per step, not a pile', async () => {
+    await prefetchFocused(request)
+    await prefetchFocused(request)
+    expect(prepare).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not hand a picture lesson to a screen-reader user', async () => {
+    await prefetchFocused(request)
+    online = false
+    expect(await takeLesson({ ...request, screenReader: true, explicitFocus: true })).toEqual({ kind: 'offline' })
+  })
+
+  it('asks nothing while offline, and never throws', async () => {
+    online = false
+    await expect(prefetchFocused(request)).resolves.toBeUndefined()
+    expect(prepare).not.toHaveBeenCalled()
   })
 })
 

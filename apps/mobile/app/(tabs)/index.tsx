@@ -26,6 +26,11 @@ import { useReminderAsk } from '../../src/features/home/useReminderAsk.js'
 import { useLeague } from '../../src/features/league/useLeague.js'
 import { useLeagueEnabled } from '../../src/features/league/flag.js'
 import { useStreakNotice } from '../../src/features/streak/useStreakNotice.js'
+import { nodeStanding } from '@worldquest/engines'
+import { useCoursePath } from '../../src/features/course/useCoursePath.js'
+import { toPathView } from '../../src/features/course/pathView.js'
+import { nodeLessonHref, reviewLessonHref } from '../../src/features/course/courseLesson.js'
+import { usePrefetchStep } from '../../src/features/course/usePrefetchStep.js'
 
 /**
  * Zeroed rather than invented. A first launch shows the real empty state — and a
@@ -121,6 +126,23 @@ export default function HomeRoute() {
   const reminderAsk = useReminderAsk()
 
   /**
+   * The first-week course, as the path — Home's one primary action.
+   *
+   * Synchronous: the course ships in the binary and the progress is on the device, so the
+   * path is drawn in the first frame (`useCoursePath`). A step's lesson is a link naming
+   * the step, and the lesson route credits it when it finishes (`courseLesson.ts`).
+   */
+  const coursePath = useCoursePath()
+  const pathView = useMemo(() => toPathView(coursePath), [coursePath])
+  // The step the path recommends, standing — what a D1 build keeps a ticket ready for, so
+  // Start works on a plane (`usePrefetchStep`).
+  const currentStep =
+    coursePath.status === 'ready' && coursePath.standing.next.kind === 'node'
+      ? nodeStanding(coursePath.standing, coursePath.standing.next.node.id)
+      : undefined
+  usePrefetchStep(currentStep)
+
+  /**
    * The league chip, only when there is genuinely a standing to show.
    *
    * Four conditions, all ordinary and all indistinguishable from here: the flag is
@@ -156,8 +178,20 @@ export default function HomeRoute() {
       // two screens can no longer disagree about whether the device is connected.
       isOffline={!online || refreshFailed || status === 'error'}
       onOpenStreak={() => router.push('/streak')}
-      // The quest's own facts, not a shuffle. `focus` is undefined once the quest is
-      // finished, which is exactly when the button stops being primary and becomes
+      course={{
+        path: pathView,
+        onStart: (nodeId) => router.push(nodeLessonHref(nodeId)),
+        // The same link: a finished step's lesson again. It counts as practice and moves
+        // nothing on the path, which the engine decides (`creditLesson`).
+        onPractise: (nodeId) => router.push(nodeLessonHref(nodeId)),
+        onReview: () => {
+          if (coursePath.status === 'ready') router.push(reviewLessonHref(coursePath.course.id))
+        },
+        // The course did not load; lessons do not depend on it.
+        onPractiseAnyway: () => router.push('/lesson'),
+      }}
+      // The quest's own facts, not a shuffle — now the quest card's secondary button. `focus`
+      // is undefined once the quest is finished, which is when the button becomes
       // "practise anyway" — an ordinary lesson, correctly.
       // Through the quest's cover page rather than straight into the runner — but only
       // while the quest is unfinished, and only while the flag is on. Once the quest is
@@ -167,7 +201,7 @@ export default function HomeRoute() {
       // Flagged because it puts one more tap between a user and the thing the product is
       // for, and the only honest way to learn whether that costs completions is a staged
       // rollout. Off is exactly the old path. See `features/quests/ceremony.ts`.
-      onStartLesson={() => {
+      onPlayQuest={() => {
         if (coverPage && standing !== undefined && !standing.complete) {
           router.push('/quest')
           return

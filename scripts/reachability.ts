@@ -187,8 +187,10 @@ const ALLOWED: Record<string, string> = {
   itemsForFact: 'used inside composeLesson — every presentation of a fact, including the screen-reader-safe siblings, so a template that cannot be asked costs the lesson nothing',
   applySoftCap: 'used inside gradeLesson, which the server runs',
   selectItems: 'used inside composeLesson',
-  MIN_LESSON_ITEMS: 'bounds enforced inside lessonLength',
-  MAX_LESSON_ITEMS: 'bounds enforced inside lessonLength',
+  MAX_NODE_LESSONS:
+    'the ceiling on one course step, applied inside `validateCourse`, which the content ' +
+    'validator calls. Exported so course.test.ts asserts against the named value rather ' +
+    'than re-typing 10 — the same reason the notification constants above are exported.',
   TITLES: 'read by levelProgress, which the Profile screen calls',
   titleKeyForLevel: 'read by levelProgress',
   MAX_LEVEL: 'read by levelProgress',

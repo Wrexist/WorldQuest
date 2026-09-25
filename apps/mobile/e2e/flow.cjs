@@ -167,6 +167,24 @@ const skip = (name, why) => {
   }
 
   /**
+   * Home's course path, as a screen reader meets it: every step in document order, with
+   * the state its test id carries and the label it announces.
+   *
+   * Laid-out steps only. expo-router keeps Home mounted under the lesson at zero size,
+   * and counting those would report a path while a lesson is on screen — the
+   * zero-height-heading trap `lessonPrompt` documents, in a new place.
+   */
+  const pathSteps = () =>
+    page.evaluate(() =>
+      Array.from(document.querySelectorAll('[data-testid^="path-node-"]'))
+        .filter((el) => el.getBoundingClientRect().height > 0)
+        .map((el) => ({
+          state: (el.getAttribute('data-testid') ?? '').slice('path-node-'.length),
+          label: el.getAttribute('aria-label') ?? '',
+        })),
+    )
+
+  /**
    * Doubles every rendered font size, the way the OS setting does natively.
    *
    * Except where the component has declared a lower ceiling. React Native's
@@ -565,21 +583,54 @@ const skip = (name, why) => {
   step('a returning user goes straight to Home', afterOnboarding.includes('Explorer'))
   await page.screenshot({ path: path.join(SHOTS, 'home.png') })
 
-  // ── the taster lesson, which is the whole product in one flow ─────────────
+  // ── the course path: one lit step, and it opens its own lesson ─────────────
   //
-  // Straight into the runner, because that is what SHIPS. The quest cover page sits
-  // behind `quest_cover_page`, which is off at 0 % — and `useFeatureFlag` returns false
-  // for a flag it has never fetched, which is the state this harness is always in.
-  //
-  // Asserting the flagged-on path here would have been the more impressive-looking test
-  // and the wrong one: it would prove a route no user can currently reach while saying
-  // nothing about the one every user takes. The cover page is visited directly by
-  // `pnpm design:shots /quest` instead, and the flag's own default is asserted below.
-  await page.getByText('Continue', { exact: true }).first().click()
+  // Home's one primary action is the first-week course's current step (launch brief,
+  // L08/U05). It replaced the quest card's Continue, which this step used to press.
+  // Read structurally — each step's test id carries its state and its label carries
+  // its place and objective — never by guessing at English copy.
+  await page.screenshot({ path: path.join(SHOTS, 'home-path.png') })
+  const fresh = await pathSteps()
+  step(
+    'Home shows the course path with exactly one current step, the first',
+    fresh.length === 7 && fresh.filter((s) => s.state === 'current').length === 1 && fresh[0]?.state === 'current',
+    fresh.map((s) => s.state[0]).join(''),
+  )
+  step(
+    'and every step tells a screen reader its place, its state and its objective',
+    fresh.every((s) => /^(Start step|Step) \d+ of 7[.,]/.test(s.label) && s.label.length > 24),
+    fresh[1]?.label ?? '',
+  )
+
+  // A closed step answers a tap with a card saying how it opens — no dead taps — and
+  // offers nothing to press.
+  await page.getByTestId('path-node-locked').first().click()
+  await page.waitForTimeout(500)
+  const closedCard = page.getByTestId('path-card')
+  const closedText = (await closedCard.count()) > 0 ? await closedCard.first().innerText() : ''
+  step(
+    'a step that is not open yet explains how it opens, rather than ignoring the tap',
+    /opens when you finish/i.test(closedText) && (await page.getByTestId('path-practise').count()) === 0,
+    closedText.replace(/\s+/g, ' ').slice(0, 80),
+  )
+  await page.screenshot({ path: path.join(SHOTS, 'home-path-card.png') })
+  await page.getByTestId('path-node-locked').first().click()
+  await page.waitForTimeout(400)
+
+  // Straight into the runner: a step has no cover page. (The quest's own cover page
+  // sits behind `quest_cover_page`, off at 0 % — `useFeatureFlag` returns false for a
+  // flag it has never fetched, which is the state this harness is always in — and its
+  // button is secondary on Home now; it is pressed further down.)
+  await page.getByTestId('path-node-current').first().click()
   await page.waitForTimeout(1500)
   text = await body()
   const prompt = await lessonPrompt()
-  step('Continue opens a lesson, the flag being off', prompt !== undefined, prompt)
+  const opened = new URL(page.url())
+  step(
+    'the current step opens its own lesson',
+    prompt !== undefined && opened.searchParams.get('node') === 'node.first-week.flags',
+    `${opened.pathname}${opened.search} · ${prompt ?? 'no question'}`,
+  )
 
   if (prompt !== undefined) {
     await page.screenshot({ path: path.join(SHOTS, 'lesson.png') })
@@ -1287,6 +1338,141 @@ const skip = (name, why) => {
   step('a badge the catalogue does not know is never drawn',
        (await page.getByTestId('achievement-unlocked').count()) === 0 &&
          new URL(page.url()).pathname === '/')
+
+  // ── the course path advances ───────────────────────────────────────────────
+  //
+  // Placed after the profile ask on purpose: that step needs its lesson to be one of the
+  // install's first two, and these are the third and fourth.
+  //
+  // A finished lesson started from a step counts towards that step and nothing else, the
+  // first step needs two, and then the path moves on. Every question on the way is
+  // checked to be about the step's own countries — which is the proof the lesson had the
+  // step's focus rather than a mixed shuffle with the right URL. Three ways to tell, one
+  // per flag template: the flag picture's file code ("which country's flag is this?"),
+  // the country its prompt names ("what does the flag of Kenya look like?"), or the
+  // country the graded answer names ("which country's flag is a yellow Nordic cross…?",
+  // whose prompt names none).
+  const STEP_ONE_NAMES = ['Sweden', 'Norway', 'United States', 'Japan', 'Brazil', 'Kenya']
+  const STEP_ONE_FLAG = /flags\/(SE|NO|US|JP|BR|KE)\./
+  const playCurrentStep = async () => {
+    await home()
+    await page.getByTestId('path-node-current').first().click()
+    await page.waitForTimeout(1500)
+    const node = new URL(page.url()).searchParams.get('node')
+    const subjects = []
+    for (let i = 0; i < 25; i++) {
+      const options = await page.getByTestId('answer-option').all()
+      if (options.length === 0) break
+      const subject = await page.evaluate(() => {
+        const img = document.querySelector('[data-testid="prompt-art"] img')
+        const heading = Array.from(document.querySelectorAll('[role="heading"]')).find(
+          (h) => h.getBoundingClientRect().height > 0,
+        )
+        return { src: img?.getAttribute('src') ?? '', prompt: heading?.textContent ?? '', answer: '' }
+      })
+      // Human speed, as the achievements lesson above explains: faster is graded as a bot.
+      await page.waitForTimeout(600)
+      await options[0].click()
+      await page.getByTestId('lesson-check').click()
+      await page.waitForTimeout(250)
+      // Grading labels the right option "…, correct answer", whichever was chosen.
+      subject.answer = await page.evaluate(
+        () =>
+          Array.from(document.querySelectorAll('[data-testid="answer-option"]'))
+            .map((o) => o.getAttribute('aria-label') ?? '')
+            .find((label) => /correct answer$/.test(label)) ?? '',
+      )
+      subjects.push(subject)
+      const next = page.getByRole('button', { name: 'Continue' })
+      if (await next.count()) await next.first().click()
+      await page.waitForTimeout(250)
+    }
+    await page.waitForTimeout(1400)
+    const finished = (await page.getByTestId('summary-continue').count()) > 0
+    if (finished) await page.getByTestId('summary-continue').click()
+    await page.waitForTimeout(1600)
+    // Whichever beats this lesson earned — badges, the quest, the profile ask — until Home.
+    for (let i = 0; i < 8 && new URL(page.url()).pathname !== '/'; i++) {
+      for (const onward of await page.getByRole('button', { name: /^(Nice|Continue|Not now)$/ }).all()) {
+        if (await onward.isVisible()) {
+          await onward.click()
+          break
+        }
+      }
+      await page.waitForTimeout(1000)
+    }
+    return { node, finished, subjects }
+  }
+
+  const firstRun = await playCurrentStep()
+  const offTopic = firstRun.subjects.filter(
+    (s) =>
+      !STEP_ONE_FLAG.test(s.src) &&
+      !STEP_ONE_NAMES.some((name) => s.prompt.includes(name) || s.answer.startsWith(`${name},`)),
+  )
+  step(
+    'a step\'s lesson asks only about that step: the flags of its six countries',
+    firstRun.node === 'node.first-week.flags' && firstRun.subjects.length >= 5 && offTopic.length === 0,
+    offTopic.length > 0
+      ? `off the step: ${offTopic.map((s) => s.prompt || s.src).slice(0, 2).join(' · ')}`
+      : `${firstRun.subjects.length} questions, every one a flag of the six`,
+  )
+  await home()
+  const halfway = await pathSteps()
+  step(
+    'one finished lesson moves the step on, and the step stays current until it has two',
+    firstRun.finished && halfway[0]?.state === 'current' && /Lesson 2 of 2/.test(halfway[0]?.label ?? ''),
+    halfway[0]?.label ?? 'no path',
+  )
+
+  const secondRun = await playCurrentStep()
+  await home()
+  const advanced = await pathSteps()
+  step(
+    'finishing the step\'s lessons advances the path: step 1 done, step 2 current',
+    secondRun.finished &&
+      advanced[0]?.state === 'done' &&
+      advanced[1]?.state === 'current' &&
+      advanced.filter((s) => s.state === 'current').length === 1,
+    advanced.map((s) => s.state[0]).join(''),
+  )
+  await page.screenshot({ path: path.join(SHOTS, 'home-path-advanced.png') })
+
+  // A done step opens a card offering practice rather than starting a lesson on a tap,
+  // and Practise replays that step — the step it names, not the current one.
+  await page.getByTestId('path-node-done').first().click()
+  await page.waitForTimeout(500)
+  const practise = page.getByTestId('path-practise')
+  const offersPractice = (await practise.count()) > 0 && new URL(page.url()).pathname === '/'
+  if (offersPractice) {
+    await practise.first().click()
+    await page.waitForTimeout(1500)
+  }
+  const replay = new URL(page.url())
+  step(
+    'a done step offers practice, and Practise replays that step',
+    offersPractice && replay.searchParams.get('node') === 'node.first-week.flags' && (await lessonPrompt()) !== undefined,
+    `${replay.pathname}${replay.search}`,
+  )
+
+  // The quest is secondary on Home now, and its own button still plays the quest — its
+  // facts, straight into the runner while the cover-page flag is off.
+  await home()
+  const questStart = page.getByTestId('home-quest-start')
+  if ((await questStart.count()) === 0) {
+    skip('the quest card\'s button still plays the quest', 'today\'s quest is already complete')
+  } else {
+    await questStart.first().click()
+    await page.waitForTimeout(1500)
+    // Its outstanding facts when a task still wants some, an ordinary lesson when only the
+    // "finish strong" task is left (`questFocus`) — never a course step.
+    const quest = new URL(page.url())
+    step(
+      'the quest card\'s button still plays the quest, the cover-page flag being off',
+      quest.pathname === '/lesson' && !quest.searchParams.has('node') && (await lessonPrompt()) !== undefined,
+      `${quest.pathname}?${[...quest.searchParams.keys()].join('&')}`,
+    )
+  }
 
   // ── the way out of a lesson ────────────────────────────────────────────────
   //

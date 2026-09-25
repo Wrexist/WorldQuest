@@ -246,6 +246,17 @@ describe('Lesson — pausing', () => {
     expect(screen.getByRole('heading').textContent).toBe('Paused')
     expect(screen.getByRole('heading').textContent).not.toBe(prompt)
   })
+
+  it('leads back from a lesson that never started, instead of trapping the learner', () => {
+    // A focus with nothing in it composes no lesson. The route is a full-screen modal
+    // with the back gesture off, so this screen needs its own way out — as do the
+    // offline and failure screens, which share the same button.
+    const onLeave = vi.fn()
+    render(<LessonScreen onExit={() => {}} onLeave={onLeave} focus={{ entities: [] }} />)
+    expect(screen.getByText("You're all caught up")).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }))
+    expect(onLeave).toHaveBeenCalledOnce()
+  })
 })
 
 describe('Lesson — correctness reaches a screen reader', () => {
