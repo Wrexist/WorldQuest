@@ -516,6 +516,11 @@ describe('the app account repository against the real Worker', () => {
     await expect(repo.setTimeZone('Nowhere/Nothing')).rejects.toThrow('INVALID_TIME_ZONE')
     await expect(repo.submitLesson({ lessonId: 'x', kind: 'lesson', startedAt: 0, answers: [] })).rejects.toThrow('USE_D1_LESSON_QUEUE')
     expect(await repo.fetchSubscription()).toMatchObject({ status: 'none', tier: 'free' })
+    // The quest the device shows is the one the server composed and will pay.
+    const today = await repo.fetchTodayQuest()
+    expect(today.quest.tasks.map(t => t.slot)).toEqual(['locate', 'recognise', 'recall', 'discover', 'perform'])
+    expect(today.quest.date).toBe(today.day)
+    expect(await repo.fetchTodayQuest()).toEqual(today)
     current = false
     await expect(repo.fetchProgress()).rejects.toThrow('Account changed')
   })

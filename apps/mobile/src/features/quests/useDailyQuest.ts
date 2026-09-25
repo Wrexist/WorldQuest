@@ -11,6 +11,10 @@
  */
 
 import { useMemo } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { isD1 } from '../../lib/backendConfig.js'
+import { withAccount } from '../../lib/backend.js'
+import { queryKeys } from '../../lib/query.js'
 import {
   generateDailyQuest,
   localDate,
@@ -99,18 +103,36 @@ export function useDailyQuest(): {
   reload: () => void
 } {
   const { index, memory, status, reload } = useContent()
-  // Subscribed rather than read once: finishing a lesson changes this, and a quest screen
-  // holding the figure from the render before it would draw a goal the runner is no
-  // longer scoring against.
   const accuracy = useRecentAccuracy()
+  // On a D1 build the quest is the server's: it composes and pays it (B05/S04), so the
+  // screen shows those five tasks and the progress the server counted. Persisted with the
+  // rest of the query cache, so it is still there offline.
+  const remote = isD1()
+  const server = useQuery({
+    queryKey: queryKeys.quest,
+    queryFn: () => withAccount(async (account) => {
+      if (!account.fetchTodayQuest) throw new Error('Quest unavailable on this backend')
+      return (await account.fetchTodayQuest()).quest
+    }),
+    enabled: remote,
+  })
 
   const generated = useMemo<DailyQuest | null>(
-    () => (index === null ? null : todaysQuest(index.index, memory, Date.now(), accuracy)),
-    [index, memory, accuracy],
+    () => (remote || index === null ? null : todaysQuest(index.index, memory, Date.now(), accuracy)),
+    [remote, index, memory, accuracy],
   )
+  const local = useQuestWithProgress(generated)
 
+  if (remote) {
+    return {
+      quest: server.data ?? null,
+      loading: server.isPending && server.data === undefined,
+      status: server.data !== undefined ? 'ready' : server.isError ? 'error' : 'loading',
+      reload: () => void server.refetch(),
+    }
+  }
   return {
-    quest: useQuestWithProgress(generated),
+    quest: local,
     loading: status === 'loading',
     status,
     reload,

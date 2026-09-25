@@ -22,7 +22,7 @@ vi.mock('@worldquest/api/d1-learning', async (importOriginal) => ({
   createD1LearningClient: () => ({ prepare, submit, state: async () => ({ memories: [] }) }),
 }))
 
-const { takeLesson, toSubmission, submitLesson } = await import('./d1-lessons.js')
+const { takeLesson, toSubmission, submitLesson, receiptSoon } = await import('./d1-lessons.js')
 
 const question = (id: string) => ({ item: { id, factId: `fact-${id}`, entityId: 'SE', templateId: 't', difficulty: 1, screenReaderSafe: true },
   promptKey: 'q', promptParams: {}, modality: 'text' as const, isNew: true, timeLimitMs: null,
@@ -73,5 +73,26 @@ describe('submitLesson', () => {
     await submitLesson(lesson, [answer('i0')])
     expect(submit).not.toHaveBeenCalled()
     expect(JSON.parse(store.get('d1.lessons.v1')!)).toMatchObject({ entries: [{ lessonId: 'l2' }] })
+  })
+})
+
+describe('receiptSoon', () => {
+  const receipt = (lessonId: string) => ({ lessonId, revision: 1, xpAwarded: 10, coinsAwarded: 5, xpTotal: 10, coinBalance: 5, correct: 1, reviews: 1,
+    day: '2026-10-02', finished: true, streak: { current: 1, longest: 1, extended: true, freezeUsed: false, reset: false, milestoneXp: 0, milestoneCoins: 0 } })
+
+  it('returns what the server decided when the answer is quick', async () => {
+    const lesson = issued('l3', { lessonId: 'l3', locale: 'en', count: 5, screenReader: false })
+    submit.mockImplementation(async (input: { lessonId: string }) => receipt(input.lessonId))
+    await submitLesson(lesson, [answer('i0')])
+    expect(await receiptSoon('l3', 2000)).toMatchObject({ lessonId: 'l3', finished: true, streak: { extended: true } })
+  })
+
+  it('gives up in time and leaves the decision to the device', async () => {
+    const lesson = issued('l4', { lessonId: 'l4', locale: 'en', count: 5, screenReader: false })
+    submit.mockImplementation(() => new Promise(() => {}))
+    await submitLesson(lesson, [answer('i0')])
+    const started = Date.now()
+    expect(await receiptSoon('l4', 50)).toBeNull()
+    expect(Date.now() - started).toBeLessThan(1000)
   })
 })

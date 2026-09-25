@@ -1,6 +1,7 @@
 import { AccountChangedError, type AccountRepository } from './ports.js'
 import { D1AuthError, type AuthFetch, type createD1AuthClient } from './d1-auth.js'
 import type { ContinuePurchase, FreezePurchase, Progress, StreakRepair } from './contracts.js'
+import type { DailyQuest, QuestTask } from '@worldquest/engines'
 
 /**
  * The account repository over the Cloudflare Worker (ADR 0013).
@@ -30,7 +31,10 @@ export function createD1AccountRepository(options: {
   auth: ReturnType<typeof createD1AuthClient>; owner: string; isCurrent: () => boolean; fetch: AuthFetch
   /** Twelve random bytes per call; native callers pass the OS generator. */
   randomBytes: () => Uint8Array
-}): AccountRepository & { progressWithInventory: () => Promise<Progress & { inventory: string[] }> } {
+}): AccountRepository & {
+  progressWithInventory: () => Promise<Progress & { inventory: string[] }>
+  fetchTodayQuest: () => Promise<{ day: string; quest: DailyQuest }>
+} {
   const assertCurrent = () => { if (!options.isCurrent()) throw new AccountChangedError() }
   async function request(path: string, body?: unknown): Promise<unknown> {
     assertCurrent()
@@ -61,8 +65,34 @@ export function createD1AccountRepository(options: {
       factsMastered: v.factsMastered, lastActiveDate: v.lastActiveDate, freezesHeld: v.freezesHeld, brokenOn: v.brokenOn,
       lastRepairAt: v.lastRepairAt, inventory: v.inventory as string[] }
   }
+  /**
+   * Today's quest as the server composed it, with the progress it will pay on.
+   *
+   * On this backend the quest is the server's (B05/S04): the device shows these five
+   * tasks rather than composing its own, so the screen and the reward cannot disagree.
+   */
+  async function fetchTodayQuest(): Promise<{ day: string; quest: DailyQuest }> {
+    const v = await request('/v1/quest/today')
+    if (!object(v) || !day(v.day) || v.day === null || !object(v.quest) || !Array.isArray(v.quest.tasks) || v.quest.tasks.length !== 5
+      || typeof v.quest.id !== 'string' || v.quest.date !== v.day || typeof v.quest.complete !== 'boolean' || typeof v.quest.bonusClaimed !== 'boolean') {
+      throw new D1AuthError('INVALID_RESPONSE')
+    }
+    const slots = ['locate', 'recognise', 'recall', 'discover', 'perform']
+    const tasks: QuestTask[] = v.quest.tasks.map((t: unknown, i: number) => {
+      if (!object(t) || t.slot !== slots[i] || !count(t.target) || t.target < 1 || !count(t.progress) || t.progress > t.target
+        || typeof t.complete !== 'boolean' || !Array.isArray(t.factIds) || t.factIds.length > 20
+        || !t.factIds.every((id: unknown) => typeof id === 'string')
+        || !(t.goal === undefined || t.goal === 'perfect_lesson' || t.goal === 'speed_round' || t.goal === 'streak_keeper')) {
+        throw new D1AuthError('INVALID_RESPONSE')
+      }
+      return { slot: t.slot as QuestTask['slot'], target: t.target, progress: t.progress, complete: t.complete,
+        factIds: t.factIds as string[], ...(t.goal === undefined ? {} : { goal: t.goal as NonNullable<QuestTask['goal']> }) }
+    })
+    return { day: v.day, quest: { id: v.quest.id, date: v.day, tasks, complete: v.quest.complete, bonusClaimed: v.quest.bonusClaimed } }
+  }
   return {
     identity: { backendId: options.auth.endpoint, userId: options.owner },
+    fetchTodayQuest,
     submitLesson: async () => { throw new D1AuthError('USE_D1_LESSON_QUEUE') },
     progressWithInventory,
     fetchProgress: async () => {

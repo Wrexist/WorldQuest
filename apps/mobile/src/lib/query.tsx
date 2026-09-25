@@ -156,6 +156,8 @@ export function QueryProvider({ children }: { children: ReactNode }) {
  */
 export function invalidateProgress(): void {
   void queryClient().invalidateQueries({ queryKey: queryKeys.progress })
+  // The server's quest moves with the same lessons (a D1 build reads it from there).
+  void queryClient().invalidateQueries({ queryKey: queryKeys.quest })
 }
 
 /** Query keys in one place, so a typo cannot silently create a second cache entry. */
@@ -163,4 +165,5 @@ export const queryKeys = {
   progress: ['progress'] as const,
   subscription: ['subscription'] as const,
   league: ['league'] as const,
+  quest: ['quest', 'today'] as const,
 } as const

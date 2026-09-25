@@ -236,6 +236,23 @@ export function flushLessons(): Promise<readonly D1Receipt[]> {
   return flushing
 }
 
+/**
+ * The receipt for a just-finished lesson, waiting at most `ms` for it.
+ *
+ * The celebrations after a lesson should say what the server decided (did this finish
+ * the quest, did it extend the streak), and online the answer is normally back before
+ * the learner has read the summary. Offline or slow, this returns null in time and the
+ * caller falls back to the device's own reading, as before.
+ */
+export async function receiptSoon(id: string, ms: number): Promise<D1Receipt | null> {
+  const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), ms))
+  const answer = (async () => {
+    await flushLessons()
+    return receiptFor(id)
+  })().catch(() => null)
+  return Promise.race([answer, timeout])
+}
+
 /** The receipt for a lesson, if the server has answered for it on this device. */
 export async function receiptFor(id: string): Promise<D1Receipt | null> {
   const { queue } = await open()

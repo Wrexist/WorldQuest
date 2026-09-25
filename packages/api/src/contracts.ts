@@ -125,3 +125,24 @@ export type LeagueCohort = {
     readonly division: number;
     readonly members: readonly LeagueRow[];
 };
+
+/**
+ * Today's quest as a backend reports it: the engines' `DailyQuest`, restated so this
+ * contract depends on nothing. The two must stay structurally identical; the app assigns
+ * one to the other, so a drift is a type error at that call site.
+ */
+export type QuestTaskRow = {
+    readonly slot: 'locate' | 'recognise' | 'recall' | 'discover' | 'perform';
+    readonly target: number;
+    readonly factIds: readonly string[];
+    readonly goal?: 'perfect_lesson' | 'speed_round' | 'streak_keeper';
+    readonly progress: number;
+    readonly complete: boolean;
+};
+export type QuestRow = {
+    readonly id: string;
+    readonly date: string;
+    readonly tasks: readonly QuestTaskRow[];
+    readonly complete: boolean;
+    readonly bonusClaimed: boolean;
+};

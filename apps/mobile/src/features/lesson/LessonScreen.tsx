@@ -307,6 +307,8 @@ export type LessonExit = {
    * only a finished lesson earns the streak beat that follows the summary.
    */
   readonly completed: boolean
+  /** The lesson's id — the ticket's on a D1 build — for asking after its receipt. */
+  readonly lessonId: string
 }
 
 export function LessonScreen({
@@ -783,6 +785,7 @@ export function LessonScreen({
             practised: practised.map((c) => c.id),
             questCompleted: questCompleted.current,
             completed: lesson.state.phase === 'summary',
+            lessonId: lesson.state.lessonId,
           })
         }
       />

@@ -6,7 +6,7 @@
  * that costs a tap for no reason.
  */
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { router, useLocalSearchParams } from 'expo-router'
 import { LessonScreen } from '../src/features/lesson/LessonScreen.js'
 import { useProgress } from '../src/features/home/useProgress.js'
@@ -15,8 +15,18 @@ import { useOnboarding } from '../src/features/onboarding/useOnboarding.js'
 import { SELLING } from '../src/features/paywall/purchases.js'
 import { hrefFor, planAfterLesson } from '../src/features/lesson/afterLesson.js'
 import { lessonsToday } from '../src/features/profile/useWeekActivity.js'
+import { isD1 } from '../src/lib/backendConfig.js'
+import { receiptSoon } from '../src/lib/d1-lessons.js'
 import { parseFocusParams } from '../src/features/lesson/focusParams.js'
 import { useLessonFocus } from '../src/features/lesson/useLessonFocus.js'
+
+/**
+ * How long the summary's Continue waits for the server's receipt on a D1 build.
+ *
+ * Long enough for one round trip on an ordinary connection, short enough that a slow
+ * one is not felt: past it, the device's own reading decides and nothing is lost.
+ */
+const RECEIPT_WAIT_MS = 1500
 
 export default function LessonRoute() {
   // `/lesson?mode=speed`. A query param rather than a second route: it is the same
@@ -60,6 +70,7 @@ export default function LessonRoute() {
   // The device's own lesson log, not the server's streak, because the question is
   // "is this the first lesson finished today" and that is known here, offline or not.
   const [countedTodayBefore] = useState(() => lessonsToday() > 0)
+  const leaving = useRef(false)
 
   return (
     <LessonScreen
@@ -72,7 +83,14 @@ export default function LessonRoute() {
       // who reinstalls.
       isTaster={taster === '1'}
       coins={data?.coins ?? 0}
-      onExit={(summary) => {
+      onExit={(summary) => void (async () => {
+        // One exit per lesson: the wait below must not let a second tap navigate twice.
+        if (leaving.current) return
+        leaving.current = true
+        // On a D1 build, what the server decided wins: whether this lesson finished the
+        // quest (its coins are paid only then) and whether it extended the streak. Asked
+        // for briefly; offline, the device's own reading below stands.
+        const receipt = isD1() ? await receiptSoon(summary.lessonId, RECEIPT_WAIT_MS) : null
         // Duolingo's rhythm: the lesson (summary, already shown), then the day (the
         // streak), then the daily quest, then anything we want from the learner. The
         // order and its reasons live in `afterLesson.ts`.
@@ -82,9 +100,9 @@ export default function LessonRoute() {
         // "there's nothing to buy here yet" is a dead end App Review rejects (2.1) and
         // a learner reads as a bait-and-switch. Never to a subscriber, never to a child.
         const steps = planAfterLesson({
-          completed: summary.completed,
-          countedTodayBefore,
-          questCompleted: summary.questCompleted,
+          completed: receipt?.finished ?? summary.completed,
+          countedTodayBefore: receipt?.streak ? !receipt.streak.extended : countedTodayBefore,
+          questCompleted: receipt?.quest ? receipt.quest.coins > 0 : summary.questCompleted,
           offerPaywall: taster === '1' && SELLING && !isPremium && onboarding.isChild !== true,
         })
         if (steps.length > 0) {
@@ -96,7 +114,7 @@ export default function LessonRoute() {
         // do nothing at all — leaving the user stuck on the summary.
         if (router.canGoBack()) router.back()
         else router.replace('/')
-      }}
+      })()}
     />
   )
 }
