@@ -173,8 +173,10 @@ async function playLesson(page, route, knownAnswers) {
     const known = knownAnswers.get(prompt)
     const index = known === undefined ? 0 : Math.max(0, labels.findIndex((l) => (l ?? '').startsWith(known)))
 
+    // Select, then Check: a tap alone only selects.
     await options[index].click()
-    await page.waitForTimeout(220)
+    await page.getByTestId('lesson-check').click()
+    await page.waitForTimeout(420)
 
     // Whatever was chosen, the app has now labelled the right one. Record it.
     const revealed = await Promise.all(

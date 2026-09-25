@@ -7,8 +7,20 @@
  * control is labelled, and the five states are all present.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import {
+  AccessibilityInfo,
+  Animated,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native'
 import {
   AnswerOption,
   Button,
@@ -21,14 +33,16 @@ import {
   Spacer,
   squircle,
   text,
+  useRiseIn,
 } from '@worldquest/design'
-import { canRevive, deriveRating, lessonLength } from '@worldquest/engines'
+import { canRevive, lessonLength } from '@worldquest/engines'
 import type { LessonFocus } from '@worldquest/engines'
 import type { ContentIndex, GradeResult, LessonState, Question } from '@worldquest/engines'
 import { Art } from '../../components/Art.js'
 import { Flag } from '../../components/Flag.js'
 import { CountryMap } from '../../components/CountryMap.js'
 import { useLesson } from './hooks/useLesson.js'
+import { useAnswerCues } from './hooks/useAnswerCues.js'
 import { LessonSummary, type PractisedCountry } from './LessonSummary.js'
 import { SPEED_SECONDS } from './modes.js'
 import { OutOfHearts } from './OutOfHearts.js'
@@ -36,8 +50,8 @@ import { payForContinue } from './continuePurchase.js'
 import { Paused } from './Paused.js'
 import { recordPace, useItemPace } from './usePace.js'
 import { recordAccuracy, recentAccuracy } from './useAccuracy.js'
-import { hapticCelebrate, hapticCorrect, hapticWrong } from '../../lib/haptics.js'
-import { soundCorrect, soundLevelUp, soundWrong } from '../../lib/sound.js'
+import { hapticCelebrate, hapticSelect } from '../../lib/haptics.js'
+import { soundLevelUp } from '../../lib/sound.js'
 import { recordLessonForAchievements, recordQuestCompleted } from '../achievements/progress.js'
 import { drainUnlocks, queueUnlocks, type PendingUnlock } from '../achievements/pending.js'
 import { todaysQuest } from '../quests/useDailyQuest.js'
@@ -186,6 +200,23 @@ const WRAPPED_AT = 1.5
  * scrolling, and on a quiz an option you cannot see is one you do not consider.
  */
 const SHORT_SCREEN = 700
+
+/**
+ * Below this height, Check sits after the options instead of pinned under them.
+ *
+ * MEASURED, per question type, with the button pinned: at 375×667 every template's
+ * fourth option clears it with room to spare, and 360×640 does too. At 320×568 (iPhone
+ * SE 1) the pinned bar took about 90pt off a viewport that was already exactly full, and
+ * the fourth option went under it by 65pt on a locator question, 101 on a map question
+ * and 116 under a flag prompt — where before Check existed it fitted, overflowed by 11
+ * and by 26. Shrinking the pictures to win that back would put the map and the flag
+ * below the floors `MAP_PROMPT_WIDTH_SHORT` and `FLAG_PROMPT_WIDTH` exist to defend.
+ *
+ * So on the smallest phone the question keeps the whole screen, exactly as before, and
+ * Check follows the options in the scroll. Selecting scrolls it into view, so it is never
+ * a thing the user has to hunt for — it arrives the moment there is something to check.
+ */
+const PINNED_CHECK_MIN_HEIGHT = 600
 
 /**
  * The locator map beside a question.
@@ -338,6 +369,7 @@ export function LessonScreen({
    * it changes is a target size, so the 44pt floor holds at both settings.
    */
   const compact = height < SHORT_SCREEN
+  const inlineCheck = height < PINNED_CHECK_MIN_HEIGHT
 
   // Latched, never unlatched. Moving the mascot is what gives the row room to unwrap,
   // so a flag that followed the measurement would flip back the moment it took effect
@@ -571,6 +603,30 @@ export function LessonScreen({
 
   const timeLimitMs = mode === 'speed' ? SPEED_SECONDS * 1000 : null
   const lesson = useLesson({ questions, memory, timeLimitMs, onComplete: handleComplete })
+  // Haptic, sound and `question_answered`, from the GRADED answer — whether Check graded
+  // it or the speed round's clock did. See the hook for why not from a tap.
+  useAnswerCues(lesson.state, itemMs)
+
+  /**
+   * Screen-reader focus to the verdict when the sheet arrives.
+   *
+   * The Check button the user just pressed unmounts in the same render — the sheet takes
+   * its place — so without this VoiceOver's cursor falls to wherever the platform puts
+   * it, usually the top of the screen, and the verdict is never read. When a tap WAS the
+   * answer this did not arise: focus stayed on the option, whose label changed to
+   * "Paris, correct answer" under the cursor. From the verdict, the next swipes read the
+   * explanation, the reward and Continue, in that order.
+   *
+   * Native only. react-native-web implements neither half — `setAccessibilityFocus` is
+   * an empty function there and `sendAccessibilityEvent` does not exist — and web is not
+   * a platform this app ships a screen reader experience on.
+   */
+  const verdict = useRef<Text>(null)
+  const answeredCount = lesson.state.answers.length
+  useEffect(() => {
+    if (lesson.state.phase !== 'answered' || Platform.OS === 'web') return
+    if (verdict.current !== null) AccessibilityInfo.sendAccessibilityEvent(verdict.current, 'focus')
+  }, [lesson.state.phase, answeredCount])
 
   /**
    * On the transition into feedback, put the options back on screen. See `scroller`.
@@ -597,6 +653,28 @@ export function LessonScreen({
     if (lesson.state.phase !== 'answered') return
     revealOptions()
   }, [lesson.state.phase, revealOptions])
+
+  /**
+   * Every new question starts at the top.
+   *
+   * The scroll view outlives the question, so the offset `revealOptions` left behind
+   * carried into the next one: on a short phone the new prompt arrived half scrolled off
+   * the top, and the first thing a user saw of a question was its answers. Not animated —
+   * this is a new page, not movement within one.
+   */
+  useEffect(() => {
+    scroller.current?.scrollTo({ y: 0, animated: false })
+  }, [lesson.state.index])
+
+  /**
+   * On the smallest phones Check is in the scroll, after the options — see
+   * `PINNED_CHECK_MIN_HEIGHT`. Selecting brings it into view so the next action is on
+   * screen the moment it becomes possible.
+   */
+  useEffect(() => {
+    if (!inlineCheck || lesson.state.selectedOptionId === null) return
+    scroller.current?.scrollToEnd({ animated: true })
+  }, [inlineCheck, lesson.state.selectedOptionId])
 
   /**
    * The badges to celebrate, taken once when the lesson ends.
@@ -742,6 +820,28 @@ export function LessonScreen({
    * under a user's thumb is the number that lands in the ledger.
    */
   const lastAward = lastAnswer ? lesson.awardFor(lastAnswer) : null
+
+  /**
+   * The one primary action while a question is up.
+   *
+   * Disabled rather than hidden until something is selected, so the screen does not jump
+   * when the first option is tapped and the user can see where an answer is committed.
+   * Pinned, it sits exactly where the sheet's Continue will land, so the thumb that
+   * pressed Check is already on the way onward. Where it sits on the smallest phones is
+   * `PINNED_CHECK_MIN_HEIGHT`'s business.
+   */
+  const noSelection = lesson.state.selectedOptionId === null
+  const checkButton = (
+    <Button
+      label={t('lesson:check.label')}
+      onPress={lesson.check}
+      disabled={noSelection}
+      // Why it is dimmed, read after "Check, dimmed" — a disabled control with no
+      // reason is a dead end to a screen-reader user.
+      {...(noSelection ? { accessibilityHint: t('lesson:check.needsAnswer') } : {})}
+      testID="lesson-check"
+    />
+  )
 
   return (
     <View style={styles.screen}>
@@ -896,6 +996,7 @@ export function LessonScreen({
               option.id,
               answered,
               lastAnswer?.chosenOptionId,
+              lesson.state.selectedOptionId,
             )
             return (
             <AnswerOption
@@ -952,38 +1053,15 @@ export function LessonScreen({
                   <Icon name="forward" size={20} color={colors.text.secondary} />
                 ) : undefined
               }
+              // A tap SELECTS; Check grades. Changing your mind is free, which is the
+              // point: a mis-tap on a phone held in one hand used to be a scored answer,
+              // and on a review item a lost heart. The selection haptic is the light
+              // platform tick, not the verdict — nothing has been decided yet, and the
+              // correct/wrong cues fire from the graded answer (`useAnswerCues`).
               onPress={() => {
-                // Fired from the option's own correctness rather than from the
-                // state after dispatch: the reducer has not run yet at this point,
-                // and reading `lastAnswer` here would buzz for the PREVIOUS question.
-                // Sound and haptic together, both from the option's own correctness
-                // rather than from the state after dispatch — the reducer has not run
-                // yet, so reading `lastAnswer` here would fire for the PREVIOUS
-                // question. Both are no-ops when their toggle is off.
-                if (option.isCorrect) {
-                  hapticCorrect()
-                  soundCorrect()
-                } else {
-                  hapticWrong()
-                  soundWrong()
-                }
-
-                // The richest event we have, and the one that sets lesson length
-                // honestly: accuracy by POSITION is a measurement, not a guess.
-                // Timed from `shownAt` for the same reason the countdown is —
-                // the deadline belongs to when the question appeared.
-                const elapsedMs = Date.now() - (lesson.state.shownAt ?? Date.now())
-                track('question_answered', {
-                  lesson_id: lesson.state.lessonId,
-                  template_id: question.item.templateId,
-                  fact_id: question.item.factId,
-                  correct: option.isCorrect,
-                  elapsed_ms: elapsedMs,
-                  rating: deriveRating(option.isCorrect, elapsedMs, itemMs),
-                  position: lesson.state.index,
-                })
-
-                lesson.answer(option.id)
+                if (option.id === lesson.state.selectedOptionId) return
+                hapticSelect()
+                lesson.select(option.id)
               }}
               // So tests can select answers POSITIVELY. The helper used to take every
               // button that was not labelled "Continue", which silently swallowed the
@@ -995,11 +1073,15 @@ export function LessonScreen({
           })}
         </View>
 
+        {inlineCheck && !answered && checkButton}
+
         <Spacer />
       </ScrollView>
 
-      {answered && (
-        <View style={styles.footer}>
+      {!answered ? (
+        !inlineCheck && <View style={styles.footer}>{checkButton}</View>
+      ) : (
+        <RiseIn key={answeredCount} style={styles.footer}>
           {/* Out of hearts is a fork, not a wall. The engine has held the flag since
               the machine was written and nothing rendered it — so the lesson simply
               carried on at zero hearts, which made the whole mechanic decorative. */}
@@ -1048,7 +1130,23 @@ export function LessonScreen({
                This block used to sit in the scroll flow with the button pinned beneath
                it, so the praise and the way onward were two objects with a gap between
                them. One sheet is the mechanic worth taking. */
-            <View style={styles.sheet}>
+            <View
+              // The verdict's tint, and it is calm on both sides: the success surface
+              // for right, the muted plum `feedback.wrong` for wrong — never red — and
+              // the plain raised surface when the clock ran out, because that one is
+              // not a verdict on the user at all. The ring draws the edge a dark tint
+              // alone would not have (R10). Colour is never the only carrier: the
+              // headline, the tick on the option and the haptic all say the same thing.
+              style={[
+                styles.sheet,
+                lastAnswer?.wasCorrect === true
+                  ? styles.sheetCorrect
+                  : lastAnswer?.chosenOptionId == null
+                    ? styles.sheetNeutral
+                    : styles.sheetWrong,
+              ]}
+              testID="answer-sheet"
+            >
               {/* The thing the question was ABOUT, now that it can be shown.
    
                   "Hur ser Japans flagga ut?" is asked in words and answered in words,
@@ -1130,7 +1228,9 @@ export function LessonScreen({
               >
                 {lastAnswer?.wasCorrect ? (
             <>
-              <Text style={styles.feedbackTitleOk}>{t('lesson:feedback.correct.title')}</Text>
+              <Text ref={verdict} style={styles.feedbackTitleOk}>
+                {t('lesson:feedback.correct.title')}
+              </Text>
               {/* One warm line under the headline, and it tells the truth.
    
                   `feedback.correct.body` — "You found {entityName} 🎉" — has been in the
@@ -1183,7 +1283,7 @@ export function LessonScreen({
           ) : (
             // Never "Wrong!". State the truth, name the right answer, move on.
             <>
-              <Text style={styles.feedbackTitle}>
+              <Text ref={verdict} style={styles.feedbackTitle}>
                 {/* A timeout has no chosen option. "That's undefined." is what the
                     normal branch would render, and the clock running out is not the
                     user choosing wrongly — it deserves its own neutral sentence. */}
@@ -1209,10 +1309,27 @@ export function LessonScreen({
               <Button label={t('common:continue')} onPress={lesson.advance} />
             </View>
           )}
-        </View>
+        </RiseIn>
       )}
 
     </View>
+  )
+}
+
+/**
+ * The answer sheet's entrance: up from below, into the place it occupies.
+ *
+ * Remounted per answer by its key, so every verdict arrives rather than the first one
+ * arriving and the rest simply being there. Never blocks input — the Continue button
+ * inside is pressable from the first frame, and a user who knows the drill can tap
+ * through the slide. Under reduced motion the sheet is in place from the start.
+ */
+function RiseIn({ children, style }: { children: ReactNode; style: StyleProp<ViewStyle> }) {
+  const rise = useRiseIn('base')
+  return (
+    <Animated.View style={[style, rise.style]} onLayout={rise.onLayout}>
+      {children}
+    </Animated.View>
   )
 }
 
@@ -1253,8 +1370,9 @@ function optionState(
   optionId: string,
   answered: boolean,
   chosenId: string | null | undefined,
+  selectedId: string | null,
 ) {
-  if (!answered) return 'idle' as const
+  if (!answered) return optionId === selectedId ? ('selected' as const) : ('idle' as const)
   if (isCorrect) return 'correct' as const
   if (optionId === chosenId) return 'wrong' as const
   return 'disabled' as const
@@ -1440,8 +1558,14 @@ const styles = StyleSheet.create({
     paddingTop: space[5],
     borderRadius: radius.lg,
     ...squircle,
-    backgroundColor: colors.bg.surfaceRaised,
+    borderWidth: 2,
   },
+  sheetCorrect: {
+    backgroundColor: colors.feedback.correctSurface,
+    borderColor: colors.feedback.correctEdge,
+  },
+  sheetWrong: { backgroundColor: colors.feedback.wrong, borderColor: colors.feedback.wrongEdge },
+  sheetNeutral: { backgroundColor: colors.feedback.neutral, borderColor: colors.border.subtle },
   // Anchored so the feet land INSIDE the button's band rather than on the sheet's floor.
   // The button is a later sibling in normal flow, so it paints over — that overlap is the
   // whole mechanic, and a mascot that stops neatly above the button is a sticker. At

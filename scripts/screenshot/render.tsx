@@ -397,7 +397,13 @@ function LessonView({
       )}
 
       <View style={s.footer}>
-        {answered && <Button label="Continue" onPress={() => {}} />}
+        {/* Check before an answer, as the app now draws it — disabled, because this
+            frame shows a question with nothing selected yet. */}
+        {answered ? (
+          <Button label="Continue" onPress={() => {}} />
+        ) : (
+          <Button label="Check" disabled onPress={() => {}} />
+        )}
       </View>
     </View>
   )

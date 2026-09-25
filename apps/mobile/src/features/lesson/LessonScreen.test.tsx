@@ -23,6 +23,21 @@ vi.mock('../../lib/analytics.js', () => ({ track: vi.fn() }))
 /** Every button except the footer's Continue. */
 const answerButtons = (): HTMLElement[] => screen.getAllByTestId('answer-option')
 
+/** The footer's Check. */
+const checkButton = (): HTMLElement => screen.getByTestId('lesson-check')
+
+/**
+ * Answer the way a user does now: tap an option to select it, then press Check.
+ *
+ * A tap alone is only a selection, so every test that used to click an option and read
+ * the feedback goes through here — otherwise it would be reading a screen on which
+ * nothing has been graded and asserting on the absence of feedback by accident.
+ */
+function choose(option: HTMLElement): void {
+  fireEvent.click(option)
+  fireEvent.click(checkButton())
+}
+
 /**
  * Click the right answer and return what the screen then said.
  *
@@ -36,7 +51,7 @@ function answerCorrectly(): string {
     const { container } = render(<LessonScreen onExit={() => {}} />)
     const options = answerButtons()
     if (index >= options.length) break
-    fireEvent.click(options[index]!)
+    choose(options[index]!)
     const shown = container.textContent ?? ''
     if (shown.includes('Perfect!')) return shown
     cleanup()
@@ -72,8 +87,12 @@ describe('Lesson', () => {
 
     const options = answerButtons()
     expect(options.length).toBeGreaterThan(0)
+    // Selecting is not answering: still nothing that looks like feedback.
     fireEvent.click(options[0]!)
+    expect(container.textContent).not.toMatch(/Perfect|That's/)
+    expect(screen.queryByRole('button', { name: 'Continue' })).toBeNull()
 
+    fireEvent.click(checkButton())
     expect(screen.getByRole('button', { name: 'Continue' })).toBeTruthy()
   })
 
@@ -122,10 +141,19 @@ describe('Lesson', () => {
   it('never punishes a wrong answer', () => {
     // No "Wrong!", no shame. The voice guide forbids it and the i18n gate bans the
     // words; this asserts the rendered screen too.
-    const { container } = render(<LessonScreen onExit={() => {}} />)
-    for (const option of answerButtons()) fireEvent.click(option)
-
-    expect(container.textContent).not.toMatch(/wrong!|incorrect|oops|failed/i)
+    // Every option, each in a fresh lesson, so whichever are wrong get graded and read.
+    const count = (() => {
+      render(<LessonScreen onExit={() => {}} />)
+      const n = answerButtons().length
+      cleanup()
+      return n
+    })()
+    for (let index = 0; index < count; index++) {
+      const { container } = render(<LessonScreen onExit={() => {}} />)
+      choose(answerButtons()[index]!)
+      expect(container.textContent).not.toMatch(/wrong!|incorrect|oops|failed/i)
+      cleanup()
+    }
   })
 
   it('labels every answer with the country it names, and never with its badge letter', () => {
@@ -222,7 +250,7 @@ describe('Lesson — correctness reaches a screen reader', () => {
     render(<LessonScreen onExit={() => {}} />)
     // Answer, wrongly or rightly — either way BOTH labels must appear, because the
     // correct option is revealed in green whichever was chosen.
-    fireEvent.click(answerButtons()[1]!)
+    choose(answerButtons()[1]!)
 
     const labels = answerButtons().map((o) => o.getAttribute('aria-label') ?? '')
     expect(labels.some((l) => /correct answer$/.test(l))).toBe(true)
@@ -236,8 +264,86 @@ describe('Lesson — correctness reaches a screen reader', () => {
     // exclamation, no "Oops". The spoken label has to keep the same register: a
     // screen-reader user is the one person who cannot see how gentle the screen is.
     const { container } = render(<LessonScreen onExit={() => {}} />)
-    fireEvent.click(answerButtons()[1]!)
+    choose(answerButtons()[1]!)
     const spoken = container.innerHTML
     expect(spoken).not.toMatch(/wrong answer|incorrect|oops|try again/i)
+  })
+})
+
+describe('Lesson — select, then check', () => {
+  const selected = (el: HTMLElement): boolean => el.getAttribute('aria-selected') === 'true'
+  const disabled = (el: HTMLElement): boolean => el.getAttribute('aria-disabled') === 'true'
+
+  it('offers Check, disabled until something is selected', () => {
+    // The "Choose an answer first" hint that goes with the disabled state is an
+    // `accessibilityHint`, which react-native-web does not render — so it is a device
+    // check (VoiceOver reads it after "Check, dimmed"), not one jsdom can make.
+    render(<LessonScreen onExit={() => {}} />)
+    const check = screen.getByRole('button', { name: 'Check' })
+    expect(check).toBe(checkButton())
+    expect(disabled(check)).toBe(true)
+  })
+
+  it('pressing Check with nothing selected does nothing', () => {
+    const { container } = render(<LessonScreen onExit={() => {}} />)
+    fireEvent.click(checkButton())
+    expect(container.textContent).not.toMatch(/Perfect|That's/)
+    expect(screen.queryByTestId('answer-sheet')).toBeNull()
+  })
+
+  it('a tap selects the option, announces it as selected, and enables Check', () => {
+    render(<LessonScreen onExit={() => {}} />)
+    const [first] = answerButtons()
+    fireEvent.click(first!)
+    expect(selected(answerButtons()[0]!)).toBe(true)
+    expect(answerButtons().filter(selected)).toHaveLength(1)
+    expect(disabled(checkButton())).toBe(false)
+    // Still a live question: every option stays pressable so the choice can change.
+    expect(answerButtons().some(disabled)).toBe(false)
+  })
+
+  it('lets the user change their mind before checking', () => {
+    render(<LessonScreen onExit={() => {}} />)
+    fireEvent.click(answerButtons()[0]!)
+    fireEvent.click(answerButtons()[2]!)
+    const now = answerButtons()
+    expect(selected(now[0]!)).toBe(false)
+    expect(selected(now[2]!)).toBe(true)
+    expect(now.filter(selected)).toHaveLength(1)
+  })
+
+  it('grades the FINAL choice, not the first tap', () => {
+    // Find which option is correct with a throwaway lesson — composition is deterministic.
+    let correctIndex = -1
+    for (let index = 0; index < 4 && correctIndex < 0; index++) {
+      const { container } = render(<LessonScreen onExit={() => {}} />)
+      choose(answerButtons()[index]!)
+      if ((container.textContent ?? '').includes('Perfect!')) correctIndex = index
+      cleanup()
+    }
+    expect(correctIndex, 'no option graded as correct').toBeGreaterThanOrEqual(0)
+    const wrongIndex = correctIndex === 0 ? 1 : 0
+
+    const { container } = render(<LessonScreen onExit={() => {}} />)
+    fireEvent.click(answerButtons()[wrongIndex]!)
+    fireEvent.click(answerButtons()[correctIndex]!)
+    fireEvent.click(checkButton())
+    expect(container.textContent).toContain('Perfect!')
+  })
+
+  it('swaps Check for the answer sheet, and locks the options', () => {
+    render(<LessonScreen onExit={() => {}} />)
+    choose(answerButtons()[0]!)
+    expect(screen.queryByTestId('lesson-check')).toBeNull()
+    expect(screen.getByTestId('answer-sheet')).toBeTruthy()
+    expect(answerButtons().every(disabled)).toBe(true)
+  })
+
+  it('Continue brings the next question with nothing selected', () => {
+    render(<LessonScreen onExit={() => {}} />)
+    choose(answerButtons()[0]!)
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    expect(answerButtons().some(selected)).toBe(false)
+    expect(disabled(checkButton())).toBe(true)
   })
 })

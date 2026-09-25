@@ -48,15 +48,23 @@ The most important screen in the app. Close button · progress bar · item count
 (`2 / 10`) · hearts · the question · answer options.
 **Question types (v1.0):** tap-the-country (map) · flag → country · country → capital ·
 landmark → country · speed round.
-**Interaction rules:** options are ≥ 56 pt tall; no auto-advance before the user sees
-feedback; answering is impossible during the feedback animation (double-tap protection);
-the back gesture confirms before discarding.
+**Interaction rules:** options are ≥ 56 pt tall; tapping an option **selects** it
+(changeable) and a single primary **Check** grades it — Check is disabled until something
+is selected, and the answer timer stops at Check, not at the tap; Check is pinned at the
+bottom, except below 600 pt of height (iPhone SE 1) where it follows the options and
+selecting scrolls it into view; no auto-advance before the user sees feedback; answering
+is impossible during the feedback animation (double-tap protection); the back gesture
+confirms before discarding. Speed round: a selection still unchecked at the buzzer is
+graded; no selection is a timeout.
 **States:** loading items · presenting · answered-correct · answered-wrong · out of
 hearts · paused · network lost mid-lesson (continue offline, queue the writes).
 
 ### 6. Correct answer / feedback
 Confetti · "Perfect!" · the entity (flag + name) · `+10 XP` and `🪙 +5` · `Continue`
 (green) · streak bonus line.
+A bottom sheet that rises into place (`motion.base`, instant under Reduce Motion) with a
+calm tint: `feedback.correctSurface` when right, the muted plum `feedback.wrong` when
+wrong, the neutral surface when the clock ran out. Screen-reader focus moves to the verdict.
 **The wrong-answer variant is equally designed and must not feel like a punishment:**
 show the correct answer, one sentence of why it's memorable, no red flash, no sound of
 failure — a neutral tone. Copy rules in
