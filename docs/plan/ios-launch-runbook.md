@@ -77,9 +77,11 @@ eas env:create --environment production --name EXPO_PUBLIC_D1_URL --value https:
 Run the **iOS TestFlight** workflow in GitHub Actions (build numbers are unique per
 run). Install from TestFlight on one iPhone and do, in order: onboard, finish a lesson,
 check the streak screen, lock the phone offline and finish a second lesson, reconnect,
-link your email (a real code should arrive), delete the account from Settings ›
-Privacy. Report anything odd; every step here has passed on the web build against a
-local Worker (`pnpm e2e:d1`), not yet on a phone.
+link your email (a real code should arrive). Then, on a second iPhone (or after
+deleting and reinstalling the app), tap **I already have an account**, sign in with the
+same email and check your XP and streak are there. Last, delete the account from
+Settings › Privacy. Report anything odd; every step here has passed on the web build
+against a local Worker (`pnpm e2e:d1`), not yet on a phone.
 
 ## 7. App Store Connect (60 min)
 

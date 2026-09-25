@@ -42,6 +42,9 @@ Status: ✅ done on this branch · ⏳ in progress · ☐ open.
 | 24 | P1 | Course path on Home (units/nodes) | L08/P07/U05 | ☐ Phase 3 |
 | 25 | P1 | Web harness: previous tab's content shows through a newly selected tab (transparent scenes) | U09 | ☐ check on device first |
 | 26 | P1 | Euro distractor capitalised ("Euro" among lowercase short names) gave the answer away | L14 | ✅ euro short names, currencies pack 1.0.1 |
+| 27 | P0 | Signing in on a new phone: "I already have an account" bounced back to onboarding; the account screen then offered "Start as guest"; after signing in, onboarding started again | U04, B02 (web part) | ✅ gate lets `/account` through; `?mode=signIn` opens on signing in; a sign-in finishes onboarding in the account's scope; `pnpm e2e:d1` second phone |
+| 28 | P0 | Every identity change remounts the app, so the account screen lost its flow: no "Your email is linked" or "Welcome back", and a refused code left the device paused in an empty guest scope (onboarding again) | S01, B02 | ✅ flow state outlives the screen; the host reopens the paused owner on a refusal; component and host tests |
+| 29 | P0 | Onboarding's birth year never reached the server: every guest `unknown`, adults asked twice, children unprotected server-side until the account screen | S02 | ✅ age band sent when onboarding finishes (or when a later guest is made); the Worker keeps the band only |
 
 ## Deliberately not copied from Duolingo
 

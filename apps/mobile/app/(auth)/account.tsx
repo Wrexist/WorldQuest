@@ -21,6 +21,7 @@ import { SUPPORT_URL } from '../../src/lib/links.js'
 import { currentLocale } from '../../src/lib/i18n.js'
 import { useAccount } from '../../src/features/account/useAccount.js'
 import { useProgress } from '../../src/features/home/useProgress.js'
+import { finishOnboardingBySignIn } from '../../src/features/onboarding/useOnboarding.js'
 import { useOnline } from '../../src/lib/connectivity.js'
 
 /**
@@ -32,10 +33,14 @@ import { useOnline } from '../../src/lib/connectivity.js'
  * Deletion is permanent and in-app, which is what guideline 5.1.1(v) asks for.
  */
 function D1AccountRoute() {
+  const params = useLocalSearchParams<{ mode?: string }>()
   const queryClient = useQueryClient()
   const online = useOnline()
-  const flow = useD1Account(createD1AccountClient(backendConfig().url), appD1Host(), currentLocale() === 'sv' ? 'sv' : 'en', online)
+  const flow = useD1Account(createD1AccountClient(backendConfig().url), appD1Host(), currentLocale() === 'sv' ? 'sv' : 'en', online,
+    params.mode === 'signIn' ? 'signIn' : undefined)
   const leave = (): void => {
+    // Whatever the screen was showing has been seen; it opens afresh next time.
+    flow.acknowledge()
     if (router.canGoBack()) router.back()
     else router.replace('/')
   }
@@ -46,8 +51,12 @@ function D1AccountRoute() {
       onBack={leave}
       onSupport={SUPPORT_URL === undefined ? undefined : () => void openURL(SUPPORT_URL!)}
       onDone={() => {
+        // Signed in on a phone that never finished onboarding: the account is the
+        // answer to everything onboarding asks, so the app opens rather than asking again.
+        if (flow.state.intent === 'login' && !flow.state.deleted) finishOnboardingBySignIn(flow.recordedBirthYear())
         // Every cached server number may belong to a different owner now.
         queryClient.clear()
+        flow.acknowledge()
         router.replace('/')
       }}
     />

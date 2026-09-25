@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { createD1AuthClient } from '@worldquest/api/d1-auth'
+import { createD1AuthClient, D1AuthError } from '@worldquest/api/d1-auth'
 import { createD1AccountHost } from './d1-account-host.js'
 
 const first = { userId: '11111111-1111-4111-8111-111111111111', token: 'a'.repeat(64), expiresAt: Date.now() + 30 * 86400000 }
@@ -44,6 +44,20 @@ describe('D1 account transition isolation', () => {
     expect(old.isCurrent()).toBe(false)
     expect(h.data.get(old.namespace + 'queue')).toBe('pending')
     expect(h.eraseOwner).not.toHaveBeenCalled()
+  })
+  it('reopens the paused owner when the server refuses the code, so a typo strands nobody', async () => {
+    // Left paused, the device sat in an empty guest scope after a wrong code, and the
+    // onboarding gate sent the learner back to the start with their progress hidden.
+    const h = harness(), host = h.create(); await host.resume()
+    const old = host.capture()
+    await expect(host.changeIdentity(async () => { throw new D1AuthError('INVALID_CODE') })).rejects.toThrow('INVALID_CODE')
+    expect(host.capture().namespace).toBe(old.namespace)
+    expect(h.activateOwner).toHaveBeenLastCalledWith(old.namespace)
+  })
+  it('stays paused after an answer that may have changed the server', async () => {
+    const h = harness(), host = h.create(); await host.resume()
+    await expect(host.changeIdentity(async () => { throw new TypeError('network') })).rejects.toThrow('network')
+    expect(() => host.capture()).toThrow('ACCOUNT_TRANSITION_PENDING')
   })
   it('does not send identity mutations when learning cannot be stopped', async () => {
     const h = harness(), host = h.create(); await host.resume()

@@ -2,6 +2,14 @@ import { D1AuthError } from '@worldquest/api/d1-auth'
 import type { D1AccountClient, D1AccountHost } from '../features/account/useD1Account.js'
 
 export type D1LocalStore = { get: (key: string) => string | null; set: (key: string, value: string) => void; remove: (key: string) => void }
+
+/**
+ * The Worker's answers to an identity operation that mean "refused, nothing changed":
+ * a wrong or used code, a challenge that no longer matches, a rate limit, a protected
+ * account. Anything else, a lost connection above all, may have changed the server, so
+ * it leaves the device paused for the activation step to reconcile.
+ */
+const REFUSALS = new Set(['INVALID_CODE', 'INVALID_CHALLENGE', 'RETRY_LATER', 'ACCOUNT_PROTECTED'])
 /** Separate from legacy storage: a D1 identity must never open another backend's queue. */
 export function createD1AccountHost(options: {
   baseURL: string; store: D1LocalStore; client: () => D1AccountClient
@@ -45,7 +53,17 @@ export function createD1AccountHost(options: {
       // Marker precedes server mutations. Local work stays in its original namespace.
       options.store.set(key, JSON.stringify({ version: 1, previousOwner: previous.userId, deleting }))
       await pause()
-      const result = await operation()
+      let result: Awaited<ReturnType<typeof operation>>
+      try { result = await operation() }
+      catch (error) {
+        // A refusal changed nothing on the server, so the paused owner is still the
+        // session's owner: reopen it. Left paused, a mistyped code put the device in an
+        // empty guest scope, where the onboarding gate sent the learner back to the start.
+        if (error instanceof D1AuthError && REFUSALS.has(error.code)) {
+          try { await open() } catch { throw new D1AuthError('ACCOUNT_ACTIVATION_REQUIRED') }
+        }
+        throw error
+      }
       if (!('deleted' in result)) {
         try { await open() } catch { throw new D1AuthError('ACCOUNT_ACTIVATION_REQUIRED') }
       }

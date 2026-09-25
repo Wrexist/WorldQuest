@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useSyncExternalStore } from 'react'
 import { D1AuthError, type createD1AuthClient, type D1Account, type D1Challenge, type D1Session } from '@worldquest/api/d1-auth'
 
 export type D1AccountClient = ReturnType<typeof createD1AuthClient>
@@ -20,18 +20,69 @@ export type D1AccountState = {
 const initial: D1AccountState = { stage: 'loading', busy: false, account: null, challenge: null,
   intent: 'link', email: '', code: '', birthYear: '', error: null, deleted: false }
 
-/** Account UI state only; credentials and pending challenges live in protected storage. */
-export function useD1Account(client: D1AccountClient, host: D1AccountHost, locale: 'en' | 'sv', online: boolean) {
-  const currentClient = useRef(client)
-  const mounted = useRef(false), locked = useRef(false)
-  const opened = useRef(false)
-  const [state, setState] = useState<D1AccountState>(initial)
-  const patch = useCallback((next: Partial<D1AccountState>) => {
-    if (mounted.current) setState(previous => ({ ...previous, ...next }))
-  }, [])
+/*
+ * The flow lives here, outside any one mounted screen.
+ *
+ * Every identity change remounts the whole tree: `appD1Host` moves the storage scope to a
+ * fresh guest while the change runs and back to the owner after it, and the provider tree
+ * is keyed by that scope. With the state inside the screen, the screen that started a
+ * link, sign-in or deletion was gone before it finished and its replacement began again
+ * at `loading`. Nobody saw "Your email is linked" or "Welcome back", a refused code's
+ * message went to a screen that was no longer there, and on a new phone the Continue
+ * that opens the app was never offered (`pnpm e2e:d1`, the second phone).
+ *
+ * One account flow is on screen at a time, so one store is enough. A screen mounted while
+ * an operation runs, or after one has finished and not yet been acknowledged, shows that
+ * flow; any other mount starts a fresh one.
+ */
+let flow: D1AccountState = initial
+let inFlight = false
+let flowClient: D1AccountClient | null = null
+/** The birth year the audience step sent, for a phone finishing onboarding by signing in. */
+let sentBirthYear: number | undefined
+const listeners = new Set<() => void>()
+const subscribe = (listener: () => void) => { listeners.add(listener); return () => { listeners.delete(listener) } }
+const snapshot = () => flow
+function patch(next: Partial<D1AccountState>): void {
+  flow = { ...flow, ...next }
+  for (const listener of listeners) listener()
+}
+
+/** A fresh flow, as on a cold start. For tests, which share this module. */
+export function resetD1AccountFlow(): void {
+  flow = initial; inFlight = false; flowClient = null; sentBirthYear = undefined
+}
+
+/** Straight to signing in: the birth year first if the band is unknown, else the email. */
+function signingIn(account: D1Account): void {
+  patch({ account, challenge: null, intent: 'login', email: '', code: '',
+    stage: account.audience === 'unknown' ? 'audience' : account.audience === 'protected' ? 'protected' : 'email' })
+}
+
+/**
+ * Account UI state only; credentials and pending challenges live in protected storage.
+ *
+ * `entry` is how the screen was opened. `'signIn'` is onboarding's "I already have an
+ * account": on a phone with no session it goes straight to signing in rather than
+ * offering to start an account, which is the opposite of what the person just said.
+ */
+export function useD1Account(client: D1AccountClient, host: D1AccountHost, locale: 'en' | 'sv', online: boolean,
+  entry?: 'signIn') {
+  // Decided once, on this screen's first render: carry on a flow in progress or finished
+  // (the remount an identity change causes), or start a fresh one. The reset is written
+  // here rather than in an effect so a fresh screen never paints the last visit's state.
+  const adopted = useRef<boolean | null>(null)
+  if (adopted.current === null) {
+    adopted.current = inFlight || flow.stage === 'done'
+    if (!adopted.current) resetD1AccountFlow()
+    flowClient ??= client
+  }
+  const state = useSyncExternalStore(subscribe, snapshot, snapshot)
+  const auth = () => flowClient ?? client
+
   const run = useCallback(async (work: () => Promise<void>) => {
-    if (locked.current) return
-    locked.current = true
+    if (inFlight) return
+    inFlight = true
     patch({ busy: true, error: null })
     try { await work() }
     catch (error) {
@@ -42,39 +93,51 @@ export function useD1Account(client: D1AccountClient, host: D1AccountHost, local
         ...(code === 'CREDENTIAL_CLEANUP_REQUIRED' ? { stage: 'cleanup' as const } : {}),
         ...(code === 'ACCOUNT_ACTIVATION_REQUIRED' ? { stage: 'activation' as const } : {}),
         ...(error instanceof D1AuthError && error.retryChallenge ? { stage: 'code' as const, challenge: error.retryChallenge } : {}) })
-    } finally { locked.current = false; patch({ busy: false }) }
-  }, [patch])
+    } finally { inFlight = false; patch({ busy: false }) }
+  }, [])
   const load = useCallback(() => run(async () => {
     patch({ stage: 'loading' })
     try {
-      const auth = currentClient.current
-      const session = await auth.restore()
+      const current = flowClient ?? client
+      const session = await current.restore()
+      if (!session && entry === 'signIn' && !host.deletionPending()) {
+        // A sign-in code is requested BY a device session, so one is still needed; it
+        // is made quietly and holds nothing. The sign-in then replaces it.
+        await current.startGuest()
+        signingIn(await current.account())
+        return
+      }
       if (!session) { patch({ stage: host.deletionPending() ? 'cleanup' : 'empty', account: null, challenge: null }); return }
       // Restore the pending operation before offering another address or purpose.
-      const challenge = await auth.pending()
+      const challenge = await current.pending()
       if (challenge) {
         patch({ stage: 'code', challenge, intent: challenge.purpose, email: challenge.email, code: '' })
         return
       }
-      const account = await auth.account()
+      const account = await current.account()
+      // The app usually made a guest at launch, so "I already have an account" finds one:
+      // a guest with no email is not an account anyone meant, and the screen goes on to
+      // signing in rather than stopping at it (`pnpm e2e:d1`, the second phone).
+      if (entry === 'signIn' && account.email === null) { signingIn(account); return }
       patch({ stage: 'account', account, challenge: null })
     } catch (error) { patch({ stage: 'error' }); throw error }
-  }), [patch, run, host])
+  }), [run, client, host, entry])
+  const opened = useRef(false)
   useEffect(() => {
-    mounted.current = true
-    if (online && !opened.current) { opened.current = true; void load() }
-    return () => { mounted.current = false }
+    if (!online || opened.current) return
+    opened.current = true
+    if (!adopted.current) void load()
   }, [load, online])
 
   const select = (intent: D1AccountIntent) => {
-    if (locked.current) return
-    const account = state.account
+    if (inFlight) return
+    const account = flow.account
     patch({ intent, error: null, code: '', email: intent === 'delete' ? account?.email ?? '' : '',
       stage: intent === 'delete' ? 'delete' : account?.audience === 'unknown' ? 'audience'
         : account?.audience === 'protected' ? 'protected' : 'email' })
   }
   const request = () => run(async () => {
-    const challenge = await currentClient.current.requestEmail(state.email, state.intent, locale)
+    const challenge = await auth().requestEmail(flow.email, flow.intent, locale)
     patch({ stage: 'code', challenge, code: '' })
   })
   const finishDeletion = async () => {
@@ -83,48 +146,54 @@ export function useD1Account(client: D1AccountClient, host: D1AccountHost, local
   }
   return { state, load, select,
     edit: (field: 'email' | 'code' | 'birthYear', value: string) => {
-      if (!locked.current) patch({ [field]: value, error: null })
+      if (!inFlight) patch({ [field]: value, error: null })
     },
-    start: () => run(async () => { await currentClient.current.startGuest(); patch({ account: await currentClient.current.account(), stage: 'account' }) }),
+    start: () => run(async () => { await auth().startGuest(); patch({ account: await auth().account(), stage: 'account' }) }),
+    recordedBirthYear: () => sentBirthYear,
+    /** The person has seen the result: the next time the screen opens, it starts afresh. */
+    acknowledge: () => { if (!inFlight) resetD1AccountFlow() },
     recordAudience: () => run(async () => {
-      await currentClient.current.recordAudience(Number(state.birthYear))
-      const account = await currentClient.current.account()
+      const birthYear = Number(flow.birthYear)
+      await auth().recordAudience(birthYear)
+      sentBirthYear = birthYear
+      const account = await auth().account()
       patch({ account, birthYear: '', stage: account.audience === 'eligible' ? 'email' : 'protected' })
     }),
     request,
     resend: () => run(async () => {
-      const challenge = await currentClient.current.resendEmail()
+      const challenge = await auth().resendEmail()
       patch({ challenge, code: '' })
     }),
     verify: () => run(async () => {
-      if (!/^\d{8}$/.test(state.code)) { patch({ error: 'INVALID_CODE' }); return }
-      const result = await host.changeIdentity(() => currentClient.current.verifyEmail(state.code), state.intent === 'delete')
+      const code = flow.code
+      if (!/^\d{8}$/.test(code)) { patch({ error: 'INVALID_CODE' }); return }
+      const result = await host.changeIdentity(() => auth().verifyEmail(code), flow.intent === 'delete')
       if ('deleted' in result) await finishDeletion()
       patch({ stage: 'done', code: '', challenge: null, deleted: 'deleted' in result })
     }),
     confirmDelete: () => run(async () => {
-      const email = state.account?.email ?? (state.challenge?.purpose === 'delete' ? state.challenge.email : null)
+      const email = flow.account?.email ?? (flow.challenge?.purpose === 'delete' ? flow.challenge.email : null)
       if (email) {
-        const challenge = await currentClient.current.requestEmail(email, 'delete', locale)
+        const challenge = await auth().requestEmail(email, 'delete', locale)
         patch({ stage: 'code', challenge, code: '' })
       } else {
-        await host.changeIdentity(() => currentClient.current.deleteGuest(), true)
+        await host.changeIdentity(() => auth().deleteGuest(), true)
         await finishDeletion()
         patch({ stage: 'done', deleted: true })
       }
     }),
     retryCleanup: () => run(async () => {
-      await currentClient.current.signOut()
+      await auth().signOut()
       await finishDeletion()
       patch({ stage: 'done', deleted: true })
     }),
     retryActivation: () => run(async () => { await host.resumeIdentity(); patch({ stage: 'done', challenge: null, code: '' }) }),
     recover: () => run(async () => {
       // This explicit choice detaches old work; the host must never erase or adopt it.
-      currentClient.current = await host.recoverSession()
-      const account = await currentClient.current.account()
+      flowClient = await host.recoverSession()
+      const account = await flowClient.account()
       patch({ ...initial, stage: account.audience === 'eligible' ? 'email' : 'audience', intent: 'login', account })
     }),
-    changeEmail: () => { if (!locked.current) patch({ stage: state.intent === 'delete' ? 'delete' : 'email', code: '', error: null }) },
+    changeEmail: () => { if (!inFlight) patch({ stage: flow.intent === 'delete' ? 'delete' : 'email', code: '', error: null }) },
   }
 }

@@ -88,7 +88,10 @@ function useOnboardingGate(ready: boolean): void {
 
   useEffect(() => {
     if (!ready) return
-    if (pathname.startsWith('/onboarding')) return
+    // `/account` too: onboarding's own "I already have an account" opens it. Bouncing it
+    // back here made signing in on a new phone impossible, because onboarding cannot be
+    // finished by a person who came to sign in (`pnpm e2e:d1`, the second phone).
+    if (pathname.startsWith('/onboarding') || pathname.startsWith('/account')) return
     if (readOnboarding().completed) return
     router.replace('/onboarding')
   }, [ready, pathname])

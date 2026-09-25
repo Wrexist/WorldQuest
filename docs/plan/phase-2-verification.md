@@ -573,3 +573,43 @@ The web harness also showed the previous tab's content bleeding through a newly
 selected tab (transparent tab scenes). It predates this batch and is visible in the
 regular e2e's Explore capture too; it is listed for the device pass rather than fixed
 blind.
+
+### Keeping it: an email, and a second phone (U04, S02)
+
+`pnpm e2e:d1` now continues past the offline lesson. On the first phone the learner
+links an email from Profile; on a second, fresh browser context ("a phone that has never
+run the app") they tap **I already have an account**, sign in with the same email, and
+land in the app with the progress earned on the first. The Worker runs with its real
+Resend adapter switched on (local stand-in secret and sender), and Miniflare's outbound
+service plays Resend: it keeps each message, so the journey types the code from the
+email the learner would have received. Nothing leaves the machine.
+
+It passes 24/24 at the batch's revision. Getting there found four defects, all fixed:
+
+1. **"I already have an account" was a dead end on a new phone.** The onboarding gate
+   redirects every unfinished install to `/onboarding`, including `/account`, so the
+   button bounced straight back. The gate now lets the account route through.
+2. **Every identity change reset the account screen.** Link, sign-in and deletion move
+   the storage scope twice, and the provider tree is keyed by that scope, so the screen
+   that started the change was gone before it finished. Nobody ever saw "Your email is
+   linked" or "Welcome back", and on a new phone the Continue that opens the app was
+   never offered. The flow's state now lives outside the screen; the replacement shows
+   the result. A refused code (wrong, used, rate-limited) used to leave the device paused
+   in an empty guest scope, where the gate sent the learner back to onboarding; the host
+   now reopens the owner on a refusal and stays paused only for answers that may have
+   changed the server.
+3. **After signing in, the app asked onboarding again.** Onboarding's record is scoped
+   to the account, and the signed-in account has none on a new phone. A sign-in now
+   finishes onboarding in that scope, with `isChild: false` as a result rather than an
+   assumption: a sign-in code is only sent to an account the server judged eligible.
+   `?mode=signIn` also opens on signing in instead of on the guest the app made at
+   launch.
+4. **Onboarding's birth year never reached the server (S02).** Every guest's band stayed
+   `unknown`, so an adult linking an email was asked the year again, and a child's
+   account had no server-side protection until the child reached the account screen.
+   The band is now sent when onboarding finishes (or when a later guest is made); the
+   Worker keeps the band, never the year.
+
+What this does not show: native credential storage (SecureStore) through the same
+steps, which is the B02 device pass in the [runbook](ios-launch-runbook.md), and
+preferences, which are per-device by design and do not follow the account.

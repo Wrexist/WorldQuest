@@ -19,9 +19,10 @@ import {
   type WorldQuestClient,
 } from '@worldquest/api'
 import { createD1AccountRepository } from '@worldquest/api/d1-repository'
-import { beginStorageTransition, captureStorage, finishStorageTransition, setStorageAccount, startGuestStorage } from './storage.js'
+import { beginStorageTransition, captureStorage, finishStorageTransition, readJson, setStorageAccount, startGuestStorage } from './storage.js'
 import { createSessionStorage } from './credentials.js'
 import { backendConfig, isD1 } from './backendConfig.js'
+import { sendAge } from './d1-age.js'
 export { isD1 } from './backendConfig.js'
 
 let client: WorldQuestClient | null = null
@@ -114,9 +115,23 @@ async function d1CurrentUser(accept: (userId: string, created: boolean) => void)
   const { createD1AccountClient } = await import('./d1-auth.js')
   const client = createD1AccountClient(backendConfig().url)
   const existing = await client.restore()
+  // Read in the scope onboarding wrote to, before the new identity is accepted.
+  const birthYear = existing === null ? onboardingBirthYear() : undefined
   const next = existing ? await client.ensureSession() : await client.startGuest()
   accept(next.userId, existing === null)
+  if (birthYear !== undefined) await sendAge(client, birthYear)
   return { userId: next.userId }
+}
+
+/**
+ * The age gate's answer, for a guest created after onboarding finished (S02, `d1-age.ts`).
+ *
+ * Read by key rather than through `features/onboarding`: a `lib` module importing a
+ * feature is a cycle, the same choice `locale.ts` makes for preferences.
+ */
+function onboardingBirthYear(): number | undefined {
+  const year = readJson<{ birthYear?: unknown }>('onboarding.v1')?.birthYear
+  return typeof year === 'number' && Number.isInteger(year) ? year : undefined
 }
 
 /** Open an immutable, owner-bound transport for the account visible to the caller. */

@@ -9,8 +9,10 @@
  * their unit tests, but neither runs the SHIPPED app code against the SHIPPED Worker:
  * issued lessons, the durable D1 queue, receipts driving the celebrations, the server's
  * quest on the Quests tab, and an offline lesson from a pre-fetched ticket that syncs
- * when the connection returns. This is that journey (E10/E11 in the execution plan),
- * in the web export of the real bundle, with every claim checked against the database.
+ * when the connection returns, then keeping it: an email linked on this phone and
+ * signed into on a second one that has never run the app (U04). This is that journey
+ * (E10/E11 in the execution plan), in the web export of the real bundle, with every
+ * claim checked against the database.
  *
  * ## How it is wired
  *
@@ -22,6 +24,14 @@
  *
  * Web keeps credentials in memory for the page's lifetime (credentials.ts), so the
  * journey navigates inside the app and never reloads after onboarding.
+ *
+ * ## Email, without sending any
+ *
+ * The Worker runs with its real Resend adapter switched on (a local secret and sender),
+ * and Miniflare's outbound service stands in for Resend: it keeps each message and
+ * answers as Resend would. The journey reads the code out of the email the learner
+ * would have received, so linking and signing in are driven exactly as a person would
+ * drive them, and nothing leaves the machine.
  *
  * Flags: `--no-export` reuses the last D1 export (it is slow and the bundle has to be
  * rebuilt only when app code changed).
@@ -49,6 +59,16 @@ const TYPES = {
   '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json',
   '.ttf': 'font/ttf', '.otf': 'font/otf', '.woff2': 'font/woff2', '.png': 'image/png',
   '.svg': 'image/svg+xml', '.webp': 'image/webp', '.wav': 'audio/wav',
+}
+
+/** Every email the Worker sent, captured where Resend would have received it. */
+const mails = []
+
+/** The eight digits in the newest email to `address` sent after `since`, or null. */
+function codeFor(address, since) {
+  const mail = mails.filter((m) => m.at >= since && m.body.to?.[0] === address).at(-1)
+  const found = mail?.body.text?.match(/\b(\d{4}) (\d{4})\b/)
+  return found ? found[1] + found[2] : null
 }
 
 const steps = []
@@ -79,7 +99,18 @@ async function startWorker() {
   const bundled = await build({ entryPoints: [path.join(REPO, 'packages/backend/src/index.ts')], bundle: true, write: false,
     format: 'esm', platform: 'browser', target: 'es2022', external: ['node:*'] })
   const mf = new Miniflare(convertV4MiniflareOptions({ modules: true, script: bundled.outputFiles[0].text,
-    compatibilityDate: '2026-09-13', compatibilityFlags: ['nodejs_compat'], d1Databases: ['DB'], bindings: { API_ENABLED: 'true' } }))
+    compatibilityDate: '2026-09-13', compatibilityFlags: ['nodejs_compat'], d1Databases: ['DB'],
+    // Local stand-ins, not credentials: the Worker turns real mail on only when a Resend
+    // key and a sender are both set, and signs codes with a secret of 32+ characters.
+    bindings: { API_ENABLED: 'true', AUTH_SECRET: 'journey-local-signing-secret-not-a-real-one',
+      RESEND_API_KEY: 're_journey_local', MAIL_FROM: 'WorldQuest <journey@example.invalid>' },
+    // Resend, played locally: keep the message, answer the way Resend does. Anything
+    // else the Worker tries to reach is refused, so an unexpected call fails loudly.
+    outboundService: async (request) => {
+      if (new URL(request.url).hostname !== 'api.resend.com') return new Response('blocked in the journey', { status: 502 })
+      mails.push({ at: Date.now(), body: await request.json() })
+      return new Response(JSON.stringify({ id: `journey-${mails.length}` }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+    } }))
   const db = await mf.getD1Database('DB')
   const dir = path.join(REPO, 'packages/backend/migrations')
   for (const file of fs.readdirSync(dir).sort()) {
@@ -314,6 +345,105 @@ async function waitFor(check, ms) {
     const wallet = await one('SELECT xp, coins FROM accounts WHERE id = ?', guest.id)
     step('every XP and coin on the account is in the ledger', ledger.xp === wallet.xp && ledger.coins === wallet.coins)
     await shot('home-after')
+
+    // ── keeping it: link an email here (U04) ──────────────────────────────────
+    const EMAIL = 'journey.learner@example.invalid'
+    await page.getByRole('tab', { name: /Profile/ }).first().click()
+    await page.waitForTimeout(1500)
+    await page.getByRole('button', { name: 'Create an account' }).first().click()
+    await page.waitForTimeout(1500)
+    await page.getByRole('button', { name: 'Link your email' }).first().click()
+    await page.waitForTimeout(800)
+    // Whatever the screens ask, answered as this learner, and recorded: onboarding took
+    // the birth year already, so the account flow asking it again is a finding (S02).
+    const seenLinking = []
+    let since = Date.now()
+    let linkCode = null
+    for (let i = 0; i < 6; i++) {
+      const heading = ((await page.getByRole('heading').allTextContents()).map((h) => h.trim()).filter(Boolean).at(-1)) ?? ''
+      seenLinking.push(heading)
+      if (heading === 'Your year of birth') {
+        await page.getByLabel('Birth year').fill(String(new Date().getFullYear() - 30))
+        await page.getByRole('button', { name: 'Continue' }).first().click()
+      } else if ((await page.getByLabel('Eight-digit code').count()) > 0) {
+        linkCode = await waitFor(async () => codeFor(EMAIL, since), 10000)
+        break
+      } else if ((await page.getByLabel('Email').count()) > 0) {
+        since = Date.now()
+        await page.getByLabel('Email').fill(EMAIL)
+        await page.getByRole('button', { name: 'Send me a code' }).click()
+      } else break
+      await page.waitForTimeout(1500)
+    }
+    step('linking an email does not ask the birth year onboarding already took',
+      !seenLinking.includes('Your year of birth'), seenLinking.join(' → '))
+    step('a verification email goes out through the Resend adapter, code inside', linkCode !== null,
+      mails.length > 0 ? `"${mails.at(-1).body.subject}"` : 'no email was sent')
+    await page.getByLabel('Eight-digit code').fill(linkCode ?? '')
+    await page.getByRole('button', { name: 'Confirm' }).click()
+    const linked = await waitFor(async () => (await page.getByText('Your email is linked').count()) > 0, 10000)
+    const identity = await one(`SELECT i.account_id AS account FROM identities i
+      JOIN auth_user u ON u.id = i.subject_id WHERE u.email = ?`, EMAIL)
+    step('the guest links that email with the code from it', linked && identity?.account === guest.id)
+    await shot('linked')
+    await page.getByRole('button', { name: 'Continue' }).first().click()
+    await page.waitForTimeout(1500)
+
+    // ── a second phone: sign in, and it is all there ──────────────────────────
+    //
+    // A fresh browser context is a phone that has never run the app. The learner does
+    // what a returning learner does: "I already have an account", then whatever the
+    // screens ask, answered as that person. The screens seen are recorded, so a detour
+    // (a guest account to create first, a birth year asked again) is visible in the
+    // output rather than silently absorbed.
+    const second = await browser.newContext({ ...browserContext, viewport: { width: 390, height: 844 } })
+    const phone = await second.newPage()
+    phone.on('pageerror', (e) => errors.push('second phone: ' + String(e)))
+    phone.on('console', (m) => { if (m.type() === 'error') errors.push('second phone console: ' + m.text()) })
+    await phone.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' })
+    await phone.waitForTimeout(1500)
+    await phone.getByRole('button', { name: 'I already have an account' }).first().click()
+    await phone.waitForTimeout(1500)
+    step('"I already have an account" opens sign-in on a new phone', new URL(phone.url()).pathname === '/account',
+      new URL(phone.url()).pathname)
+    const seen = []
+    let welcomed = false
+    for (let i = 0; i < 10 && !welcomed; i++) {
+      const heading = ((await phone.getByRole('heading').allTextContents()).map((h) => h.trim()).filter(Boolean).at(-1)) ?? ''
+      seen.push(heading)
+      if (heading === 'Welcome back') { welcomed = true; break }
+      if (heading === 'Start your account') await phone.getByRole('button', { name: 'Start as guest' }).click()
+      else if (heading === 'Your year of birth') {
+        await phone.getByLabel('Birth year').fill(String(new Date().getFullYear() - 30))
+        await phone.getByRole('button', { name: 'Continue' }).first().click()
+      } else if (heading === 'Your guest account') await phone.getByRole('button', { name: 'Sign in' }).first().click()
+      else if (heading === 'Sign in') {
+        since = Date.now()
+        await phone.getByLabel('Email').fill(EMAIL)
+        await phone.getByRole('button', { name: 'Send me a code' }).click()
+      } else if ((await phone.getByLabel('Eight-digit code').count()) > 0) {
+        const code = await waitFor(async () => codeFor(EMAIL, since), 10000)
+        await phone.getByLabel('Eight-digit code').fill(code ?? '')
+        await phone.getByRole('button', { name: 'Confirm' }).click()
+      } else break
+      await phone.waitForTimeout(1500)
+    }
+    step('the returning learner signs in with the emailed code', welcomed, seen.join(' → '))
+    await phone.screenshot({ path: path.join(SHOTS, 'second-phone-welcome.png') })
+    const sessions = await one('SELECT count(*) AS n FROM sessions WHERE account_id = ?', guest.id)
+    step('the second phone holds a session for the same account', sessions.n >= 2, `${sessions.n} session(s)`)
+    if (welcomed) await phone.getByRole('button', { name: 'Continue' }).first().click()
+    await phone.waitForTimeout(2500)
+    const landed = new URL(phone.url()).pathname
+    step('and lands in the app, not back in onboarding', landed !== '/onboarding', landed)
+    await phone.getByRole('tab', { name: /Profile/ }).first().click().catch(() => {})
+    await phone.waitForTimeout(2500)
+    const wallet2 = await one('SELECT xp FROM accounts WHERE id = ?', guest.id)
+    const profileText = await phone.evaluate(() => document.body.innerText)
+    step('the second phone shows the progress earned on the first', profileText.includes(String(wallet2.xp)),
+      `server ${wallet2.xp} XP`)
+    await phone.screenshot({ path: path.join(SHOTS, 'second-phone-profile.png') })
+    await second.close()
 
     step('no uncaught errors in the page', errors.length === 0, errors.slice(0, 3).join(' | '))
   } catch (error) {
