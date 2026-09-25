@@ -195,11 +195,11 @@ export function LessonSummary({
             announcing confetti is noise. */}
         {outcome === 'perfect' && (
           <View style={styles.headlineArt}>
+            {/* Confetti ring only. `celebration/rays` used to sit under it, and on the
+                navy background that asset is an opaque white blob that swallowed the
+                whole headline (owner review, 25 Sep 2026). */}
             <View style={styles.celebration} pointerEvents="none">
-              <Art name="celebration/rays" size={CELEBRATION_SIZE} />
-              <View style={styles.celebrationOverlay}>
-                <Art name="celebration/burst" size={CELEBRATION_SIZE} />
-              </View>
+              <Art name="celebration/burst" size={CELEBRATION_SIZE} />
             </View>
             <Art name="atlas/celebrate" size={140} />
           </View>
@@ -424,7 +424,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  celebrationOverlay: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
   xpCard: { alignItems: 'center', paddingVertical: space[5] },
   xpValue: { ...text('hero'), color: colors.reward.xp },
   xpUnit: { ...text('overline'), color: colors.text.secondary },
