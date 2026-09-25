@@ -80,7 +80,7 @@ function randomEvent(rng: () => number, state: LessonState, now: number): Lesson
     ...state.questions.flatMap((q) => q.options.map((o) => o.id)),
     'no-such-option',
   ]
-  const pick = Math.floor(rng() * 8)
+  const pick = Math.floor(rng() * 10)
   switch (pick) {
     case 0:
       return { type: 'LOAD', lessonId: 'fuzz', now }
@@ -88,6 +88,10 @@ function randomEvent(rng: () => number, state: LessonState, now: number): Lesson
       return { type: 'LOADED', questions: makeQuestions(1 + Math.floor(rng() * 12), rng() < 0.5), now }
     case 2:
       return { type: 'ANSWER', optionId: options[Math.floor(rng() * options.length)]!, now }
+    case 8:
+      return { type: 'SELECT', optionId: options[Math.floor(rng() * options.length)]!, now }
+    case 9:
+      return { type: 'CHECK', now }
     case 3:
       return { type: 'CONTINUE', now }
     case 4:
@@ -134,6 +138,17 @@ function assertInvariants(state: LessonState, trail: string): void {
   // state with no current question is a user with no way out and no submission.
   if (state.phase === 'presenting' || state.phase === 'answered') {
     expect(currentQuestion(state), `${trail}: ${state.phase} with no question`).not.toBeNull()
+  }
+
+  // A selection exists only while a question is on screen, and only ever names one of
+  // THAT question's options — otherwise a CHECK could grade a tap made on a question the
+  // user has already left.
+  if (state.selectedOptionId !== null) {
+    expect(['presenting', 'paused'], `${trail}: selection in ${state.phase}`).toContain(state.phase)
+    expect(
+      currentQuestion(state)?.options.some((o) => o.id === state.selectedOptionId),
+      `${trail}: selection ${state.selectedOptionId} is not an option of the current question`,
+    ).toBe(true)
   }
 
   // Answers never exceed the queue, and never contain an item the queue does not.
