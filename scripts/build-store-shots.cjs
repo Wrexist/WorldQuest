@@ -43,16 +43,21 @@ const { browserContext } = require('./lib/browser-harness.cjs')
 const { launchOptions } = require('./chromium.cjs')
 const { token } = require('./tokens.cjs')
 const { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } = require('node:fs')
-const { join, extname } = require('node:path')
+const { join, extname, dirname } = require('node:path')
+const { createRequire } = require('node:module')
 const http = require('node:http')
 const fs = require('node:fs')
 
 const ROOT = join(__dirname, '..')
 const WEB = join(ROOT, 'node_modules', '.cache', 'wq-web')
 const OUT = join(ROOT, 'docs', 'design', 'assets', 'store', 'screenshots')
+// Resolved through the package, as the app resolves it, rather than through a pnpm store
+// path: that path carries the version and the install's layout, and it broke on an
+// install where the package is hoisted.
 const FONT = join(
-  ROOT,
-  'node_modules/.pnpm/@expo-google-fonts+nunito@0.4.2/node_modules/@expo-google-fonts/nunito/900Black/Nunito_900Black.ttf',
+  dirname(createRequire(join(ROOT, 'apps', 'mobile', 'package.json')).resolve('@expo-google-fonts/nunito/package.json')),
+  '900Black',
+  'Nunito_900Black.ttf',
 )
 const PORT = 4193
 
@@ -92,7 +97,10 @@ const SHOTS = [
   { name: '1-lesson', route: '/lesson', headline: ['onboarding', 'onboarding:slide.1.title'] },
   { name: '2-collection', route: '/collection/flags', headline: ['onboarding', 'onboarding:slide.3.title'] },
   { name: '3-home', route: '/', headline: ['onboarding', 'onboarding:slide.2.title'] },
-  { name: '4-country', route: '/country/SE', headline: ['country', 'country:source.title'] },
+  // Explore's promise, not a line from the country page itself (that would print twice).
+  // It was `country:source.title`, removed with the page's citation list on 2026-08-10,
+  // which left this script failing on a missing key until it was next run.
+  { name: '4-country', route: '/country/SE', headline: ['explore', 'explore:subtitle'] },
   // Not `quests:subtitle` — that line is printed inside the screenshot, under "Today's
   // Quest", so the composite said the same sentence twice. Same trap as shot 6.
   { name: '5-quests', route: '/quests', headline: ['welcome', 'welcome:title'] },
@@ -163,7 +171,7 @@ async function completeOnboarding(page) {
  * Unseen questions in the second pass fall back to a guess, so a non-deterministic
  * composer degrades to a lower score rather than to a crash.
  */
-async function playLesson(page, route, knownAnswers) {
+async function playLesson(page, route, knownAnswers, thinkMs = 0) {
   for (let question = 0; question < 40; question++) {
     const options = await page.getByTestId('answer-option').all()
     if (options.length === 0) break
@@ -173,8 +181,11 @@ async function playLesson(page, route, knownAnswers) {
     const known = knownAnswers.get(prompt)
     const index = known === undefined ? 0 : Math.max(0, labels.findIndex((l) => (l ?? '').startsWith(known)))
 
-    // Select, then Check: a tap alone only selects.
+    // Select, then Check: a tap alone only selects. The pause is thinking time, and the
+    // summary's Time tile reports it: answered at machine speed, the celebration shot
+    // read "0:12" for twenty questions, which no listing should claim.
     await options[index].click()
+    if (thinkMs > 0) await page.waitForTimeout(thinkMs)
     await page.getByTestId('lesson-check').click()
     await page.waitForTimeout(420)
 
@@ -380,7 +391,8 @@ async function compose(page, screenshot, size, headline) {
         await playLesson(page, shot.route, knownAnswers)
         await page.goto(`http://localhost:${PORT}${shot.route}`, { waitUntil: 'networkidle' })
         await page.waitForTimeout(1400)
-        await playLesson(page, shot.route, knownAnswers)
+        // The pass that is photographed, at a person's pace: a few seconds a question.
+        await playLesson(page, shot.route, knownAnswers, 3_000)
       }
       await page.waitForTimeout(600)
 
