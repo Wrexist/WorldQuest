@@ -89,6 +89,14 @@ export type GradeResult = {
    * is the same derivation, run where the data is authoritative.
    */
   readonly heartsLost: number
+  /**
+   * Whether the replay's hearts reached zero at any point.
+   *
+   * The lesson machine ends a lesson there unless the learner pays to continue, so a
+   * server holding a SHORT submission can tell "ran out of hearts" (a finished lesson,
+   * in the app's terms) from "ended it early", without taking the client's word for it.
+   */
+  readonly heartsDepleted: boolean
 }
 
 const DEFAULT_MEDIAN_MS = 8_000
@@ -196,6 +204,7 @@ export function gradeLesson(input: GradeInput): GradeResult {
   let hearts: number = BALANCE.hearts.max
   let correctRun = 0
   let heartsLost = 0
+  let heartsDepleted = false
 
   for (const answer of answers) {
     // Sub-400ms answers are not credible. They earn nothing AND never reach the
@@ -304,6 +313,7 @@ export function gradeLesson(input: GradeInput): GradeResult {
         // counting it would inflate the very metric §7 reads.
         if (hearts > 0) heartsLost++
         hearts = Math.max(0, hearts - 1)
+        if (hearts === 0) heartsDepleted = true
       }
     }
   }
@@ -340,6 +350,7 @@ export function gradeLesson(input: GradeInput): GradeResult {
     rejected,
     overdueCleared,
     heartsLost,
+    heartsDepleted,
   }
 }
 

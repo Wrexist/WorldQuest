@@ -520,3 +520,62 @@ describe('the app account repository against the real Worker', () => {
     await expect(repo.fetchProgress()).rejects.toThrow('Account changed')
   })
 })
+
+describe('lessons that end before the last question (real workerd and SQLite)', () => {
+  const answersFor = (count: number, choice: 'a' | 'b') =>
+    Array.from({ length: count }, (_, slot) => ({ slot, chosenOptionId: choice, elapsedMs: 9000 }))
+
+  it('grades an early exit without counting it as the day\'s lesson', async () => {
+    const a = await guest()
+    await seed(a.userId, ['short', 'full'], 10)
+    const short = await call('/v1/lessons/submit', a.token, { lessonId: 'short', answers: answersFor(3, 'a') })
+    expect(short.status).toBe(200)
+    const r1 = await short.json() as Receipt
+    expect(r1).toMatchObject({ finished: false, reviews: 3, correct: 3, streak: { current: 0, extended: false } })
+    expect(r1.quest.completedSlots).not.toContain('perform')
+    const full = await (await call('/v1/lessons/submit', a.token, { lessonId: 'full', answers: answersFor(10, 'a') })).json() as Receipt
+    expect(full).toMatchObject({ finished: true, streak: { current: 1, extended: true } })
+    expect(full.quest.completedSlots).toContain('perform')
+    // The early exit did not use up the day's first-lesson bonus.
+    expect((await db.prepare('SELECT lessons_today FROM accounts WHERE id = ?').bind(a.userId).first())?.lessons_today).toBe(1)
+    const snapshot = await state(a.userId)
+    expect(snapshot.reviews).toHaveLength(13)
+    expect(snapshot.account?.xp).toBe(snapshot.ledger.reduce((sum, row) => sum + Number(row.xp), 0))
+  })
+
+  it('treats running out of hearts as a finished lesson, decided by the server\'s own replay', async () => {
+    const a = await guest()
+    // New facts never cost a heart, so the facts are learnt first; the second lesson
+    // then misses five of them, which empties the hearts in the grader's replay.
+    await seed(a.userId, ['learn', 'hearts', 'quit'], 10)
+    expect((await call('/v1/lessons/submit', a.token, { lessonId: 'learn', answers: answersFor(10, 'a') })).status).toBe(200)
+    const r = await (await call('/v1/lessons/submit', a.token, { lessonId: 'hearts', answers: answersFor(5, 'b') })).json() as Receipt
+    expect(r).toMatchObject({ finished: true, correct: 0, reviews: 5 })
+    // Four misses leave a heart: that lesson was ended, not finished.
+    const q = await (await call('/v1/lessons/submit', a.token, { lessonId: 'quit', answers: answersFor(4, 'b') })).json() as Receipt
+    expect(q).toMatchObject({ finished: false, reviews: 4 })
+    expect((await db.prepare('SELECT lessons_today FROM accounts WHERE id = ?').bind(a.userId).first())?.lessons_today).toBe(2)
+  })
+
+  it('refuses more answers than were issued and answers that skip a slot', async () => {
+    const a = await guest()
+    await seed(a.userId, ['bounded'], 5)
+    expect((await call('/v1/lessons/submit', a.token, { lessonId: 'bounded', answers: answersFor(6, 'a') })).status).toBe(400)
+    const gap = [{ slot: 0, chosenOptionId: 'a', elapsedMs: 9000 }, { slot: 2, chosenOptionId: 'a', elapsedMs: 9000 }]
+    expect((await call('/v1/lessons/submit', a.token, { lessonId: 'bounded', answers: gap })).status).toBe(400)
+    expect((await state(a.userId)).receipts).toHaveLength(0)
+  })
+
+  it('issues a lesson focused on one country, and says so when a focus is too narrow', async () => {
+    const a = await guest()
+    const focused = await call('/v1/lessons/prepare', a.token, { lessonId: 'sweden', locale: 'en', count: 5, focus: { entities: ['SE'] } })
+    expect(focused.status).toBe(200)
+    const lesson = await focused.json() as { questions: Question[]; request: { focus: unknown } }
+    expect(lesson.questions.length).toBeGreaterThanOrEqual(5)
+    expect(lesson.questions.every(q => q.item.entityId === 'SE')).toBe(true)
+    expect(lesson.request.focus).toEqual({ entities: ['SE'] })
+    expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'nowhere', locale: 'en', count: 5, focus: { entities: [] } })).status).toBe(409)
+    expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'bad', locale: 'en', count: 5, focus: { entities: ['sweden'] } })).status).toBe(400)
+    expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'bad2', locale: 'en', count: 5, focus: { planet: 'Mars' } })).status).toBe(400)
+  })
+})

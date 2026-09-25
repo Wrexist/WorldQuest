@@ -648,6 +648,29 @@ describe('gradeLesson', () => {
         now: T0,
       })
       expect(r.heartsLost).toBe(BALANCE.hearts.max)
+      expect(r.heartsDepleted).toBe(true)
+    })
+
+    it('reports hearts depleted only when they actually reached zero', () => {
+      // The server reads this to tell "ran out of hearts" (a finished lesson) from
+      // "ended it early" on a short submission, so it must follow the same replay:
+      // one short of the maximum, or a run that earns a heart back, is not depleted.
+      const facts = ['fact.a', 'fact.b', 'fact.c', 'fact.d', 'fact.e', 'fact.f']
+      const memory = new Map(facts.map((f) => [f, seen(f)] as const))
+      const short = gradeLesson({
+        lessonId: 'l-hearts-short',
+        answers: answersFrom(facts.slice(0, BALANCE.hearts.max - 1), Array(BALANCE.hearts.max - 1).fill(false)),
+        memory,
+        now: T0,
+      })
+      expect(short.heartsDepleted).toBe(false)
+      const fresh = gradeLesson({
+        lessonId: 'l-hearts-new-only',
+        answers: answersFrom(facts, Array(facts.length).fill(false)),
+        memory: new Map(),
+        now: T0,
+      })
+      expect(fresh.heartsDepleted).toBe(false)
     })
 
     it('ignores answers too fast to be credible', () => {

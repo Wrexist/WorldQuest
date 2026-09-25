@@ -75,11 +75,13 @@ export type QuestOutcome = {
 /** Apply one graded lesson to the day's quest and price what it newly completed. */
 export function applyLesson(day: QuestDay, lesson: {
   correctFacts: readonly string[]; accuracy: number; durationMs: number
+  /** Only a finished lesson can meet slot five's goal; correct facts count either way. */
+  finished: boolean
 }): QuestOutcome {
   const wanted = new Set(day.base.tasks.flatMap(t => t.factIds))
   const credited = [...new Set([...day.credited, ...lesson.correctFacts.filter(id => wanted.has(id))])]
   const goal = day.base.tasks.find(t => t.slot === 'perform')?.goal
-  const next: QuestDay = { base: day.base, credited, performDone: day.performDone || performMet(goal, lesson) }
+  const next: QuestDay = { base: day.base, credited, performDone: day.performDone || (lesson.finished && performMet(goal, lesson)) }
   const before = project(day), after = project(next)
   const completedSlots = after.tasks.filter((t, i) => t.complete && !before.tasks[i]!.complete).map(t => t.slot)
   const finished = after.complete && !before.complete

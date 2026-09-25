@@ -6,7 +6,7 @@ export const submissionSchema = z.object({
     slot: z.number().int().min(0).max(19),
     chosenOptionId: z.string().max(160).nullable(),
     elapsedMs: z.number().finite().min(0).max(60_000),
-  }).strict()).min(5).max(20),
+  }).strict()).min(1).max(20),
 }).strict().superRefine(({ answers }, ctx) => {
   if (new Set(answers.map(a => a.slot)).size !== answers.length) {
     ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Duplicate slots' })
@@ -28,7 +28,10 @@ export interface Receipt {
   lessonId: string; revision: number; xpAwarded: number; coinsAwarded: number
   xpTotal: number; coinBalance: number; correct: number; reviews: number
   /** The learner's local date this lesson counted for. */
-  day: string; streak: StreakReceipt; quest: QuestReceipt
+  day: string
+  /** Every slot answered, or hearts ran out. Only a finished lesson is the day's activity. */
+  finished: boolean
+  streak: StreakReceipt; quest: QuestReceipt
 }
 export interface QuestReceipt {
   /** Slots this lesson completed. Their XP (and the all-five bonus) is inside the totals. */

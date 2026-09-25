@@ -70,7 +70,9 @@ export async function submitLesson(db: D1Database, owner: string, tokenHash: str
     const ticketRow = read[2]?.results[0] as { slots: string } | undefined
     if (!ticketRow) throw new ApiError('INVALID_TICKET', 400)
     const slots = ticketSchema.parse(JSON.parse(ticketRow.slots))
-    if (slots.length !== ordered.length) throw new ApiError('INVALID_TICKET', 400)
+    // The answers are a prefix of the ticket: a lesson that ended early still sends what
+    // was answered, and those answers still teach the scheduler. Never more than issued.
+    if (ordered.length > slots.length) throw new ApiError('INVALID_TICKET', 400)
     const allMemory = new Map<string, MemoryState>()
     for (const row of read[3]?.results ?? []) {
       const state = JSON.parse(String(row.state)) as MemoryState
@@ -90,16 +92,26 @@ export async function submitLesson(db: D1Database, owner: string, tokenHash: str
     // Arrival order is still the prototype limit (L06); the day is the learner's own.
     const { day, opensDay } = dayRule(account, now)
     const sameDay = !opensDay
-    const graded = gradeLesson({ lessonId: input.lessonId, answers, memory, now,
-      xpEarnedToday: sameDay ? account.daily_xp : 0,
-      isFirstLessonOfDay: !sameDay || account.lessons_today === 0,
-      masteredBefore: new Set([...memory].filter(([, state]) =>
-        ['mastered', 'burnished'].includes(masteryOf(state, now))).map(([id]) => id)),
-    })
+    const masteredBefore = new Set([...memory].filter(([, state]) =>
+      ['mastered', 'burnished'].includes(masteryOf(state, now))).map(([id]) => id))
+    // Whether this was a FINISHED lesson — every slot answered, or hearts ran out, which
+    // the grader's own heart replay decides. Only a finished lesson is the day's
+    // activity: it extends the streak, takes the first-lesson bonus and meets the
+    // quest's perform goal. A lesson ended early still grades what was answered.
+    const provisional = gradeLesson({ lessonId: input.lessonId, answers, memory, now,
+      xpEarnedToday: sameDay ? account.daily_xp : 0, isFirstLessonOfDay: false, masteredBefore })
+    const finished = ordered.length === slots.length || provisional.heartsDepleted
+    const graded = finished && (!sameDay || account.lessons_today === 0)
+      ? gradeLesson({ lessonId: input.lessonId, answers, memory, now,
+        xpEarnedToday: sameDay ? account.daily_xp : 0, isFirstLessonOfDay: true, masteredBefore })
+      : provisional
     // The engine decides the streak; this carries it. A second lesson on a day returns
     // `extended: false`, which is also what stops a milestone paying twice.
-    const streak = applyActivity({ current: account.streak_current, longest: account.streak_longest,
-      lastActiveDate: account.streak_last_day, freezesHeld: account.freezes_held }, now, knownTimeZone(account.time_zone))
+    const priorStreak = { current: account.streak_current, longest: account.streak_longest,
+      lastActiveDate: account.streak_last_day, freezesHeld: account.freezes_held }
+    const streak = finished
+      ? applyActivity(priorStreak, now, knownTimeZone(account.time_zone))
+      : { ...priorStreak, extended: false, freezeUsed: false, reset: false }
     const milestone = streak.extended ? streakMilestoneReward(streak.current) : { xp: 0, coins: 0 }
     // Today's quest: stored if a lesson or the quest screen already composed it,
     // otherwise composed now from the memory as it was BEFORE this lesson.
@@ -110,6 +122,7 @@ export async function submitLesson(db: D1Database, owner: string, tokenHash: str
       correctFacts: answers.filter(a => a.wasCorrect).map(a => a.factId),
       accuracy: graded.accuracy,
       durationMs: ordered.reduce((sum, a) => sum + a.elapsedMs, 0),
+      finished,
     })
     const xpAwarded = graded.xpAwarded + milestone.xp + quest.xp
     const coinsAwarded = graded.coinsAwarded + milestone.coins + quest.coins
@@ -117,7 +130,7 @@ export async function submitLesson(db: D1Database, owner: string, tokenHash: str
     const result: Receipt = { lessonId: input.lessonId, revision, xpAwarded,
       coinsAwarded, xpTotal: account.xp + xpAwarded,
       coinBalance: account.coins + coinsAwarded, correct: graded.correct, reviews: graded.reviews.length,
-      day, streak: { current: streak.current, longest: streak.longest, extended: streak.extended,
+      day, finished, streak: { current: streak.current, longest: streak.longest, extended: streak.extended,
         freezeUsed: streak.freezeUsed, reset: streak.reset, milestoneXp: milestone.xp, milestoneCoins: milestone.coins },
       quest: { completedSlots: quest.completedSlots, complete: quest.complete, done: quest.done, total: quest.total,
         xp: quest.xp, coins: quest.coins } }
@@ -143,7 +156,7 @@ export async function submitLesson(db: D1Database, owner: string, tokenHash: str
         streak_current = ?, streak_longest = ?, streak_last_day = ?, freezes_held = ?, recent_accuracy = ?,
         streak_broken_on = ?, streak_restorable = ? WHERE id = ?`)
         .bind(revision, result.xpTotal, result.coinBalance, day,
-          (sameDay ? account.daily_xp : 0) + graded.xpAwarded, (sameDay ? account.lessons_today : 0) + 1,
+          (sameDay ? account.daily_xp : 0) + graded.xpAwarded, (sameDay ? account.lessons_today : 0) + (finished ? 1 : 0),
           streak.current, streak.longest, streak.lastActiveDate, streak.freezesHeld, graded.accuracy,
           ...brokenFields(account, streak), owner),
       db.prepare(`INSERT INTO quest_days (account_id, day, quest, credited, perform_done) VALUES (?, ?, ?, ?, ?)

@@ -61,6 +61,23 @@ describe('D1 durable offline submissions', () => {
     await expect(broken.flush()).rejects.toThrow('INVALID_RESPONSE')
     expect((await broken.inspect()).entries).toEqual([input])
   })
+  it('queues a lesson that ended after one answer', async () => {
+    const h = harness(), queue = h.create()
+    const short = { lessonId: 'ended-early', answers: [input.answers[0]!] }
+    await queue.enqueue(short)
+    expect((await queue.inspect()).entries).toEqual([short])
+    await expect(queue.enqueue({ lessonId: 'empty', answers: [] })).rejects.toThrow('INVALID_SUBMISSION')
+  })
+  it('asks for a focused lesson and accepts the echo whatever order the focus was written in', async () => {
+    const h = harness(), queue = h.create()
+    // Written attributes-first; the Worker echoes its schema order, entities after attributes.
+    const wanted = { lessonId: 'focused', locale: 'en' as const, count: 5, screenReader: false,
+      focus: { entities: ['SE'], attributes: ['capital'], difficulty: { max: 3, min: 1 } } }
+    const ticket = await queue.prepare(wanted)
+    expect(ticket?.request.focus).toEqual({ attributes: ['capital'], entities: ['SE'], difficulty: { min: 1, max: 3 } })
+    expect(JSON.stringify(h.prepare.mock.calls[0]![0].focus)).toBe('{"attributes":["capital"],"entities":["SE"],"difficulty":{"min":1,"max":3}}')
+    await expect(queue.prepare({ ...wanted, lessonId: 'bad-focus', focus: { entities: ['sweden'] } })).rejects.toThrow('INVALID_LESSON_REQUEST')
+  })
   it('keeps old work after an account switch during a request', async () => {
     const h = harness(), queue = h.create(); await queue.enqueue(input)
     h.submit.mockImplementationOnce(async () => { h.switchAccount(); return result })

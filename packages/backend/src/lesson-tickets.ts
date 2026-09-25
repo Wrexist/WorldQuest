@@ -1,12 +1,30 @@
-import { composeLesson, seededRng, type MemoryState, type Question } from '@worldquest/engines'
+import { composeLesson, focusFilter, seededRng, type LessonFocus, type MemoryState, type Question } from '@worldquest/engines'
 import { z } from 'zod'
 import { ApiError } from './contracts'
 import { learningContent } from './learning-content'
 
+/**
+ * What the learner asked to practise: a country, a region, an attribute, the quest's
+ * exact facts or a difficulty band. The engines' `LessonFocus`, bounded. Each field only
+ * ever removes facts; the server still chooses which of them are due.
+ */
+const focusSchema = z.object({
+  factIds: z.array(z.string().regex(/^[a-zA-Z0-9._-]{1,120}$/)).max(60).optional(),
+  attributes: z.array(z.string().regex(/^[a-z-]{1,40}$/)).max(12).optional(),
+  entities: z.array(z.string().regex(/^[A-Z]{2}$/)).max(300).optional(),
+  difficulty: z.object({ min: z.number().int().min(1).max(5).optional(), max: z.number().int().min(1).max(5).optional() }).strict().optional(),
+}).strict()
 export const prepareLessonSchema = z.object({ lessonId: z.string().regex(/^[a-zA-Z0-9_-]{1,80}$/),
   locale: z.enum(['en', 'sv']), count: z.number().int().min(5).max(20).default(10),
-  screenReader: z.boolean().default(false) }).strict()
+  screenReader: z.boolean().default(false), focus: focusSchema.optional() }).strict()
 type Input = z.infer<typeof prepareLessonSchema>
+/** Parsed focus, with absent fields absent rather than `undefined` (exact optional types). */
+function lessonFocus(f: z.infer<typeof focusSchema>): LessonFocus {
+  const d = f.difficulty
+  return { ...(f.factIds ? { factIds: f.factIds } : {}), ...(f.attributes ? { attributes: f.attributes } : {}),
+    ...(f.entities ? { entities: f.entities } : {}),
+    ...(d ? { difficulty: { ...(d.min === undefined ? {} : { min: d.min }), ...(d.max === undefined ? {} : { max: d.max }) } } : {}) }
+}
 type Ticket = { request_json: string | null; questions_json: string | null; issued_at: number | null }
 function response(lessonId: string, row: Ticket) {
   if (!row.questions_json || !row.request_json || row.issued_at === null) throw new ApiError('INVALID_TICKET', 409)
@@ -37,9 +55,14 @@ export async function prepareLesson(db: D1Database, owner: string, tokenHash: st
     if (Number(read[3]?.results[0]?.count ?? 0) >= 20) throw new ApiError('TICKET_LIMIT', 429)
     const memory = (read[2]?.results ?? []).map(row => JSON.parse(String(row.state)) as MemoryState)
     const seed = crypto.getRandomValues(new Uint32Array(1))[0]!
+    const topicFilter = input.focus ? focusFilter(learningContent, lessonFocus(input.focus)) : undefined
     const questions = composeLesson({ index: learningContent, memory, now, rng: seededRng(seed),
-      locale: input.locale, count: input.count, screenReaderOnly: input.screenReader, modalities: ['text', 'image', 'map'] })
-    if (questions.length < 5) throw new ApiError('CONTENT_UNAVAILABLE', 503)
+      locale: input.locale, count: input.count, screenReaderOnly: input.screenReader, modalities: ['text', 'image', 'map'],
+      ...(topicFilter ? { topicFilter } : {}),
+      // One entity in focus means the entity is not the question (the app's own rule).
+      entityIsGiven: input.focus?.entities?.length === 1 })
+    // A focus narrower than one lesson is the caller's choice, not an outage.
+    if (questions.length < 5) throw input.focus ? new ApiError('FOCUS_TOO_NARROW', 409) : new ApiError('CONTENT_UNAVAILABLE', 503)
     const slots = questions.map(q => {
       const correct = q.options.filter(option => option.isCorrect)
       if (correct.length !== 1) throw new ApiError('CONTENT_UNAVAILABLE', 503)

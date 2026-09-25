@@ -64,6 +64,17 @@ Progress is derived from the distinct quest facts answered correctly that day
 plus slot five's goal; task XP, the all-five bonus and its coins are paid in the
 lesson's own ledger row, once.
 
+Lessons that end early: a submission may answer any prefix of its ticket (at
+least one slot, never more than issued), and those answers are graded into
+memory with their per-answer XP. Only a FINISHED lesson — every slot answered,
+or hearts emptied in the grader's own replay (`heartsDepleted`; new facts never
+cost a heart) — is the day's activity: it extends the streak, takes the
+first-lesson bonus, counts in `lessons_today` and can meet the quest's perform
+goal. Receipts carry `finished`. `POST /v1/lessons/prepare` accepts an optional
+`focus` (the engines' `LessonFocus`: fact ids, attributes, ISO entities,
+difficulty band), applied with `focusFilter`; a focus too narrow for five
+questions answers `409 FOCUS_TOO_NARROW`.
+
 Coin spending (migration 0009, S06/A04): `POST /v1/shop/freeze`,
 `/v1/streak/repair`, `/v1/lessons/continue` and `/v1/shop/item` take a client
 request id, are decided by the engines' streak-recovery and shop rules, and

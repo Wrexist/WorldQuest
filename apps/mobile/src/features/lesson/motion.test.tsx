@@ -79,6 +79,7 @@ describe('the animated branch mounts', () => {
             rejected: 0,
             overdueCleared: 0,
             heartsLost: 0,
+            heartsDepleted: false,
           }}
           wasAbandoned={false}
           isOffline={false}
