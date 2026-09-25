@@ -10,10 +10,15 @@ import { MIN_CREDIBLE_ANSWER_MS, type MemoryState } from '../learning/types.js'
 import { composeLesson } from './compose.js'
 import {
   accuracy,
+  answerCount,
+  answeringMs,
   canRevive,
   currentQuestion,
+  currentRun,
+  inReview,
   initialState,
   isFinished,
+  lastAnswerOf,
   transition,
   type LessonState,
 } from './machine.js'
@@ -131,6 +136,196 @@ describe('lesson state machine', () => {
     s = transition(s, { type: 'ABANDON', now: T0 + 4_000 })
     expect(s.phase).toBe('abandoned')
     expect(s.answers).toHaveLength(1)
+  })
+})
+
+describe('reviewing mistakes at the end', () => {
+  // Three questions: right, wrong, right. The wrong one comes back once, before the summary.
+  const toReview = (): LessonState => {
+    let s = started(makeQuestions(3))
+    s = transition(answerCorrectly(s, T0 + 1000), { type: 'CONTINUE', now: T0 + 1100 })
+    s = transition(answerWrongly(s, T0 + 2000), { type: 'CONTINUE', now: T0 + 2100 })
+    s = answerCorrectly(s, T0 + 3000)
+    return transition(s, { type: 'CONTINUE', now: T0 + 3100 })
+  }
+
+  it('asks each missed question again, once, with the options moved', () => {
+    const s = toReview()
+    expect(s.phase).toBe('presenting')
+    expect(inReview(s)).toBe(true)
+    expect(s.reviewFrom).toBe(3)
+    expect(s.questions).toHaveLength(4)
+    const original = s.questions[1]!, again = currentQuestion(s)!
+    expect(again.item.id).toBe(original.item.id)
+    expect(again.options.map((o) => o.id)).not.toEqual(original.options.map((o) => o.id))
+    expect(new Set(again.options.map((o) => o.id))).toEqual(new Set(original.options.map((o) => o.id)))
+  })
+
+  it('keeps review answers out of grading: no heart, no second graded answer', () => {
+    let s = toReview()
+    const before = { answers: s.answers, hearts: s.hearts, heartsLost: s.heartsLost }
+    s = answerWrongly(s, T0 + 4000)
+    expect(s.answers).toEqual(before.answers)
+    expect(s.hearts).toBe(before.hearts)
+    expect(s.heartsLost).toBe(before.heartsLost)
+    expect(s.reviewed).toHaveLength(1)
+    expect(lastAnswerOf(s)?.wasCorrect).toBe(false)
+    expect(answerCount(s)).toBe(4)
+    expect(accuracy(s)).toBeCloseTo(2 / 3)
+  })
+
+  it('ends on the summary after one round, however the review went', () => {
+    let s = answerWrongly(toReview(), T0 + 4000)
+    s = transition(s, { type: 'CONTINUE', now: T0 + 4100 })
+    expect(s.phase).toBe('summary')
+    expect(s.questions).toHaveLength(4)
+  })
+
+  it('leaving the review is finishing the lesson, not abandoning it', () => {
+    const s = transition(toReview(), { type: 'ABANDON', now: T0 + 4000 })
+    expect(s.phase).toBe('summary')
+  })
+
+  it('has nothing to review after a clean lesson, a speed round or running out of hearts', () => {
+    let clean = started(makeQuestions(2))
+    for (let i = 0; i < 2; i++) clean = transition(answerCorrectly(clean, T0 + i * 1000 + 500), { type: 'CONTINUE', now: T0 + i * 1000 + 600 })
+    expect(clean.phase).toBe('summary')
+
+    let timed = started(makeQuestions(1), { timeLimitMs: 10_000 })
+    timed = transition(answerWrongly(timed, T0 + 500), { type: 'CONTINUE', now: T0 + 600 })
+    expect(timed.phase).toBe('summary')
+
+    let empty = started(makeQuestions(BALANCE.hearts.max + 1))
+    for (let i = 0; i < BALANCE.hearts.max; i++) empty = transition(answerWrongly(empty, T0 + i * 1000 + 500), { type: 'CONTINUE', now: T0 + i * 1000 + 600 })
+    expect(empty.phase).toBe('summary')
+    expect(empty.reviewFrom).toBeNull()
+  })
+})
+
+describe('what the lesson summary and the progress bar read', () => {
+  it('times the answering: never a pause, never the feedback, and the review counts', () => {
+    let s = started(makeQuestions(2))
+    // Four seconds on the first question, then five reading the feedback.
+    s = transition(answerCorrectly(s, T0 + 4_000), { type: 'CONTINUE', now: T0 + 9_000 })
+    // A minute on the pause screen, then three seconds to answer.
+    s = transition(s, { type: 'PAUSE', now: T0 + 10_000 })
+    s = transition(s, { type: 'RESUME', now: T0 + 70_000 })
+    s = transition(answerWrongly(s, T0 + 73_000), { type: 'CONTINUE', now: T0 + 74_000 })
+    // The missed question again, in the review round: two seconds.
+    expect(inReview(s)).toBe(true)
+    s = answerCorrectly(s, T0 + 76_000)
+    expect(answeringMs(s)).toBe(4_000 + 3_000 + 2_000)
+  })
+
+  it('counts a run in the round being played, so a graded run does not carry into the review', () => {
+    let s = started(makeQuestions(4))
+    s = transition(answerWrongly(s, T0 + 1_000), { type: 'CONTINUE', now: T0 + 1_100 })
+    for (let i = 1; i < 4; i++) {
+      s = answerCorrectly(s, T0 + i * 1_000 + 1_000)
+      expect(currentRun(s)).toBe(i)
+      s = transition(s, { type: 'CONTINUE', now: T0 + i * 1_000 + 1_100 })
+    }
+    expect(inReview(s)).toBe(true)
+    expect(currentRun(s)).toBe(0)
+    expect(currentRun(answerCorrectly(s, T0 + 9_000))).toBe(1)
+  })
+})
+
+describe('select, then check', () => {
+  const select = (s: LessonState, optionId: string, now: number): LessonState =>
+    transition(s, { type: 'SELECT', optionId, now })
+  const check = (s: LessonState, now: number): LessonState =>
+    transition(s, { type: 'CHECK', now })
+
+  it('selecting scores nothing', () => {
+    // A selection is a thought, not an answer: no phase change, no record, no heart.
+    const before = started(makeQuestions(2))
+    const s = select(before, 'wrong-0', T0 + 1_000)
+    expect(s.phase).toBe('presenting')
+    expect(s.selectedOptionId).toBe('wrong-0')
+    expect(s.answers).toHaveLength(0)
+    expect(s.hearts).toBe(before.hearts)
+  })
+
+  it('lets the user change their mind, and grades only the final choice', () => {
+    let s = started(makeQuestions(2))
+    s = select(s, 'wrong-0', T0 + 1_000)
+    s = select(s, 'right-0', T0 + 2_000)
+    expect(s.selectedOptionId).toBe('right-0')
+    s = check(s, T0 + 3_000)
+    expect(s.phase).toBe('answered')
+    expect(s.answers).toHaveLength(1)
+    expect(s.answers[0]!.chosenOptionId).toBe('right-0')
+    expect(s.answers[0]!.wasCorrect).toBe(true)
+    expect(s.selectedOptionId).toBeNull()
+  })
+
+  it('stops the clock at CHECK, not at the selection', () => {
+    // L05: `elapsedMs` feeds the rating and the pace estimate. Selecting at 1s and
+    // checking at 4.2s took 4.2s of thinking.
+    let s = started(makeQuestions(2))
+    s = select(s, 'right-0', T0 + 1_000)
+    s = check(s, T0 + 4_200)
+    expect(s.answers[0]!.elapsedMs).toBe(4_200)
+    expect(s.answers[0]!.answeredAt).toBe(T0 + 4_200)
+  })
+
+  it('ignores CHECK with nothing selected', () => {
+    const s = started(makeQuestions(2))
+    expect(check(s, T0 + 1_000)).toBe(s)
+  })
+
+  it('ignores a selection that belongs to no option of this question', () => {
+    // A stray tap on the previous question's option must not become this one's answer.
+    let s = started(makeQuestions(2))
+    s = answerCorrectly(s, T0 + 1_000)
+    s = transition(s, { type: 'CONTINUE', now: T0 + 2_000 })
+    expect(select(s, 'right-0', T0 + 2_100)).toBe(s)
+    expect(select(s, 'nonsense', T0 + 2_100)).toBe(s)
+  })
+
+  it('ignores selecting and checking once answered', () => {
+    let s = started(makeQuestions(2))
+    s = select(s, 'right-0', T0 + 1_000)
+    s = check(s, T0 + 2_000)
+    expect(select(s, 'wrong-0', T0 + 2_100)).toBe(s)
+    expect(check(s, T0 + 2_200)).toBe(s)
+  })
+
+  it('charges hearts exactly as a one-step answer does', () => {
+    const viaCheck = check(select(started(makeQuestions(2)), 'wrong-0', T0 + 1_000), T0 + 2_000)
+    const viaAnswer = transition(started(makeQuestions(2)), {
+      type: 'ANSWER',
+      optionId: 'wrong-0',
+      now: T0 + 2_000,
+    })
+    expect(viaCheck).toEqual(viaAnswer)
+  })
+
+  it('keeps the selection across a pause, but not the paused time', () => {
+    let s = started(makeQuestions(2))
+    s = select(s, 'right-0', T0 + 1_000)
+    s = transition(s, { type: 'PAUSE', now: T0 + 2_000 })
+    s = transition(s, { type: 'RESUME', now: T0 + 60_000 })
+    expect(s.selectedOptionId).toBe('right-0')
+    s = check(s, T0 + 61_500)
+    expect(s.answers[0]!.elapsedMs).toBe(1_500)
+  })
+
+  it('starts every question with nothing selected', () => {
+    let s = started(makeQuestions(2))
+    s = check(select(s, 'right-0', T0 + 1_000), T0 + 2_000)
+    s = transition(s, { type: 'CONTINUE', now: T0 + 3_000 })
+    expect(s.phase).toBe('presenting')
+    expect(s.selectedOptionId).toBeNull()
+  })
+
+  it('drops an unchecked selection when the lesson is abandoned', () => {
+    let s = started(makeQuestions(2))
+    s = select(s, 'right-0', T0 + 1_000)
+    s = transition(s, { type: 'ABANDON', now: T0 + 2_000 })
+    expect(s.answers).toHaveLength(0)
+    expect(s.selectedOptionId).toBeNull()
   })
 })
 
@@ -550,6 +745,29 @@ describe('gradeLesson', () => {
         now: T0,
       })
       expect(r.heartsLost).toBe(BALANCE.hearts.max)
+      expect(r.heartsDepleted).toBe(true)
+    })
+
+    it('reports hearts depleted only when they actually reached zero', () => {
+      // The server reads this to tell "ran out of hearts" (a finished lesson) from
+      // "ended it early" on a short submission, so it must follow the same replay:
+      // one short of the maximum, or a run that earns a heart back, is not depleted.
+      const facts = ['fact.a', 'fact.b', 'fact.c', 'fact.d', 'fact.e', 'fact.f']
+      const memory = new Map(facts.map((f) => [f, seen(f)] as const))
+      const short = gradeLesson({
+        lessonId: 'l-hearts-short',
+        answers: answersFrom(facts.slice(0, BALANCE.hearts.max - 1), Array(BALANCE.hearts.max - 1).fill(false)),
+        memory,
+        now: T0,
+      })
+      expect(short.heartsDepleted).toBe(false)
+      const fresh = gradeLesson({
+        lessonId: 'l-hearts-new-only',
+        answers: answersFrom(facts, Array(facts.length).fill(false)),
+        memory: new Map(),
+        now: T0,
+      })
+      expect(fresh.heartsDepleted).toBe(false)
     })
 
     it('ignores answers too fast to be credible', () => {
@@ -799,5 +1017,32 @@ describe('the timed mode', () => {
     )
     expect(s.phase).toBe('presenting')
     expect(s.index).toBe(1)
+  })
+
+  describe('with an option selected but not checked', () => {
+    const selected = (optionId: string): LessonState =>
+      transition(timed(), { type: 'SELECT', optionId, now: T0 + 4_000 })
+
+    it('submits the selection, so the extra tap never costs a right answer', () => {
+      const s = transition(selected('right-0'), { type: 'TIMEOUT', now: T0 + 10_000 })
+      expect(s.phase).toBe('answered')
+      expect(s.answers[0]!.chosenOptionId).toBe('right-0')
+      expect(s.answers[0]!.wasCorrect).toBe(true)
+      expect(s.correctRun).toBe(1)
+    })
+
+    it('times it at the limit, never past it', () => {
+      // The timer can fire late; lateness is not thinking time.
+      const s = transition(selected('right-0'), { type: 'TIMEOUT', now: T0 + 10_250 })
+      expect(s.answers[0]!.elapsedMs).toBe(10_000)
+    })
+
+    it('grades a wrong selection exactly as CHECK would', () => {
+      // The grader sees only the chosen option; the machine must agree with it.
+      const viaTimeout = transition(selected('wrong-0'), { type: 'TIMEOUT', now: T0 + 10_000 })
+      const viaCheck = transition(selected('wrong-0'), { type: 'CHECK', now: T0 + 10_000 })
+      expect(viaTimeout).toEqual(viaCheck)
+      expect(viaTimeout.answers[0]!.chosenOptionId).toBe('wrong-0')
+    })
   })
 })

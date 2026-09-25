@@ -22,8 +22,9 @@
  * reaches no screen at all.
  *
  * So an unlock is recorded rather than announced, and the end of the next lesson shows
- * whatever is waiting. Nothing is lost, and the celebration lands where a celebration
- * belongs: on the screen the user is already looking at after doing the work.
+ * whatever is waiting — one full-screen card per tier, straight after the summary
+ * (`features/lesson/afterLesson.ts`). Nothing is lost, and the celebration lands where a
+ * celebration belongs: right after the user has done the work.
  *
  * ## Why it is persisted
  *
@@ -50,9 +51,10 @@ export type PendingUnlock = {
 /**
  * How many are held at once.
  *
- * Six is two rows of three on the narrowest phone. Past that the oldest are dropped
- * rather than the newest: a user looking at a summary cares most about what just
- * happened, and the achievements screen still holds every one of them.
+ * Six: three cards and an "and 3 more" line is already a long run of celebrations. Past
+ * that the oldest are dropped rather than the newest: a user who has just finished a
+ * lesson cares most about what just happened, and the achievements screen still holds
+ * every one of them.
  */
 const MAX_PENDING = 6
 
@@ -95,18 +97,32 @@ export function queueUnlocks(unlocks: readonly PendingUnlock[]): void {
   writeJson(KEY, next.slice(-MAX_PENDING))
 }
 
-/** What is waiting, without consuming it. */
+/**
+ * What is waiting, without consuming it.
+ *
+ * The lesson route reads this when the summary's Continue is pressed and puts the list
+ * in the after-lesson chain's URL. Reading is not taking: a learner who closes the app
+ * on the summary still has every badge waiting for the next lesson.
+ */
 export const peekUnlocks = (): readonly PendingUnlock[] => read()
 
+const keyOf = (unlock: PendingUnlock): string => `${unlock.achievementId}:${unlock.tier}`
+
 /**
- * Take everything waiting and clear it.
+ * Take THESE unlocks off the queue — the ones a card is about to show.
  *
- * Called by whatever is about to show them. Clearing on read rather than on dismiss is
- * deliberate: a celebration the user swiped away is still a celebration they saw, and
- * the alternative is a queue that only drains when somebody presses the right button.
+ * Called when the celebration mounts, so clearing is on read rather than on dismiss: a
+ * card swiped past is still a card that was seen, and the alternative is a queue that
+ * only drains when somebody presses the right button.
+ *
+ * Only these, rather than everything. The list the card shows was read a few screens
+ * earlier; a server unlock that landed in between (a background flush during the streak
+ * beat) is not in it, and draining the whole queue would drop that one unseen.
  */
-export function drainUnlocks(): readonly PendingUnlock[] {
+export function acknowledgeUnlocks(shown: readonly PendingUnlock[]): void {
+  if (shown.length === 0) return
+  const done = new Set(shown.map(keyOf))
   const pending = read()
-  if (pending.length > 0) writeJson(KEY, [])
-  return pending
+  const rest = pending.filter((unlock) => !done.has(keyOf(unlock)))
+  if (rest.length !== pending.length) writeJson(KEY, rest)
 }

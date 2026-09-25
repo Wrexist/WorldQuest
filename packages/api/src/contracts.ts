@@ -75,6 +75,20 @@ export type Progress = {
     readonly freezesHeld: number;
     readonly brokenOn: string | null;
     readonly lastRepairAt: number | null;
+    /**
+     * The streak length a repair would restore while the streak is broken; null while it
+     * is not. The server decides it — the D1 Worker from the length the break interrupted,
+     * the legacy backend from the longest streak, which is what its repair restores.
+     * Absent from caches written before it existed, and a reader must treat absent as
+     * "not known" rather than guess: a wrong number here is a wrong price-per-day.
+     */
+    readonly restoreTo?: number | null;
+    /**
+     * The missed day a streak freeze covered, when the backend records one (the legacy
+     * `expire_streaks` job). The D1 Worker spends a freeze with the next lesson instead,
+     * and its state says so directly — `lastActiveDate` two days back with a freeze held.
+     */
+    readonly freezeUsedOn?: string | null;
 };
 export type SubscriptionRow = {
     readonly status: 'none' | 'trialing' | 'active' | 'in_grace' | 'on_hold' | 'expired';
@@ -125,3 +139,30 @@ export type LeagueCohort = {
     readonly division: number;
     readonly members: readonly LeagueRow[];
 };
+
+/**
+ * Today's quest as a backend reports it: the engines' `DailyQuest`, restated so this
+ * contract depends on nothing. The two must stay structurally identical; the app assigns
+ * one to the other, so a drift is a type error at that call site.
+ */
+export type QuestTaskRow = {
+    readonly slot: 'locate' | 'recognise' | 'recall' | 'discover' | 'perform';
+    readonly target: number;
+    readonly factIds: readonly string[];
+    readonly goal?: 'perfect_lesson' | 'speed_round' | 'streak_keeper';
+    readonly progress: number;
+    readonly complete: boolean;
+};
+export type QuestRow = {
+    readonly id: string;
+    readonly date: string;
+    readonly tasks: readonly QuestTaskRow[];
+    readonly complete: boolean;
+    readonly bonusClaimed: boolean;
+};
+
+/**
+ * Why a learner reported a question. A closed list: never free text, so nothing a child
+ * types is collected (content-pipeline §6).
+ */
+export type ReportReason = 'wrong' | 'unclear' | 'outdated' | 'offensive' | 'other';

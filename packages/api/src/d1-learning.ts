@@ -3,14 +3,23 @@ import { D1AuthError, type AuthFetch, type createD1AuthClient, type ProtectedSto
 import { parseD1Memory, parseD1Question } from './d1-learning-contracts.js'
 
 export type D1Submission = { lessonId: string; answers: readonly { slot: number; chosenOptionId: string | null; elapsedMs: number }[] }
-export type D1Receipt = { lessonId: string; revision: number; xpAwarded: number; coinsAwarded: number; xpTotal: number; coinBalance: number; correct: number; reviews: number }
-export type D1PrepareInput = { lessonId: string; locale: 'en' | 'sv'; count: number; screenReader: boolean }
+export type D1StreakReceipt = { current: number; longest: number; extended: boolean; freezeUsed: boolean; reset: boolean; milestoneXp: number; milestoneCoins: number }
+/** `day`/`streak` arrive from migration 0007 on; receipts queued before it carry neither. */
+export type D1QuestReceipt = { completedSlots: string[]; complete: boolean; done: number; total: number; xp: number; coins: number }
+export type D1AchievementReceipt = { unlocked: { achievementId: string; tier: string }[]; xp: number; coins: number }
+export type D1Receipt = { lessonId: string; revision: number; xpAwarded: number; coinsAwarded: number; xpTotal: number; coinBalance: number; correct: number; reviews: number
+  day?: string; finished?: boolean; streak?: D1StreakReceipt; quest?: D1QuestReceipt; achievements?: D1AchievementReceipt }
+export type D1StreakState = { current: number; longest: number; lastActiveDate: string | null; freezesHeld: number }
+/** The engines' `LessonFocus`, as the Worker bounds it. Each field only removes facts. */
+export type D1Focus = { factIds?: string[]; attributes?: string[]; entities?: string[]; difficulty?: { min?: number; max?: number } }
+export type D1PrepareInput = { lessonId: string; locale: 'en' | 'sv'; count: number; screenReader: boolean; focus?: D1Focus }
 export type D1PreparedLesson = { lessonId: string; issuedAt: number; questions: ReturnType<typeof parseD1Question>[]; request: D1PrepareInput }
 const object = (v: unknown): v is Record<string, unknown> => v !== null && typeof v === 'object' && !Array.isArray(v)
 const integer = (v: unknown): v is number => typeof v === 'number' && Number.isSafeInteger(v) && v >= 0
 function submission(value: unknown): D1Submission {
   if (!object(value) || typeof value.lessonId !== 'string' || !/^[a-zA-Z0-9_-]{1,80}$/.test(value.lessonId)
-    || !Array.isArray(value.answers) || value.answers.length < 5 || value.answers.length > 20) throw new D1AuthError('INVALID_SUBMISSION')
+    // One answer upward: a lesson that ended early still sends what was answered.
+    || !Array.isArray(value.answers) || value.answers.length < 1 || value.answers.length > 20) throw new D1AuthError('INVALID_SUBMISSION')
   const answers = value.answers.map((a: unknown) => {
     if (!object(a) || !integer(a.slot) || a.slot > 19 || !(a.chosenOptionId === null || (typeof a.chosenOptionId === 'string' && a.chosenOptionId.length <= 160))
       || typeof a.elapsedMs !== 'number' || !Number.isFinite(a.elapsedMs) || a.elapsedMs < 0 || a.elapsedMs > 60000) throw new D1AuthError('INVALID_SUBMISSION')
@@ -19,17 +28,82 @@ function submission(value: unknown): D1Submission {
   if (new Set(answers.map(a => a.slot)).size !== answers.length) throw new D1AuthError('INVALID_SUBMISSION')
   return { lessonId: value.lessonId, answers }
 }
+const isoDay = (v: unknown): v is string => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v)
+function streakReceipt(value: unknown): D1StreakReceipt {
+  if (!object(value) || !integer(value.current) || !integer(value.longest) || typeof value.extended !== 'boolean' || typeof value.freezeUsed !== 'boolean'
+    || typeof value.reset !== 'boolean' || !integer(value.milestoneXp) || !integer(value.milestoneCoins)) throw new D1AuthError('INVALID_RESPONSE')
+  return { current: value.current, longest: value.longest, extended: value.extended, freezeUsed: value.freezeUsed, reset: value.reset,
+    milestoneXp: value.milestoneXp, milestoneCoins: value.milestoneCoins }
+}
+function streakState(value: unknown): D1StreakState {
+  if (!object(value) || !integer(value.current) || !integer(value.longest) || !(value.lastActiveDate === null || isoDay(value.lastActiveDate))
+    || !integer(value.freezesHeld)) throw new D1AuthError('INVALID_RESPONSE')
+  return { current: value.current, longest: value.longest, lastActiveDate: value.lastActiveDate, freezesHeld: value.freezesHeld }
+}
+const SLOTS = ['locate', 'recognise', 'recall', 'discover', 'perform']
+function questReceipt(value: unknown): D1QuestReceipt {
+  if (!object(value) || !Array.isArray(value.completedSlots) || value.completedSlots.length > 5
+    || !value.completedSlots.every((s: unknown) => typeof s === 'string' && SLOTS.includes(s)) || typeof value.complete !== 'boolean'
+    || !integer(value.done) || !integer(value.total) || value.done > value.total || !integer(value.xp) || !integer(value.coins)) throw new D1AuthError('INVALID_RESPONSE')
+  return { completedSlots: value.completedSlots as string[], complete: value.complete, done: value.done, total: value.total, xp: value.xp, coins: value.coins }
+}
+const TIER_NAMES = ['bronze', 'silver', 'gold', 'platinum', 'legendary']
+function achievementReceipt(value: unknown): D1AchievementReceipt {
+  if (!object(value) || !Array.isArray(value.unlocked) || value.unlocked.length > 50 || !integer(value.xp) || !integer(value.coins)) throw new D1AuthError('INVALID_RESPONSE')
+  const unlocked = value.unlocked.map((u: unknown) => {
+    if (!object(u) || typeof u.achievementId !== 'string' || u.achievementId.length > 120 || typeof u.tier !== 'string' || !TIER_NAMES.includes(u.tier)) {
+      throw new D1AuthError('INVALID_RESPONSE')
+    }
+    return { achievementId: u.achievementId, tier: u.tier }
+  })
+  return { unlocked, xp: value.xp, coins: value.coins }
+}
 function receipt(value: unknown): D1Receipt {
   if (!object(value) || typeof value.lessonId !== 'string' || !integer(value.revision) || !integer(value.xpAwarded)
     || !integer(value.coinsAwarded) || !integer(value.xpTotal) || !integer(value.coinBalance) || !integer(value.correct) || !integer(value.reviews)) throw new D1AuthError('INVALID_RESPONSE')
+  if ((value.day !== undefined && !isoDay(value.day)) || (value.day === undefined) !== (value.streak === undefined)) throw new D1AuthError('INVALID_RESPONSE')
   return { lessonId: value.lessonId, revision: value.revision, xpAwarded: value.xpAwarded, coinsAwarded: value.coinsAwarded,
-    xpTotal: value.xpTotal, coinBalance: value.coinBalance, correct: value.correct, reviews: value.reviews }
+    xpTotal: value.xpTotal, coinBalance: value.coinBalance, correct: value.correct, reviews: value.reviews,
+    ...(isoDay(value.day) ? { day: value.day, streak: streakReceipt(value.streak) } : {}),
+    ...(typeof value.finished === 'boolean' ? { finished: value.finished } : {}),
+    ...(value.quest === undefined ? {} : { quest: questReceipt(value.quest) }),
+    ...(value.achievements === undefined ? {} : { achievements: achievementReceipt(value.achievements) }) }
+}
+const strings = (v: unknown, pattern: RegExp, max: number): string[] => {
+  if (!Array.isArray(v) || v.length > max || !v.every((s: unknown) => typeof s === 'string' && pattern.test(s))) throw new D1AuthError('INVALID_LESSON_REQUEST')
+  return v as string[]
+}
+const band = (v: unknown): number | undefined => {
+  if (v === undefined) return undefined
+  if (!integer(v) || v < 1 || v > 5) throw new D1AuthError('INVALID_LESSON_REQUEST')
+  return v
+}
+/**
+ * Canonical key order, the same as the Worker's schema: the echoed request is compared
+ * as JSON, so an equivalent focus written in another order must still match.
+ */
+function focus(value: unknown): D1Focus | undefined {
+  if (value === undefined) return undefined
+  if (!object(value) || Object.keys(value).some(k => !['factIds', 'attributes', 'entities', 'difficulty'].includes(k))) throw new D1AuthError('INVALID_LESSON_REQUEST')
+  const out: D1Focus = {}
+  if (value.factIds !== undefined) out.factIds = strings(value.factIds, /^[a-zA-Z0-9._-]{1,120}$/, 60)
+  if (value.attributes !== undefined) out.attributes = strings(value.attributes, /^[a-z-]{1,40}$/, 12)
+  if (value.entities !== undefined) out.entities = strings(value.entities, /^[A-Z]{2}$/, 300)
+  if (value.difficulty !== undefined) {
+    const d = value.difficulty
+    if (!object(d) || Object.keys(d).some(k => k !== 'min' && k !== 'max')) throw new D1AuthError('INVALID_LESSON_REQUEST')
+    const min = band(d.min), max = band(d.max)
+    out.difficulty = { ...(min === undefined ? {} : { min }), ...(max === undefined ? {} : { max }) }
+  }
+  return out
 }
 function prepareInput(value: unknown): D1PrepareInput {
   if (!object(value) || typeof value.lessonId !== 'string' || !/^[a-zA-Z0-9_-]{1,80}$/.test(value.lessonId)
     || (value.locale !== 'en' && value.locale !== 'sv') || !integer(value.count) || value.count < 5 || value.count > 20
     || typeof value.screenReader !== 'boolean') throw new D1AuthError('INVALID_LESSON_REQUEST')
-  return { lessonId: value.lessonId, locale: value.locale, count: value.count, screenReader: value.screenReader }
+  const f = focus(value.focus)
+  return { lessonId: value.lessonId, locale: value.locale, count: value.count, screenReader: value.screenReader,
+    ...(f === undefined ? {} : { focus: f }) }
 }
 function prepared(value: unknown): D1PreparedLesson {
   if (!object(value) || typeof value.lessonId !== 'string' || !integer(value.issuedAt) || !Array.isArray(value.questions)
@@ -73,7 +147,8 @@ export function createD1LearningClient(options: {
       const value = await request('/v1/learning/state')
       if (!object(value) || !integer(value.revision) || !integer(value.xp) || !integer(value.coins) || !Array.isArray(value.memories)
         || value.memories.length > 1000) throw new D1AuthError('INVALID_RESPONSE')
-      return { revision: value.revision, xp: value.xp, coins: value.coins, memories: value.memories.map(parseD1Memory) }
+      return { revision: value.revision, xp: value.xp, coins: value.coins, memories: value.memories.map(parseD1Memory),
+        ...(value.streak === undefined ? {} : { streak: streakState(value.streak) }), timeZone: typeof value.timeZone === 'string' ? value.timeZone : 'UTC' }
     },
     submit: async (input: D1Submission): Promise<D1Receipt> => {
         const parsed = submission(input), result = receipt(await request('/v1/lessons/submit', parsed))

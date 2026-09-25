@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { MMKV } from 'react-native-mmkv'
 import {
-  captureStorage, clearAll, readJson, setStorageAccount, startGuestStorage,
-  storageTreeGeneration, writeJson,
+  captureStorage, clearAll, readDeviceJson, readJson, setStorageAccount, startGuestStorage,
+  storageTreeGeneration, writeDeviceJson, writeJson,
 } from './storage.js'
 
 beforeEach(clearAll)
@@ -73,5 +73,30 @@ describe('account-scoped durable state', () => {
     expect(readJson('sync.queue.v1')).toBeNull()
     expect(readJson('query.cache.v1')).toBeNull()
     expect(legacy.getString('sync.queue.v1')).toContain('unknown-owner')
+  })
+})
+
+describe('device-level values', () => {
+  it('outlive a sign-out and a new guest, because they are about the phone', () => {
+    // The profile ask is capped per device. In the scoped store a sign-out would start a
+    // guest with a fresh count and the ask would return for someone who has answered it.
+    writeDeviceJson('asked', 2)
+    setStorageAccount('A')
+    startGuestStorage()
+    expect(readDeviceJson('asked')).toBe(2)
+    // And they never leak into an account's scoped data, in either direction.
+    expect(readJson('asked')).toBeNull()
+  })
+
+  it('drops a value of the wrong shape instead of handing it over', () => {
+    writeDeviceJson('asked', 'twice')
+    expect(readDeviceJson('asked', (value) => typeof value === 'number')).toBeNull()
+    expect(readDeviceJson('asked')).toBeNull()
+  })
+
+  it('is cleared by an explicit full reset like everything else', async () => {
+    writeDeviceJson('asked', 1)
+    await clearAll()
+    expect(readDeviceJson('asked')).toBeNull()
   })
 })

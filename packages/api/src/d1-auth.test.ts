@@ -26,6 +26,19 @@ function harness() {
   return { create, values, storage, fetch, clear, events, setTime: (time: number) => { clock = time } }
 }
 describe('D1 native auth transport', () => {
+  it('lets session checks wait their turn, and still refuses a second owner change in flight', async () => {
+    const h = harness(), a = h.create()
+    // The app asks for a session from several places at once (progress, the quest, a
+    // lesson, a prefetch). Every one must get it; none may lose to the others.
+    const guestStart = a.startGuest()
+    const concurrent = await Promise.all([a.ensureSession(), a.ensureSession(), a.ensureSession()])
+    expect(await guestStart).toEqual(guest)
+    expect(concurrent).toEqual([guest, guest, guest])
+    // Two owner changes racing is still refused: one of them would strand the other.
+    const first = a.requestEmail('learner@example.invalid', 'link', 'en')
+    await expect(a.requestEmail('other@example.invalid', 'link', 'en')).rejects.toMatchObject({ code: 'AUTH_BUSY' })
+    await first
+  })
   it('restores guest and pending verification after restart and replaces both atomically', async () => {
     const h = harness(), a = h.create()
     await a.startGuest()

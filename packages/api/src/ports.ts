@@ -1,5 +1,5 @@
 import type {
-  ContinuePurchase, FreezePurchase, LeagueCohort, Progress, StreakRepair,
+  ContinuePurchase, FreezePurchase, LeagueCohort, Progress, QuestRow, ReportReason, StreakRepair,
   SubmitLessonRequest, SubmitLessonResponse, SubscriptionRow,
 } from './contracts.js'
 
@@ -25,6 +25,13 @@ export type AccountRepository = {
   readonly fetchTimeZone: () => Promise<string>
   readonly setTimeZone: (zone: string) => Promise<void>
   readonly fetchFeatureFlags: () => Promise<readonly { key: string; enabled: boolean; rolloutPercent: number }[]>
+  /**
+   * Today's quest as the server composed it, with the progress it pays on. Only a backend
+   * that composes quests itself has one (the Worker); the legacy one pins the device's.
+   */
+  readonly fetchTodayQuest?: () => Promise<{ day: string; quest: QuestRow }>
+  /** Report a problem with a fact. Only a backend with a triage queue has one (the Worker). */
+  readonly reportFact?: (factId: string, reason: ReportReason) => Promise<void>
 }
 
 export type AuthRepository = {

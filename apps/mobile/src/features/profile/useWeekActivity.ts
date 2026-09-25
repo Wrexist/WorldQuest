@@ -33,6 +33,16 @@ export type WeekDay = { readonly day: string; readonly count: number }
 // fourth caller needed it — see the note there about who should own "today".
 const isoDay = localDay
 
+/**
+ * The whole day log: `YYYY-MM-DD` to lessons finished, for the last 31 days.
+ *
+ * Exported for the streak screen's month calendar, which reads the same record as the
+ * week chart here so the two can never disagree about a day.
+ */
+export function readActivityLog(): Record<string, number> {
+  return readJson<Record<string, number>>(KEY, isNumberRecord) ?? {}
+}
+
 export function useWeekActivity(): readonly WeekDay[] {
   return useMemo(() => {
     const log = readJson<Record<string, number>>(KEY, isNumberRecord) ?? {}

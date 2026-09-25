@@ -179,6 +179,15 @@ const WAIVED: Record<string, Partial<Record<State, string>>> = {
     // `purchased` was dropped, so "you already hold two" and "bought" looked identical.
     // The screen now says which, and that is an error state, so it is no longer waived.
   },
+  'home/HomeScreen': {
+    empty:
+      'the course path cannot be empty: a course that parses has at least one step, the ' +
+      'first launch opens on step 1 with its Start callout (that IS the day-1 state, per ' +
+      'L08 "a new user always sees a meaningful next task"), a finished course shows its ' +
+      'review card, and a pack that does not parse is the error card. The zero states ' +
+      'around it — no streak tile at 0, the quest bar at 0 of 5 — are content with their ' +
+      'own copy, and a section with nothing loaded is absent rather than empty',
+  },
   'quests/QuestScreen': {
     offline:
       'quests are generated on device and progress is counted locally; the only thing ' +

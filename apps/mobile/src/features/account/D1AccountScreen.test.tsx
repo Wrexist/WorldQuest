@@ -2,11 +2,14 @@ import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { createD1AuthClient, type D1Account, type D1Challenge, type AuthFetch } from '@worldquest/api/d1-auth'
 import { D1AccountScreen } from './D1AccountScreen.js'
-import { useD1Account, type D1AccountHost, type D1AccountClient } from './useD1Account.js'
+import { resetD1AccountFlow, useD1Account, type D1AccountHost, type D1AccountClient } from './useD1Account.js'
 
 const owner = '11111111-1111-4111-8111-111111111111'
 const session = { userId: owner, token: 'a'.repeat(64), expiresAt: Date.now() + 30 * 86400000 }
 function harness(options: { audience?: D1Account['audience']; linked?: boolean; pending?: boolean; expired?: boolean; missing?: boolean } = {}) {
+  // The flow outlives any one screen (it has to survive the remount an identity change
+  // causes), so each test starts it fresh, as a cold start would.
+  resetD1AccountFlow()
   const values = new Map<string, string>()
   let challenge: D1Challenge = { challengeId: 'b'.repeat(64), expiresAt: Date.now() + 300000, resendAt: Date.now() + 60000, email: 'test@example.invalid', purpose: 'link' }
   const account: D1Account = { userId: owner, audience: options.audience ?? 'eligible', email: options.linked ? challenge.email : null, revision: 1, xp: 42, coins: 7 }
@@ -37,14 +40,55 @@ function harness(options: { audience?: D1Account['audience']; linked?: boolean; 
   const host: D1AccountHost = { changeIdentity: vi.fn(operation => operation()), recoverSession: vi.fn(async () => create()), finishDeletion: vi.fn(async () => {}), resumeIdentity: vi.fn(async () => {}), deletionPending: () => false }
   return { create, host, fetch, values, clear, account }
 }
-function App({ client, host, online = true }: { client: D1AccountClient; host: D1AccountHost; online?: boolean }) {
-  const flow = useD1Account(client, host, 'en', online)
+function App({ client, host, online = true, entry }: { client: D1AccountClient; host: D1AccountHost; online?: boolean; entry?: 'signIn' }) {
+  const flow = useD1Account(client, host, 'en', online, entry)
   return <D1AccountScreen flow={flow} online={online} onBack={vi.fn()} onSupport={vi.fn()} onDone={vi.fn()} />
 }
 const click = (label: string) => fireEvent.click(screen.getByRole('button', { name: label }))
 const code = (value: string) => fireEvent.change(screen.getByLabelText('Eight-digit code'), { target: { value } })
 
 describe('D1 account screens with the protected auth transport', () => {
+  it('opens on signing in for "I already have an account", on a phone with no session', async () => {
+    // It offered "Start your account / Start as guest" to someone who had just said they
+    // have one. The device session a sign-in code needs is made without asking.
+    const h = harness({ missing: true })
+    render(<App client={h.create()} host={h.host} entry="signIn" />)
+    expect(await screen.findByRole('heading', { name: 'Sign in' })).toBeTruthy()
+    expect(screen.queryByText('Start your account')).toBeNull()
+    expect(h.fetch.mock.calls.some(([url]) => String(url).endsWith('/guest'))).toBe(true)
+  })
+
+  it('shows the result on the screen that replaces it mid-change', async () => {
+    // Every identity change remounts the app (the storage scope moves twice). The flow
+    // used to live in the screen, so its replacement began again at "loading" and nobody
+    // saw "Your email is linked" or reached the Continue that opens the app.
+    const h = harness({ pending: true })
+    const client = h.create()
+    let view = render(<App client={client} host={h.host} />)
+    await screen.findByLabelText('Eight-digit code')
+    h.host.changeIdentity = vi.fn(async (operation) => {
+      view.unmount()
+      view = render(<App client={h.create()} host={h.host} />)
+      return operation()
+    })
+    code('12345678'); click('Confirm')
+    expect(await screen.findByText('Your email is linked')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Continue' })).toBeTruthy()
+  })
+
+  it('goes on to signing in past the guest the app made at launch', async () => {
+    const h = harness()
+    render(<App client={h.create()} host={h.host} entry="signIn" />)
+    expect(await screen.findByRole('heading', { name: 'Sign in' })).toBeTruthy()
+    expect(screen.queryByText('Your guest account')).toBeNull()
+  })
+
+  it('still offers to start an account when opened any other way', async () => {
+    const h = harness({ missing: true })
+    render(<App client={h.create()} host={h.host} />)
+    expect(await screen.findByText('Start your account')).toBeTruthy()
+  })
+
   it('restores a pending challenge after remount, enforces eight digits and preserves resend cooldown', async () => {
     const h = harness({ pending: true })
     const first = render(<App client={h.create()} host={h.host} />)

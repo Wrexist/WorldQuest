@@ -37,6 +37,9 @@ pnpm also has a built-in deploy command). Wrangler OAuth needs
 write and D1 write permissions. Credentials use encrypted storage with a key in
 Windows Credential Manager.
 
+`GET` and `HEAD /health` answer without authentication: the app's connectivity probe
+asks with `HEAD`, and a 401 there reads as "offline" on every device.
+
 The checked-in configuration disables workers.dev, preview URLs, and API access.
 For isolated local API development only, pass `--var API_ENABLED:true` to Wrangler.
 Do not enable public API access before recovery, abuse controls, child policy and
@@ -46,6 +49,55 @@ Implemented: restricted guest sessions with hashed tokens, account-derived reads
 logout revocation, strict 16 KiB request limits, server grading, idempotent receipts,
 atomic reward/review/memory writes and bounded optimistic concurrency retries.
 
+Local-day rules (migration 0007, S14): each account stores a validated IANA zone
+(`POST /v1/account/time-zone`, UTC fallback on read). `accounts.day` is the local
+date of the latest counted lesson and only moves forward, so DST days of 23/25
+hours and time-zone moves never pay a second first-lesson bonus. The streak is
+decided by the engines' `applyActivity` inside the same revision-guarded batch,
+with milestone XP/coins folded into that lesson's ledger row; receipts carry
+`day` and `streak`. The Worker takes an injectable clock (`createWorker(mail,
+clock)`, `submitLesson(..., clock)`) and `proof.test.ts` drives it across the
+October 2026 Stockholm DST change.
+
+Daily quests (migration 0008, B05/S04): the Worker composes each day's quest
+itself with the engines' `generateDailyQuest`, seeded by (account, local day),
+and stores it on first sight (`GET /v1/quest/today` or the day's first lesson).
+Submissions carry answers only, so there is no slot for a client to duplicate.
+Progress is derived from the distinct quest facts answered correctly that day
+plus slot five's goal; task XP, the all-five bonus and its coins are paid in the
+lesson's own ledger row, once.
+
+Lessons that end early: a submission may answer any prefix of its ticket (at
+least one slot, never more than issued), and those answers are graded into
+memory with their per-answer XP. Only a FINISHED lesson — every slot answered,
+or hearts emptied in the grader's own replay (`heartsDepleted`; new facts never
+cost a heart) — is the day's activity: it extends the streak, takes the
+first-lesson bonus, counts in `lessons_today` and can meet the quest's perform
+goal. Receipts carry `finished`. `POST /v1/lessons/prepare` accepts an optional
+`focus` (the engines' `LessonFocus`: fact ids, attributes, ISO entities,
+difficulty band), applied with `focusFilter`; a focus too narrow for five
+questions answers `409 FOCUS_TOO_NARROW`.
+
+Coin spending (migration 0009, S06/A04): `POST /v1/shop/freeze`,
+`/v1/streak/repair`, `/v1/lessons/continue` and `/v1/shop/item` take a client
+request id, are decided by the engines' streak-recovery and shop rules, and
+record each spend once in `spends` plus a negative `ledger` row, under the same
+revision guard as lessons. Replays return the stored result (a continue replay
+reports `already_paid`); refusals write nothing. `GET /v1/progress` projects the
+app's `Progress` shape, showing a lapsed streak as zero and deriving the repair
+window at read time, so no nightly job is needed. While a streak is broken it
+also states `restoreTo`, the length the repair would restore (from the same view
+the repair uses), so the app never has to guess the number it offers. Hearts
+reset per lesson and are not stored. Entitlements are not yet server-side here.
+
+Achievements (migration 0010): the Worker runs the engines' `evaluateAll` over the
+shipped catalogue (`packs/achievements/core.v1.json`) with events it derived from its
+own grading, via the same `achievementEvents` helper the legacy function uses (it
+moves into the engines when that function is retired, B20). A lesson ended early is
+not a lesson for the session rules. Tier XP and coins come from the balance table and
+land in the lesson's ledger row inside the revision guard; receipts list the tiers
+unlocked.
+
 Protected native credential storage is accepted under [ADR 0014](../../docs/adr/0014-native-credential-storage.md); it does not provide D1 identity by itself.
 
 The local account gateway now uses sessionless Better Auth email verification and
@@ -53,8 +105,10 @@ separate stable progress owners ([ADR 0015](../../docs/adr/0015-d1-email-identit
 It supports age-band declaration, guest linking, existing-account login and fresh
 proof for linked deletion. Codes are challenge-scoped HMACs; WorldQuest sessions
 remain hashed bearer tokens. Provider HTTP/session APIs are not exposed.
-`AUTH_SECRET` must contain at least 32 characters. Real mail delivery is deliberately
-unconfigured; the default mail port returns `EMAIL_UNAVAILABLE`. Tests inject an
+`AUTH_SECRET` must contain at least 32 characters. Real mail goes through Resend
+when `RESEND_API_KEY` (secret) and `MAIL_FROM` are both configured
+([setup](../../docs/engineering/account-email-setup.md)); otherwise the mail port
+returns `EMAIL_UNAVAILABLE`. Tests inject an
 isolated synthetic mailbox and apply every migration to fresh real local D1.
 
 The portable client in `@worldquest/api` uses one awaited protected session/challenge

@@ -14,7 +14,7 @@ Worldwide means every storefront the eventual release is eligible to serve, with
 
 ## First week: World foundations
 
-One course, with a default five-minute session. New learners get **Continue today's lesson** as the one green primary recommendation. Explore, collection and optional challenges stay secondary. Resume an unfinished lesson first, then due reviews, then the next course segment; do not ask the learner to choose among five competing courses. Existing Home has one green quest CTA; its placement and replacement with the course sequence are U01/L08 in Phases 3–4.
+One course, with a default five-minute session. New learners get **Continue today's lesson** as the one green primary recommendation. Explore, collection and optional challenges stay secondary. Resume an unfinished lesson first, then due reviews, then the next course segment; do not ask the learner to choose among five competing courses. Home's one green action is now the course path's current step (the quest card is secondary below it); resuming an unfinished lesson (E02/U08) and putting due reviews ahead of the next segment are not built yet — a step's lesson serves its own due facts first, nothing more.
 
 | Day | Practice objective | Candidate pack entities | Evidence of learning |
 |---|---|---|---|
@@ -25,6 +25,8 @@ One course, with a default five-minute session. New learners get **Continue toda
 | 5 | Add capitals and revisit confusion | Reuse all twelve | Retry mistaken pairs without repeating an identical quiz |
 | 6 | Mix flag, location and capital directions | All twelve | Answer mixed questions; keep accessible equivalents equivalent |
 | 7 | Check what remains after a delay | All twelve; due work first | Compare with baseline; report correct answers and uncertainty |
+
+Implemented as `packages/content/packs/courses/first-week.v1.json` (v1.0.0): one step per day, in two units, each step completed by two finished lessons (the check by one). **One deviation, awaiting the owner's and an editor's approval:** day 1 practises the flags of all six countries days 2–3 use (SE, NO, US, JP, BR, KE), not only the first four. Each fact is asked once per lesson, and the D1 Worker refuses a focused lesson under five questions (`FOCUS_TOO_NARROW`), so four flags would open the course on an empty lesson; it also introduces BR and KE flags before day 6 mixes them. Day 7 has no time gate yet: the check opens when day 6 is done and relies on due-first composition. `pnpm content:validate` composes every step with the real engine and fails one that cannot fill a lesson.
 
 Country IDs above are curriculum candidates drawn from existing entities; display names and facts always come from packs. This is a course specification, not a shipped seven-day scheduler. Phase 3 must implement versioned course data, explanations, delayed review, accessible template diversity and native-speaker editorial approval. Do not claim “twelve countries mastered” after recognition practice. Calling codes, currencies and broader geography stay available for exploration; they are not the beginner course's primary sequence.
 

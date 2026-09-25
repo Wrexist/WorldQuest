@@ -51,7 +51,10 @@ const path = require('node:path')
 
 const ROOT = process.argv[2]
 const SHOTS = process.argv[3] ?? path.join(ROOT, '..', 'wq-e2e-shots')
-const PORT = 4173
+// Overridable because the default is a common one: on a machine shared with other
+// projects, another dev server holding 4173 made this die at `listen` after the whole
+// bundle had exported — a failure about the machine that read like one about the app.
+const PORT = Number(process.env.WQ_E2E_PORT ?? 4173)
 
 const TYPES = {
   '.html': 'text/html',
@@ -162,6 +165,24 @@ const skip = (name, why) => {
     })
     return heading.trim() || undefined
   }
+
+  /**
+   * Home's course path, as a screen reader meets it: every step in document order, with
+   * the state its test id carries and the label it announces.
+   *
+   * Laid-out steps only. expo-router keeps Home mounted under the lesson at zero size,
+   * and counting those would report a path while a lesson is on screen — the
+   * zero-height-heading trap `lessonPrompt` documents, in a new place.
+   */
+  const pathSteps = () =>
+    page.evaluate(() =>
+      Array.from(document.querySelectorAll('[data-testid^="path-node-"]'))
+        .filter((el) => el.getBoundingClientRect().height > 0)
+        .map((el) => ({
+          state: (el.getAttribute('data-testid') ?? '').slice('path-node-'.length),
+          label: el.getAttribute('aria-label') ?? '',
+        })),
+    )
 
   /**
    * Doubles every rendered font size, the way the OS setting does natively.
@@ -562,21 +583,54 @@ const skip = (name, why) => {
   step('a returning user goes straight to Home', afterOnboarding.includes('Explorer'))
   await page.screenshot({ path: path.join(SHOTS, 'home.png') })
 
-  // ── the taster lesson, which is the whole product in one flow ─────────────
+  // ── the course path: one lit step, and it opens its own lesson ─────────────
   //
-  // Straight into the runner, because that is what SHIPS. The quest cover page sits
-  // behind `quest_cover_page`, which is off at 0 % — and `useFeatureFlag` returns false
-  // for a flag it has never fetched, which is the state this harness is always in.
-  //
-  // Asserting the flagged-on path here would have been the more impressive-looking test
-  // and the wrong one: it would prove a route no user can currently reach while saying
-  // nothing about the one every user takes. The cover page is visited directly by
-  // `pnpm design:shots /quest` instead, and the flag's own default is asserted below.
-  await page.getByText('Continue', { exact: true }).first().click()
+  // Home's one primary action is the first-week course's current step (launch brief,
+  // L08/U05). It replaced the quest card's Continue, which this step used to press.
+  // Read structurally — each step's test id carries its state and its label carries
+  // its place and objective — never by guessing at English copy.
+  await page.screenshot({ path: path.join(SHOTS, 'home-path.png') })
+  const fresh = await pathSteps()
+  step(
+    'Home shows the course path with exactly one current step, the first',
+    fresh.length === 7 && fresh.filter((s) => s.state === 'current').length === 1 && fresh[0]?.state === 'current',
+    fresh.map((s) => s.state[0]).join(''),
+  )
+  step(
+    'and every step tells a screen reader its place, its state and its objective',
+    fresh.every((s) => /^(Start step|Step) \d+ of 7[.,]/.test(s.label) && s.label.length > 24),
+    fresh[1]?.label ?? '',
+  )
+
+  // A closed step answers a tap with a card saying how it opens — no dead taps — and
+  // offers nothing to press.
+  await page.getByTestId('path-node-locked').first().click()
+  await page.waitForTimeout(500)
+  const closedCard = page.getByTestId('path-card')
+  const closedText = (await closedCard.count()) > 0 ? await closedCard.first().innerText() : ''
+  step(
+    'a step that is not open yet explains how it opens, rather than ignoring the tap',
+    /opens when you finish/i.test(closedText) && (await page.getByTestId('path-practise').count()) === 0,
+    closedText.replace(/\s+/g, ' ').slice(0, 80),
+  )
+  await page.screenshot({ path: path.join(SHOTS, 'home-path-card.png') })
+  await page.getByTestId('path-node-locked').first().click()
+  await page.waitForTimeout(400)
+
+  // Straight into the runner: a step has no cover page. (The quest's own cover page
+  // sits behind `quest_cover_page`, off at 0 % — `useFeatureFlag` returns false for a
+  // flag it has never fetched, which is the state this harness is always in — and its
+  // button is secondary on Home now; it is pressed further down.)
+  await page.getByTestId('path-node-current').first().click()
   await page.waitForTimeout(1500)
   text = await body()
   const prompt = await lessonPrompt()
-  step('Continue opens a lesson, the flag being off', prompt !== undefined, prompt)
+  const opened = new URL(page.url())
+  step(
+    'the current step opens its own lesson',
+    prompt !== undefined && opened.searchParams.get('node') === 'node.first-week.flags',
+    `${opened.pathname}${opened.search} · ${prompt ?? 'no question'}`,
+  )
 
   if (prompt !== undefined) {
     await page.screenshot({ path: path.join(SHOTS, 'lesson.png') })
@@ -639,7 +693,33 @@ const skip = (name, why) => {
       layout === null ? 'not measurable' : `${layout}px below the prompt`,
     )
 
+    // Select, then Check. A tap only SELECTS now, so the first thing to prove is that it
+    // does not grade: no feedback string may appear until Check is pressed, and Check
+    // must refuse to do anything before there is a selection to grade.
+    const check = page.getByTestId('lesson-check')
+    const checkDisabledBefore = (await check.getAttribute('aria-disabled')) === 'true'
+    step('Check waits for a selection', checkDisabledBefore)
+
     if (answered) await options[0].click()
+    await page.waitForTimeout(400)
+    const selection = await page.evaluate(() => {
+      const all = [...document.querySelectorAll('[data-testid="answer-option"]')]
+      return {
+        selected: all.filter((o) => o.getAttribute('aria-selected') === 'true').length,
+        first: all[0]?.getAttribute('aria-selected') === 'true',
+        check: document.querySelector('[data-testid="lesson-check"]')?.getAttribute('aria-disabled'),
+      }
+    })
+    const graded = /Perfect!|That's [^\n]*|The answer is [^\n]*/.test(await body())
+    step(
+      'a tap selects the option without grading it',
+      answered && selection.first && selection.selected === 1 && selection.check !== 'true' && !graded,
+      `${selection.selected} selected · Check ${selection.check === 'true' ? 'disabled' : 'enabled'}` +
+        (graded ? ' · but feedback already showed' : ''),
+    )
+    await page.screenshot({ path: path.join(SHOTS, 'lesson-selected.png') })
+
+    if (answered) await check.click()
 
     await page.waitForTimeout(1200)
     text = await body()
@@ -652,7 +732,23 @@ const skip = (name, why) => {
     // See docs/design/voice-and-tone.md. This is the one place a copy regression
     // would reach a child before it reached a reviewer.
     step('wrong-answer copy does not shame', !/Wrong!|Oops!|Incorrect!/i.test(text))
+
+    // The sheet has risen all the way — by now it has had over four times `motion.base`
+    // — and sits inside the viewport. A sheet left at its start position would still be
+    // in the DOM with all its text, so the text assertions above cannot tell.
+    const sheet = await page.evaluate(() => {
+      const el = document.querySelector('[data-testid="answer-sheet"]')
+      if (!el) return null
+      const r = el.getBoundingClientRect()
+      return { top: Math.round(r.top), bottom: Math.round(r.bottom), vh: window.innerHeight }
+    })
+    step(
+      'the answer sheet rises into view',
+      sheet !== null && sheet.top >= 0 && sheet.bottom <= sheet.vh,
+      sheet === null ? 'no sheet' : `${sheet.top}–${sheet.bottom} of ${sheet.vh}`,
+    )
     await page.screenshot({ path: path.join(SHOTS, 'feedback.png') })
+    await page.screenshot({ path: path.join(SHOTS, 'lesson-sheet.png') })
 
     // ── the flag question, which is the mockup's lesson screen ──────────────
     //
@@ -727,7 +823,10 @@ const skip = (name, why) => {
       }
       const next = await page.getByTestId('answer-option').all()
       if (next.length === 0) break
+      // Select, then Check — a tap alone grades nothing, and the next lap's
+      // `isDisabled` test would wait on a question that was never answered.
       await next[0].click()
+      await page.getByTestId('lesson-check').click()
       await page.waitForTimeout(700)
     }
 
@@ -938,15 +1037,18 @@ const skip = (name, why) => {
   const dismissed = await page.getByText('Not now', { exact: true }).first().isVisible()
   step('paywall is escapable on the first frame, at full size', dismissed)
 
-  // ── Settings owns the subscription, and does not bury cancelling ───────────
-  // `/settings`, not `/more`. The route moved when Shop took the fifth tab, and a URL
-  // that 404s here would have failed as "Settings has no Premium section" — a check
-  // reporting the wrong defect is worse than one that does not run.
+  // ── Settings sells nothing this build cannot deliver ───────────────────────
+  // `/settings`, not `/more`. The route moved when Shop took the fifth tab.
+  //
+  // No store adapter is installed (`SELLING` in purchases.ts), so "See Premium" would
+  // open an empty paywall and "Restore purchases" could only fail — both dead ends App
+  // Review rejects. When A01 installs a port, these two steps flip: the Premium section
+  // and Restore return, and both stores require Restore to be there.
   await page.goto(`http://localhost:${PORT}/settings`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(1200)
   const more = await body()
-  step('Settings has a Premium section', /premium/i.test(more))
-  step('Settings offers restore, which both stores require', /restore purchases/i.test(more))
+  step('Settings offers no Premium while nothing can be bought', !/see premium/i.test(more))
+  step('and no Restore that can only fail', !/restore purchases/i.test(more))
   await page.screenshot({ path: path.join(SHOTS, 'settings-premium.png') })
 
   // ── a deep route, which is also a content check ────────────────────────────
@@ -1033,11 +1135,20 @@ const skip = (name, why) => {
   const beforeAch = await body()
   const lockedBefore = (beforeAch.match(/Not yet/g) ?? []).length
 
+  // Make this the day's first finished lesson, whatever the flow did above, so the
+  // after-summary step below has one right answer: the streak beat.
+  await page.evaluate(() => {
+    for (const key of Object.keys(localStorage)) {
+      if (key.endsWith('activity.byDay.v1')) localStorage.removeItem(key)
+    }
+  })
   await page.goto(`http://localhost:${PORT}/lesson`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(1800)
   // Answer every question, then leave — the lesson must reach its summary for the
-  // completion event to fire at all.
-  for (let i = 0; i < 25; i++) {
+  // completion event to fire at all. Up to 45 answers: a lesson is at most twenty
+  // questions, and the review round after them asks each missed one again, so always
+  // tapping the first option can take nearly twice that. The loop ends with the options.
+  for (let i = 0; i < 45; i++) {
     const options = await page.getByTestId('answer-option').all()
     if (options.length === 0) break
     // Think first. `MIN_CREDIBLE_ANSWER_MS` is 400 and grading DISCARDS anything
@@ -1047,7 +1158,9 @@ const skip = (name, why) => {
     // played graded to zero and the summary it produced was the rejected-everything
     // case. The quest and achievement steps below passed anyway, so nothing said so.
     await page.waitForTimeout(600)
+    // The clock stops at Check, so the think time above is what gets recorded.
     await options[0].click()
+    await page.getByTestId('lesson-check').click()
     await page.waitForTimeout(250)
     const next = page.getByRole('button', { name: 'Continue' })
     if (await next.count()) await next.first().click()
@@ -1097,6 +1210,64 @@ const skip = (name, why) => {
        `${practisedFlags.length} flag(s)`)
   await page.screenshot({ path: path.join(SHOTS, 'lesson-summary.png') })
 
+  // ── after the summary: the day's streak beat, then onward ─────────────────
+  //
+  // The day's first finished lesson is followed by the streak celebration, as in
+  // Duolingo, and never by a paywall this build has nothing to sell on
+  // (`afterLesson.ts`, `SELLING`). Continue on it must leave for Home or the next beat.
+  await page.getByTestId('summary-continue').click()
+  await page.waitForTimeout(1600)
+  const afterSummary = await body()
+  const streakBeat = page.getByTestId('streak-extended')
+  step('the first lesson of the day ends on the streak, not a sale',
+       (await streakBeat.count()) > 0 && !/nothing to buy|per month|Try it free/i.test(afterSummary),
+       afterSummary.slice(0, 80).replace(/\s+/g, ' '))
+  await page.screenshot({ path: path.join(SHOTS, 'streak-extended.png') })
+  await streakBeat.getByText('Continue', { exact: true }).click()
+  await page.waitForTimeout(1200)
+  step('and the streak beat has a way out', (await page.getByTestId('streak-extended').count()) === 0)
+
+  // ── then "Create a profile", as Duolingo asks after an early lesson ───────
+  //
+  // This lesson is the install's first or second to reach its end (the flag walk above
+  // may have finished one), the learner is an adult, and this export has no backend, so
+  // every session is a guest by construction — all four conditions `shouldOfferProfile`
+  // needs. A quest or badge beat could legitimately sit between the streak and the ask
+  // if this lesson happened to earn one, so those are stepped through, not assumed away.
+  for (let i = 0; i < 6; i++) {
+    const at = new URL(page.url()).pathname
+    if (at !== '/quest-complete' && at !== '/achievement-unlocked') break
+    // expo-router keeps earlier routes mounted, so only the VISIBLE button is this beat's.
+    for (const onward of await page.getByRole('button', { name: /^(Nice|Continue)$/ }).all()) {
+      if (await onward.isVisible()) {
+        await onward.click()
+        break
+      }
+    }
+    await page.waitForTimeout(1000)
+  }
+  const ask = page.getByTestId('create-profile')
+  const asked = (await ask.count()) > 0
+  const askText = asked ? await ask.innerText() : ''
+  step('an adult guest is then offered a profile, for what it is for',
+       // What the profile does today; second-device recovery (U04) is not yet promised.
+       asked && /Create a profile/.test(askText) && /sign in to it again/i.test(askText) && !/new (one|phone)/i.test(askText),
+       askText.slice(0, 90).replace(/\s+/g, ' '))
+  // Rule 7, asserted in the shipped bundle: the ask is an offer, not a threat.
+  step('and the offer threatens nothing',
+       asked && !/lose|lost|forever|too late|hurry|last chance|don'?t miss/i.test(askText))
+  await page.screenshot({ path: path.join(SHOTS, 'create-profile.png') })
+  if (asked) {
+    await ask.getByRole('button', { name: 'Not now' }).click()
+    await page.waitForTimeout(1200)
+  }
+  // By path: expo-router keeps the tabs mounted under every stack screen, so "a tab bar
+  // exists" is true on the ask itself and proves nothing.
+  step('"Not now" carries on to Home, and nothing follows it',
+       asked && (await page.getByTestId('create-profile').count()) === 0 &&
+         new URL(page.url()).pathname === '/',
+       new URL(page.url()).pathname)
+
   // The quest, checked in the same pass — the lesson above is what should have moved
   // it. Until now `applyQuestEvent` had no caller, so five tasks read 0/5 forever no
   // matter how many lessons were finished: a promise on the home screen that the app
@@ -1123,6 +1294,187 @@ const skip = (name, why) => {
        (afterAch.match(/Not yet/g) ?? []).length < lockedBefore,
        `${lockedBefore} locked before`)
   await page.screenshot({ path: path.join(SHOTS, 'achievements.png') })
+
+  // ── the badge cards: one per unlock, three at most, then "and N more" ──────
+  //
+  // Driven by URL because a lesson that unlocks four badges cannot be arranged from
+  // here without writing to storage — this harness answers the first option, so a
+  // perfect lesson is luck. The chain's own URL is the contract under test: the cards
+  // read `?unlocks=` and re-check every entry against the shipped catalogue.
+  const FOUR = 'ach.session.perfect:bronze,ach.lessons.done:bronze,ach.flags.collector:bronze,ach.streak.keeper:bronze'
+  await page.goto(`http://localhost:${PORT}/achievement-unlocked?unlocks=${encodeURIComponent(FOUR)}`, {
+    waitUntil: 'networkidle',
+  })
+  await page.waitForTimeout(1200)
+  const cardNames = []
+  let sawMore = ''
+  for (let i = 0; i < 5; i++) {
+    const card = page.getByTestId('achievement-unlocked')
+    if ((await card.count()) === 0) break
+    const name = ((await card.getByRole('heading').first().textContent()) ?? '').trim()
+    cardNames.push(name)
+    if (i === 0) await page.screenshot({ path: path.join(SHOTS, 'achievement-unlocked.png') })
+    const more = card.getByTestId('achievement-more')
+    if ((await more.count()) > 0) {
+      sawMore = ((await more.textContent()) ?? '').trim()
+      await page.screenshot({ path: path.join(SHOTS, 'achievement-unlocked-last.png') })
+    }
+    await card.getByRole('button', { name: 'Continue' }).click()
+    await page.waitForTimeout(900)
+  }
+  step('each badge gets a card of its own, named, never a raw key',
+       cardNames.length === 3 &&
+         cardNames.every((name) => name.length > 0 && !/achievements:|ach\./.test(name)) &&
+         new Set(cardNames).size === 3,
+       cardNames.join(' · '))
+  step('and the fourth is counted on the last card rather than given one',
+       /And 1 more badge/.test(sawMore), sawMore || 'no "more" line')
+  step('and the last Continue leaves for Home', new URL(page.url()).pathname === '/',
+       new URL(page.url()).pathname)
+
+  // A link that names nothing real draws nothing at all: it steps straight on.
+  await page.goto(`http://localhost:${PORT}/achievement-unlocked?unlocks=ach.not.real%3Agold`, {
+    waitUntil: 'networkidle',
+  })
+  await page.waitForTimeout(1200)
+  step('a badge the catalogue does not know is never drawn',
+       (await page.getByTestId('achievement-unlocked').count()) === 0 &&
+         new URL(page.url()).pathname === '/')
+
+  // ── the course path advances ───────────────────────────────────────────────
+  //
+  // Placed after the profile ask on purpose: that step needs its lesson to be one of the
+  // install's first two, and these are the third and fourth.
+  //
+  // A finished lesson started from a step counts towards that step and nothing else, the
+  // first step needs two, and then the path moves on. Every question on the way is
+  // checked to be about the step's own countries — which is the proof the lesson had the
+  // step's focus rather than a mixed shuffle with the right URL. Three ways to tell, one
+  // per flag template: the flag picture's file code ("which country's flag is this?"),
+  // the country its prompt names ("what does the flag of Kenya look like?"), or the
+  // country the graded answer names ("which country's flag is a yellow Nordic cross…?",
+  // whose prompt names none).
+  const STEP_ONE_NAMES = ['Sweden', 'Norway', 'United States', 'Japan', 'Brazil', 'Kenya']
+  const STEP_ONE_FLAG = /flags\/(SE|NO|US|JP|BR|KE)\./
+  const playCurrentStep = async () => {
+    await home()
+    await page.getByTestId('path-node-current').first().click()
+    await page.waitForTimeout(1500)
+    const node = new URL(page.url()).searchParams.get('node')
+    const subjects = []
+    for (let i = 0; i < 25; i++) {
+      const options = await page.getByTestId('answer-option').all()
+      if (options.length === 0) break
+      const subject = await page.evaluate(() => {
+        const img = document.querySelector('[data-testid="prompt-art"] img')
+        const heading = Array.from(document.querySelectorAll('[role="heading"]')).find(
+          (h) => h.getBoundingClientRect().height > 0,
+        )
+        return { src: img?.getAttribute('src') ?? '', prompt: heading?.textContent ?? '', answer: '' }
+      })
+      // Human speed, as the achievements lesson above explains: faster is graded as a bot.
+      await page.waitForTimeout(600)
+      await options[0].click()
+      await page.getByTestId('lesson-check').click()
+      await page.waitForTimeout(250)
+      // Grading labels the right option "…, correct answer", whichever was chosen.
+      subject.answer = await page.evaluate(
+        () =>
+          Array.from(document.querySelectorAll('[data-testid="answer-option"]'))
+            .map((o) => o.getAttribute('aria-label') ?? '')
+            .find((label) => /correct answer$/.test(label)) ?? '',
+      )
+      subjects.push(subject)
+      const next = page.getByRole('button', { name: 'Continue' })
+      if (await next.count()) await next.first().click()
+      await page.waitForTimeout(250)
+    }
+    await page.waitForTimeout(1400)
+    const finished = (await page.getByTestId('summary-continue').count()) > 0
+    if (finished) await page.getByTestId('summary-continue').click()
+    await page.waitForTimeout(1600)
+    // Whichever beats this lesson earned — badges, the quest, the profile ask — until Home.
+    for (let i = 0; i < 8 && new URL(page.url()).pathname !== '/'; i++) {
+      for (const onward of await page.getByRole('button', { name: /^(Nice|Continue|Not now)$/ }).all()) {
+        if (await onward.isVisible()) {
+          await onward.click()
+          break
+        }
+      }
+      await page.waitForTimeout(1000)
+    }
+    return { node, finished, subjects }
+  }
+
+  const firstRun = await playCurrentStep()
+  const offTopic = firstRun.subjects.filter(
+    (s) =>
+      !STEP_ONE_FLAG.test(s.src) &&
+      !STEP_ONE_NAMES.some((name) => s.prompt.includes(name) || s.answer.startsWith(`${name},`)),
+  )
+  step(
+    'a step\'s lesson asks only about that step: the flags of its six countries',
+    firstRun.node === 'node.first-week.flags' && firstRun.subjects.length >= 5 && offTopic.length === 0,
+    offTopic.length > 0
+      ? `off the step: ${offTopic.map((s) => s.prompt || s.src).slice(0, 2).join(' · ')}`
+      : `${firstRun.subjects.length} questions, every one a flag of the six`,
+  )
+  await home()
+  const halfway = await pathSteps()
+  step(
+    'one finished lesson moves the step on, and the step stays current until it has two',
+    firstRun.finished && halfway[0]?.state === 'current' && /Lesson 2 of 2/.test(halfway[0]?.label ?? ''),
+    halfway[0]?.label ?? 'no path',
+  )
+
+  const secondRun = await playCurrentStep()
+  await home()
+  const advanced = await pathSteps()
+  step(
+    'finishing the step\'s lessons advances the path: step 1 done, step 2 current',
+    secondRun.finished &&
+      advanced[0]?.state === 'done' &&
+      advanced[1]?.state === 'current' &&
+      advanced.filter((s) => s.state === 'current').length === 1,
+    advanced.map((s) => s.state[0]).join(''),
+  )
+  await page.screenshot({ path: path.join(SHOTS, 'home-path-advanced.png') })
+
+  // A done step opens a card offering practice rather than starting a lesson on a tap,
+  // and Practise replays that step — the step it names, not the current one.
+  await page.getByTestId('path-node-done').first().click()
+  await page.waitForTimeout(500)
+  const practise = page.getByTestId('path-practise')
+  const offersPractice = (await practise.count()) > 0 && new URL(page.url()).pathname === '/'
+  if (offersPractice) {
+    await practise.first().click()
+    await page.waitForTimeout(1500)
+  }
+  const replay = new URL(page.url())
+  step(
+    'a done step offers practice, and Practise replays that step',
+    offersPractice && replay.searchParams.get('node') === 'node.first-week.flags' && (await lessonPrompt()) !== undefined,
+    `${replay.pathname}${replay.search}`,
+  )
+
+  // The quest is secondary on Home now, and its own button still plays the quest — its
+  // facts, straight into the runner while the cover-page flag is off.
+  await home()
+  const questStart = page.getByTestId('home-quest-start')
+  if ((await questStart.count()) === 0) {
+    skip('the quest card\'s button still plays the quest', 'today\'s quest is already complete')
+  } else {
+    await questStart.first().click()
+    await page.waitForTimeout(1500)
+    // Its outstanding facts when a task still wants some, an ordinary lesson when only the
+    // "finish strong" task is left (`questFocus`) — never a course step.
+    const quest = new URL(page.url())
+    step(
+      'the quest card\'s button still plays the quest, the cover-page flag being off',
+      quest.pathname === '/lesson' && !quest.searchParams.has('node') && (await lessonPrompt()) !== undefined,
+      `${quest.pathname}?${[...quest.searchParams.keys()].join('&')}`,
+    )
+  }
 
   // ── the way out of a lesson ────────────────────────────────────────────────
   //
@@ -1261,12 +1613,33 @@ const skip = (name, why) => {
     if (landed) {
       const label = await page.evaluate(() => document.activeElement?.textContent?.trim() ?? '')
       await page.keyboard.press('Enter')
-      await page.waitForTimeout(1200)
-      const text = await body()
-      // The feedback panel is the proof the answer was actually scored — focus moving
-      // is not the same as the control doing its job.
-      const scored = /Perfect!|That's [^\n]*|The answer is [^\n]*/.test(text)
-      step('keyboard: Enter scores it, with no pointer involved', scored, label)
+      await page.waitForTimeout(400)
+      const selectedByKey = await page.evaluate(
+        () => document.activeElement?.getAttribute('aria-selected') === 'true',
+      )
+      step('keyboard: Enter selects it', selectedByKey, label)
+
+      // Then onward to Check, by Tab alone. This is also the focus-order check the
+      // select-then-check model needs: Check comes AFTER the options, so a keyboard or
+      // switch user meets the question, then the answers, then the commit.
+      let onCheck = false
+      for (let i = 0; i < 12 && !onCheck; i++) {
+        await page.keyboard.press('Tab')
+        onCheck = await page.evaluate(
+          () => document.activeElement?.getAttribute('data-testid') === 'lesson-check',
+        )
+      }
+      step('keyboard: Tab reaches Check after the answers', onCheck)
+
+      if (onCheck) {
+        await page.keyboard.press('Enter')
+        await page.waitForTimeout(1200)
+        const text = await body()
+        // The feedback panel is the proof the answer was actually scored — focus moving
+        // is not the same as the control doing its job.
+        const scored = /Perfect!|That's [^\n]*|The answer is [^\n]*/.test(text)
+        step('keyboard: Enter on Check scores it, with no pointer involved', scored, label)
+      }
     }
   }
 
@@ -1304,6 +1677,14 @@ const skip = (name, why) => {
     // likely to clip its own exit at 200 %, and the one where clipping the exit is a
     // review-team problem rather than a cosmetic one.
     ['/paywall?source=settings', 'paywall'],
+    // The two after-lesson screens this chain gained. Both are a large picture, a
+    // display-size heading and a pinned button — the shape most likely to push its own
+    // button off a phone when every string doubles.
+    ['/create-profile', 'create-profile'],
+    [
+      `/achievement-unlocked?unlocks=${encodeURIComponent('ach.flags.collector:gold,ach.lessons.done:bronze')}`,
+      'achievement-unlocked',
+    ],
     // Onboarding is deliberately absent: it is a gate this harness has already walked
     // through by the time it gets here, so it cannot be revisited by URL. It is checked
     // in place, up in the first-launch section, where it is genuinely on screen.

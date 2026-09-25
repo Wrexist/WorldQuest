@@ -10,8 +10,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { factsStrengthened } from '@worldquest/engines'
 import type { GradeResult, Mastery, Rating } from '@worldquest/engines'
-import { LessonSummary, outcomeOf } from './LessonSummary.js'
-import { CATALOGUE } from '../achievements/useAchievements.js'
+import { LessonSummary, minutesAndSeconds, outcomeOf } from './LessonSummary.js'
 
 const move = (factId: string, from: Mastery, to: Mastery) => ({ factId, from, to })
 
@@ -44,14 +43,16 @@ const grade = (over: Partial<GradeResult> = {}): GradeResult => ({
   rejected: 0,
   overdueCleared: 0,
   heartsLost: 0,
+  heartsDepleted: false,
   ...over,
 })
 
-const summary = (over: Partial<GradeResult> | null = {}, wasAbandoned = false) => {
+const summary = (over: Partial<GradeResult> | null = {}, wasAbandoned = false, timeMs = 65_000) => {
   const onExit = vi.fn()
   const view = render(
     <LessonSummary
       result={over === null ? null : grade(over)}
+      timeMs={timeMs}
       wasAbandoned={wasAbandoned}
       isOffline={false}
       onExit={onExit}
@@ -185,9 +186,30 @@ describe('LessonSummary — the numbers', () => {
     expect(tile.getAttribute('aria-label')).toBe('No facts moved up a level this time')
   })
 
+  it('shows how long the answering took, and says it in words', () => {
+    summary({}, false, 65_000)
+    const tile = screen.getByTestId('summary-time')
+    expect(tile.textContent).toContain('1:05')
+    expect(tile.getAttribute('aria-label')).toBe('Answering time: 1 minute 5 seconds')
+  })
+
+  it('says a lesson under a minute in seconds alone', () => {
+    summary({}, false, 48_000)
+    const tile = screen.getByTestId('summary-time')
+    expect(tile.textContent).toContain('0:48')
+    expect(tile.getAttribute('aria-label')).toBe('Answering time: 48 seconds')
+  })
+
+  it('calls it time, never speed', () => {
+    // A slow lesson is not a worse one. The reference labels this card with praise for
+    // speed; for a child reading a flag description carefully, that scores the care.
+    const { container } = summary({}, false, 200_000)
+    expect(container.textContent).not.toMatch(/speed|fast|quick|slow/i)
+  })
+
   it('groups each tile into one spoken element, not two fragments', () => {
     summary()
-    for (const id of ['summary-accuracy', 'summary-coins', 'summary-stronger']) {
+    for (const id of ['summary-accuracy', 'summary-time', 'summary-coins', 'summary-stronger']) {
       const tile = screen.getByTestId(id)
       expect(tile.getAttribute('aria-label')).toBeTruthy()
       for (const child of Array.from(tile.querySelectorAll('div'))) {
@@ -206,6 +228,7 @@ describe('LessonSummary — where you just were', () => {
       <LessonSummary
         result={grade()}
         practised={practised}
+        timeMs={30_000}
         wasAbandoned={false}
         isOffline={false}
         onExit={() => {}}
@@ -244,76 +267,32 @@ describe('LessonSummary — the way out', () => {
 
   it('says so when the result has not reached the server', () => {
     render(
-      <LessonSummary result={grade()} wasAbandoned={false} isOffline onExit={() => {}} />,
+      <LessonSummary result={grade()} timeMs={30_000} wasAbandoned={false} isOffline onExit={() => {}} />,
     )
     expect(screen.getByRole('alert')).toBeTruthy()
   })
 })
 
-describe('the summary — badges that used to unlock in silence', () => {
-  const badge = CATALOGUE[0]!.id
-
-  it('shows a medal and names it', () => {
-    // Before this an unlock produced an analytics event and nothing a user could see:
-    // the only way to find out was to open Profile, then Achievements, and notice a
-    // medal that had gained its frame.
+describe('the summary — badges', () => {
+  it('leaves badges to the full-screen cards that follow it', () => {
+    // Each unlock gets a card of its own straight after this screen, finished lesson or
+    // early exit (`afterLesson.ts`). A row of medals here as well showed the same badge
+    // twice, seconds apart, and pushed the practised flags off a short phone.
     render(
-      <LessonSummary
-        result={grade()}
-        wasAbandoned={false}
-        unlocked={[{ achievementId: badge, tier: 'bronze' }]}
-        isOffline={false}
-        onExit={() => {}}
-      />,
-    )
-    const section = screen.getByTestId('summary-unlocked')
-    expect(section.textContent).toMatch(/new badge/i)
-    // The name, not the raw key — the medal is a picture and the caption is the fact.
-    expect(section.textContent).not.toMatch(/achievements:/)
-  })
-
-  it('pluralises the heading rather than concatenating one', () => {
-    render(
-      <LessonSummary
-        result={grade()}
-        wasAbandoned={false}
-        unlocked={[
-          { achievementId: CATALOGUE[0]!.id, tier: 'bronze' },
-          { achievementId: CATALOGUE[1]!.id, tier: 'silver' },
-        ]}
-        isOffline={false}
-        onExit={() => {}}
-      />,
-    )
-    expect(screen.getByTestId('summary-unlocked').textContent).toMatch(/new badges/i)
-  })
-
-  it('renders nothing at all when there is nothing to celebrate', () => {
-    // A heading over an empty row is the shape of a screen that thinks something
-    // happened. Most lessons unlock nothing and must look like it.
-    render(
-      <LessonSummary result={grade()} wasAbandoned={false} isOffline={false} onExit={() => {}} />,
+      <LessonSummary result={grade()} timeMs={30_000} wasAbandoned={false} isOffline={false} onExit={() => {}} />,
     )
     expect(screen.queryByTestId('summary-unlocked')).toBeNull()
-  })
-
-  it('celebrates even a lesson somebody walked out of', () => {
-    // The badge was earned by the answers that were given, and `ABANDON` keeps those.
-    // Withholding it would be the app punishing someone for stopping.
-    render(
-      <LessonSummary
-        result={grade()}
-        wasAbandoned
-        unlocked={[{ achievementId: badge, tier: 'gold' }]}
-        isOffline={false}
-        onExit={() => {}}
-      />,
-    )
-    expect(screen.getByTestId('summary-unlocked')).toBeTruthy()
+    expect(screen.queryByText(/new badge/i)).toBeNull()
   })
 })
 
 describe('the summary rules, on their own', () => {
+  it('rounds the time once, on the total, so a minute never reads 0:60', () => {
+    expect(minutesAndSeconds(59_600)).toEqual({ minutes: 1, seconds: 0 })
+    expect(minutesAndSeconds(65_400)).toEqual({ minutes: 1, seconds: 5 })
+    expect(minutesAndSeconds(0)).toEqual({ minutes: 0, seconds: 0 })
+  })
+
   it('ranks mastery in the order the model defines', () => {
     // Each with the correct answer that moved it — a wrong answer strengthens nothing at
     // all, which is the case below rather than the ordering being tested here.

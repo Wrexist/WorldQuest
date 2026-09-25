@@ -6,7 +6,7 @@ export const submissionSchema = z.object({
     slot: z.number().int().min(0).max(19),
     chosenOptionId: z.string().max(160).nullable(),
     elapsedMs: z.number().finite().min(0).max(60_000),
-  }).strict()).min(5).max(20),
+  }).strict()).min(1).max(20),
 }).strict().superRefine(({ answers }, ctx) => {
   if (new Set(answers.map(a => a.slot)).size !== answers.length) {
     ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Duplicate slots' })
@@ -19,16 +19,42 @@ export const ticketSchema = z.array(z.object({
 })).min(5).max(20)
 
 export type Submission = z.infer<typeof submissionSchema>
+export interface StreakReceipt {
+  current: number; longest: number; extended: boolean; freezeUsed: boolean; reset: boolean
+  /** Already inside `xpAwarded`/`coinsAwarded`; stated separately so the app can celebrate it. */
+  milestoneXp: number; milestoneCoins: number
+}
 export interface Receipt {
   lessonId: string; revision: number; xpAwarded: number; coinsAwarded: number
   xpTotal: number; coinBalance: number; correct: number; reviews: number
+  /** The learner's local date this lesson counted for. */
+  day: string
+  /** Every slot answered, or hearts ran out. Only a finished lesson is the day's activity. */
+  finished: boolean
+  streak: StreakReceipt; quest: QuestReceipt
+  /** Tiers this lesson unlocked. Their XP and coins are inside the totals above. */
+  achievements: { unlocked: { achievementId: string; tier: string }[]; xp: number; coins: number }
+}
+export interface QuestReceipt {
+  /** Slots this lesson completed. Their XP (and the all-five bonus) is inside the totals. */
+  completedSlots: string[]; complete: boolean; done: number; total: number; xp: number; coins: number
 }
 export interface Account {
   id: string; audience: 'unknown' | 'protected' | 'eligible'; deleted_at: number | null
   revision: number; xp: number; coins: number; day: string; daily_xp: number; lessons_today: number
+  time_zone: string; streak_current: number; streak_longest: number; streak_last_day: string | null; freezes_held: number
+  recent_accuracy: number
+  streak_broken_on: string | null; streak_restorable: number; last_repair_at: number | null
+  achievements: string
 }
+/** Injected so day rules are testable across midnights and DST; production passes `Date.now`. */
+export type Clock = () => number
 export class ApiError extends Error {
   constructor(readonly code: string, readonly status: number,
     readonly retryContext?: { challengeId: string; expiresAt: number; resendAt?: number }) { super(code) }
 }
-export interface Env { DB: D1Database; API_ENABLED: string; AUTH_SECRET?: string }
+export interface Env {
+  DB: D1Database; API_ENABLED: string; AUTH_SECRET?: string
+  /** Resend credential (a Worker secret) and sender; both set turns real mail on. */
+  RESEND_API_KEY?: string; MAIL_FROM?: string
+}

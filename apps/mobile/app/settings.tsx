@@ -25,6 +25,9 @@ import { usePreferences } from '../src/features/settings/usePreferences.js'
 import { useSyncStatus } from '../src/features/settings/useSyncStatus.js'
 import { useEntitlement } from '../src/features/paywall/useEntitlement.js'
 import { usePurchases } from '../src/features/paywall/usePurchases.js'
+import { SELLING } from '../src/features/paywall/purchases.js'
+import { ANALYTICS_CONNECTED } from '../src/lib/analytics.js'
+import { isD1 } from '../src/lib/backendConfig.js'
 import { useOnboarding } from '../src/features/onboarding/useOnboarding.js'
 import { useReminder } from '../src/features/settings/useReminder.js'
 import { useAccountStatus } from '../src/features/account/useAccountStatus.js'
@@ -38,12 +41,11 @@ import { useT } from '../src/lib/i18n.js'
  *
  * A settings screen that opens a 404 is worse than one that opens nothing — these
  * are the two documents a user goes looking for when they already distrust an app.
- * They land with the marketing site; until then the rows have no handler and
- * correctly render as text rather than as buttons that do nothing.
+ * They come from build configuration (`src/lib/links.ts`), so publishing the pages
+ * is an EAS environment change; until then the rows have no handler and correctly
+ * render as text rather than as buttons that do nothing.
  */
-const PRIVACY_URL: string | undefined = undefined
-const TERMS_URL: string | undefined = undefined
-const LICENCES_URL: string | undefined = undefined
+import { LICENCES_URL, PRIVACY_URL, TERMS_URL } from '../src/lib/links.js'
 
 const open = (url: string | undefined) =>
   url === undefined ? undefined : () => void openURL(url)
@@ -95,8 +97,12 @@ export default function SettingsRoute() {
    * be a purchasing opportunity in the listing sense, and it would also be a row that
    * tells a ten-year-old they are missing something.
    */
+  //
+  // Also absent while this build cannot sell (`SELLING`): "See Premium" would open a
+  // paywall with no plans and "Restore purchases" could only fail. A learner who
+  // somehow holds an entitlement still sees their status.
   const premium: PremiumStatus | undefined =
-    state.isChild === true
+    state.isChild === true || (!SELLING && !entitlement.isPremium)
       ? undefined
       : {
           isPremium: entitlement.isPremium,
@@ -161,6 +167,11 @@ export default function SettingsRoute() {
       onOpenPrivacyPolicy={open(PRIVACY_URL)}
       onOpenTerms={open(TERMS_URL)}
       onOpenLicences={open(LICENCES_URL)}
+      analyticsConnected={ANALYTICS_CONNECTED}
+      // Where accounts can be deleted in the app (the D1 Worker), the way in is here,
+      // in Privacy, where people look for it (App Review 5.1.1(v)). Not on a child
+      // account: there is no account to delete, only this device's guest progress.
+      {...(isD1() && !account.isChild ? { onDeleteAccount: () => router.push('/account') } : {})}
     />
   )
 }

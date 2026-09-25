@@ -12,6 +12,7 @@
 
 import { useCallback, useState } from 'react'
 import { readJson, writeJson } from '../../lib/storage.js'
+import { sendOnboardingAge } from '../../lib/d1-age.js'
 import type { OnboardingResult } from './OnboardingScreen.js'
 
 const KEY = 'onboarding.v1'
@@ -56,6 +57,27 @@ export function readOnboarding(): OnboardingState {
   return readJson<OnboardingState>(KEY, isOnboardingState) ?? NOT_DONE
 }
 
+/**
+ * Onboarding finished by signing in: "I already have an account" on a new phone.
+ *
+ * The person skipped the flow on purpose; their answers live on the account, and the
+ * app's defaults cover everything else until they change it in Settings. The age answer
+ * is the one this device must still hold, and the account flow has just asked it: a
+ * sign-in code is only ever sent to an account the server judged eligible, so this is
+ * never a child. `isChild` is therefore written false as a result, not assumed.
+ *
+ * A no-op on a device that already finished onboarding, whose answers stand.
+ */
+export function finishOnboardingBySignIn(birthYear: number | undefined): void {
+  if (readOnboarding().completed) return
+  const next: OnboardingState = {
+    completed: true,
+    ...(birthYear !== undefined ? { birthYear } : {}),
+    isChild: false,
+  }
+  writeJson(KEY, next)
+}
+
 export type UseOnboarding = {
   readonly state: OnboardingState
   readonly complete: (result: OnboardingResult) => void
@@ -74,6 +96,8 @@ export function useOnboarding(): UseOnboarding {
     }
     writeJson(KEY, next)
     setState(next)
+    // The server keeps the age band, never the year, and needs it before any email flow.
+    if (result.birthYear !== undefined) void sendOnboardingAge(result.birthYear)
   }, [])
 
   const reset = useCallback(() => {

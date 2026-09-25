@@ -246,6 +246,8 @@ the platform testable and reusable — protect it.
 | Lesson item | `<factId>@<templateId>` | `geo.JP.capital@tpl.capital.mc4` |
 | Achievement | `ach.<category>.<slug>` | `ach.flags.collector-100` |
 | Quest | `quest.<cadence>.<slug>` | `quest.daily.tap-the-country` |
+| Course | `courses.<slug>` (the pack id) | `courses.first-week` |
+| Course unit / step | `unit.<slug>.<name>` · `node.<slug>.<name>` — a step id keys finished lessons in save data | `node.first-week.flags` |
 | Analytics event | `object_action` snake_case | `lesson_completed` |
 | i18n key | `<namespace>:<screen>.<element>` | `home:greeting.evening` |
 | Feature flag | `ff_<area>_<name>` | `ff_liveops_worldcup` |

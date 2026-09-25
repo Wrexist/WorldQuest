@@ -35,7 +35,8 @@ export function createD1AuthClient(options: {
   const origin = base.href.replace(/\/$/, '')
   // Browser fetch checks its receiver; do not invoke it as a method of our options.
   const transport = options.fetch
-  let closed = false, busy = false
+  let closed = false, changing = false
+  let chain: Promise<unknown> = Promise.resolve()
   let erased = false, erasing: Promise<void> | null = null
   const now = options.now ?? Date.now
   const assertOpen = () => { if (closed) throw new AccountChangedError() }
@@ -97,11 +98,26 @@ export function createD1AuthClient(options: {
       throw error
     }
   }
-  async function transition<T>(operation: () => Promise<T>): Promise<T> {
+  /**
+   * One credential operation at a time, in the order asked.
+   *
+   * Every operation may write the vault (a renewal rotates the token), so they never
+   * overlap. They used to refuse instead of waiting (`AUTH_BUSY`), which was right for
+   * two owner changes racing and wrong for everything else: the app asks for a session
+   * from several places at once (progress, the quest, a lesson, a background prefetch),
+   * and one of them always lost. So reads and session checks now wait their turn;
+   * a second owner change while one is in flight is still refused.
+   */
+  async function transition<T>(operation: () => Promise<T>, changesOwner = true): Promise<T> {
     assertOpen()
-    if (busy) throw new D1AuthError('AUTH_BUSY')
-    busy = true
-    try { return await operation() } finally { busy = false }
+    if (changesOwner) {
+      if (changing) throw new D1AuthError('AUTH_BUSY')
+      changing = true
+    }
+    const run = async () => { assertOpen(); return operation() }
+    const next = chain.then(run, run)
+    chain = next.catch(() => {})
+    try { return await next } finally { if (changesOwner) changing = false }
   }
   async function required(): Promise<D1Session> {
     const s = await load()
@@ -201,7 +217,7 @@ export function createD1AuthClient(options: {
       if (await renewal()) return 'renewal-pending'
       return current.expiresAt <= now() ? 'expired' : current.expiresAt <= now() + RENEWAL_WINDOW_MS ? 'renewal-due' : 'active'
     },
-    ensureSession: () => transition(ready),
+    ensureSession: () => transition(ready, false),
     startGuest: () => transition(async () => {
       const existing = await load()
       if (existing) return ready()
@@ -217,7 +233,7 @@ export function createD1AuthClient(options: {
         || typeof value.coins !== 'number' || !Number.isFinite(value.coins)) throw new D1AuthError('INVALID_RESPONSE')
       return { userId: s.userId, audience: value.audience, email: value.email,
         revision: value.revision, xp: value.xp, coins: value.coins }
-    }),
+    }, false),
     recordAudience: (birthYear: number) => transition(async () => {
       const s = await ready(), value = await request('/v1/account/audience', s.token, { birthYear })
       assertOpen(); return value.audience

@@ -46,7 +46,9 @@ const path = require('node:path')
 const ROOT = process.env.WQ_WEB ?? path.join(process.cwd(), 'node_modules', '.cache', 'wq-web')
 const OUT =
   process.env.WQ_SHOTS ?? path.join(process.cwd(), 'node_modules', '.cache', 'wq-design-shots')
-const PORT = 4174
+// Overridable for the same reason as the e2e's: another project's dev server on a shared
+// machine can already hold it.
+const PORT = Number(process.env.WQ_SHOTS_PORT ?? 4174)
 
 /**
  * 320 is the floor the Definition of Done names (iPhone SE 1) and the width most
@@ -102,6 +104,17 @@ const DEFAULT_ROUTES = [
   '/quest',
   // …and the celebration at the other end of it.
   '/quest-complete',
+  // The streak beat after the day's first lesson is NOT here: with no lesson behind it
+  // the harness streak is zero and it steps straight on to Home, and `assertRoute`
+  // stopped the whole run on it. It is photographed in the lesson flow instead
+  // (`walkAfterLesson`), where it is reached with a real streak.
+  // The badge card, one per unlock. It draws from its URL — re-checked against the
+  // shipped catalogue — so a first-perfect-lesson unlock can be photographed with no
+  // lesson behind it.
+  '/achievement-unlocked?unlocks=ach.session.perfect:bronze',
+  // "Create a profile". Standalone it renders for the harness's adult guest: this export
+  // has no backend, so every session is a guest by construction.
+  '/create-profile',
   // Reached by a gate in the root layout and by the "we miss you" push, never by a tap.
   // It went unphotographed for that reason and was rendering "It's been 0 days." to
   // anyone who followed the notification the same afternoon.
@@ -188,7 +201,18 @@ const PLAYED_ROUTES = ['/profile', '/streak', '/', '/quests', '/settings']
  * labels that could push them (Home, Streak), and the lesson, whose answer options are
  * the only place in the app where a wrapped string costs a tap target.
  */
-const PSEUDO_ROUTES = ['/', '/settings', '/account?mode=link', '/paywall?source=settings', '/streak', '/lesson', '/quests']
+const PSEUDO_ROUTES = [
+  '/',
+  '/settings',
+  '/account?mode=link',
+  // Its words are the whole screen, under a display-size heading and above two pinned
+  // buttons — where +40 % lands first.
+  '/create-profile',
+  '/paywall?source=settings',
+  '/streak',
+  '/lesson',
+  '/quests',
+]
 
 /**
  * How full each screen is, as a table rather than a verdict.
@@ -411,12 +435,14 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
          * because all of them were of the question and none of the answer.
          */
         await options[0].click()
+        await page.getByTestId('lesson-check').click()
         await page.waitForTimeout(600)
         await shot('lesson-flags-answered')
         return true
       }
 
       await options[0].click()
+      await page.getByTestId('lesson-check').click()
       await page.waitForTimeout(500)
       const next = page.getByText(/^(Continue|Finish|Got it)$/).first()
       if ((await next.count()) === 0) break
@@ -448,6 +474,13 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
       const options = await page.getByTestId('answer-option').all()
       if (options.length === 0) break
       await options[0].click()
+      // The selected-but-unchecked state is its own screen now: one option ringed in
+      // blue and Check lit. Photographed once, on the first question.
+      if (q === 0) {
+        await page.waitForTimeout(300)
+        await shot('lesson-selected')
+      }
+      await page.getByTestId('lesson-check').click()
       await page.waitForTimeout(550)
       const tail = (await page.evaluate(() => document.body.innerText)).split('\n').slice(-8).join(' ')
       const correct = /Perfect|Nice|Yes/i.test(tail)
@@ -466,7 +499,39 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
     }
     await page.waitForTimeout(800)
     await shot('lesson-summary')
+    await walkAfterLesson(page, shot)
     return { gotCorrect, gotWrong }
+  }
+
+  /**
+   * The after-lesson chain, walked the way a learner walks it: the streak beat (this is
+   * the day's first finished lesson), then whatever else the chain holds, then Home.
+   *
+   * The streak beat used to be in `DEFAULT_ROUTES`, and it cannot be photographed by URL:
+   * with no lesson behind it the streak is zero and it steps straight on to Home, which
+   * `assertRoute` rightly refuses as evidence — so the whole run stopped there and every
+   * route after it in the list went unphotographed. Here it is reached with a streak.
+   */
+  const walkAfterLesson = async (page, shot) => {
+    const onward = page.getByTestId('summary-continue')
+    if ((await onward.count()) === 0) return
+    await onward.click()
+    await page.waitForTimeout(1600)
+    for (let beat = 0; beat < 6; beat++) {
+      if ((await page.getByTestId('streak-extended').count()) > 0) {
+        await shot('streak-extended')
+        await page.getByTestId('streak-extended').getByText('Continue', { exact: true }).click()
+      } else if ((await page.getByTestId('achievement-unlocked').count()) > 0) {
+        await shot('after-lesson-badge')
+        await page.getByTestId('achievement-continue').click()
+      } else if ((await page.getByTestId('create-profile').count()) > 0) {
+        await shot('after-lesson-profile')
+        await page.getByTestId('create-profile-later').click()
+      } else {
+        break
+      }
+      await page.waitForTimeout(1200)
+    }
   }
 
   for (const viewport of VIEWPORTS) {

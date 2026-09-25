@@ -248,6 +248,63 @@ Validated in CI by `pnpm content:validate` against a JSON Schema **and** a Zod p
 
 ---
 
+## 3b. Courses
+
+A course is an ordered path through facts that already exist: units, each an ordered
+run of **steps** (nodes), each step a lesson focus plus the number of finished lessons
+that completes it. It is content, so it is a pack — `packs/courses/<slug>.v<n>.json`,
+`"kind": "course"` — and it contains no facts, no names and no copy of its own: entity
+and attribute ids point into the subject's packs, and every word a learner reads is an
+i18n key (`course:<course>.…` in `packages/i18n/locales`).
+
+```json
+{
+  "packId": "courses.first-week", "version": "1.0.0", "subject": "geography",
+  "kind": "course", "titleKey": "course:firstWeek.title",
+  "items": [{
+    "id": "unit.first-week.first-countries",
+    "titleKey": "course:firstWeek.unit.first.title",
+    "objectiveKey": "course:firstWeek.unit.first.objective",
+    "nodes": [{
+      "id": "node.first-week.flags", "kind": "lesson",
+      "objectiveKey": "course:firstWeek.node.flags",
+      "focus": { "entities": ["SE", "NO", "US", "JP", "BR", "KE"], "attributes": ["flag"] },
+      "lessons": 2
+    }]
+  }]
+}
+```
+
+- **Ids are permanent.** `unit.<slug>.<name>` and `node.<slug>.<name>`, where `<slug>` is
+  the course's own (`courses.first-week` → `first-week`). A node id is the key finished
+  lessons are counted under in save data, so a later version may add, reorder or retune
+  steps and never rename one. `PROJECT.md §4` lists the format.
+- **`focus` is the engines' `LessonFocus`, narrowed**: `entities` and `attributes`, both
+  required and non-empty. An absent list would mean "everything", which is not a step.
+- **Copy counts come from the data.** A step's objective receives `{count}` = how many
+  entities it covers, so "Match 6 flags to their countries" stays true when the pack
+  changes.
+- **`kind: "check"`** asks again what came before it, due work first (the composer serves
+  due facts first under any focus). It closes its unit, a course closes with one, and it
+  must cover every entity and attribute taught before it.
+
+`pnpm content:validate` (section 13 of `scripts/validate.ts`, logic in
+`scripts/courses.ts`, rules in the engine's `validateCourse`) refuses a course that:
+names an entity no pack defines; names an entity × attribute with no quizzable fact
+(including one held back by `quizzable: false` for review); has a step the real
+composer cannot fill to a five-question lesson in every shipped language, with and
+without a screen reader (the D1 Worker refuses a narrower focus with
+`FOCUS_TOO_NARROW`); breaks the check rules; asks more than ten lessons of one step;
+names a key missing from a shipped locale; or carries a unit or node id without its
+course's slug. `src/courses.test.ts` shows each of those failing.
+
+How the app reads it: the path engine is `packages/engines/src/course/` (states, the one
+next step, crediting, review focus), the Home path is `apps/mobile/src/features/course/`,
+and a step's lesson is `/lesson?node=<id>` — the URL names the step and the course
+supplies its focus, so a link cannot play one step and credit another.
+
+---
+
 ## 4. Build pipeline
 
 ```

@@ -114,6 +114,29 @@ const PAIRS: Pair[] = [
     note: 'the "XP" unit label under the hero number, and any caption on a level-2 card',
   },
   { name: 'status.streak on surface', fg: p.flame['500'], bg: p.surface['1'], min: 3.0 },
+  // The lesson bar during a run of right answers: the fill against its track, and the
+  // "3 / 10" count printed in the fill colour, which is caption-size text.
+  {
+    name: 'status.streak on progressTrack',
+    fg: p.flame['500'],
+    bg: p.surface['3'],
+    min: 3.0,
+    note: 'a run-coloured fill must still stand apart from its track',
+  },
+  {
+    name: 'text.onStreak on status.streak',
+    fg: p.space['800'],
+    bg: p.flame['500'],
+    min: 4.5,
+    note: 'a learned day on the streak calendar — white on this orange is about 2:1, so navy',
+  },
+  {
+    name: 'status.streak on canvas',
+    fg: p.flame['500'],
+    bg: p.space['800'],
+    min: 4.5,
+    note: "the lesson bar's count during a run — small text, so the body floor",
+  },
   {
     name: 'status.error on canvas',
     fg: p.red['500'],
@@ -156,6 +179,21 @@ const PAIRS: Pair[] = [
     fg: p.text['2'],
     bg: p.feedback.correctSurface,
     min: 4.5,
+  },
+  // The answer sheet is tinted with the same two surfaces now, and the wrong sheet is the
+  // one carrying a full explanatory sentence in the secondary colour.
+  {
+    name: 'text.secondary on feedback.wrong (answer sheet body)',
+    fg: p.text['2'],
+    bg: p.feedback.wrongSurface,
+    min: 4.5,
+  },
+  {
+    name: 'feedback.correct on feedback.correctSurface (sheet verdict, h2)',
+    fg: p.green['400'],
+    bg: p.feedback.correctSurface,
+    min: 3.0,
+    note: 'large bold heading only — the verdict word, never body copy',
   },
 
   // The favourite star. It lands at 4.42:1 — under the 4.5 small-text floor and over
@@ -254,7 +292,10 @@ const GROUPS: ReadonlyArray<{
 }> = [
   {
     what: 'body text on a surface',
-    texts: leaves(c.text, 'text').filter((t) => t.path !== 'text.onAccent' && t.path !== 'text.tertiary'),
+    // `text.onStreak` is drawn only on the flame; its one pair is a curated row above.
+    texts: leaves(c.text, 'text').filter(
+      (t) => t.path !== 'text.onAccent' && t.path !== 'text.onStreak' && t.path !== 'text.tertiary',
+    ),
     surfaces: [
       ...leaves(c.bg, 'bg'),
       ...leaves(c.option, 'option').filter((s) => !s.path.endsWith('Edge')),

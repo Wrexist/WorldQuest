@@ -9,7 +9,7 @@
 
 import { beforeEach, describe, expect, it } from 'vitest'
 import { clearAll, writeJson } from '../../lib/storage.js'
-import { drainUnlocks, peekUnlocks, queueUnlocks } from './pending.js'
+import { acknowledgeUnlocks, peekUnlocks, queueUnlocks } from './pending.js'
 import { CATALOGUE } from './useAchievements.js'
 
 const REAL = CATALOGUE[0]!.id
@@ -18,11 +18,31 @@ const ALSO_REAL = CATALOGUE[1]!.id
 beforeEach(() => clearAll())
 
 describe('pending unlocks', () => {
-  it('holds an unlock until something drains it', () => {
+  it('holds an unlock until a card acknowledges it — reading is not taking', () => {
     queueUnlocks([{ achievementId: REAL, tier: 'bronze' }])
+    // The lesson route peeks when Continue is pressed. A learner who closes the app on
+    // the summary must still have the badge waiting for next time.
+    expect(peekUnlocks()).toEqual([{ achievementId: REAL, tier: 'bronze' }])
     expect(peekUnlocks()).toHaveLength(1)
-    expect(drainUnlocks()).toEqual([{ achievementId: REAL, tier: 'bronze' }])
+    acknowledgeUnlocks([{ achievementId: REAL, tier: 'bronze' }])
     expect(peekUnlocks()).toHaveLength(0)
+  })
+
+  it('clears only what the card showed, keeping what arrived since', () => {
+    // A background flush can queue a server unlock while the streak beat is on screen.
+    // The card only knows the list from its URL; draining everything would lose that
+    // one without anybody having seen it.
+    queueUnlocks([{ achievementId: REAL, tier: 'bronze' }])
+    queueUnlocks([{ achievementId: ALSO_REAL, tier: 'silver' }])
+    acknowledgeUnlocks([{ achievementId: REAL, tier: 'bronze' }])
+    expect(peekUnlocks()).toEqual([{ achievementId: ALSO_REAL, tier: 'silver' }])
+  })
+
+  it('acknowledging nothing, or something never queued, changes nothing', () => {
+    queueUnlocks([{ achievementId: REAL, tier: 'bronze' }])
+    acknowledgeUnlocks([])
+    acknowledgeUnlocks([{ achievementId: ALSO_REAL, tier: 'gold' }])
+    expect(peekUnlocks()).toHaveLength(1)
   })
 
   it('never celebrates the same tier twice', () => {

@@ -306,3 +306,81 @@ splitter would stop working there without failing anywhere.
 | **Those three landmarks specifically** | Encumbered — §8b carries the detail. A silhouette is still a derivative of the structure. |
 | **A framed plate under the empty-state art** | The reference's empty-state illustration is a CUTOUT with sparkles, sitting directly on the page. Ours is a baked plate, which is why it needed a radius and then a hairline to stop reading as pasted. That confirms the fix is a new master with a transparent background, not more framing — the framing is a holding action and should be recorded as one. |
 | **The owl, the white canvas, the brand green** | As graft four. |
+
+---
+
+# Graft six: the course path on Home
+
+The owner's brief: every workflow should feel like Duolingo's iOS app, own art and copy,
+rule 7 respected. The launch brief supplied the content — one first-week course, and
+"Continue today's lesson" as the one green recommendation — and Home's quest card was
+the thing it replaced as the primary.
+
+## Step 1 — the feel
+
+*You can always see where you are on the trail, and the one step to take next.* What
+is behind you looks finished, what is ahead is visible and waits, and nothing asks you
+to choose.
+
+## Step 2 — the mechanics
+
+1. **One lit step on a winding line.** Position IS the sequence: steps zig-zag down a
+   column, the current one is bigger, lit, and wears a Start callout; done ones are
+   ticked; closed ones are dimmed.
+2. **Every step answers a tap.** The donor opens a popover under any circle: Start,
+   Practice, or "complete the levels above to unlock this".
+3. **A banner per unit** says where you are: which unit, what it is for.
+
+## Step 3 — measure, and what could not be measured
+
+**Not measured, and said so.** There is no donor reference in the repo, no device, and
+P03 (the native teardown) is still open, so the donor's numbers here are from knowledge
+of the 2025–26 app: a lesson circle of roughly a fifth of a phone's width, a darker lip
+under it, a swing of several dozen points either side, a white START bubble. Every one
+was therefore checked against OUR constraints instead of adopted, which is where the
+values in `features/course/components/pathGeometry.ts` come from:
+
+| Donor (unmeasured) | Constraint that decided it | Ours |
+|---|---|---|
+| Circle ≈ 1/5 of the width | 44 pt target; room to swing at 320 | `NODE` 64, the current step `CURRENT_NODE` 80 |
+| Wide swing | a full-column callout must still hold at 320 and 200 % text | at most half the free travel, capped at `space[7]` a step |
+| White START bubble | white on this navy is a glare spot (owner's note on `celebration/rays`) | `bg.surfaceRaised` bubble, `action.primary` edge, green "Start" |
+| Unit colour on done circles | one primary green per screen (R6) | neutral raised face, green ring and tick |
+| Ring filling around the current circle | no SVG in the app | "Lesson n of m" in the callout |
+
+## Step 4 — taken, and refused
+
+| Taken | Landing |
+|---|---|
+| Lit step + zig-zag | `PathNode` on `swingFor`; the face-on-edge press from `press3d`; the primary's halo, once |
+| Tap → card | `PathBubble` in the flow, not floated: a screen reader meets it right after its step, and nothing has to trap focus |
+| Unit banner | `UnitHeader`: overline, title, objective, count, one heading per unit |
+| Path opens at your step | `useScrollIntoView` in `HomeScreen`: the least movement that shows the step whole |
+
+| Refused | Why |
+|---|---|
+| **A popover before the current step starts** | The donor makes Start two taps. The one action a new learner looks for is one tap here; the objective sits in the callout instead. Done and closed steps keep the card. |
+| **Green on every done circle** | Six green buttons beside the primary mean none is primary. |
+| **Hearts or energy gating a step; chest nodes; jump-ahead tests** | Rule 7 and ADR 0011 for the first; chests are a variable-reward layer the economy has not simulated; a placement test is L13, not a path skin. |
+| **The guidebook button on the banner** | There is no guidebook content (explanations are L10). A button to nothing is R12. |
+| **Characters standing along the path** | Planned, and dropped before it was built: the empty side of the swing is where the full-column callout goes, so at 320 and 200 % text a mascot there would sit under it. Not measured — a judgement from the geometry. Atlas stands in the current unit's banner instead, cut by its edge the way the quest card measured. |
+| **An endlessly bobbing callout** | Three bobs, then still — an unstoppable loop is WCAG 2.2.2 — and none under Reduce Motion. |
+
+## Step 5 — what looking caught
+
+`pnpm design:shots` at 320/390/768 plus the e2e shots, and each of these was invisible in
+the component tests:
+
+- **The callout's tail pointed beside its step** at 390 and 768: the callout was drawn at
+  its content's width while the tail was placed from the column's edge. It spans the
+  column now.
+- **On a tablet the first frame's zig-zag was 168 pt too wide**: the router caps screens
+  at `layout.maxContentWidth`, and the estimate used the window. `estimatedColumn`.
+- **At 320 × 568 the scroll-into-view hid the unit's banner** by jumping the step to the
+  top edge, when banner and step fit together. Minimal reveal instead.
+- **Offline at 320 the banner was the first thing scrolled away.** It is pinned above the
+  scroll view now, and the reveal re-checks when the viewport shrinks.
+
+And one the validator caught before any picture: the brief's day 1 is four flags, which
+is a four-question lesson the D1 Worker refuses. The course moves BR and KE's flags to
+day 1, recorded in the launch brief for the owner's approval rather than decided quietly.

@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { CHILD_AGE, OnboardingScreen } from './OnboardingScreen.js'
 import { clearAll, writeJson } from '../../lib/storage.js'
@@ -414,6 +414,12 @@ describe('OnboardingScreen', () => {
  * moves the slide and this test together and neither has to be remembered.
  */
 describe('the third slide promises what the app actually ships', () => {
+  // The content graph is the heaviest import in the app; loading it cold inside a test
+  // below spent that test's whole 5-second budget on a loaded machine (25 Sep 2026).
+  beforeAll(async () => {
+    await import('../../lib/content.js')
+  }, 60_000)
+
   // The carousel is two steps in and the answer beat is a real `setTimeout`, so these
   // need the same fake clock every other navigating test in this file uses.
   beforeEach(() => {

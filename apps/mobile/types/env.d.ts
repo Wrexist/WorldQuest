@@ -31,6 +31,18 @@ declare const process: {
      * which must stay in CI and never carry this prefix.
      */
     readonly EXPO_PUBLIC_SENTRY_DSN?: string
+    /**
+     * `d1` selects the Cloudflare Worker (ADR 0013); anything else keeps the legacy
+     * Supabase pair above. See `src/lib/backendConfig.ts`.
+     */
+    readonly EXPO_PUBLIC_BACKEND?: string
+    /** The Worker's origin, e.g. `https://api.example`. Public: it is where the app calls. */
+    readonly EXPO_PUBLIC_D1_URL?: string
+    /** Published policy/support pages (A05). HTTPS only; unset hides the row. See `src/lib/links.ts`. */
+    readonly EXPO_PUBLIC_PRIVACY_URL?: string
+    readonly EXPO_PUBLIC_TERMS_URL?: string
+    readonly EXPO_PUBLIC_LICENCES_URL?: string
+    readonly EXPO_PUBLIC_SUPPORT_URL?: string
     readonly NODE_ENV?: 'development' | 'production' | 'test'
   }
 }

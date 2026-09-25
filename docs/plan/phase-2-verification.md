@@ -509,3 +509,119 @@ number-pad fields, so the return key never submits the birth year or the code;
 the visible button covers the journey, but the keyboard cannot be dismissed
 without it. Production account screens, real delivery and the public D1 route
 remain required before B02 closes.
+
+## iOS launch batch, 25 September 2026 (`claude/ios-launch-readiness-cc9070`)
+
+Ranked list and status: [iOS launch audit](ios-launch-audit-2026-09-25.md). All of
+the following is local evidence on real workerd/D1 (Miniflare) and the web export;
+nothing was deployed, and no hosted, native-device or store evidence is claimed.
+
+- **Local-day rules (S14).** Migration 0007 stores a validated IANA zone; the lesson
+  day is the learner's local date and only moves forward. `proof.test.ts` drives the
+  October 2026 Stockholm DST change and a move to Los Angeles: two bonuses for two
+  local days, none for the 25-hour day or the westward move.
+- **Streaks, milestones, quests, spending, achievements (B04/B05/S04/S05/S06).**
+  Migrations 0007–0010. The Worker composes the daily quest itself, so no client
+  field can carry a quest slot; progress is derived from distinct facts and paid
+  once. Freeze, repair, continue and cosmetic spends are idempotent per request id,
+  share the revision guard with lessons (a freeze bought mid-submission keeps both)
+  and write negative ledger rows. Achievements use the shipped catalogue and
+  `evaluateAll`; tier rewards land in the lesson's ledger row. Every proof re-checks
+  that the ledger sums to the balances.
+- **Lessons that end early.** Submissions may answer a prefix of the ticket; only a
+  finished lesson (every slot, or hearts emptied in the grader's own replay) counts
+  for the day. Issued lessons accept the engines' `LessonFocus`.
+- **The app on D1 (B07/L01 code part).** `EXPO_PUBLIC_BACKEND=d1` selects the Worker:
+  account repository, D1 account route with in-app deletion, server-issued lessons
+  with pre-fetched tickets for offline starts, the durable D1 queue drained by the
+  sync loop, an account-scoped cache of the server's memory, the server's quest on
+  the Quests tab, and celebrations decided by the receipt when it arrives in time.
+- **Verification.** Last full local `pnpm verify` on this batch: engines 571,
+  api 51, backend 53, mobile 756; `pnpm e2e` 89/89. Several full runs hit
+  load-dependent timeouts (other projects share this machine); each such test passed
+  when rerun alone, and those runs are not counted as green.
+
+Still open for B02/B07/E10: a hosted Worker, real email delivery, native D1 builds
+through the account and lesson journey, and the multi-device replay under E11.
+
+### The app against the Worker: `pnpm e2e:d1`
+
+`scripts/d1-journey.cjs` exports the web bundle as a D1 build and drives it against
+the Worker running in-process on workerd with local D1 and every migration, through a
+same-origin proxy. At the batch's final revision it passes 14/14: a new adult learner
+onboards; the taster lesson is issued by the Worker, played, graded there (XP, a
+one-day streak) and followed by the streak beat; three lessons are saved ahead; the
+Quests tab shows exactly the quest the server pays; offline, a lesson starts from a
+saved ticket, nothing reaches the Worker, and on reconnect it syncs; the second lesson
+keeps the streak at one day; the ledger sums to the balances; no uncaught page errors.
+
+Running it the first time found four defects no other check could see, all fixed:
+
+1. The Worker answered `HEAD /health` with 401, so NetInfo's probe read every D1
+   build as offline for good. It now answers 200, pinned in `proof.test.ts`.
+2. The D1 auth client refused concurrent operations (`AUTH_BUSY`), and the app asks
+   for a session from several places at once. Operations now queue; a second
+   concurrent owner change is still refused.
+3. Every app lesson carries an implied focus (onboarding's start region and level, or
+   the quest's facts), so saved lessons could never start offline. Only a focus the
+   learner chose now requires a fresh lesson.
+4. The lesson request was captured before the screen-reader check answered, so a
+   VoiceOver user's D1 lesson could be issued with picture questions. The request now
+   waits for the answer, and a screen-reader-safe saved lesson suits anyone.
+
+The web harness also showed the previous tab's content bleeding through a newly
+selected tab (transparent tab scenes). It predates this batch and is visible in the
+regular e2e's Explore capture too; it is listed for the device pass rather than fixed
+blind.
+
+### Keeping it: an email, and a second phone (U04, S02)
+
+`pnpm e2e:d1` now continues past the offline lesson. On the first phone the learner
+links an email from Profile; on a second, fresh browser context ("a phone that has never
+run the app") they tap **I already have an account**, sign in with the same email, and
+land in the app with the progress earned on the first. The Worker runs with its real
+Resend adapter switched on (local stand-in secret and sender), and Miniflare's outbound
+service plays Resend: it keeps each message, so the journey types the code from the
+email the learner would have received. Nothing leaves the machine.
+
+It then goes on with both phones on the one account: the second plays a lesson and
+the first plays one while its copy of the account is a revision behind; both land
+exactly once and the ledger still sums to the balances (a sequential slice of E11,
+not concurrent submission). Last, on the second phone: Settings › Sign out ends only
+that phone's session and returns it to onboarding; "I already have an account" signs
+back in with a new code; and Settings › Privacy › Delete account, confirmed by a code
+from the email, leaves the Worker no session, email row or account for it, and the
+phone starts over. That is guest, link, login, logout, recovery and deletion (B02) on
+the web build, end to end. Last of all, a third phone onboards as a ten-year-old: the
+Worker holds the account as `protected` from the age gate alone, and neither Profile nor
+Settings offers the child an email, a sign-in or a deletion (S02, S03).
+
+It passes 33/33 at the batch's revision. Getting there found four defects, all fixed:
+
+1. **"I already have an account" was a dead end on a new phone.** The onboarding gate
+   redirects every unfinished install to `/onboarding`, including `/account`, so the
+   button bounced straight back. The gate now lets the account route through.
+2. **Every identity change reset the account screen.** Link, sign-in and deletion move
+   the storage scope twice, and the provider tree is keyed by that scope, so the screen
+   that started the change was gone before it finished. Nobody ever saw "Your email is
+   linked" or "Welcome back", and on a new phone the Continue that opens the app was
+   never offered. The flow's state now lives outside the screen; the replacement shows
+   the result. A refused code (wrong, used, rate-limited) used to leave the device paused
+   in an empty guest scope, where the gate sent the learner back to onboarding; the host
+   now reopens the owner on a refusal and stays paused only for answers that may have
+   changed the server.
+3. **After signing in, the app asked onboarding again.** Onboarding's record is scoped
+   to the account, and the signed-in account has none on a new phone. A sign-in now
+   finishes onboarding in that scope, with `isChild: false` as a result rather than an
+   assumption: a sign-in code is only sent to an account the server judged eligible.
+   `?mode=signIn` also opens on signing in instead of on the guest the app made at
+   launch.
+4. **Onboarding's birth year never reached the server (S02).** Every guest's band stayed
+   `unknown`, so an adult linking an email was asked the year again, and a child's
+   account had no server-side protection until the child reached the account screen.
+   The band is now sent when onboarding finishes (or when a later guest is made); the
+   Worker keeps the band, never the year.
+
+What this does not show: native credential storage (SecureStore) through the same
+steps, which is the B02 device pass in the [runbook](ios-launch-runbook.md), and
+preferences, which are per-device by design and do not follow the account.

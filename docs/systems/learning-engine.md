@@ -117,6 +117,13 @@ treating every correct answer identically.
 **Guard:** cap `elapsedMs` at 30 s so a user who put the phone down isn't scored as
 having forgotten. Reviews longer than 60 s are logged but excluded from scheduling.
 
+**What `elapsedMs` measures.** From the question appearing (or the lesson resuming
+from a pause) to the user pressing **Check** — not to the tap that selected an option.
+Answering is select-then-check (`SELECT`/`CHECK` in `packages/engines/src/lesson/machine.ts`),
+and time spent changing one's mind is thinking time. In a speed round, a selection still
+unchecked when the clock runs out is graded as if checked at the limit; nothing selected
+is recorded as a timeout (`chosenOptionId: null`).
+
 ---
 
 ## 3. Item selection — what the user actually sees next
@@ -171,6 +178,18 @@ and the struggling filter both read it.
 The richer treatments — a mnemonic, an Atlas explanation — remain v3.0.
 
 ---
+
+### The end-of-lesson review round
+
+An untimed lesson that ends with mistakes re-asks each missed question once, options
+rotated, before the summary (`reviewFrom`/`reviewed` in `lesson/machine.ts`). It is
+practice, not evidence: review answers are never graded, submitted or scheduled, cost
+no heart and earn no XP, because the first answer is the observation and a second one
+seconds later would count one fact twice in FSRS. A speed round and a lesson that ran
+out of hearts have no review round; leaving the review ends the lesson as finished.
+Added 25 September 2026 for Duolingo parity and the launch course's "introduce and
+retest mistakes"; a learning-science review of whether the retest should feed a
+relearning step is still open (L03/L05).
 
 ## 4. Mastery states (what the UI shows)
 

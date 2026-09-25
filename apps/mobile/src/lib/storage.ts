@@ -8,6 +8,7 @@
 
 import { MMKV } from 'react-native-mmkv'
 import { clearSessionStorage } from './credentials.js'
+import { backendConfig } from './backendConfig.js'
 export { clearSessionStorage } from './credentials.js'
 
 /**
@@ -20,7 +21,9 @@ let app: MMKV | undefined
 const appStore = (): MMKV => (app ??= new MMKV({ id: 'worldquest.app' }))
 
 type Scope = { userId: string | null; guest: number }
-const backendId = process.env.EXPO_PUBLIC_SUPABASE_URL || 'unconfigured'
+// The selected backend's origin, so a D1 build and a legacy build on one device can
+// never read each other's caches.
+const backendId = backendConfig().url || 'unconfigured'
 const SCOPE_KEY = `account.scope.v2.${encodeURIComponent(backendId)}`
 const TRANSITION_KEY = `account.transition.v2.${encodeURIComponent(backendId)}`
 let scope: Scope | null = null
@@ -105,6 +108,17 @@ export function setStorageAccount(userId: string, adoptNewGuest = false): void {
     }
   }
   changeScope(next, adoptNewGuest && previous.userId === null)
+}
+
+/**
+ * Erase one signed-in account's local data after the server confirmed its deletion.
+ *
+ * Only that account's prefix: guests and other accounts on the device are untouched,
+ * and the active scope is never one being erased (the caller has already moved away).
+ */
+export function eraseAccountStorage(userId: string): void {
+  const prefix = prefixOf({ userId, guest: 0 })
+  for (const key of appStore().getAllKeys().filter((key) => key.startsWith(prefix))) appStore().delete(key)
 }
 
 /** Detached accounts keep their durable work; a fresh guest cannot read or send it. */
@@ -219,6 +233,46 @@ export const writeJson = (key: string, value: unknown): void =>
   appStore().set(scopedKey(key), JSON.stringify(value))
 
 export const remove = (key: string): void => appStore().delete(scopedKey(key))
+
+// ── device storage ──────────────────────────────────────────────────────────
+
+/**
+ * Facts about this PHONE rather than about whoever is signed in on it.
+ *
+ * Everything above is scoped to an account or a guest generation, and that is right for
+ * progress: signing out must not let the next guest read the last person's work. It is
+ * wrong for the one kind of value that exists to limit how often the app asks the person
+ * holding the device for something. "Create a profile" is offered at most twice per
+ * device; kept in the scoped store, signing out would start a fresh guest whose count is
+ * zero, and the ask would come back for someone who has already answered it twice.
+ *
+ * Nothing personal belongs here — a count of asks, never an answer, an email or a
+ * lesson. Not tied to the backend either: the question is whether this phone has been
+ * asked, and that does not change with the server. `clearAll()` still clears it.
+ */
+const DEVICE_PREFIX = 'device.v1.'
+
+/** `readJson`, for a device-level value. The same repair rule: a bad value is dropped. */
+export const readDeviceJson = <T>(key: string, shape?: Shape): T | null => {
+  const storedKey = DEVICE_PREFIX + key
+  const raw = appStore().getString(storedKey)
+  if (raw === undefined) return null
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(raw)
+  } catch {
+    appStore().delete(storedKey)
+    return null
+  }
+  if (shape !== undefined && !shape(parsed)) {
+    appStore().delete(storedKey)
+    return null
+  }
+  return parsed as T
+}
+
+export const writeDeviceJson = (key: string, value: unknown): void =>
+  appStore().set(DEVICE_PREFIX + key, JSON.stringify(value))
 
 /** Explicit full local reset. Ordinary logout detaches accounts without deleting work. */
 export function clearAll(): Promise<void> {

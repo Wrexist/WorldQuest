@@ -73,5 +73,7 @@
   "achievements:set.westafrica.name": "Västafrika",
   "achievements:set.westafrica.desc": "Lär dig allt om alla 4 länder i Västafrika.",
   "achievements:set.westerneurope.name": "Västeuropa",
-  "achievements:set.westerneurope.desc": "Lär dig allt om alla 6 länder i Västeuropa."
+  "achievements:set.westerneurope.desc": "Lär dig allt om alla 6 länder i Västeuropa.",
+  "achievements:unlocked.label": "Ny utmärkelse",
+  "achievements:unlocked.more": "{count, plural, one {Och # utmärkelse till – du hittar den under Utmärkelser} other {Och # utmärkelser till – du hittar dem under Utmärkelser}}"
 }

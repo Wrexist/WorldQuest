@@ -1,0 +1,101 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "$comment": "The first-week course from docs/product/launch-brief.md (\"First week: World foundations\"), as the path on Home. Units and nodes only: every country name, flag, place and capital comes from the geography packs, and every word a learner reads is an i18n key in packages/i18n/locales/*/course.json. Node ids ship in save data as the keys finished lessons are counted under, so they are permanent; a later version may add, reorder or retune nodes, never rename one.\n\nOne node per day of the brief, and one deliberate difference from its table: day 1 practises the flags of all six countries days 2 and 3 use (SE, NO, US, JP, BR, KE), not only the first four. Each fact is asked at most once per lesson, and the D1 Worker refuses a focused lesson under five questions (FOCUS_TOO_NARROW, the engines' MIN_LESSON_ITEMS), so four flags would open the path on an empty lesson for every learner on the release backend. Moving BR and KE forward a day also closes a gap in the table itself: day 6 mixes the flags of all twelve and never introduced those two. `pnpm content:validate` composes every node with the real engine and fails any that cannot fill a lesson with and without a screen reader, so this cannot regress silently.\n\nThe brief's day 7 is \"after a delay\"; this version has no time gate, so the check opens when day 6 is done and relies on the composer serving due work first. Days are not a scheduler (the brief says so): a node opens when the one before it has its finished lessons. Awaiting native-speaker editorial approval (L18) like the rest of the course copy.",
+  "packId": "courses.first-week",
+  "version": "1.0.0",
+  "subject": "geography",
+  "kind": "course",
+  "locales": [
+    "en",
+    "sv"
+  ],
+  "license": "CC-BY-4.0",
+  "generatedAt": "2026-09-25",
+  "titleKey": "course:firstWeek.title",
+  "items": [
+    {
+      "id": "unit.first-week.first-countries",
+      "titleKey": "course:firstWeek.unit.first.title",
+      "objectiveKey": "course:firstWeek.unit.first.objective",
+      "nodes": [
+        {
+          "id": "node.first-week.flags",
+          "kind": "lesson",
+          "objectiveKey": "course:firstWeek.node.flags",
+          "focus": {
+            "entities": ["SE", "NO", "US", "JP", "BR", "KE"],
+            "attributes": ["flag"]
+          },
+          "lessons": 2
+        },
+        {
+          "id": "node.first-week.locations",
+          "kind": "lesson",
+          "objectiveKey": "course:firstWeek.node.locations",
+          "focus": {
+            "entities": ["SE", "NO", "US", "JP", "BR", "KE"],
+            "attributes": ["location"]
+          },
+          "lessons": 2
+        },
+        {
+          "id": "node.first-week.capitals",
+          "kind": "lesson",
+          "objectiveKey": "course:firstWeek.node.capitals",
+          "focus": {
+            "entities": ["SE", "NO", "US", "JP", "BR", "KE"],
+            "attributes": ["capital"]
+          },
+          "lessons": 2
+        }
+      ]
+    },
+    {
+      "id": "unit.first-week.continents",
+      "titleKey": "course:firstWeek.unit.continents.title",
+      "objectiveKey": "course:firstWeek.unit.continents.objective",
+      "nodes": [
+        {
+          "id": "node.first-week.new-countries",
+          "kind": "lesson",
+          "objectiveKey": "course:firstWeek.node.newCountries",
+          "focus": {
+            "entities": ["CA", "MX", "FR", "DE", "IN", "AU"],
+            "attributes": ["flag", "location"]
+          },
+          "lessons": 2
+        },
+        {
+          "id": "node.first-week.all-capitals",
+          "kind": "lesson",
+          "objectiveKey": "course:firstWeek.node.allCapitals",
+          "focus": {
+            "entities": ["SE", "NO", "US", "JP", "BR", "KE", "CA", "MX", "FR", "DE", "IN", "AU"],
+            "attributes": ["capital"]
+          },
+          "lessons": 2
+        },
+        {
+          "id": "node.first-week.mixed",
+          "kind": "lesson",
+          "objectiveKey": "course:firstWeek.node.mixed",
+          "focus": {
+            "entities": ["SE", "NO", "US", "JP", "BR", "KE", "CA", "MX", "FR", "DE", "IN", "AU"],
+            "attributes": ["flag", "location", "capital"]
+          },
+          "lessons": 2
+        },
+        {
+          "id": "node.first-week.check",
+          "kind": "check",
+          "objectiveKey": "course:firstWeek.node.check",
+          "focus": {
+            "entities": ["SE", "NO", "US", "JP", "BR", "KE", "CA", "MX", "FR", "DE", "IN", "AU"],
+            "attributes": ["flag", "location", "capital"]
+          },
+          "lessons": 1
+        }
+      ]
+    }
+  ]
+}

@@ -129,5 +129,9 @@
   "achievements:set.southernafrica.name__note": "Achievement name — the region itself, \"Southern Africa\". A PLACE NAME rather than copy: use the standard geographic name in the target language, the same one an atlas would print. Never invent a nickname. Shown on a medal, so max 18 characters.",
   "achievements:set.southerneurope.name__note": "Achievement name — the region itself, \"Southern Europe\". A PLACE NAME rather than copy: use the standard geographic name in the target language, the same one an atlas would print. Never invent a nickname. Shown on a medal, so max 18 characters.",
   "achievements:set.westafrica.name__note": "Achievement name — the region itself, \"West Africa\". A PLACE NAME rather than copy: use the standard geographic name in the target language, the same one an atlas would print. Never invent a nickname. Shown on a medal, so max 18 characters.",
-  "achievements:set.westerneurope.name__note": "Achievement name — the region itself, \"Western Europe\". A PLACE NAME rather than copy: use the standard geographic name in the target language, the same one an atlas would print. Never invent a nickname. Shown on a medal, so max 18 characters."
+  "achievements:set.westerneurope.name__note": "Achievement name — the region itself, \"Western Europe\". A PLACE NAME rather than copy: use the standard geographic name in the target language, the same one an atlas would print. Never invent a nickname. Shown on a medal, so max 18 characters.",
+  "achievements:unlocked.label": "New badge",
+  "achievements:unlocked.label__note": "Small label above the badge's name on the full-screen card shown after a lesson that unlocked it. 'New' rather than 'Unlocked': it is a thing you now have, not a door that opened. Max 16 characters.",
+  "achievements:unlocked.more": "{count, plural, one {And # more badge — find it in Achievements} other {And # more badges — find them in Achievements}}",
+  "achievements:unlocked.more__note": "On the last unlock card, when more badges unlocked than get a card of their own (three). {count} is how many more, always at least 1. 'Achievements' is the screen's name — match achievements:title."
 }

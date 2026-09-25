@@ -7,8 +7,20 @@
  * control is labelled, and the five states are all present.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import {
+  AccessibilityInfo,
+  Animated,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native'
 import {
   AnswerOption,
   Button,
@@ -21,14 +33,23 @@ import {
   Spacer,
   squircle,
   text,
+  useRiseIn,
 } from '@worldquest/design'
-import { canRevive, deriveRating, lessonLength } from '@worldquest/engines'
+import {
+  answeringMs,
+  canRevive,
+  currentRun,
+  inReview,
+  lastAnswerOf,
+  lessonLength,
+} from '@worldquest/engines'
 import type { LessonFocus } from '@worldquest/engines'
 import type { ContentIndex, GradeResult, LessonState, Question } from '@worldquest/engines'
 import { Art } from '../../components/Art.js'
 import { Flag } from '../../components/Flag.js'
 import { CountryMap } from '../../components/CountryMap.js'
 import { useLesson } from './hooks/useLesson.js'
+import { useAnswerCues } from './hooks/useAnswerCues.js'
 import { LessonSummary, type PractisedCountry } from './LessonSummary.js'
 import { SPEED_SECONDS } from './modes.js'
 import { OutOfHearts } from './OutOfHearts.js'
@@ -36,10 +57,10 @@ import { payForContinue } from './continuePurchase.js'
 import { Paused } from './Paused.js'
 import { recordPace, useItemPace } from './usePace.js'
 import { recordAccuracy, recentAccuracy } from './useAccuracy.js'
-import { hapticCelebrate, hapticCorrect, hapticWrong } from '../../lib/haptics.js'
-import { soundCorrect, soundLevelUp, soundWrong } from '../../lib/sound.js'
+import { hapticCelebrate, hapticSelect } from '../../lib/haptics.js'
+import { soundLevelUp } from '../../lib/sound.js'
 import { recordLessonForAchievements, recordQuestCompleted } from '../achievements/progress.js'
-import { drainUnlocks, queueUnlocks, type PendingUnlock } from '../achievements/pending.js'
+import { queueUnlocks } from '../achievements/pending.js'
 import { todaysQuest } from '../quests/useDailyQuest.js'
 import { recordQuestEvent } from '../quests/questProgress.js'
 import { useContent } from '../../lib/content.js'
@@ -50,10 +71,16 @@ import { recordSessionHour } from '../../lib/notifications.js'
 import { localDay } from '../../lib/day.js'
 import { recordPredictedAward } from '../../lib/awards.js'
 import { enqueueLesson } from '../../lib/sync.js'
+import { isD1 } from '../../lib/backendConfig.js'
+import { prefetchLessons, submitLesson as submitD1Lesson } from '../../lib/d1-lessons.js'
+import { useScreenReaderStatus } from '../../lib/screenReader.js'
+import { useD1Lesson } from './hooks/useD1Lesson.js'
+import { ReportSheet } from './ReportSheet.js'
+import { withAccount } from '../../lib/backend.js'
 import { Icon } from '../../components/Icon.js'
 import { Stat } from '../../components/Stat.js'
 
-type ScreenState = 'loading' | 'error' | 'empty' | 'ready'
+type ScreenState = 'loading' | 'error' | 'empty' | 'offline-start' | 'ready'
 
 /**
  * The rail down the leading edge of the answers.
@@ -67,20 +94,13 @@ type ScreenState = 'loading' | 'error' | 'empty' | 'ready'
 const BADGES = ['A', 'B', 'C', 'D'] as const
 
 /**
- * The two phases that put the summary on screen.
- *
- * `isFinished` in the engine answers the same question, and is not imported here because
- * it takes the whole state — this is used in a dependency array, where passing the state
- * object would re-run the effect on every answer.
- */
-const isFinishedPhase = (phase: LessonState['phase']): boolean =>
-  phase === 'summary' || phase === 'abandoned'
-
-/**
  * How many right in a row before the feedback is allowed to call it a roll.
  *
  * Three, because two is a coincidence. Below this the praise says something true and
  * unremarkable instead — see the copy note on `lesson:feedback.correct.streak`.
+ *
+ * The progress bar takes its run colour at the same count, so the bar and the sentence
+ * under "Perfect!" never disagree about whether this is a roll.
  */
 const STREAK_PRAISE = 3
 
@@ -188,6 +208,23 @@ const WRAPPED_AT = 1.5
 const SHORT_SCREEN = 700
 
 /**
+ * Below this height, Check sits after the options instead of pinned under them.
+ *
+ * MEASURED, per question type, with the button pinned: at 375×667 every template's
+ * fourth option clears it with room to spare, and 360×640 does too. At 320×568 (iPhone
+ * SE 1) the pinned bar took about 90pt off a viewport that was already exactly full, and
+ * the fourth option went under it by 65pt on a locator question, 101 on a map question
+ * and 116 under a flag prompt — where before Check existed it fitted, overflowed by 11
+ * and by 26. Shrinking the pictures to win that back would put the map and the flag
+ * below the floors `MAP_PROMPT_WIDTH_SHORT` and `FLAG_PROMPT_WIDTH` exist to defend.
+ *
+ * So on the smallest phone the question keeps the whole screen, exactly as before, and
+ * Check follows the options in the scroll. Selecting scrolls it into view, so it is never
+ * a thing the user has to hunt for — it arrives the moment there is something to check.
+ */
+const PINNED_CHECK_MIN_HEIGHT = 600
+
+/**
  * The locator map beside a question.
  *
  * The same 200pt as the flag prompt, because it is now the same kind of object: the
@@ -267,17 +304,36 @@ export type LessonExit = {
    * Carried out rather than acted on: this screen does not navigate, the route does.
    */
   readonly questCompleted: boolean
+  /**
+   * Finished rather than ended early. Only a finished lesson is the day's activity, so
+   * only a finished lesson earns the streak beat that follows the summary.
+   */
+  readonly completed: boolean
+  /** The lesson's id — the ticket's on a D1 build — for asking after its receipt. */
+  readonly lessonId: string
 }
 
 export function LessonScreen({
   onExit,
+  onLeave,
   mode = 'normal',
   coins = 0,
   isTaster = false,
   focus,
+  focusIsExplicit = false,
   length,
 }: {
   onExit: (summary: LessonExit) => void
+  /**
+   * Leave a lesson that never started — offline with nothing saved, a failure, or a focus
+   * with nothing in it.
+   *
+   * The route is a full-screen modal with the back gesture off (so a swipe cannot discard
+   * answers), which left those three screens with no way out on iOS but Retry. A course
+   * step is an explicit focus, so pressing Home's primary action on a plane before its
+   * lesson was saved lands on one of them; it has to lead back. Absent draws no button.
+   */
+  onLeave?: (() => void) | undefined
   /** `speed` runs the same items against a clock. Scoring is unchanged. */
   mode?: 'normal' | 'speed'
   /**
@@ -307,6 +363,12 @@ export function LessonScreen({
    */
   focus?: LessonFocus | undefined
   /**
+   * Whether `focus` is the learner's own choice (a country, region, topic or difficulty
+   * from a picker or a link) rather than one implied by onboarding or the daily quest.
+   * On a D1 build only an implied focus may start from a saved lesson when offline.
+   */
+  focusIsExplicit?: boolean | undefined
+  /**
    * How many questions, when the user asked for a number.
    *
    * Absent keeps the measured default: `lessonLength(itemMs)` sizes a lesson to about two
@@ -319,6 +381,9 @@ export function LessonScreen({
   const t = useT()
   const { index, memory, status, reload, isOffline } = useContent()
   const [screen, setScreen] = useState<ScreenState>('loading')
+  // "Report a problem" open over the answer just given. Only where a backend takes
+  // reports (the Worker): a link that could only fail is a link not to show.
+  const [reporting, setReporting] = useState(false)
 
   // The sheet stops widening at `maxContentWidth`, so the mascot measures against that
   // rather than against a tablet's whole screen.
@@ -333,6 +398,7 @@ export function LessonScreen({
    * it changes is a target size, so the 44pt floor holds at both settings.
    */
   const compact = height < SHORT_SCREEN
+  const inlineCheck = height < PINNED_CHECK_MIN_HEIGHT
 
   // Latched, never unlatched. Moving the mascot is what gives the row room to unwrap,
   // so a flag that followed the measurement would flip back the moment it took effect
@@ -385,13 +451,33 @@ export function LessonScreen({
   // two-minute lesson so that "five minutes a day" is a real promise rather than a
   // number in Settings — see features/lesson/usePace.ts for why this was inert.
   const itemMs = useItemPace()
+  /**
+   * Where the questions come from.
+   *
+   * A D1 build plays a lesson the server issued, because the Worker grades only lessons
+   * it issued (the answer key never has to be trusted from a device). A legacy build
+   * composes its own. Decided at bundle time, so it cannot change under a lesson.
+   */
+  const remoteLessons = isD1()
+  // Asked for only once the platform has said whether a screen reader is on: the
+  // server issues the lesson for one presentation, and it cannot be recomposed after.
+  const screenReaderStatus = useScreenReaderStatus()
+  const screenReaderOn = screenReaderStatus === true
+  const remote = useD1Lesson(remoteLessons && screenReaderStatus !== null, {
+    count: length ?? lessonLength(itemMs),
+    locale: currentLocale() === 'sv' ? 'sv' : 'en',
+    screenReader: screenReaderOn,
+    focus,
+    explicitFocus: focusIsExplicit,
+  })
   const questions = useMemo<readonly Question[]>(() => {
+    if (remoteLessons) return remote.lesson?.questions ?? []
     if (status !== 'ready' || !index) return []
     return index.compose({
       count: length ?? lessonLength(itemMs),
       ...(focus ? { focus } : {}),
     })
-  }, [status, index, itemMs, focus, length])
+  }, [remoteLessons, remote.lesson, status, index, itemMs, focus, length])
 
   const handleComplete = useCallback((state: LessonState, optimistic: GradeResult) => {
     /**
@@ -409,34 +495,46 @@ export function LessonScreen({
     const quest =
       index === null ? null : todaysQuest(index.index, memory, Date.now(), recentAccuracy())
 
-    // Enqueue, never await. A lesson finishing must not depend on the network —
-    // the queue replays it whenever connectivity returns.
-    enqueueLesson({
-      lessonId: state.lessonId,
-      kind: 'lesson',
-      startedAt: state.startedAt ?? Date.now(),
-      answers: state.answers,
-      heartsLost: state.heartsLost,
-      ...(quest !== null
-        ? {
-            quest: {
-              // The day the device composed it for. The server decides which day to
-              // RECORD under and only compares this — a lesson that spans local midnight
-              // arrives on a new day carrying the old day's tasks, and pinning those
-              // would make the new day's quest unpayable.
-              date: quest.date,
-              tasks: quest.tasks.map((task) => ({
-                slot: task.slot,
-                target: task.target,
-                factIds: task.factIds,
-                // `exactOptionalPropertyTypes` — `goal` is only on the perform slot, and
-                // spreading an explicit `undefined` is not the same as omitting it.
-                ...(task.goal !== undefined ? { goal: task.goal } : {}),
-              })),
-            },
-          }
-        : {}),
-    })
+    if (remoteLessons) {
+      // The Worker grades what it issued: the answers go to the D1 queue under the
+      // ticket's id — durably before this returns, never waiting on the network — and a
+      // few more lessons are fetched for the next offline start. An early exit sends
+      // the answered prefix; the server decides whether it was a finished lesson.
+      if (remote.lesson) {
+        void submitD1Lesson(remote.lesson, state.answers).then(() =>
+          prefetchLessons({ count: remote.lesson!.request.count, locale: remote.lesson!.request.locale, screenReader: screenReaderOn }),
+        )
+      }
+    } else {
+      // Enqueue, never await. A lesson finishing must not depend on the network —
+      // the queue replays it whenever connectivity returns.
+      enqueueLesson({
+        lessonId: state.lessonId,
+        kind: 'lesson',
+        startedAt: state.startedAt ?? Date.now(),
+        answers: state.answers,
+        heartsLost: state.heartsLost,
+        ...(quest !== null
+          ? {
+              quest: {
+                // The day the device composed it for. The server decides which day to
+                // RECORD under and only compares this — a lesson that spans local midnight
+                // arrives on a new day carrying the old day's tasks, and pinning those
+                // would make the new day's quest unpayable.
+                date: quest.date,
+                tasks: quest.tasks.map((task) => ({
+                  slot: task.slot,
+                  target: task.target,
+                  factIds: task.factIds,
+                  // `exactOptionalPropertyTypes` — `goal` is only on the perform slot, and
+                  // spreading an explicit `undefined` is not the same as omitting it.
+                  ...(task.goal !== undefined ? { goal: task.goal } : {}),
+                })),
+              },
+            }
+          : {}),
+      })
+    }
     // Local, immediate, and independent of the queue. The weekly chart on Profile
     // must be right the moment the lesson ends — waiting for the server round trip
     // would show an empty week to anyone who finishes a lesson offline.
@@ -487,8 +585,13 @@ export function LessonScreen({
     })
     // Queued rather than announced. Until this line an unlock produced an analytics event
     // and nothing a user could see — the whole reward loop for thirty achievements was a
-    // row in a dashboard. The summary below drains the queue.
-    queueUnlocks(unlocked.map((u) => ({ achievementId: u.achievementId, tier: u.tier })))
+    // row in a dashboard. The after-lesson chain reads the queue when the summary's
+    // Continue is pressed and gives each unlock a card of its own (`afterLesson.ts`).
+    //
+    // Not on a D1 build: there the server decides each tier exactly once per account and
+    // its receipts queue the cards (`d1-lessons.ts`). Queuing the device's own reading
+    // too would celebrate one badge twice, once from each side.
+    if (!remoteLessons) queueUnlocks(unlocked.map((u) => ({ achievementId: u.achievementId, tier: u.tier })))
     for (const unlock of unlocked) {
       // `days_to_unlock` is not sent. We would have to know when the user started,
       // and nothing records that — a number derived from "first lesson we happen to
@@ -562,10 +665,34 @@ export function LessonScreen({
         duration_ms: Date.now() - (state.startedAt ?? Date.now()),
       })
     }
-  }, [isOffline, index, memory, isTaster])
+  }, [isOffline, index, memory, isTaster, remoteLessons, remote.lesson, screenReaderOn])
 
   const timeLimitMs = mode === 'speed' ? SPEED_SECONDS * 1000 : null
   const lesson = useLesson({ questions, memory, timeLimitMs, onComplete: handleComplete })
+  // Haptic, sound and `question_answered`, from the GRADED answer — whether Check graded
+  // it or the speed round's clock did. See the hook for why not from a tap.
+  useAnswerCues(lesson.state, itemMs)
+
+  /**
+   * Screen-reader focus to the verdict when the sheet arrives.
+   *
+   * The Check button the user just pressed unmounts in the same render — the sheet takes
+   * its place — so without this VoiceOver's cursor falls to wherever the platform puts
+   * it, usually the top of the screen, and the verdict is never read. When a tap WAS the
+   * answer this did not arise: focus stayed on the option, whose label changed to
+   * "Paris, correct answer" under the cursor. From the verdict, the next swipes read the
+   * explanation, the reward and Continue, in that order.
+   *
+   * Native only. react-native-web implements neither half — `setAccessibilityFocus` is
+   * an empty function there and `sendAccessibilityEvent` does not exist — and web is not
+   * a platform this app ships a screen reader experience on.
+   */
+  const verdict = useRef<Text>(null)
+  const answeredCount = lesson.state.answers.length
+  useEffect(() => {
+    if (lesson.state.phase !== 'answered' || Platform.OS === 'web') return
+    if (verdict.current !== null) AccessibilityInfo.sendAccessibilityEvent(verdict.current, 'focus')
+  }, [lesson.state.phase, answeredCount])
 
   /**
    * On the transition into feedback, put the options back on screen. See `scroller`.
@@ -594,21 +721,26 @@ export function LessonScreen({
   }, [lesson.state.phase, revealOptions])
 
   /**
-   * The badges to celebrate, taken once when the lesson ends.
+   * Every new question starts at the top.
    *
-   * `drainUnlocks` clears the queue, so it has to run in an effect and land in state: a
-   * drain from the render body would empty the queue on a render React is allowed to
-   * throw away, and StrictMode would do it twice — the medals would be gone before
-   * anything drew them. The same rule `useLesson`'s completion effect exists for.
-   *
-   * Whatever is waiting, not only what this lesson earned: an unlock decided by the server
-   * during a background flush has no screen to appear on, and this is the next one.
+   * The scroll view outlives the question, so the offset `revealOptions` left behind
+   * carried into the next one: on a short phone the new prompt arrived half scrolled off
+   * the top, and the first thing a user saw of a question was its answers. Not animated —
+   * this is a new page, not movement within one.
    */
-  const [unlockedToShow, setUnlockedToShow] = useState<readonly PendingUnlock[]>([])
   useEffect(() => {
-    if (!isFinishedPhase(lesson.state.phase)) return
-    setUnlockedToShow((shown) => (shown.length > 0 ? shown : drainUnlocks()))
-  }, [lesson.state.phase])
+    scroller.current?.scrollTo({ y: 0, animated: false })
+  }, [lesson.state.index])
+
+  /**
+   * On the smallest phones Check is in the scroll, after the options — see
+   * `PINNED_CHECK_MIN_HEIGHT`. Selecting brings it into view so the next action is on
+   * screen the moment it becomes possible.
+   */
+  useEffect(() => {
+    if (!inlineCheck || lesson.state.selectedOptionId === null) return
+    scroller.current?.scrollToEnd({ animated: true })
+  }, [inlineCheck, lesson.state.selectedOptionId])
 
   /**
    * Watch this number. If it is high the mechanic is too punishing — which is the
@@ -623,12 +755,19 @@ export function LessonScreen({
   }, [lesson.state.outOfHearts, lesson.state.index])
 
   useEffect(() => {
-    if (status === 'loading') return setScreen('loading')
-    if (status === 'error') return setScreen('error')
-    if (questions.length === 0) return setScreen('empty')
+    // On D1 the screen's state is the issued lesson's: waiting for it, offline with none
+    // saved, a focus too narrow for a lesson (the empty state), or ready.
+    const source = remoteLessons
+      ? remote.status === 'ready' ? 'ready' : remote.status === 'idle' ? 'loading' : remote.status
+      : status
+    if (source === 'loading') return setScreen('loading')
+    if (source === 'error') return setScreen('error')
+    if (source === 'offline') return setScreen('offline-start')
+    if (source === 'too-narrow' || questions.length === 0) return setScreen('empty')
     setScreen('ready')
     if (lesson.state.phase === 'idle') {
-      lesson.start(makeUuid())
+      // The ticket's id on D1: it is the idempotency key the server issued under.
+      lesson.start(remoteLessons && remote.lesson ? remote.lesson.lessonId : makeUuid())
       track('lesson_started', {
         lesson_id: 'pending',
         kind: 'lesson',
@@ -637,11 +776,12 @@ export function LessonScreen({
         was_offline: isOffline,
       })
     }
-  }, [status, questions, lesson, isOffline])
+  }, [status, questions, lesson, isOffline, remoteLessons, remote.status, remote.lesson])
 
   if (screen === 'loading') return <LoadingState />
-  if (screen === 'error') return <ErrorState onRetry={reload} />
-  if (screen === 'empty') return <EmptyState />
+  if (screen === 'error') return <ErrorState onRetry={remoteLessons ? remote.retry : reload} onLeave={onLeave} />
+  if (screen === 'offline-start') return <OfflineStartState onRetry={remote.retry} onLeave={onLeave} />
+  if (screen === 'empty') return <EmptyState onLeave={onLeave} />
 
   if (lesson.state.phase === 'summary' || lesson.state.phase === 'abandoned') {
     const practised = practisedCountries(index?.index, lesson.state.answers)
@@ -649,18 +789,36 @@ export function LessonScreen({
       <LessonSummary
         result={lesson.optimistic}
         practised={practised}
+        timeMs={answeringMs(lesson.state)}
         // The two phases arrive here for very different reasons and the screen says so.
         // Running out of hearts is NOT one of them — the machine sends that to
         // `summary`, because the lesson ended rather than the user leaving it.
         wasAbandoned={lesson.state.phase === 'abandoned'}
-        unlocked={unlockedToShow}
         isOffline={isOffline}
         onExit={() =>
           onExit({
             practised: practised.map((c) => c.id),
             questCompleted: questCompleted.current,
+            completed: lesson.state.phase === 'summary',
+            lessonId: lesson.state.lessonId,
           })
         }
+      />
+    )
+  }
+
+  // In place of the runner, like `Paused`, so the question is not left in the
+  // accessibility tree. Only while the answer is on screen: the fact is the one just
+  // answered, and the verdict has already been graded, so nothing here can change it.
+  const reportedFact = lesson.state.questions[lesson.state.index]?.item.factId
+  if (reporting && lesson.state.phase === 'answered' && reportedFact !== undefined) {
+    return (
+      <ReportSheet
+        onSend={(reason) => withAccount(async (account) => {
+          if (!account.reportFact) throw new Error('Reports are not available on this backend')
+          await account.reportFact(reportedFact, reason)
+        })}
+        onClose={() => setReporting(false)}
       />
     )
   }
@@ -710,20 +868,17 @@ export function LessonScreen({
   /**
    * How many the user has just got right in a row, counting back from the last answer.
    *
-   * Only used to decide whether the praise under "Perfect!" is allowed to mention a
-   * streak. Computed rather than tracked because the answer log is already the truth
-   * and a second counter beside it is a second thing that can disagree with it.
+   * Decides whether the praise under "Perfect!" may mention a roll, and whether the
+   * progress bar wears the run colour. Derived from the answer log, which is already the
+   * truth — and in the end-of-lesson review it counts the review's own answers, so a run
+   * from the graded questions is not praised again in practice.
    */
-  const correctRun = (() => {
-    let run = 0
-    for (let i = lesson.state.answers.length - 1; i >= 0; i--) {
-      if (lesson.state.answers[i]?.wasCorrect !== true) break
-      run++
-    }
-    return run
-  })()
+  const correctRun = currentRun(lesson.state)
 
-  const lastAnswer = lesson.state.answers[lesson.state.answers.length - 1]
+  // The answer on screen: in the end-of-lesson review it is the review round's, which is
+  // practice and earns nothing, so it shows no reward either.
+  const reviewing = inReview(lesson.state)
+  const lastAnswer = lastAnswerOf(lesson.state)
   /**
    * What that answer was actually worth.
    *
@@ -735,7 +890,29 @@ export function LessonScreen({
    * `awardForAnswer` is the same function the grader and the server run, so the number
    * under a user's thumb is the number that lands in the ledger.
    */
-  const lastAward = lastAnswer ? lesson.awardFor(lastAnswer) : null
+  const lastAward = lastAnswer && !reviewing ? lesson.awardFor(lastAnswer) : null
+
+  /**
+   * The one primary action while a question is up.
+   *
+   * Disabled rather than hidden until something is selected, so the screen does not jump
+   * when the first option is tapped and the user can see where an answer is committed.
+   * Pinned, it sits exactly where the sheet's Continue will land, so the thumb that
+   * pressed Check is already on the way onward. Where it sits on the smallest phones is
+   * `PINNED_CHECK_MIN_HEIGHT`'s business.
+   */
+  const noSelection = lesson.state.selectedOptionId === null
+  const checkButton = (
+    <Button
+      label={t('lesson:check.label')}
+      onPress={lesson.check}
+      disabled={noSelection}
+      // Why it is dimmed, read after "Check, dimmed" — a disabled control with no
+      // reason is a dead end to a screen-reader user.
+      {...(noSelection ? { accessibilityHint: t('lesson:check.needsAnswer') } : {})}
+      testID="lesson-check"
+    />
+  )
 
   return (
     <View style={styles.screen}>
@@ -756,10 +933,15 @@ export function LessonScreen({
         >
           <Icon name="close" size={20} color={colors.text.secondary} />
         </Pressable>
+        {/* The combo glow: from the third right answer in a row the bar takes the flame
+            colour, the moment the feedback starts saying "on a roll". A miss returns it
+            to the ordinary green, never to a red one. Colour only, so nothing moves under
+            Reduce Motion and nothing new is announced; the sheet says it in words. */}
         <ProgressBar
           current={lesson.progress.current}
           total={lesson.progress.total}
           label={t('lesson:progress.label')}
+          tone={correctRun >= STREAK_PRAISE ? 'streak' : 'progress'}
           style={styles.flex}
         />
         <Stat
@@ -783,6 +965,10 @@ export function LessonScreen({
             `justifyContent` puts the prompt above scroll position zero and out of reach.
             Measured before the change: option four sat at 535–594 of 568. */}
         <Spacer />
+        {reviewing && (
+          // Duolingo's "previous mistake" tag: this one came back because it was missed.
+          <Text style={styles.reviewTag}>{t('lesson:review.tag')}</Text>
+        )}
         <Text style={styles.prompt} role="heading">
           {/* The prompt key and its params come from the question template in the
               content pack, so they are validated by `pnpm content:validate` rather
@@ -890,6 +1076,7 @@ export function LessonScreen({
               option.id,
               answered,
               lastAnswer?.chosenOptionId,
+              lesson.state.selectedOptionId,
             )
             return (
             <AnswerOption
@@ -946,38 +1133,15 @@ export function LessonScreen({
                   <Icon name="forward" size={20} color={colors.text.secondary} />
                 ) : undefined
               }
+              // A tap SELECTS; Check grades. Changing your mind is free, which is the
+              // point: a mis-tap on a phone held in one hand used to be a scored answer,
+              // and on a review item a lost heart. The selection haptic is the light
+              // platform tick, not the verdict — nothing has been decided yet, and the
+              // correct/wrong cues fire from the graded answer (`useAnswerCues`).
               onPress={() => {
-                // Fired from the option's own correctness rather than from the
-                // state after dispatch: the reducer has not run yet at this point,
-                // and reading `lastAnswer` here would buzz for the PREVIOUS question.
-                // Sound and haptic together, both from the option's own correctness
-                // rather than from the state after dispatch — the reducer has not run
-                // yet, so reading `lastAnswer` here would fire for the PREVIOUS
-                // question. Both are no-ops when their toggle is off.
-                if (option.isCorrect) {
-                  hapticCorrect()
-                  soundCorrect()
-                } else {
-                  hapticWrong()
-                  soundWrong()
-                }
-
-                // The richest event we have, and the one that sets lesson length
-                // honestly: accuracy by POSITION is a measurement, not a guess.
-                // Timed from `shownAt` for the same reason the countdown is —
-                // the deadline belongs to when the question appeared.
-                const elapsedMs = Date.now() - (lesson.state.shownAt ?? Date.now())
-                track('question_answered', {
-                  lesson_id: lesson.state.lessonId,
-                  template_id: question.item.templateId,
-                  fact_id: question.item.factId,
-                  correct: option.isCorrect,
-                  elapsed_ms: elapsedMs,
-                  rating: deriveRating(option.isCorrect, elapsedMs, itemMs),
-                  position: lesson.state.index,
-                })
-
-                lesson.answer(option.id)
+                if (option.id === lesson.state.selectedOptionId) return
+                hapticSelect()
+                lesson.select(option.id)
               }}
               // So tests can select answers POSITIVELY. The helper used to take every
               // button that was not labelled "Continue", which silently swallowed the
@@ -989,11 +1153,15 @@ export function LessonScreen({
           })}
         </View>
 
+        {inlineCheck && !answered && checkButton}
+
         <Spacer />
       </ScrollView>
 
-      {answered && (
-        <View style={styles.footer}>
+      {!answered ? (
+        !inlineCheck && <View style={styles.footer}>{checkButton}</View>
+      ) : (
+        <RiseIn key={answeredCount} style={styles.footer}>
           {/* Out of hearts is a fork, not a wall. The engine has held the flag since
               the machine was written and nothing rendered it — so the lesson simply
               carried on at zero hearts, which made the whole mechanic decorative. */}
@@ -1042,7 +1210,23 @@ export function LessonScreen({
                This block used to sit in the scroll flow with the button pinned beneath
                it, so the praise and the way onward were two objects with a gap between
                them. One sheet is the mechanic worth taking. */
-            <View style={styles.sheet}>
+            <View
+              // The verdict's tint, and it is calm on both sides: the success surface
+              // for right, the muted plum `feedback.wrong` for wrong — never red — and
+              // the plain raised surface when the clock ran out, because that one is
+              // not a verdict on the user at all. The ring draws the edge a dark tint
+              // alone would not have (R10). Colour is never the only carrier: the
+              // headline, the tick on the option and the haptic all say the same thing.
+              style={[
+                styles.sheet,
+                lastAnswer?.wasCorrect === true
+                  ? styles.sheetCorrect
+                  : lastAnswer?.chosenOptionId == null
+                    ? styles.sheetNeutral
+                    : styles.sheetWrong,
+              ]}
+              testID="answer-sheet"
+            >
               {/* The thing the question was ABOUT, now that it can be shown.
    
                   "Hur ser Japans flagga ut?" is asked in words and answered in words,
@@ -1124,7 +1308,9 @@ export function LessonScreen({
               >
                 {lastAnswer?.wasCorrect ? (
             <>
-              <Text style={styles.feedbackTitleOk}>{t('lesson:feedback.correct.title')}</Text>
+              <Text ref={verdict} style={styles.feedbackTitleOk}>
+                {t('lesson:feedback.correct.title')}
+              </Text>
               {/* One warm line under the headline, and it tells the truth.
    
                   `feedback.correct.body` — "You found {entityName} 🎉" — has been in the
@@ -1177,7 +1363,7 @@ export function LessonScreen({
           ) : (
             // Never "Wrong!". State the truth, name the right answer, move on.
             <>
-              <Text style={styles.feedbackTitle}>
+              <Text ref={verdict} style={styles.feedbackTitle}>
                 {/* A timeout has no chosen option. "That's undefined." is what the
                     normal branch would render, and the clock running out is not the
                     user choosing wrongly — it deserves its own neutral sentence. */}
@@ -1201,12 +1387,32 @@ export function LessonScreen({
           )}
               </View>
               <Button label={t('common:continue')} onPress={lesson.advance} />
+              {remoteLessons && (
+                <Button label={t('lesson:report.cta')} variant="ghost" size="sm" onPress={() => setReporting(true)} />
+              )}
             </View>
           )}
-        </View>
+        </RiseIn>
       )}
 
     </View>
+  )
+}
+
+/**
+ * The answer sheet's entrance: up from below, into the place it occupies.
+ *
+ * Remounted per answer by its key, so every verdict arrives rather than the first one
+ * arriving and the rest simply being there. Never blocks input — the Continue button
+ * inside is pressable from the first frame, and a user who knows the drill can tap
+ * through the slide. Under reduced motion the sheet is in place from the start.
+ */
+function RiseIn({ children, style }: { children: ReactNode; style: StyleProp<ViewStyle> }) {
+  const rise = useRiseIn('base')
+  return (
+    <Animated.View style={[style, rise.style]} onLayout={rise.onLayout}>
+      {children}
+    </Animated.View>
   )
 }
 
@@ -1247,8 +1453,9 @@ function optionState(
   optionId: string,
   answered: boolean,
   chosenId: string | null | undefined,
+  selectedId: string | null,
 ) {
-  if (!answered) return 'idle' as const
+  if (!answered) return optionId === selectedId ? ('selected' as const) : ('idle' as const)
   if (isCorrect) return 'correct' as const
   if (optionId === chosenId) return 'wrong' as const
   return 'disabled' as const
@@ -1332,7 +1539,7 @@ function practisedCountries(
   return out
 }
 
-function ErrorState({ onRetry }: { onRetry: () => void }) {
+function ErrorState({ onRetry, onLeave }: { onRetry: () => void; onLeave: (() => void) | undefined }) {
   const t = useT()
 
   return (
@@ -1340,12 +1547,23 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
       <Text style={styles.prompt}>{t('common:error.generic.title')}</Text>
       <Text style={styles.feedbackBody}>{t('common:error.generic.body')}</Text>
       <Button label={t('common:retry')} onPress={onRetry} style={styles.retry} />
+      <LeaveButton onLeave={onLeave} />
     </View>
   )
 }
 
+/**
+ * The quiet way back from a lesson that never started. Ghost, not a second primary: the
+ * screen's own action (Retry) is still the thing it recommends.
+ */
+function LeaveButton({ onLeave }: { onLeave: (() => void) | undefined }) {
+  const t = useT()
+  if (onLeave === undefined) return null
+  return <Button label={t('common:back')} variant="ghost" onPress={onLeave} testID="lesson-leave" />
+}
+
 /** Never a dead end — an empty queue is celebrated, then offers what is next. */
-function EmptyState() {
+function EmptyState({ onLeave }: { onLeave: (() => void) | undefined }) {
   const t = useT()
 
   return (
@@ -1357,6 +1575,28 @@ function EmptyState() {
       <Art name="states/empty-caught-up" size={160} />
       <Text style={styles.prompt}>{t('lesson:empty.title')}</Text>
       <Text style={styles.feedbackBody}>{t('lesson:empty.body')}</Text>
+      <LeaveButton onLeave={onLeave} />
+    </View>
+  )
+}
+
+/**
+ * Offline, on a D1 build, with no lesson saved for offline use.
+ *
+ * The one lesson this device cannot start: lessons are issued by the server, and a few
+ * are kept for offline starts once there has been a connection. Says what to do and
+ * offers the retry; answers already given are safe in the queue either way.
+ */
+function OfflineStartState({ onRetry, onLeave }: { onRetry: () => void; onLeave: (() => void) | undefined }) {
+  const t = useT()
+
+  return (
+    <View style={[styles.screen, styles.centered]} testID="lesson-offline-start">
+      <Art name="states/offline" size={160} />
+      <Text style={styles.prompt}>{t('lesson:offlineStart.title')}</Text>
+      <Text style={styles.feedbackBody}>{t('lesson:offlineStart.body')}</Text>
+      <Button label={t('common:retry')} onPress={onRetry} style={styles.retry} />
+      <LeaveButton onLeave={onLeave} />
     </View>
   )
 }
@@ -1396,6 +1636,7 @@ const styles = StyleSheet.create({
   // shadow of its own to separate it.
   bodyShort: { gap: space[3], paddingBottom: space[4] },
   prompt: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
+  reviewTag: { ...text('caption'), color: colors.text.secondary, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 },
   promptArt: { alignItems: 'center' },
   options: { gap: space[2] },
   /**
@@ -1434,8 +1675,14 @@ const styles = StyleSheet.create({
     paddingTop: space[5],
     borderRadius: radius.lg,
     ...squircle,
-    backgroundColor: colors.bg.surfaceRaised,
+    borderWidth: 2,
   },
+  sheetCorrect: {
+    backgroundColor: colors.feedback.correctSurface,
+    borderColor: colors.feedback.correctEdge,
+  },
+  sheetWrong: { backgroundColor: colors.feedback.wrong, borderColor: colors.feedback.wrongEdge },
+  sheetNeutral: { backgroundColor: colors.feedback.neutral, borderColor: colors.border.subtle },
   // Anchored so the feet land INSIDE the button's band rather than on the sheet's floor.
   // The button is a later sibling in normal flow, so it paints over — that overlap is the
   // whole mechanic, and a mascot that stops neatly above the button is a sticker. At

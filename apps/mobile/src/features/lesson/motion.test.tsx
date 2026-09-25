@@ -19,7 +19,7 @@
  */
 
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { withFullMotion } from '../../test/setup.js'
 import { LessonScreen } from './LessonScreen.js'
 import { LessonSummary } from './LessonSummary.js'
@@ -45,12 +45,27 @@ describe('the animated branch mounts', () => {
     })
   })
 
+  it('grades an answer with motion on, and the sheet that rises has its content', () => {
+    // The answer sheet rewinds below the screen before its first paint and rises from
+    // there; this is the branch that does it. The content must be in the tree whatever
+    // the transform is doing — a sheet that "rose" with nothing in it would pass a
+    // screenshot taken mid-flight.
+    withFullMotion(() => {
+      render(<LessonScreen onExit={() => {}} />)
+      fireEvent.click(screen.getAllByTestId('answer-option')[0]!)
+      fireEvent.click(screen.getByTestId('lesson-check'))
+      expect(screen.getByTestId('answer-sheet')).toBeTruthy()
+      expect(screen.getByRole('button', { name: 'Continue' })).toBeTruthy()
+    })
+  })
+
   it('renders the summary — the screen with the XP tally on it — with motion on', () => {
     // The tally is the one thing in this app that counts up, so it is the component with
     // the most to get wrong on the animated path.
     withFullMotion(() => {
       const { container } = render(
         <LessonSummary
+          timeMs={30_000}
           result={{
             lessonId: 'l1',
             items: 10,
@@ -65,6 +80,7 @@ describe('the animated branch mounts', () => {
             rejected: 0,
             overdueCleared: 0,
             heartsLost: 0,
+            heartsDepleted: false,
           }}
           wasAbandoned={false}
           isOffline={false}

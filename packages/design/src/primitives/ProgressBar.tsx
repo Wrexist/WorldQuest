@@ -20,6 +20,7 @@ import { Tally } from './Tally.js'
  * `progress` is the default green. `reward` is the amber the mockup uses on the
  * quest card — a distinct meaning (this is a reward track, not raw completion),
  * so it earns its own tone rather than a colour override at the call site.
+ * `streak` is the flame: the lesson bar wears it during a run of right answers.
  */
 export type ProgressTone = 'progress' | 'reward' | 'streak'
 
@@ -91,7 +92,9 @@ const FILLS: Record<ProgressTone, string> = {
 const SHEENS: Record<ProgressTone, string> = {
   progress: colors.status.progressHighlight,
   reward: colors.reward.coin,
-  streak: colors.status.streak,
+  // A lighter flame, so the sheen reads on the run-coloured lesson bar. It was the fill
+  // colour itself, which drew the sheen invisibly.
+  streak: colors.status.streakHighlight,
 }
 
 export function ProgressBar({

@@ -250,17 +250,26 @@ Rules:
 reward, haptic, sound. Dismissible from frame one. If several unlock at once, queue
 them with a maximum of **2** celebrations, then a summary card.
 
-> **What is built, 2026-08-18: the medal appears on the lesson summary**, under a "New
-> badges" heading, not as a full-screen celebration. Before that an unlock produced an
-> analytics event and nothing else — the whole reward loop for thirty achievements was a
-> row in a dashboard nobody had built yet.
+> **What is built, 2026-09-25: a full-screen card per unlocked tier**, straight after the
+> lesson summary (`/achievement-unlocked`, a step in `features/lesson/afterLesson.ts`,
+> after the streak and quest beats). The medal springs in, then the name, the tier in
+> words and colour, and the target the tier asked for; one Continue, live from the first
+> frame; Reduce Motion shows the medal still. **Three cards at most** — the owner asked
+> for three rather than the two above — and the rest are counted on the last card
+> ("and 2 more"). An early exit still gets its cards: the answers that earned the badge
+> were given. The "New badges" row that used to sit on the summary is gone; it showed
+> the same medal twice, seconds apart.
 >
-> The queue is the part worth keeping either way (`features/achievements/pending.ts`).
-> Most unlocks are decided by the SERVER and arrive when the sync queue drains, which for
-> a lesson finished in a tunnel is on the walk home with the app in the background — there
-> is no screen mounted to celebrate anything, so an unlock is recorded and shown at the
-> end of the next lesson. A full-screen celebration can be built on top of that queue
-> without changing anything that produces an unlock.
+> Deliberately no reward line on the card. The server pays each tier once, from its own
+> ledger; a tier the device announces again after a reinstall has already been paid, and
+> "+25 XP" printed over it would be a claim nothing honours.
+>
+> The queue is unchanged in what produces it (`features/achievements/pending.ts`). Most
+> unlocks are decided by the SERVER and arrive when the sync queue drains, which for a
+> lesson finished in a tunnel is on the walk home with the app in the background — so an
+> unlock is recorded, read (not taken) when the next summary's Continue is pressed, and
+> cleared by the card that shows it. The ids travel in the chain's URL and are re-checked
+> against the shipped catalogue before anything is drawn.
 
 ## 8. Design rules
 

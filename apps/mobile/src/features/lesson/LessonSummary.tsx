@@ -20,6 +20,13 @@
  * the ticking text is `aria-hidden` and the card carries the final figure as its label,
  * so a screen reader says "40 XP earned" once instead of counting to forty out loud.
  *
+ * ## Time, and why it is not called speed
+ *
+ * The time tile is how long the questions took: the engine's `answeringMs`, which leaves
+ * out pauses and the feedback sheet. It is printed in the neutral colour and labelled
+ * "Time", never "Speedy". A slow lesson is not a worse one, and a child reading a flag
+ * description carefully should not see the care scored.
+ *
  * Spec: docs/design/voice-and-tone.md · docs/systems/xp-economy.md
  */
 
@@ -33,18 +40,17 @@ import {
   space,
   Spacer,
   squircle,
+  staggerStyle,
   text,
   useCelebration,
   useCountUp,
+  useStagger,
 } from '@worldquest/design'
 import { factsStrengthened } from '@worldquest/engines'
 import type { GradeResult } from '@worldquest/engines'
 import { Art } from '../../components/Art.js'
 import { Flag } from '../../components/Flag.js'
-import { tContent, useT, type TranslationKey } from '../../lib/i18n.js'
-import { AchievementMedal } from '../achievements/AchievementMedal.js'
-import { achievementNameKey } from '../achievements/useAchievements.js'
-import type { PendingUnlock } from '../achievements/pending.js'
+import { useT } from '../../lib/i18n.js'
 
 /**
  * How a lesson ended, from the user's point of view rather than the machine's.
@@ -72,6 +78,16 @@ export function outcomeOf(result: GradeResult | null, wasAbandoned: boolean): Su
  * that has to stop claiming to be good does not have to start claiming to be bad.
  */
 const STRONG_ACCURACY = 0.8
+
+/**
+ * Whole minutes and the seconds left over, to the nearest second: 65 400 ms is 1:05.
+ *
+ * Rounded once, on the total, so 59.6 seconds reads 1:00 rather than 0:60.
+ */
+export function minutesAndSeconds(ms: number): { minutes: number; seconds: number } {
+  const total = Math.max(0, Math.round(ms / 1000))
+  return { minutes: Math.floor(total / 60), seconds: total % 60 }
+}
 
 const HEADLINE = {
   perfect: 'lesson:summary.perfect.title',
@@ -112,8 +128,8 @@ const PRACTISED_FLAG_WIDTH = 44
 export function LessonSummary({
   result,
   practised = [],
+  timeMs,
   wasAbandoned,
-  unlocked = [],
   isOffline,
   onExit,
 }: {
@@ -127,20 +143,20 @@ export function LessonSummary({
    * for the collection.
    */
   practised?: readonly PractisedCountry[]
+  /**
+   * Time spent answering, in milliseconds: the engine's `answeringMs`, so pauses and the
+   * feedback sheet are already left out.
+   */
+  timeMs: number
   /** True when the user chose to stop rather than reaching the last question. */
   wasAbandoned: boolean
-  /**
-   * Achievements unlocked and not yet shown to anybody.
-   *
-   * Not only the ones this lesson earned. Three achievements are decided on the device
-   * and the rest by the SERVER, arriving through `recordServerOutcome` whenever the sync
-   * queue drains — which for a lesson finished in a tunnel is on the walk home with the
-   * app in the background, where no screen exists to celebrate anything. So unlocks are
-   * queued and shown at the end of the next lesson, which is where somebody is looking.
-   *
-   * Before this the entire reward loop for thirty achievements was an analytics event.
+  /*
+   * Badges are no longer drawn here. They used to sit in a row of 64pt medals under the
+   * numbers; each one now gets a full-screen card straight after this screen, for a
+   * finished lesson and an early exit alike (`afterLesson.ts`, `AchievementUnlocked`).
+   * Keeping the row as well would show the same medal twice, seconds apart, and push
+   * the practised flags off a short phone to do it.
    */
-  unlocked?: readonly PendingUnlock[]
   isOffline: boolean
   onExit: () => void
 }) {
@@ -156,6 +172,10 @@ export function LessonSummary({
 
   const strengthened = useMemo(() => (result === null ? 0 : factsStrengthened(result)), [result])
   const accuracyPct = result === null ? 0 : Math.round(result.accuracy * 100)
+  const time = minutesAndSeconds(timeMs)
+  // After the four tiles, in reading order. A hook, so it is called whether or not the
+  // shelf renders.
+  const practisedIn = useStagger(5, 'expressive')
 
   return (
     <View style={styles.screen}>
@@ -195,11 +215,11 @@ export function LessonSummary({
             announcing confetti is noise. */}
         {outcome === 'perfect' && (
           <View style={styles.headlineArt}>
+            {/* Confetti ring only. `celebration/rays` used to sit under it, and on the
+                navy background that asset is an opaque white blob that swallowed the
+                whole headline (owner review, 25 Sep 2026). */}
             <View style={styles.celebration} pointerEvents="none">
-              <Art name="celebration/rays" size={CELEBRATION_SIZE} />
-              <View style={styles.celebrationOverlay}>
-                <Art name="celebration/burst" size={CELEBRATION_SIZE} />
-              </View>
+              <Art name="celebration/burst" size={CELEBRATION_SIZE} />
             </View>
             <Art name="atlas/celebrate" size={140} />
           </View>
@@ -243,8 +263,12 @@ export function LessonSummary({
               </Card>
             </Animated.View>
 
+            {/* Dealt in one after another behind the XP, in the order they are read.
+                `useStagger` caps the cascade and skips it under Reduce Motion, where
+                every tile is simply there. */}
             <View style={styles.tiles}>
               <StatTile
+                order={1}
                 value={t('lesson:summary.stat.percent', { value: accuracyPct })}
                 label={t('lesson:summary.stat.accuracy')}
                 tint={
@@ -260,6 +284,19 @@ export function LessonSummary({
                 testID="summary-accuracy"
               />
               <StatTile
+                order={2}
+                value={t('lesson:summary.stat.time.value', {
+                  minutes: time.minutes,
+                  seconds: String(time.seconds).padStart(2, '0'),
+                })}
+                label={t('lesson:summary.stat.time')}
+                // Neutral: time is a fact about the lesson, not a score (see the header).
+                tint={colors.text.primary}
+                accessibilityLabel={t('lesson:summary.stat.time.a11y', time)}
+                testID="summary-time"
+              />
+              <StatTile
+                order={3}
                 value={`+${result.coinsAwarded}`}
                 label={t('lesson:summary.stat.coins')}
                 tint={colors.reward.coin}
@@ -270,6 +307,7 @@ export function LessonSummary({
                   flatters is a scoreboard, not a report — and a layout that changes
                   shape between lessons is its own small accessibility problem. */}
               <StatTile
+                order={4}
                 value={String(strengthened)}
                 label={t('lesson:summary.stat.stronger')}
                 tint={colors.reward.gem}
@@ -282,44 +320,11 @@ export function LessonSummary({
           </>
         )}
 
-        {unlocked.length > 0 && (
-          // Above the practised flags, because a badge is the bigger event and the flags
-          // are context. Below the numbers, because the numbers are what the screen is
-          // for — a celebration that pushes the XP off a short phone has taken the
-          // headline away from the lesson to give it to a side effect.
-          <View style={styles.unlocked} testID="summary-unlocked">
-            <Text style={styles.practisedLabel} role="heading" aria-level={2}>
-              {t('lesson:summary.unlocked', { count: unlocked.length })}
-            </Text>
-            <View style={styles.medals}>
-              {unlocked.map((unlock) => (
-                <View key={`${unlock.achievementId}:${unlock.tier}`} style={styles.medal}>
-                  {/* The medal is the picture and the name is the fact. Grouped into one
-                      accessible element for the same reason `StatTile` is: a medal and a
-                      caption should read as one thing, not two fragments. */}
-                  <View
-                    accessibilityLabel={tContent(
-                      achievementNameKey(unlock.achievementId) as TranslationKey,
-                    )}
-                    style={styles.medalGroup}
-                  >
-                    <AchievementMedal
-                      achievementId={unlock.achievementId}
-                      tier={unlock.tier}
-                      size={UNLOCK_MEDAL}
-                    />
-                    <Text style={styles.medalName} numberOfLines={2} aria-hidden>
-                      {tContent(achievementNameKey(unlock.achievementId) as TranslationKey)}
-                    </Text>
-                  </View>
-                </View>
-              ))}
-            </View>
-          </View>
-        )}
-
         {practised.length > 0 && (
-          <View style={styles.practised} testID="summary-practised">
+          <Animated.View
+            style={[styles.practised, staggerStyle(practisedIn)]}
+            testID="summary-practised"
+          >
             <Text style={styles.practisedLabel} role="heading" aria-level={2}>
               {t('lesson:summary.practised')}
             </Text>
@@ -336,7 +341,7 @@ export function LessonSummary({
                 />
               ))}
             </View>
-          </View>
+          </Animated.View>
         )}
         <Spacer />
       </ScrollView>
@@ -354,14 +359,6 @@ export function LessonSummary({
 }
 
 /**
- * The medal on the summary, smaller than on the achievements screen.
- *
- * That screen is a shelf and the medal is its subject; here it is one item in a row under
- * a heading, beside an XP card that has to stay the headline.
- */
-const UNLOCK_MEDAL = 64
-
-/**
  * One number and what it means.
  *
  * The label sits under the value rather than beside it so the tile can be narrow, and
@@ -369,27 +366,40 @@ const UNLOCK_MEDAL = 64
  * three facts, not six fragments.
  */
 function StatTile({
+  order,
   value,
   label,
   tint,
   accessibilityLabel,
   testID,
 }: {
+  /** Its place in the reveal: 1 arrives first, just after the XP card. */
+  order: number
   value: string
   label: string
   tint: string
   accessibilityLabel: string
   testID: string
 }) {
+  const entrance = useStagger(order, 'expressive')
+
   return (
-    <Card level={1} accessibilityLabel={accessibilityLabel} style={styles.tile} testID={testID}>
-      <Text style={[styles.tileValue, { color: tint }]} aria-hidden>
-        {value}
-      </Text>
-      <Text style={styles.tileLabel} aria-hidden>
-        {label}
-      </Text>
-    </Card>
+    // The cell moves; the card inside it is the one spoken element, unchanged.
+    <Animated.View style={[styles.tile, staggerStyle(entrance)]}>
+      <Card
+        level={1}
+        accessibilityLabel={accessibilityLabel}
+        style={styles.tileFace}
+        testID={testID}
+      >
+        <Text style={[styles.tileValue, { color: tint }]} aria-hidden>
+          {value}
+        </Text>
+        <Text style={styles.tileLabel} aria-hidden>
+          {label}
+        </Text>
+      </Card>
+    </Animated.View>
   )
 }
 
@@ -424,13 +434,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  celebrationOverlay: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
   xpCard: { alignItems: 'center', paddingVertical: space[5] },
   xpValue: { ...text('hero'), color: colors.reward.xp },
   xpUnit: { ...text('overline'), color: colors.text.secondary },
 
-  // Wraps rather than squeezing. Three tiles fit one row at 320pt; at 200 % text they
-  // become two rows instead of three columns of broken words.
+  // Two by two at every width. Four in a row is 64pt a tile at 320 — broken words — and
+  // wrapping at a fixed width gave 2 + 2 on a small phone but 3 + 1 at 390, one tile
+  // stretched alone under three. A basis under half the row fits two beside the gap and
+  // never three; at 200 % text the cards grow taller instead of narrower.
   tiles: {
     alignSelf: 'stretch',
     flexDirection: 'row',
@@ -438,7 +449,8 @@ const styles = StyleSheet.create({
     gap: space[2],
     justifyContent: 'center',
   },
-  tile: { flexGrow: 1, flexBasis: 96, minWidth: 96, alignItems: 'center', gap: space[1] },
+  tile: { flexGrow: 1, flexBasis: '40%' },
+  tileFace: { flexGrow: 1, alignItems: 'center', gap: space[1] },
   tileValue: text('h2', { numeric: true }),
   tileLabel: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
 
@@ -449,15 +461,6 @@ const styles = StyleSheet.create({
   // so this one is on the caller to get right.
   practisedLabel: { ...text('overline'), color: colors.text.secondary },
   flags: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2], justifyContent: 'center' },
-
-  unlocked: { alignSelf: 'stretch', alignItems: 'center', gap: space[3], marginTop: space[2] },
-  medals: { flexDirection: 'row', flexWrap: 'wrap', gap: space[3], justifyContent: 'center' },
-  // A fixed width so two medals with names of very different lengths still sit on a grid
-  // rather than pushing each other around. Wide enough for two lines of `caption` at the
-  // 200 % the DoD requires, which is what `numberOfLines={2}` on the label is sized for.
-  medal: { width: UNLOCK_MEDAL + space[4] },
-  medalGroup: { alignItems: 'center', gap: space[1] },
-  medalName: { ...text('caption'), color: colors.text.primary, textAlign: 'center' },
 
   cta: { marginTop: space[2] },
   offline: {

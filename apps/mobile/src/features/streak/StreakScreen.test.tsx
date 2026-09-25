@@ -203,6 +203,36 @@ describe('StreakScreen', () => {
   })
 })
 
+describe('StreakScreen — sharing', () => {
+  it('opens the share sheet with the streak, when the route allows it', () => {
+    const onShare = vi.fn()
+    render(<StreakScreen {...props({ onShare })} />)
+    fireEvent.click(screen.getByTestId('streak-share'))
+    expect(onShare).toHaveBeenCalledWith(12)
+  })
+
+  it('offers no share without a handler, which is how a child\'s screen arrives', () => {
+    render(<StreakScreen {...props()} />)
+    expect(screen.queryByTestId('streak-share')).toBeNull()
+  })
+
+  it('offers nothing to share at zero, or on the day a streak broke', () => {
+    const { unmount } = render(<StreakScreen {...props({ current: 0, onShare: vi.fn() })} />)
+    expect(screen.queryByTestId('streak-share')).toBeNull()
+    unmount()
+    render(
+      <StreakScreen
+        {...props({
+          current: 1,
+          onShare: vi.fn(),
+          repairOffer: { available: true, price: REPAIR_PRICE, expiresAt: NOW + 3_600_000 },
+        })}
+      />,
+    )
+    expect(screen.queryByTestId('streak-share')).toBeNull()
+  })
+})
+
 describe('StreakScreen — the repair actually happens', () => {
   const broken = (over: Partial<StreakScreenProps> = {}): StreakScreenProps =>
     props({

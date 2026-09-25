@@ -47,10 +47,13 @@ on:
         default: true
         type: boolean
 
-# The iOS build number bumps itself — `apps/mobile/eas.json`'s `production` profile
-# already sets `autoIncrement: true`, which EAS Build reads and increments on its own
-# servers. Nothing here needs to pass one in; a manual input would just be a second
-# source of truth that can disagree with the first.
+# The iOS build number is resolved here, not left to `autoIncrement` alone.
+# eas.json uses `appVersionSource: "local"`, so EAS writes its increment back into
+# app.json on a runner whose working tree is then discarded — every cloud run would
+# start from the same committed number and App Store Connect rejects a repeat.
+# scripts/next-build-number.mjs (shared with eas-build-local-ios.yml) returns App
+# Store Connect's highest build + 1, or an epoch-seconds fallback; `autoIncrement`
+# then adds one more, which is still unique and increasing (audit action A10).
 
 permissions:
   contents: read
@@ -179,6 +182,24 @@ jobs:
       # `extra.eas.projectId`, so `eas build --non-interactive` resolves the
       # project straight from the checkout. Same reasoning as the local
       # workflow — see that file, and app.json's own $comment.
+
+      - name: Compute unique build number (CFBundleVersion)
+        working-directory: .
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+        run: |
+          BUILD_NUMBER="$(node scripts/next-build-number.mjs)"
+          node -e '
+            const fs = require("fs");
+            const p = "apps/mobile/app.json";
+            const json = JSON.parse(fs.readFileSync(p, "utf8"));
+            json.expo.ios.buildNumber = String(process.argv[1]);
+            fs.writeFileSync(p, JSON.stringify(json, null, 2) + "
+");
+          ' "$BUILD_NUMBER"
+          echo "::notice::ios.buildNumber stamped as $BUILD_NUMBER (autoIncrement adds one)"
 
       - name: Build (EAS Build, production profile)
         env:

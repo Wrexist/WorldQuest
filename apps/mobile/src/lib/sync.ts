@@ -20,6 +20,7 @@ import {
 import type { AnsweredItem } from '@worldquest/engines'
 import type { SubmitLessonResponse } from '@worldquest/api'
 import { accountRepository, currentUser, isConfigured } from './supabase.js'
+import { isD1 } from './backendConfig.js'
 import { isOnline, onConnectivityChange } from './connectivity.js'
 import { invalidateProgress } from './query.js'
 import { captureStorage, onStorageScopeChange, writeJson } from './storage.js'
@@ -222,7 +223,22 @@ export function flush(): Promise<void> {
 async function run(): Promise<void> {
   // Nothing to talk to. Leave the queue intact rather than failing every item and
   // burning their retry budget against a backend that was never configured.
+  //
   if (!isConfigured()) return
+  // On the D1 Worker lessons travel in the ticketed D1 queue (`d1-lessons.ts`), so the
+  // same wake-ups — reconnect, account change, retry — drain that queue instead. This
+  // queue holds nothing on a D1 build: the Worker grades only lessons it issued, so a
+  // device-composed lesson is never sent there. Loaded lazily, so a legacy build never
+  // loads the D1 client at all.
+  if (isD1()) {
+    const [{ flushLessons, prefetchLessons }, { currentLocale }] = await Promise.all([import('./d1-lessons.js'), import('./i18n.js')])
+    await flushLessons()
+    // Keep a few lessons ready for the next offline start. Ten questions is the Worker's
+    // own default; a lesson screen tops these up with the learner's measured length and
+    // screen-reader state after every lesson.
+    await prefetchLessons({ count: 10, locale: currentLocale() === 'sv' ? 'sv' : 'en', screenReader: false })
+    return
+  }
   if (queue.pending.length === 0) return
 
   // Offline is not a failure, it is a "not yet". Sending anyway would spend an attempt

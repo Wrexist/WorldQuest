@@ -88,7 +88,10 @@ function useOnboardingGate(ready: boolean): void {
 
   useEffect(() => {
     if (!ready) return
-    if (pathname.startsWith('/onboarding')) return
+    // `/account` too: onboarding's own "I already have an account" opens it. Bouncing it
+    // back here made signing in on a new phone impossible, because onboarding cannot be
+    // finished by a person who came to sign in (`pnpm e2e:d1`, the second phone).
+    if (pathname.startsWith('/onboarding') || pathname.startsWith('/account')) return
     if (readOnboarding().completed) return
     router.replace('/onboarding')
   }, [ready, pathname])
@@ -301,6 +304,12 @@ export default function RootLayout() {
             <Stack.Screen name="collection/[kind]" />
             <Stack.Screen name="achievements" />
             <Stack.Screen name="streak" />
+            {/* The after-lesson chain (`afterLesson.ts`): each step's way out is its own
+                button, which knows what comes next. A swipe back would land on nothing —
+                the summary behind them has already been replaced. */}
+            <Stack.Screen name="streak-extended" options={{ gestureEnabled: false }} />
+            <Stack.Screen name="achievement-unlocked" options={{ gestureEnabled: false }} />
+            <Stack.Screen name="create-profile" options={{ gestureEnabled: false }} />
             <Stack.Screen name="welcome-back" options={{ gestureEnabled: false }} />
             <Stack.Screen
               name="lesson"

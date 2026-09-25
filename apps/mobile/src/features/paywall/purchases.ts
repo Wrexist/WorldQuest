@@ -71,6 +71,25 @@ export const UNAVAILABLE: PurchasePort = {
   manageBilling: async () => {},
 }
 
+/**
+ * The purchase port this build ships with.
+ *
+ * `UNAVAILABLE` until a store adapter lands (A01). Read by the paywall and Settings
+ * through `usePurchases`, and by every entry point through `SELLING` below.
+ */
+export const RUNTIME_PURCHASES: PurchasePort = UNAVAILABLE
+
+/**
+ * Whether this build can sell anything at all.
+ *
+ * With no store adapter every plan list is empty, Restore can only fail, and a paywall
+ * is a screen that says "nothing to buy here yet". Guideline 2.1 rejects dead ends like
+ * that, and a learner reads it as bait. So entry points ask this first: the taster's
+ * hand-off, Settings' Premium section and its Restore row. Flip it by installing a real
+ * port, not by editing this line.
+ */
+export const SELLING: boolean = RUNTIME_PURCHASES !== UNAVAILABLE
+
 /** Sample prices for the harness and tests. Never used at runtime. */
 export const SAMPLE_PLANS: readonly Plan[] = [
   {

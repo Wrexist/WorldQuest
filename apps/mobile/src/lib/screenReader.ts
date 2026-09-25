@@ -31,7 +31,18 @@ import { useEffect, useState } from 'react'
 import { AccessibilityInfo } from 'react-native'
 
 export function useScreenReader(): boolean {
-  const [enabled, setEnabled] = useState(false)
+  return useScreenReaderStatus() ?? false
+}
+
+/**
+ * The same answer, but `null` until the platform has given it.
+ *
+ * For a caller that must not act on the default: a D1 lesson is issued once, by the
+ * server, for a presentation. Asking before this resolves would ask for picture
+ * questions on behalf of a VoiceOver user, and there is no recomposing an issued lesson.
+ */
+export function useScreenReaderStatus(): boolean | null {
+  const [enabled, setEnabled] = useState<boolean | null>(null)
 
   useEffect(() => {
     let alive = true

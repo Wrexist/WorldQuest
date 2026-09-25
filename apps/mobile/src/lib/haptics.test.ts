@@ -48,6 +48,25 @@ describe('haptics — the setting', () => {
     expect(source).toMatch(/!== false/)
   })
 
+  it('asks the page first on web, where a vibration before the first tap is refused', () => {
+    // A celebration that fires on arrival — the badge card opened from a link — made
+    // Chromium log "Blocked call to navigator.vibrate" and failed the e2e's no-errors
+    // step. The page's own user-activation flag is the question the browser asks.
+    expect(source).toMatch(/userActivation/)
+    expect(source).toMatch(/hasBeenActive/)
+    const original = Object.getOwnPropertyDescriptor(navigator, 'userActivation')
+    Object.defineProperty(navigator, 'userActivation', {
+      value: { hasBeenActive: false },
+      configurable: true,
+    })
+    try {
+      expect(() => hapticCelebrate()).not.toThrow()
+    } finally {
+      if (original) Object.defineProperty(navigator, 'userActivation', original)
+      else Reflect.deleteProperty(navigator, 'userActivation')
+    }
+  })
+
   it('never lets a missing Taptic Engine break a lesson', () => {
     // Unavailable on web, on simulators, and on plenty of Android hardware. Every
     // call is fire-and-forget with the rejection swallowed.

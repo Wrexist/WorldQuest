@@ -1,5 +1,6 @@
 export * from './client.js'
 export * from './ports.js'
+export type { QuestRow, ReportReason } from './contracts.js'
 export { createSupabaseBackend } from './supabase-adapter.js'
 export type {
   Database,
