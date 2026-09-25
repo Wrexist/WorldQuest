@@ -38,8 +38,13 @@
         "templates",
         "collections",
         "achievements",
-        "cosmetics"
+        "cosmetics",
+        "course"
       ]
+    },
+    "titleKey": {
+      "$ref": "#/$defs/i18nKey",
+      "description": "Course packs only: the course's name, as an i18n key. Required when kind is course."
     },
     "locales": {
       "type": "array",
@@ -91,7 +96,92 @@
       "description": "Set when every fact in this pack shares one volatility tag AND that is a graded decision rather than an unfilled field. content:validate warns otherwise, because a tag identical on every row switches the freshness check off."
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "required": ["kind"],
+        "properties": { "kind": { "const": "course" } }
+      },
+      "then": {
+        "required": ["titleKey"],
+        "properties": { "items": { "items": { "$ref": "#/$defs/courseUnit" } } }
+      },
+      "else": {
+        "not": { "required": ["titleKey"] }
+      }
+    }
+  ],
   "$defs": {
+    "i18nKey": {
+      "type": "string",
+      "pattern": "^[a-z][a-zA-Z0-9]*:[a-zA-Z0-9_.]+$",
+      "description": "A key in packages/i18n/locales — namespace:screen.element. Copy is never written into a pack; content:validate checks the key exists in every shipped locale."
+    },
+    "courseUnit": {
+      "type": "object",
+      "description": "One unit of a course: a title, the unit's objective, and its nodes in path order. See docs/systems/content-pipeline.md §3b Courses.",
+      "required": ["id", "titleKey", "objectiveKey", "nodes"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^unit\\.[a-z0-9-]+\\.[a-z0-9-]+$",
+          "description": "unit.<course>.<slug>. Permanent."
+        },
+        "titleKey": { "$ref": "#/$defs/i18nKey" },
+        "objectiveKey": { "$ref": "#/$defs/i18nKey" },
+        "nodes": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/courseNode" }
+        }
+      }
+    },
+    "courseNode": {
+      "type": "object",
+      "description": "One step on the path: what it practises (a lesson focus), the objective a learner reads, and how many finished lessons complete it.",
+      "required": ["id", "kind", "objectiveKey", "focus", "lessons"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^node\\.[a-z0-9-]+\\.[a-z0-9-]+$",
+          "description": "node.<course>.<slug>. Permanent: it ships in save data as the key finished lessons are counted under. Renaming one is a migration."
+        },
+        "kind": {
+          "enum": ["lesson", "check"],
+          "description": "A check asks again what the nodes before it taught, due work first. It closes its unit, and a course closes with one."
+        },
+        "objectiveKey": { "$ref": "#/$defs/i18nKey" },
+        "focus": { "$ref": "#/$defs/courseFocus" },
+        "lessons": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Finished lessons that complete this node. An abandoned lesson never counts."
+        }
+      }
+    },
+    "courseFocus": {
+      "type": "object",
+      "description": "The engines' LessonFocus, narrowed to what a course step needs: which entities, and which of their attributes. Both lists are required and non-empty — an absent list would mean everything, which is not a step.",
+      "required": ["entities", "attributes"],
+      "additionalProperties": false,
+      "properties": {
+        "entities": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[A-Z0-9-]+$" }
+        },
+        "attributes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[a-z0-9-]+$" }
+        }
+      }
+    },
     "localizedText": {
       "type": "object",
       "description": "Whole values per locale. Never assembled from fragments — word order differs by language.",
@@ -417,6 +507,9 @@
         },
         {
           "$ref": "#/$defs/cosmetic"
+        },
+        {
+          "$ref": "#/$defs/courseUnit"
         }
       ]
     },

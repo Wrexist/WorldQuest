@@ -34,7 +34,10 @@ import {
   BALANCE,
   buildIndex,
   composeLesson,
+  courseStanding,
   emptyProgress,
+  parseCourse,
+  type CourseProgress,
   generateDailyQuest,
   gradeLesson,
   seededRng,
@@ -49,6 +52,8 @@ import { Stat } from '../../apps/mobile/src/components/Stat.js'
 import type { IconName } from '../../apps/mobile/src/lib/icons.generated.js'
 import { CountryMap } from '../../apps/mobile/src/components/CountryMap.js'
 import { HomeScreen } from '../../apps/mobile/src/features/home/HomeScreen.js'
+import { toPathView } from '../../apps/mobile/src/features/course/pathView.js'
+import coursePack from '../../packages/content/packs/courses/first-week.v1.json'
 import { AchievementsScreen } from '../../apps/mobile/src/features/achievements/AchievementsScreen.js'
 import { CATALOGUE } from '../../apps/mobile/src/features/achievements/useAchievements.js'
 import { CountryScreen } from '../../apps/mobile/src/features/explore/CountryScreen.js'
@@ -208,6 +213,23 @@ const PREVIEW_REMINDER = {
   enabled: false, blocked: true, hour: 19, isChild: false,
   earlier: () => {}, later: () => {}, onChange: () => {}, onOpenSystemSettings: () => {},
 }
+
+/**
+ * Home's course path from the real pack, at a given progress — so the gallery shows the
+ * primary action the app actually draws rather than a Home with no path at all.
+ */
+const course = parseCourse(coursePack)
+const homeCourse = (progress: CourseProgress) => ({
+  path: course.ok
+    ? toPathView({ status: 'ready', course: course.value, standing: courseStanding(course.value, progress) })
+    : ({ status: 'error' } as const),
+  onStart: () => {},
+  onPractise: () => {},
+  onReview: () => {},
+  onPractiseAnyway: () => {},
+})
+/** A returning learner partway through unit 1: flags done, places one lesson in. */
+const RETURNING_COURSE = { 'node.first-week.flags': 2, 'node.first-week.locations': 1 }
 
 const MOCKUP_STATE = {
   xpTotal: 4820,
@@ -432,7 +454,8 @@ function Gallery() {
             progress={{ xpTotal: 0, coins: 0, streak: 0, factsMastered: 0, factsTotal: 10 }}
             loading={false}
             isOffline={false}
-            onStartLesson={() => {}}
+            course={homeCourse({})}
+            onPlayQuest={() => {}}
           />
         </Phone>
 
@@ -441,12 +464,13 @@ function Gallery() {
             progress={MOCKUP_STATE}
             loading={false}
             isOffline={false}
-            onStartLesson={() => {}}
+            course={homeCourse(RETURNING_COURSE)}
+            onPlayQuest={() => {}}
           />
         </Phone>
 
         <Phone label="Home · loading (skeleton)" id="home-loading" tab="index">
-          <HomeScreen progress={null} loading isOffline={false} onStartLesson={() => {}} />
+          <HomeScreen progress={null} loading isOffline={false} onPlayQuest={() => {}} />
         </Phone>
 
         <Phone label="Lesson · question" id="lesson-question">
@@ -719,7 +743,8 @@ function Gallery() {
             progress={MOCKUP_STATE}
             loading={false}
             isOffline
-            onStartLesson={() => {}}
+            course={homeCourse(RETURNING_COURSE)}
+            onPlayQuest={() => {}}
           />
         </Phone>
 

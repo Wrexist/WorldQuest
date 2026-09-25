@@ -33,10 +33,10 @@ All present. The redesign needed fourteen that were not in the set; they were ad
 
 | Asset | Where the mockup puts it |
 |---|---|
-| `atlas/waving-back` | beside the Home greeting |
-| `atlas/thinking` | the quest card, the Quests header, the quest cover page |
-| `atlas/explorer` | the Shop's wallet card, the Explore header |
-| `atlas/celebrate` | onboarding's answer beat |
+| `atlas/waving-back` | the welcome-back screen and the sign-in path (it stood beside the Home greeting until the course path moved Atlas into the current unit's banner) |
+| `atlas/thinking` | the Quests header, the quest cover page (Home's quest card is secondary now and carries none) |
+| `atlas/explorer` | the Shop's wallet card, the Explore header, the current unit's banner on the Home course path |
+| `atlas/celebrate` | onboarding's answer beat, the Home path's finished-course card |
 | `achievements/tier-{bronze,silver,gold,platinum,legendary}` + 13 category glyphs | Profile's "Recent badges" row |
 | `continents/*` skies + `continents-silhouette/*` landmasses | the Explore grid's tiles |
 | `rewards/globe` | the "Your world" cards |

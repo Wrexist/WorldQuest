@@ -63,7 +63,7 @@ import type { EntityProgress, Mastery } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import type { RegionCode } from './ExploreScreen.js'
 import { Icon } from '../../components/Icon.js'
-import type { IconName } from '../../lib/icons.generated.js'
+import { ATTRIBUTE_ICON } from '../../lib/attributeIcons.js'
 
 /**
  * Every attribute the packs can carry, and `location` was missing from it.
@@ -98,26 +98,11 @@ const ATTRIBUTE_LABEL: Record<string, TranslationKey> = {
   'calling-code': 'country:attribute.callingCode',
 }
 
-/**
- * The glyph beside each attribute.
- *
- * The list was five identical rows of two words, which is a column the eye has to READ
- * to navigate. A mark per kind is what lets somebody find the capital without reading,
- * and the same glyphs name the same things in a quest and in the shop.
- *
- * `Partial`, and a row without one draws no icon rather than a placeholder: an attribute
- * that arrives before its glyph should be a plain row, not a broken one. That is the same
- * rule the labels above wanted and did not have.
+/*
+ * The glyph beside each attribute lives in `lib/attributeIcons.ts` now, shared with the
+ * Home course path, so a flag step and the Flag row carry the same mark. A row without
+ * one draws no icon rather than a placeholder — the rule the labels above wanted too.
  */
-const ATTRIBUTE_ICON: Partial<Record<string, IconName>> = {
-  capital: 'capital',
-  flag: 'flag',
-  location: 'continent',
-  population: 'profile',
-  currency: 'currency',
-  language: 'language',
-  'calling-code': 'callingCode',
-}
 
 const MASTERY_LABEL: Record<Mastery, TranslationKey> = {
   unseen: 'explore:mastery.unseen',

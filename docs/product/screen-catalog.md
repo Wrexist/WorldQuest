@@ -31,11 +31,31 @@ the single highest-leverage conversion decision in the app.
 to the child flow (no social, no third-party analytics, parental email for consent).
 
 ### 3. Home
-Avatar · greeting by time of day · streak flame + count · Today's Quest card with
-progress and `Continue` (green) · Daily Challenge with countdown · Friends tile ·
-League tile · tab bar.
-**Empty (day 1):** no streak, quest card reads "Start your first lesson".
+Avatar · coins · greeting by time of day · fact row (streak when above 0, earned title,
+quest count, league when there is one) · **the first-week course path** — a banner per
+unit (unit number, title, objective, done count; Atlas in the current unit's) and its
+steps in a gentle zig-zag · Today's Quest card, secondary (blue `Start quest`) · streak
+news · reminder ask · Your world · tab bar. The mockup's Daily Challenge, Friends and
+League tiles are not drawn ([mockup-fidelity.md](../design/mockup-fidelity.md)).
+**The one primary action is the current step** (launch brief: one green recommendation;
+L08/P07/U05). It is larger, green on its edge, and carries a `Start` callout with the
+step's objective and "Lesson n of m"; one tap starts its lesson (`/lesson?node=<id>`).
+A done step shows a tick and opens a card offering `Practise`; a step not open yet is
+dimmed with a lock badge and opens a card saying how it opens — no dead taps.
+Screen-reader order is path order, and every step's label carries its place, state and
+objective. A finished lesson started from a step counts towards it (account-scoped,
+on this device). The course ends: after its check, a card offers `Keep reviewing` (L15).
+**Empty (day 1):** no streak tile; the path opens on step 1 with its callout; the quest
+reads 0 of 5. **Error:** a course pack that does not parse shows a card saying so, with
+`Practise now` — lessons do not depend on the course. **Loading:** a skeleton in the
+path's shape. **Offline:** the banner is pinned above the scroll view; on D1 builds the
+current step's lesson is kept saved so `Start` works on a plane, and with that spent the
+lesson says it needs a connection (and offers Back) rather than playing another.
+On a short phone Home scrolls the current step into view — the least movement that shows
+it whole — so the banner and `Start` share the first screen at 320 × 568.
 **The greeting is localised and time-aware** — `home:greeting.{morning|afternoon|evening}`.
+Course data: `packages/content/packs/courses/first-week.v1.json`
+([content-pipeline.md §3b](../systems/content-pipeline.md#3b-courses)).
 
 ### 4. Daily Quest
 5 challenges, each with title, subtitle, XP value and a completion tick.

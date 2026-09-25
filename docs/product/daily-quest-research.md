@@ -156,6 +156,12 @@ direction to be right, which is the standard the whole section is now held to.
 One card. One button. It plays the quest's own facts, in slot order, resumable all day.
 Finishing it is the day's ritual and what holds the streak.
 
+> **Update, September 2026.** The launch brief made the first-week course Home's one
+> green recommendation, so the path's current step holds Home's primary action now and
+> this card sits below the path as a secondary one (a blue `Start quest`). Everything
+> above still holds for what the card does: its button plays the quest's own facts, and
+> its count stays at the top of Home in the fact row. See `screen-catalog.md` §3.
+
 The mechanism is already there and needs one new field: a lesson focused on a **set of fact
 ids** — which is exactly what a quest task is. `LessonFocus` gains `factIds`, and
 "play the quest" becomes "compose a lesson from the incomplete tasks' facts".
