@@ -54,8 +54,16 @@ decided by the engines' `applyActivity` inside the same revision-guarded batch,
 with milestone XP/coins folded into that lesson's ledger row; receipts carry
 `day` and `streak`. The Worker takes an injectable clock (`createWorker(mail,
 clock)`, `submitLesson(..., clock)`) and `proof.test.ts` drives it across the
-October 2026 Stockholm DST change. Hearts, quests, achievements, freezes and
-repair purchases are not yet server-side here.
+October 2026 Stockholm DST change.
+
+Daily quests (migration 0008, B05/S04): the Worker composes each day's quest
+itself with the engines' `generateDailyQuest`, seeded by (account, local day),
+and stores it on first sight (`GET /v1/quest/today` or the day's first lesson).
+Submissions carry answers only, so there is no slot for a client to duplicate.
+Progress is derived from the distinct quest facts answered correctly that day
+plus slot five's goal; task XP, the all-five bonus and its coins are paid in the
+lesson's own ledger row, once. Hearts, achievements, freezes and repair
+purchases are not yet server-side here.
 
 Protected native credential storage is accepted under [ADR 0014](../../docs/adr/0014-native-credential-storage.md); it does not provide D1 identity by itself.
 

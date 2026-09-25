@@ -194,7 +194,11 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
       expect(response.status).toBe(200)
       return await response.json() as Receipt
     }))
-    expect(Math.abs(receipts[0]!.xpAwarded - receipts[1]!.xpAwarded)).toBe(BALANCE.xp.firstLessonOfDay)
+    // Lesson XP differs by exactly the first-lesson bonus, and the quest's fifth task
+    // (finish a lesson) is paid to exactly one of the two concurrent lessons.
+    const lessonXp = receipts.map(r => r.xpAwarded - r.quest.xp)
+    expect(Math.abs(lessonXp[0]! - lessonXp[1]!)).toBe(BALANCE.xp.firstLessonOfDay)
+    expect(receipts.map(r => r.quest.xp).sort()).toEqual([0, BALANCE.xp.dailyQuestTask])
     const snapshot = await state(a.userId)
     expect(snapshot.account?.revision).toBe(2)
     expect(snapshot.account?.lessons_today).toBe(2)
@@ -234,10 +238,13 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
     expect([r1, r2, r3, r4, r5].map(r => r.streak.current)).toEqual([1, 2, 2, 2, 3])
     expect([r1, r2, r3, r4, r5].map(r => r.streak.extended)).toEqual([true, true, false, false, true])
     const bonus = BALANCE.xp.firstLessonOfDay
-    expect(r1.xpAwarded).toBe(r2.xpAwarded)
-    expect(r2.xpAwarded - r3.xpAwarded).toBe(bonus)
-    expect(r2.xpAwarded - r4.xpAwarded).toBe(bonus)
-    expect(r5.xpAwarded).toBe(r1.xpAwarded)
+    // Lesson XP only: each new local day also pays its own quest's fifth task.
+    const [x1, x2, x3, x4, x5] = [r1, r2, r3, r4, r5].map(r => r.xpAwarded - r.quest.xp)
+    expect(x1).toBe(x2)
+    expect(x2! - x3!).toBe(bonus)
+    expect(x2! - x4!).toBe(bonus)
+    expect(x5).toBe(x1)
+    expect([r1, r2, r3, r4, r5].map(r => r.quest.xp)).toEqual([10, 10, 0, 0, 10].map(n => n && BALANCE.xp.dailyQuestTask))
     const snapshot = await state(a.userId)
     expect(snapshot.account?.xp).toBe(snapshot.ledger.reduce((sum, row) => sum + Number(row.xp), 0))
     const account = await (await call('/v1/account', a.token)).json() as { timeZone: string; streak: { current: number; lastActiveDate: string } }
@@ -257,6 +264,47 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
     const snapshot = await state(a.userId)
     expect(snapshot.account?.xp).toBe(snapshot.ledger.reduce((sum, row) => sum + Number(row.xp), 0))
     expect(snapshot.account?.coins).toBe(snapshot.ledger.reduce((sum, row) => sum + Number(row.coins), 0))
+  })
+  it('composes one server quest per day, counts each fact once and pays the bonus once', async () => {
+    const a = await guest()
+    type Task = { slot: string; target: number; factIds: string[]; progress: number; complete: boolean; goal?: string }
+    type Today = { day: string; quest: { tasks: Task[]; complete: boolean } }
+    const today = async () => await (await call('/v1/quest/today', a.token)).json() as Today
+    const first = await today()
+    expect(first.quest.tasks.map(t => t.slot)).toEqual(['locate', 'recognise', 'recall', 'discover', 'perform'])
+    expect(await today()).toEqual(first)
+    const review = [...new Set(first.quest.tasks.filter(t => ['locate', 'recognise', 'recall'].includes(t.slot)).flatMap(t => t.factIds))]
+    const discover = first.quest.tasks.find(t => t.slot === 'discover')!.factIds
+    const ticket = async (lessonId: string, facts: string[]) => {
+      await db.prepare('INSERT INTO tickets (account_id, lesson_id, slots) VALUES (?, ?, ?)').bind(a.userId, lessonId,
+        JSON.stringify(facts.map((factId, i) => ({ itemId: `${lessonId}-${i}`, factId, templateId: 'flag-mcq', options: ['a', 'b'], correctOptionId: 'a' })))).run()
+      return facts.map((_, slot) => ({ slot, chosenOptionId: 'a', elapsedMs: 9000 }))
+    }
+    // Lesson one: every review fact and one of the two discover facts.
+    const one = await ticket('q1', [...review, discover[0]!])
+    const r1 = await (await call('/v1/lessons/submit', a.token, { lessonId: 'q1', answers: one })).json() as Receipt
+    expect(r1.quest.completedSlots.sort()).toEqual(['locate', 'perform', 'recall', 'recognise'])
+    expect(r1.quest).toMatchObject({ complete: false, done: 4, xp: 4 * BALANCE.xp.dailyQuestTask, coins: 0 })
+    // Lesson two repeats the review facts (they count once) and adds the last discover fact.
+    const two = await ticket('q2', [...review, discover[1]!])
+    const r2 = await (await call('/v1/lessons/submit', a.token, { lessonId: 'q2', answers: two })).json() as Receipt
+    expect(r2.quest).toMatchObject({ completedSlots: ['discover'], complete: true, done: 5,
+      xp: BALANCE.xp.dailyQuestTask + BALANCE.xp.dailyQuest, coins: BALANCE.coins.dailyQuest })
+    // A replay returns the stored receipt; a new lesson on a finished quest pays nothing more.
+    expect(await (await call('/v1/lessons/submit', a.token, { lessonId: 'q2', answers: two })).json()).toEqual(r2)
+    const three = await ticket('q3', [...review, discover[0]!])
+    const r3 = await (await call('/v1/lessons/submit', a.token, { lessonId: 'q3', answers: three })).json() as Receipt
+    expect(r3.quest).toMatchObject({ completedSlots: [], complete: true, xp: 0, coins: 0 })
+    const after = await today()
+    expect(after.quest.complete).toBe(true)
+    expect(after.quest.tasks.map(t => t.factIds)).toEqual(first.quest.tasks.map(t => t.factIds))
+    const snapshot = await state(a.userId)
+    expect(snapshot.account?.xp).toBe(snapshot.ledger.reduce((sum, row) => sum + Number(row.xp), 0))
+    expect(snapshot.account?.coins).toBe(snapshot.ledger.reduce((sum, row) => sum + Number(row.coins), 0))
+    // Another account cannot read this quest; its own is composed for it.
+    const b = await guest()
+    const other = await (await call('/v1/quest/today', b.token)).json() as Today
+    expect(other.quest.tasks.every(t => t.progress === 0)).toBe(true)
   })
   it('rolls back every write after an injected database failure and retries safely', async () => {
     const a = await guest()
@@ -304,7 +352,7 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
     const result = await submitLesson(observed, a.userId, await hashToken(a.token), { lessonId: 'maximum', answers })
     expect(result.reviews).toBe(20)
     expect((await state(a.userId)).reviews).toHaveLength(20)
-    expect(statementCount).toBe(11)
+    expect(statementCount).toBe(13)
   })
   it('rejects a session revoked between the grading read and transaction commit', async () => {
     const a = await guest()

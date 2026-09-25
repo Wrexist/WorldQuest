@@ -11,6 +11,7 @@ import { renewSession, revokeSessionFamily, pruneSessionRotations } from './sess
 import { prepareLesson, prepareLessonSchema } from './lesson-tickets'
 import { learningState, learningHistory } from './learning-state'
 import { setTimeZone } from './time-zone'
+import { todayQuest } from './quest-state'
 
 const codeRequest = z.object({ email: z.string().trim().toLowerCase().email().max(254),
   purpose: z.enum(['link', 'login', 'delete']), locale: z.enum(['en', 'sv']) }).strict()
@@ -136,6 +137,7 @@ export function createWorker(mail: MailDelivery = unavailableMail, clock: Clock 
         if (!parsed.success) throw new ApiError('INVALID_LESSON_REQUEST', 400)
         return json(await prepareLesson(env.DB, account.id, tokenHash, parsed.data))
       }
+      if (request.method === 'GET' && path === '/v1/quest/today') return json(await todayQuest(env.DB, account.id, tokenHash, now))
       if (request.method === 'GET' && path === '/v1/learning/state') return json(await learningState(env.DB, account.id, tokenHash))
       if (request.method === 'GET' && path === '/v1/learning/history') {
         const params = new URL(request.url).searchParams

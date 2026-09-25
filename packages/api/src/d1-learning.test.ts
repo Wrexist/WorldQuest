@@ -52,9 +52,10 @@ describe('D1 durable offline submissions', () => {
   it('keeps the server day and streak on a receipt, and refuses half of one', async () => {
     const streak = { current: 7, longest: 7, extended: true, freezeUsed: false, reset: false, milestoneXp: 50, milestoneCoins: 25 }
     const h = harness(), queue = h.create(); await queue.enqueue(input)
-    h.submit.mockResolvedValueOnce({ ...result, day: '2026-10-02', streak })
+    const quest = { completedSlots: ['perform'], complete: false, done: 1, total: 5, xp: 10, coins: 0 }
+    h.submit.mockResolvedValueOnce({ ...result, day: '2026-10-02', streak, quest })
     await queue.flush()
-    expect((await queue.inspect()).receipts).toEqual([{ ...result, day: '2026-10-02', streak }])
+    expect((await queue.inspect()).receipts).toEqual([{ ...result, day: '2026-10-02', streak, quest }])
     const other = harness(), broken = other.create(); await broken.enqueue(input)
     other.submit.mockResolvedValueOnce({ ...result, day: '2026-10-02' })
     await expect(broken.flush()).rejects.toThrow('INVALID_RESPONSE')

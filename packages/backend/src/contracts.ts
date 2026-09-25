@@ -28,12 +28,17 @@ export interface Receipt {
   lessonId: string; revision: number; xpAwarded: number; coinsAwarded: number
   xpTotal: number; coinBalance: number; correct: number; reviews: number
   /** The learner's local date this lesson counted for. */
-  day: string; streak: StreakReceipt
+  day: string; streak: StreakReceipt; quest: QuestReceipt
+}
+export interface QuestReceipt {
+  /** Slots this lesson completed. Their XP (and the all-five bonus) is inside the totals. */
+  completedSlots: string[]; complete: boolean; done: number; total: number; xp: number; coins: number
 }
 export interface Account {
   id: string; audience: 'unknown' | 'protected' | 'eligible'; deleted_at: number | null
   revision: number; xp: number; coins: number; day: string; daily_xp: number; lessons_today: number
   time_zone: string; streak_current: number; streak_longest: number; streak_last_day: string | null; freezes_held: number
+  recent_accuracy: number
 }
 /** Injected so day rules are testable across midnights and DST; production passes `Date.now`. */
 export type Clock = () => number

@@ -5,8 +5,9 @@ import { parseD1Memory, parseD1Question } from './d1-learning-contracts.js'
 export type D1Submission = { lessonId: string; answers: readonly { slot: number; chosenOptionId: string | null; elapsedMs: number }[] }
 export type D1StreakReceipt = { current: number; longest: number; extended: boolean; freezeUsed: boolean; reset: boolean; milestoneXp: number; milestoneCoins: number }
 /** `day`/`streak` arrive from migration 0007 on; receipts queued before it carry neither. */
+export type D1QuestReceipt = { completedSlots: string[]; complete: boolean; done: number; total: number; xp: number; coins: number }
 export type D1Receipt = { lessonId: string; revision: number; xpAwarded: number; coinsAwarded: number; xpTotal: number; coinBalance: number; correct: number; reviews: number
-  day?: string; streak?: D1StreakReceipt }
+  day?: string; streak?: D1StreakReceipt; quest?: D1QuestReceipt }
 export type D1StreakState = { current: number; longest: number; lastActiveDate: string | null; freezesHeld: number }
 export type D1PrepareInput = { lessonId: string; locale: 'en' | 'sv'; count: number; screenReader: boolean }
 export type D1PreparedLesson = { lessonId: string; issuedAt: number; questions: ReturnType<typeof parseD1Question>[]; request: D1PrepareInput }
@@ -35,13 +36,21 @@ function streakState(value: unknown): D1StreakState {
     || !integer(value.freezesHeld)) throw new D1AuthError('INVALID_RESPONSE')
   return { current: value.current, longest: value.longest, lastActiveDate: value.lastActiveDate, freezesHeld: value.freezesHeld }
 }
+const SLOTS = ['locate', 'recognise', 'recall', 'discover', 'perform']
+function questReceipt(value: unknown): D1QuestReceipt {
+  if (!object(value) || !Array.isArray(value.completedSlots) || value.completedSlots.length > 5
+    || !value.completedSlots.every((s: unknown) => typeof s === 'string' && SLOTS.includes(s)) || typeof value.complete !== 'boolean'
+    || !integer(value.done) || !integer(value.total) || value.done > value.total || !integer(value.xp) || !integer(value.coins)) throw new D1AuthError('INVALID_RESPONSE')
+  return { completedSlots: value.completedSlots as string[], complete: value.complete, done: value.done, total: value.total, xp: value.xp, coins: value.coins }
+}
 function receipt(value: unknown): D1Receipt {
   if (!object(value) || typeof value.lessonId !== 'string' || !integer(value.revision) || !integer(value.xpAwarded)
     || !integer(value.coinsAwarded) || !integer(value.xpTotal) || !integer(value.coinBalance) || !integer(value.correct) || !integer(value.reviews)) throw new D1AuthError('INVALID_RESPONSE')
   if ((value.day !== undefined && !isoDay(value.day)) || (value.day === undefined) !== (value.streak === undefined)) throw new D1AuthError('INVALID_RESPONSE')
   return { lessonId: value.lessonId, revision: value.revision, xpAwarded: value.xpAwarded, coinsAwarded: value.coinsAwarded,
     xpTotal: value.xpTotal, coinBalance: value.coinBalance, correct: value.correct, reviews: value.reviews,
-    ...(isoDay(value.day) ? { day: value.day, streak: streakReceipt(value.streak) } : {}) }
+    ...(isoDay(value.day) ? { day: value.day, streak: streakReceipt(value.streak) } : {}),
+    ...(value.quest === undefined ? {} : { quest: questReceipt(value.quest) }) }
 }
 function prepareInput(value: unknown): D1PrepareInput {
   if (!object(value) || typeof value.lessonId !== 'string' || !/^[a-zA-Z0-9_-]{1,80}$/.test(value.lessonId)
