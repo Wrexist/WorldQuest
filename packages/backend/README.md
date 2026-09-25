@@ -105,8 +105,10 @@ separate stable progress owners ([ADR 0015](../../docs/adr/0015-d1-email-identit
 It supports age-band declaration, guest linking, existing-account login and fresh
 proof for linked deletion. Codes are challenge-scoped HMACs; WorldQuest sessions
 remain hashed bearer tokens. Provider HTTP/session APIs are not exposed.
-`AUTH_SECRET` must contain at least 32 characters. Real mail delivery is deliberately
-unconfigured; the default mail port returns `EMAIL_UNAVAILABLE`. Tests inject an
+`AUTH_SECRET` must contain at least 32 characters. Real mail goes through Resend
+when `RESEND_API_KEY` (secret) and `MAIL_FROM` are both configured
+([setup](../../docs/engineering/account-email-setup.md)); otherwise the mail port
+returns `EMAIL_UNAVAILABLE`. Tests inject an
 isolated synthetic mailbox and apply every migration to fresh real local D1.
 
 The portable client in `@worldquest/api` uses one awaited protected session/challenge

@@ -53,4 +53,8 @@ export class ApiError extends Error {
   constructor(readonly code: string, readonly status: number,
     readonly retryContext?: { challengeId: string; expiresAt: number; resendAt?: number }) { super(code) }
 }
-export interface Env { DB: D1Database; API_ENABLED: string; AUTH_SECRET?: string }
+export interface Env {
+  DB: D1Database; API_ENABLED: string; AUTH_SECRET?: string
+  /** Resend credential (a Worker secret) and sender; both set turns real mail on. */
+  RESEND_API_KEY?: string; MAIL_FROM?: string
+}

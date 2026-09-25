@@ -151,5 +151,13 @@
   "account:ask.body": "Dina framsteg sparas på den här telefonen. Med en profil kan du logga in till dem igen.",
   "account:ask.privacy": "Vi använder din e-post för att logga in dig, och till inget annat.",
   "account:ask.create": "Skapa en profil",
-  "account:ask.later": "Inte nu"
+  "account:ask.later": "Inte nu",
+  "account:mail.link.subject": "Din WorldQuest-kod",
+  "account:mail.link.body": "Ange den här koden i WorldQuest för att spara dina framsteg till den här e-postadressen:",
+  "account:mail.login.subject": "Din inloggningskod till WorldQuest",
+  "account:mail.login.body": "Ange den här koden i WorldQuest för att logga in:",
+  "account:mail.delete.subject": "Bekräfta att ditt WorldQuest-konto raderas",
+  "account:mail.delete.body": "Ange den här koden i WorldQuest för att bekräfta att ditt konto och dina framsteg raderas:",
+  "account:mail.expiry": "Koden gäller i 5 minuter.",
+  "account:mail.ignore": "Om du inte bad om det här kan du bortse från mejlet."
 }

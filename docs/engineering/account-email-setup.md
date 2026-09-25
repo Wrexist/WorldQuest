@@ -21,6 +21,26 @@ to arbitrary recipients requires that paid plan; free sending is restricted to
 verified destination addresses. Paid includes 3,000 outbound emails/month, then
 $0.35/1,000. Do not upgrade billing as part of domain registration.
 
+**Code status (25 September 2026):** the Worker has a Resend adapter
+(`packages/backend/src/mail-resend.ts`). It is used only when both `RESEND_API_KEY`
+(a Worker secret) and `MAIL_FROM` (a var) are set; otherwise the Worker keeps
+answering `EMAIL_UNAVAILABLE`, which the app already explains. Messages carry the
+eight-digit code, its purpose and the five-minute expiry in the learner's language,
+from `account:mail.*` in the app's own locale files; no links, no images, no
+tracking. Provider refusals and outages surface as `EMAIL_UNAVAILABLE` without the
+address or code. Tests: `packages/backend/mail-resend.test.ts`.
+
+To switch it on once the domain is verified in Resend:
+
+```bash
+cd packages/backend
+npx wrangler secret put RESEND_API_KEY
+```
+
+then set `"MAIL_FROM": "WorldQuest <accounts@learnworldquest.com>"` under `vars` in
+`wrangler.jsonc` and deploy. Turn open and click tracking off in the Resend domain
+settings.
+
 After registration:
 
 1. Verify the sending domain with the selected provider's exact DNS records.

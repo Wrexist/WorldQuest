@@ -184,5 +184,21 @@
   "account:ask.create": "Create a profile",
   "account:ask.create__note": "Primary button. Opens the screen that links an email address. Verb first. Max 20 characters.",
   "account:ask.later": "Not now",
-  "account:ask.later__note": "Leaves the ask and carries on. NOT 'No thanks' or 'Skip': nothing is being refused, and it may be offered once more after the next lesson. Max 12 characters."
+  "account:ask.later__note": "Leaves the ask and carries on. NOT 'No thanks' or 'Skip': nothing is being refused, and it may be offered once more after the next lesson. Max 12 characters.",
+  "account:mail.link.subject": "Your WorldQuest code",
+  "account:mail.link.subject__note": "Subject of the email that links progress to an address. Short; no emoji.",
+  "account:mail.link.body": "Enter this code in WorldQuest to save your progress to this email address:",
+  "account:mail.link.body__note": "First line of the link email, above the code.",
+  "account:mail.login.subject": "Your WorldQuest sign-in code",
+  "account:mail.login.subject__note": "Subject of the sign-in email.",
+  "account:mail.login.body": "Enter this code in WorldQuest to sign in:",
+  "account:mail.login.body__note": "First line of the sign-in email, above the code.",
+  "account:mail.delete.subject": "Confirm deleting your WorldQuest account",
+  "account:mail.delete.subject__note": "Subject of the email that confirms account deletion. Plain; no alarm.",
+  "account:mail.delete.body": "Enter this code in WorldQuest to confirm deleting your account and its progress:",
+  "account:mail.delete.body__note": "First line of the deletion email, above the code.",
+  "account:mail.expiry": "The code works for 5 minutes.",
+  "account:mail.expiry__note": "Under the code. The five minutes is the server rule (emailOTP expiresIn 300s); change both together.",
+  "account:mail.ignore": "If you didn't ask for this, you can ignore this email.",
+  "account:mail.ignore__note": "Last line. Reassuring, no call to action."
 }

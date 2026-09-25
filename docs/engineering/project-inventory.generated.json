@@ -201,6 +201,7 @@
     "packages/api/src/database.types.test.ts",
     "packages/api/src/supabase-adapter.test.ts",
     "packages/backend/identity.test.ts",
+    "packages/backend/mail-resend.test.ts",
     "packages/backend/proof.test.ts",
     "packages/content/src/packs.test.ts",
     "packages/design/src/motion.test.ts",

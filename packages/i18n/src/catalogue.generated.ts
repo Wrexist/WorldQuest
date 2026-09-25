@@ -106,7 +106,15 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "ask.body": "Your progress is saved on this phone. With a profile, you can sign in to it again.",
       "ask.privacy": "We use your email to sign you in, and for nothing else.",
       "ask.create": "Create a profile",
-      "ask.later": "Not now"
+      "ask.later": "Not now",
+      "mail.link.subject": "Your WorldQuest code",
+      "mail.link.body": "Enter this code in WorldQuest to save your progress to this email address:",
+      "mail.login.subject": "Your WorldQuest sign-in code",
+      "mail.login.body": "Enter this code in WorldQuest to sign in:",
+      "mail.delete.subject": "Confirm deleting your WorldQuest account",
+      "mail.delete.body": "Enter this code in WorldQuest to confirm deleting your account and its progress:",
+      "mail.expiry": "The code works for 5 minutes.",
+      "mail.ignore": "If you didn't ask for this, you can ignore this email."
     },
     "achievements": {
       "title": "Achievements",
@@ -878,7 +886,15 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "ask.body": "Dina framsteg sparas på den här telefonen. Med en profil kan du logga in till dem igen.",
       "ask.privacy": "Vi använder din e-post för att logga in dig, och till inget annat.",
       "ask.create": "Skapa en profil",
-      "ask.later": "Inte nu"
+      "ask.later": "Inte nu",
+      "mail.link.subject": "Din WorldQuest-kod",
+      "mail.link.body": "Ange den här koden i WorldQuest för att spara dina framsteg till den här e-postadressen:",
+      "mail.login.subject": "Din inloggningskod till WorldQuest",
+      "mail.login.body": "Ange den här koden i WorldQuest för att logga in:",
+      "mail.delete.subject": "Bekräfta att ditt WorldQuest-konto raderas",
+      "mail.delete.body": "Ange den här koden i WorldQuest för att bekräfta att ditt konto och dina framsteg raderas:",
+      "mail.expiry": "Koden gäller i 5 minuter.",
+      "mail.ignore": "Om du inte bad om det här kan du bortse från mejlet."
     },
     "achievements": {
       "title": "Utmärkelser",
