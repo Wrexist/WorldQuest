@@ -301,6 +301,9 @@ export default function RootLayout() {
             <Stack.Screen name="collection/[kind]" />
             <Stack.Screen name="achievements" />
             <Stack.Screen name="streak" />
+            {/* A celebration in the after-lesson chain: its only way out is Continue,
+                which knows what comes next. A swipe back would land on nothing. */}
+            <Stack.Screen name="streak-extended" options={{ gestureEnabled: false }} />
             <Stack.Screen name="welcome-back" options={{ gestureEnabled: false }} />
             <Stack.Screen
               name="lesson"

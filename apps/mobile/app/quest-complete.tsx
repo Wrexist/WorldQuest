@@ -22,12 +22,13 @@
  */
 
 import { useEffect } from 'react'
-import { router } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
 import { BALANCE, questProgress } from '@worldquest/engines'
 import { QuestComplete } from '../src/features/quests/QuestComplete.js'
 import { useDailyQuest } from '../src/features/quests/useDailyQuest.js'
 import { useProgress } from '../src/features/home/useProgress.js'
 import { askForReview } from '../src/lib/review.js'
+import { nextAfterLesson } from '../src/features/lesson/afterLesson.js'
 
 /**
  * How long the celebration gets to itself before we consider interrupting it.
@@ -57,6 +58,8 @@ function milestoneFor(streak: number | undefined): number | undefined {
 }
 
 export default function QuestCompleteRoute() {
+  // The rest of the after-lesson chain, if any (`afterLesson.ts`).
+  const { then, countries } = useLocalSearchParams<{ then?: string; countries?: string }>()
   const { quest } = useDailyQuest()
   const { data } = useProgress()
   const standing = quest === null ? null : questProgress(quest)
@@ -91,8 +94,8 @@ export default function QuestCompleteRoute() {
       {...(milestoneXp !== undefined ? { milestoneXp } : {})}
       // `replace`, not `back()`: the lesson has already been replaced off the stack, and
       // going "back" from a celebration would return the user to the summary they just
-      // dismissed.
-      onDone={() => router.replace('/')}
+      // dismissed. Onward to whatever the after-lesson plan still holds, else Home.
+      onDone={() => router.replace(nextAfterLesson(then, countries))}
     />
   )
 }

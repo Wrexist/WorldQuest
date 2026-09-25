@@ -6,11 +6,15 @@
  * that costs a tap for no reason.
  */
 
+import { useState } from 'react'
 import { router, useLocalSearchParams } from 'expo-router'
 import { LessonScreen } from '../src/features/lesson/LessonScreen.js'
 import { useProgress } from '../src/features/home/useProgress.js'
 import { useEntitlement } from '../src/features/paywall/useEntitlement.js'
-import { useQuestCelebration } from '../src/features/quests/ceremony.js'
+import { useOnboarding } from '../src/features/onboarding/useOnboarding.js'
+import { SELLING } from '../src/features/paywall/purchases.js'
+import { hrefFor, planAfterLesson } from '../src/features/lesson/afterLesson.js'
+import { lessonsToday } from '../src/features/profile/useWeekActivity.js'
 import { parseFocusParams } from '../src/features/lesson/focusParams.js'
 import { useLessonFocus } from '../src/features/lesson/useLessonFocus.js'
 
@@ -51,10 +55,11 @@ export default function LessonRoute() {
   // paid. Asking an existing subscriber to subscribe is the fastest way to make a
   // paying user feel like a target, and it earns nothing.
   const { isPremium } = useEntitlement()
-  // Flagged, like the cover page at the other end of the loop, and for the same reason:
-  // it is a screen inserted into the core path, and it lands at the moment somebody has
-  // just finished and might be about to leave. Off is the old behaviour exactly.
-  const celebration = useQuestCelebration()
+  const { state: onboarding } = useOnboarding()
+  // Read once, before the lesson can record itself: whether today already counted.
+  // The device's own lesson log, not the server's streak, because the question is
+  // "is this the first lesson finished today" and that is known here, offline or not.
+  const [countedTodayBefore] = useState(() => lessonsToday() > 0)
 
   return (
     <LessonScreen
@@ -68,31 +73,23 @@ export default function LessonRoute() {
       isTaster={taster === '1'}
       coins={data?.coins ?? 0}
       onExit={(summary) => {
-        // The taster is the value moment, and this is the instant after it: a real
-        // lesson finished, a real summary read, and the user has never been asked for
-        // anything. Paywalls placed after a measurable value moment get 2.1× the trial
-        // starts of an immediate hard gate, and this one is still only three minutes
-        // from install — so it is both "at the start" and "after the value".
+        // Duolingo's rhythm: the lesson (summary, already shown), then the day (the
+        // streak), then the daily quest, then anything we want from the learner. The
+        // order and its reasons live in `afterLesson.ts`.
         //
-        // `replace`, not `push`: the taster is over and there is nothing to go back to.
-        // The paywall is dismissible on its first frame and never gates a lesson.
-        if (taster === '1' && !isPremium) {
-          // The ids travel, not the count: page 1 shows the flags of the countries
-          // this user just placed, and a number cannot draw a flag.
-          router.replace(
-            `/paywall?source=onboarding&countries=${encodeURIComponent(summary.practised.join(','))}`,
-          )
-          return
-        }
-        // The day's ritual, finished. AFTER the summary rather than instead of it: the
-        // summary is about the lesson — what you got right and what it earned — and the
-        // celebration is about the day. Collapsed into one screen the quest bonus would
-        // read as part of the lesson's XP, which is the one thing it is not.
-        //
-        // `replace`, so the lesson is off the stack before the celebration draws and
-        // "back" from it cannot return the user to a summary they have dismissed.
-        if (celebration && summary.questCompleted) {
-          router.replace('/quest-complete')
+        // The paywall follows the taster only when there is something to sell. The
+        // purchase port is not installed in this build, and ending a first lesson on
+        // "there's nothing to buy here yet" is a dead end App Review rejects (2.1) and
+        // a learner reads as a bait-and-switch. Never to a subscriber, never to a child.
+        const steps = planAfterLesson({
+          completed: summary.completed,
+          countedTodayBefore,
+          questCompleted: summary.questCompleted,
+          offerPaywall: taster === '1' && SELLING && !isPremium && onboarding.isChild !== true,
+        })
+        if (steps.length > 0) {
+          // `replace`, so "back" from a celebration cannot return to a dismissed summary.
+          router.replace(hrefFor(steps, summary.practised))
           return
         }
         // Opened from a notification there is no history to pop, and `back()` would

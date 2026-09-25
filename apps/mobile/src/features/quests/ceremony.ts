@@ -44,10 +44,16 @@ import { useFeatureFlag } from '../../lib/featureFlags.js'
  * error — it is a flag that reads false for ever and a feature nobody can turn on.
  */
 export const QUEST_COVER = 'quest_cover_page'
+/**
+ * Retired 25 September 2026: the celebration is now part of every finished quest.
+ *
+ * It was seeded off and read only through the legacy adapter, so "off" had become
+ * "never" — the screen, and the one review prompt that lives on it, could not appear
+ * for anyone. The owner asked for Duolingo's end-of-lesson rhythm, where the quest
+ * beat always plays; `features/lesson/afterLesson.ts` orders it. The key stays because
+ * rows with it exist, and a stable id is never reused for something else.
+ */
 export const QUEST_CELEBRATION = 'quest_completion_screen'
 
 /** Whether the quest's cover page stands between Home and the lesson. */
 export const useQuestCover = (): boolean => useFeatureFlag(QUEST_COVER)
-
-/** Whether finishing the quest gets its own screen after the lesson summary. */
-export const useQuestCelebration = (): boolean => useFeatureFlag(QUEST_CELEBRATION)

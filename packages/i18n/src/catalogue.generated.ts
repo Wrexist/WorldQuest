@@ -720,7 +720,13 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "repair.refused.failed": "That didn't go through. Nothing was spent.",
       "coins": "{count, plural, one {# coin} other {# coins}}",
       "cantAfford": "You need {short} more",
-      "earned": "Coins come from lessons, never from money"
+      "earned": "Coins come from lessons, never from money",
+      "extended.count": "{count, plural, one {# day streak} other {# day streak}}",
+      "extended.unit": "{count, plural, one {day streak} other {day streak}}",
+      "extended.first": "You started a streak. One lesson a day keeps it growing.",
+      "extended.body": "Today counts. Nice work.",
+      "extended.milestone": "{count, plural, one {# days — milestone! +{amount} XP} other {# days — milestone! +{amount} XP}}",
+      "extended.cta": "Continue"
     },
     "titles": {
       "wanderer": "Wanderer",
@@ -1455,7 +1461,13 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "repair.refused.failed": "Det gick inte igenom. Inga mynt drogs.",
       "coins": "{count, plural, one {# mynt} other {# mynt}}",
       "cantAfford": "Du behöver {short} till",
-      "earned": "Mynt kommer från lektioner, aldrig från pengar"
+      "earned": "Mynt kommer från lektioner, aldrig från pengar",
+      "extended.count": "{count, plural, one {# dags svit} other {# dagars svit}}",
+      "extended.unit": "{count, plural, one {dags svit} other {dagars svit}}",
+      "extended.first": "Du har startat en svit. En lektion om dagen får den att växa.",
+      "extended.body": "Dagen är räknad. Snyggt jobbat.",
+      "extended.milestone": "{count, plural, one {# dag – milstolpe! +{amount} XP} other {# dagar – milstolpe! +{amount} XP}}",
+      "extended.cta": "Fortsätt"
     },
     "titles": {
       "wanderer": "Vandrare",

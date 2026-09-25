@@ -62,5 +62,17 @@
   "streak:cantAfford": "You need {short} more",
   "streak:cantAfford__note": "Shown when the balance is short. States the gap plainly — never 'Get more coins!' with a store link.",
   "streak:earned": "Coins come from lessons, never from money",
-  "streak:earned__note": "Standing reassurance on the streak screen. This must remain TRUE — see docs/systems/xp-economy.md."
+  "streak:earned__note": "Standing reassurance on the streak screen. This must remain TRUE — see docs/systems/xp-economy.md.",
+  "streak:extended.count": "{count, plural, one {# day streak} other {# day streak}}",
+  "streak:extended.count__note": "Spoken label of the big number after the day's first lesson. The streak length including today.",
+  "streak:extended.unit": "{count, plural, one {day streak} other {day streak}}",
+  "streak:extended.unit__note": "Shown under the big number on the streak celebration. English uses 'day streak' for all counts; Swedish needs its own plural.",
+  "streak:extended.first": "You started a streak. One lesson a day keeps it growing.",
+  "streak:extended.first__note": "Body on the very first day of a streak. Explains the rule once, warmly. Never a warning.",
+  "streak:extended.body": "Today counts. Nice work.",
+  "streak:extended.body__note": "Body on the streak celebration after day one. Short, warm, about today. Never mentions losing it or tomorrow.",
+  "streak:extended.milestone": "{count, plural, one {# days — milestone! +{amount} XP} other {# days — milestone! +{amount} XP}}",
+  "streak:extended.milestone__note": "Shown only on the exact day a streak reaches 7, 30, 100 or 365. {amount} is the XP the server pays for it.",
+  "streak:extended.cta": "Continue",
+  "streak:extended.cta__note": "The only button on the streak celebration. Goes to the next screen after a lesson, or Home."
 }

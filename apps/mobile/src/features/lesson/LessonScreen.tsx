@@ -267,6 +267,11 @@ export type LessonExit = {
    * Carried out rather than acted on: this screen does not navigate, the route does.
    */
   readonly questCompleted: boolean
+  /**
+   * Finished rather than ended early. Only a finished lesson is the day's activity, so
+   * only a finished lesson earns the streak beat that follows the summary.
+   */
+  readonly completed: boolean
 }
 
 export function LessonScreen({
@@ -659,6 +664,7 @@ export function LessonScreen({
           onExit({
             practised: practised.map((c) => c.id),
             questCompleted: questCompleted.current,
+            completed: lesson.state.phase === 'summary',
           })
         }
       />

@@ -96,6 +96,7 @@
     "apps/mobile/app/quest.tsx",
     "apps/mobile/app/region/[code].tsx",
     "apps/mobile/app/settings.tsx",
+    "apps/mobile/app/streak-extended.tsx",
     "apps/mobile/app/streak.tsx",
     "apps/mobile/app/welcome-back.tsx"
   ],
@@ -129,6 +130,7 @@
     "apps/mobile/src/features/lesson/LessonSummary.test.tsx",
     "apps/mobile/src/features/lesson/OutOfHearts.test.tsx",
     "apps/mobile/src/features/lesson/Paused.test.tsx",
+    "apps/mobile/src/features/lesson/afterLesson.test.ts",
     "apps/mobile/src/features/lesson/focusParams.test.ts",
     "apps/mobile/src/features/lesson/motion.test.tsx",
     "apps/mobile/src/features/lesson/useAccuracy.test.ts",
@@ -150,6 +152,7 @@
     "apps/mobile/src/features/settings/useSyncStatus.test.ts",
     "apps/mobile/src/features/shop/ShopScreen.test.tsx",
     "apps/mobile/src/features/splash/SplashScreen.test.tsx",
+    "apps/mobile/src/features/streak/StreakExtended.test.tsx",
     "apps/mobile/src/features/streak/StreakScreen.test.tsx",
     "apps/mobile/src/features/welcome/WelcomeBackScreen.test.tsx",
     "apps/mobile/src/lib/analytics.test.ts",

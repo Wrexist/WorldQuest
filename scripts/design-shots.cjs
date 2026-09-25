@@ -102,6 +102,9 @@ const DEFAULT_ROUTES = [
   '/quest',
   // …and the celebration at the other end of it.
   '/quest-complete',
+  // The streak beat after the day's first lesson. With no lesson behind it the
+  // harness streak is zero and it steps straight on, so it is also driven below.
+  '/streak-extended',
   // Reached by a gate in the root layout and by the "we miss you" push, never by a tap.
   // It went unphotographed for that reason and was rendering "It's been 0 days." to
   // anyone who followed the notification the same afternoon.

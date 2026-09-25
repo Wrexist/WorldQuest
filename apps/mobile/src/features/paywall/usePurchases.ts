@@ -14,7 +14,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { UNAVAILABLE, type Plan, type PurchasePort, type PurchaseResult } from './purchases.js'
+import { RUNTIME_PURCHASES, type Plan, type PurchasePort, type PurchaseResult } from './purchases.js'
 
 export type PurchasesView = {
   /** Empty until the store answers, and empty forever if it will not. */
@@ -37,7 +37,7 @@ export type PurchasesView = {
  * `port` is a parameter so a test, the screenshot renderer and eventually a real SDK
  * can each supply their own without this file knowing which is which.
  */
-export function usePurchases(port: PurchasePort = UNAVAILABLE): PurchasesView {
+export function usePurchases(port: PurchasePort = RUNTIME_PURCHASES): PurchasesView {
   const [plans, setPlans] = useState<readonly Plan[]>([])
   const [loading, setLoading] = useState(true)
   const [failed, setFailed] = useState(false)

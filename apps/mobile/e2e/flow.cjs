@@ -938,15 +938,18 @@ const skip = (name, why) => {
   const dismissed = await page.getByText('Not now', { exact: true }).first().isVisible()
   step('paywall is escapable on the first frame, at full size', dismissed)
 
-  // ── Settings owns the subscription, and does not bury cancelling ───────────
-  // `/settings`, not `/more`. The route moved when Shop took the fifth tab, and a URL
-  // that 404s here would have failed as "Settings has no Premium section" — a check
-  // reporting the wrong defect is worse than one that does not run.
+  // ── Settings sells nothing this build cannot deliver ───────────────────────
+  // `/settings`, not `/more`. The route moved when Shop took the fifth tab.
+  //
+  // No store adapter is installed (`SELLING` in purchases.ts), so "See Premium" would
+  // open an empty paywall and "Restore purchases" could only fail — both dead ends App
+  // Review rejects. When A01 installs a port, these two steps flip: the Premium section
+  // and Restore return, and both stores require Restore to be there.
   await page.goto(`http://localhost:${PORT}/settings`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(1200)
   const more = await body()
-  step('Settings has a Premium section', /premium/i.test(more))
-  step('Settings offers restore, which both stores require', /restore purchases/i.test(more))
+  step('Settings offers no Premium while nothing can be bought', !/see premium/i.test(more))
+  step('and no Restore that can only fail', !/restore purchases/i.test(more))
   await page.screenshot({ path: path.join(SHOTS, 'settings-premium.png') })
 
   // ── a deep route, which is also a content check ────────────────────────────
@@ -1033,6 +1036,13 @@ const skip = (name, why) => {
   const beforeAch = await body()
   const lockedBefore = (beforeAch.match(/Not yet/g) ?? []).length
 
+  // Make this the day's first finished lesson, whatever the flow did above, so the
+  // after-summary step below has one right answer: the streak beat.
+  await page.evaluate(() => {
+    for (const key of Object.keys(localStorage)) {
+      if (key.endsWith('activity.byDay.v1')) localStorage.removeItem(key)
+    }
+  })
   await page.goto(`http://localhost:${PORT}/lesson`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(1800)
   // Answer every question, then leave — the lesson must reach its summary for the
@@ -1096,6 +1106,23 @@ const skip = (name, why) => {
          practisedFlags.every((f) => f.w > 0 && (f.alt ?? '').length > 0),
        `${practisedFlags.length} flag(s)`)
   await page.screenshot({ path: path.join(SHOTS, 'lesson-summary.png') })
+
+  // ── after the summary: the day's streak beat, then onward ─────────────────
+  //
+  // The day's first finished lesson is followed by the streak celebration, as in
+  // Duolingo, and never by a paywall this build has nothing to sell on
+  // (`afterLesson.ts`, `SELLING`). Continue on it must leave for Home or the next beat.
+  await page.getByTestId('summary-continue').click()
+  await page.waitForTimeout(1600)
+  const afterSummary = await body()
+  const streakBeat = page.getByTestId('streak-extended')
+  step('the first lesson of the day ends on the streak, not a sale',
+       (await streakBeat.count()) > 0 && !/nothing to buy|per month|Try it free/i.test(afterSummary),
+       afterSummary.slice(0, 80).replace(/\s+/g, ' '))
+  await page.screenshot({ path: path.join(SHOTS, 'streak-extended.png') })
+  await streakBeat.getByText('Continue', { exact: true }).click()
+  await page.waitForTimeout(1200)
+  step('and the streak beat has a way out', (await page.getByTestId('streak-extended').count()) === 0)
 
   // The quest, checked in the same pass — the lesson above is what should have moved
   // it. Until now `applyQuestEvent` had no caller, so five tasks read 0/5 forever no

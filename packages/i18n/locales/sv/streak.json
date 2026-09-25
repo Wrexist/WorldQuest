@@ -30,5 +30,11 @@
   "streak:repair.refused.failed": "Det gick inte igenom. Inga mynt drogs.",
   "streak:coins": "{count, plural, one {# mynt} other {# mynt}}",
   "streak:cantAfford": "Du behöver {short} till",
-  "streak:earned": "Mynt kommer från lektioner, aldrig från pengar"
+  "streak:earned": "Mynt kommer från lektioner, aldrig från pengar",
+  "streak:extended.count": "{count, plural, one {# dags svit} other {# dagars svit}}",
+  "streak:extended.unit": "{count, plural, one {dags svit} other {dagars svit}}",
+  "streak:extended.first": "Du har startat en svit. En lektion om dagen får den att växa.",
+  "streak:extended.body": "Dagen är räknad. Snyggt jobbat.",
+  "streak:extended.milestone": "{count, plural, one {# dag – milstolpe! +{amount} XP} other {# dagar – milstolpe! +{amount} XP}}",
+  "streak:extended.cta": "Fortsätt"
 }
