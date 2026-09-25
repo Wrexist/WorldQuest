@@ -186,7 +186,12 @@ export default function StreakRoute() {
         repairOffer={repairAvailability(state, now, timeZone)}
         // The pre-break length, which is what a repair restores. `current` has already
         // been reset to 1 by the time this screen can be reached.
-        restoreTo={state.longest}
+        //
+        // The server's figure when it states one (`restoreTo`): the D1 Worker restores the
+        // run the break interrupted, which is not always the longest. `longest` remains the
+        // fallback for a cache from before the field, and is exactly what the legacy
+        // backend's `repair_streak` restores.
+        restoreTo={data?.restoreTo ?? state.longest}
         now={now}
         onBuyFreeze={isConfigured() ? onBuyFreeze : undefined}
         buyingFreeze={buyingFreeze}

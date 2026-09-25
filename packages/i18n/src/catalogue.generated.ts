@@ -325,7 +325,13 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "reminder.title": "Want a nudge?",
       "reminder.body": "One reminder a day, at a time you choose. Nothing else, ever.",
       "reminder.yes": "Pick a time",
-      "reminder.later": "Not now"
+      "reminder.later": "Not now",
+      "streakNotice.freeze.title": "{count, plural, one {Your streak freeze kept your # day streak} other {Your streak freeze kept your # day streak}}",
+      "streakNotice.freeze.body": "It covered yesterday for you.",
+      "streakNotice.repair.title": "{count, plural, one {You can bring back your # day streak} other {You can bring back your # day streak}}",
+      "streakNotice.repair.body": "A repair costs {price} coins.",
+      "streakNotice.repair.cta": "Bring it back",
+      "streakNotice.dismiss": "Dismiss"
     },
     "league": {
       "title": "League",
@@ -1076,7 +1082,13 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "reminder.title": "Vill du ha en knuff?",
       "reminder.body": "En påminnelse om dagen, vid en tid du väljer. Inget annat, någonsin.",
       "reminder.yes": "Välj en tid",
-      "reminder.later": "Inte nu"
+      "reminder.later": "Inte nu",
+      "streakNotice.freeze.title": "{count, plural, one {Din frysning höll din # dags svit vid liv} other {Din frysning höll din # dagars svit vid liv}}",
+      "streakNotice.freeze.body": "Den täckte gårdagen åt dig.",
+      "streakNotice.repair.title": "{count, plural, one {Du kan ta tillbaka din # dags svit} other {Du kan ta tillbaka din # dagars svit}}",
+      "streakNotice.repair.body": "En reparation kostar {price} mynt.",
+      "streakNotice.repair.cta": "Ta tillbaka den",
+      "streakNotice.dismiss": "Dölj"
     },
     "league": {
       "title": "Liga",

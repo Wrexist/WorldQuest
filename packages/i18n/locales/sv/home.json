@@ -44,5 +44,11 @@
   "home:reminder.body": "En påminnelse om dagen, vid en tid du väljer. Inget annat, någonsin.",
   "home:reminder.yes": "Välj en tid",
   "home:reminder.later": "Inte nu",
-  "home:quest.play__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. "
+  "home:quest.play__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. ",
+  "home:streakNotice.freeze.title": "{count, plural, one {Din frysning höll din # dags svit vid liv} other {Din frysning höll din # dagars svit vid liv}}",
+  "home:streakNotice.freeze.body": "Den täckte gårdagen åt dig.",
+  "home:streakNotice.repair.title": "{count, plural, one {Du kan ta tillbaka din # dags svit} other {Du kan ta tillbaka din # dagars svit}}",
+  "home:streakNotice.repair.body": "En reparation kostar {price} mynt.",
+  "home:streakNotice.repair.cta": "Ta tillbaka den",
+  "home:streakNotice.dismiss": "Dölj"
 }
