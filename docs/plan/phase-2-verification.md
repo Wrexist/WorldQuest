@@ -543,3 +543,33 @@ nothing was deployed, and no hosted, native-device or store evidence is claimed.
 
 Still open for B02/B07/E10: a hosted Worker, real email delivery, native D1 builds
 through the account and lesson journey, and the multi-device replay under E11.
+
+### The app against the Worker: `pnpm e2e:d1`
+
+`scripts/d1-journey.cjs` exports the web bundle as a D1 build and drives it against
+the Worker running in-process on workerd with local D1 and every migration, through a
+same-origin proxy. At the batch's final revision it passes 14/14: a new adult learner
+onboards; the taster lesson is issued by the Worker, played, graded there (XP, a
+one-day streak) and followed by the streak beat; three lessons are saved ahead; the
+Quests tab shows exactly the quest the server pays; offline, a lesson starts from a
+saved ticket, nothing reaches the Worker, and on reconnect it syncs; the second lesson
+keeps the streak at one day; the ledger sums to the balances; no uncaught page errors.
+
+Running it the first time found four defects no other check could see, all fixed:
+
+1. The Worker answered `HEAD /health` with 401, so NetInfo's probe read every D1
+   build as offline for good. It now answers 200, pinned in `proof.test.ts`.
+2. The D1 auth client refused concurrent operations (`AUTH_BUSY`), and the app asks
+   for a session from several places at once. Operations now queue; a second
+   concurrent owner change is still refused.
+3. Every app lesson carries an implied focus (onboarding's start region and level, or
+   the quest's facts), so saved lessons could never start offline. Only a focus the
+   learner chose now requires a fresh lesson.
+4. The lesson request was captured before the screen-reader check answered, so a
+   VoiceOver user's D1 lesson could be issued with picture questions. The request now
+   waits for the answer, and a screen-reader-safe saved lesson suits anyone.
+
+The web harness also showed the previous tab's content bleeding through a newly
+selected tab (transparent tab scenes). It predates this batch and is visible in the
+regular e2e's Explore capture too; it is listed for the device pass rather than fixed
+blind.

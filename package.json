@@ -32,6 +32,7 @@
     "typecheck:edge": "tsc --noEmit -p supabase/tsconfig.json",
     "test": "node --test scripts/lib/browser-harness.test.cjs scripts/security-regressions.test.cjs && pnpm -r --filter \"./packages/*\" --filter \"./apps/*\" --fail-if-no-match test && vitest run --config vitest.edge.config.ts",
     "e2e": "pnpm --filter @worldquest/mobile exec expo export --platform web --output-dir ../../node_modules/.cache/wq-web && node apps/mobile/e2e/flow.cjs node_modules/.cache/wq-web node_modules/.cache/wq-e2e-shots",
+    "e2e:d1": "node scripts/d1-journey.cjs",
     "design:shots": "pnpm --filter @worldquest/mobile exec expo export --platform web --output-dir ../../node_modules/.cache/wq-web && node scripts/design-shots.cjs",
     "bundle:native": "node scripts/bundle-native.cjs",
     "design:measure": "node scripts/measure-design.cjs",

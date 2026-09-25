@@ -151,6 +151,16 @@ async function waitFor(check, ms) {
   const errors = []
   let offline = false
   page.on('pageerror', (e) => errors.push(String(e)))
+  // `--debug` prints every request the app makes to the Worker, and the page's console,
+  // so a failed journey says where it went wrong rather than only that it did.
+  if (process.argv.includes('--debug')) {
+    page.on('response', (r) => {
+      const u = new URL(r.url())
+      if (u.pathname.startsWith('/v1/') || u.pathname === '/health') console.log(`    [net] ${r.request().method()} ${u.pathname} → ${r.status()}`)
+    })
+    page.on('requestfailed', (r) => console.log(`    [net] ${r.method()} ${r.url()} failed: ${r.failure()?.errorText}`))
+    page.on('console', (m) => console.log(`    [console.${m.type()}] ${m.text().slice(0, 300)}`))
+  }
   page.on('console', (m) => {
     // A failed request while the test holds the page offline is the point, not a fault.
     if (m.type() === 'error' && !(offline && /fetch|network|ERR_INTERNET_DISCONNECTED/i.test(m.text()))) errors.push('console: ' + m.text())
@@ -242,12 +252,19 @@ async function waitFor(check, ms) {
     // ── an offline lesson from a pre-fetched ticket, synced on reconnect ──────
     await page.getByRole('tab', { name: /Home/ }).first().click()
     await page.waitForTimeout(1200)
+    if (process.argv.includes('--debug')) {
+      const queues = await page.evaluate(() => Object.keys(localStorage).filter((k) => k.includes('d1.lessons.v1')).map((k) => {
+        const v = JSON.parse(localStorage.getItem(k) ?? 'null')
+        return { key: k.slice(0, 120), tickets: v?.tickets?.map((t) => ({ locale: t.request.locale, sr: t.request.screenReader, focus: t.request.focus ?? null })), preparing: v?.preparing ?? null }
+      }))
+      console.log('    [debug] local D1 queues:', JSON.stringify(queues))
+    }
     offline = true
     await context.setOffline(true)
     await page.waitForTimeout(1500)
     await page.getByText('Continue', { exact: true }).first().click()
     const offlineStart = await waitFor(async () => (await page.getByTestId('answer-option').count()) > 0, 10000)
-    step('a lesson starts offline from a saved ticket', offlineStart)
+    step('a lesson starts offline from a saved ticket', offlineStart, new URL(page.url()).pathname + new URL(page.url()).search.slice(0, 40))
     await shot('lesson-offline')
     step('the offline lesson reaches its summary', offlineStart && await playLesson())
     const stillOne = (await one('SELECT count(*) AS n FROM receipts WHERE account_id = ?', guest.id)).n === 1

@@ -15,6 +15,7 @@
  */
 
 import { AccountChangedError } from '@worldquest/api'
+import { D1AuthError } from '@worldquest/api/d1-auth'
 import {
   createD1LearningClient,
   createD1LessonQueue,
@@ -82,6 +83,12 @@ export type LessonRequest = {
   readonly locale: 'en' | 'sv'
   readonly screenReader: boolean
   readonly focus?: LessonFocus | undefined
+  /**
+   * The focus is the learner's own choice (a country, a region, a topic, a difficulty
+   * they picked), not one the app implied from onboarding or the daily quest. Only an
+   * implied focus may be traded for a saved lesson when offline.
+   */
+  readonly explicitFocus?: boolean | undefined
 }
 
 /** The engines' focus, in the wire shape (mutable arrays, absent fields absent). */
@@ -129,34 +136,62 @@ export function takeLesson(request: LessonRequest): Promise<TakeResult> {
 async function take(request: LessonRequest): Promise<TakeResult> {
   const { queue } = await open()
   const focused = request.focus !== undefined && Object.keys(request.focus).length > 0
-  // Exact facts alone are the daily quest steering a lesson ("play today's quest"), not
-  // a place the learner chose. Offline, a saved lesson is the right answer for them; a
-  // chosen country or topic is not, so it still needs a connection.
-  const steering = focused && Object.keys(request.focus!).every((key) => key === 'factIds')
-  const saved = async () => (await queue.inspect()).tickets.find((t) => t.request.locale === request.locale
-    && t.request.screenReader === request.screenReader && t.request.focus === undefined)
+  const wanted = focused ? wireFocus(request.focus!) : undefined
+  // A focus the app implied (onboarding's start region and level, the daily quest's
+  // facts) is a preference: offline, a saved lesson is the right answer. A place or
+  // topic the learner chose is not, so that still needs a connection.
+  const flexible = !request.explicitFocus
+  // A lesson issued for a screen reader (every question describable) suits anyone; one
+  // issued without may show a flag or a map a VoiceOver user cannot answer.
+  const fits = (t: D1PreparedLesson) => t.request.locale === request.locale && (t.request.screenReader || !request.screenReader)
+  /**
+   * A saved lesson for this request: an unfocused one first, and for an implied focus
+   * any other left over (a lesson prepared for a focus and then not played, which would
+   * otherwise hold one of the server's twenty ticket slots for good).
+   */
+  const saved = async (anyFocus: boolean) => {
+    const { tickets } = await queue.inspect()
+    return tickets.find((t) => fits(t) && t.request.focus === undefined)
+      ?? (anyFocus ? tickets.find(fits) : undefined)
+  }
   if (!focused) {
-    const ready = await saved()
+    const ready = await saved(false)
     if (ready) return { kind: 'ready', lesson: ready }
   }
-  if (!isOnline()) {
-    const fallback = steering ? await saved() : undefined
+  const offline = async (): Promise<TakeResult> => {
+    const fallback = flexible ? await saved(true) : undefined
     return fallback ? { kind: 'ready', lesson: fallback } : { kind: 'offline' }
   }
+  // Known to be offline, with a saved lesson that will do: no request, so nothing is left
+  // pending for a later launch to finish.
+  if (!isOnline() && flexible) {
+    const fallback = await saved(true)
+    if (fallback) return { kind: 'ready', lesson: fallback }
+  }
+  // Otherwise asked, not assumed: the request itself is the connectivity test. A probe
+  // is an estimate that can be stale for a moment, and a wrong "offline" would refuse a
+  // lesson the network could have served.
   try {
-    // A preparation an earlier launch left pending is finished first; the queue holds one.
-    await queue.prepare()
+    // A preparation an earlier launch left pending is finished first (the queue holds
+    // one), and used if it is the lesson being asked for now.
+    const resumed = await queue.prepare()
+    if (resumed && fits(resumed) && JSON.stringify(resumed.request.focus) === JSON.stringify(wanted)) {
+      return { kind: 'ready', lesson: resumed }
+    }
     const lesson = await queue.prepare({
       lessonId: lessonId(),
       locale: request.locale,
       count: clampCount(request.count),
       screenReader: request.screenReader,
-      ...(focused ? { focus: wireFocus(request.focus!) } : {}),
+      ...(wanted ? { focus: wanted } : {}),
     })
-    if (!lesson) return { kind: 'offline' }
+    if (!lesson) return offline()
     return { kind: 'ready', lesson }
   } catch (error) {
-    if (error instanceof Error && 'code' in error && error.code === 'FOCUS_TOO_NARROW') return { kind: 'too-narrow' }
+    if (error instanceof D1AuthError && error.code === 'FOCUS_TOO_NARROW') return { kind: 'too-narrow' }
+    // Anything the server did not answer (no route, a timeout) is being offline; an
+    // answer it did give (a D1AuthError) or an account change is not.
+    if (!(error instanceof D1AuthError) && !(error instanceof AccountChangedError)) return offline()
     throw error
   }
 }

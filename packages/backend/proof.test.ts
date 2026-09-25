@@ -151,6 +151,8 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
   it('fails closed when the application API is disabled', async () => {
     await mf.setOptions(convertV4MiniflareOptions({ modules: true, script, compatibilityDate: '2026-09-13', compatibilityFlags: ['nodejs_compat'], d1Databases: ['DB'], bindings: { API_ENABLED: 'false' } }))
     expect((await call('/health')).status).toBe(200)
+    // The app's connectivity probe asks with HEAD; a 401 here read as "offline" forever.
+    expect((await mf.dispatchFetch('http://localhost/health', { method: 'HEAD' })).status).toBe(200)
     expect((await call('/v1/auth/guest', undefined, {})).status).toBe(503)
   })
   it('creates restricted guests, stores only token hashes and rejects identity injection', async () => {
@@ -621,5 +623,27 @@ describe('achievements the server decides and pays (real workerd and SQLite)', (
     const snapshot = await state(a.userId)
     expect(snapshot.account?.xp).toBe(snapshot.ledger.reduce((sum, row) => sum + Number(row.xp), 0))
     expect(snapshot.account?.coins).toBe(snapshot.ledger.reduce((sum, row) => sum + Number(row.coins), 0))
+  })
+})
+
+describe('fact reports (real workerd and SQLite)', () => {
+  it('files a reason about a shipped fact once, bounded per day, never free text, erased with the account', async () => {
+    const a = await guest(), b = await guest()
+    const report = { reportId: 'report-0001', factId: 'geo.SE.capital', reason: 'wrong' }
+    expect((await call('/v1/reports', a.token, report)).status).toBe(202)
+    expect((await call('/v1/reports', a.token, report)).status).toBe(202)
+    expect((await db.prepare('SELECT count(*) AS n FROM reports').first())?.n).toBe(1)
+    expect((await call('/v1/reports', a.token, { ...report, reportId: 'report-0002', note: 'my name is…' })).status).toBe(400)
+    expect((await call('/v1/reports', a.token, { ...report, reportId: 'report-0003', reason: 'boring' })).status).toBe(400)
+    expect((await call('/v1/reports', a.token, { ...report, reportId: 'report-0004', factId: 'geo.XX.nothing' })).status).toBe(400)
+    for (let i = 0; i < 29; i++) {
+      expect((await call('/v1/reports', a.token, { ...report, reportId: `bulk-${String(i).padStart(4, '0')}` })).status).toBe(202)
+    }
+    expect((await call('/v1/reports', a.token, { ...report, reportId: 'report-0005' })).status).toBe(429)
+    // Another learner's budget is their own.
+    expect((await call('/v1/reports', b.token, { ...report, reportId: 'report-0001' })).status).toBe(202)
+    expect((await call('/v1/account/delete', a.token, {})).status).toBe(200)
+    expect((await db.prepare('SELECT count(*) AS n FROM reports WHERE account_id = ?').bind(a.userId).first())?.n).toBe(0)
+    expect((await db.prepare('SELECT count(*) AS n FROM reports WHERE account_id = ?').bind(b.userId).first())?.n).toBe(1)
   })
 })

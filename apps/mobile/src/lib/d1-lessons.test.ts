@@ -34,7 +34,11 @@ const answer = (itemId: string) => ({ itemId, factId: `fact-${itemId}`, template
 beforeEach(() => {
   store.clear()
   online = true
-  prepare.mockReset().mockImplementation(async (request: D1PreparedLesson['request']) => issued(request.lessonId, request))
+  // Offline means the request fails, as it does on a device; the flag alone decides nothing.
+  prepare.mockReset().mockImplementation(async (request: D1PreparedLesson['request']) => {
+    if (!online) throw new TypeError('Failed to fetch')
+    return issued(request.lessonId, request)
+  })
   submit.mockReset()
 })
 
@@ -59,18 +63,23 @@ describe('takeLesson', () => {
     expect(prepare.mock.calls[0]![0]).toMatchObject({ locale: 'sv', count: 20, focus: { entities: ['SE'] } })
   })
 
-  it('offline, plays a saved lesson for the quest but not for a chosen country', async () => {
+  it('offline, plays a saved lesson for an implied focus but not for a chosen country', async () => {
     await takeLesson({ count: 10, locale: 'en', screenReader: false })
     online = false
+    // The quest's facts, or onboarding's start region: the app's suggestion.
     expect(await takeLesson({ count: 10, locale: 'en', screenReader: false, focus: { factIds: ['geo.SE.capital'] } }))
       .toMatchObject({ kind: 'ready' })
-    expect(await takeLesson({ count: 10, locale: 'en', screenReader: false, focus: { entities: ['SE'] } })).toEqual({ kind: 'offline' })
+    expect(await takeLesson({ count: 10, locale: 'en', screenReader: false, focus: { entities: ['SE', 'NO'], difficulty: { min: 1, max: 3 } } }))
+      .toMatchObject({ kind: 'ready' })
+    // A country the learner picked is a promise about content; a saved lesson is not it.
+    expect(await takeLesson({ count: 10, locale: 'en', screenReader: false, focus: { entities: ['SE'] }, explicitFocus: true }))
+      .toEqual({ kind: 'offline' })
   })
 
   it('says offline, rather than failing, when nothing was pre-fetched', async () => {
     online = false
     expect(await takeLesson({ count: 10, locale: 'en', screenReader: false })).toEqual({ kind: 'offline' })
-    expect(prepare).not.toHaveBeenCalled()
+    // It asked, and the failed request is what said offline.
   })
 })
 

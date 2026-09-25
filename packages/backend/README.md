@@ -37,6 +37,9 @@ pnpm also has a built-in deploy command). Wrangler OAuth needs
 write and D1 write permissions. Credentials use encrypted storage with a key in
 Windows Credential Manager.
 
+`GET` and `HEAD /health` answer without authentication: the app's connectivity probe
+asks with `HEAD`, and a 401 there reads as "offline" on every device.
+
 The checked-in configuration disables workers.dev, preview URLs, and API access.
 For isolated local API development only, pass `--var API_ENABLED:true` to Wrangler.
 Do not enable public API access before recovery, abuse controls, child policy and

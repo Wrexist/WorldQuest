@@ -13,6 +13,7 @@ import { learningState, learningHistory } from './learning-state'
 import { setTimeZone } from './time-zone'
 import { todayQuest } from './quest-state'
 import { progress, spend, spendSchema, type SpendKind } from './economy'
+import { fileReport, reportSchema } from './reports'
 
 const codeRequest = z.object({ email: z.string().trim().toLowerCase().email().max(254),
   purpose: z.enum(['link', 'login', 'delete']), locale: z.enum(['en', 'sv']) }).strict()
@@ -52,6 +53,10 @@ export function createWorker(mail: MailDelivery = unavailableMail, clock: Clock 
   async fetch(request: Request, env: Env): Promise<Response> {
     try {
       const path = new URL(request.url).pathname
+      // HEAD as well as GET: the app's connectivity probe (NetInfo) asks with HEAD, and a
+      // HEAD that fell through to authentication answered 401, which the app read as "no
+      // network" — every D1 build would have believed itself offline for good.
+      if (path === '/health' && request.method === 'HEAD') return new Response(null, { status: 200, headers: { 'Cache-Control': 'no-store' } })
       if (request.method === 'GET' && path === '/health') return json({ service: 'worldquest', backend: 'cloudflare-d1', apiEnabled: env.API_ENABLED === 'true' })
       // No externally usable app API until rate limiting, recovery and native acceptance pass.
       if (env.API_ENABLED !== 'true') throw new ApiError('API_NOT_READY', 503)
@@ -146,6 +151,11 @@ export function createWorker(mail: MailDelivery = unavailableMail, clock: Clock 
         return json(await spend(env.DB, account.id, tokenHash, spends[path]!, parsed.data, clock))
       }
       if (request.method === 'GET' && path === '/v1/progress') return json(await progress(env.DB, account.id, tokenHash, now))
+      if (request.method === 'POST' && path === '/v1/reports') {
+        const parsed = reportSchema.safeParse(await body(request))
+        if (!parsed.success) throw new ApiError('INVALID_BODY', 400)
+        return json(await fileReport(env.DB, account.id, tokenHash, parsed.data, now), 202)
+      }
       if (request.method === 'GET' && path === '/v1/quest/today') return json(await todayQuest(env.DB, account.id, tokenHash, now))
       if (request.method === 'GET' && path === '/v1/learning/state') return json(await learningState(env.DB, account.id, tokenHash))
       if (request.method === 'GET' && path === '/v1/learning/history') {

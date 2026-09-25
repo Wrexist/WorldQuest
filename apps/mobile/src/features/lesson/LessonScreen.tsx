@@ -66,7 +66,7 @@ import { recordPredictedAward } from '../../lib/awards.js'
 import { enqueueLesson } from '../../lib/sync.js'
 import { isD1 } from '../../lib/backendConfig.js'
 import { prefetchLessons, submitLesson as submitD1Lesson } from '../../lib/d1-lessons.js'
-import { useScreenReader } from '../../lib/screenReader.js'
+import { useScreenReaderStatus } from '../../lib/screenReader.js'
 import { useD1Lesson } from './hooks/useD1Lesson.js'
 import { Icon } from '../../components/Icon.js'
 import { Stat } from '../../components/Stat.js'
@@ -317,6 +317,7 @@ export function LessonScreen({
   coins = 0,
   isTaster = false,
   focus,
+  focusIsExplicit = false,
   length,
 }: {
   onExit: (summary: LessonExit) => void
@@ -348,6 +349,12 @@ export function LessonScreen({
    * not a different mode; it is the same lesson about less.
    */
   focus?: LessonFocus | undefined
+  /**
+   * Whether `focus` is the learner's own choice (a country, region, topic or difficulty
+   * from a picker or a link) rather than one implied by onboarding or the daily quest.
+   * On a D1 build only an implied focus may start from a saved lesson when offline.
+   */
+  focusIsExplicit?: boolean | undefined
   /**
    * How many questions, when the user asked for a number.
    *
@@ -436,12 +443,16 @@ export function LessonScreen({
    * composes its own. Decided at bundle time, so it cannot change under a lesson.
    */
   const remoteLessons = isD1()
-  const screenReaderOn = useScreenReader()
-  const remote = useD1Lesson(remoteLessons, {
+  // Asked for only once the platform has said whether a screen reader is on: the
+  // server issues the lesson for one presentation, and it cannot be recomposed after.
+  const screenReaderStatus = useScreenReaderStatus()
+  const screenReaderOn = screenReaderStatus === true
+  const remote = useD1Lesson(remoteLessons && screenReaderStatus !== null, {
     count: length ?? lessonLength(itemMs),
     locale: currentLocale() === 'sv' ? 'sv' : 'en',
     screenReader: screenReaderOn,
     focus,
+    explicitFocus: focusIsExplicit,
   })
   const questions = useMemo<readonly Question[]>(() => {
     if (remoteLessons) return remote.lesson?.questions ?? []

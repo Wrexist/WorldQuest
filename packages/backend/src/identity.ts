@@ -59,7 +59,7 @@ export async function deleteAccount(db: D1Database, owner: string, session: stri
       AND NOT EXISTS (SELECT 1 FROM identities WHERE subject_id=auth_user.id)`).bind(owner),
     q(`DELETE FROM email_challenges WHERE account_id=? OR email IN (
       SELECT u.email FROM auth_user u JOIN identities i ON i.subject_id=u.id WHERE i.account_id=?)`).bind(owner, owner),
-    ...['tickets', 'receipts', 'reviews', 'memories', 'ledger', 'quest_days', 'spends', 'inventory', 'sessions', 'session_rotations', 'identities'].map(table => q(`DELETE FROM ${table} WHERE account_id=?`).bind(owner)),
+    ...['tickets', 'receipts', 'reviews', 'memories', 'ledger', 'quest_days', 'spends', 'inventory', 'reports', 'sessions', 'session_rotations', 'identities'].map(table => q(`DELETE FROM ${table} WHERE account_id=?`).bind(owner)),
     ...(identity ? [q('DELETE FROM auth_user WHERE id=?').bind(identity.subject_id)] : []),
     q('DELETE FROM auth_budgets WHERE bucket=?').bind(`email-owner:${owner}`),
     q('DELETE FROM accounts WHERE id=?').bind(owner),

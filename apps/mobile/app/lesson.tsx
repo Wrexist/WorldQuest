@@ -76,6 +76,9 @@ export default function LessonRoute() {
     <LessonScreen
       mode={mode === 'speed' ? 'speed' : 'normal'}
       {...(focus ? { focus } : {})}
+      // A place, topic or band in the link is the learner's choice; quest facts and
+      // onboarding's start region are the app's suggestion (see `useLessonFocus`).
+      focusIsExplicit={[attr, entity, region, min, max].some((value) => value !== undefined)}
       {...(length !== undefined ? { length } : {})}
       // Set only by the onboarding hand-off. Finishing this one lesson is the single
       // biggest predictor of a user coming back, so it gets its own event rather than
