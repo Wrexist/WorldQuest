@@ -487,6 +487,7 @@ function Gallery() {
           <LessonSummary
             result={PERFECT_LESSON}
             practised={practisedFrom(6)}
+            timeMs={41_000}
             wasAbandoned={false}
             isOffline={false}
             onExit={() => {}}
@@ -497,6 +498,7 @@ function Gallery() {
           <LessonSummary
             result={SHORT_LESSON}
             practised={practisedFrom(3)}
+            timeMs={17_000}
             wasAbandoned
             isOffline={false}
             onExit={() => {}}

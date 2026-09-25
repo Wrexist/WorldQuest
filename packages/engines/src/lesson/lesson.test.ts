@@ -11,8 +11,10 @@ import { composeLesson } from './compose.js'
 import {
   accuracy,
   answerCount,
+  answeringMs,
   canRevive,
   currentQuestion,
+  currentRun,
   inReview,
   initialState,
   isFinished,
@@ -197,6 +199,35 @@ describe('reviewing mistakes at the end', () => {
     for (let i = 0; i < BALANCE.hearts.max; i++) empty = transition(answerWrongly(empty, T0 + i * 1000 + 500), { type: 'CONTINUE', now: T0 + i * 1000 + 600 })
     expect(empty.phase).toBe('summary')
     expect(empty.reviewFrom).toBeNull()
+  })
+})
+
+describe('what the lesson summary and the progress bar read', () => {
+  it('times the answering: never a pause, never the feedback, and the review counts', () => {
+    let s = started(makeQuestions(2))
+    // Four seconds on the first question, then five reading the feedback.
+    s = transition(answerCorrectly(s, T0 + 4_000), { type: 'CONTINUE', now: T0 + 9_000 })
+    // A minute on the pause screen, then three seconds to answer.
+    s = transition(s, { type: 'PAUSE', now: T0 + 10_000 })
+    s = transition(s, { type: 'RESUME', now: T0 + 70_000 })
+    s = transition(answerWrongly(s, T0 + 73_000), { type: 'CONTINUE', now: T0 + 74_000 })
+    // The missed question again, in the review round: two seconds.
+    expect(inReview(s)).toBe(true)
+    s = answerCorrectly(s, T0 + 76_000)
+    expect(answeringMs(s)).toBe(4_000 + 3_000 + 2_000)
+  })
+
+  it('counts a run in the round being played, so a graded run does not carry into the review', () => {
+    let s = started(makeQuestions(4))
+    s = transition(answerWrongly(s, T0 + 1_000), { type: 'CONTINUE', now: T0 + 1_100 })
+    for (let i = 1; i < 4; i++) {
+      s = answerCorrectly(s, T0 + i * 1_000 + 1_000)
+      expect(currentRun(s)).toBe(i)
+      s = transition(s, { type: 'CONTINUE', now: T0 + i * 1_000 + 1_100 })
+    }
+    expect(inReview(s)).toBe(true)
+    expect(currentRun(s)).toBe(0)
+    expect(currentRun(answerCorrectly(s, T0 + 9_000))).toBe(1)
   })
 })
 

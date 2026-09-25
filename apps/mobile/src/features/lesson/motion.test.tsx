@@ -65,6 +65,7 @@ describe('the animated branch mounts', () => {
     withFullMotion(() => {
       const { container } = render(
         <LessonSummary
+          timeMs={30_000}
           result={{
             lessonId: 'l1',
             items: 10,

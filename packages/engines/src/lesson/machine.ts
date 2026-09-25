@@ -157,6 +157,31 @@ export const lastAnswerOf = (s: LessonState): AnsweredItem | undefined =>
 export const answerCount = (s: LessonState): number => s.answers.length + s.reviewed.length
 
 /**
+ * Time spent answering, in milliseconds: each question's clock, from appearing to being
+ * answered, summed over the lesson and its review round.
+ *
+ * The lesson summary's "Time". Pauses are already outside it (RESUME restarts the
+ * question's clock), and so is the time spent reading feedback. A wall clock would count
+ * a phone left on the pause screen over lunch; this counts the thinking.
+ */
+export const answeringMs = (s: LessonState): number =>
+  [...s.answers, ...s.reviewed].reduce((sum, answer) => sum + answer.elapsedMs, 0)
+
+/**
+ * Right answers in a row, counting back from the last one, in the round being played.
+ *
+ * Derived from the answer log rather than read from `correctRun`, which is the hearts
+ * rule's counter and stops at the review round. Once the review starts it counts the
+ * review's own answers, so a run from the graded questions does not carry into practice.
+ */
+export const currentRun = (s: LessonState): number => {
+  const log = inReview(s) ? s.reviewed : s.answers
+  let run = 0
+  for (let i = log.length - 1; i >= 0 && log[i]?.wasCorrect === true; i--) run++
+  return run
+}
+
+/**
  * The review round for a lesson that just ran out of questions, or null.
  *
  * Only once, only for an untimed lesson (a speed round is a race, not a lesson to go

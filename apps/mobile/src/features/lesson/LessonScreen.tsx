@@ -35,7 +35,14 @@ import {
   text,
   useRiseIn,
 } from '@worldquest/design'
-import { canRevive, inReview, lastAnswerOf, lessonLength } from '@worldquest/engines'
+import {
+  answeringMs,
+  canRevive,
+  currentRun,
+  inReview,
+  lastAnswerOf,
+  lessonLength,
+} from '@worldquest/engines'
 import type { LessonFocus } from '@worldquest/engines'
 import type { ContentIndex, GradeResult, LessonState, Question } from '@worldquest/engines'
 import { Art } from '../../components/Art.js'
@@ -91,6 +98,9 @@ const BADGES = ['A', 'B', 'C', 'D'] as const
  *
  * Three, because two is a coincidence. Below this the praise says something true and
  * unremarkable instead — see the copy note on `lesson:feedback.correct.streak`.
+ *
+ * The progress bar takes its run colour at the same count, so the bar and the sentence
+ * under "Perfect!" never disagree about whether this is a roll.
  */
 const STREAK_PRAISE = 3
 
@@ -768,6 +778,7 @@ export function LessonScreen({
       <LessonSummary
         result={lesson.optimistic}
         practised={practised}
+        timeMs={answeringMs(lesson.state)}
         // The two phases arrive here for very different reasons and the screen says so.
         // Running out of hearts is NOT one of them — the machine sends that to
         // `summary`, because the lesson ended rather than the user leaving it.
@@ -846,18 +857,12 @@ export function LessonScreen({
   /**
    * How many the user has just got right in a row, counting back from the last answer.
    *
-   * Only used to decide whether the praise under "Perfect!" is allowed to mention a
-   * streak. Computed rather than tracked because the answer log is already the truth
-   * and a second counter beside it is a second thing that can disagree with it.
+   * Decides whether the praise under "Perfect!" may mention a roll, and whether the
+   * progress bar wears the run colour. Derived from the answer log, which is already the
+   * truth — and in the end-of-lesson review it counts the review's own answers, so a run
+   * from the graded questions is not praised again in practice.
    */
-  const correctRun = (() => {
-    let run = 0
-    for (let i = lesson.state.answers.length - 1; i >= 0; i--) {
-      if (lesson.state.answers[i]?.wasCorrect !== true) break
-      run++
-    }
-    return run
-  })()
+  const correctRun = currentRun(lesson.state)
 
   // The answer on screen: in the end-of-lesson review it is the review round's, which is
   // practice and earns nothing, so it shows no reward either.
@@ -917,10 +922,15 @@ export function LessonScreen({
         >
           <Icon name="close" size={20} color={colors.text.secondary} />
         </Pressable>
+        {/* The combo glow: from the third right answer in a row the bar takes the flame
+            colour, the moment the feedback starts saying "on a roll". A miss returns it
+            to the ordinary green, never to a red one. Colour only, so nothing moves under
+            Reduce Motion and nothing new is announced; the sheet says it in words. */}
         <ProgressBar
           current={lesson.progress.current}
           total={lesson.progress.total}
           label={t('lesson:progress.label')}
+          tone={correctRun >= STREAK_PRAISE ? 'streak' : 'progress'}
           style={styles.flex}
         />
         <Stat

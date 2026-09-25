@@ -261,7 +261,12 @@ alone is never a control unless it is universally understood (back, close, setti
 
 **Principles**
 - Things **scale and spring**; they do not fade in place. Fade is for disappearing.
-- Entrance is staggered by 40 ms per item, max 6 items, then all at once.
+- Entrance is staggered by 40 ms per item, max 6 items, then all at once. `useStagger`
+  is seeded at rest and rewinds before the first paint, so a render without effects
+  (the static screenshot harness) still draws every item. The lesson summary's four
+  tiles use it.
+- A run of right answers is shown in colour, not motion: from the third in a row the
+  lesson bar takes `status.streak`, with `status.streakHighlight` as its sheen.
 - Celebration never blocks input — `Continue` is tappable from frame one.
 - Bottom sheets rise from below by their own measured height (`useRiseIn`, `motion.base`,
   transform only). The lesson's answer sheet is the first user.

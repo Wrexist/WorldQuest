@@ -27,9 +27,11 @@ describe('ReportSheet', () => {
     render(<ReportSheet onSend={onSend} onClose={() => {}} />)
     fireEvent.click(screen.getByLabelText('It\'s out of date'))
     fireEvent.click(screen.getByText('Send report'))
-    await waitFor(() => expect(screen.getByRole('alert')).toBeTruthy())
+    // Longer than the one-second default: two rejected-then-resolved round trips, and on
+    // a machine running e2e alongside, the first re-render alone has taken over a second.
+    await waitFor(() => expect(screen.getByRole('alert')).toBeTruthy(), { timeout: 5_000 })
     fireEvent.click(screen.getByText('Send report'))
-    await waitFor(() => expect(screen.getByText('Thank you')).toBeTruthy())
+    await waitFor(() => expect(screen.getByText('Thank you')).toBeTruthy(), { timeout: 5_000 })
     expect(onSend).toHaveBeenLastCalledWith('outdated')
   })
 

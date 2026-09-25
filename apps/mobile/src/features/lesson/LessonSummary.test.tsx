@@ -10,7 +10,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { factsStrengthened } from '@worldquest/engines'
 import type { GradeResult, Mastery, Rating } from '@worldquest/engines'
-import { LessonSummary, outcomeOf } from './LessonSummary.js'
+import { LessonSummary, minutesAndSeconds, outcomeOf } from './LessonSummary.js'
 
 const move = (factId: string, from: Mastery, to: Mastery) => ({ factId, from, to })
 
@@ -47,11 +47,12 @@ const grade = (over: Partial<GradeResult> = {}): GradeResult => ({
   ...over,
 })
 
-const summary = (over: Partial<GradeResult> | null = {}, wasAbandoned = false) => {
+const summary = (over: Partial<GradeResult> | null = {}, wasAbandoned = false, timeMs = 65_000) => {
   const onExit = vi.fn()
   const view = render(
     <LessonSummary
       result={over === null ? null : grade(over)}
+      timeMs={timeMs}
       wasAbandoned={wasAbandoned}
       isOffline={false}
       onExit={onExit}
@@ -185,9 +186,30 @@ describe('LessonSummary — the numbers', () => {
     expect(tile.getAttribute('aria-label')).toBe('No facts moved up a level this time')
   })
 
+  it('shows how long the answering took, and says it in words', () => {
+    summary({}, false, 65_000)
+    const tile = screen.getByTestId('summary-time')
+    expect(tile.textContent).toContain('1:05')
+    expect(tile.getAttribute('aria-label')).toBe('Answering time: 1 minute 5 seconds')
+  })
+
+  it('says a lesson under a minute in seconds alone', () => {
+    summary({}, false, 48_000)
+    const tile = screen.getByTestId('summary-time')
+    expect(tile.textContent).toContain('0:48')
+    expect(tile.getAttribute('aria-label')).toBe('Answering time: 48 seconds')
+  })
+
+  it('calls it time, never speed', () => {
+    // A slow lesson is not a worse one. The reference labels this card with praise for
+    // speed; for a child reading a flag description carefully, that scores the care.
+    const { container } = summary({}, false, 200_000)
+    expect(container.textContent).not.toMatch(/speed|fast|quick|slow/i)
+  })
+
   it('groups each tile into one spoken element, not two fragments', () => {
     summary()
-    for (const id of ['summary-accuracy', 'summary-coins', 'summary-stronger']) {
+    for (const id of ['summary-accuracy', 'summary-time', 'summary-coins', 'summary-stronger']) {
       const tile = screen.getByTestId(id)
       expect(tile.getAttribute('aria-label')).toBeTruthy()
       for (const child of Array.from(tile.querySelectorAll('div'))) {
@@ -206,6 +228,7 @@ describe('LessonSummary — where you just were', () => {
       <LessonSummary
         result={grade()}
         practised={practised}
+        timeMs={30_000}
         wasAbandoned={false}
         isOffline={false}
         onExit={() => {}}
@@ -244,7 +267,7 @@ describe('LessonSummary — the way out', () => {
 
   it('says so when the result has not reached the server', () => {
     render(
-      <LessonSummary result={grade()} wasAbandoned={false} isOffline onExit={() => {}} />,
+      <LessonSummary result={grade()} timeMs={30_000} wasAbandoned={false} isOffline onExit={() => {}} />,
     )
     expect(screen.getByRole('alert')).toBeTruthy()
   })
@@ -256,7 +279,7 @@ describe('the summary — badges', () => {
     // early exit (`afterLesson.ts`). A row of medals here as well showed the same badge
     // twice, seconds apart, and pushed the practised flags off a short phone.
     render(
-      <LessonSummary result={grade()} wasAbandoned={false} isOffline={false} onExit={() => {}} />,
+      <LessonSummary result={grade()} timeMs={30_000} wasAbandoned={false} isOffline={false} onExit={() => {}} />,
     )
     expect(screen.queryByTestId('summary-unlocked')).toBeNull()
     expect(screen.queryByText(/new badge/i)).toBeNull()
@@ -264,6 +287,12 @@ describe('the summary — badges', () => {
 })
 
 describe('the summary rules, on their own', () => {
+  it('rounds the time once, on the total, so a minute never reads 0:60', () => {
+    expect(minutesAndSeconds(59_600)).toEqual({ minutes: 1, seconds: 0 })
+    expect(minutesAndSeconds(65_400)).toEqual({ minutes: 1, seconds: 5 })
+    expect(minutesAndSeconds(0)).toEqual({ minutes: 0, seconds: 0 })
+  })
+
   it('ranks mastery in the order the model defines', () => {
     // Each with the correct answer that moved it — a wrong answer strengthens nothing at
     // all, which is the case below rather than the ordering being tested here.

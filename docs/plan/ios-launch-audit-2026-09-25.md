@@ -37,7 +37,7 @@ Status: ✅ done on this branch · ⏳ in progress · ☐ open.
 | 19 | P1 | Paywall footer: period, auto-renew, Terms/Privacy links (when IAP ships) | 3.1.2 | ☐ |
 | 20 | P1 | Hide analytics opt-out toggle until analytics has a transport | honesty, G02 | ✅ hidden behind `ANALYTICS_CONNECTED` until G02 (`8a09aa9`) |
 | 21 | P1 | `supportsTablet: true` with no iPad pass | A11 | ☐ owner decision |
-| 22 | P2 | Summary: time card + staggered reveal; combo glow on progress bar | parity polish | ☐ |
+| 22 | P2 | Summary: time card + staggered reveal; combo glow on progress bar | parity polish | ✅ time tile (answering time, neutral colour, never "speed"), tiles two by two and dealt in with `useStagger`; the lesson bar turns flame from three right in a row, the moment the sheet says "on a roll" |
 | 23 | P2 | Month streak calendar; share streak (hidden for children) | parity polish | ☐ |
 | 24 | P1 | Course path on Home (units/nodes) | L08/P07/U05 | ☐ Phase 3 |
 | 25 | P1 | Web harness: previous tab's content shows through a newly selected tab (transparent scenes) | U09 | ☐ check on device first |

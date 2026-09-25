@@ -114,6 +114,22 @@ const PAIRS: Pair[] = [
     note: 'the "XP" unit label under the hero number, and any caption on a level-2 card',
   },
   { name: 'status.streak on surface', fg: p.flame['500'], bg: p.surface['1'], min: 3.0 },
+  // The lesson bar during a run of right answers: the fill against its track, and the
+  // "3 / 10" count printed in the fill colour, which is caption-size text.
+  {
+    name: 'status.streak on progressTrack',
+    fg: p.flame['500'],
+    bg: p.surface['3'],
+    min: 3.0,
+    note: 'a run-coloured fill must still stand apart from its track',
+  },
+  {
+    name: 'status.streak on canvas',
+    fg: p.flame['500'],
+    bg: p.space['800'],
+    min: 4.5,
+    note: "the lesson bar's count during a run — small text, so the body floor",
+  },
   {
     name: 'status.error on canvas',
     fg: p.red['500'],

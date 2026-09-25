@@ -269,11 +269,24 @@ export function useCelebration(trigger: unknown): Animated.Value {
  * skipped the animation by leaving opacity at 0 would hide most of a list from exactly
  * the user who asked for less movement, which is the usual way this gets implemented
  * wrong (see the note at the top of this file).
+ *
+ * ## Seeded at rest
+ *
+ * Like `useScaleIn` and `useRiseIn`: the value starts at 1 and is rewound to 0 in a
+ * layout effect, before the first paint. A render with no effects — the static
+ * screenshot harness — used to draw every staggered item at opacity 0, which is how
+ * the lesson summary's tiles would have vanished from its frames when they started to
+ * arrive in turn.
  */
 export function useStagger(index: number, step: MotionStep = 'base'): Animated.Value {
   const reduced = useReducedMotion()
   const timing = useTiming(step)
-  const value = useRef(new Animated.Value(reduced ? 1 : 0)).current
+  const value = useRef(new Animated.Value(1)).current
+
+  useIsomorphicLayoutEffect(() => {
+    if (!reduced) value.setValue(0)
+    // Mount only, like `useScaleIn`: a later change to `reduced` lands, it never rewinds.
+  }, [])
 
   useEffect(() => {
     if (reduced) {
