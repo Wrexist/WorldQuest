@@ -58,8 +58,9 @@ function milestoneFor(streak: number | undefined): number | undefined {
 }
 
 export default function QuestCompleteRoute() {
-  // The rest of the after-lesson chain, if any (`afterLesson.ts`).
-  const { then, countries } = useLocalSearchParams<{ then?: string; countries?: string }>()
+  // The rest of the after-lesson chain, if any (`afterLesson.ts`) — passed on whole, so
+  // the unlocks for a badge card after this one survive the trip.
+  const params = useLocalSearchParams<{ then?: string; countries?: string; unlocks?: string }>()
   const { quest } = useDailyQuest()
   const { data } = useProgress()
   const standing = quest === null ? null : questProgress(quest)
@@ -95,7 +96,7 @@ export default function QuestCompleteRoute() {
       // `replace`, not `back()`: the lesson has already been replaced off the stack, and
       // going "back" from a celebration would return the user to the summary they just
       // dismissed. Onward to whatever the after-lesson plan still holds, else Home.
-      onDone={() => router.replace(nextAfterLesson(then, countries))}
+      onDone={() => router.replace(nextAfterLesson(params))}
     />
   )
 }

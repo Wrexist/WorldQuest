@@ -20,7 +20,6 @@ import {
   Button,
   Card,
   colors,
-  palette,
   ProgressBar,
   radius,
   space,
@@ -35,37 +34,13 @@ import {
   tierProgress,
   type AchievementDef,
   type AchievementProgress,
-  type Tier,
 } from '@worldquest/engines'
 import { tContent, useT, type TranslationKey } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 import { AchievementMedal } from './AchievementMedal.js'
-import { achievementNameKey } from './useAchievements.js'
+import { achievementDescKey, achievementNameKey } from './useAchievements.js'
+import { TIER_COLOR, TIER_LABEL } from './tiers.js'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
-
-const TIER_LABEL: Record<Tier, TranslationKey> = {
-  bronze: 'achievements:tier.bronze',
-  silver: 'achievements:tier.silver',
-  gold: 'achievements:tier.gold',
-  platinum: 'achievements:tier.platinum',
-  legendary: 'achievements:tier.legendary',
-}
-
-/**
- * The tier colours from docs/systems/achievements.md §2.
- *
- * Bronze, silver and platinum are metal colours with no semantic meaning beyond
- * "this tier" — they are the one place a raw palette reference is right, because
- * there is nothing to name them after. Gold reuses the reward token, since a gold
- * tier and an XP reward are the same idea.
- */
-const TIER_COLOR: Record<Tier, string> = {
-  bronze: palette.bronze['500'],
-  silver: palette.silver['500'],
-  gold: colors.reward.xp,
-  platinum: palette.platinum['500'],
-  legendary: palette.purple['500'],
-}
 
 export type AchievementRow = {
   readonly def: AchievementDef
@@ -92,10 +67,10 @@ export type AchievementsScreenProps = {
  * typo'd key — there is no key to typo. `tContent` because the id comes from a pack
  * and is validated by `pnpm content:validate` rather than by the compiler.
  */
-// Imported rather than declared: the lesson summary derives the same key, and the rule
+// Imported rather than declared: the unlock card derives the same keys, and the rule
 // lives with the catalogue it describes.
 const nameKey = achievementNameKey
-const descKey = (id: string): string => `achievements:${id.slice('ach.'.length)}.desc`
+const descKey = achievementDescKey
 
 /**
  * How many unearned rows count as "close".

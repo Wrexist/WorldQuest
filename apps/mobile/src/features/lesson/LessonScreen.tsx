@@ -53,7 +53,7 @@ import { recordAccuracy, recentAccuracy } from './useAccuracy.js'
 import { hapticCelebrate, hapticSelect } from '../../lib/haptics.js'
 import { soundLevelUp } from '../../lib/sound.js'
 import { recordLessonForAchievements, recordQuestCompleted } from '../achievements/progress.js'
-import { drainUnlocks, queueUnlocks, type PendingUnlock } from '../achievements/pending.js'
+import { queueUnlocks } from '../achievements/pending.js'
 import { todaysQuest } from '../quests/useDailyQuest.js'
 import { recordQuestEvent } from '../quests/questProgress.js'
 import { useContent } from '../../lib/content.js'
@@ -83,16 +83,6 @@ type ScreenState = 'loading' | 'error' | 'empty' | 'offline-start' | 'ready'
  * loudly, in the place someone is looking, rather than by crashing a lesson.
  */
 const BADGES = ['A', 'B', 'C', 'D'] as const
-
-/**
- * The two phases that put the summary on screen.
- *
- * `isFinished` in the engine answers the same question, and is not imported here because
- * it takes the whole state — this is used in a dependency array, where passing the state
- * object would re-run the effect on every answer.
- */
-const isFinishedPhase = (phase: LessonState['phase']): boolean =>
-  phase === 'summary' || phase === 'abandoned'
 
 /**
  * How many right in a row before the feedback is allowed to call it a roll.
@@ -558,7 +548,8 @@ export function LessonScreen({
     })
     // Queued rather than announced. Until this line an unlock produced an analytics event
     // and nothing a user could see — the whole reward loop for thirty achievements was a
-    // row in a dashboard. The summary below drains the queue.
+    // row in a dashboard. The after-lesson chain reads the queue when the summary's
+    // Continue is pressed and gives each unlock a card of its own (`afterLesson.ts`).
     queueUnlocks(unlocked.map((u) => ({ achievementId: u.achievementId, tier: u.tier })))
     for (const unlock of unlocked) {
       // `days_to_unlock` is not sent. We would have to know when the user started,
@@ -711,23 +702,6 @@ export function LessonScreen({
   }, [inlineCheck, lesson.state.selectedOptionId])
 
   /**
-   * The badges to celebrate, taken once when the lesson ends.
-   *
-   * `drainUnlocks` clears the queue, so it has to run in an effect and land in state: a
-   * drain from the render body would empty the queue on a render React is allowed to
-   * throw away, and StrictMode would do it twice — the medals would be gone before
-   * anything drew them. The same rule `useLesson`'s completion effect exists for.
-   *
-   * Whatever is waiting, not only what this lesson earned: an unlock decided by the server
-   * during a background flush has no screen to appear on, and this is the next one.
-   */
-  const [unlockedToShow, setUnlockedToShow] = useState<readonly PendingUnlock[]>([])
-  useEffect(() => {
-    if (!isFinishedPhase(lesson.state.phase)) return
-    setUnlockedToShow((shown) => (shown.length > 0 ? shown : drainUnlocks()))
-  }, [lesson.state.phase])
-
-  /**
    * Watch this number. If it is high the mechanic is too punishing — which is the
    * whole reason the balance table caps hearts per lesson rather than per day.
    *
@@ -778,7 +752,6 @@ export function LessonScreen({
         // Running out of hearts is NOT one of them — the machine sends that to
         // `summary`, because the lesson ended rather than the user leaving it.
         wasAbandoned={lesson.state.phase === 'abandoned'}
-        unlocked={unlockedToShow}
         isOffline={isOffline}
         onExit={() =>
           onExit({

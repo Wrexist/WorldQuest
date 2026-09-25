@@ -174,5 +174,15 @@
   "account:settings.signOut.pending": "Signing out…",
   "account:settings.signOut.pending__note": "Status while protected credentials are being removed. The action cannot be repeated until cleanup finishes.",
   "account:settings.signOut.failed": "Sign-out could not finish on this device. Unlock your phone and tap Sign out to try again.",
-  "account:settings.signOut.failed__note": "Protected credential cleanup failed. Keep Settings open and offer the existing sign-out action as retry; never claim credentials were erased."
+  "account:settings.signOut.failed__note": "Protected credential cleanup failed. Keep Settings open and offer the existing sign-out action as retry; never claim credentials were erased.",
+  "account:ask.title": "Create a profile",
+  "account:ask.title__note": "Heading of the full screen offered to an adult guest after one of their first two finished lessons. Names what the button does; never a warning. Max 24 characters.",
+  "account:ask.body": "Your progress is saved on this phone. A profile lets you keep it on a new one too.",
+  "account:ask.body__note": "Says what a profile is FOR, starting from the truth that nothing is at risk right now. No loss framing ('or you'll lose it'), no urgency, no guilt. The new-phone promise was asked for by the owner; revisit it if second-device recovery (execution plan U04) is not verified before release. Two sentences at most.",
+  "account:ask.privacy": "We use your email to sign you in, and for nothing else.",
+  "account:ask.privacy__note": "Small reassurance under the body — the promise people hesitate over. Keep it exact and add no claims the product has not made. Max 60 characters.",
+  "account:ask.create": "Create a profile",
+  "account:ask.create__note": "Primary button. Opens the screen that links an email address. Verb first. Max 20 characters.",
+  "account:ask.later": "Not now",
+  "account:ask.later__note": "Leaves the ask and carries on. NOT 'No thanks' or 'Skip': nothing is being refused, and it may be offered once more after the next lesson. Max 12 characters."
 }

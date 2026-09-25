@@ -146,5 +146,10 @@
   "account:settings.signOut.pending": "Loggar ut…",
   "account:settings.signOut.pending__note": "Status while protected credentials are being removed. The action cannot be repeated until cleanup finishes.",
   "account:settings.signOut.failed": "Det gick inte att slutföra utloggningen på den här enheten. Lås upp telefonen och tryck på Logga ut för att försöka igen.",
-  "account:settings.signOut.failed__note": "Protected credential cleanup failed. Keep Settings open and offer the existing sign-out action as retry; never claim credentials were erased."
+  "account:settings.signOut.failed__note": "Protected credential cleanup failed. Keep Settings open and offer the existing sign-out action as retry; never claim credentials were erased.",
+  "account:ask.title": "Skapa en profil",
+  "account:ask.body": "Dina framsteg sparas på den här telefonen. Med en profil kan du ta med dem till en ny telefon också.",
+  "account:ask.privacy": "Vi använder din e-post för att logga in dig, och till inget annat.",
+  "account:ask.create": "Skapa en profil",
+  "account:ask.later": "Inte nu"
 }

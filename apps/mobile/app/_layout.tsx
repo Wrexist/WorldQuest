@@ -301,9 +301,12 @@ export default function RootLayout() {
             <Stack.Screen name="collection/[kind]" />
             <Stack.Screen name="achievements" />
             <Stack.Screen name="streak" />
-            {/* A celebration in the after-lesson chain: its only way out is Continue,
-                which knows what comes next. A swipe back would land on nothing. */}
+            {/* The after-lesson chain (`afterLesson.ts`): each step's way out is its own
+                button, which knows what comes next. A swipe back would land on nothing —
+                the summary behind them has already been replaced. */}
             <Stack.Screen name="streak-extended" options={{ gestureEnabled: false }} />
+            <Stack.Screen name="achievement-unlocked" options={{ gestureEnabled: false }} />
+            <Stack.Screen name="create-profile" options={{ gestureEnabled: false }} />
             <Stack.Screen name="welcome-back" options={{ gestureEnabled: false }} />
             <Stack.Screen
               name="lesson"

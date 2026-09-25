@@ -25,11 +25,15 @@ export const CATALOGUE: readonly AchievementDef[] = pack.items as unknown as Ach
  * `ach.flags.collector` → `achievements:flags.collector.name`.
  *
  * The copy convention, in the module that owns the catalogue rather than in a screen.
- * `AchievementsScreen` had it as a local const, and the lesson summary needs the same
+ * `AchievementsScreen` had it as a local const, and the unlock card needs the same
  * derivation — two copies of a key-building rule is one copy and one future mismatch.
  */
 export const achievementNameKey = (id: string): string =>
   `achievements:${id.slice('ach.'.length)}.name`
+
+/** `ach.flags.collector` → `achievements:flags.collector.desc`, which takes `{threshold}`. */
+export const achievementDescKey = (id: string): string =>
+  `achievements:${id.slice('ach.'.length)}.desc`
 
 export function useAchievements(
   progressById: ReadonlyMap<string, AchievementProgress> = new Map(),

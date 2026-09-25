@@ -314,6 +314,56 @@ export function staggerStyle(value: Animated.Value) {
 }
 
 /**
+ * An entrance that scales a thing up into place — the hero of a full-screen moment: the
+ * medal on an unlock card, Atlas on an ask.
+ *
+ * "Things scale and spring; they don't fade in place." So this is transform only, on the
+ * native driver, on `expressive` by default — whose curve overshoots a little and
+ * settles, which is the spring.
+ *
+ * Seeded at REST, like `useRiseIn` and `useCountUp`: a render with no effects — the
+ * screenshot harness — draws the hero at full size, where it belongs. The rewind to
+ * `from` happens in a layout effect, before the first paint, so a device never sees the
+ * rest position flash first. Under Reduce Motion there is no rewind and no travel: the
+ * hero is simply there.
+ *
+ * Mount only. A screen that shows several of these in turn re-keys the component, so
+ * each one arrives on its own.
+ */
+export function useScaleIn(
+  from: number,
+  step: MotionStep = 'expressive',
+): { readonly transform: { scale: Animated.AnimatedInterpolation<number> }[] } {
+  const reduced = useReducedMotion()
+  const timing = useTiming(step)
+  const progress = useRef(new Animated.Value(1)).current
+
+  useIsomorphicLayoutEffect(() => {
+    if (!reduced) progress.setValue(0)
+    // Mount only, like `useRiseIn`: a later change to `reduced` lands, it never rewinds.
+  }, [])
+
+  useEffect(() => {
+    if (reduced) {
+      progress.setValue(1)
+      return
+    }
+    const animation = Animated.timing(progress, {
+      toValue: 1,
+      duration: timing.duration,
+      easing: timing.easing,
+      useNativeDriver: true,
+    })
+    animation.start()
+    return () => animation.stop()
+  }, [reduced, progress, timing.duration, timing.easing])
+
+  return {
+    transform: [{ scale: progress.interpolate({ inputRange: [0, 1], outputRange: [from, 1] }) }],
+  }
+}
+
+/**
  * A bottom sheet's entrance: it rises from below its own resting place into it.
  *
  * Travel is the sheet's own measured height, so it starts exactly out of sight whatever
