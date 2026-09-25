@@ -29,11 +29,11 @@ Status: ✅ done on this branch · ⏳ in progress · ☐ open.
 | 11 | P0 | Connected multi-day journey test on real workerd | E10/E11 | ✅ single device: `pnpm e2e:d1` 14/14 on the real bundle and real Worker (online, streak beat, server quest, offline ticket, reconnect sync, ledger); E11 multi-device still open |
 | 12 | P1 | Lesson player: select-then-CHECK | Duolingo parity, L05 (timer now stops at Check; L05 itself stays open) | ✅ `feat/lesson-check-sheet`; SELECT/CHECK in the engine machine, e2e asserted |
 | 13 | P1 | Answer sheet slides up with calm tint (motion tokens, Reduce Motion) | Duolingo parity | ✅ `feat/lesson-check-sheet`; `useRiseIn`, `feedback.*Edge` tokens; device pass for VoiceOver focus still owed |
-| 14 | P1 | "Report a problem" on the answer sheet | G08, content-pipeline §report | ☐ |
+| 14 | P1 | "Report a problem" on the answer sheet | G08, content-pipeline §report | ✅ on D1 builds: reasons only, idempotent, 30/day, erased with the account; in `pnpm e2e:d1` |
 | 15 | P1 | Mistake review at lesson end (needs learning-science sign-off) | Duolingo parity, L03 | ☐ |
-| 16 | P1 | "Create a profile" sheet after lesson 1–2, adults only, max twice | Duolingo parity | ✅ `feat/parity-popups`: `/create-profile` step after streak/quest/badges, before the paywall; adult guests only (account lookup must have ANSWERED), online, twice per device (device-level count survives sign-out); e2e asserted. Copy promises a new phone per owner brief — revisit if U04 fails |
-| 17 | P1 | Achievement-unlocked full-screen card queue | Duolingo parity | ✅ `feat/parity-popups`: `/achievement-unlocked`, one card per tier, 3 max then "and N more"; ids re-checked against the catalogue; inline summary medals removed; e2e asserted |
-| 18 | P1 | Home card when a freeze was used / repair is available | Duolingo parity | ✅ `feat/parity-popups`: freeze card from D1 state (gap of 2 days + freeze held) or legacy `freeze_used_on`; repair card names the server's `restoreTo` (new on `/v1/progress`), hidden when unaffordable; no countdown. Not reachable in the web export (no backend) — component tests only |
+| 16 | P1 | "Create a profile" sheet after lesson 1–2, adults only, max twice | Duolingo parity | ✅ after lesson 1–2, adults only, twice max, after server confirms no email; copy promises only what linking does (`d8c6016`) |
+| 17 | P1 | Achievement-unlocked full-screen card queue | Duolingo parity | ✅ card per tier after the summary; on D1 from server receipts only |
+| 18 | P1 | Home card when a freeze was used / repair is available | Duolingo parity | ✅ freeze-kept and repair-open cards on Home; component and static-render evidence (no web backend) |
 | 19 | P1 | Paywall footer: period, auto-renew, Terms/Privacy links (when IAP ships) | 3.1.2 | ☐ |
 | 20 | P1 | Hide analytics opt-out toggle until analytics has a transport | honesty, G02 | ✅ hidden behind `ANALYTICS_CONNECTED` until G02 (`8a09aa9`) |
 | 21 | P1 | `supportsTablet: true` with no iPad pass | A11 | ☐ owner decision |
