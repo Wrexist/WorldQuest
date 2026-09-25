@@ -56,13 +56,26 @@ export async function prepareLesson(db: D1Database, owner: string, tokenHash: st
     const memory = (read[2]?.results ?? []).map(row => JSON.parse(String(row.state)) as MemoryState)
     const seed = crypto.getRandomValues(new Uint32Array(1))[0]!
     const topicFilter = input.focus ? focusFilter(learningContent, lessonFocus(input.focus)) : undefined
-    const questions = composeLesson({ index: learningContent, memory, now, rng: seededRng(seed),
-      locale: input.locale, count: input.count, screenReaderOnly: input.screenReader, modalities: ['text', 'image', 'map'],
+    const base = { index: learningContent, memory, now, locale: input.locale, screenReaderOnly: input.screenReader,
+      modalities: ['text', 'image', 'map'] as ('text' | 'image' | 'map')[] }
+    let questions = composeLesson({ ...base, rng: seededRng(seed), count: input.count,
       ...(topicFilter ? { topicFilter } : {}),
       // One entity in focus means the entity is not the question (the app's own rule).
       entityIsGiven: input.focus?.entities?.length === 1 })
+    /**
+     * Exact facts alone are STEERING, not a boundary: they are what "play today's quest"
+     * sends, and a quest with two facts left must still give a full lesson. Those facts
+     * come first; the rest of the lesson is composed as usual from everything else.
+     * A chosen country, attribute or band stays a boundary.
+     */
+    const steering = input.focus !== undefined && Object.keys(input.focus).every(key => key === 'factIds')
+    if (steering && questions.length < input.count) {
+      const taken = new Set(questions.map(q => q.item.factId))
+      questions = [...questions, ...composeLesson({ ...base, rng: seededRng(seed ^ 0x9e3779b9), count: input.count - questions.length,
+        topicFilter: id => !taken.has(id) })]
+    }
     // A focus narrower than one lesson is the caller's choice, not an outage.
-    if (questions.length < 5) throw input.focus ? new ApiError('FOCUS_TOO_NARROW', 409) : new ApiError('CONTENT_UNAVAILABLE', 503)
+    if (questions.length < 5) throw input.focus && !steering ? new ApiError('FOCUS_TOO_NARROW', 409) : new ApiError('CONTENT_UNAVAILABLE', 503)
     const slots = questions.map(q => {
       const correct = q.options.filter(option => option.isCorrect)
       if (correct.length !== 1) throw new ApiError('CONTENT_UNAVAILABLE', 503)

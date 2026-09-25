@@ -59,6 +59,14 @@ describe('takeLesson', () => {
     expect(prepare.mock.calls[0]![0]).toMatchObject({ locale: 'sv', count: 20, focus: { entities: ['SE'] } })
   })
 
+  it('offline, plays a saved lesson for the quest but not for a chosen country', async () => {
+    await takeLesson({ count: 10, locale: 'en', screenReader: false })
+    online = false
+    expect(await takeLesson({ count: 10, locale: 'en', screenReader: false, focus: { factIds: ['geo.SE.capital'] } }))
+      .toMatchObject({ kind: 'ready' })
+    expect(await takeLesson({ count: 10, locale: 'en', screenReader: false, focus: { entities: ['SE'] } })).toEqual({ kind: 'offline' })
+  })
+
   it('says offline, rather than failing, when nothing was pre-fetched', async () => {
     online = false
     expect(await takeLesson({ count: 10, locale: 'en', screenReader: false })).toEqual({ kind: 'offline' })

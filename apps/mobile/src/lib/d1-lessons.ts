@@ -129,13 +129,20 @@ export function takeLesson(request: LessonRequest): Promise<TakeResult> {
 async function take(request: LessonRequest): Promise<TakeResult> {
   const { queue } = await open()
   const focused = request.focus !== undefined && Object.keys(request.focus).length > 0
+  // Exact facts alone are the daily quest steering a lesson ("play today's quest"), not
+  // a place the learner chose. Offline, a saved lesson is the right answer for them; a
+  // chosen country or topic is not, so it still needs a connection.
+  const steering = focused && Object.keys(request.focus!).every((key) => key === 'factIds')
+  const saved = async () => (await queue.inspect()).tickets.find((t) => t.request.locale === request.locale
+    && t.request.screenReader === request.screenReader && t.request.focus === undefined)
   if (!focused) {
-    const { tickets } = await queue.inspect()
-    const ready = tickets.find((t) => t.request.locale === request.locale && t.request.screenReader === request.screenReader
-      && t.request.focus === undefined)
+    const ready = await saved()
     if (ready) return { kind: 'ready', lesson: ready }
   }
-  if (!isOnline()) return { kind: 'offline' }
+  if (!isOnline()) {
+    const fallback = steering ? await saved() : undefined
+    return fallback ? { kind: 'ready', lesson: fallback } : { kind: 'offline' }
+  }
   try {
     // A preparation an earlier launch left pending is finished first; the queue holds one.
     await queue.prepare()

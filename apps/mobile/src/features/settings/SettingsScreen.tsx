@@ -189,6 +189,13 @@ export type SettingsScreenProps = {
   readonly onOpenPrivacyPolicy?: (() => void) | undefined
   readonly onOpenTerms?: (() => void) | undefined
   readonly onOpenLicences?: (() => void) | undefined
+  /**
+   * Opens account deletion. Present where the backend deletes accounts in-app (the D1
+   * Worker); absent elsewhere, where the note says plainly that it is not here yet.
+   */
+  readonly onDeleteAccount?: (() => void) | undefined
+  /** Offer the analytics switch. False while no transport exists (`ANALYTICS_CONNECTED`). */
+  readonly analyticsConnected?: boolean | undefined
 }
 
 /**
@@ -212,6 +219,8 @@ export function SettingsScreen({
   onOpenPrivacyPolicy,
   onOpenTerms,
   onOpenLicences,
+  onDeleteAccount,
+  analyticsConnected = false,
   onBack,
 }: SettingsScreenProps) {
   const t = useT()
@@ -433,17 +442,20 @@ export function SettingsScreen({
       )}
 
       <Section title={t('settings:section.privacy')}>
-        <SwitchRow
-          label={t('settings:privacy.analytics.label')}
-          help={t('settings:privacy.analytics.help')}
-          value={preferences.analytics}
-          onChange={(value) => set('analytics', value)}
-        />
+        {analyticsConnected && (
+          <SwitchRow
+            label={t('settings:privacy.analytics.label')}
+            help={t('settings:privacy.analytics.help')}
+            value={preferences.analytics}
+            onChange={(value) => set('analytics', value)}
+          />
+        )}
         <LinkRow label={t('settings:privacy.policy')} onPress={onOpenPrivacyPolicy} />
         <LinkRow label={t('settings:privacy.terms')} onPress={onOpenTerms} />
+        {onDeleteAccount && <LinkRow label={t('settings:privacy.delete')} onPress={onDeleteAccount} />}
         <Note
           title={t('settings:privacy.account.title')}
-          body={t('settings:privacy.account.body')}
+          body={t(onDeleteAccount ? 'settings:privacy.account.deletable' : 'settings:privacy.account.body')}
         />
       </Section>
 

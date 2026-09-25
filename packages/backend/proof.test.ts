@@ -583,6 +583,18 @@ describe('lessons that end before the last question (real workerd and SQLite)', 
     expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'bad', locale: 'en', count: 5, focus: { entities: ['sweden'] } })).status).toBe(400)
     expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'bad2', locale: 'en', count: 5, focus: { planet: 'Mars' } })).status).toBe(400)
   })
+
+  it('treats exact facts as steering: those first, the rest of the lesson as usual', async () => {
+    const a = await guest()
+    const quest = await (await call('/v1/quest/today', a.token)).json() as { quest: { tasks: { slot: string; factIds: string[] }[] } }
+    const two = quest.quest.tasks.find(t => t.slot === 'discover')!.factIds.slice(0, 2)
+    const r = await call('/v1/lessons/prepare', a.token, { lessonId: 'steered', locale: 'en', count: 6, focus: { factIds: two } })
+    expect(r.status).toBe(200)
+    const lesson = await r.json() as { questions: Question[] }
+    expect(lesson.questions).toHaveLength(6)
+    expect(new Set(lesson.questions.map(q => q.item.factId)).size).toBe(6)
+    expect(lesson.questions.slice(0, two.length).map(q => q.item.factId).sort()).toEqual([...two].sort())
+  })
 })
 
 describe('achievements the server decides and pays (real workerd and SQLite)', () => {

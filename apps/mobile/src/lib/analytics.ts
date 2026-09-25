@@ -37,6 +37,17 @@ export function resetChildAccount(): void {
   isChildAccount = null
 }
 
+/**
+ * Whether any analytics transport is installed. None is (G02): `track` only prints in
+ * debug builds and sends nothing anywhere.
+ *
+ * Settings reads this to decide whether to offer "Help improve WorldQuest" at all. A
+ * switch that controls nothing is a promise the app does not keep, in the one section
+ * people read when they are deciding whether to trust it. Flip this in the same change
+ * that connects a transport behind the child and consent gates.
+ */
+export const ANALYTICS_CONNECTED = false
+
 export function track<N extends EventName>(name: N, properties: Props): void {
   // Child accounts emit NO third-party analytics. Not "restricted" — absent.
   // `null` is treated as a child: unknown is not permission.

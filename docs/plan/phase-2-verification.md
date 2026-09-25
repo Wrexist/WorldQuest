@@ -509,3 +509,37 @@ number-pad fields, so the return key never submits the birth year or the code;
 the visible button covers the journey, but the keyboard cannot be dismissed
 without it. Production account screens, real delivery and the public D1 route
 remain required before B02 closes.
+
+## iOS launch batch, 25 September 2026 (`claude/ios-launch-readiness-cc9070`)
+
+Ranked list and status: [iOS launch audit](ios-launch-audit-2026-09-25.md). All of
+the following is local evidence on real workerd/D1 (Miniflare) and the web export;
+nothing was deployed, and no hosted, native-device or store evidence is claimed.
+
+- **Local-day rules (S14).** Migration 0007 stores a validated IANA zone; the lesson
+  day is the learner's local date and only moves forward. `proof.test.ts` drives the
+  October 2026 Stockholm DST change and a move to Los Angeles: two bonuses for two
+  local days, none for the 25-hour day or the westward move.
+- **Streaks, milestones, quests, spending, achievements (B04/B05/S04/S05/S06).**
+  Migrations 0007–0010. The Worker composes the daily quest itself, so no client
+  field can carry a quest slot; progress is derived from distinct facts and paid
+  once. Freeze, repair, continue and cosmetic spends are idempotent per request id,
+  share the revision guard with lessons (a freeze bought mid-submission keeps both)
+  and write negative ledger rows. Achievements use the shipped catalogue and
+  `evaluateAll`; tier rewards land in the lesson's ledger row. Every proof re-checks
+  that the ledger sums to the balances.
+- **Lessons that end early.** Submissions may answer a prefix of the ticket; only a
+  finished lesson (every slot, or hearts emptied in the grader's own replay) counts
+  for the day. Issued lessons accept the engines' `LessonFocus`.
+- **The app on D1 (B07/L01 code part).** `EXPO_PUBLIC_BACKEND=d1` selects the Worker:
+  account repository, D1 account route with in-app deletion, server-issued lessons
+  with pre-fetched tickets for offline starts, the durable D1 queue drained by the
+  sync loop, an account-scoped cache of the server's memory, the server's quest on
+  the Quests tab, and celebrations decided by the receipt when it arrives in time.
+- **Verification.** Last full local `pnpm verify` on this batch: engines 571,
+  api 51, backend 53, mobile 756; `pnpm e2e` 89/89. Several full runs hit
+  load-dependent timeouts (other projects share this machine); each such test passed
+  when rerun alone, and those runs are not counted as green.
+
+Still open for B02/B07/E10: a hosted Worker, real email delivery, native D1 builds
+through the account and lesson journey, and the multi-device replay under E11.

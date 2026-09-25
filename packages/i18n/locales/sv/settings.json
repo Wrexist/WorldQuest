@@ -54,5 +54,7 @@
   "settings:reminder.earlier": "Tidigare",
   "settings:reminder.later": "Senare",
   "settings:reminder.blocked": "Aviseringar är avstängda för WorldQuest i telefonens inställningar.",
-  "settings:reminder.blocked.cta": "Öppna inställningar"
+  "settings:reminder.blocked.cta": "Öppna inställningar",
+  "settings:privacy.delete": "Radera konto",
+  "settings:privacy.account.deletable": "När du raderar tas ditt konto och dina framsteg bort från våra servrar för gott. Det går inte att exportera en kopia än."
 }

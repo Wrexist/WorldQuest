@@ -95,5 +95,9 @@
   "settings:reminder.blocked": "Notifications are off for WorldQuest in your phone's settings.",
   "settings:reminder.blocked__note": "Shown when the OS has denied notification permission, so the toggle above cannot do anything. States the fact; the button beside it opens the OS settings. Max 80 characters.",
   "settings:reminder.blocked.cta": "Open settings",
-  "settings:reminder.blocked.cta__note": "Opens the phone's own settings page for this app. Max 16 characters."
+  "settings:reminder.blocked.cta__note": "Opens the phone's own settings page for this app. Max 16 characters.",
+  "settings:privacy.delete": "Delete account",
+  "settings:privacy.delete__note": "Row in Privacy that opens account deletion. Plain words; it is found by people looking for exactly this. Max 22 characters.",
+  "settings:privacy.account.deletable": "Deleting removes your account and progress from our servers for good. Exporting a copy is not available yet.",
+  "settings:privacy.account.deletable__note": "Note under the Delete account row. States what deletion does and what is not offered yet. Calm, factual, no warning tone."
 }

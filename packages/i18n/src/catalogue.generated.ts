@@ -645,7 +645,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "reminder.earlier": "Earlier",
       "reminder.later": "Later",
       "reminder.blocked": "Notifications are off for WorldQuest in your phone's settings.",
-      "reminder.blocked.cta": "Open settings"
+      "reminder.blocked.cta": "Open settings",
+      "privacy.delete": "Delete account",
+      "privacy.account.deletable": "Deleting removes your account and progress from our servers for good. Exporting a copy is not available yet."
     },
     "shop": {
       "title": "Shop",
@@ -1390,7 +1392,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "reminder.earlier": "Tidigare",
       "reminder.later": "Senare",
       "reminder.blocked": "Aviseringar är avstängda för WorldQuest i telefonens inställningar.",
-      "reminder.blocked.cta": "Öppna inställningar"
+      "reminder.blocked.cta": "Öppna inställningar",
+      "privacy.delete": "Radera konto",
+      "privacy.account.deletable": "När du raderar tas ditt konto och dina framsteg bort från våra servrar för gott. Det går inte att exportera en kopia än."
     },
     "shop": {
       "title": "Butik",
