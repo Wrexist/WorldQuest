@@ -14,7 +14,15 @@ import { useEntitlement } from '../src/features/paywall/useEntitlement.js'
 import { useOnboarding } from '../src/features/onboarding/useOnboarding.js'
 import { SELLING } from '../src/features/paywall/purchases.js'
 import { hrefFor, planAfterLesson } from '../src/features/lesson/afterLesson.js'
-import { lessonsToday } from '../src/features/profile/useWeekActivity.js'
+import { lessonsEverCompleted, lessonsToday } from '../src/features/profile/useWeekActivity.js'
+import { peekUnlocks } from '../src/features/achievements/pending.js'
+import {
+  mayOfferProfileAfterNextLesson,
+  profileAsksShown,
+  shouldOfferProfile,
+} from '../src/features/account/profileAsk.js'
+import { useAccountStatus } from '../src/features/account/useAccountStatus.js'
+import { useOnline } from '../src/lib/connectivity.js'
 import { isD1 } from '../src/lib/backendConfig.js'
 import { receiptSoon } from '../src/lib/d1-lessons.js'
 import { parseFocusParams } from '../src/features/lesson/focusParams.js'
@@ -70,6 +78,23 @@ export default function LessonRoute() {
   // The device's own lesson log, not the server's streak, because the question is
   // "is this the first lesson finished today" and that is known here, offline or not.
   const [countedTodayBefore] = useState(() => lessonsToday() > 0)
+  /**
+   * Whether this lesson could end in "Create a profile" (`profileAsk.ts`).
+   *
+   * Read once, before the lesson records itself, and used to decide whether to look the
+   * account up at all: the answer only matters for an adult guest's first two lessons,
+   * and a round trip on every lesson for the sake of those two would be waste. Starting
+   * it now gives the lookup the whole lesson to arrive.
+   */
+  const [profileMayAsk] = useState(() =>
+    mayOfferProfileAfterNextLesson({
+      lessonsEndedBefore: lessonsEverCompleted(),
+      timesShown: profileAsksShown(),
+      isChild: onboarding.isChild,
+    }),
+  )
+  const account = useAccountStatus({ enabled: profileMayAsk })
+  const online = useOnline()
   const leaving = useRef(false)
 
   return (
@@ -95,9 +120,13 @@ export default function LessonRoute() {
         // for briefly; offline, the device's own reading below stands.
         const receipt = isD1() ? await receiptSoon(summary.lessonId, RECEIPT_WAIT_MS) : null
         // Duolingo's rhythm: the lesson (summary, already shown), then the day (the
-        // streak), then the daily quest, then anything we want from the learner. The
-        // order and its reasons live in `afterLesson.ts`.
+        // streak), then the daily quest, then any badge, then anything we want from the
+        // learner. The order and its reasons live in `afterLesson.ts`.
         //
+        // Badges waiting to be seen — this lesson's, or a server unlock that arrived
+        // while nobody was looking. Read, not taken: the card that shows them clears
+        // them, so closing the app here loses nothing.
+        const unlocked = peekUnlocks()
         // The paywall follows the taster only when there is something to sell. The
         // purchase port is not installed in this build, and ending a first lesson on
         // "there's nothing to buy here yet" is a dead end App Review rejects (2.1) and
@@ -106,11 +135,23 @@ export default function LessonRoute() {
           completed: receipt?.finished ?? summary.completed,
           countedTodayBefore: receipt?.streak ? !receipt.streak.extended : countedTodayBefore,
           questCompleted: receipt?.quest ? receipt.quest.coins > 0 : summary.questCompleted,
+          unlocked: unlocked.length,
+          // Asked now rather than at the start, because this lesson has just been counted
+          // and the account lookup has had the whole lesson to answer.
+          offerProfile:
+            profileMayAsk &&
+            shouldOfferProfile({
+              lessonsEnded: lessonsEverCompleted(),
+              timesShown: profileAsksShown(),
+              isChild: onboarding.isChild,
+              account: !account.known ? 'unknown' : account.linked ? 'linked' : 'guest',
+              online,
+            }),
           offerPaywall: taster === '1' && SELLING && !isPremium && onboarding.isChild !== true,
         })
         if (steps.length > 0) {
           // `replace`, so "back" from a celebration cannot return to a dismissed summary.
-          router.replace(hrefFor(steps, summary.practised))
+          router.replace(hrefFor(steps, { countries: summary.practised, unlocks: unlocked }))
           return
         }
         // Opened from a notification there is no history to pop, and `back()` would

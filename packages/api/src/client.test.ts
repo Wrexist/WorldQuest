@@ -119,6 +119,8 @@ describe('fetchProgress', () => {
       freezesHeld: 0,
       brokenOn: null,
       lastRepairAt: null,
+      restoreTo: null,
+      freezeUsedOn: null,
       factsMastered: 0,
     })
   })
@@ -135,6 +137,7 @@ describe('fetchProgress', () => {
             freezes_held: 1,
             broken_on: null,
             last_repair_at: null,
+            freeze_used_on: '2026-08-04',
           },
           error: null,
         },
@@ -157,8 +160,36 @@ describe('fetchProgress', () => {
       // entire repair feature returned `not-broken` for everyone.
       brokenOn: null,
       lastRepairAt: null,
+      // Nothing to restore while nothing is broken.
+      restoreTo: null,
+      // The missed day the hourly job spent a freeze on — what Home's "your freeze kept
+      // your streak" card reads on this backend, where the job moves `last_active_date`.
+      freezeUsedOn: '2026-08-04',
       factsMastered: 7,
     })
+  })
+
+  it('names what a repair restores here: the longest streak, as `repair_streak` does', async () => {
+    const progress = await fetchProgress(
+      fakeClient({
+        wallets: { data: { xp_total: 10, coins: 900, hearts: 5 }, error: null },
+        streaks: {
+          data: {
+            current: 0,
+            longest: 31,
+            last_active_date: '2026-08-02',
+            freezes_held: 0,
+            broken_on: '2026-08-04',
+            last_repair_at: null,
+            freeze_used_on: null,
+          },
+          error: null,
+        },
+        userFacts: { data: null, error: null, count: 0 },
+      }),
+    )
+    expect(progress.restoreTo).toBe(31)
+    expect(progress.brokenOn).toBe('2026-08-04')
   })
 
   it('throws when a query fails rather than reporting zero progress', async () => {

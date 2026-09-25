@@ -11,7 +11,6 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { factsStrengthened } from '@worldquest/engines'
 import type { GradeResult, Mastery, Rating } from '@worldquest/engines'
 import { LessonSummary, outcomeOf } from './LessonSummary.js'
-import { CATALOGUE } from '../achievements/useAchievements.js'
 
 const move = (factId: string, from: Mastery, to: Mastery) => ({ factId, from, to })
 
@@ -251,66 +250,16 @@ describe('LessonSummary — the way out', () => {
   })
 })
 
-describe('the summary — badges that used to unlock in silence', () => {
-  const badge = CATALOGUE[0]!.id
-
-  it('shows a medal and names it', () => {
-    // Before this an unlock produced an analytics event and nothing a user could see:
-    // the only way to find out was to open Profile, then Achievements, and notice a
-    // medal that had gained its frame.
-    render(
-      <LessonSummary
-        result={grade()}
-        wasAbandoned={false}
-        unlocked={[{ achievementId: badge, tier: 'bronze' }]}
-        isOffline={false}
-        onExit={() => {}}
-      />,
-    )
-    const section = screen.getByTestId('summary-unlocked')
-    expect(section.textContent).toMatch(/new badge/i)
-    // The name, not the raw key — the medal is a picture and the caption is the fact.
-    expect(section.textContent).not.toMatch(/achievements:/)
-  })
-
-  it('pluralises the heading rather than concatenating one', () => {
-    render(
-      <LessonSummary
-        result={grade()}
-        wasAbandoned={false}
-        unlocked={[
-          { achievementId: CATALOGUE[0]!.id, tier: 'bronze' },
-          { achievementId: CATALOGUE[1]!.id, tier: 'silver' },
-        ]}
-        isOffline={false}
-        onExit={() => {}}
-      />,
-    )
-    expect(screen.getByTestId('summary-unlocked').textContent).toMatch(/new badges/i)
-  })
-
-  it('renders nothing at all when there is nothing to celebrate', () => {
-    // A heading over an empty row is the shape of a screen that thinks something
-    // happened. Most lessons unlock nothing and must look like it.
+describe('the summary — badges', () => {
+  it('leaves badges to the full-screen cards that follow it', () => {
+    // Each unlock gets a card of its own straight after this screen, finished lesson or
+    // early exit (`afterLesson.ts`). A row of medals here as well showed the same badge
+    // twice, seconds apart, and pushed the practised flags off a short phone.
     render(
       <LessonSummary result={grade()} wasAbandoned={false} isOffline={false} onExit={() => {}} />,
     )
     expect(screen.queryByTestId('summary-unlocked')).toBeNull()
-  })
-
-  it('celebrates even a lesson somebody walked out of', () => {
-    // The badge was earned by the answers that were given, and `ABANDON` keeps those.
-    // Withholding it would be the app punishing someone for stopping.
-    render(
-      <LessonSummary
-        result={grade()}
-        wasAbandoned
-        unlocked={[{ achievementId: badge, tier: 'gold' }]}
-        isOffline={false}
-        onExit={() => {}}
-      />,
-    )
-    expect(screen.getByTestId('summary-unlocked')).toBeTruthy()
+    expect(screen.queryByText(/new badge/i)).toBeNull()
   })
 })
 

@@ -234,6 +234,46 @@ export const writeJson = (key: string, value: unknown): void =>
 
 export const remove = (key: string): void => appStore().delete(scopedKey(key))
 
+// ── device storage ──────────────────────────────────────────────────────────
+
+/**
+ * Facts about this PHONE rather than about whoever is signed in on it.
+ *
+ * Everything above is scoped to an account or a guest generation, and that is right for
+ * progress: signing out must not let the next guest read the last person's work. It is
+ * wrong for the one kind of value that exists to limit how often the app asks the person
+ * holding the device for something. "Create a profile" is offered at most twice per
+ * device; kept in the scoped store, signing out would start a fresh guest whose count is
+ * zero, and the ask would come back for someone who has already answered it twice.
+ *
+ * Nothing personal belongs here — a count of asks, never an answer, an email or a
+ * lesson. Not tied to the backend either: the question is whether this phone has been
+ * asked, and that does not change with the server. `clearAll()` still clears it.
+ */
+const DEVICE_PREFIX = 'device.v1.'
+
+/** `readJson`, for a device-level value. The same repair rule: a bad value is dropped. */
+export const readDeviceJson = <T>(key: string, shape?: Shape): T | null => {
+  const storedKey = DEVICE_PREFIX + key
+  const raw = appStore().getString(storedKey)
+  if (raw === undefined) return null
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(raw)
+  } catch {
+    appStore().delete(storedKey)
+    return null
+  }
+  if (shape !== undefined && !shape(parsed)) {
+    appStore().delete(storedKey)
+    return null
+  }
+  return parsed as T
+}
+
+export const writeDeviceJson = (key: string, value: unknown): void =>
+  appStore().set(DEVICE_PREFIX + key, JSON.stringify(value))
+
 /** Explicit full local reset. Ordinary logout detaches accounts without deleting work. */
 export function clearAll(): Promise<void> {
   const cleared = clearSessionStorage()

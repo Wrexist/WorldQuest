@@ -51,7 +51,10 @@ const path = require('node:path')
 
 const ROOT = process.argv[2]
 const SHOTS = process.argv[3] ?? path.join(ROOT, '..', 'wq-e2e-shots')
-const PORT = 4173
+// Overridable because the default is a common one: on a machine shared with other
+// projects, another dev server holding 4173 made this die at `listen` after the whole
+// bundle had exported — a failure about the machine that read like one about the app.
+const PORT = Number(process.env.WQ_E2E_PORT ?? 4173)
 
 const TYPES = {
   '.html': 'text/html',
@@ -1171,6 +1174,46 @@ const skip = (name, why) => {
   await page.waitForTimeout(1200)
   step('and the streak beat has a way out', (await page.getByTestId('streak-extended').count()) === 0)
 
+  // ── then "Create a profile", as Duolingo asks after an early lesson ───────
+  //
+  // This lesson is the install's first or second to reach its end (the flag walk above
+  // may have finished one), the learner is an adult, and this export has no backend, so
+  // every session is a guest by construction — all four conditions `shouldOfferProfile`
+  // needs. A quest or badge beat could legitimately sit between the streak and the ask
+  // if this lesson happened to earn one, so those are stepped through, not assumed away.
+  for (let i = 0; i < 6; i++) {
+    const at = new URL(page.url()).pathname
+    if (at !== '/quest-complete' && at !== '/achievement-unlocked') break
+    // expo-router keeps earlier routes mounted, so only the VISIBLE button is this beat's.
+    for (const onward of await page.getByRole('button', { name: /^(Nice|Continue)$/ }).all()) {
+      if (await onward.isVisible()) {
+        await onward.click()
+        break
+      }
+    }
+    await page.waitForTimeout(1000)
+  }
+  const ask = page.getByTestId('create-profile')
+  const asked = (await ask.count()) > 0
+  const askText = asked ? await ask.innerText() : ''
+  step('an adult guest is then offered a profile, for what it is for',
+       asked && /Create a profile/.test(askText) && /new one/i.test(askText),
+       askText.slice(0, 90).replace(/\s+/g, ' '))
+  // Rule 7, asserted in the shipped bundle: the ask is an offer, not a threat.
+  step('and the offer threatens nothing',
+       asked && !/lose|lost|forever|too late|hurry|last chance|don'?t miss/i.test(askText))
+  await page.screenshot({ path: path.join(SHOTS, 'create-profile.png') })
+  if (asked) {
+    await ask.getByRole('button', { name: 'Not now' }).click()
+    await page.waitForTimeout(1200)
+  }
+  // By path: expo-router keeps the tabs mounted under every stack screen, so "a tab bar
+  // exists" is true on the ask itself and proves nothing.
+  step('"Not now" carries on to Home, and nothing follows it',
+       asked && (await page.getByTestId('create-profile').count()) === 0 &&
+         new URL(page.url()).pathname === '/',
+       new URL(page.url()).pathname)
+
   // The quest, checked in the same pass — the lesson above is what should have moved
   // it. Until now `applyQuestEvent` had no caller, so five tasks read 0/5 forever no
   // matter how many lessons were finished: a promise on the home screen that the app
@@ -1197,6 +1240,52 @@ const skip = (name, why) => {
        (afterAch.match(/Not yet/g) ?? []).length < lockedBefore,
        `${lockedBefore} locked before`)
   await page.screenshot({ path: path.join(SHOTS, 'achievements.png') })
+
+  // ── the badge cards: one per unlock, three at most, then "and N more" ──────
+  //
+  // Driven by URL because a lesson that unlocks four badges cannot be arranged from
+  // here without writing to storage — this harness answers the first option, so a
+  // perfect lesson is luck. The chain's own URL is the contract under test: the cards
+  // read `?unlocks=` and re-check every entry against the shipped catalogue.
+  const FOUR = 'ach.session.perfect:bronze,ach.lessons.done:bronze,ach.flags.collector:bronze,ach.streak.keeper:bronze'
+  await page.goto(`http://localhost:${PORT}/achievement-unlocked?unlocks=${encodeURIComponent(FOUR)}`, {
+    waitUntil: 'networkidle',
+  })
+  await page.waitForTimeout(1200)
+  const cardNames = []
+  let sawMore = ''
+  for (let i = 0; i < 5; i++) {
+    const card = page.getByTestId('achievement-unlocked')
+    if ((await card.count()) === 0) break
+    const name = ((await card.getByRole('heading').first().textContent()) ?? '').trim()
+    cardNames.push(name)
+    if (i === 0) await page.screenshot({ path: path.join(SHOTS, 'achievement-unlocked.png') })
+    const more = card.getByTestId('achievement-more')
+    if ((await more.count()) > 0) {
+      sawMore = ((await more.textContent()) ?? '').trim()
+      await page.screenshot({ path: path.join(SHOTS, 'achievement-unlocked-last.png') })
+    }
+    await card.getByRole('button', { name: 'Continue' }).click()
+    await page.waitForTimeout(900)
+  }
+  step('each badge gets a card of its own, named, never a raw key',
+       cardNames.length === 3 &&
+         cardNames.every((name) => name.length > 0 && !/achievements:|ach\./.test(name)) &&
+         new Set(cardNames).size === 3,
+       cardNames.join(' · '))
+  step('and the fourth is counted on the last card rather than given one',
+       /And 1 more badge/.test(sawMore), sawMore || 'no "more" line')
+  step('and the last Continue leaves for Home', new URL(page.url()).pathname === '/',
+       new URL(page.url()).pathname)
+
+  // A link that names nothing real draws nothing at all: it steps straight on.
+  await page.goto(`http://localhost:${PORT}/achievement-unlocked?unlocks=ach.not.real%3Agold`, {
+    waitUntil: 'networkidle',
+  })
+  await page.waitForTimeout(1200)
+  step('a badge the catalogue does not know is never drawn',
+       (await page.getByTestId('achievement-unlocked').count()) === 0 &&
+         new URL(page.url()).pathname === '/')
 
   // ── the way out of a lesson ────────────────────────────────────────────────
   //
@@ -1399,6 +1488,14 @@ const skip = (name, why) => {
     // likely to clip its own exit at 200 %, and the one where clipping the exit is a
     // review-team problem rather than a cosmetic one.
     ['/paywall?source=settings', 'paywall'],
+    // The two after-lesson screens this chain gained. Both are a large picture, a
+    // display-size heading and a pinned button — the shape most likely to push its own
+    // button off a phone when every string doubles.
+    ['/create-profile', 'create-profile'],
+    [
+      `/achievement-unlocked?unlocks=${encodeURIComponent('ach.flags.collector:gold,ach.lessons.done:bronze')}`,
+      'achievement-unlocked',
+    ],
     // Onboarding is deliberately absent: it is a gate this harness has already walked
     // through by the time it gets here, so it cannot be revisited by URL. It is checked
     // in place, up in the first-launch section, where it is genuinely on screen.

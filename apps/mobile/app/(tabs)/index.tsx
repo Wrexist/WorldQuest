@@ -25,6 +25,7 @@ import { useT, type TranslationKey } from '../../src/lib/i18n.js'
 import { useReminderAsk } from '../../src/features/home/useReminderAsk.js'
 import { useLeague } from '../../src/features/league/useLeague.js'
 import { useLeagueEnabled } from '../../src/features/league/flag.js'
+import { useStreakNotice } from '../../src/features/streak/useStreakNotice.js'
 
 /**
  * Zeroed rather than invented. A first launch shows the real empty state — and a
@@ -39,7 +40,10 @@ const COLD_START: HomeProgress = {
 export default function HomeRoute() {
   const router = useRouter()
   const t = useT()
-  const { shown, status, refreshFailed } = useOptimisticProgress()
+  const { data, shown, status, refreshFailed } = useOptimisticProgress()
+  // A freeze that kept the streak yesterday, or a repair still open. Decided from the
+  // same figures the streak tile shows, so the two cannot disagree.
+  const streakNotice = useStreakNotice(data, shown)
   const online = useOnline()
   const shop = useShop()
 
@@ -182,6 +186,15 @@ export default function HomeRoute() {
       // screen a lesson ends on. `useReminderAsk` returns undefined the rest of the time
       // and the card is simply absent — see `notifications.md` §1.
       {...(reminderAsk !== undefined ? { reminderAsk } : {})}
+      {...(streakNotice.notice !== null
+        ? {
+            streakNotice: {
+              notice: streakNotice.notice,
+              onDismiss: streakNotice.dismiss,
+              onOpenStreak: () => router.push('/streak'),
+            },
+          }
+        : {})}
       {...(leagueChip !== undefined ? { league: leagueChip } : {})}
       onOpenInbox={() => router.push('/quests')}
     />

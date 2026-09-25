@@ -32,6 +32,7 @@ import { Icon } from '../../components/Icon.js'
 import type { IconName } from '../../lib/icons.generated.js'
 import { Stat } from '../../components/Stat.js'
 import { TopBar } from '../../components/TopBar.js'
+import { StreakNoticeCard, type StreakNoticeCardProps } from '../streak/StreakNoticeCard.js'
 
 export type HomeProgress = {
   readonly xpTotal: number
@@ -180,6 +181,13 @@ export type HomeScreenProps = {
   readonly reminderAsk?:
     | { readonly onAccept: () => void; readonly onDismiss: () => void }
     | undefined
+  /**
+   * The streak card — a freeze that kept the streak, or a repair still open — or nothing.
+   *
+   * Absent is the normal state. The decision is `streakNotice`'s, made by the route from
+   * the progress it already reads; this screen only draws it.
+   */
+  readonly streakNotice?: StreakNoticeCardProps | undefined
 }
 
 /** The subset of the engine's `WorldProgress` this screen draws. */
@@ -213,6 +221,7 @@ export function HomeScreen({
   onOpenQuests,
   league,
   reminderAsk,
+  streakNotice,
 }: HomeScreenProps) {
   // Before the early return: hooks cannot be conditional, and the skeleton needs
   // translated copy too.
@@ -498,6 +507,15 @@ export function HomeScreen({
             />
           ) : null}
         </Card>
+
+        {/* The streak's news, when there is any: a freeze that did its job yesterday,
+            or a broken streak that can still come back.
+
+            Below the quest card, not above it. The quest is the one primary action and
+            the reason Home exists; a card above it would push Continue below the fold on
+            a 320pt phone for as long as the news lasted. And news about the streak is
+            not urgent — saying it without pressure is the whole point (rule 7). */}
+        {streakNotice !== undefined && <StreakNoticeCard {...streakNotice} />}
 
         {/* "Want a nudge?" — the in-context permission ask.
 

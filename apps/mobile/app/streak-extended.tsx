@@ -19,11 +19,13 @@ import { hapticCelebrate } from '../src/lib/haptics.js'
 import { soundStreak } from '../src/lib/sound.js'
 
 export default function StreakExtendedRoute() {
-  const { then, countries } = useLocalSearchParams<{ then?: string; countries?: string }>()
+  // The whole query, passed on whole: the unlocks for a badge card further down the
+  // chain ride through this screen without it knowing they exist (`afterLesson.ts`).
+  const params = useLocalSearchParams<{ then?: string; countries?: string; unlocks?: string }>()
   const { shown, status } = useOptimisticProgress()
   const week = useWeekActivity()
   const streak = shown?.streak ?? 0
-  const next = nextAfterLesson(then, countries)
+  const next = nextAfterLesson(params)
   const milestones = BALANCE.xp.streakMilestones as Readonly<Record<number, number>>
 
   // Decide once the figures have settled: a cold start reads the persisted cache, and

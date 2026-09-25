@@ -164,6 +164,9 @@ export async function progress(db: D1Database, owner: string, tokenHash: string,
     streak: view.shown, longestStreak: account.streak_longest, factsMastered: mastered,
     lastActiveDate: account.streak_last_day, freezesHeld: account.freezes_held,
     brokenOn: view.state.brokenOn, lastRepairAt: account.last_repair_at,
+    // The length `repair` would restore, from the same view the repair itself uses, so
+    // "bring back your 10-day streak" on Home and the 10 days a repair buys cannot differ.
+    restoreTo: view.state.brokenOn === null ? null : view.restoreTo,
     inventory: (read[2]?.results ?? []).map(row => String(row.item_id)),
   }
 }

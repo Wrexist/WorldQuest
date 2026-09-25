@@ -101,7 +101,12 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "offline.title": "You are offline",
       "offline.body": "Linking an email needs a connection. Come back when you are online.",
       "settings.signOut.pending": "Signing out…",
-      "settings.signOut.failed": "Sign-out could not finish on this device. Unlock your phone and tap Sign out to try again."
+      "settings.signOut.failed": "Sign-out could not finish on this device. Unlock your phone and tap Sign out to try again.",
+      "ask.title": "Create a profile",
+      "ask.body": "Your progress is saved on this phone. A profile lets you keep it on a new one too.",
+      "ask.privacy": "We use your email to sign you in, and for nothing else.",
+      "ask.create": "Create a profile",
+      "ask.later": "Not now"
     },
     "achievements": {
       "title": "Achievements",
@@ -178,7 +183,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "set.westafrica.name": "West Africa",
       "set.westafrica.desc": "Learn everything about all 4 countries in West Africa.",
       "set.westerneurope.name": "Western Europe",
-      "set.westerneurope.desc": "Learn everything about all 6 countries in Western Europe."
+      "set.westerneurope.desc": "Learn everything about all 6 countries in Western Europe.",
+      "unlocked.label": "New badge",
+      "unlocked.more": "{count, plural, one {And # more badge — find it in Achievements} other {And # more badges — find them in Achievements}}"
     },
     "collection": {
       "flags.title": "Flags",
@@ -318,7 +325,13 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "reminder.title": "Want a nudge?",
       "reminder.body": "One reminder a day, at a time you choose. Nothing else, ever.",
       "reminder.yes": "Pick a time",
-      "reminder.later": "Not now"
+      "reminder.later": "Not now",
+      "streakNotice.freeze.title": "{count, plural, one {Your streak freeze kept your # day streak} other {Your streak freeze kept your # day streak}}",
+      "streakNotice.freeze.body": "It covered yesterday for you.",
+      "streakNotice.repair.title": "{count, plural, one {You can bring back your # day streak} other {You can bring back your # day streak}}",
+      "streakNotice.repair.body": "A repair costs {price} coins.",
+      "streakNotice.repair.cta": "Bring it back",
+      "streakNotice.dismiss": "Dismiss"
     },
     "league": {
       "title": "League",
@@ -377,7 +390,6 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "summary.stat.stronger": "Facts stronger",
       "summary.stat.stronger.a11y": "{count, plural, =0 {No facts moved up a level this time} one {# fact moved up a level} other {# facts moved up a level}}",
       "summary.practised": "Where you just were",
-      "summary.unlocked": "{count, plural, one {New badge} other {New badges}}",
       "hearts.out.title": "That's the last heart",
       "hearts.out.body": "You keep everything you got right. The next lesson starts with a full set.",
       "hearts.out.revive": "Keep going · {price}",
@@ -848,7 +860,12 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "offline.title": "Du är offline",
       "offline.body": "Du behöver internet för att koppla en e-postadress. Kom tillbaka när du är online.",
       "settings.signOut.pending": "Loggar ut…",
-      "settings.signOut.failed": "Det gick inte att slutföra utloggningen på den här enheten. Lås upp telefonen och tryck på Logga ut för att försöka igen."
+      "settings.signOut.failed": "Det gick inte att slutföra utloggningen på den här enheten. Lås upp telefonen och tryck på Logga ut för att försöka igen.",
+      "ask.title": "Skapa en profil",
+      "ask.body": "Dina framsteg sparas på den här telefonen. Med en profil kan du ta med dem till en ny telefon också.",
+      "ask.privacy": "Vi använder din e-post för att logga in dig, och till inget annat.",
+      "ask.create": "Skapa en profil",
+      "ask.later": "Inte nu"
     },
     "achievements": {
       "title": "Utmärkelser",
@@ -925,7 +942,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "set.westafrica.name": "Västafrika",
       "set.westafrica.desc": "Lär dig allt om alla 4 länder i Västafrika.",
       "set.westerneurope.name": "Västeuropa",
-      "set.westerneurope.desc": "Lär dig allt om alla 6 länder i Västeuropa."
+      "set.westerneurope.desc": "Lär dig allt om alla 6 länder i Västeuropa.",
+      "unlocked.label": "Ny utmärkelse",
+      "unlocked.more": "{count, plural, one {Och # utmärkelse till – du hittar den under Utmärkelser} other {Och # utmärkelser till – du hittar dem under Utmärkelser}}"
     },
     "collection": {
       "flags.title": "Flaggor",
@@ -1065,7 +1084,13 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "reminder.title": "Vill du ha en knuff?",
       "reminder.body": "En påminnelse om dagen, vid en tid du väljer. Inget annat, någonsin.",
       "reminder.yes": "Välj en tid",
-      "reminder.later": "Inte nu"
+      "reminder.later": "Inte nu",
+      "streakNotice.freeze.title": "{count, plural, one {Din frysning höll din # dags svit vid liv} other {Din frysning höll din # dagars svit vid liv}}",
+      "streakNotice.freeze.body": "Den täckte gårdagen åt dig.",
+      "streakNotice.repair.title": "{count, plural, one {Du kan ta tillbaka din # dags svit} other {Du kan ta tillbaka din # dagars svit}}",
+      "streakNotice.repair.body": "En reparation kostar {price} mynt.",
+      "streakNotice.repair.cta": "Ta tillbaka den",
+      "streakNotice.dismiss": "Dölj"
     },
     "league": {
       "title": "Liga",
@@ -1124,7 +1149,6 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "summary.stat.stronger": "Starkare fakta",
       "summary.stat.stronger.a11y": "{count, plural, =0 {Inga fakta steg en nivå den här gången} one {# faktum steg en nivå} other {# fakta steg en nivå}}",
       "summary.practised": "Här var du nyss",
-      "summary.unlocked": "{count, plural, one {Ny utmärkelse} other {Nya utmärkelser}}",
       "hearts.out.title": "Det var sista hjärtat",
       "hearts.out.body": "Du behåller allt du svarade rätt på. Nästa lektion börjar med fulla hjärtan.",
       "hearts.out.revive": "Fortsätt · {price}",

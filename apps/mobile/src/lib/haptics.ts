@@ -33,6 +33,7 @@
  */
 
 import * as Haptics from 'expo-haptics'
+import { Platform } from 'react-native'
 import { readJson } from './storage.js'
 
 /** The same key `usePreferences` writes. Read directly so any module can fire. */
@@ -40,8 +41,25 @@ const PREFERENCES_KEY = 'preferences.v1'
 
 const enabled = (): boolean => readJson<{ haptics?: boolean }>(PREFERENCES_KEY)?.haptics !== false
 
+/**
+ * Whether the browser will take a vibration at all — web only.
+ *
+ * On web expo-haptics calls `navigator.vibrate`, which Chromium refuses until the page
+ * has had a tap and reports as a console error. A celebration that fires on arrival —
+ * the badge card, opened straight from a link — did exactly that. Asking first costs
+ * nothing: no phone runs this branch, and where the API is missing the call goes ahead
+ * and fails quietly as before.
+ */
+const pageAllows = (): boolean => {
+  if (Platform.OS !== 'web') return true
+  const activation = (
+    globalThis as { navigator?: { userActivation?: { hasBeenActive: boolean } } }
+  ).navigator?.userActivation
+  return activation === undefined || activation.hasBeenActive
+}
+
 const fire = (run: () => Promise<void>): void => {
-  if (!enabled()) return
+  if (!enabled() || !pageAllows()) return
   // Swallowed on purpose — see the header. A missing Taptic Engine is not an error
   // worth surfacing to a user mid-lesson.
   void run().catch(() => {})

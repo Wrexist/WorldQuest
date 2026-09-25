@@ -87,5 +87,17 @@
   "home:reminder.yes": "Pick a time",
   "home:reminder.yes__note": "Accepts. Opens the phone's notification permission dialogue. Max 14 characters.",
   "home:reminder.later": "Not now",
-  "home:reminder.later__note": "Dismisses the card. NOT 'No thanks' — nothing has been refused, and we may ask once more in ninety days. Max 12 characters."
+  "home:reminder.later__note": "Dismisses the card. NOT 'No thanks' — nothing has been refused, and we may ask once more in ninety days. Max 12 characters.",
+  "home:streakNotice.freeze.title": "{count, plural, one {Your streak freeze kept your # day streak} other {Your streak freeze kept your # day streak}}",
+  "home:streakNotice.freeze.title__note": "Card on Home the day after a streak freeze covered a missed day. {count} is the streak's length. Warm and factual — the freeze did its job. Never say what would have happened without it. ICU plural: Swedish needs 'dags' and 'dagars'.",
+  "home:streakNotice.freeze.body": "It covered yesterday for you.",
+  "home:streakNotice.freeze.body__note": "Under the freeze card's heading. What happened, calmly. Not 'you missed a day', and no nudge to buy another freeze.",
+  "home:streakNotice.repair.title": "{count, plural, one {You can bring back your # day streak} other {You can bring back your # day streak}}",
+  "home:streakNotice.repair.title__note": "Card on Home while a broken streak can still be repaired and the learner has the coins. {count} is the length a repair restores. An offer, stated plainly: no countdown, no 'before it's too late', no loss words. ICU plural.",
+  "home:streakNotice.repair.body": "A repair costs {price} coins.",
+  "home:streakNotice.repair.body__note": "Under the repair card's heading. The price before the tap, so the next screen holds no surprise. {price} is a whole number of coins, always more than one.",
+  "home:streakNotice.repair.cta": "Bring it back",
+  "home:streakNotice.repair.cta__note": "Button on the repair card. Opens the streak screen, where the repair is bought — this button buys nothing itself. Max 16 characters.",
+  "home:streakNotice.dismiss": "Dismiss",
+  "home:streakNotice.dismiss__note": "Accessibility label for the X on the streak card. The action, not the icon. Hides this card for good."
 }
