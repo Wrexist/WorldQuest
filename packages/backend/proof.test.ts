@@ -10,6 +10,7 @@ import type { Receipt } from './src/contracts'
 import type { Question } from '@worldquest/engines'
 import { createD1AuthClient, type AuthFetch } from '../api/src/d1-auth'
 import { createD1LearningClient, createD1LessonQueue } from '../api/src/d1-learning'
+import { createD1AccountRepository } from '../api/src/d1-repository'
 
 type Guest = { userId: string; token: string; expiresAt: number }
 let script: string
@@ -481,5 +482,41 @@ describe('D1 coin spending (real workerd and SQLite)', () => {
     const later = () => now + 5 * 86_400_000
     expect(await spend(db, a.userId, tokenHash, 'repair', { requestId: 'repair-0003' }, later)).toMatchObject({ status: 'cooldown' })
     await invariant(a.userId)
+  })
+})
+
+describe('the app account repository against the real Worker', () => {
+  it('reads progress, spends, keeps owner isolation and refuses the legacy lesson path', async () => {
+    const vault = new Map<string, string>()
+    const storage = { getItem: async (key: string) => vault.get(key) ?? null,
+      setItem: async (key: string, value: string) => { vault.set(key, value) }, removeItem: async (key: string) => { vault.delete(key) } }
+    const transport: AuthFetch = async (url, init) => {
+      const r = await mf.dispatchFetch(url, { method: init.method ?? 'GET', headers: Object.fromEntries(new Headers(init.headers).entries()),
+        ...(init.body ? { body: String(init.body) } : {}) })
+      const value: unknown = await r.json()
+      return { status: r.status, ok: r.ok, json: async () => value }
+    }
+    const auth = createD1AuthClient({ baseURL: 'http://localhost', storage, clearCredentials: async () => { vault.clear() }, fetch: transport })
+    const a = await auth.startGuest()
+    let current = true
+    let n = 0
+    const repo = createD1AccountRepository({ auth, owner: a.userId, isCurrent: () => current, fetch: transport,
+      randomBytes: () => new Uint8Array(12).map(() => ++n % 256) })
+    expect(await repo.fetchProgress()).toMatchObject({ xpTotal: 0, coins: 0, streak: 0, hearts: BALANCE.hearts.max, brokenOn: null })
+    await db.batch([
+      db.prepare("INSERT INTO ledger (account_id, lesson_id, xp, coins) VALUES (?, 'test-grant', 0, 1200)").bind(a.userId),
+      db.prepare('UPDATE accounts SET coins = 1200 WHERE id = ?').bind(a.userId),
+    ])
+    expect(await repo.buyStreakFreeze()).toEqual({ status: 'no_streak' })
+    expect(await repo.buyLessonContinue('offer-abcdef01')).toMatchObject({ status: 'purchased' })
+    expect(await repo.buyLessonContinue('offer-abcdef01')).toMatchObject({ status: 'already_paid' })
+    expect(await repo.purchaseItem('title.flag-fanatic')).toEqual({ status: 'insufficient_funds' })
+    await repo.setTimeZone('Europe/Stockholm')
+    expect(await repo.fetchTimeZone()).toBe('Europe/Stockholm')
+    await expect(repo.setTimeZone('Nowhere/Nothing')).rejects.toThrow('INVALID_TIME_ZONE')
+    await expect(repo.submitLesson({ lessonId: 'x', kind: 'lesson', startedAt: 0, answers: [] })).rejects.toThrow('USE_D1_LESSON_QUEUE')
+    expect(await repo.fetchSubscription()).toMatchObject({ status: 'none', tier: 'free' })
+    current = false
+    await expect(repo.fetchProgress()).rejects.toThrow('Account changed')
   })
 })
