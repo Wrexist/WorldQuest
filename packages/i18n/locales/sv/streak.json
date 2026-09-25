@@ -36,5 +36,8 @@
   "streak:extended.first": "Du har startat en svit. En lektion om dagen får den att växa.",
   "streak:extended.body": "Dagen är räknad. Snyggt jobbat.",
   "streak:extended.milestone": "{count, plural, one {# dag – milstolpe! +{amount} XP} other {# dagar – milstolpe! +{amount} XP}}",
-  "streak:extended.cta": "Fortsätt"
+  "streak:extended.cta": "Fortsätt",
+  "streak:calendar.count": "{count, plural, one {# dag den här månaden} other {# dagar den här månaden}}",
+  "streak:share": "Dela din svit",
+  "streak:share.message": "{count, plural, one {Jag började en svit på WorldQuest i dag.} other {Jag har lärt mig något nytt om världen # dagar i rad på WorldQuest.}}"
 }

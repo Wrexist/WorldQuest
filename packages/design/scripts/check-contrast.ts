@@ -124,6 +124,13 @@ const PAIRS: Pair[] = [
     note: 'a run-coloured fill must still stand apart from its track',
   },
   {
+    name: 'text.onStreak on status.streak',
+    fg: p.space['800'],
+    bg: p.flame['500'],
+    min: 4.5,
+    note: 'a learned day on the streak calendar — white on this orange is about 2:1, so navy',
+  },
+  {
     name: 'status.streak on canvas',
     fg: p.flame['500'],
     bg: p.space['800'],
@@ -285,7 +292,10 @@ const GROUPS: ReadonlyArray<{
 }> = [
   {
     what: 'body text on a surface',
-    texts: leaves(c.text, 'text').filter((t) => t.path !== 'text.onAccent' && t.path !== 'text.tertiary'),
+    // `text.onStreak` is drawn only on the flame; its one pair is a curated row above.
+    texts: leaves(c.text, 'text').filter(
+      (t) => t.path !== 'text.onAccent' && t.path !== 'text.onStreak' && t.path !== 'text.tertiary',
+    ),
     surfaces: [
       ...leaves(c.bg, 'bg'),
       ...leaves(c.option, 'option').filter((s) => !s.path.endsWith('Edge')),

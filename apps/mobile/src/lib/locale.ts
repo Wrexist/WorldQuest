@@ -9,9 +9,10 @@
  */
 
 import { useEffect } from 'react'
-import { getLocales } from 'expo-localization'
+import { getCalendars, getLocales } from 'expo-localization'
 import { resolveLocale, setLocale, SUPPORTED_LOCALES, type Locale } from '@worldquest/i18n'
 import { readJson } from './storage.js'
+import { setFirstWeekday } from './week.js'
 
 /**
  * The device's preferred languages, most-preferred first.
@@ -62,5 +63,8 @@ export function startupLocale(): Locale {
 export function useDeviceLocale(): void {
   useEffect(() => {
     void setLocale(startupLocale())
+    // Where the user's week starts, for the streak calendar. Read here because this is
+    // the one module allowed a native import; `lib/week.ts` keeps it as plain data.
+    setFirstWeekday(getCalendars()[0]?.firstWeekday)
   }, [])
 }

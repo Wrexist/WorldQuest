@@ -769,7 +769,10 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "extended.first": "You started a streak. One lesson a day keeps it growing.",
       "extended.body": "Today counts. Nice work.",
       "extended.milestone": "{count, plural, one {# days — milestone! +{amount} XP} other {# days — milestone! +{amount} XP}}",
-      "extended.cta": "Continue"
+      "extended.cta": "Continue",
+      "calendar.count": "{count, plural, one {# day this month} other {# days this month}}",
+      "share": "Share your streak",
+      "share.message": "{count, plural, one {I started a learning streak on WorldQuest today.} other {I've learned something new about the world # days in a row on WorldQuest.}}"
     },
     "titles": {
       "wanderer": "Wanderer",
@@ -1553,7 +1556,10 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "extended.first": "Du har startat en svit. En lektion om dagen får den att växa.",
       "extended.body": "Dagen är räknad. Snyggt jobbat.",
       "extended.milestone": "{count, plural, one {# dag – milstolpe! +{amount} XP} other {# dagar – milstolpe! +{amount} XP}}",
-      "extended.cta": "Fortsätt"
+      "extended.cta": "Fortsätt",
+      "calendar.count": "{count, plural, one {# dag den här månaden} other {# dagar den här månaden}}",
+      "share": "Dela din svit",
+      "share.message": "{count, plural, one {Jag började en svit på WorldQuest i dag.} other {Jag har lärt mig något nytt om världen # dagar i rad på WorldQuest.}}"
     },
     "titles": {
       "wanderer": "Vandrare",

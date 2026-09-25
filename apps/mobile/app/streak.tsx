@@ -25,11 +25,14 @@
  */
 
 import { useCallback, useMemo, useState } from 'react'
+import { Share } from 'react-native'
 import { router } from 'expo-router'
 import { currentStreak, repairAvailability, type RecoveryState } from '@worldquest/engines'
 import { withAccount } from '../src/lib/backend.js'
 import { StreakScreen } from '../src/features/streak/StreakScreen.js'
-import { useWeekActivity } from '../src/features/profile/useWeekActivity.js'
+import { useMonthActivity } from '../src/features/streak/monthActivity.js'
+import { readOnboarding } from '../src/features/onboarding/useOnboarding.js'
+import { useT } from '../src/lib/i18n.js'
 import { ContentGate } from '../src/components/ContentGate.js'
 import { useOptimisticProgress } from '../src/features/home/useOptimisticProgress.js'
 import { useOnline } from '../src/lib/connectivity.js'
@@ -44,7 +47,8 @@ export default function StreakRoute() {
   const { data, shown, status, refetch } = useOptimisticProgress()
   const online = useOnline()
   const now = Date.now()
-  const week = useWeekActivity()
+  const month = useMonthActivity()
+  const t = useT()
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 
   /**
@@ -83,6 +87,22 @@ export default function StreakRoute() {
     // above never recomputed — the memo held the values from the render where the queue
     // was still empty.
     [data, shown],
+  )
+
+  /**
+   * Sharing the streak, for adults only, and exactly: `isChild === false`. Unknown is not
+   * permission, the rule the review prompt and the profile ask already follow.
+   *
+   * The phone's own share sheet with one editable sentence: no link, no tracking and no
+   * record of who shared. A refusal (a browser without `navigator.share`, a sheet the
+   * user closed) needs no answer, because nothing was promised.
+   */
+  const adult = readOnboarding().isChild === false
+  const onShare = useCallback(
+    (days: number) => {
+      void Share.share({ message: t('streak:share.message', { count: days }) }).catch(() => {})
+    },
+    [t],
   )
 
   const [buyingFreeze, setBuyingFreeze] = useState(false)
@@ -174,10 +194,10 @@ export default function StreakRoute() {
         longest={state.longest}
         freezesHeld={state.freezesHeld}
         coins={data?.coins ?? 0}
-        // The same seven days Profile draws, from the same hook — this is a strip of
-        // local lesson history, so there is nothing to fetch and nothing that can be out
-        // of step with the tab that also shows it.
-        week={week}
+        // This month from the same local lesson log Profile's week chart draws, so there
+        // is nothing to fetch and nothing that can be out of step with that tab.
+        month={month}
+        onShare={adult ? onShare : undefined}
         // `repairOffer`, not `repair`. The engine exports a pure `repair()` with no
         // caller — the transaction is `repair_streak` in SQL, because a Postgres function
         // cannot import TypeScript — and `pnpm reachability` matches export names on a

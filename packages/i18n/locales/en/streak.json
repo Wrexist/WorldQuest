@@ -74,5 +74,11 @@
   "streak:extended.milestone": "{count, plural, one {# days — milestone! +{amount} XP} other {# days — milestone! +{amount} XP}}",
   "streak:extended.milestone__note": "Shown only on the exact day a streak reaches 7, 30, 100 or 365. {amount} is the XP the server pays for it.",
   "streak:extended.cta": "Continue",
-  "streak:extended.cta__note": "The only button on the streak celebration. Goes to the next screen after a lesson, or Home."
+  "streak:extended.cta__note": "The only button on the streak celebration. Goes to the next screen after a lesson, or Home.",
+  "streak:calendar.count": "{count, plural, one {# day this month} other {# days this month}}",
+  "streak:calendar.count__note": "Beside the month's name over the streak calendar: days this month with a finished lesson. Hidden at zero, so it is never a report of nothing.",
+  "streak:share": "Share your streak",
+  "streak:share__note": "Button under the streak count, for adults only. Opens the phone's own share sheet; nothing is sent until the user picks where. Max 24 characters.",
+  "streak:share.message": "{count, plural, one {I started a learning streak on WorldQuest today.} other {I've learned something new about the world # days in a row on WorldQuest.}}",
+  "streak:share.message__note": "The sentence pre-filled in the share sheet, which the user can edit. First person, no link, no hashtags, nothing that pressures whoever reads it."
 }

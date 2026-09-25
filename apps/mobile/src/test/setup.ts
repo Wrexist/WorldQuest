@@ -66,6 +66,7 @@ vi.mock('react-native-mmkv', () => {
 /** Reads the OS locale list. Fixed here so a test is not sensitive to the CI box. */
 vi.mock('expo-localization', () => ({
   getLocales: () => [{ languageTag: 'en-GB', languageCode: 'en' }],
+  getCalendars: () => [{ firstWeekday: 2 }],
 }))
 
 /**

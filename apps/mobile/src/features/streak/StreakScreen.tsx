@@ -46,7 +46,8 @@ import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 import { Stat } from '../../components/Stat.js'
 import { Icon } from '../../components/Icon.js'
-import { WeekStrip, type WeekActivity } from '../../components/WeekStrip.js'
+import { MonthCalendar } from './MonthCalendar.js'
+import type { MonthActivity } from './monthActivity.js'
 
 /**
  * The freeze on its own card.
@@ -198,13 +199,16 @@ export type StreakScreenProps = {
   /** The length a repair would restore. Not `current`, which has already reset to 1. */
   readonly restoreTo: number
   /**
-   * The last seven days, for the strip.
-   *
-   * Optional, because a caller with nothing to say is a real case and an all-zero week is
-   * a different one — the first draws nothing, the second draws seven empty channels,
-   * which is the shape of a week nobody learned in and is worth seeing.
+   * This month, for the calendar. Optional so a test or the screenshot renderer can
+   * mount the screen without a lesson log; a route passes it.
    */
-  readonly week?: WeekActivity | undefined
+  readonly month?: MonthActivity | undefined
+  /**
+   * Opens the phone's share sheet with the streak. The ROUTE decides who gets it: only a
+   * confirmed adult, never a child or an unknown age. Absent means no button, the same
+   * shape as `onBuyFreeze`.
+   */
+  readonly onShare?: ((days: number) => void) | undefined
   /** Epoch ms, injected so the screen never reads a clock. */
   readonly now: number
   readonly onBuyFreeze?: (() => void) | undefined
@@ -274,7 +278,8 @@ export function StreakScreen({
   longest,
   freezesHeld,
   coins,
-  week,
+  month,
+  onShare,
   repairOffer,
   restoreTo,
   now,
@@ -342,22 +347,29 @@ export function StreakScreen({
               : t('streak:none')}
         </Text>
         <MilestoneLine current={current} broken={broken} />
+        {/* Sharing, Duolingo's streak-page button. The phone's own sheet with a sentence
+            the user can edit: no link, no tracking, no count of who shared. Only for a
+            live streak — "0 days" is not something anyone wants to post. */}
+        {onShare !== undefined && current > 0 && !broken && (
+          <Button
+            label={t('streak:share')}
+            variant="tertiary"
+            size="sm"
+            // Sized to its label: an offer beside the streak, not a second call to action
+            // as wide as the screen competing with the number it shares.
+            fullWidth={false}
+            onPress={() => onShare(current)}
+            style={styles.share}
+            testID="streak-share"
+          />
+        )}
       </View>
 
-      {/* The week, from the same component Profile draws.
-          This screen's whole subject is consecutive days and it had no calendar on it —
-          the tab that links here showed more about the streak than the streak page did,
-          and the measurement agreed: after a real lesson Profile goes from 40 % ink to
-          86 % while this screen moved two points.
-
-          No `emptyLabel`. The heading above already reads "No days yet" and the line
-          under it already says how to start one; a third sentence saying the same
-          nothing is the thing `streak:longest` was silenced for. */}
-      {week !== undefined && (
-        <View style={styles.week}>
-          <WeekStrip week={week} />
-        </View>
-      )}
+      {/* The month, where Duolingo's streak page has it. This screen's whole subject is
+          consecutive days, and a week of bars showed seven of them; a month shows the
+          run itself, each learned day joined to the next. It reads the same lesson log
+          as Profile's week chart, so the two cannot disagree about a day. */}
+      {month !== undefined && <MonthCalendar month={month} />}
 
       <MilestoneLadder current={current} broken={broken} />
 
@@ -544,7 +556,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: space[1],
   },
-  week: { paddingHorizontal: space[2] },
+  share: { marginTop: space[3] },
 
   ladder: { gap: space[2] },
   sectionTitle: { ...text('overline'), color: colors.text.tertiary },
