@@ -31,6 +31,7 @@
 import { useEffect, useState } from 'react'
 import NetInfo from '@react-native-community/netinfo'
 import { backendUrl } from './supabase.js'
+import { isD1 } from './backendConfig.js'
 import { track } from './analytics.js'
 
 let online = true
@@ -68,7 +69,8 @@ function set(next: boolean): void {
 const probing = (): boolean => backendUrl() !== ''
 
 NetInfo.configure({
-  reachabilityUrl: `${backendUrl()}/auth/v1/health`,
+  // The Worker answers `/health` without auth; Supabase's is under its auth service.
+  reachabilityUrl: isD1() ? `${backendUrl()}/health` : `${backendUrl()}/auth/v1/health`,
   reachabilityShouldRun: probing,
   // Any 2xx means we got through. The default only accepts 200, and a health endpoint
   // answering 204 is not a network failure.

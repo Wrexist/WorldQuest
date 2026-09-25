@@ -20,6 +20,7 @@ import {
 import type { AnsweredItem } from '@worldquest/engines'
 import type { SubmitLessonResponse } from '@worldquest/api'
 import { accountRepository, currentUser, isConfigured } from './supabase.js'
+import { isD1 } from './backendConfig.js'
 import { isOnline, onConnectivityChange } from './connectivity.js'
 import { invalidateProgress } from './query.js'
 import { captureStorage, onStorageScopeChange, writeJson } from './storage.js'
@@ -222,7 +223,11 @@ export function flush(): Promise<void> {
 async function run(): Promise<void> {
   // Nothing to talk to. Leave the queue intact rather than failing every item and
   // burning their retry budget against a backend that was never configured.
-  if (!isConfigured()) return
+  //
+  // Also nothing to talk to on the D1 Worker: it grades only lessons it issued, so a
+  // device-composed lesson cannot be sent there at all. Kept, not failed, until the
+  // ticketed D1 lesson path replaces this queue for that backend.
+  if (!isConfigured() || isD1()) return
   if (queue.pending.length === 0) return
 
   // Offline is not a failure, it is a "not yet". Sending anyway would spend an attempt

@@ -9,12 +9,56 @@
 
 import { router, useLocalSearchParams } from 'expo-router'
 import { useQueryClient } from '@tanstack/react-query'
+import { openURL } from 'expo-linking'
 import { AccountScreen, type AccountMode } from '../../src/features/account/AccountScreen.js'
+import { D1AccountScreen } from '../../src/features/account/D1AccountScreen.js'
+import { useD1Account } from '../../src/features/account/useD1Account.js'
+import { appD1Host } from '../../src/lib/d1-app-host.js'
+import { createD1AccountClient } from '../../src/lib/d1-auth.js'
+import { backendConfig } from '../../src/lib/backendConfig.js'
+import { isD1 } from '../../src/lib/backendConfig.js'
+import { SUPPORT_URL } from '../../src/lib/links.js'
+import { currentLocale } from '../../src/lib/i18n.js'
 import { useAccount } from '../../src/features/account/useAccount.js'
 import { useProgress } from '../../src/features/home/useProgress.js'
 import { useOnline } from '../../src/lib/connectivity.js'
 
+/**
+ * The D1 account flow: link, sign in, recover and delete, against the Worker.
+ *
+ * Its own screen rather than a mode of the legacy one, because the protocol differs
+ * (eight-digit codes, challenge ids, resend cooldowns, fresh proof before deletion) and
+ * the host quarantines this device's learning work around every identity change.
+ * Deletion is permanent and in-app, which is what guideline 5.1.1(v) asks for.
+ */
+function D1AccountRoute() {
+  const queryClient = useQueryClient()
+  const online = useOnline()
+  const flow = useD1Account(createD1AccountClient(backendConfig().url), appD1Host(), currentLocale() === 'sv' ? 'sv' : 'en', online)
+  const leave = (): void => {
+    if (router.canGoBack()) router.back()
+    else router.replace('/')
+  }
+  return (
+    <D1AccountScreen
+      flow={flow}
+      online={online}
+      onBack={leave}
+      onSupport={SUPPORT_URL === undefined ? undefined : () => void openURL(SUPPORT_URL!)}
+      onDone={() => {
+        // Every cached server number may belong to a different owner now.
+        queryClient.clear()
+        router.replace('/')
+      }}
+    />
+  )
+}
+
 export default function AccountRoute() {
+  return isD1() ? <D1AccountRoute /> : <LegacyAccountRoute />
+}
+
+function LegacyAccountRoute() {
   const params = useLocalSearchParams<{ mode?: string }>()
   // Anything that is not the sign-in path is the link path. A router can be pointed at
   // this with no param at all, and "save your progress" is the safe reading of an

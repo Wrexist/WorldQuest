@@ -11,7 +11,7 @@
  * instead of against what a cold start actually reads off the device.
  */
 
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, renderHook } from '@testing-library/react'
 import { NO_SUBSCRIPTION, type Subscription } from '@worldquest/engines'
 
@@ -57,6 +57,15 @@ const premium = (over: Partial<Subscription> = {}): Subscription => ({
 const onDevice = (value: unknown): void => {
   store.set(KEY, typeof value === 'string' ? value : JSON.stringify(value))
 }
+
+/**
+ * Transform the module graph once, outside any test's budget. `boot` resets modules,
+ * so the first test otherwise paid the cold transform inside its 5-second timeout and
+ * failed about one run in three under load (25 Sep 2026).
+ */
+beforeAll(async () => {
+  await import('./useEntitlement.js')
+}, 60_000)
 
 beforeEach(() => store.clear())
 

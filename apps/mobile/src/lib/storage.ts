@@ -8,6 +8,7 @@
 
 import { MMKV } from 'react-native-mmkv'
 import { clearSessionStorage } from './credentials.js'
+import { backendConfig } from './backendConfig.js'
 export { clearSessionStorage } from './credentials.js'
 
 /**
@@ -20,7 +21,9 @@ let app: MMKV | undefined
 const appStore = (): MMKV => (app ??= new MMKV({ id: 'worldquest.app' }))
 
 type Scope = { userId: string | null; guest: number }
-const backendId = process.env.EXPO_PUBLIC_SUPABASE_URL || 'unconfigured'
+// The selected backend's origin, so a D1 build and a legacy build on one device can
+// never read each other's caches.
+const backendId = backendConfig().url || 'unconfigured'
 const SCOPE_KEY = `account.scope.v2.${encodeURIComponent(backendId)}`
 const TRANSITION_KEY = `account.transition.v2.${encodeURIComponent(backendId)}`
 let scope: Scope | null = null
@@ -105,6 +108,17 @@ export function setStorageAccount(userId: string, adoptNewGuest = false): void {
     }
   }
   changeScope(next, adoptNewGuest && previous.userId === null)
+}
+
+/**
+ * Erase one signed-in account's local data after the server confirmed its deletion.
+ *
+ * Only that account's prefix: guests and other accounts on the device are untouched,
+ * and the active scope is never one being erased (the caller has already moved away).
+ */
+export function eraseAccountStorage(userId: string): void {
+  const prefix = prefixOf({ userId, guest: 0 })
+  for (const key of appStore().getAllKeys().filter((key) => key.startsWith(prefix))) appStore().delete(key)
 }
 
 /** Detached accounts keep their durable work; a fresh guest cannot read or send it. */

@@ -39,12 +39,11 @@ import { useT } from '../src/lib/i18n.js'
  *
  * A settings screen that opens a 404 is worse than one that opens nothing — these
  * are the two documents a user goes looking for when they already distrust an app.
- * They land with the marketing site; until then the rows have no handler and
- * correctly render as text rather than as buttons that do nothing.
+ * They come from build configuration (`src/lib/links.ts`), so publishing the pages
+ * is an EAS environment change; until then the rows have no handler and correctly
+ * render as text rather than as buttons that do nothing.
  */
-const PRIVACY_URL: string | undefined = undefined
-const TERMS_URL: string | undefined = undefined
-const LICENCES_URL: string | undefined = undefined
+import { LICENCES_URL, PRIVACY_URL, TERMS_URL } from '../src/lib/links.js'
 
 const open = (url: string | undefined) =>
   url === undefined ? undefined : () => void openURL(url)

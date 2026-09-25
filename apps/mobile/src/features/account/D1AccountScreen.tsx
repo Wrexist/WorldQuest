@@ -7,7 +7,8 @@ import { useT, type TranslationKey } from '../../lib/i18n.js'
 import type { useD1Account } from './useD1Account.js'
 
 type Flow = ReturnType<typeof useD1Account>
-type Props = { flow: Flow; online: boolean; onBack: () => void; onSupport: () => void; onDone: () => void }
+/** `onSupport` absent means there is no support page yet; the button is left out rather than dead. */
+type Props = { flow: Flow; online: boolean; onBack: () => void; onSupport?: (() => void) | undefined; onDone: () => void }
 const errorKeys: Readonly<Record<string, TranslationKey>> = {
   INVALID_CODE: 'account:d1.error.code', INVALID_CHALLENGE: 'account:d1.error.code',
   EMAIL_UNAVAILABLE: 'account:d1.error.delivery', RETRY_LATER: 'account:d1.error.rate',
@@ -130,7 +131,7 @@ export function D1AccountScreen({ flow, online, onBack, onSupport, onDone }: Pro
           {state.busy && <Text role="status" aria-live="polite" style={styles.body}>{t('account:d1.working')}</Text>}
           {state.error && <Text role="alert" aria-live="polite" style={styles.error}>{t(errorKeys[state.error] ?? 'account:error.generic')}</Text>}
         </>}
-        {button('account:d1.support', onSupport, false, 'ghost')}
+        {onSupport && button('account:d1.support', onSupport, false, 'ghost')}
       </ScrollView>
     </KeyboardAvoidingView>
   </View>

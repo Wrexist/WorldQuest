@@ -18,8 +18,11 @@ import {
   ensureSession,
   type WorldQuestClient,
 } from '@worldquest/api'
+import { createD1AccountRepository } from '@worldquest/api/d1-repository'
 import { beginStorageTransition, captureStorage, finishStorageTransition, setStorageAccount, startGuestStorage } from './storage.js'
 import { createSessionStorage } from './credentials.js'
+import { backendConfig, isD1 } from './backendConfig.js'
+export { isD1 } from './backendConfig.js'
 
 let client: WorldQuestClient | null = null
 let session: Promise<{ userId: string }> | null = null
@@ -33,17 +36,17 @@ let transitioning = false
  * exactly the behaviour we want for everything else.
  */
 function config(): { url: string; publishableKey: string } {
-  return {
-    url: process.env.EXPO_PUBLIC_SUPABASE_URL ?? '',
-    publishableKey: process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? '',
-  }
+  const selected = backendConfig()
+  return selected.kind === 'supabase'
+    ? { url: selected.url, publishableKey: selected.publishableKey }
+    : { url: '', publishableKey: '' }
 }
 
-/** True when the app has been given a backend to talk to at all. */
+/** True when the app has been given a backend to talk to at all — either one. */
 export function isConfigured(): boolean {
-  const { url, publishableKey } = config()
-  return url !== '' && publishableKey !== ''
+  return backendConfig().kind !== 'none'
 }
+
 
 /**
  * The backend origin, or `''` when there is none.
@@ -52,7 +55,7 @@ export function isConfigured(): boolean {
  * whichever third party a library picked as a default. Deliberately not the client:
  * asking "is the server up" must not require a session, a key, or a table.
  */
-export const backendUrl = (): string => config().url
+export const backendUrl = (): string => backendConfig().url
 
 export function supabase(): WorldQuestClient {
   if (!client) {
@@ -83,10 +86,12 @@ export function currentUser(): Promise<{ userId: string }> {
   if (session) return session
   const store = captureStorage()
   initializing++
-  const pending = Promise.resolve().then(() => ensureSession(supabase(), (userId, created) => {
+  const accept = (userId: string, created: boolean) => {
     if (transitioning || !store.isCurrent()) throw new AccountChangedError()
     setStorageAccount(userId, created)
-  })).catch((error: unknown) => {
+  }
+  const start = isD1() ? () => d1CurrentUser(accept) : () => ensureSession(supabase(), accept)
+  const pending = Promise.resolve().then(start).catch((error: unknown) => {
     // Clear the memo so a later attempt can retry — a failed sign-in on a plane must
     // not poison the session for the rest of the process's life.
     if (session === pending) session = null
@@ -96,9 +101,33 @@ export function currentUser(): Promise<{ userId: string }> {
   return pending
 }
 
+/**
+ * The D1 identity: the stored session if there is one, otherwise a new guest.
+ *
+ * Only a guest created HERE may adopt this device's pre-account work, the same rule
+ * the legacy path follows — restoring an existing session must never pull another
+ * person's local lessons into it.
+ */
+async function d1CurrentUser(accept: (userId: string, created: boolean) => void): Promise<{ userId: string }> {
+  // Loaded on the D1 path only: it reaches into native crypto and the legacy build
+  // (and every jsdom test of this module) must not pay for or trip over that.
+  const { createD1AccountClient } = await import('./d1-auth.js')
+  const client = createD1AccountClient(backendConfig().url)
+  const existing = await client.restore()
+  const next = existing ? await client.ensureSession() : await client.startGuest()
+  accept(next.userId, existing === null)
+  return { userId: next.userId }
+}
+
 /** Open an immutable, owner-bound transport for the account visible to the caller. */
 export async function accountRepository(userId: string) {
   if (transitioning) throw new AccountChangedError()
+  if (isD1()) {
+    const store = captureStorage()
+    const [{ createD1AccountClient }, { getRandomBytes }] = await Promise.all([import('./d1-auth.js'), import('expo-crypto')])
+    return createD1AccountRepository({ auth: createD1AccountClient(backendConfig().url), owner: userId,
+      isCurrent: store.isCurrent, fetch: (url, init) => fetch(url, init), randomBytes: () => getRandomBytes(12) })
+  }
   return createSupabaseBackend(config(), supabase()).forAccount(userId)
 }
 
@@ -111,6 +140,11 @@ export async function withAccountTransition<T>(work: () => Promise<T>): Promise<
     transitioning = false
     finishStorageTransition()
   }
+}
+
+/** Forget the memoised identity while a D1 identity change is in progress. */
+export function detachSession(): void {
+  session = null
 }
 
 export function acceptSignedInAccount(userId: string): void {

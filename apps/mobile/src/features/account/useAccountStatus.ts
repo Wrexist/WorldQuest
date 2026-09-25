@@ -15,6 +15,7 @@
 import { useEffect, useState } from 'react'
 import { accountEmail } from '@worldquest/api'
 import { isConfigured, supabase } from '../../lib/supabase.js'
+import { backendConfig, isD1 } from '../../lib/backendConfig.js'
 import { readOnboarding } from '../onboarding/useOnboarding.js'
 
 export type AccountStatus = {
@@ -41,7 +42,11 @@ export function useAccountStatus(): AccountStatus {
     // No backend configured — a fresh checkout with no .env.local. Asking would throw.
     if (!isConfigured()) return
     let cancelled = false
-    void accountEmail(supabase())
+    const lookup = isD1()
+      ? import('../../lib/d1-auth.js').then(({ createD1AccountClient }) =>
+          createD1AccountClient(backendConfig().url).account()).then((account) => account.email)
+      : accountEmail(supabase())
+    void lookup
       .then((found) => {
         if (!cancelled) setEmail(found)
       })
