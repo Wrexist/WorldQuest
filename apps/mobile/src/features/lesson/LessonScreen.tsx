@@ -68,6 +68,8 @@ import { isD1 } from '../../lib/backendConfig.js'
 import { prefetchLessons, submitLesson as submitD1Lesson } from '../../lib/d1-lessons.js'
 import { useScreenReaderStatus } from '../../lib/screenReader.js'
 import { useD1Lesson } from './hooks/useD1Lesson.js'
+import { ReportSheet } from './ReportSheet.js'
+import { withAccount } from '../../lib/backend.js'
 import { Icon } from '../../components/Icon.js'
 import { Stat } from '../../components/Stat.js'
 
@@ -358,6 +360,9 @@ export function LessonScreen({
   const t = useT()
   const { index, memory, status, reload, isOffline } = useContent()
   const [screen, setScreen] = useState<ScreenState>('loading')
+  // "Report a problem" open over the answer just given. Only where a backend takes
+  // reports (the Worker): a link that could only fail is a link not to show.
+  const [reporting, setReporting] = useState(false)
 
   // The sheet stops widening at `maxContentWidth`, so the mascot measures against that
   // rather than against a tablet's whole screen.
@@ -561,7 +566,11 @@ export function LessonScreen({
     // and nothing a user could see — the whole reward loop for thirty achievements was a
     // row in a dashboard. The after-lesson chain reads the queue when the summary's
     // Continue is pressed and gives each unlock a card of its own (`afterLesson.ts`).
-    queueUnlocks(unlocked.map((u) => ({ achievementId: u.achievementId, tier: u.tier })))
+    //
+    // Not on a D1 build: there the server decides each tier exactly once per account and
+    // its receipts queue the cards (`d1-lessons.ts`). Queuing the device's own reading
+    // too would celebrate one badge twice, once from each side.
+    if (!remoteLessons) queueUnlocks(unlocked.map((u) => ({ achievementId: u.achievementId, tier: u.tier })))
     for (const unlock of unlocked) {
       // `days_to_unlock` is not sent. We would have to know when the user started,
       // and nothing records that — a number derived from "first lesson we happen to
@@ -772,6 +781,22 @@ export function LessonScreen({
             lessonId: lesson.state.lessonId,
           })
         }
+      />
+    )
+  }
+
+  // In place of the runner, like `Paused`, so the question is not left in the
+  // accessibility tree. Only while the answer is on screen: the fact is the one just
+  // answered, and the verdict has already been graded, so nothing here can change it.
+  const reportedFact = lesson.state.questions[lesson.state.index]?.item.factId
+  if (reporting && lesson.state.phase === 'answered' && reportedFact !== undefined) {
+    return (
+      <ReportSheet
+        onSend={(reason) => withAccount(async (account) => {
+          if (!account.reportFact) throw new Error('Reports are not available on this backend')
+          await account.reportFact(reportedFact, reason)
+        })}
+        onClose={() => setReporting(false)}
       />
     )
   }
@@ -1334,6 +1359,9 @@ export function LessonScreen({
           )}
               </View>
               <Button label={t('common:continue')} onPress={lesson.advance} />
+              {remoteLessons && (
+                <Button label={t('lesson:report.cta')} variant="ghost" size="sm" onPress={() => setReporting(true)} />
+              )}
             </View>
           )}
         </RiseIn>

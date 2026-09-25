@@ -64,5 +64,18 @@
   "lesson:prompt.calling_code_of": "Vilket riktnummer ringer till {entityName}?",
   "lesson:prompt.calling_code_reverse": "Att ringa {valueName} går till vilket land?",
   "lesson:offlineStart.title": "Du är offline",
-  "lesson:offlineStart.body": "Lektionerna kommer från ditt konto. Anslut en gång så fungerar de närmaste lektionerna offline också."
+  "lesson:offlineStart.body": "Lektionerna kommer från ditt konto. Anslut en gång så fungerar de närmaste lektionerna offline också.",
+  "lesson:report.cta": "Rapportera ett problem",
+  "lesson:report.title": "Rapportera ett problem",
+  "lesson:report.question": "Vad är fel med frågan?",
+  "lesson:report.reason.wrong": "Svaret är fel",
+  "lesson:report.reason.unclear": "Frågan är otydlig",
+  "lesson:report.reason.outdated": "Den är inaktuell",
+  "lesson:report.reason.offensive": "Den är stötande",
+  "lesson:report.reason.other": "Något annat",
+  "lesson:report.send": "Skicka",
+  "lesson:report.cancel": "Avbryt",
+  "lesson:report.thanks.title": "Tack",
+  "lesson:report.thanks.body": "Vi läser dem för att rätta våra fakta.",
+  "lesson:report.failed": "Det gick inte att skicka. Kontrollera anslutningen och försök igen."
 }

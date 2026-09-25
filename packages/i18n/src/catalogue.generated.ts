@@ -103,7 +103,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "settings.signOut.pending": "Signing out…",
       "settings.signOut.failed": "Sign-out could not finish on this device. Unlock your phone and tap Sign out to try again.",
       "ask.title": "Create a profile",
-      "ask.body": "Your progress is saved on this phone. A profile lets you keep it on a new one too.",
+      "ask.body": "Your progress is saved on this phone. With a profile, you can sign in to it again.",
       "ask.privacy": "We use your email to sign you in, and for nothing else.",
       "ask.create": "Create a profile",
       "ask.later": "Not now"
@@ -429,7 +429,20 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "prompt.calling_code_of": "Which dialling code calls {entityName}?",
       "prompt.calling_code_reverse": "Dialling {valueName} calls which country?",
       "offlineStart.title": "You're offline",
-      "offlineStart.body": "Lessons come from your account. Connect once and the next few will work offline too."
+      "offlineStart.body": "Lessons come from your account. Connect once and the next few will work offline too.",
+      "report.cta": "Report a problem",
+      "report.title": "Report a problem",
+      "report.question": "What's wrong with this question?",
+      "report.reason.wrong": "The answer is wrong",
+      "report.reason.unclear": "The question is unclear",
+      "report.reason.outdated": "It's out of date",
+      "report.reason.offensive": "It's offensive",
+      "report.reason.other": "Something else",
+      "report.send": "Send report",
+      "report.cancel": "Cancel",
+      "report.thanks.title": "Thank you",
+      "report.thanks.body": "We read these to fix our facts.",
+      "report.failed": "That didn't send. Check your connection and try again."
     },
     "nav": {
       "home": "Home",
@@ -862,7 +875,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "settings.signOut.pending": "Loggar ut…",
       "settings.signOut.failed": "Det gick inte att slutföra utloggningen på den här enheten. Lås upp telefonen och tryck på Logga ut för att försöka igen.",
       "ask.title": "Skapa en profil",
-      "ask.body": "Dina framsteg sparas på den här telefonen. Med en profil kan du ta med dem till en ny telefon också.",
+      "ask.body": "Dina framsteg sparas på den här telefonen. Med en profil kan du logga in till dem igen.",
       "ask.privacy": "Vi använder din e-post för att logga in dig, och till inget annat.",
       "ask.create": "Skapa en profil",
       "ask.later": "Inte nu"
@@ -1188,7 +1201,20 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "prompt.calling_code_of": "Vilket riktnummer ringer till {entityName}?",
       "prompt.calling_code_reverse": "Att ringa {valueName} går till vilket land?",
       "offlineStart.title": "Du är offline",
-      "offlineStart.body": "Lektionerna kommer från ditt konto. Anslut en gång så fungerar de närmaste lektionerna offline också."
+      "offlineStart.body": "Lektionerna kommer från ditt konto. Anslut en gång så fungerar de närmaste lektionerna offline också.",
+      "report.cta": "Rapportera ett problem",
+      "report.title": "Rapportera ett problem",
+      "report.question": "Vad är fel med frågan?",
+      "report.reason.wrong": "Svaret är fel",
+      "report.reason.unclear": "Frågan är otydlig",
+      "report.reason.outdated": "Den är inaktuell",
+      "report.reason.offensive": "Den är stötande",
+      "report.reason.other": "Något annat",
+      "report.send": "Skicka",
+      "report.cancel": "Avbryt",
+      "report.thanks.title": "Tack",
+      "report.thanks.body": "Vi läser dem för att rätta våra fakta.",
+      "report.failed": "Det gick inte att skicka. Kontrollera anslutningen och försök igen."
     },
     "nav": {
       "home": "Hem",

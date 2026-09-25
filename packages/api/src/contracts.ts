@@ -160,3 +160,9 @@ export type QuestRow = {
     readonly complete: boolean;
     readonly bonusClaimed: boolean;
 };
+
+/**
+ * Why a learner reported a question. A closed list: never free text, so nothing a child
+ * types is collected (content-pipeline §6).
+ */
+export type ReportReason = 'wrong' | 'unclear' | 'outdated' | 'offensive' | 'other';

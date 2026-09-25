@@ -1,5 +1,5 @@
 import type {
-  ContinuePurchase, FreezePurchase, LeagueCohort, Progress, QuestRow, StreakRepair,
+  ContinuePurchase, FreezePurchase, LeagueCohort, Progress, QuestRow, ReportReason, StreakRepair,
   SubmitLessonRequest, SubmitLessonResponse, SubscriptionRow,
 } from './contracts.js'
 
@@ -30,6 +30,8 @@ export type AccountRepository = {
    * that composes quests itself has one (the Worker); the legacy one pins the device's.
    */
   readonly fetchTodayQuest?: () => Promise<{ day: string; quest: QuestRow }>
+  /** Report a problem with a fact. Only a backend with a triage queue has one (the Worker). */
+  readonly reportFact?: (factId: string, reason: ReportReason) => Promise<void>
 }
 
 export type AuthRepository = {

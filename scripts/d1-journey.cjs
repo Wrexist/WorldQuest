@@ -41,7 +41,7 @@ const backendRequire = createRequire(path.resolve(__dirname, '../packages/backen
 const { Miniflare, convertV4MiniflareOptions } = backendRequire('miniflare')
 const { build } = backendRequire('esbuild')
 
-const PORT = 4174
+const PORT = Number(process.env.WQ_D1_PORT ?? 4174)
 const REPO = path.resolve(__dirname, '..')
 const ROOT = path.join(REPO, 'node_modules', '.cache', 'wq-web-d1')
 const SHOTS = path.join(REPO, 'node_modules', '.cache', 'wq-d1-shots')
@@ -201,7 +201,8 @@ async function waitFor(check, ms) {
     step('the taster lesson is one the Worker issued', issued && ticket?.n >= 1, `${ticket?.n ?? 0} ticket(s) for one guest`)
     await shot('lesson-issued')
 
-    const playLesson = async () => {
+    let reported = false
+    const playLesson = async (report = false) => {
       for (let i = 0; i < 25; i++) {
         const options = await page.getByTestId('answer-option').all()
         if (options.length === 0) break
@@ -210,6 +211,17 @@ async function waitFor(check, ms) {
         await page.waitForTimeout(200)
         await page.getByRole('button', { name: 'Check' }).first().click()
         await page.waitForTimeout(300)
+        // "Report a problem" from the answer sheet, once, on the first question.
+        if (report && i === 0) {
+          await page.getByText('Report a problem', { exact: true }).first().click()
+          await page.waitForTimeout(400)
+          await page.getByLabel('The answer is wrong').click()
+          await page.getByText('Send report', { exact: true }).click()
+          reported = await waitFor(async () => (await page.getByText('Thank you', { exact: true }).count()) > 0, 5000)
+          await shot('report-sent')
+          await page.getByText('Continue', { exact: true }).first().click()
+          await page.waitForTimeout(400)
+        }
         const next = page.getByRole('button', { name: 'Continue' })
         if (await next.count()) await next.first().click()
         await page.waitForTimeout(250)
@@ -217,7 +229,9 @@ async function waitFor(check, ms) {
       return waitFor(async () => (await page.getByTestId('summary-continue').count()) > 0, 8000)
     }
 
-    step('the lesson reaches its summary', await playLesson())
+    step('the lesson reaches its summary', await playLesson(true))
+    const report = await one('SELECT reason FROM reports WHERE account_id = ?', guest.id)
+    step('a problem reported from the answer sheet reaches triage, as a reason only', reported && report?.reason === 'wrong')
     await shot('summary')
     const receipt = await waitFor(async () => (await one('SELECT count(*) AS n FROM receipts WHERE account_id = ?', guest.id))?.n === 1, 10000)
     step('the answers reach the Worker and are graded there', receipt)
@@ -231,6 +245,23 @@ async function waitFor(check, ms) {
     await shot('streak-extended')
     if (beat) await page.getByTestId('streak-extended').getByText('Continue', { exact: true }).click()
     await page.waitForTimeout(1500)
+    // The rest of the after-lesson chain, whichever beats this lesson earned: badge
+    // cards and, for a guest adult, the create-profile ask. Walked until the tab bar.
+    const asked = { profile: false, badges: 0 }
+    for (let i = 0; i < 8; i++) {
+      if ((await page.getByRole('tab', { name: 'Home' }).count()) > 0) break
+      if ((await page.getByTestId('achievement-continue').count()) > 0) {
+        asked.badges++
+        await page.getByTestId('achievement-continue').click()
+      } else if ((await page.getByTestId('create-profile-later').count()) > 0) {
+        asked.profile = true
+        await shot('create-profile')
+        await page.getByTestId('create-profile-later').click()
+      }
+      await page.waitForTimeout(1200)
+    }
+    step('the after-lesson chain ends on Home', (await page.getByRole('tab', { name: 'Home' }).count()) > 0,
+      `${asked.badges} badge card(s)${asked.profile ? ', the profile ask' : ''}`)
 
     const prefetched = await waitFor(async () => {
       const row = await one(`SELECT count(*) AS n FROM tickets t WHERE account_id = ? AND NOT EXISTS

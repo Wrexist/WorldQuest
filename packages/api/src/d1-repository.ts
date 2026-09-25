@@ -1,6 +1,6 @@
 import { AccountChangedError, type AccountRepository } from './ports.js'
 import { D1AuthError, type AuthFetch, type createD1AuthClient } from './d1-auth.js'
-import type { ContinuePurchase, FreezePurchase, Progress, StreakRepair } from './contracts.js'
+import type { ContinuePurchase, FreezePurchase, Progress, ReportReason, StreakRepair } from './contracts.js'
 import type { DailyQuest, QuestTask } from '@worldquest/engines'
 
 /**
@@ -34,6 +34,7 @@ export function createD1AccountRepository(options: {
 }): AccountRepository & {
   progressWithInventory: () => Promise<Progress & { inventory: string[] }>
   fetchTodayQuest: () => Promise<{ day: string; quest: DailyQuest }>
+  reportFact: (factId: string, reason: ReportReason) => Promise<void>
 } {
   const assertCurrent = () => { if (!options.isCurrent()) throw new AccountChangedError() }
   async function request(path: string, body?: unknown): Promise<unknown> {
@@ -126,6 +127,11 @@ export function createD1AccountRepository(options: {
       return v.timeZone
     },
     setTimeZone: async (zone) => { await request('/v1/account/time-zone', { timeZone: zone }) },
+    // One id per report, so a retry after a lost response files it once.
+    reportFact: async (factId: string, reason: ReportReason) => {
+      const v = await request('/v1/reports', { reportId: offerId('report', options.randomBytes), factId, reason })
+      if (!object(v) || v.accepted !== true) throw new D1AuthError('INVALID_RESPONSE')
+    },
     fetchFeatureFlags: async () => [],
   }
 }

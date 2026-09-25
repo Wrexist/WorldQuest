@@ -12,7 +12,10 @@ describe('CreateProfile', () => {
     render(<CreateProfile onCreate={() => {}} onLater={() => {}} />)
     expect(screen.getByRole('heading', { name: 'Create a profile' })).toBeTruthy()
     expect(screen.getByText(/saved on this phone/)).toBeTruthy()
-    expect(screen.getByText(/keep it on a new one/)).toBeTruthy()
+    // What linking does today. Not "on a new phone": second-device recovery (U04) is
+    // still to be verified, and the ask must not promise more than the app does.
+    expect(screen.getByText(/With a profile, you can sign in to it again/)).toBeTruthy()
+    expect(screen.queryByText(/new (one|phone)/)).toBeNull()
   })
 
   it('never frames the ask as a loss, a deadline or a threat', () => {

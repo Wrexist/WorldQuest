@@ -29,6 +29,7 @@ import { isOnline } from './connectivity.js'
 import { invalidateProgress } from './query.js'
 import { captureStorage } from './storage.js'
 import { MEMORY_KEY } from './d1-memory.js'
+import { queueUnlocks, type PendingUnlock } from '../features/achievements/pending.js'
 import { currentUser } from './supabase.js'
 
 const QUEUE_KEY = 'd1.lessons.v1'
@@ -265,6 +266,10 @@ export function flushLessons(): Promise<readonly D1Receipt[]> {
       const { receipts } = await queue.inspect()
       const fresh = receipts.slice(before)
       if (fresh.length > 0) {
+        // The server's badges get their cards: the next lesson end reads this queue,
+        // and the one just finished reads it after waiting for its receipt.
+        queueUnlocks(fresh.flatMap((r) => r.achievements?.unlocked ?? [])
+          .map((u) => ({ achievementId: u.achievementId, tier: u.tier as PendingUnlock['tier'] })))
         invalidateProgress()
         await refreshMemory()
       }

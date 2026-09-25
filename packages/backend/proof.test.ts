@@ -526,6 +526,10 @@ describe('the app account repository against the real Worker', () => {
     expect(today.quest.tasks.map(t => t.slot)).toEqual(['locate', 'recognise', 'recall', 'discover', 'perform'])
     expect(today.quest.date).toBe(today.day)
     expect(await repo.fetchTodayQuest()).toEqual(today)
+    // "Report a problem" reaches the triage table with a reason and nothing else.
+    await repo.reportFact('geo.SE.capital', 'wrong')
+    expect(await db.prepare('SELECT fact_id, reason FROM reports WHERE account_id = ?').bind(a.userId).first())
+      .toEqual({ fact_id: 'geo.SE.capital', reason: 'wrong' })
     current = false
     await expect(repo.fetchProgress()).rejects.toThrow('Account changed')
   })

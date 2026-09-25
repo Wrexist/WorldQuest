@@ -1197,7 +1197,8 @@ const skip = (name, why) => {
   const asked = (await ask.count()) > 0
   const askText = asked ? await ask.innerText() : ''
   step('an adult guest is then offered a profile, for what it is for',
-       asked && /Create a profile/.test(askText) && /new one/i.test(askText),
+       // What the profile does today; second-device recovery (U04) is not yet promised.
+       asked && /Create a profile/.test(askText) && /sign in to it again/i.test(askText) && !/new (one|phone)/i.test(askText),
        askText.slice(0, 90).replace(/\s+/g, ' '))
   // Rule 7, asserted in the shipped bundle: the ask is an offer, not a threat.
   step('and the offer threatens nothing',
