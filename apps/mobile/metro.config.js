@@ -59,8 +59,23 @@ config.resolver.unstable_enableSymlinks = true
  */
 const OPTIONAL_AND_UNWANTED = new Set(['@opentelemetry/api'])
 
+/**
+ * A D1 build leaves the legacy backend's SDK out.
+ *
+ * Every Supabase call is behind `isD1()`, but Metro bundles what is imported, not what
+ * runs, so a D1 build carried the whole SDK: the largest dead weight in the bundle. It
+ * resolves to a stub that throws by name if a legacy path ever runs; `pnpm e2e:d1` is
+ * what shows none does. Read here, at bundle time, from the same variable the app
+ * reads (`src/lib/backendConfig.ts`).
+ */
+const LEGACY_BACKEND_ABSENT = process.env.EXPO_PUBLIC_BACKEND === 'd1'
+const SUPABASE_ABSENT = path.resolve(projectRoot, 'src/lib/supabase-absent.ts')
+
 const resolveTsFromJs = (context, moduleName, platform) => {
   if (OPTIONAL_AND_UNWANTED.has(moduleName)) return { type: 'empty' }
+  if (LEGACY_BACKEND_ABSENT && moduleName === '@supabase/supabase-js') {
+    return { type: 'sourceFile', filePath: SUPABASE_ABSENT }
+  }
 
   if (moduleName.startsWith('.') && moduleName.endsWith('.js')) {
     try {

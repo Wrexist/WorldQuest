@@ -285,6 +285,23 @@ const EXPO_CLI = require.resolve('expo/bin/cli', { paths: [MOBILE] })
  * The 9.74 MB of assets beside the bundle are a separate and larger question, and they
  * are not parsed at start — which is why they are reported separately and why they are
  * not the first place to look for cold-start time.
+ *
+ * ── 2026-09-26 · 4.80 → 4.32, the budget stays at 4.6, and this measures what ships ──
+ * The D1 backend (client, account flows, lesson queue, learning state), the account
+ * recovery work and the course path took the bundle to **4.80 MB**, over by 0.20. The
+ * sourcemap finally got run (`expo export --source-maps --no-bytecode`, grouped by
+ * package), and it answered in one line: the legacy backend's SDK, `@supabase/*`, was
+ * ~280 KB of the 3.10 MB of JavaScript — auth, realtime, storage, postgrest — in a build
+ * that talks only to the Worker. Every call to it is behind `isD1()`; Metro bundles what
+ * is imported, not what runs.
+ * A D1 build now resolves `@supabase/supabase-js` to `src/lib/supabase-absent.ts`, a stub
+ * that throws by name if a legacy path ever runs (`metro.config.js`), and `pnpm e2e:d1`
+ * drives that build end to end with no uncaught error. **4.80 → 4.32 MB** on both
+ * platforms: the SDK was 0.48 MB of bytecode.
+ * This gate now builds that configuration (`EXPO_PUBLIC_BACKEND=d1`), because it is the
+ * one the production environment ships (docs/plan/ios-launch-runbook.md); measuring the
+ * legacy build was measuring an app nobody installs. When the legacy adapter is removed
+ * after cutover, the stub and the setting both go with it.
  */
 const BUDGET_MB = 4.6
 
@@ -354,6 +371,10 @@ for (const platform of ['ios', 'android']) {
       cwd: MOBILE,
       stdio: 'pipe',
       maxBuffer: 1 << 26,
+      // The build that ships (the runbook's production environment), not the legacy one:
+      // a D1 build leaves the legacy backend's SDK out (`metro.config.js`). The address
+      // is a placeholder; only its few bytes reach the bundle.
+      env: { ...process.env, EXPO_PUBLIC_BACKEND: 'd1', EXPO_PUBLIC_D1_URL: 'https://api.example.invalid' },
     })
     const size = bundleSize(dir)
     const mb = size / 1024 / 1024

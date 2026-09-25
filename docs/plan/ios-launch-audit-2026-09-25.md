@@ -45,6 +45,7 @@ Status: ✅ done on this branch · ⏳ in progress · ☐ open.
 | 27 | P0 | Signing in on a new phone: "I already have an account" bounced back to onboarding; the account screen then offered "Start as guest"; after signing in, onboarding started again | U04, B02 (web part) | ✅ gate lets `/account` through; `?mode=signIn` opens on signing in; a sign-in finishes onboarding in the account's scope; `pnpm e2e:d1` second phone |
 | 28 | P0 | Every identity change remounts the app, so the account screen lost its flow: no "Your email is linked" or "Welcome back", and a refused code left the device paused in an empty guest scope (onboarding again) | S01, B02 | ✅ flow state outlives the screen; the host reopens the paused owner on a refusal; component and host tests |
 | 29 | P0 | Onboarding's birth year never reached the server: every guest `unknown`, adults asked twice, children unprotected server-side until the account screen | S02 | ✅ age band sent when onboarding finishes (or when a later guest is made); the Worker keeps the band only |
+| 30 | P0 | Native bundle over its 4.6 MB budget (4.80 MB), so CI's `verify:full` was red; the gate also measured the legacy build, which nobody ships | cold start, CI | ✅ the first sourcemap breakdown found the legacy Supabase SDK (~280 KB of JS) in D1 builds; D1 builds resolve it to a throwing stub and the gate measures the D1 build: **4.32 MB** on iOS and Android, budget unchanged |
 
 ## Deliberately not copied from Duolingo
 

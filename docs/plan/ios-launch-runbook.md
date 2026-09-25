@@ -97,3 +97,13 @@ sends an eight-digit code." Add a support email.
    to `false` for 1.0, or test on an iPad and supply 13" screenshots.
 2. **Selling:** v1.0 sells nothing (the paywall is hidden). Keep it free, or create the
    subscription products so purchases can be built (A01).
+3. **Day 1 of the course (5 min):** it practises six flags (SE NO US JP BR KE), not the
+   brief's four, because the Worker refuses a lesson under five questions. Approve, or
+   pick the six. Recorded in `docs/product/launch-brief.md`.
+4. **Course copy (15 min):** read the English and Swedish lines in
+   `packages/i18n/locales/{en,sv}/course.json`; a native speaker should sign off the
+   Swedish (L18).
+5. **Crash reports:** Sentry was removed on 2026-08-09 to hold the bundle budget, so
+   TestFlight's own crash logs are all you will see. A first-party option costs no SDK:
+   crash reports that already carry no free text (`src/lib/reporting.ts`) could be sent
+   to the Worker. Say if you want it.
