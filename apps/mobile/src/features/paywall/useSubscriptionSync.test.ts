@@ -7,7 +7,7 @@
  * wire existing, and about it never carrying anything in the dangerous direction.
  */
 
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createElement, type ReactNode } from 'react'
@@ -71,6 +71,19 @@ const wrapper = ({ children }: { children: ReactNode }) => {
   })
   return createElement(QueryClientProvider, { client }, children)
 }
+
+/**
+ * Transform the module graph once, outside any test's budget.
+ *
+ * `boot` resets modules, so the FIRST test paid the cold transform of the whole hook
+ * graph inside its 5-second timeout and failed about one run in three on a loaded
+ * machine (25 Sep 2026). Later imports reuse the transform cache and stay fast; the
+ * tests still re-evaluate fresh modules, so nothing leaks between them.
+ */
+beforeAll(async () => {
+  await import('./useSubscriptionSync.js')
+  await import('./useEntitlement.js')
+}, 60_000)
 
 beforeEach(() => {
   store.clear()
