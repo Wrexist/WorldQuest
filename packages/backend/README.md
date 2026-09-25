@@ -46,6 +46,17 @@ Implemented: restricted guest sessions with hashed tokens, account-derived reads
 logout revocation, strict 16 KiB request limits, server grading, idempotent receipts,
 atomic reward/review/memory writes and bounded optimistic concurrency retries.
 
+Local-day rules (migration 0007, S14): each account stores a validated IANA zone
+(`POST /v1/account/time-zone`, UTC fallback on read). `accounts.day` is the local
+date of the latest counted lesson and only moves forward, so DST days of 23/25
+hours and time-zone moves never pay a second first-lesson bonus. The streak is
+decided by the engines' `applyActivity` inside the same revision-guarded batch,
+with milestone XP/coins folded into that lesson's ledger row; receipts carry
+`day` and `streak`. The Worker takes an injectable clock (`createWorker(mail,
+clock)`, `submitLesson(..., clock)`) and `proof.test.ts` drives it across the
+October 2026 Stockholm DST change. Hearts, quests, achievements, freezes and
+repair purchases are not yet server-side here.
+
 Protected native credential storage is accepted under [ADR 0014](../../docs/adr/0014-native-credential-storage.md); it does not provide D1 identity by itself.
 
 The local account gateway now uses sessionless Better Auth email verification and

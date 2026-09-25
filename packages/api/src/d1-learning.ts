@@ -3,7 +3,11 @@ import { D1AuthError, type AuthFetch, type createD1AuthClient, type ProtectedSto
 import { parseD1Memory, parseD1Question } from './d1-learning-contracts.js'
 
 export type D1Submission = { lessonId: string; answers: readonly { slot: number; chosenOptionId: string | null; elapsedMs: number }[] }
-export type D1Receipt = { lessonId: string; revision: number; xpAwarded: number; coinsAwarded: number; xpTotal: number; coinBalance: number; correct: number; reviews: number }
+export type D1StreakReceipt = { current: number; longest: number; extended: boolean; freezeUsed: boolean; reset: boolean; milestoneXp: number; milestoneCoins: number }
+/** `day`/`streak` arrive from migration 0007 on; receipts queued before it carry neither. */
+export type D1Receipt = { lessonId: string; revision: number; xpAwarded: number; coinsAwarded: number; xpTotal: number; coinBalance: number; correct: number; reviews: number
+  day?: string; streak?: D1StreakReceipt }
+export type D1StreakState = { current: number; longest: number; lastActiveDate: string | null; freezesHeld: number }
 export type D1PrepareInput = { lessonId: string; locale: 'en' | 'sv'; count: number; screenReader: boolean }
 export type D1PreparedLesson = { lessonId: string; issuedAt: number; questions: ReturnType<typeof parseD1Question>[]; request: D1PrepareInput }
 const object = (v: unknown): v is Record<string, unknown> => v !== null && typeof v === 'object' && !Array.isArray(v)
@@ -19,11 +23,25 @@ function submission(value: unknown): D1Submission {
   if (new Set(answers.map(a => a.slot)).size !== answers.length) throw new D1AuthError('INVALID_SUBMISSION')
   return { lessonId: value.lessonId, answers }
 }
+const isoDay = (v: unknown): v is string => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v)
+function streakReceipt(value: unknown): D1StreakReceipt {
+  if (!object(value) || !integer(value.current) || !integer(value.longest) || typeof value.extended !== 'boolean' || typeof value.freezeUsed !== 'boolean'
+    || typeof value.reset !== 'boolean' || !integer(value.milestoneXp) || !integer(value.milestoneCoins)) throw new D1AuthError('INVALID_RESPONSE')
+  return { current: value.current, longest: value.longest, extended: value.extended, freezeUsed: value.freezeUsed, reset: value.reset,
+    milestoneXp: value.milestoneXp, milestoneCoins: value.milestoneCoins }
+}
+function streakState(value: unknown): D1StreakState {
+  if (!object(value) || !integer(value.current) || !integer(value.longest) || !(value.lastActiveDate === null || isoDay(value.lastActiveDate))
+    || !integer(value.freezesHeld)) throw new D1AuthError('INVALID_RESPONSE')
+  return { current: value.current, longest: value.longest, lastActiveDate: value.lastActiveDate, freezesHeld: value.freezesHeld }
+}
 function receipt(value: unknown): D1Receipt {
   if (!object(value) || typeof value.lessonId !== 'string' || !integer(value.revision) || !integer(value.xpAwarded)
     || !integer(value.coinsAwarded) || !integer(value.xpTotal) || !integer(value.coinBalance) || !integer(value.correct) || !integer(value.reviews)) throw new D1AuthError('INVALID_RESPONSE')
+  if ((value.day !== undefined && !isoDay(value.day)) || (value.day === undefined) !== (value.streak === undefined)) throw new D1AuthError('INVALID_RESPONSE')
   return { lessonId: value.lessonId, revision: value.revision, xpAwarded: value.xpAwarded, coinsAwarded: value.coinsAwarded,
-    xpTotal: value.xpTotal, coinBalance: value.coinBalance, correct: value.correct, reviews: value.reviews }
+    xpTotal: value.xpTotal, coinBalance: value.coinBalance, correct: value.correct, reviews: value.reviews,
+    ...(isoDay(value.day) ? { day: value.day, streak: streakReceipt(value.streak) } : {}) }
 }
 function prepareInput(value: unknown): D1PrepareInput {
   if (!object(value) || typeof value.lessonId !== 'string' || !/^[a-zA-Z0-9_-]{1,80}$/.test(value.lessonId)
@@ -73,7 +91,8 @@ export function createD1LearningClient(options: {
       const value = await request('/v1/learning/state')
       if (!object(value) || !integer(value.revision) || !integer(value.xp) || !integer(value.coins) || !Array.isArray(value.memories)
         || value.memories.length > 1000) throw new D1AuthError('INVALID_RESPONSE')
-      return { revision: value.revision, xp: value.xp, coins: value.coins, memories: value.memories.map(parseD1Memory) }
+      return { revision: value.revision, xp: value.xp, coins: value.coins, memories: value.memories.map(parseD1Memory),
+        ...(value.streak === undefined ? {} : { streak: streakState(value.streak) }), timeZone: typeof value.timeZone === 'string' ? value.timeZone : 'UTC' }
     },
     submit: async (input: D1Submission): Promise<D1Receipt> => {
         const parsed = submission(input), result = receipt(await request('/v1/lessons/submit', parsed))

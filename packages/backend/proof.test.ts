@@ -204,6 +204,60 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
     expect(snapshot.memories.every(row => (JSON.parse(String(row.state)) as { reps: number }).reps === 2)).toBe(true)
     expect((await db.prepare('SELECT * FROM transaction_guards').all()).results).toHaveLength(0)
   })
+  it('counts local days across a DST change and a time-zone move without a second daily bonus', async () => {
+    const a = await guest()
+    const tokenHash = await hashToken(a.token)
+    // The clock below runs a month ahead; keep the session valid for it.
+    await db.prepare('UPDATE sessions SET expires_at = ? WHERE token_hash = ?').bind(Date.parse('2027-01-01T00:00:00Z'), tokenHash).run()
+    // Fresh facts per lesson, so every lesson earns the same base XP and the only
+    // difference between receipts is the first-lesson-of-day bonus.
+    const lessons = ['d1', 'd2', 'd3', 'd4', 'd5']
+    await db.batch(lessons.map(id => db.prepare('INSERT INTO tickets (account_id, lesson_id, slots) VALUES (?, ?, ?)')
+      .bind(a.userId, id, JSON.stringify(Array.from({ length: 5 }, (_, i) => ({ itemId: `${id}-item-${i}`,
+        factId: `${id}-fact-${i}`, templateId: 'flag-mcq', options: ['a', 'b'], correctOptionId: 'a' }))))))
+    const answers = Array.from({ length: 5 }, (_, slot) => ({ slot, chosenOptionId: 'a', elapsedMs: 9000 }))
+    expect((await call('/v1/account/time-zone', a.token, { timeZone: 'Mars/Olympus' })).status).toBe(400)
+    expect((await call('/v1/account/time-zone', a.token, { timeZone: 'Europe/Stockholm' })).status).toBe(200)
+    const at = (iso: string) => () => Date.parse(iso)
+    const submit = (lessonId: string, iso: string) => submitLesson(db, a.userId, tokenHash, { lessonId, answers }, at(iso))
+    // 23:30 CEST on the 24th, then 00:30 on the 25th: two local days, two bonuses.
+    const r1 = await submit('d1', '2026-10-24T21:30:00Z')
+    const r2 = await submit('d2', '2026-10-24T22:30:00Z')
+    // 23:30 CET on the 25th, the 25-hour day the clocks went back: still the 25th.
+    const r3 = await submit('d3', '2026-10-25T22:30:00Z')
+    // Flying to Los Angeles, where it is 16:00 on the 25th: no day to reopen.
+    expect((await call('/v1/account/time-zone', a.token, { timeZone: 'America/Los_Angeles' })).status).toBe(200)
+    const r4 = await submit('d4', '2026-10-25T23:00:00Z')
+    // 00:30 on the 26th in Los Angeles: a genuinely new day.
+    const r5 = await submit('d5', '2026-10-26T07:30:00Z')
+    expect([r1, r2, r3, r4, r5].map(r => r.day)).toEqual(['2026-10-24', '2026-10-25', '2026-10-25', '2026-10-25', '2026-10-26'])
+    expect([r1, r2, r3, r4, r5].map(r => r.streak.current)).toEqual([1, 2, 2, 2, 3])
+    expect([r1, r2, r3, r4, r5].map(r => r.streak.extended)).toEqual([true, true, false, false, true])
+    const bonus = BALANCE.xp.firstLessonOfDay
+    expect(r1.xpAwarded).toBe(r2.xpAwarded)
+    expect(r2.xpAwarded - r3.xpAwarded).toBe(bonus)
+    expect(r2.xpAwarded - r4.xpAwarded).toBe(bonus)
+    expect(r5.xpAwarded).toBe(r1.xpAwarded)
+    const snapshot = await state(a.userId)
+    expect(snapshot.account?.xp).toBe(snapshot.ledger.reduce((sum, row) => sum + Number(row.xp), 0))
+    const account = await (await call('/v1/account', a.token)).json() as { timeZone: string; streak: { current: number; lastActiveDate: string } }
+    expect(account.timeZone).toBe('America/Los_Angeles')
+    expect(account.streak).toMatchObject({ current: 3, lastActiveDate: '2026-10-26' })
+  })
+  it('pays a streak milestone once, inside the lesson ledger row', async () => {
+    const a = await guest()
+    const tokenHash = await hashToken(a.token)
+    await db.prepare(`UPDATE accounts SET streak_current = 6, streak_longest = 6, streak_last_day = '2026-10-01', day = '2026-10-01' WHERE id = ?`).bind(a.userId).run()
+    await seed(a.userId, ['m1', 'm2'])
+    const answers = Array.from({ length: 5 }, (_, slot) => ({ slot, chosenOptionId: 'a', elapsedMs: 9000 }))
+    const r1 = await submitLesson(db, a.userId, tokenHash, { lessonId: 'm1', answers }, () => Date.parse('2026-10-02T12:00:00Z'))
+    const r2 = await submitLesson(db, a.userId, tokenHash, { lessonId: 'm2', answers }, () => Date.parse('2026-10-02T13:00:00Z'))
+    expect(r1.streak).toMatchObject({ current: 7, extended: true, milestoneXp: BALANCE.xp.streakMilestones[7] })
+    expect(r2.streak).toMatchObject({ current: 7, extended: false, milestoneXp: 0, milestoneCoins: 0 })
+    const snapshot = await state(a.userId)
+    expect(snapshot.account?.xp).toBe(snapshot.ledger.reduce((sum, row) => sum + Number(row.xp), 0))
+    expect(snapshot.account?.coins).toBe(snapshot.ledger.reduce((sum, row) => sum + Number(row.coins), 0))
+  })
   it('rolls back every write after an injected database failure and retries safely', async () => {
     const a = await guest()
     const answers = await seed(a.userId, ['one'])

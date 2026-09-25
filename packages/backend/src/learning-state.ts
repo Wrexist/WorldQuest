@@ -4,7 +4,8 @@ import type { MemoryState } from '@worldquest/engines'
 /** Current projection and wallet share a coherent D1 snapshot. No unbounded scans. */
 export async function learningState(db: D1Database, owner: string, tokenHash: string) {
   const rows = await db.batch<Record<string, unknown>>([
-    db.prepare(`SELECT a.revision,a.xp,a.coins FROM accounts a JOIN sessions s ON s.account_id=a.id
+    db.prepare(`SELECT a.revision,a.xp,a.coins,a.time_zone,a.streak_current,a.streak_longest,a.streak_last_day,a.freezes_held
+      FROM accounts a JOIN sessions s ON s.account_id=a.id
       WHERE a.id=? AND a.deleted_at IS NULL AND s.token_hash=? AND s.expires_at>?`).bind(owner, tokenHash, Date.now()),
     db.prepare('SELECT state FROM memories WHERE account_id=? ORDER BY fact_id LIMIT 1001').bind(owner),
   ])
@@ -12,7 +13,10 @@ export async function learningState(db: D1Database, owner: string, tokenHash: st
   if (!account) throw new ApiError('SESSION_EXPIRED', 401)
   const memory = rows[1]?.results ?? []
   if (memory.length > 1000) throw new ApiError('STATE_REQUIRES_PAGING', 409)
-  return { ...account, memories: memory.map(row => JSON.parse(String(row.state)) as MemoryState) }
+  return { revision: account.revision, xp: account.xp, coins: account.coins, timeZone: account.time_zone,
+    streak: { current: account.streak_current, longest: account.streak_longest, lastActiveDate: account.streak_last_day,
+      freezesHeld: account.freezes_held },
+    memories: memory.map(row => JSON.parse(String(row.state)) as MemoryState) }
 }
 
 /** Immutable reviews page by accepted revision and slot, capped to the first page's revision. */

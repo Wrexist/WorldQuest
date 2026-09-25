@@ -21,8 +21,8 @@ Status: ✅ done on this branch · ⏳ in progress · ☐ open.
 | 3 | P0 | First lesson ends on a paywall with nothing to buy; Restore does nothing | U03, A02 scope | ✅ `SELLING` gate; paywall/Premium/Restore return with a real port (A01) |
 | 4 | P0 | Streak-extended celebration and quest progress never shown (flag seeded off, read only via legacy adapter); rate prompt unreachable | Duolingo parity | ✅ `afterLesson.ts` chain: summary → streak → quest → (paywall) → Home; e2e asserted |
 | 5 | P0 | Account link/sign-in without in-app deletion on the shipping route | A06/S07, 5.1.1(v) | ☐ |
-| 6 | P0 | Worker: injected clock + stored IANA time zone + local-day rules | S14, prerequisite for E10 | ☐ |
-| 7 | P0 | Worker: streaks, hearts, canonical quests, achievements in the revision-guarded batch | B04/B05/S04/S05/E03/S12 | ☐ |
+| 6 | P0 | Worker: injected clock + stored IANA time zone + local-day rules | S14, prerequisite for E10 | ✅ migration 0007; DST + time-zone-move proof on workerd |
+| 7 | P0 | Worker: streaks, hearts, canonical quests, achievements in the revision-guarded batch | B04/B05/S04/S05/E03/S12 | ⏳ streak + milestones done; quests/hearts/achievements open |
 | 8 | P0 | Worker: freeze/repair/continue/shop spending with idempotency keys | S06/B09/A04 | ☐ |
 | 9 | P0 | App: D1 repository adapter + backend switch; route `D1AccountScreen` | B07/S01/B02 (code part) | ☐ |
 | 10 | P0 | App: hydrate memory from `/v1/learning/state`, replay queue on top | L01/L06/B06 | ☐ |

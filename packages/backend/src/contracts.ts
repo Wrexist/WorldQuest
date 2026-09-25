@@ -19,14 +19,24 @@ export const ticketSchema = z.array(z.object({
 })).min(5).max(20)
 
 export type Submission = z.infer<typeof submissionSchema>
+export interface StreakReceipt {
+  current: number; longest: number; extended: boolean; freezeUsed: boolean; reset: boolean
+  /** Already inside `xpAwarded`/`coinsAwarded`; stated separately so the app can celebrate it. */
+  milestoneXp: number; milestoneCoins: number
+}
 export interface Receipt {
   lessonId: string; revision: number; xpAwarded: number; coinsAwarded: number
   xpTotal: number; coinBalance: number; correct: number; reviews: number
+  /** The learner's local date this lesson counted for. */
+  day: string; streak: StreakReceipt
 }
 export interface Account {
   id: string; audience: 'unknown' | 'protected' | 'eligible'; deleted_at: number | null
   revision: number; xp: number; coins: number; day: string; daily_xp: number; lessons_today: number
+  time_zone: string; streak_current: number; streak_longest: number; streak_last_day: string | null; freezes_held: number
 }
+/** Injected so day rules are testable across midnights and DST; production passes `Date.now`. */
+export type Clock = () => number
 export class ApiError extends Error {
   constructor(readonly code: string, readonly status: number,
     readonly retryContext?: { challengeId: string; expiresAt: number; resendAt?: number }) { super(code) }

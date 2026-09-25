@@ -1,13 +1,29 @@
-import { gradeLesson, masteryOf, type MemoryState } from '@worldquest/engines'
-import { ApiError, ticketSchema, type Account, type Receipt, type Submission } from './contracts'
+import { applyActivity, gradeLesson, localDate, masteryOf, streakMilestoneReward, type MemoryState } from '@worldquest/engines'
+import { ApiError, ticketSchema, type Account, type Clock, type Receipt, type Submission } from './contracts'
+import { knownTimeZone } from './time-zone'
+
+/**
+ * The learner's local date for the day rules, and whether it opens a new day.
+ *
+ * `accounts.day` only moves forward. A lesson whose local date is not after it (the
+ * same day, or an earlier one because the learner flew west) belongs to the day already
+ * counted: no second first-lesson bonus and a continuing soft cap. Flying east can open
+ * the next date a few hours early; it can never open the same date twice (S14).
+ */
+export function dayRule(account: Pick<Account, 'day' | 'time_zone'>, now: number) {
+  const local = localDate(now, knownTimeZone(account.time_zone))
+  const opensDay = account.day === '' || local > account.day
+  return { day: opensDay ? local : account.day, opensDay }
+}
 
 /** Every writer of learning state must hold this account revision guard. */
-export async function submitLesson(db: D1Database, owner: string, tokenHash: string, input: Submission): Promise<Receipt> {
+export async function submitLesson(db: D1Database, owner: string, tokenHash: string, input: Submission,
+  clock: Clock = Date.now): Promise<Receipt> {
   const ordered = [...input.answers].sort((a, b) => a.slot - b.slot)
   const payload = JSON.stringify(ordered.map(a => [a.slot, a.chosenOptionId, a.elapsedMs]))
   // At most 45 SQL statements including authentication, below Free's 50/query limit.
   for (let attempt = 0; attempt < 4; attempt++) {
-    const now = Date.now()
+    const now = clock()
     // One batch provides a coherent grading snapshot. Only ticket facts are loaded.
     const read = await db.batch<Record<string, unknown>>([
       db.prepare(`SELECT a.* FROM accounts a JOIN sessions s ON s.account_id = a.id
@@ -42,28 +58,37 @@ export async function submitLesson(db: D1Database, owner: string, tokenHash: str
       return { ...answer, itemId: slot.itemId, factId: slot.factId, templateId: slot.templateId,
         wasCorrect: answer.chosenOptionId === slot.correctOptionId, answeredAt: now }
     })
-    // Arrival order and UTC day are explicit prototype limits, not the offline protocol.
-    const day = new Date(now).toISOString().slice(0, 10)
-    const sameDay = account.day === day
+    // Arrival order is still the prototype limit (L06); the day is the learner's own.
+    const { day, opensDay } = dayRule(account, now)
+    const sameDay = !opensDay
     const graded = gradeLesson({ lessonId: input.lessonId, answers, memory, now,
       xpEarnedToday: sameDay ? account.daily_xp : 0,
       isFirstLessonOfDay: !sameDay || account.lessons_today === 0,
       masteredBefore: new Set([...memory].filter(([, state]) =>
         ['mastered', 'burnished'].includes(masteryOf(state, now))).map(([id]) => id)),
     })
+    // The engine decides the streak; this carries it. A second lesson on a day returns
+    // `extended: false`, which is also what stops a milestone paying twice.
+    const streak = applyActivity({ current: account.streak_current, longest: account.streak_longest,
+      lastActiveDate: account.streak_last_day, freezesHeld: account.freezes_held }, now, knownTimeZone(account.time_zone))
+    const milestone = streak.extended ? streakMilestoneReward(streak.current) : { xp: 0, coins: 0 }
+    const xpAwarded = graded.xpAwarded + milestone.xp
+    const coinsAwarded = graded.coinsAwarded + milestone.coins
     const revision = account.revision + 1
-    const result: Receipt = { lessonId: input.lessonId, revision, xpAwarded: graded.xpAwarded,
-      coinsAwarded: graded.coinsAwarded, xpTotal: account.xp + graded.xpAwarded,
-      coinBalance: account.coins + graded.coinsAwarded, correct: graded.correct, reviews: graded.reviews.length }
+    const result: Receipt = { lessonId: input.lessonId, revision, xpAwarded,
+      coinsAwarded, xpTotal: account.xp + xpAwarded,
+      coinBalance: account.coins + coinsAwarded, correct: graded.correct, reviews: graded.reviews.length,
+      day, streak: { current: streak.current, longest: streak.longest, extended: streak.extended,
+        freezeUsed: streak.freezeUsed, reset: streak.reset, milestoneXp: milestone.xp, milestoneCoins: milestone.coins } }
     const guardId = crypto.randomUUID()
     const statements = [
       db.prepare(`INSERT INTO transaction_guards (id, valid) VALUES (?, CASE WHEN EXISTS (
         SELECT 1 FROM accounts a JOIN sessions s ON s.account_id = a.id
         WHERE a.id = ? AND a.revision = ? AND a.deleted_at IS NULL
         AND s.token_hash = ? AND s.expires_at > ?
-      ) THEN 1 ELSE 0 END)`).bind(guardId, owner, account.revision, tokenHash, Date.now()),
+      ) THEN 1 ELSE 0 END)`).bind(guardId, owner, account.revision, tokenHash, now),
       db.prepare('INSERT INTO ledger (account_id, lesson_id, xp, coins) VALUES (?, ?, ?, ?)')
-        .bind(owner, input.lessonId, graded.xpAwarded, graded.coinsAwarded),
+        .bind(owner, input.lessonId, xpAwarded, coinsAwarded),
     ]
     statements.push(
       db.prepare(`INSERT INTO reviews (account_id, lesson_id, slot, fact_id, revision, rating, reviewed_at)
@@ -73,9 +98,11 @@ export async function submitLesson(db: D1Database, owner: string, tokenHash: str
         SELECT ?, json_extract(value, '$.factId'), value, ? FROM json_each(?) WHERE 1
         ON CONFLICT (account_id, fact_id) DO UPDATE SET state = excluded.state, revision = excluded.revision`)
         .bind(owner, revision, JSON.stringify([...graded.updatedMemory.values()])),
-      db.prepare(`UPDATE accounts SET revision = ?, xp = ?, coins = ?, day = ?, daily_xp = ?, lessons_today = ? WHERE id = ?`)
+      db.prepare(`UPDATE accounts SET revision = ?, xp = ?, coins = ?, day = ?, daily_xp = ?, lessons_today = ?,
+        streak_current = ?, streak_longest = ?, streak_last_day = ?, freezes_held = ? WHERE id = ?`)
         .bind(revision, result.xpTotal, result.coinBalance, day,
-          (sameDay ? account.daily_xp : 0) + graded.xpAwarded, (sameDay ? account.lessons_today : 0) + 1, owner),
+          (sameDay ? account.daily_xp : 0) + graded.xpAwarded, (sameDay ? account.lessons_today : 0) + 1,
+          streak.current, streak.longest, streak.lastActiveDate, streak.freezesHeld, owner),
       db.prepare('INSERT INTO receipts (account_id, lesson_id, payload, result) VALUES (?, ?, ?, ?)')
         .bind(owner, input.lessonId, payload, JSON.stringify(result)),
       db.prepare('DELETE FROM transaction_guards WHERE id = ?').bind(guardId),
