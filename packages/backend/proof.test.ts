@@ -470,12 +470,14 @@ describe('D1 coin spending (real workerd and SQLite)', () => {
     await db.prepare('UPDATE accounts SET streak_current = 10, streak_longest = 10, streak_last_day = ?, day = ? WHERE id = ?')
       .bind(day(-2), day(-2), a.userId).run()
     const lapsed = await (await call('/v1/progress', a.token)).json() as { streak: number; brokenOn: string }
-    expect(lapsed).toMatchObject({ streak: 0, brokenOn: day(-1) })
+    // `restoreTo` is what Home's "bring back your 10-day streak" names, and it must be
+    // the length the repair below actually restores.
+    expect(lapsed).toMatchObject({ streak: 0, brokenOn: day(-1), restoreTo: 10 })
     expect((await post('/v1/streak/repair', a.token, { requestId: 'repair-0001' })).body).toEqual({ status: 'insufficient_funds' })
     await grant(a.userId, 1500)
     expect((await post('/v1/streak/repair', a.token, { requestId: 'repair-0001' })).body)
       .toMatchObject({ status: 'repaired', current: 10, spent: BALANCE.prices.streakRepair })
-    expect(await (await call('/v1/progress', a.token)).json()).toMatchObject({ streak: 10, brokenOn: null })
+    expect(await (await call('/v1/progress', a.token)).json()).toMatchObject({ streak: 10, brokenOn: null, restoreTo: null })
     expect((await post('/v1/streak/repair', a.token, { requestId: 'repair-0002' })).body).toEqual({ status: 'not_broken' })
     // Broken again later: the cooldown answers with a number of days, not a bare no.
     await db.prepare('UPDATE accounts SET streak_last_day = ? WHERE id = ?').bind(day(3), a.userId).run()
@@ -502,7 +504,8 @@ describe('the app account repository against the real Worker', () => {
     let n = 0
     const repo = createD1AccountRepository({ auth, owner: a.userId, isCurrent: () => current, fetch: transport,
       randomBytes: () => new Uint8Array(12).map(() => ++n % 256) })
-    expect(await repo.fetchProgress()).toMatchObject({ xpTotal: 0, coins: 0, streak: 0, hearts: BALANCE.hearts.max, brokenOn: null })
+    expect(await repo.fetchProgress()).toMatchObject({ xpTotal: 0, coins: 0, streak: 0, hearts: BALANCE.hearts.max, brokenOn: null,
+      restoreTo: null })
     await db.batch([
       db.prepare("INSERT INTO ledger (account_id, lesson_id, xp, coins) VALUES (?, 'test-grant', 0, 1200)").bind(a.userId),
       db.prepare('UPDATE accounts SET coins = 1200 WHERE id = ?').bind(a.userId),

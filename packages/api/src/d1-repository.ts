@@ -60,10 +60,13 @@ export function createD1AccountRepository(options: {
     if (!object(v) || !count(v.xpTotal) || !count(v.coins) || !count(v.hearts) || !count(v.streak) || !count(v.longestStreak)
       || !count(v.factsMastered) || !day(v.lastActiveDate) || !count(v.freezesHeld) || !day(v.brokenOn)
       || !(v.lastRepairAt === null || count(v.lastRepairAt)) || !Array.isArray(v.inventory)
-      || !v.inventory.every((id: unknown) => typeof id === 'string')) throw new D1AuthError('INVALID_RESPONSE')
+      || !v.inventory.every((id: unknown) => typeof id === 'string')
+      // Optional: a Worker deployed before it existed simply does not send it.
+      || !(v.restoreTo === undefined || v.restoreTo === null || count(v.restoreTo))) throw new D1AuthError('INVALID_RESPONSE')
     return { xpTotal: v.xpTotal, coins: v.coins, hearts: v.hearts, streak: v.streak, longestStreak: v.longestStreak,
       factsMastered: v.factsMastered, lastActiveDate: v.lastActiveDate, freezesHeld: v.freezesHeld, brokenOn: v.brokenOn,
-      lastRepairAt: v.lastRepairAt, inventory: v.inventory as string[] }
+      lastRepairAt: v.lastRepairAt, ...(v.restoreTo === undefined ? {} : { restoreTo: v.restoreTo as number | null }),
+      inventory: v.inventory as string[] }
   }
   /**
    * Today's quest as the server composed it, with the progress it will pay on.

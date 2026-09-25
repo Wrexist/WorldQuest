@@ -75,6 +75,20 @@ export type Progress = {
     readonly freezesHeld: number;
     readonly brokenOn: string | null;
     readonly lastRepairAt: number | null;
+    /**
+     * The streak length a repair would restore while the streak is broken; null while it
+     * is not. The server decides it — the D1 Worker from the length the break interrupted,
+     * the legacy backend from the longest streak, which is what its repair restores.
+     * Absent from caches written before it existed, and a reader must treat absent as
+     * "not known" rather than guess: a wrong number here is a wrong price-per-day.
+     */
+    readonly restoreTo?: number | null;
+    /**
+     * The missed day a streak freeze covered, when the backend records one (the legacy
+     * `expire_streaks` job). The D1 Worker spends a freeze with the next lesson instead,
+     * and its state says so directly — `lastActiveDate` two days back with a freeze held.
+     */
+    readonly freezeUsedOn?: string | null;
 };
 export type SubscriptionRow = {
     readonly status: 'none' | 'trialing' | 'active' | 'in_grace' | 'on_hold' | 'expired';

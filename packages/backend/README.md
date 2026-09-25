@@ -82,8 +82,10 @@ record each spend once in `spends` plus a negative `ledger` row, under the same
 revision guard as lessons. Replays return the stored result (a continue replay
 reports `already_paid`); refusals write nothing. `GET /v1/progress` projects the
 app's `Progress` shape, showing a lapsed streak as zero and deriving the repair
-window at read time, so no nightly job is needed. Hearts reset per lesson and
-are not stored. Entitlements are not yet server-side here.
+window at read time, so no nightly job is needed. While a streak is broken it
+also states `restoreTo`, the length the repair would restore (from the same view
+the repair uses), so the app never has to guess the number it offers. Hearts
+reset per lesson and are not stored. Entitlements are not yet server-side here.
 
 Achievements (migration 0010): the Worker runs the engines' `evaluateAll` over the
 shipped catalogue (`packs/achievements/core.v1.json`) with events it derived from its

@@ -133,7 +133,9 @@ export async function fetchProgress(client: WorldQuestClient): Promise<Progress>
     client.from('wallets').select('xp_total, coins, hearts').maybeSingle(),
     client
       .from('streaks')
-      .select('current, longest, last_active_date, freezes_held, broken_on, last_repair_at')
+      .select(
+        'current, longest, last_active_date, freezes_held, broken_on, last_repair_at, freeze_used_on',
+      )
       .maybeSingle(),
     client
       .from('user_facts')
@@ -157,6 +159,11 @@ export async function fetchProgress(client: WorldQuestClient): Promise<Progress>
     freezesHeld: streak.data?.freezes_held ?? 0,
     brokenOn: streak.data?.broken_on ?? null,
     lastRepairAt: streak.data?.last_repair_at ? Date.parse(streak.data.last_repair_at) : null,
+    // What `repair_streak` restores on this backend: `greatest(longest, current)`. Stated
+    // here, beside the query, so no screen has to know the legacy rule to name the number.
+    restoreTo: streak.data?.broken_on ? Math.max(streak.data.longest, streak.data.current) : null,
+    // Written by the hourly `expire_streaks` job when it spends a freeze: the missed day.
+    freezeUsedOn: streak.data?.freeze_used_on ?? null,
     factsMastered: mastered.count ?? 0,
   }
 }
