@@ -39,7 +39,7 @@ Status: ✅ done on this branch · ⏳ in progress · ☐ open.
 | 21 | P1 | `supportsTablet: true` with no iPad pass | A11 | ☐ owner decision |
 | 22 | P2 | Summary: time card + staggered reveal; combo glow on progress bar | parity polish | ☐ |
 | 23 | P2 | Month streak calendar; share streak (hidden for children) | parity polish | ☐ |
-| 24 | P1 | Course path on Home (units/nodes) | L08/P07/U05 | ☐ Phase 3 |
+| 24 | P1 | Course path on Home (units/nodes) | L08/P07/U05 (code part), L15 | ✅ `c292c95` (`feat/course-path`): first-week course as a validated pack, pure path engine, one lit step with Start, done/closed-step cards, finished-lesson credit per step (account-scoped), review after the check; on D1 the current step's ticket is kept saved so Start works offline; `pnpm e2e` 108/108, `pnpm e2e:d1` 22/22. Open: owner/editor approval of the course copy and of day 1 practising six flags instead of four (launch brief), a time gate for the day-7 check, due reviews ahead of the next step, cross-device progress, a device VoiceOver pass |
 | 25 | P1 | Web harness: previous tab's content shows through a newly selected tab (transparent scenes) | U09 | ☐ check on device first |
 | 26 | P1 | Euro distractor capitalised ("Euro" among lowercase short names) gave the answer away | L14 | ✅ euro short names, currencies pack 1.0.1 |
 

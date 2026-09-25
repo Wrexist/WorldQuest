@@ -24,10 +24,14 @@ WorldQuest
 │   └── Class code entry                      · v2.0, Sarah
 │
 ├── HOME  🏠  "your daily hub"                [screen 3]
-│   ├── Greeting + streak flame
-│   ├── Today's Quest card       → Daily Quest
-│   ├── Continue Lesson card     → Lesson runner        ← the primary action
-│   ├── Daily Challenge card     → Challenge (timed)
+│   ├── Greeting + fact row (streak, title, quest count)
+│   ├── Course path: unit banners + steps  → Lesson runner (?node=)  ← the primary action
+│   │   ├── current step  → starts its lesson
+│   │   ├── done step     → card → Practise
+│   │   ├── closed step   → card: how it opens
+│   │   └── finished course → Keep reviewing
+│   ├── Today's Quest card (secondary)  → Daily Quest
+│   ├── Daily Challenge card     → Challenge (timed)    · not drawn; no producer
 │   ├── Friends strip            → Friends
 │   ├── League strip             → Leagues
 │   ├── Event banner             → Live-ops event       · conditional
