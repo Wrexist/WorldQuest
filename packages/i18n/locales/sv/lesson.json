@@ -77,5 +77,6 @@
   "lesson:report.cancel": "Avbryt",
   "lesson:report.thanks.title": "Tack",
   "lesson:report.thanks.body": "Vi läser dem för att rätta våra fakta.",
-  "lesson:report.failed": "Det gick inte att skicka. Kontrollera anslutningen och försök igen."
+  "lesson:report.failed": "Det gick inte att skicka. Kontrollera anslutningen och försök igen.",
+  "lesson:review.tag": "Tidigare misstag"
 }

@@ -30,7 +30,7 @@ Status: ✅ done on this branch · ⏳ in progress · ☐ open.
 | 12 | P1 | Lesson player: select-then-CHECK | Duolingo parity, L05 (timer now stops at Check; L05 itself stays open) | ✅ `feat/lesson-check-sheet`; SELECT/CHECK in the engine machine, e2e asserted |
 | 13 | P1 | Answer sheet slides up with calm tint (motion tokens, Reduce Motion) | Duolingo parity | ✅ `feat/lesson-check-sheet`; `useRiseIn`, `feedback.*Edge` tokens; device pass for VoiceOver focus still owed |
 | 14 | P1 | "Report a problem" on the answer sheet | G08, content-pipeline §report | ✅ on D1 builds: reasons only, idempotent, 30/day, erased with the account; in `pnpm e2e:d1` |
-| 15 | P1 | Mistake review at lesson end (needs learning-science sign-off) | Duolingo parity, L03 | ☐ |
+| 15 | P1 | Mistake review at lesson end (needs learning-science sign-off) | Duolingo parity, L03 | ✅ missed questions re-asked once, practice only (no hearts, XP or scheduling); relearning-step review by learning science still open |
 | 16 | P1 | "Create a profile" sheet after lesson 1–2, adults only, max twice | Duolingo parity | ✅ after lesson 1–2, adults only, twice max, after server confirms no email; copy promises only what linking does (`d8c6016`) |
 | 17 | P1 | Achievement-unlocked full-screen card queue | Duolingo parity | ✅ card per tier after the summary; on D1 from server receipts only |
 | 18 | P1 | Home card when a freeze was used / repair is available | Duolingo parity | ✅ freeze-kept and repair-open cards on Home; component and static-render evidence (no web backend) |

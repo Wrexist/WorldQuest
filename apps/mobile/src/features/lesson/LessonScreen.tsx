@@ -35,7 +35,7 @@ import {
   text,
   useRiseIn,
 } from '@worldquest/design'
-import { canRevive, lessonLength } from '@worldquest/engines'
+import { canRevive, inReview, lastAnswerOf, lessonLength } from '@worldquest/engines'
 import type { LessonFocus } from '@worldquest/engines'
 import type { ContentIndex, GradeResult, LessonState, Question } from '@worldquest/engines'
 import { Art } from '../../components/Art.js'
@@ -859,7 +859,10 @@ export function LessonScreen({
     return run
   })()
 
-  const lastAnswer = lesson.state.answers[lesson.state.answers.length - 1]
+  // The answer on screen: in the end-of-lesson review it is the review round's, which is
+  // practice and earns nothing, so it shows no reward either.
+  const reviewing = inReview(lesson.state)
+  const lastAnswer = lastAnswerOf(lesson.state)
   /**
    * What that answer was actually worth.
    *
@@ -871,7 +874,7 @@ export function LessonScreen({
    * `awardForAnswer` is the same function the grader and the server run, so the number
    * under a user's thumb is the number that lands in the ledger.
    */
-  const lastAward = lastAnswer ? lesson.awardFor(lastAnswer) : null
+  const lastAward = lastAnswer && !reviewing ? lesson.awardFor(lastAnswer) : null
 
   /**
    * The one primary action while a question is up.
@@ -941,6 +944,10 @@ export function LessonScreen({
             `justifyContent` puts the prompt above scroll position zero and out of reach.
             Measured before the change: option four sat at 535–594 of 568. */}
         <Spacer />
+        {reviewing && (
+          // Duolingo's "previous mistake" tag: this one came back because it was missed.
+          <Text style={styles.reviewTag}>{t('lesson:review.tag')}</Text>
+        )}
         <Text style={styles.prompt} role="heading">
           {/* The prompt key and its params come from the question template in the
               content pack, so they are validated by `pnpm content:validate` rather
@@ -1595,6 +1602,7 @@ const styles = StyleSheet.create({
   // shadow of its own to separate it.
   bodyShort: { gap: space[3], paddingBottom: space[4] },
   prompt: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
+  reviewTag: { ...text('caption'), color: colors.text.secondary, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 },
   promptArt: { alignItems: 'center' },
   options: { gap: space[2] },
   /**

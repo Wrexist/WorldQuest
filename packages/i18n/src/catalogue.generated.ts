@@ -450,7 +450,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "report.cancel": "Cancel",
       "report.thanks.title": "Thank you",
       "report.thanks.body": "We read these to fix our facts.",
-      "report.failed": "That didn't send. Check your connection and try again."
+      "report.failed": "That didn't send. Check your connection and try again.",
+      "review.tag": "Previous mistake"
     },
     "nav": {
       "home": "Home",
@@ -1230,7 +1231,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "report.cancel": "Avbryt",
       "report.thanks.title": "Tack",
       "report.thanks.body": "Vi läser dem för att rätta våra fakta.",
-      "report.failed": "Det gick inte att skicka. Kontrollera anslutningen och försök igen."
+      "report.failed": "Det gick inte att skicka. Kontrollera anslutningen och försök igen.",
+      "review.tag": "Tidigare misstag"
     },
     "nav": {
       "home": "Hem",

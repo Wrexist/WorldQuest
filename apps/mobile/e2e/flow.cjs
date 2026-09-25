@@ -1094,8 +1094,10 @@ const skip = (name, why) => {
   await page.goto(`http://localhost:${PORT}/lesson`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(1800)
   // Answer every question, then leave — the lesson must reach its summary for the
-  // completion event to fire at all.
-  for (let i = 0; i < 25; i++) {
+  // completion event to fire at all. Up to 45 answers: a lesson is at most twenty
+  // questions, and the review round after them asks each missed one again, so always
+  // tapping the first option can take nearly twice that. The loop ends with the options.
+  for (let i = 0; i < 45; i++) {
     const options = await page.getByTestId('answer-option').all()
     if (options.length === 0) break
     // Think first. `MIN_CREDIBLE_ANSWER_MS` is 400 and grading DISCARDS anything

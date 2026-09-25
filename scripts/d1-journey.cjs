@@ -203,7 +203,8 @@ async function waitFor(check, ms) {
 
     let reported = false
     const playLesson = async (report = false) => {
-      for (let i = 0; i < 25; i++) {
+      // Up to 45: twenty questions at most, then the review round re-asks each miss.
+      for (let i = 0; i < 45; i++) {
         const options = await page.getByTestId('answer-option').all()
         if (options.length === 0) break
         await page.waitForTimeout(600) // credible think time; faster answers are discarded

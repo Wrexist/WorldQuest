@@ -179,6 +179,18 @@ The richer treatments — a mnemonic, an Atlas explanation — remain v3.0.
 
 ---
 
+### The end-of-lesson review round
+
+An untimed lesson that ends with mistakes re-asks each missed question once, options
+rotated, before the summary (`reviewFrom`/`reviewed` in `lesson/machine.ts`). It is
+practice, not evidence: review answers are never graded, submitted or scheduled, cost
+no heart and earn no XP, because the first answer is the observation and a second one
+seconds later would count one fact twice in FSRS. A speed round and a lesson that ran
+out of hearts have no review round; leaving the review ends the lesson as finished.
+Added 25 September 2026 for Duolingo parity and the launch course's "introduce and
+retest mistakes"; a learning-science review of whether the retest should feed a
+relearning step is still open (L03/L05).
+
 ## 4. Mastery states (what the UI shows)
 
 The user never sees "stability = 12.4". They see a state:

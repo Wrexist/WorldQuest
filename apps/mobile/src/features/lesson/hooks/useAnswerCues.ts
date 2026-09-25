@@ -17,23 +17,24 @@
  */
 
 import { useEffect, useRef } from 'react'
-import { deriveRating, type LessonState } from '@worldquest/engines'
+import { answerCount, deriveRating, inReview, lastAnswerOf, type LessonState } from '@worldquest/engines'
 import { hapticCorrect, hapticWrong } from '../../../lib/haptics.js'
 import { soundCorrect, soundWrong } from '../../../lib/sound.js'
 import { track } from '../../../lib/analytics.js'
 
 export function useAnswerCues(state: LessonState, itemMs: number): void {
-  const announced = useRef(state.answers.length)
+  // Every answer gets its cue, the review round's included.
+  const announced = useRef(answerCount(state))
 
   useEffect(() => {
-    const count = state.answers.length
+    const count = answerCount(state)
     if (count <= announced.current) {
       announced.current = count
       return
     }
     announced.current = count
 
-    const answer = state.answers[count - 1]
+    const answer = lastAnswerOf(state)
     if (answer === undefined || answer.chosenOptionId === null) return
 
     // `impactMedium` for a wrong answer, never the error pattern — see lib/haptics.ts.
@@ -47,7 +48,9 @@ export function useAnswerCues(state: LessonState, itemMs: number): void {
     }
 
     // The richest event we have, and the one that sets lesson length honestly:
-    // accuracy by POSITION is a measurement, not a guess.
+    // accuracy by POSITION is a measurement, not a guess. Not for a review answer: it
+    // is the same question again seconds later, and counting it would skew both.
+    if (inReview(state)) return
     track('question_answered', {
       lesson_id: state.lessonId,
       template_id: answer.templateId,
@@ -57,5 +60,5 @@ export function useAnswerCues(state: LessonState, itemMs: number): void {
       rating: deriveRating(answer.wasCorrect, answer.elapsedMs, itemMs),
       position: state.index,
     })
-  }, [state.answers, state.lessonId, state.index, itemMs])
+  }, [state, itemMs])
 }

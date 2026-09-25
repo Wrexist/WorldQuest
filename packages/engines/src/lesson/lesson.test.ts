@@ -10,10 +10,13 @@ import { MIN_CREDIBLE_ANSWER_MS, type MemoryState } from '../learning/types.js'
 import { composeLesson } from './compose.js'
 import {
   accuracy,
+  answerCount,
   canRevive,
   currentQuestion,
+  inReview,
   initialState,
   isFinished,
+  lastAnswerOf,
   transition,
   type LessonState,
 } from './machine.js'
@@ -131,6 +134,69 @@ describe('lesson state machine', () => {
     s = transition(s, { type: 'ABANDON', now: T0 + 4_000 })
     expect(s.phase).toBe('abandoned')
     expect(s.answers).toHaveLength(1)
+  })
+})
+
+describe('reviewing mistakes at the end', () => {
+  // Three questions: right, wrong, right. The wrong one comes back once, before the summary.
+  const toReview = (): LessonState => {
+    let s = started(makeQuestions(3))
+    s = transition(answerCorrectly(s, T0 + 1000), { type: 'CONTINUE', now: T0 + 1100 })
+    s = transition(answerWrongly(s, T0 + 2000), { type: 'CONTINUE', now: T0 + 2100 })
+    s = answerCorrectly(s, T0 + 3000)
+    return transition(s, { type: 'CONTINUE', now: T0 + 3100 })
+  }
+
+  it('asks each missed question again, once, with the options moved', () => {
+    const s = toReview()
+    expect(s.phase).toBe('presenting')
+    expect(inReview(s)).toBe(true)
+    expect(s.reviewFrom).toBe(3)
+    expect(s.questions).toHaveLength(4)
+    const original = s.questions[1]!, again = currentQuestion(s)!
+    expect(again.item.id).toBe(original.item.id)
+    expect(again.options.map((o) => o.id)).not.toEqual(original.options.map((o) => o.id))
+    expect(new Set(again.options.map((o) => o.id))).toEqual(new Set(original.options.map((o) => o.id)))
+  })
+
+  it('keeps review answers out of grading: no heart, no second graded answer', () => {
+    let s = toReview()
+    const before = { answers: s.answers, hearts: s.hearts, heartsLost: s.heartsLost }
+    s = answerWrongly(s, T0 + 4000)
+    expect(s.answers).toEqual(before.answers)
+    expect(s.hearts).toBe(before.hearts)
+    expect(s.heartsLost).toBe(before.heartsLost)
+    expect(s.reviewed).toHaveLength(1)
+    expect(lastAnswerOf(s)?.wasCorrect).toBe(false)
+    expect(answerCount(s)).toBe(4)
+    expect(accuracy(s)).toBeCloseTo(2 / 3)
+  })
+
+  it('ends on the summary after one round, however the review went', () => {
+    let s = answerWrongly(toReview(), T0 + 4000)
+    s = transition(s, { type: 'CONTINUE', now: T0 + 4100 })
+    expect(s.phase).toBe('summary')
+    expect(s.questions).toHaveLength(4)
+  })
+
+  it('leaving the review is finishing the lesson, not abandoning it', () => {
+    const s = transition(toReview(), { type: 'ABANDON', now: T0 + 4000 })
+    expect(s.phase).toBe('summary')
+  })
+
+  it('has nothing to review after a clean lesson, a speed round or running out of hearts', () => {
+    let clean = started(makeQuestions(2))
+    for (let i = 0; i < 2; i++) clean = transition(answerCorrectly(clean, T0 + i * 1000 + 500), { type: 'CONTINUE', now: T0 + i * 1000 + 600 })
+    expect(clean.phase).toBe('summary')
+
+    let timed = started(makeQuestions(1), { timeLimitMs: 10_000 })
+    timed = transition(answerWrongly(timed, T0 + 500), { type: 'CONTINUE', now: T0 + 600 })
+    expect(timed.phase).toBe('summary')
+
+    let empty = started(makeQuestions(BALANCE.hearts.max + 1))
+    for (let i = 0; i < BALANCE.hearts.max; i++) empty = transition(answerWrongly(empty, T0 + i * 1000 + 500), { type: 'CONTINUE', now: T0 + i * 1000 + 600 })
+    expect(empty.phase).toBe('summary')
+    expect(empty.reviewFrom).toBeNull()
   })
 })
 
