@@ -31,14 +31,18 @@ describe('a lesson from the course path', () => {
   it('treats a step as the learner\'s choice and review as the app\'s suggestion', () => {
     // A step may not be swapped for a different saved lesson offline; review may.
     expect(courseLesson(COURSE, { node: 'node.first-week.check' })?.explicit).toBe(true)
+    // Review is everything the course taught: what its closing check asks.
+    const closing = COURSE.units.at(-1)!.nodes.at(-1)!
+    expect(closing.kind).toBe('check')
     expect(courseLesson(COURSE, { review: COURSE.id })).toEqual({
       kind: 'review',
       params: {
-        entity: 'SE,NO,US,JP,BR,KE,CA,MX,FR,DE,IN,AU',
+        entity: closing.focus.entities.join(','),
         attr: 'flag,location,capital',
       },
       explicit: false,
     })
+    expect(closing.focus.entities.slice(0, 12).join(',')).toBe('SE,NO,US,JP,BR,KE,CA,MX,FR,DE,IN,AU')
   })
 
   it('falls back to an ordinary lesson for a step or course this build does not know', () => {

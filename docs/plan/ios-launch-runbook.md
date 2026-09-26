@@ -129,8 +129,10 @@ sends an eight-digit code." Add a support email.
    Duolingo's quests count any lesson. Keep this, or credit "discover" with any
    first-seen fact and the review tasks with any due fact answered, so quests move with
    the path; quests would then complete more often (an economy change, so it is yours).
-9. **The path after week one (10 min):** the course is the brief's first week (13
-   lessons, 12 countries). After it, Home offers review and Explore holds the other 53
-   countries. Proposal: continue with one unit per continent from the existing packs,
-   in the same step shapes (flags, places, capitals, then a check). About an hour of
-   work once you approve the order of continents.
+9. **The path after week one (5 min):** done with a default you can change. After the
+   brief's first week the path goes on with one unit per continent, in the order the first
+   week met them: Europe, the Americas, Asia and Oceania, Africa (33 steps, 63 countries;
+   `packages/content/packs/courses/first-week.v1.json` v1.1.0). Reordering units later
+   keeps every learner's finished steps. Switzerland and South Africa stay out of the
+   path until their capitals are signed off (both are review-required). Check the
+   Swedish unit names with the rest of the course copy (decision 4).
