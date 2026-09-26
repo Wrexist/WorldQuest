@@ -196,8 +196,7 @@ jobs:
             const p = "apps/mobile/app.json";
             const json = JSON.parse(fs.readFileSync(p, "utf8"));
             json.expo.ios.buildNumber = String(process.argv[1]);
-            fs.writeFileSync(p, JSON.stringify(json, null, 2) + "
-");
+            fs.writeFileSync(p, JSON.stringify(json, null, 2) + "\n");
           ' "$BUILD_NUMBER"
           echo "::notice::ios.buildNumber stamped as $BUILD_NUMBER (autoIncrement adds one)"
 

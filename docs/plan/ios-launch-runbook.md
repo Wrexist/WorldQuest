@@ -85,7 +85,9 @@ Worked when: it lists `EXPO_PUBLIC_BACKEND`, `EXPO_PUBLIC_D1_URL` and the four
 ## 6. Build and try it (45 min)
 
 Run the **iOS TestFlight** workflow in GitHub Actions (build numbers are unique per
-run). Install from TestFlight on one iPhone and do, in order: onboard, finish a lesson,
+run). Until 26 September the workflow file did not parse, so GitHub could not start it
+and showed a failed "iOS TestFlight" run on every push: those failures were that, not
+your secrets. `pnpm verify` now parses every workflow (`pnpm check:workflows`). Install from TestFlight on one iPhone and do, in order: onboard, finish a lesson,
 check the streak screen, lock the phone offline and finish a second lesson, reconnect,
 link your email (a real code should arrive). Then, on a second iPhone (or after
 deleting and reinstalling the app), tap **I already have an account**, sign in with the

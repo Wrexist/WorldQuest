@@ -151,8 +151,9 @@ unless asked. Full rules: [`PROJECT.md §11`](PROJECT.md#11-git-workflow).
 - `pnpm dev` (Expo) · `pnpm test` · `pnpm typecheck` · `pnpm content:validate` ·
   `pnpm content:crosscheck` · `pnpm i18n:check`
 - **`pnpm verify` is the gate.** Typecheck, every test, content validation and preview,
-  i18n, contrast, a11y lint, escape hatches, reachability, five states, and the economy
-  simulation. It said "all of it" for months while `engines:simulate` and
+  i18n, contrast, a11y lint, escape hatches, reachability, five states, the economy
+  simulation, and every CI workflow parsing (`pnpm check:workflows`: GitHub only says a
+  workflow is broken after a push, and the TestFlight one sat unrunnable for weeks). It said "all of it" for months while `engines:simulate` and
   `content:preview` ran only in CI — so a reward number could be pushed having met every
   local check. One list now, and CI runs the same command rather than its own subset.
 - **`pnpm verify:full`** adds the three that need Chromium or Metro: `bundle:native`,

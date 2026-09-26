@@ -99,6 +99,7 @@ safe areas, Dynamic Type, haptics and VoiceOver itself.
 | 63 | P2 | The region picker offers Antarctica (no countries, a pale blur) and cuts "North America" | design review 10 | ✅ six regions with countries; labels wrap to two lines |
 | 64 | P2 | The flame looks the same at 0 and 1 and cannot say today is not done | design review 11 | ✅ grey until today's lesson is in, and the label says so in words |
 | 65 | P3 | The paywall fallback says lessons are free "in the meantime"; the achievements heading "Close" reads as a button | design review 12 | ✅ "stays free"; "Up next" |
+| 66 | P0 | The TestFlight workflow could not be started: since 3d9164c a `"\n"` in its build-number step was a real line break, the YAML did not parse, and GitHub failed it on every push | runbook 6, found when merging | ✅ fixed and run against a copy of app.json; `pnpm check:workflows` (in verify) parses all eleven workflows and fails on this exact break |
 
 ## Deliberately not copied from Duolingo
 
