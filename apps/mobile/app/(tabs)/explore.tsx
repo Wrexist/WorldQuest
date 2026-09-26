@@ -38,7 +38,8 @@ export default function ExploreRoute() {
         onOpenCollection={(kind) => router.push(`/collection/${kind}`)}
         onSelectRegion={(region) => router.push(`/region/${region}`)}
         coins={data?.coins ?? 0}
-        onOpenInbox={() => router.push('/streak')}
+        streak={data?.streak ?? 0}
+        onOpenStreak={() => router.push('/streak')}
       />
     </ContentGate>
   )

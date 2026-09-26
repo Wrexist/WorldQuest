@@ -144,7 +144,9 @@ export type ExploreScreenProps = {
   readonly onSelectRegion: (region: RegionCode) => void
   /** The wallet, for the bar at the top. Absent draws the bar without it. */
   readonly coins?: number | undefined
-  readonly onOpenInbox?: (() => void) | undefined
+  /** The streak, for the flame chip in the top bar, and where tapping it goes. */
+  readonly streak?: number | undefined
+  readonly onOpenStreak?: (() => void) | undefined
 }
 
 /**
@@ -195,7 +197,8 @@ export function ExploreScreen({
   onSelectRegion,
   onOpenCollection,
   coins,
-  onOpenInbox,
+  streak,
+  onOpenStreak,
 }: ExploreScreenProps) {
   const t = useT()
 
@@ -227,7 +230,7 @@ export function ExploreScreen({
       <TopBar
         initials="EX"
         {...(coins !== undefined ? { coins } : {})}
-        {...(onOpenInbox !== undefined ? { onInbox: onOpenInbox } : {})}
+        {...(onOpenStreak !== undefined && streak !== undefined ? { onStreak: onOpenStreak, streak } : {})}
       />
       {/* Atlas at screen level, beside the title.
    

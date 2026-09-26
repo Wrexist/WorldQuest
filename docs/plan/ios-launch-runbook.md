@@ -107,3 +107,10 @@ sends an eight-digit code." Add a support email.
    TestFlight's own crash logs are all you will see. A first-party option costs no SDK:
    crash reports that already carry no free text (`src/lib/reporting.ts`) could be sent
    to the Worker. Say if you want it.
+6. **The first lesson and the path (5 min):** onboarding's taster lesson follows the
+   region and level the learner picked, then Home's course path starts with six world
+   flags either way, so the taster does not count as step one. Duolingo makes the first
+   lesson the path's first step. Keep the region-first taster, or make it path step one.
+7. **Kids Category:** if you choose it, the requirement for a parental gate before links
+   out of the app is met: on a child's device every link and "Delete account" asks a
+   grown-up first (`/grown-up`). Nothing else in the app contacts a third party.

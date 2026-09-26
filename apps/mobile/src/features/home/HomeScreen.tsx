@@ -146,7 +146,6 @@ export type HomeScreenProps = {
   readonly resetsIn?: string | undefined
   /** The title the user is wearing, for the middle fact chip. */
   readonly titleKey?: TranslationKey | undefined
-  readonly onOpenInbox?: (() => void) | undefined
   readonly onOpenQuests?: (() => void) | undefined
   /**
    * This week's standing, or nothing.
@@ -208,7 +207,6 @@ export function HomeScreen({
   onOpenWorld,
   resetsIn,
   titleKey = 'titles:wanderer',
-  onOpenInbox,
   onOpenQuests,
   league,
   reminderAsk,
@@ -244,7 +242,7 @@ export function HomeScreen({
         <TopBar
           initials="EX"
           {...(progress !== null ? { coins: progress.coins } : {})}
-          onInbox={onOpenInbox ?? (() => {})}
+          {...(onOpenStreak !== undefined && progress !== null ? { onStreak: onOpenStreak, streak: progress.streak } : {})}
         />
 
         {/* Two-tier greeting: light salutation, bold role.

@@ -155,10 +155,12 @@ describe('Home — the path is the one primary action', () => {
     expect(screen.getByLabelText('Day streak, 12 days')).toBeTruthy()
   })
 
-  it('gives the avatar and the inbox real labels, not icon names', () => {
-    home()
+  it('gives the avatar and the streak chip real labels, and has no bell that goes nowhere', () => {
+    home({ onOpenStreak: () => {} })
     expect(screen.getByLabelText('Your profile')).toBeTruthy()
-    expect(screen.getByLabelText('Inbox')).toBeTruthy()
+    // The bar's flame opens the streak page; the "Inbox" bell it replaced opened Quests.
+    expect(screen.getByRole('button', { name: 'Your streak: 12 days' })).toBeTruthy()
+    expect(screen.queryByLabelText('Inbox')).toBeNull()
   })
 })
 

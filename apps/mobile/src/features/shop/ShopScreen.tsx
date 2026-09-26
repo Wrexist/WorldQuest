@@ -66,7 +66,8 @@ export type ShopScreenProps = {
   readonly error?: boolean
   readonly onRetry?: (() => void) | undefined
   /** The bell, so the header matches the other tabs. Optional like every other route hook. */
-  readonly onOpenInbox?: (() => void) | undefined
+  /** The streak, for the top bar's flame chip. */
+  readonly streak?: number | undefined
   /** The streak page, where freezes are bought against the streak they protect. */
   readonly onOpenStreak?: (() => void) | undefined
   readonly onBuy: (item: ShopItem) => void
@@ -84,7 +85,7 @@ export function ShopScreen({
   isOffline,
   error = false,
   onRetry,
-  onOpenInbox,
+  streak,
   onOpenStreak,
   onBuy,
   onEquip,
@@ -117,7 +118,10 @@ export function ShopScreen({
           points above it would state the balance twice on the one screen where it is
           already the subject. Consistency here is the avatar and the inbox, not the
           duplication of a figure. */}
-      <TopBar initials="EX" {...(onOpenInbox !== undefined ? { onInbox: onOpenInbox } : {})} />
+      <TopBar
+        initials="EX"
+        {...(onOpenStreak !== undefined && streak !== undefined ? { onStreak: onOpenStreak, streak } : {})}
+      />
       <Text style={styles.h1} role="heading" aria-level={1}>
         {t('shop:title')}
       </Text>

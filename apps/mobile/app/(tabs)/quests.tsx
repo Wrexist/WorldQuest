@@ -39,7 +39,8 @@ export default function QuestsRoute() {
         coins={data?.coins ?? 0}
         resetsIn={untilReset}
         onOpenAchievements={() => router.push('/achievements')}
-        onOpenInbox={() => router.push('/streak')}
+        streak={data?.streak ?? 0}
+        onOpenStreak={() => router.push('/streak')}
         // The quest's own facts. This button said "Continue" above five named tasks and
         // started a generic lesson, so the five rows were a report on a lesson chosen by
         // something else. Now the rows ARE the lesson.

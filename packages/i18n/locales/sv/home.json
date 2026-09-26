@@ -16,7 +16,7 @@
   "home:greeting.role": "Upptäckare!",
   "home:streak.label": "Dagars svit",
   "home:avatar.label": "Din profil",
-  "home:inbox.label": "Inkorg",
+  "home:streak.chip": "{count, plural, =0 {Din svit: inga dagar än} one {Din svit: # dag} other {Din svit: # dagar}}",
   "home:quest.progress": "Framsteg",
   "home:friends.title": "Vänner",
   "home:friends.label": "Vänner",

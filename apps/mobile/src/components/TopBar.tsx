@@ -23,18 +23,30 @@
  * fact about a balance, a currency reading 0 that can never be anything else is set
  * dressing. When gems are granted by something, they appear here with no further change.
  *
- * ## The bell and the gear are optional, and absent means absent
+ * ## The streak chip and the gear are optional, and absent means absent
  *
  * A control with no handler is not rendered rather than rendered dead. The mockup puts a
  * gear on Profile and nowhere else, which is what `onSettings` is: the way to Settings
  * now that it is not a tab.
+ *
+ * The streak chip replaced a bell labelled "Inbox". There is no inbox: the bell opened
+ * Quests on Home and the streak page everywhere else. Duolingo's bar carries the streak,
+ * as a flame and a count that open the streak, and that is what this is now.
+ *
+ * ## The portrait is the one the learner chose
+ *
+ * Every tab but Profile passed nothing, so the bar drew "EX" on four tabs whatever the
+ * learner had picked in Settings. With no `avatar` given it now reads the preference.
  */
 
 import { StyleSheet, View, Pressable } from 'react-native'
 import { Avatar, colors, layout, space } from '@worldquest/design'
+import { Art } from './Art.js'
 import { Icon } from './Icon.js'
 import { Stat } from './Stat.js'
 import { useT } from '../lib/i18n.js'
+import { usePreferences } from '../features/settings/usePreferences.js'
+import { avatarArt } from '../features/settings/AvatarPicker.js'
 
 export type TopBarProps = {
   /** Initials, when the user has not chosen a portrait. */
@@ -46,7 +58,10 @@ export type TopBarProps = {
   /** Premium currency. Rendered only when there is one — see the note above. */
   readonly gems?: number | undefined
   readonly onAvatar?: (() => void) | undefined
-  readonly onInbox?: (() => void) | undefined
+  /** The current streak, drawn as a flame chip. Shown with `onStreak`, at zero too. */
+  readonly streak?: number | undefined
+  /** Opens the streak page. */
+  readonly onStreak?: (() => void) | undefined
   /** Profile only. The way into Settings now that More is not a tab. */
   readonly onSettings?: (() => void) | undefined
 }
@@ -60,16 +75,20 @@ export function TopBar({
   coins,
   gems,
   onAvatar,
-  onInbox,
+  streak,
+  onStreak,
   onSettings,
 }: TopBarProps) {
   const t = useT()
+  const { preferences } = usePreferences()
+  const portrait = avatar === undefined ? avatarArt(preferences.avatar) : null
+  const image = avatar ?? (portrait !== null ? <Art name={portrait} size={40} /> : undefined)
   // Spread rather than passed: `exactOptionalPropertyTypes` is on, so an explicit
   // `image={undefined}` is a different thing from an absent `image`, and `Avatar`'s
   // fallback-to-initials path is the absent one.
   const face = {
     ...(initials !== undefined ? { initials } : {}),
-    ...(avatar !== undefined ? { image: avatar } : {}),
+    ...(image !== undefined ? { image } : {}),
   }
 
   return (
@@ -89,6 +108,17 @@ export function TopBar({
 
       <View style={styles.spacer} />
 
+      {streak !== undefined && onStreak !== undefined && (
+        <Pressable
+          onPress={onStreak}
+          role="button"
+          aria-label={t('home:streak.chip', { count: streak })}
+          hitSlop={8}
+        >
+          {/* Named by the Pressable, so the chip inside it is silent, like the avatar. */}
+          <Stat kind="streak" value={streak} accessibilityLabel="" />
+        </Pressable>
+      )}
       {gems !== undefined && gems > 0 && (
         <Stat kind="gem" value={gems} accessibilityLabel={t('home:stats.gems', { amount: gems })} />
       )}
@@ -98,18 +128,6 @@ export function TopBar({
           value={coins}
           accessibilityLabel={t('home:stats.coins', { amount: coins })}
         />
-      )}
-
-      {onInbox !== undefined && (
-        <Pressable
-          onPress={onInbox}
-          role="button"
-          aria-label={t('home:inbox.label')}
-          style={styles.chrome}
-          hitSlop={8}
-        >
-          <Icon name="bell" size={GLYPH} color={colors.text.secondary} />
-        </Pressable>
       )}
 
       {onSettings !== undefined && (
@@ -135,8 +153,8 @@ const styles = StyleSheet.create({
     paddingBottom: space[3],
   },
   spacer: { flex: 1 },
-  // A real target around a 20pt glyph. The bell used to be a bare `View` with a label,
-  // which iOS never focuses and no finger can reliably hit.
+  // A real target around a 20pt glyph. A glyph in a bare `View` with a label is one iOS
+  // never focuses and no finger can reliably hit (the old bell was).
   chrome: {
     width: layout.minTouchTarget,
     height: layout.minTouchTarget,

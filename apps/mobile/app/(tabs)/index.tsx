@@ -230,7 +230,6 @@ export default function HomeRoute() {
           }
         : {})}
       {...(leagueChip !== undefined ? { league: leagueChip } : {})}
-      onOpenInbox={() => router.push('/quests')}
     />
   )
 }

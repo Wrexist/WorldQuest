@@ -56,7 +56,9 @@ export type QuestScreenProps = {
   readonly resetsIn?: DayCountdown | undefined
   /** Opens the achievements half of this screen. Absent hides the segmented control. */
   readonly onOpenAchievements?: (() => void) | undefined
-  readonly onOpenInbox?: (() => void) | undefined
+  /** The streak, for the flame chip in the top bar, and where tapping it goes. */
+  readonly streak?: number | undefined
+  readonly onOpenStreak?: (() => void) | undefined
   /**
    * Optional so the screenshot renderer and component tests mount without a router,
    * like every other callback here.
@@ -83,7 +85,8 @@ export function QuestScreen({
   coins,
   resetsIn,
   onOpenAchievements,
-  onOpenInbox,
+  streak,
+  onOpenStreak,
 }: QuestScreenProps) {
   const t = useT()
 
@@ -115,7 +118,7 @@ export function QuestScreen({
       <TopBar
         initials="EX"
         {...(coins !== undefined ? { coins } : {})}
-        {...(onOpenInbox !== undefined ? { onInbox: onOpenInbox } : {})}
+        {...(onOpenStreak !== undefined && streak !== undefined ? { onStreak: onOpenStreak, streak } : {})}
       />
       <View style={styles.header}>
         <View style={styles.headerText}>
