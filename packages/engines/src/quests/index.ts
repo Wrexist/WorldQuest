@@ -97,13 +97,18 @@ export function generateDailyQuest(input: GenerateInput): DailyQuest {
   const weakest = [...weak].sort((a, b) => a.stability - b.stability).map((w) => w.factId)
 
   let dueCursor = 0
+  let fillCursor = 0
   const takeReview = (n: number): FactId[] => {
     const slice = dueShuffled.slice(dueCursor, dueCursor + n)
     dueCursor += slice.length
     // Nothing due: a first-week user. Fill from new content rather than handing them
-    // an empty task.
+    // an empty task — and each task from facts no other task was given. The filler used
+    // to restart at the same place for every slot, so a new learner's three review tasks
+    // named the same four facts: one quest lesson finished all three, and the quest paid
+    // three tasks for the work of one.
     if (slice.length < n) {
-      const filler = unseenShuffled.slice(0, n - slice.length)
+      const filler = unseenShuffled.slice(fillCursor, fillCursor + n - slice.length)
+      fillCursor += filler.length
       return [...slice, ...filler]
     }
     return slice

@@ -202,6 +202,27 @@ export const currentQuestion = (s: LessonState): Question | null =>
   s.questions[s.index] ?? null
 
 /**
+ * The lesson's progress bar: questions settled, out of the lesson's own.
+ *
+ * A right answer settles its question; a missed one is settled by its second look in the
+ * review round, as Duolingo's bar fills on what you get right and the mistakes fill the
+ * rest. Counting the question on screen instead, with the review appended to the total,
+ * sent the bar backwards at the worst moment: "20 / 20" became "21 / 36" and a nearly
+ * full bar dropped to 58 % for the learner who had struggled most (round-3 design
+ * review). This one only grows, and a lesson with a review ends it full.
+ *
+ * A timed lesson has no review round, so there every answer settles its question.
+ */
+export function lessonProgress(s: LessonState): { readonly current: number; readonly total: number } {
+  const total = s.reviewFrom ?? s.questions.length
+  const settled =
+    s.timeLimitMs !== null
+      ? s.answers.length
+      : s.answers.filter((a) => a.wasCorrect).length + s.reviewed.length
+  return { current: Math.min(total, settled), total }
+}
+
+/**
  * Is there a question left for a revive to resume at?
  *
  * `REVIVE` resumes at `index + 1`, so running out of hearts on the LAST question left

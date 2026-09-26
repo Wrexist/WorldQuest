@@ -13,7 +13,6 @@
  * destination being buried.
  */
 
-import { useMemo } from 'react'
 import { openSettings, openURL } from 'expo-linking'
 import Constants from 'expo-constants'
 import { router } from 'expo-router'
@@ -29,12 +28,11 @@ import { SELLING } from '../src/features/paywall/purchases.js'
 import { ANALYTICS_CONNECTED } from '../src/lib/analytics.js'
 import { isD1 } from '../src/lib/backendConfig.js'
 import { useOnboarding } from '../src/features/onboarding/useOnboarding.js'
-import { useReminder } from '../src/features/settings/useReminder.js'
+import { useReminder, useReminderCopy } from '../src/features/settings/useReminder.js'
 import { useAccountStatus } from '../src/features/account/useAccountStatus.js'
 import { useLeagueOptOut } from '../src/features/league/useLeagueOptOut.js'
 import { useLeagueEnabled } from '../src/features/league/flag.js'
 import { useSignOut } from '../src/features/account/useSignOut.js'
-import { useT } from '../src/lib/i18n.js'
 
 /**
  * Real URLs, not placeholders.
@@ -45,19 +43,21 @@ import { useT } from '../src/lib/i18n.js'
  * is an EAS environment change; until then the rows have no handler and correctly
  * render as text rather than as buttons that do nothing.
  */
-import { LICENCES_URL, PRIVACY_URL, TERMS_URL } from '../src/lib/links.js'
+import { LICENCES_URL, PRIVACY_URL, SUPPORT_URL, TERMS_URL } from '../src/lib/links.js'
 
 const open = (url: string | undefined) =>
   url === undefined ? undefined : () => void openURL(url)
 
 export default function SettingsRoute() {
+  const account = useAccountStatus()
+  /** A link out of the app: straight there for an adult, through the gate for a child. */
+  const outward = (url: string | undefined, name: string) =>
+    url === undefined ? undefined : account.isChild ? () => router.push(`/grown-up?link=${name}`) : open(url)
   const { preferences, set } = usePreferences()
   const sync = useSyncStatus()
   const entitlement = useEntitlement()
   const purchases = usePurchases()
   const { state } = useOnboarding()
-  const t = useT()
-  const account = useAccountStatus()
   const signOut = useSignOut()
   const leagueOn = useLeagueEnabled()
   const league = useLeagueOptOut()
@@ -75,18 +75,7 @@ export default function SettingsRoute() {
    * is localised as a WHOLE sentence and never assembled from fragments, and a template
    * with an empty slot is a fragment with extra steps.
    */
-  const copy = useMemo(
-    () => ({
-      title: t('notifications:daily.title'),
-      body: t('notifications:daily.reminder', {
-        region:
-          preferences.startRegion === null
-            ? t('notifications:daily.anywhere')
-            : t(`explore:region.${preferences.startRegion}` as 'explore:region.EU'),
-      }),
-    }),
-    [t, preferences.startRegion],
-  )
+  const copy = useReminderCopy()
   const reminder = useReminder(copy)
 
   /**
@@ -164,14 +153,20 @@ export default function SettingsRoute() {
         // than an apology.
         onOpenSystemSettings: () => void openSettings(),
       }}
-      onOpenPrivacyPolicy={open(PRIVACY_URL)}
-      onOpenTerms={open(TERMS_URL)}
-      onOpenLicences={open(LICENCES_URL)}
+      // On a child's device every way out of the app asks a grown-up first (1.3, 5.1.4).
+      onOpenPrivacyPolicy={outward(PRIVACY_URL, 'privacy')}
+      onOpenTerms={outward(TERMS_URL, 'terms')}
+      onOpenLicences={outward(LICENCES_URL, 'licences')}
+      onOpenSupport={outward(SUPPORT_URL, 'support')}
       analyticsConnected={ANALYTICS_CONNECTED}
       // Where accounts can be deleted in the app (the D1 Worker), the way in is here,
       // in Privacy, where people look for it (App Review 5.1.1(v)). Not on a child
       // account: there is no account to delete, only this device's guest progress.
-      {...(isD1() && !account.isChild ? { onDeleteAccount: () => router.push('/account') } : {})}
+      // And a child's progress can be deleted too, by a grown-up: a guest lives on the
+      // server, and "delete my child's data" must not need an email we never took.
+      {...(isD1()
+        ? { onDeleteAccount: () => router.push(account.isChild ? '/grown-up?to=account' : '/account') }
+        : {})}
     />
   )
 }

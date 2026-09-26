@@ -4,7 +4,7 @@
     "slug": "worldquest",
     "owner": "isacm",
     "scheme": "worldquest",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
@@ -92,7 +92,12 @@
       "./plugins/without-push-entitlement",
       "expo-router",
       "expo-font",
-      "expo-localization",
+      [
+        "expo-localization",
+        {
+          "supportedLocales": ["en", "sv"]
+        }
+      ],
       [
         "expo-audio",
         {
@@ -100,7 +105,12 @@
         }
       ],
       "expo-notifications",
-      "expo-secure-store"
+      [
+        "expo-secure-store",
+        {
+          "faceIDPermission": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": false

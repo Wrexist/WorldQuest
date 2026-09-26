@@ -180,11 +180,16 @@ export function ProfileScreen({
 
             No coin chip: an empty profile has nothing to report and a `0` beside a
             "nothing here yet" screen reads as a scolding rather than a fact. */}
-        <TopBar
-          initials="EX"
-          {...(portrait !== null ? { avatar: <Art name={portrait} size={40} /> } : {})}
-          {...(onOpenSettings !== undefined ? { onSettings: onOpenSettings } : {})}
-        />
+        {/* In the populated branch's padding: without it the avatar ring sat in the
+            screen's corner and the gear against its top edge, on every new user's
+            first visit (round-3 design review). */}
+        <View style={styles.emptyBar}>
+          <TopBar
+            initials="EX"
+            {...(portrait !== null ? { avatar: <Art name={portrait} size={40} /> } : {})}
+            {...(onOpenSettings !== undefined ? { onSettings: onOpenSettings } : {})}
+          />
+        </View>
         {/* The 72pt `Avatar` that used to sit here is gone.
 
             `TopBar` above already draws the same initials, or the same portrait, four
@@ -565,6 +570,7 @@ const styles = StyleSheet.create({
   levelTitle: { ...text('h3'), color: colors.text.primary, marginBottom: space[2] },
   screen: { flex: 1 },
   content: { padding: space[4], gap: space[4] },
+  emptyBar: { paddingHorizontal: space[4], paddingTop: space[4] },
   /**
    * Anchored to the upper third, not centred.
    *

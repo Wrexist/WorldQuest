@@ -23,7 +23,7 @@
   "quests:tab.achievements": "Utmärkelser",
   "quests:resets": "Nya uppdrag om {hours} tim {minutes} min",
   "quests:intro.title": "Dagens uppdrag",
-  "quests:intro.headline": "{count, plural, one {Svara på # fråga} other {Svara på # frågor}}",
+  "quests:intro.headline": "{count, plural, one {# utmaning i dag} other {# utmaningar i dag}}",
   "quests:intro.body": "Klara alla för att få bonusen.",
   "quests:intro.start": "Starta uppdraget",
   "quests:done.title": "Uppdraget klart",

@@ -4,6 +4,8 @@ import { courseStanding, type CourseProgress } from '@worldquest/engines'
 import { HomeScreen, type HomeProgress, type HomeScreenProps } from './HomeScreen.js'
 import { loadCourse } from '../course/course.js'
 import { toPathView } from '../course/pathView.js'
+import { recordLessonCompleted } from '../profile/useWeekActivity.js'
+import { clearAll } from '../../lib/storage.js'
 
 const RETURNING: HomeProgress = {
   xpTotal: 4820,
@@ -45,7 +47,7 @@ describe('Home — the five states', () => {
     home({ quest: { done: 2, total: 5, complete: false } })
     expect(screen.getByLabelText('Day streak, 12 days')).toBeTruthy()
     expect(screen.getByText('Wanderer')).toBeTruthy()
-    expect(screen.getByRole('button', { name: /^Start step 1 of 7/ })).toBeTruthy()
+    expect(screen.getByRole('button', { name: /^Start step 1 of 33/ })).toBeTruthy()
     expect(screen.getByText('Five challenges at your own pace')).toBeTruthy()
   })
 
@@ -76,7 +78,7 @@ describe('Home — the five states', () => {
     // next task" (L08), rather than an invitation with nothing behind it.
     expect(
       screen.getByRole('button', {
-        name: 'Start step 1 of 7. Match 6 flags to their countries. Lesson 1 of 2.',
+        name: 'Start step 1 of 33. Match 6 flags to their countries. Lesson 1 of 2.',
       }),
     ).toBeTruthy()
     // "0 day streak" is a worse first impression than none.
@@ -108,7 +110,7 @@ describe('Home — the path is the one primary action', () => {
   it('starts the current step', () => {
     const onStart = vi.fn()
     home({ course: course({}, { onStart }) })
-    fireEvent.click(screen.getByRole('button', { name: /^Start step 1 of 7/ }))
+    fireEvent.click(screen.getByRole('button', { name: /^Start step 1 of 33/ }))
     expect(onStart).toHaveBeenCalledWith('node.first-week.flags')
   })
 
@@ -155,10 +157,26 @@ describe('Home — the path is the one primary action', () => {
     expect(screen.getByLabelText('Day streak, 12 days')).toBeTruthy()
   })
 
-  it('gives the avatar and the inbox real labels, not icon names', () => {
-    home()
+  it('gives the avatar and the streak chip real labels, and has no bell that goes nowhere', () => {
+    home({ onOpenStreak: () => {} })
     expect(screen.getByLabelText('Your profile')).toBeTruthy()
-    expect(screen.getByLabelText('Inbox')).toBeTruthy()
+    // The bar's flame opens the streak page; the "Inbox" bell it replaced opened Quests.
+    // Grey before today's lesson, and the label says so in words rather than colour.
+    expect(
+      screen.getByRole('button', { name: "Your streak: 12 days. Today's lesson will add a day." }),
+    ).toBeTruthy()
+    expect(screen.queryByLabelText('Inbox')).toBeNull()
+  })
+
+  it("lights the flame once today's lesson is in", () => {
+    recordLessonCompleted()
+    try {
+      home({ onOpenStreak: () => {} })
+      expect(screen.getByRole('button', { name: 'Your streak: 12 days' })).toBeTruthy()
+    } finally {
+      // The day log is device storage, which outlives a test: leave it as it was found.
+      clearAll()
+    }
   })
 })
 
@@ -206,7 +224,8 @@ describe('Home — today’s quest, secondary', () => {
 
   it('says nothing about a quest when there is none yet', () => {
     const { container } = home()
-    expect(container.textContent).not.toMatch(/of 5 done/)
+    // By the card's own words: "0 of 5 done" is also a five-step unit's progress now.
+    expect(container.textContent).not.toMatch(/Today's Quest|Five challenges/)
     expect(screen.queryByTestId('home-quest')).toBeNull()
   })
 })

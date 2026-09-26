@@ -49,6 +49,14 @@ const http = require('node:http')
 const fs = require('node:fs')
 const path = require('node:path')
 
+/**
+ * Steps in the shipped course, from the pack itself: the path grows as units are added
+ * (v1.1.0 went from 7 to 33), and a walk that hardcoded the count failed on content.
+ */
+const COURSE_STEPS = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '..', '..', '..', 'packages', 'content', 'packs', 'courses', 'first-week.v1.json'), 'utf8'),
+).items.reduce((n, unit) => n + unit.nodes.length, 0)
+
 const ROOT = process.argv[2]
 const SHOTS = process.argv[3] ?? path.join(ROOT, '..', 'wq-e2e-shots')
 // Overridable because the default is a common one: on a machine shared with other
@@ -381,12 +389,38 @@ const skip = (name, why) => {
       const sameLayer = (a, b) =>
         (a.closest('[role="tablist"]') === null) === (b.closest('[role="tablist"]') === null)
 
+      // Where a text is actually drawn: cropped by EVERY clipping ancestor, scrollers
+      // included. `visibleRect` crops at the nearest `hidden` one only, because the
+      // clipped-text check must not call a line scrolled half out of its scroller
+      // "clipped"; but two texts can only overlap where both are drawn. Pinning Home's
+      // top bar above its scroller made the unit objective, scrolled up under the
+      // scroller's top edge, "overlap" an avatar the scroller never lets it reach.
+      const drawnRect = (node) => {
+        let { left, top, right, bottom } = node.getBoundingClientRect()
+        for (let p = node.parentElement; p !== null; p = p.parentElement) {
+          const style = getComputedStyle(p)
+          const x = /^(auto|scroll|hidden)$/.test(style.overflowX)
+          const y = /^(auto|scroll|hidden)$/.test(style.overflowY)
+          if (!x && !y) continue
+          const box = p.getBoundingClientRect()
+          if (x) {
+            left = Math.max(left, box.left)
+            right = Math.min(right, box.right)
+          }
+          if (y) {
+            top = Math.max(top, box.top)
+            bottom = Math.min(bottom, box.bottom)
+          }
+        }
+        return { left, top, right, bottom, width: right - left, height: bottom - top }
+      }
+
       const overlapping = []
       for (let i = 0; i < texts.length; i++) {
         for (let j = i + 1; j < texts.length; j++) {
           if (!sameLayer(texts[i], texts[j])) continue
-          const a = visibleRect(texts[i])
-          const b = visibleRect(texts[j])
+          const a = drawnRect(texts[i])
+          const b = drawnRect(texts[j])
           if (a.width <= 0 || b.width <= 0 || a.height <= 0 || b.height <= 0) continue
           const x = Math.min(a.right, b.right) - Math.max(a.left, b.left)
           const y = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top)
@@ -593,12 +627,12 @@ const skip = (name, why) => {
   const fresh = await pathSteps()
   step(
     'Home shows the course path with exactly one current step, the first',
-    fresh.length === 7 && fresh.filter((s) => s.state === 'current').length === 1 && fresh[0]?.state === 'current',
+    fresh.length === COURSE_STEPS && fresh.filter((s) => s.state === 'current').length === 1 && fresh[0]?.state === 'current',
     fresh.map((s) => s.state[0]).join(''),
   )
   step(
     'and every step tells a screen reader its place, its state and its objective',
-    fresh.every((s) => /^(Start step|Step) \d+ of 7[.,]/.test(s.label) && s.label.length > 24),
+    fresh.every((s) => new RegExp(`^(Start step|Step) \\d+ of ${COURSE_STEPS}[.,]`).test(s.label) && s.label.length > 24),
     fresh[1]?.label ?? '',
   )
 
@@ -1276,11 +1310,12 @@ const skip = (name, why) => {
   // is no tab bar on screen at this point in the flow.
   await page.goto(`http://localhost:${PORT}/quests`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(1400)
-  const questAfter = await body()
   // Matched against the copy the screen actually renders ("1 of 5 done"), not a
   // guessed "1 / 5". The first version passed on a different branch and printed an
   // empty detail, which is the same tell that caught the answer-selector bug.
-  const questDone = (questAfter.match(/(\d) of 5 done/) ?? [])[1]
+  // From the quest's own bar: a five-step unit on Home's path reads "0 of 5 done" too.
+  const questBar = (await page.getByTestId('quest-progress').first().textContent().catch(() => '')) ?? ''
+  const questDone = (questBar.match(/(\d) of 5 done/) ?? [])[1]
   step('finishing a lesson ticks a quest task',
        questDone !== undefined && Number(questDone) > 0,
        questDone === undefined ? 'no "N of 5 done" on screen' : `${questDone} of 5`)

@@ -59,10 +59,11 @@ export type ProgressBarProps = {
    * What a screen reader announces as the value — a localised "172 of 195".
    *
    * This package cannot import `@worldquest/i18n` (design depends on nothing, which is
-   * what lets the token layer be reused), so the fallback is an English template. That
-   * fallback was the only behaviour until now, which meant every Swedish user with
-   * VoiceOver on heard the count in English while the screen around it was translated.
-   * Callers that have a translator pass the localised string here.
+   * what lets the token layer be reused), so there is no fallback sentence: without
+   * this the platform reads the numbers itself, as a percentage in its own language.
+   * The English template that used to stand in ("3 of 10") was read to every Swedish
+   * VoiceOver user on eleven bars. Callers that have a translator pass the localised
+   * count here.
    */
   valueText?: string
   /**
@@ -129,7 +130,8 @@ export function ProgressBar({
         min: 0,
         max: safeTotal,
         now: current,
-        text: valueText ?? `${current} of ${total}`,
+        // Only a translated sentence, never an English one; see `valueText`.
+        ...(valueText !== undefined ? { text: valueText } : {}),
       }}
       style={[styles.wrap, style]}
       testID={testID}

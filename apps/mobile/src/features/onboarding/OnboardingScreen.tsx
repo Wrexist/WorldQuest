@@ -329,6 +329,15 @@ const ANSWER_BEAT_MS = 260
  */
 const OPENS_AT = 2000
 
+/**
+ * The continents a first lesson can start in: the ones with countries in the packs.
+ *
+ * Explore lists Antarctica, where there is geography to look at; a first lesson there has
+ * no country to ask about, and its card was sky without a landmass, a pale blur at the end
+ * of the grid (round-3 design review). Six cells also fill the two-column grid evenly.
+ */
+const START_REGIONS = REGIONS.filter((code) => code !== 'AN')
+
 /** Seven. Named because `goal * 7` in a template reads like a magic number. */
 const DAYS_A_WEEK = 7
 
@@ -1166,7 +1175,7 @@ export function OnboardingScreen({
               aria-label={t('onboarding:region.title')}
             >
               <View style={styles.regionGrid}>
-                {REGIONS.map((code) => {
+                {START_REGIONS.map((code) => {
                   const chosen = startRegion === code
                   return (
                     <Pressable
@@ -1200,7 +1209,9 @@ export function OnboardingScreen({
                           </View>
                         )}
                       </View>
-                      <Text style={styles.regionLabel} numberOfLines={1}>
+                      {/* Two lines, centred: one line cut "North America" to "North
+                          Ame…" in a 320 pt cell. */}
+                      <Text style={styles.regionLabel} numberOfLines={2}>
                         {t(REGION_NAME[code])}
                       </Text>
                     </Pressable>
@@ -1691,7 +1702,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   regionShape: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
-  regionLabel: { ...text('caption', { weight: '700' }), color: colors.text.primary },
+  regionLabel: { ...text('caption', { weight: '700' }), color: colors.text.primary, textAlign: 'center' },
   anywhere: {
     alignSelf: 'stretch',
     flexDirection: 'row',

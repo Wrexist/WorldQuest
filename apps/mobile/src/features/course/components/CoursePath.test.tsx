@@ -9,6 +9,9 @@ const loaded = loadCourse()
 if (!loaded.ok) throw new Error('the shipped course must parse')
 const COURSE = loaded.course
 
+/** Steps in the whole course: every label counts against it ("Step 3 of 33"). */
+const TOTAL = COURSE.units.reduce((n, u) => n + u.nodes.length, 0)
+
 const ALL_DONE: CourseProgress = Object.fromEntries(
   COURSE.units.flatMap((u) => u.nodes.map((n) => [n.id, n.lessons])),
 )
@@ -48,15 +51,21 @@ describe('the course path', () => {
 
   it('announces every step, in path order, with its state in the label', () => {
     const { container } = renderPath({ 'node.first-week.flags': 2 })
-    expect(steps(container)).toEqual([
-      'Step 1 of 7, done. Match 6 flags to their countries.',
-      'Start step 2 of 7. Find where 6 countries are in the world. Lesson 1 of 2.',
-      'Step 3 of 7, not open yet. Match 6 countries to their capitals.',
-      'Step 4 of 7, not open yet. Recognise 6 new countries by flag and place.',
-      'Step 5 of 7, not open yet. Match all 12 countries to their capitals.',
-      'Step 6 of 7, not open yet. Mix flags, places and capitals for all 12 countries.',
-      "Step 7 of 7, not open yet. Check what stayed with you, starting with what's due.",
+    const labels = steps(container)
+    expect(labels).toHaveLength(TOTAL)
+    // The first week, word for word: the brief's seven days.
+    expect(labels.slice(0, 7)).toEqual([
+      `Step 1 of ${TOTAL}, done. Match 6 flags to their countries.`,
+      `Start step 2 of ${TOTAL}. Find where 6 countries are in the world. Lesson 1 of 2.`,
+      `Step 3 of ${TOTAL}, not open yet. Match 6 countries to their capitals.`,
+      `Step 4 of ${TOTAL}, not open yet. Recognise 6 new countries by flag and place.`,
+      `Step 5 of ${TOTAL}, not open yet. Match all 12 countries to their capitals.`,
+      `Step 6 of ${TOTAL}, not open yet. Mix flags, places and capitals for all 12 countries.`,
+      `Step 7 of ${TOTAL}, not open yet. Check what stayed with you, starting with what's due.`,
     ])
+    // And the path goes on past it, still in order, with the pack's own counts.
+    expect(labels[7]).toBe(`Step 8 of ${TOTAL}, not open yet. Match 7 flags to their countries.`)
+    expect(labels.at(-1)).toBe(`Step ${TOTAL} of ${TOTAL}, not open yet. Check what stayed with you, starting with what's due.`)
   })
 
   it('counts which lesson of the step comes next', () => {
@@ -66,7 +75,7 @@ describe('the course path', () => {
 
   it('opens a card under a done step offering practice, rather than starting a lesson', () => {
     const { onPractise, onStart } = renderPath({ 'node.first-week.flags': 2 })
-    const done = screen.getByRole('button', { name: /^Step 1 of 7, done/ })
+    const done = screen.getByRole('button', { name: new RegExp(`^Step 1 of ${TOTAL}, done`) })
     expect(done.getAttribute('aria-expanded')).toBe('false')
     fireEvent.click(done)
     expect(done.getAttribute('aria-expanded')).toBe('true')
@@ -78,7 +87,7 @@ describe('the course path', () => {
 
   it('explains a step that is not open yet — no dead tap, and nothing to press', () => {
     renderPath()
-    const closed = screen.getByRole('button', { name: /^Step 3 of 7, not open yet/ })
+    const closed = screen.getByRole('button', { name: new RegExp(`^Step 3 of ${TOTAL}, not open yet`) })
     fireEvent.click(closed)
     expect(screen.getByText('Not open yet. It opens when you finish the steps before it.')).toBeTruthy()
     expect(screen.queryByRole('button', { name: 'Practise' })).toBeNull()
@@ -89,16 +98,19 @@ describe('the course path', () => {
 
   it('opens one card at a time', () => {
     renderPath()
-    fireEvent.click(screen.getByRole('button', { name: /^Step 2 of 7/ }))
-    fireEvent.click(screen.getByRole('button', { name: /^Step 5 of 7/ }))
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(`^Step 2 of ${TOTAL}`) }))
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(`^Step 5 of ${TOTAL}`) }))
     expect(screen.getAllByTestId('path-card')).toHaveLength(1)
-    expect(screen.getByRole('button', { name: /^Step 5 of 7/ }).getAttribute('aria-expanded')).toBe('true')
+    expect(screen.getByRole('button', { name: new RegExp(`^Step 5 of ${TOTAL}`) }).getAttribute('aria-expanded')).toBe('true')
   })
 
   it('heads each unit with its number and title, for moving by heading', () => {
     renderPath()
     expect(screen.getByRole('heading', { name: 'Unit 1: First countries' })).toBeTruthy()
     expect(screen.getByRole('heading', { name: 'Unit 2: Across the continents' })).toBeTruthy()
+    // After the first week, one unit per continent (course v1.1.0).
+    expect(screen.getByRole('heading', { name: 'Unit 3: Europe' })).toBeTruthy()
+    expect(screen.getByRole('heading', { name: 'Unit 6: Africa' })).toBeTruthy()
   })
 
   it('ends: a finished course offers review, and no step is lit', () => {
@@ -129,13 +141,20 @@ describe('the course path', () => {
 
   it('never frames a closed step as a punishment', () => {
     const { container } = renderPath()
-    for (const button of screen.getAllByRole('button', { name: /not open yet/ })) fireEvent.click(button)
-    expect(container.textContent).not.toMatch(/locked out|you must|can't|failed|behind/i)
+    const blame = /locked out|you must|can't|failed|behind/i
+    // Every closed step's label, which carries its objective sentence…
+    expect(steps(container).join(' ')).not.toMatch(blame)
+    // …and the card a closed step opens, which says the same for every one of them.
+    const closed = screen.getAllByRole('button', { name: /not open yet/ })
+    for (const button of [closed[0]!, closed.at(-1)!]) {
+      fireEvent.click(button)
+      expect(container.textContent).not.toMatch(blame)
+    }
   })
 
   it('renders every string through the catalogues, with every placeholder filled', () => {
     const { container } = renderPath({ 'node.first-week.flags': 2 })
-    fireEvent.click(screen.getByRole('button', { name: /^Step 1 of 7/ }))
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(`^Step 1 of ${TOTAL}`) }))
     const words = [container.textContent ?? '', ...steps(container)].join(' ')
     expect(words).not.toMatch(/\b(course|home):[a-z][a-zA-Z0-9.]+/)
     expect(words).not.toMatch(/\{[a-zA-Z_]+[,}]/)

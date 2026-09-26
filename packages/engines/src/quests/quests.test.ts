@@ -113,6 +113,16 @@ describe('generation', () => {
     }
   })
 
+  it("gives each of a first-week user's tasks its own facts", () => {
+    // Nothing is due on day one, so every review slot fills from new content. They used
+    // to fill from the same place, so all three named the same facts and one lesson
+    // finished three tasks.
+    const quest = generate(new Map())
+    const named = quest.tasks.filter((t) => t.slot !== 'perform').map((t) => t.factIds)
+    const all = named.flat()
+    expect(new Set(all).size).toBe(all.length)
+  })
+
   it('never asks for more than the content can supply', () => {
     // A task showing 0 / 4 that cannot reach 4 is worse than one showing 0 / 2.
     const tiny = buildIndex({

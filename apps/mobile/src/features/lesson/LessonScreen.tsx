@@ -435,6 +435,9 @@ export function LessonScreen({
   const questCompleted = useRef(false)
   const scroller = useRef<ScrollView>(null)
   const optionsTop = useRef(0)
+  const optionsBottom = useRef(0)
+  /** The scroll view's own height: it shrinks when the feedback sheet mounts below it. */
+  const viewport = useRef(0)
   // Called from BOTH `onLayout`s rather than only the row's, because their order is not
   // guaranteed — on web these come from a ResizeObserver, and a row that measured before
   // its chip would compare against a height of zero and conclude, permanently, that
@@ -711,9 +714,16 @@ export function LessonScreen({
    * A conditional hook is a crash, not a lint note.
    */
   const revealOptions = useCallback(() => {
-    // A hair above the block, so the first option is not flush against the header.
-    scroller.current?.scrollTo({ y: Math.max(0, optionsTop.current - space[3]), animated: true })
-  }, [])
+    const view = viewport.current
+    // The gap the body puts between its blocks, so the stop lands in the gap above the
+    // options rather than inside the prompt. Stopping `space[3]` above them cut through
+    // the prompt's letters, or its map, wherever the gap was narrower than that.
+    const gap = compact ? space[3] : space[5]
+    // Every option is already above the sheet: nothing moves and the prompt stays whole,
+    // which is most questions on most phones (round-3 design review).
+    if (view > 0 && optionsBottom.current + gap <= view) return
+    scroller.current?.scrollTo({ y: Math.max(0, optionsTop.current - gap), animated: true })
+  }, [compact])
 
   useEffect(() => {
     if (lesson.state.phase !== 'answered') return
@@ -941,6 +951,10 @@ export function LessonScreen({
           current={lesson.progress.current}
           total={lesson.progress.total}
           label={t('lesson:progress.label')}
+          valueText={t('lesson:progress.value', {
+            current: lesson.progress.current,
+            total: lesson.progress.total,
+          })}
           tone={correctRun >= STREAK_PRAISE ? 'streak' : 'progress'}
           style={styles.flex}
         />
@@ -958,7 +972,15 @@ export function LessonScreen({
         )}
       </View>
 
-      <ScrollView ref={scroller} contentContainerStyle={[styles.body, compact && styles.bodyShort]}>
+      <ScrollView
+        ref={scroller}
+        contentContainerStyle={[styles.body, compact && styles.bodyShort]}
+        onLayout={(event) => {
+          viewport.current = event.nativeEvent.layout.height
+          // The sheet arriving is what shrinks this; ask again with the new height.
+          if (answered) revealOptions()
+        }}
+      >
         {/* Centred by spacers, not by `justifyContent` — see `Spacer`. A two-option
             question should not cling to the top of a tall phone, and at 320×568 the
             prompt plus a map plus four options overflow, which is where centring with
@@ -968,6 +990,11 @@ export function LessonScreen({
         {reviewing && (
           // Duolingo's "previous mistake" tag: this one came back because it was missed.
           <Text style={styles.reviewTag}>{t('lesson:review.tag')}</Text>
+        )}
+        {!reviewing && question.isNew && (
+          // And its "new word": this is the first time, so not knowing it is expected —
+          // which is also why a new fact never costs a heart.
+          <Text style={[styles.reviewTag, styles.newTag]}>{t('lesson:new.tag')}</Text>
         )}
         <Text style={styles.prompt} role="heading">
           {/* The prompt key and its params come from the question template in the
@@ -1061,6 +1088,7 @@ export function LessonScreen({
           // illustration is present or not, and both move this by tens of points.
           onLayout={(event) => {
             optionsTop.current = event.nativeEvent.layout.y
+            optionsBottom.current = event.nativeEvent.layout.y + event.nativeEvent.layout.height
             // Scrolled from HERE as well as from the effect, and this is the call that
             // actually lands. The sheet is a sibling, so mounting it shrinks the scroll
             // viewport and the two Spacers inside the content redistribute — which moves
@@ -1637,6 +1665,7 @@ const styles = StyleSheet.create({
   bodyShort: { gap: space[3], paddingBottom: space[4] },
   prompt: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
   reviewTag: { ...text('caption'), color: colors.text.secondary, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 },
+  newTag: { color: colors.reward.gem },
   promptArt: { alignItems: 'center' },
   options: { gap: space[2] },
   /**

@@ -17,15 +17,15 @@ import { useDailyQuest } from '../../src/features/quests/useDailyQuest.js'
 import { questFocus } from '@worldquest/engines'
 import { focusToParams } from '../../src/features/lesson/focusParams.js'
 import { useDayCountdown } from '../../src/features/quests/useDayCountdown.js'
-import { useProgress } from '../../src/features/home/useProgress.js'
+import { useOptimisticProgress } from '../../src/features/home/useOptimisticProgress.js'
 
 export default function QuestsRoute() {
   const { quest, loading, status, reload } = useDailyQuest()
   const untilReset = useDayCountdown()
-  // The wallet, for the bar at the top. The server's figure rather than the optimistic
-  // one: this bar sits above a screen that leads to the Shop, and a balance that
-  // includes a lesson the server has not graded is a balance you cannot spend.
-  const { data } = useProgress()
+  // The bar at the top, with the figures Home shows: the server's plus any lesson it
+  // has not seen yet (see explore.tsx). Spending is the Shop's wallet card, which keeps
+  // the server's balance, so nothing here can offer coins the server has not credited.
+  const { shown } = useOptimisticProgress()
 
   // Routes are the layer that fetches, so the error state belongs here rather than in
   // the screen (apps/mobile/CLAUDE.md). Without it a failed content load rendered the
@@ -36,10 +36,11 @@ export default function QuestsRoute() {
         quest={quest}
         loading={loading}
         onStartSpeedRound={() => router.push('/lesson?mode=speed')}
-        coins={data?.coins ?? 0}
+        coins={shown?.coinsIncludingPending ?? 0}
         resetsIn={untilReset}
         onOpenAchievements={() => router.push('/achievements')}
-        onOpenInbox={() => router.push('/streak')}
+        streak={shown?.streak ?? 0}
+        onOpenStreak={() => router.push('/streak')}
         // The quest's own facts. This button said "Continue" above five named tasks and
         // started a generic lesson, so the five rows were a report on a lesson chosen by
         // something else. Now the rows ARE the lesson.

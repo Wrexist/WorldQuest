@@ -284,7 +284,7 @@ describe('Paywall — when there are no prices', () => {
     // anyone, because every lesson is free regardless.
     const { container } = plansPage({})
     expect(container.textContent).toMatch(/nothing to buy here yet/i)
-    expect(container.textContent).toMatch(/free in the meantime/i)
+    expect(container.textContent).toMatch(/nothing to buy here yet\. Every lesson stays free\./i)
   })
 
   it('is still escapable with no prices on it, in every one of those states', () => {

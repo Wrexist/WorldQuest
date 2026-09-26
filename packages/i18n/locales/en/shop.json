@@ -5,10 +5,6 @@
   "shop:intro__note": "Sets the rule the whole shop obeys: coins buy delight, never advantage. Says it plainly rather than in a policy nobody reads.",
   "shop:section.titles": "Titles",
   "shop:section.titles__note": "Section heading. A title appears under your name on Profile. Max 14 characters.",
-  "shop:section.soon": "More to come",
-  "shop:section.soon__note": "Heading over the not-yet-buyable categories. Never a fake row that looks purchasable.",
-  "shop:soon.body": "Pets, avatar items and map skins are being drawn. They'll appear here — nothing you buy now becomes worse when they do.",
-  "shop:soon.body__note": "Honest about what is missing and why, and reassures that buying today is not a mistake. Never a countdown or a pre-order.",
   "shop:balance": "{count, plural, one {# coin} other {# coins}}",
   "shop:balance__note": "The user's coin balance in the header. ICU plural.",
   "shop:price": "{count, plural, one {# coin} other {# coins}}",
@@ -72,5 +68,13 @@
   "shop:title.deepDiver": "Deep Diver",
   "shop:title.deepDiver__note": "Purchasable title. Flavour, never rank — the level ladder in titles.json is earned and must stay earned. Max 18 characters.",
   "shop:title.longWayRound": "Long Way Round",
-  "shop:title.longWayRound__note": "Purchasable title. Flavour, never rank — the level ladder in titles.json is earned and must stay earned. Max 18 characters."
+  "shop:title.longWayRound__note": "Purchasable title. Flavour, never rank — the level ladder in titles.json is earned and must stay earned. Max 18 characters.",
+  "shop:section.streak": "Streak",
+  "shop:section.streak__note": "Section heading in the Shop above the streak freeze row.",
+  "shop:freeze.title": "Streak freeze",
+  "shop:freeze.title__note": "Title of the Shop row about streak freezes. Same name as on the streak page.",
+  "shop:freeze.body": "Covers one missed day. You buy them on your streak page, where you can see what they protect.",
+  "shop:freeze.body__note": "Shop row body. Explains why the purchase happens on the streak page rather than here.",
+  "shop:freeze.cta": "Open streak",
+  "shop:freeze.cta__note": "Button on the Shop freeze row. Max 16 characters."
 }

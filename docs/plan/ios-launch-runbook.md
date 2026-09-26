@@ -72,10 +72,22 @@ eas env:create --environment production --name EXPO_PUBLIC_BACKEND --value d1 --
 eas env:create --environment production --name EXPO_PUBLIC_D1_URL --value https://api.learnworldquest.com --visibility plaintext
 ```
 
+Then check all six are set, because a build without them falls back quietly: no backend
+means no in-app account deletion, and a missing privacy URL hides the link rows.
+
+```bash
+eas env:list --environment production
+```
+
+Worked when: it lists `EXPO_PUBLIC_BACKEND`, `EXPO_PUBLIC_D1_URL` and the four
+`EXPO_PUBLIC_*_URL` pages.
+
 ## 6. Build and try it (45 min)
 
 Run the **iOS TestFlight** workflow in GitHub Actions (build numbers are unique per
-run). Install from TestFlight on one iPhone and do, in order: onboard, finish a lesson,
+run). Until 26 September the workflow file did not parse, so GitHub could not start it
+and showed a failed "iOS TestFlight" run on every push: those failures were that, not
+your secrets. `pnpm verify` now parses every workflow (`pnpm check:workflows`). Install from TestFlight on one iPhone and do, in order: onboard, finish a lesson,
 check the streak screen, lock the phone offline and finish a second lesson, reconnect,
 link your email (a real code should arrive). Then, on a second iPhone (or after
 deleting and reinstalling the app), tap **I already have an account**, sign in with the
@@ -97,3 +109,32 @@ sends an eight-digit code." Add a support email.
    to `false` for 1.0, or test on an iPad and supply 13" screenshots.
 2. **Selling:** v1.0 sells nothing (the paywall is hidden). Keep it free, or create the
    subscription products so purchases can be built (A01).
+3. **Day 1 of the course (5 min):** it practises six flags (SE NO US JP BR KE), not the
+   brief's four, because the Worker refuses a lesson under five questions. Approve, or
+   pick the six. Recorded in `docs/product/launch-brief.md`.
+4. **Course copy (15 min):** read the English and Swedish lines in
+   `packages/i18n/locales/{en,sv}/course.json`; a native speaker should sign off the
+   Swedish (L18).
+5. **Crash reports:** Sentry was removed on 2026-08-09 to hold the bundle budget, so
+   TestFlight's own crash logs are all you will see. A first-party option costs no SDK:
+   crash reports that already carry no free text (`src/lib/reporting.ts`) could be sent
+   to the Worker. Say if you want it.
+6. **The first lesson and the path (5 min):** onboarding's taster lesson follows the
+   region and level the learner picked, then Home's course path starts with six world
+   flags either way, so the taster does not count as step one. Duolingo makes the first
+   lesson the path's first step. Keep the region-first taster, or make it path step one.
+7. **Kids Category:** if you choose it, the requirement for a parental gate before links
+   out of the app is met: on a child's device every link and "Delete account" asks a
+   grown-up first (`/grown-up`). Nothing else in the app contacts a third party.
+8. **Quests and the path (10 min):** a quest's tasks name specific facts, so they move
+   when the learner plays the quest from its button and rarely from path lessons.
+   Duolingo's quests count any lesson. Keep this, or credit "discover" with any
+   first-seen fact and the review tasks with any due fact answered, so quests move with
+   the path; quests would then complete more often (an economy change, so it is yours).
+9. **The path after week one (5 min):** done with a default you can change. After the
+   brief's first week the path goes on with one unit per continent, in the order the first
+   week met them: Europe, the Americas, Asia and Oceania, Africa (33 steps, 63 countries;
+   `packages/content/packs/courses/first-week.v1.json` v1.1.0). Reordering units later
+   keeps every learner's finished steps. Switzerland and South Africa stay out of the
+   path until their capitals are signed off (both are review-required). Check the
+   Swedish unit names with the rest of the course copy (decision 4).

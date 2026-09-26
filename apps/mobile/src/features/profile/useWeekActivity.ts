@@ -13,6 +13,7 @@
 import { useMemo } from 'react'
 import { isFiniteNumber, isNumberRecord, readJson, writeJson } from '../../lib/storage.js'
 import { localDay } from '../../lib/day.js'
+import { currentLocale } from '../../lib/i18n.js'
 
 /** `YYYY-MM-DD` → lessons completed. Written by the lesson runner on completion. */
 const KEY = 'activity.byDay.v1'
@@ -44,6 +45,9 @@ export function readActivityLog(): Record<string, number> {
 }
 
 export function useWeekActivity(): readonly WeekDay[] {
+  // The app's language, not the device's: the letters sit beside Swedish words when the
+  // app is in Swedish on an English phone. A key, so a language switch redraws them.
+  const locale = currentLocale()
   return useMemo(() => {
     const log = readJson<Record<string, number>>(KEY, isNumberRecord) ?? {}
     const today = new Date()
@@ -54,11 +58,11 @@ export function useWeekActivity(): readonly WeekDay[] {
       return {
         // One letter in the user's locale — seven full weekday names do not fit, and
         // hardcoding "M T W T F S S" is an English-only chart.
-        day: at.toLocaleDateString(undefined, { weekday: 'narrow' }),
+        day: at.toLocaleDateString(locale, { weekday: 'narrow' }),
         count: log[isoDay(at)] ?? 0,
       }
     })
-  }, [])
+  }, [locale])
 }
 
 /**

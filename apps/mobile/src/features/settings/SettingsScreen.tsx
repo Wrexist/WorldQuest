@@ -189,6 +189,8 @@ export type SettingsScreenProps = {
   readonly onOpenPrivacyPolicy?: (() => void) | undefined
   readonly onOpenTerms?: (() => void) | undefined
   readonly onOpenLicences?: (() => void) | undefined
+  /** The support page (help and feedback); absent until it is published. */
+  readonly onOpenSupport?: (() => void) | undefined
   /**
    * Opens account deletion. Present where the backend deletes accounts in-app (the D1
    * Worker); absent elsewhere, where the note says plainly that it is not here yet.
@@ -219,6 +221,7 @@ export function SettingsScreen({
   onOpenPrivacyPolicy,
   onOpenTerms,
   onOpenLicences,
+  onOpenSupport,
   onDeleteAccount,
   analyticsConnected = false,
   onBack,
@@ -462,6 +465,7 @@ export function SettingsScreen({
       <Section title={t('settings:section.about')}>
         <LinkRow label={t('settings:about.version')} value={version} />
         <LinkRow label={t('settings:about.licences')} onPress={onOpenLicences} />
+        {onOpenSupport && <LinkRow label={t('settings:about.support')} onPress={onOpenSupport} />}
         <Note body={t('settings:about.credits')} />
       </Section>
 

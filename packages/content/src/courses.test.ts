@@ -38,6 +38,13 @@ const firstWeek = (): Pack => JSON.parse(JSON.stringify(shipped.pack)) as Pack
 type Unit = { id: string; nodes: { id: string; objectiveKey: string; focus: { entities: string[]; attributes: string[] } }[] }
 const units = (pack: Pack) => pack.items as Unit[]
 
+/**
+ * Each check composes every step's lesson with the real engine, with and without a screen
+ * reader: thirty-three steps since course v1.1.0, which is longer than vitest's default
+ * five seconds on a loaded machine.
+ */
+const COMPOSES_THE_COURSE = 60_000
+
 const check = (pack: unknown, overrides: Partial<CourseCheckInput> = {}) =>
   checkCourses({
     courses: [{ file: 'first-week.v1.json', pack }],
@@ -48,13 +55,14 @@ const check = (pack: unknown, overrides: Partial<CourseCheckInput> = {}) =>
     ...overrides,
   }).map((p) => p.message)
 
-describe('the first-week course', () => {
+describe('the first-week course', { timeout: COMPOSES_THE_COURSE }, () => {
   it('is a path every learner can walk: real ids, full lessons, every key in both languages', () => {
     expect(check(shipped.pack)).toEqual([])
   })
 
   it('follows the launch brief: flags, places, capitals, six new countries, then all twelve, then a check', () => {
-    const steps = units(shipped.pack).flatMap((u) => u.nodes)
+    // The brief's week is the first two units; v1.1.0's continents come after it.
+    const steps = units(shipped.pack).slice(0, 2).flatMap((u) => u.nodes)
     expect(steps.map((n) => n.focus.attributes.join('+'))).toEqual([
       'flag',
       'location',
@@ -69,9 +77,28 @@ describe('the first-week course', () => {
     // No new countries: every one of the twelve is a brief candidate, and nothing else.
     expect(new Set(steps.flatMap((n) => n.focus.entities))).toEqual(new Set(twelve))
   })
+
+  it('goes on after the week with a unit per continent, each closing on a check of everything', () => {
+    const later = units(shipped.pack).slice(2)
+    expect(later.map((u) => u.id)).toEqual([
+      'unit.first-week.europe',
+      'unit.first-week.americas',
+      'unit.first-week.asia-oceania',
+      'unit.first-week.africa',
+    ])
+    const all = units(shipped.pack).flatMap((u) => u.nodes)
+    for (const unit of later) {
+      const last = unit.nodes.at(-1)!
+      expect('kind' in last && last.kind).toBe('check')
+      // Its check asks about every country taught so far, in every attribute.
+      const upTo = all.slice(0, all.indexOf(last) + 1)
+      expect(new Set(last.focus.entities)).toEqual(new Set(upTo.flatMap((n) => n.focus.entities)))
+      expect(last.focus.attributes).toEqual(['flag', 'location', 'capital'])
+    }
+  })
 })
 
-describe('the course check refuses', () => {
+describe('the course check refuses', { timeout: COMPOSES_THE_COURSE }, () => {
   it("the brief's day 1 as written — four flags cannot fill a five-question lesson", () => {
     const pack = firstWeek()
     units(pack)[0]!.nodes[0]!.focus.entities = ['SE', 'NO', 'US', 'JP']

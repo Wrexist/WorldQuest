@@ -146,7 +146,6 @@ export type HomeScreenProps = {
   readonly resetsIn?: string | undefined
   /** The title the user is wearing, for the middle fact chip. */
   readonly titleKey?: TranslationKey | undefined
-  readonly onOpenInbox?: (() => void) | undefined
   readonly onOpenQuests?: (() => void) | undefined
   /**
    * This week's standing, or nothing.
@@ -208,7 +207,6 @@ export function HomeScreen({
   onOpenWorld,
   resetsIn,
   titleKey = 'titles:wanderer',
-  onOpenInbox,
   onOpenQuests,
   league,
   reminderAsk,
@@ -223,6 +221,17 @@ export function HomeScreen({
 
   return (
     <View style={styles.screen}>
+      {/* The top bar is pinned too, as Duolingo's is. Home brings the path's step into
+          view on open, and on a 375 or 320 pt phone that scrolled the avatar, the streak
+          flame and the coins off the top before the learner had seen them (round-3
+          design review). The bar is the one row every tab starts with; it stays put. */}
+      <View style={styles.topBar}>
+        <TopBar
+          initials="EX"
+          {...(progress !== null ? { coins: progress.coins } : {})}
+          {...(onOpenStreak !== undefined && progress !== null ? { onStreak: onOpenStreak, streak: progress.streak } : {})}
+        />
+      </View>
       {/* Pinned above the scroll view rather than scrolled with it. The catalogue asks for
           a persistent banner (H6), and once Home brings the path's step into view on a
           short phone, a banner at the top of the content was the first thing scrolled
@@ -241,12 +250,6 @@ export function HomeScreen({
         onScroll={bringIntoView.onScroll}
         scrollEventThrottle={16}
       >
-        <TopBar
-          initials="EX"
-          {...(progress !== null ? { coins: progress.coins } : {})}
-          onInbox={onOpenInbox ?? (() => {})}
-        />
-
         {/* Two-tier greeting: light salutation, bold role.
             Atlas used to wave from beside it. He stands in the current unit's banner now,
             a few points lower — one mascot per screen, beside the part of the path you
@@ -268,16 +271,16 @@ export function HomeScreen({
             replacing it: they are different rewards. The league chip appears only when
             there IS one. */}
         <View style={styles.factRow}>
-          {/* Not at zero. The coin chip shows 0 quite happily: a wallet reading 0 is a
-              fact about a balance, and a streak reading 0 is a verdict on the person
-              holding it. */}
+          {/* Not at zero, and not a button. The top bar's flame is the streak's one
+              control, and it states 0 as plainly as the coin chip states a balance; this
+              tile is the celebration of a streak, so it waits for one. A second control
+              for the same page was two stops saying the same thing to a screen reader. */}
           {progress !== null && progress.streak > 0 && (
             <Fact
               icon="streak"
               tint={colors.status.streak}
               label={t('home:streak.label')}
               value={t('home:facts.streak', { count: progress.streak })}
-              {...(onOpenStreak !== undefined ? { onPress: onOpenStreak } : {})}
             />
           )}
           <Fact
@@ -721,6 +724,7 @@ const styles = StyleSheet.create({
   cardTitle: { ...text('h3'), color: colors.text.primary },
 
   offlineBar: { paddingHorizontal: space[4], paddingTop: space[4] },
+  topBar: { paddingHorizontal: space[4], paddingTop: space[4] },
   offline: {
     backgroundColor: colors.bg.surfaceRaised,
     padding: space[3],

@@ -28,7 +28,7 @@ import { backendConfig } from './backendConfig.js'
 import { isOnline } from './connectivity.js'
 import { invalidateProgress } from './query.js'
 import { captureStorage } from './storage.js'
-import { MEMORY_KEY } from './d1-memory.js'
+import { announceFocusFinished, FOCUS_FINISHED_KEY, MEMORY_KEY } from './d1-memory.js'
 import { queueUnlocks, type PendingUnlock } from '../features/achievements/pending.js'
 import { currentUser } from './supabase.js'
 
@@ -366,15 +366,66 @@ export async function receiptFor(id: string): Promise<D1Receipt | null> {
 
 // ── memory (L01) — read by `d1-memory.ts`, written here ─────────────────────
 
-/** Replace the cache with the server's current memory. Quiet on failure, like prefetch. */
-export async function refreshMemory(): Promise<void> {
-  if (!isOnline()) return
+/**
+ * Replace the cache with the server's current memory, and its count of finished lessons
+ * per chosen focus (what a course path follows). Quiet on failure, like prefetch; says
+ * whether it got an answer.
+ */
+export async function refreshMemory(): Promise<boolean> {
+  if (!isOnline()) return false
   try {
     const { client, store } = await open()
     const state = await client.state()
-    if (!store.isCurrent()) return
+    if (!store.isCurrent()) return false
     store.set(MEMORY_KEY, JSON.stringify(state.memories))
+    store.set(FOCUS_FINISHED_KEY, JSON.stringify(state.finishedByFocus))
+    announceFocusFinished()
+    foldDays(store, state.finishedByDay)
+    return true
   } catch {
     // The previous snapshot stays; the server still decides every grade.
+    return false
   }
+}
+
+/**
+ * The account's finished lessons per day, folded into this device's day log, keeping the
+ * higher count per day: the log is what the streak calendar, Profile's week and the
+ * daily goal read, and a phone just signed into starts with an empty one. Written by key
+ * (`features/profile/useWeekActivity.ts` owns it), like the onboarding record in
+ * `d1-age.ts`: a `lib` module importing a feature is a cycle.
+ */
+const ACTIVITY_KEY = 'activity.byDay.v1'
+function foldDays(store: ReturnType<typeof captureStorage>, days: readonly { day: string; finished: number }[]): void {
+  if (days.length === 0) return
+  let log: Record<string, number> = {}
+  try {
+    const parsed: unknown = JSON.parse(store.get(ACTIVITY_KEY) ?? '{}')
+    if (parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)) log = { ...(parsed as Record<string, number>) }
+  } catch {
+    // A log that does not parse is rebuilt from the server's days.
+  }
+  let changed = false
+  for (const { day, finished } of days) {
+    if (typeof log[day] !== 'number' || log[day] < finished) {
+      log[day] = finished
+      changed = true
+    }
+  }
+  if (changed) store.set(ACTIVITY_KEY, JSON.stringify(log))
+}
+
+/** The storage scope whose server state has been fetched this launch. */
+let refreshedScope: string | null = null
+
+/**
+ * The server's state once per account per launch, for what a lesson flush alone never
+ * refreshes: a phone that has just signed into an account with history but has played
+ * nothing itself yet. Its path, and the memory its first lesson grades against, would
+ * otherwise start from nothing until that first lesson synced (`pnpm e2e:d1`).
+ */
+export async function refreshMemoryOnce(): Promise<void> {
+  const scope = captureStorage().id
+  if (refreshedScope === scope) return
+  if (await refreshMemory()) refreshedScope = scope
 }

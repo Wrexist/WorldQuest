@@ -13,14 +13,17 @@ import { worldProgress } from '@worldquest/engines'
 import { ExploreScreen } from '../../src/features/explore/ExploreScreen.js'
 import { ContentGate } from '../../src/components/ContentGate.js'
 import { useContent } from '../../src/lib/content.js'
-import { useProgress } from '../../src/features/home/useProgress.js'
+import { useOptimisticProgress } from '../../src/features/home/useOptimisticProgress.js'
 
 export default function ExploreRoute() {
   const router = useRouter()
   const { index, memory, status, reload, isOffline } = useContent()
-  // The server's balance for the bar at the top. Explore leads to the Shop through the
-  // tab bar, so the number shown has to be one that can actually be spent.
-  const { data } = useProgress()
+  // The bar at the top reports, so it shows what Home shows: the server's figures plus
+  // any lesson it has not seen yet. Reading the server's alone put "1 day" on Home and
+  // "no days yet" here after the same lesson. The Shop's wallet card is where coins are
+  // offered, and it keeps the spendable balance (`OptimisticProgress.coins`). Zero before
+  // anything has loaded, as on Home (`COLD_START`), so no tab's bar differs from another's.
+  const { shown } = useOptimisticProgress()
 
   const world = useMemo(
     () => (index === null ? null : worldProgress(index.index, memory, Date.now())),
@@ -37,8 +40,9 @@ export default function ExploreRoute() {
         loading={status === 'loading'}
         onOpenCollection={(kind) => router.push(`/collection/${kind}`)}
         onSelectRegion={(region) => router.push(`/region/${region}`)}
-        coins={data?.coins ?? 0}
-        onOpenInbox={() => router.push('/streak')}
+        coins={shown?.coinsIncludingPending ?? 0}
+        streak={shown?.streak ?? 0}
+        onOpenStreak={() => router.push('/streak')}
       />
     </ContentGate>
   )

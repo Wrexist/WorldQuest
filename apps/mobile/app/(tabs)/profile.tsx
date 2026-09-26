@@ -20,6 +20,7 @@ import { useOptimisticProgress } from '../../src/features/home/useOptimisticProg
 import { ContentGate } from '../../src/components/ContentGate.js'
 import { useContent } from '../../src/lib/content.js'
 import { useAccountStatus } from '../../src/features/account/useAccountStatus.js'
+import { useLeagueEnabled } from '../../src/features/league/flag.js'
 
 export default function ProfileRoute() {
   const { preferences } = usePreferences()
@@ -64,6 +65,7 @@ export default function ProfileRoute() {
   )
 
   const account = useAccountStatus()
+  const leagueOn = useLeagueEnabled()
 
   const world = useMemo(() => {
     if (index === null) return null
@@ -126,7 +128,9 @@ export default function ProfileRoute() {
         wornTitleKey={worn}
         avatar={preferences.avatar}
         badges={badges}
-        onOpenLeague={() => router.push('/league')}
+        // Only where leagues run, and never for a child: D1 builds have none, and the
+        // row promised a placement "with 29 other explorers" that would not come.
+        {...(leagueOn && !account.isChild ? { onOpenLeague: () => router.push('/league') } : {})}
         onOpenAchievements={() => router.push('/achievements')}
         // The gear. Settings stopped being a tab when Shop took the fifth slot, and
         // this is where it went — see `app/settings.tsx`.

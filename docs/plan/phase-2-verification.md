@@ -625,3 +625,28 @@ It passes 33/33 at the batch's revision. Getting there found four defects, all f
 What this does not show: native credential storage (SecureStore) through the same
 steps, which is the B02 device pass in the [runbook](ios-launch-runbook.md), and
 preferences, which are per-device by design and do not follow the account.
+
+### Round 2: what the journey proves now (26 September 2026)
+
+After a second round of audits (rows 31–47 of the launch audit), `pnpm e2e:d1` passes
+43/43. On top of the above, it now shows that the second phone's course path and streak
+calendar carry on from the first, derived from records the Worker already keeps (tickets,
+receipts), that a phone just signed into finishes onboarding in the account's own scope
+without being asked again, and that on a ten-year-old's phone the account is protected
+on the server, no email is ever asked, and a grown-up can delete the child's progress
+behind a question (`/grown-up`). The Worker's proofs add the age band's one-way rule: an
+unlinked adult guest may be moved down to protected, never up, and a linked account is
+never moved.
+
+
+### Round 3: the rendered app, and a path past the first week (26 September 2026)
+
+Two audits of the rendered screens (accessibility and language; the screens at 320, 375,
+390 and 768) found 18 issues, rows 48–65 of the launch audit, all fixed at `39aad10`. On
+that revision `pnpm verify` passes, `pnpm e2e` passes 108/108, `pnpm e2e:d1` 43/43,
+`pnpm a11y:tree` passes, and `pnpm bundle:native` builds both platforms at 4.34 MB
+(budget 4.6). The course is v1.1.0: after the brief's week, one unit per continent, 33
+steps and 63 countries, each step composing a full lesson with and without a screen
+reader (`pnpm content:validate`). Both walks now read the course's length from the pack.
+Still web-only evidence: none of this has been on a phone, and VoiceOver itself is the
+device pass (`device-pass.md` §4).

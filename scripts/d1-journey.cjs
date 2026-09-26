@@ -43,6 +43,14 @@ const http = require('node:http')
 const { spawnSync } = require('node:child_process')
 const { createRequire } = require('node:module')
 const { chromium } = require('playwright')
+
+/**
+ * Steps in the shipped course, from the pack itself: the path grows as units are added
+ * (v1.1.0 went from 7 to 33), and a walk that hardcoded the count failed on content.
+ */
+const COURSE_STEPS = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '..', 'packages', 'content', 'packs', 'courses', 'first-week.v1.json'), 'utf8'),
+).items.reduce((n, unit) => n + unit.nodes.length, 0)
 const { launchOptions } = require('./chromium.cjs')
 const { browserContext } = require('./lib/browser-harness.cjs')
 
@@ -323,7 +331,7 @@ async function waitFor(check, ms) {
     await waitFor(async () => (await pathSteps()).length > 0, 5000)
     const firstPath = await pathSteps()
     step('Home shows the course path with one current step, the first',
-      firstPath.length === 7 && firstPath.filter((s) => s.state === 'current').length === 1 && firstPath[0]?.state === 'current',
+      firstPath.length === COURSE_STEPS && firstPath.filter((s) => s.state === 'current').length === 1 && firstPath[0]?.state === 'current',
       firstPath.map((s) => s.state[0]).join(''))
     await shot('home-path')
 
@@ -346,7 +354,9 @@ async function waitFor(check, ms) {
     await page.getByRole('tab', { name: /Quests/ }).first().click()
     await page.waitForTimeout(2000)
     const questRow = await one('SELECT quest, credited, perform_done FROM quest_days WHERE account_id = ?', guest.id)
-    const shown = ((await body()).match(/(\d) of 5 done/) ?? [])[1]
+    // Read from the quest's own bar: the tabs stay mounted, so the page's text also holds
+    // Home's path, whose five-step unit reads "0 of 5 done" too.
+    const shown = (((await page.getByTestId('quest-progress').first().textContent().catch(() => '')) ?? '').match(/(\d) of 5 done/) ?? [])[1]
     const expected = questRow ? questDone(questRow) : -1
     step('the Quests tab shows the quest the server pays', questRow !== null && shown !== undefined && Number(shown) === expected,
       `screen ${shown ?? '?'} of 5, server ${expected} of 5`)
@@ -417,8 +427,12 @@ async function waitFor(check, ms) {
     await page.waitForTimeout(1500)
     await page.getByRole('button', { name: 'Create an account' }).first().click()
     await page.waitForTimeout(1500)
-    await page.getByRole('button', { name: 'Link your email' }).first().click()
-    await page.waitForTimeout(800)
+    // "Create an account" opens on the address itself now; the hub's "Link your email"
+    // is only there if it did not.
+    const hubLink = page.getByRole('button', { name: 'Link your email' })
+    const openedOnHub = (await hubLink.count()) > 0
+    if (openedOnHub) { await hubLink.first().click(); await page.waitForTimeout(800) }
+    step('"Create an account" opens on the email, not on a menu', !openedOnHub)
     // Whatever the screens ask, answered as this learner, and recorded: onboarding took
     // the birth year already, so the account flow asking it again is a finding (S02).
     const seenLinking = []
@@ -465,6 +479,13 @@ async function waitFor(check, ms) {
     const phone = await second.newPage()
     phone.on('pageerror', (e) => errors.push('second phone: ' + String(e)))
     phone.on('console', (m) => { if (m.type() === 'error') errors.push('second phone console: ' + m.text()) })
+    if (process.argv.includes('--debug')) {
+      phone.on('response', (r) => {
+        const u = new URL(r.url())
+        if (u.pathname.startsWith('/v1/') || u.pathname === '/health') console.log(`    [phone net] ${r.request().method()} ${u.pathname} → ${r.status()}`)
+      })
+      phone.on('console', (m) => console.log(`    [phone console.${m.type()}] ${m.text().slice(0, 200)}`))
+    }
     await phone.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' })
     await phone.waitForTimeout(1500)
     await phone.getByRole('button', { name: 'I already have an account' }).first().click()
@@ -505,6 +526,21 @@ async function waitFor(check, ms) {
     await phone.waitForTimeout(2500)
     const landed = new URL(phone.url()).pathname
     step('and lands in the app, not back in onboarding', landed !== '/onboarding', landed)
+    // The course path came along too, derived from the server's records: the first phone
+    // finished the current step's first lesson (the offline one), so this phone's path
+    // opens on the step's second.
+    const pathFollowed = await waitFor(async () => (await phone.getByText('Lesson 2 of 2', { exact: true }).count()) > 0, 15000)
+    // The streak calendar too, opened from the top bar's flame: the first phone learned
+    // today, so this month shows a learned day here as well.
+    await phone.getByRole('button', { name: /^Your streak: / }).first().click()
+    await phone.waitForTimeout(2000)
+    const calendarFollowed = await waitFor(async () => (await phone.getByText(/^\d+ days? this month$/).count()) > 0, 10000)
+    step('and its streak calendar shows the days learned on the first', calendarFollowed,
+      calendarFollowed ? (await phone.getByText(/^\d+ days? this month$/).first().textContent()) ?? '' : 'no learned days shown')
+    await phone.getByRole('button', { name: /back/i }).first().click().catch(() => {})
+    await phone.waitForTimeout(1200)
+    step('and its course path carries on from the first phone', pathFollowed,
+      pathFollowed ? 'Lesson 2 of 2' : ((await phone.evaluate(() => document.body.innerText)).match(/Lesson \d of \d/) ?? ['no step shown'])[0])
     await phone.getByRole('tab', { name: /Profile/ }).first().click().catch(() => {})
     await phone.waitForTimeout(2500)
     // The coin balance, by its spoken label: Profile shows XP inside the current level
@@ -636,10 +672,35 @@ async function waitFor(check, ms) {
     await kid.waitForTimeout(1500)
     // Reached first, so a count of zero means "not offered" rather than "not there yet".
     const kidInSettings = (await kid.getByRole('heading', { name: 'Settings' }).count()) > 0
-    const kidSettingsAsks = await kid.getByRole('button', { name: /^(Link your email|Sign in|Delete account)$/ }).count()
+    const kidSettingsAsks = await kid.getByRole('button', { name: /^(Link your email|Sign in)$/ }).count()
     await kid.screenshot({ path: path.join(SHOTS, 'child-settings.png') })
     step('and nothing on the phone asks a child for an email', kidInSettings && kidProfileAsks === 0 && kidSettingsAsks === 0,
       `profile ${kidProfileAsks}, settings ${kidInSettings ? kidSettingsAsks : 'not reached'}`)
+
+    // A child's progress lives on the server as a guest, so a grown-up can delete it —
+    // behind a question, like every other way out of the app on this device.
+    const kidIds = (await db.prepare('SELECT id FROM accounts WHERE deleted_at IS NULL').all()).results
+      .map((r) => r.id).filter((id) => !known.has(id))
+    await kid.getByRole('button', { name: 'Delete account' }).first().click()
+    await kid.waitForTimeout(1500)
+    const gated = (await kid.getByTestId('grown-up-gate').count()) > 0
+    const sum = ((await kid.getByTestId('grown-up-gate').innerText().catch(() => '')).match(/(\d+) × (\d+)/) ?? [])
+    if (sum.length === 3) {
+      // The field is named by its question, which is what a screen reader hears.
+      await kid.getByLabel(/^What is \d × \d\?$/).fill(String(Number(sum[1]) * Number(sum[2])))
+      await kid.getByTestId('grown-up-continue').click()
+      await kid.waitForTimeout(1500)
+    }
+    for (let i = 0; i < 4; i++) {
+      if ((await kid.getByText('Your account is deleted', { exact: true }).count()) > 0) break
+      const permanent = kid.getByRole('button', { name: 'Delete permanently' })
+      if ((await permanent.count()) > 0) await permanent.first().click()
+      else await kid.getByRole('button', { name: 'Delete account' }).last().click()
+      await kid.waitForTimeout(1500)
+    }
+    const kidLeft = kidIds.length === 0 ? -1 : (await one(`SELECT count(*) AS n FROM accounts WHERE id IN (${kidIds.map(() => '?').join(',')})`, ...kidIds)).n
+    step("a grown-up can delete a child's progress, behind a question", gated && sum.length === 3 && kidLeft === 0,
+      `${gated ? 'asked ' + (sum[0] ?? '?') : 'no gate'} · ${kidLeft} account row(s) left`)
     await kidContext.close()
 
     step('no uncaught errors in the page', errors.length === 0, errors.slice(0, 3).join(' | '))

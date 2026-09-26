@@ -45,6 +45,61 @@ Status: ✅ done on this branch · ⏳ in progress · ☐ open.
 | 27 | P0 | Signing in on a new phone: "I already have an account" bounced back to onboarding; the account screen then offered "Start as guest"; after signing in, onboarding started again | U04, B02 (web part) | ✅ gate lets `/account` through; `?mode=signIn` opens on signing in; a sign-in finishes onboarding in the account's scope; `pnpm e2e:d1` second phone |
 | 28 | P0 | Every identity change remounts the app, so the account screen lost its flow: no "Your email is linked" or "Welcome back", and a refused code left the device paused in an empty guest scope (onboarding again) | S01, B02 | ✅ flow state outlives the screen; the host reopens the paused owner on a refusal; component and host tests |
 | 29 | P0 | Onboarding's birth year never reached the server: every guest `unknown`, adults asked twice, children unprotected server-side until the account screen | S02 | ✅ age band sent when onboarding finishes (or when a later guest is made); the Worker keeps the band only |
+| 30 | P0 | Native bundle over its 4.6 MB budget (4.80 MB), so CI's `verify:full` was red; the gate also measured the legacy build, which nobody ships | cold start, CI | ✅ the first sourcemap breakdown found the legacy Supabase SDK (~280 KB of JS) in D1 builds; D1 builds resolve it to a throwing stub and the gate measures the D1 build: **4.32 MB** on iOS and Android, budget unchanged |
+
+## Round 2 (26 September 2026, at `96220b9`)
+
+Three more read-only audits after rows 1–30 landed: child safety and privacy of the
+account work, App Store submission, and Duolingo parity. Ranked in working order.
+
+| # | Pri | Item | Closes | Status |
+|---|---|---|---|---|
+| 31 | P0 | The age is asked twice and the server keeps the first answer: a parent's year typed on a child's tablet makes the child's server account `eligible`; `/account` has no child check | S02, S03 | ✅ one answer: the account flow sends onboarding's year instead of asking; a child device never opens an email flow; the Worker may move an unlinked `eligible` guest down to `protected`, never up (workerd proof) |
+| 32 | P0 | A finished account flow stays adopted after a swipe-back or sign-out; the next visitor's Continue runs "finish onboarding by sign-in" for a sign-in they never did | S01 | ✅ onboarding is finished inside the sign-in; sign-out resets the flow; a finished flow is shown again only to the account it belongs to |
+| 33 | P0 | Onboarding's age is sent once and never retried, so a dropped connection leaves the band `unknown` for good | S02 | ✅ resent on every sync until the Worker has it (`ageSent`); a sign-in marks it |
+| 34 | P1 | Refusals missing from the host's reopen list (`ACCOUNT_NOT_LINKED`, `EMAIL_ALREADY_LINKED`, …); a failed reopen's Retry reports success | S01 | ✅ `ACCOUNT_NOT_LINKED`, `EMAIL_ALREADY_LINKED`, `CHALLENGE_REQUIRED`, `REAUTH_REQUIRED` reopen; Retry after a failed reopen shows the account's real state |
+| 35 | P1 | A child's note says progress stays on the phone, but a D1 guest lives on the server, and a child cannot delete it in the app | 5.1.1, 5.1.4 | ✅ the child note is true; a grown-up can delete a child's progress from Settings › Privacy behind the gate (`pnpm e2e:d1`) |
+| 36 | P1 | Profile promises a league (placement "with 29 other explorers") that D1 never provides, to children too | rule 7, P-6 | ✅ gated like Home and Settings (`useLeagueEnabled() && !isChild`) |
+| 37 | P1 | The reminder ask requests permission but schedules nothing until Settings is opened | parity, notifications | ✅ accepting schedules the reminder at once (shared `useReminderCopy`) |
+| 38 | P1 | Beta and "coming soon" copy on the default path: "recovery is still being tested", "more to come… being drawn", "not available yet" | 2.1, 2.2 | ✅ reworded or removed; the Shop's "more to come" section is gone |
+| 39 | P2 | "Create a profile" opens the account hub instead of the link flow on D1 | parity | ✅ `?mode=link` opens on the address (the year first only if nobody asked) |
+| 40 | P2 | Settings links (privacy, terms, licences) open for children with no gate; P0 only if Kids Category | 1.3, 5.1.4 | ✅ a grown-up gate (`/grown-up`, a multiplication question, destinations named not passed) in front of every link out of the app and deletion on a child's device |
+| 41 | P2 | Adult-only UI shows to 13–16 year-olds whom the Worker protects (13 vs 16 cut-off) | S02 | ✅ adult-only UI follows the stricter of the device gate and the Worker's band |
+| 42 | P2 | Unused Face ID string; English-only binary locale; version 0.1.0; a credits line pointing at citations the app no longer shows | 2.3, 5.1 | ✅ `faceIDPermission: false`, `supportedLocales` en and sv, version 1.0.0, credits point at the licences row |
+| 43 | P2 | The first lesson (taster) does not count on the course path; no "New" tag on first-seen facts; lesson complete shows Atlas only when perfect | parity | ✅ "New" tag; a calm Atlas on every summary (confetti stays for perfect); whether the taster counts as the path's first step is an owner decision in the runbook |
+| 44 | P2 | Header: an "Inbox" bell that opens Quests or Streak, and "EX" hard-coded as the avatar; no help row in Settings; no freeze in the Shop | parity | ✅ help row, a Shop freeze row, and a streak chip in every tab's top bar where the "Inbox" bell was; the bar draws the chosen portrait |
+| 45 | P2 | Streak history and course progress are device-only | U04 | ✅ course progress and the last month's learned days follow the account (`finishedByFocus`, `finishedByDay`); `pnpm e2e:d1` checks both on the second phone |
+| 46 | P2 | A production build does not fail when the D1 or privacy URLs are missing | A05 | ✅ owner step: the values live in EAS, so the runbook checks them with `eas env:list --environment production` before building |
+| 47 | P3 | The path ends after 13 lessons; quests do not move with path lessons | parity, content | ✅ the path goes on: course v1.1.0 adds a unit per continent (Europe, the Americas, Asia and Oceania, Africa), 33 steps and 63 countries, in the first week's rhythm, validated step by step with and without a screen reader; the order is runbook decision 9, changeable without losing progress. Fixed: a first-week learner's three review tasks named the same facts. ⏳ whether path lessons advance quests is decision 8 |
+
+## Round 3 (26 September 2026, at `b07679c`)
+
+Two more audits of the rendered app after round 2 landed: accessibility and language
+(`wq-a11y-i18n-auditor`) and the screens themselves at 320, 375, 390 and 768
+(`wq-design-reviewer`). Both on the web build in Chromium, so a phone pass still owns
+safe areas, Dynamic Type, haptics and VoiceOver itself.
+
+| # | Pri | Item | Closes | Status |
+|---|---|---|---|---|
+| 48 | P0 | Streak and coins change between tabs: Explore, Quests and Shop read the server alone, so after a lesson Home said 1 day and they said none | design review 1, a11y 1 | ✅ every top bar reads `useOptimisticProgress().shown`; the Shop's wallet keeps the spendable balance |
+| 49 | P0 | A new user's Profile has its avatar in the screen corner and the gear on the top edge | design review 2 | ✅ the empty state's bar has the populated one's padding |
+| 50 | P1 | The grown-up gate says nothing to VoiceOver after a wrong answer, names its field "Answer", hides Continue under the number pad, and draws no field on the web | a11y 3 and 6, design review 3 | ✅ the new question is announced, the field is named by it, the keyboard insets adjust, the field paints above the card |
+| 51 | P1 | The streak calendar and Profile's week letters follow the phone's language, not the app's | a11y 2 | ✅ both take the app's locale and redraw when it changes |
+| 52 | P1 | Screen titles cut to one line ("Ask a grown-…" at 320 pt, "Your …" at 200 % text) | a11y 4, design review 12 | ✅ they wrap |
+| 53 | P1 | Swedish: two different names for the freeze, one misspelt; "Enhet", "Öppna svit", the share line, the review line, two course lines | a11y 5 and 7 | ✅ fixed as proposed; a native speaker still signs off all Swedish (runbook 4) |
+| 54 | P1 | On a 375 or 320 pt phone Home opens with the top bar scrolled away | design review 4 | ✅ the bar is pinned above the scroll view, as Duolingo's is |
+| 55 | P1 | The age wheel opens with 2000 in its band, unchosen, beside a disabled Continue | design review 5 | ✅ the band says "Choose a year" until the wheel moves; tapping the prompt does not answer 2000 |
+| 56 | P1 | The feedback scroll cuts through the question or its map | design review 6 | ✅ it moves only when an option would be under the sheet, and stops in the gap above the options |
+| 57 | P1 | The review round sends the progress bar backwards ("20 / 20" to "21 / 36") | design review 7 | ✅ the bar counts settled questions (`lessonProgress`): a miss is settled by its second look, so it only grows |
+| 58 | P1 | The quest cover says "Answer 5 questions" above five tasks and fourteen answers | design review 8 | ✅ "5 challenges today" |
+| 59 | P1 | The Shop lists the freeze after sixteen titles | design review 9 | ✅ first, as Duolingo's shop opens on it |
+| 60 | P2 | Eleven progress bars read "3 of 10" in English to Swedish VoiceOver users | a11y 9 | ✅ no English fallback in the primitive; the lesson bar has its own translated value |
+| 61 | P2 | The time tile says "1 minute 0 seconds" | a11y 8 | ✅ each part is empty at zero; seconds go through `Intl` |
+| 62 | P2 | Two controls on Home open the streak and say it twice | a11y 10 | ✅ the flame is the control; the fact tile is a fact |
+| 63 | P2 | The region picker offers Antarctica (no countries, a pale blur) and cuts "North America" | design review 10 | ✅ six regions with countries; labels wrap to two lines |
+| 64 | P2 | The flame looks the same at 0 and 1 and cannot say today is not done | design review 11 | ✅ grey until today's lesson is in, and the label says so in words |
+| 65 | P3 | The paywall fallback says lessons are free "in the meantime"; the achievements heading "Close" reads as a button | design review 12 | ✅ "stays free"; "Up next" |
+| 66 | P0 | The TestFlight workflow could not be started: since 3d9164c a `"\n"` in its build-number step was a real line break, the YAML did not parse, and GitHub failed it on every push | runbook 6, found when merging | ✅ fixed and run against a copy of app.json; `pnpm check:workflows` (in verify) parses all eleven workflows and fails on this exact break |
 
 ## Deliberately not copied from Duolingo
 

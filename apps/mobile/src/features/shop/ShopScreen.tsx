@@ -66,7 +66,10 @@ export type ShopScreenProps = {
   readonly error?: boolean
   readonly onRetry?: (() => void) | undefined
   /** The bell, so the header matches the other tabs. Optional like every other route hook. */
-  readonly onOpenInbox?: (() => void) | undefined
+  /** The streak, for the top bar's flame chip. */
+  readonly streak?: number | undefined
+  /** The streak page, where freezes are bought against the streak they protect. */
+  readonly onOpenStreak?: (() => void) | undefined
   readonly onBuy: (item: ShopItem) => void
   /** `null` takes the bought title off and returns to the level one. */
   readonly onEquip: (id: string | null) => void
@@ -82,7 +85,8 @@ export function ShopScreen({
   isOffline,
   error = false,
   onRetry,
-  onOpenInbox,
+  streak,
+  onOpenStreak,
   onBuy,
   onEquip,
 }: ShopScreenProps) {
@@ -114,7 +118,10 @@ export function ShopScreen({
           points above it would state the balance twice on the one screen where it is
           already the subject. Consistency here is the avatar and the inbox, not the
           duplication of a figure. */}
-      <TopBar initials="EX" {...(onOpenInbox !== undefined ? { onInbox: onOpenInbox } : {})} />
+      <TopBar
+        initials="EX"
+        {...(onOpenStreak !== undefined && streak !== undefined ? { onStreak: onOpenStreak, streak } : {})}
+      />
       <Text style={styles.h1} role="heading" aria-level={1}>
         {t('shop:title')}
       </Text>
@@ -150,6 +157,26 @@ export function ShopScreen({
           <Icon name="offline" size={18} color={colors.text.secondary} />
           <Text style={styles.offlineText}>{t('shop:offline.body')}</Text>
         </View>
+      )}
+
+      {/* First, as Duolingo's shop opens on the freeze. It is bought on the streak page,
+          beside the streak it protects, so the shop points there rather than selling it
+          twice; at the end of the list it sat below some sixteen titles, where nobody
+          looking for it would scroll (round-3 design review). */}
+      {onOpenStreak !== undefined && (
+        <>
+          <Text style={styles.section} role="heading" aria-level={2}>
+            {t('shop:section.streak')}
+          </Text>
+          <Card level={1} style={styles.freeze} testID="shop-freeze">
+            <Art name="rewards/streak-freeze" size={space[8]} />
+            <View style={styles.freezeText}>
+              <Text style={styles.freezeTitle}>{t('shop:freeze.title')}</Text>
+              <Text style={styles.freezeBody}>{t('shop:freeze.body')}</Text>
+            </View>
+            <Button label={t('shop:freeze.cta')} onPress={onOpenStreak} size="sm" variant="secondary" fullWidth={false} />
+          </Card>
+        </>
       )}
 
       <Text style={styles.section} role="heading" aria-level={2}>
@@ -209,13 +236,9 @@ export function ShopScreen({
         </>
       )}
 
-      <Text style={styles.section} role="heading" aria-level={2}>
-        {t('shop:section.soon')}
-      </Text>
-      {/* A sentence, not a row of greyed-out items with prices on them. A disabled
-          price tag is a promise with a number attached, and the number is the part
-          people remember. */}
-      <Text style={styles.soon}>{t('shop:soon.body')}</Text>
+      {/* No "more to come" section. It promised pets and map skins "being drawn", which
+          reads as unfinished to App Review (2.1) and as a promise to everyone else; the
+          shop shows what it sells. */}
 
       <View style={styles.tail} />
     </ScrollView>
@@ -451,6 +474,9 @@ const styles = StyleSheet.create({
   emptyTitle: { ...text('h3'), color: colors.text.primary },
   emptyBody: { ...text('body'), color: colors.text.secondary },
 
-  soon: { ...text('body'), color: colors.text.secondary },
+  freeze: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space[3] },
+  freezeText: { flex: 1, minWidth: 160, gap: space[1] },
+  freezeTitle: { ...text('bodyStrong'), color: colors.text.primary },
+  freezeBody: { ...text('caption'), color: colors.text.secondary },
   tail: { height: space[5] },
 })

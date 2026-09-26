@@ -11,8 +11,9 @@
  * everywhere; the network half lives in `d1-lessons.ts`.
  */
 
+import { useSyncExternalStore } from 'react'
 import type { MemoryState } from '@worldquest/engines'
-import { isRecord, readJson } from './storage.js'
+import { isRecord, onStorageScopeChange, readJson } from './storage.js'
 
 export const MEMORY_KEY = 'd1.memory.v1'
 
@@ -23,4 +24,53 @@ const isMemoryList = (value: unknown): boolean =>
 export function cachedMemory(): Map<string, MemoryState> {
   const list = readJson<MemoryState[]>(MEMORY_KEY, isMemoryList) ?? []
   return new Map(list.map((m) => [m.factId, m]))
+}
+
+// ── finished lessons per chosen focus — what a course path follows ──────────
+
+/**
+ * The Worker's count of finished lessons per focus the learner chose, for this account,
+ * as last fetched (`refreshMemory` in `d1-lessons.ts`). A course step's lessons are
+ * issued with exactly that step's focus, so these counts are the account's course
+ * progress wherever it was played (`features/course/serverProgress.ts`).
+ */
+export const FOCUS_FINISHED_KEY = 'd1.focusFinished.v1'
+
+export type FocusFinished = { readonly focus: Readonly<Record<string, unknown>>; readonly finished: number }
+
+const isFocusList = (value: unknown): boolean =>
+  Array.isArray(value) &&
+  value.every((e) => isRecord(e) && isRecord((e as { focus?: unknown }).focus) &&
+    typeof (e as { finished?: unknown }).finished === 'number')
+
+const NONE: readonly FocusFinished[] = []
+let focusSnapshot: readonly FocusFinished[] | null = null
+const focusListeners = new Set<() => void>()
+
+/** Empty before the first fetch, offline on a fresh install, and on a legacy build. */
+export function cachedFocusFinished(): readonly FocusFinished[] {
+  return (focusSnapshot ??= readJson<FocusFinished[]>(FOCUS_FINISHED_KEY, isFocusList) ?? NONE)
+}
+
+/** Called by the writer after a fetch, so the path redraws with what the server said. */
+export function announceFocusFinished(): void {
+  focusSnapshot = null
+  for (const listener of focusListeners) listener()
+}
+
+function subscribeFocus(listener: () => void): () => void {
+  focusListeners.add(listener)
+  // Another account's counts must never draw this one's path, for even a frame.
+  const off = onStorageScopeChange(() => {
+    focusSnapshot = null
+    listener()
+  })
+  return () => {
+    focusListeners.delete(listener)
+    off()
+  }
+}
+
+export function useFocusFinished(): readonly FocusFinished[] {
+  return useSyncExternalStore(subscribeFocus, cachedFocusFinished, cachedFocusFinished)
 }
