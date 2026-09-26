@@ -124,3 +124,13 @@ sends an eight-digit code." Add a support email.
 7. **Kids Category:** if you choose it, the requirement for a parental gate before links
    out of the app is met: on a child's device every link and "Delete account" asks a
    grown-up first (`/grown-up`). Nothing else in the app contacts a third party.
+8. **Quests and the path (10 min):** a quest's tasks name specific facts, so they move
+   when the learner plays the quest from its button and rarely from path lessons.
+   Duolingo's quests count any lesson. Keep this, or credit "discover" with any
+   first-seen fact and the review tasks with any due fact answered, so quests move with
+   the path; quests would then complete more often (an economy change, so it is yours).
+9. **The path after week one (10 min):** the course is the brief's first week (13
+   lessons, 12 countries). After it, Home offers review and Explore holds the other 53
+   countries. Proposal: continue with one unit per continent from the existing packs,
+   in the same step shapes (flags, places, capitals, then a check). About an hour of
+   work once you approve the order of continents.

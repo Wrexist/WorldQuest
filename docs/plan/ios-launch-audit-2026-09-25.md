@@ -70,7 +70,7 @@ account work, App Store submission, and Duolingo parity. Ranked in working order
 | 44 | P2 | Header: an "Inbox" bell that opens Quests or Streak, and "EX" hard-coded as the avatar; no help row in Settings; no freeze in the Shop | parity | ✅ help row, a Shop freeze row, and a streak chip in every tab's top bar where the "Inbox" bell was; the bar draws the chosen portrait |
 | 45 | P2 | Streak history and course progress are device-only | U04 | ✅ course progress and the last month's learned days follow the account (`finishedByFocus`, `finishedByDay`); `pnpm e2e:d1` checks both on the second phone |
 | 46 | P2 | A production build does not fail when the D1 or privacy URLs are missing | A05 | ✅ owner step: the values live in EAS, so the runbook checks them with `eas env:list --environment production` before building |
-| 47 | P3 | The path ends after 13 lessons; quests do not move with path lessons | parity, content | ☐ owner/content |
+| 47 | P3 | The path ends after 13 lessons; quests do not move with path lessons | parity, content | ⏳ fixed: a first-week learner's three review tasks named the same facts (one lesson finished three); the path's length and whether path lessons advance quests are owner decisions 8–9 in the runbook |
 
 ## Deliberately not copied from Duolingo
 
