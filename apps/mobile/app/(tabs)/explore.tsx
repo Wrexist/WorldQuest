@@ -21,7 +21,8 @@ export default function ExploreRoute() {
   // The bar at the top reports, so it shows what Home shows: the server's figures plus
   // any lesson it has not seen yet. Reading the server's alone put "1 day" on Home and
   // "no days yet" here after the same lesson. The Shop's wallet card is where coins are
-  // offered, and it keeps the spendable balance (`OptimisticProgress.coins`).
+  // offered, and it keeps the spendable balance (`OptimisticProgress.coins`). Zero before
+  // anything has loaded, as on Home (`COLD_START`), so no tab's bar differs from another's.
   const { shown } = useOptimisticProgress()
 
   const world = useMemo(
@@ -39,8 +40,8 @@ export default function ExploreRoute() {
         loading={status === 'loading'}
         onOpenCollection={(kind) => router.push(`/collection/${kind}`)}
         onSelectRegion={(region) => router.push(`/region/${region}`)}
-        coins={shown?.coinsIncludingPending}
-        streak={shown?.streak}
+        coins={shown?.coinsIncludingPending ?? 0}
+        streak={shown?.streak ?? 0}
         onOpenStreak={() => router.push('/streak')}
       />
     </ContentGate>

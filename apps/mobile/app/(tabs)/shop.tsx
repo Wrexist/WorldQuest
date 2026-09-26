@@ -53,7 +53,7 @@ export default function ShopRoute() {
       // balance; sending our guess lets the funnel be read before the sync lands, and
       // it is corrected on the next reconcile like every other optimistic number.
       // Same destination as the other tabs' bell.
-      streak={shown?.streak}
+      streak={shown?.streak ?? 0}
       onOpenStreak={() => router.push('/streak')}
       onBuy={(item) => shop.buy(item, coins - item.price)}
       onEquip={(id) => shop.equip(id)}

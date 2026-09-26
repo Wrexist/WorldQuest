@@ -36,10 +36,10 @@ export default function QuestsRoute() {
         quest={quest}
         loading={loading}
         onStartSpeedRound={() => router.push('/lesson?mode=speed')}
-        coins={shown?.coinsIncludingPending}
+        coins={shown?.coinsIncludingPending ?? 0}
         resetsIn={untilReset}
         onOpenAchievements={() => router.push('/achievements')}
-        streak={shown?.streak}
+        streak={shown?.streak ?? 0}
         onOpenStreak={() => router.push('/streak')}
         // The quest's own facts. This button said "Continue" above five named tasks and
         // started a generic lesson, so the five rows were a report on a lesson chosen by

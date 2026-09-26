@@ -638,3 +638,15 @@ behind a question (`/grown-up`). The Worker's proofs add the age band's one-way 
 unlinked adult guest may be moved down to protected, never up, and a linked account is
 never moved.
 
+
+### Round 3: the rendered app, and a path past the first week (26 September 2026)
+
+Two audits of the rendered screens (accessibility and language; the screens at 320, 375,
+390 and 768) found 18 issues, rows 48–65 of the launch audit, all fixed at `39aad10`. On
+that revision `pnpm verify` passes, `pnpm e2e` passes 108/108, `pnpm e2e:d1` 43/43,
+`pnpm a11y:tree` passes, and `pnpm bundle:native` builds both platforms at 4.34 MB
+(budget 4.6). The course is v1.1.0: after the brief's week, one unit per continent, 33
+steps and 63 countries, each step composing a full lesson with and without a screen
+reader (`pnpm content:validate`). Both walks now read the course's length from the pack.
+Still web-only evidence: none of this has been on a phone, and VoiceOver itself is the
+device pass (`device-pass.md` §4).
