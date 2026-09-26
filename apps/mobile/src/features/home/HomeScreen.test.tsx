@@ -4,6 +4,8 @@ import { courseStanding, type CourseProgress } from '@worldquest/engines'
 import { HomeScreen, type HomeProgress, type HomeScreenProps } from './HomeScreen.js'
 import { loadCourse } from '../course/course.js'
 import { toPathView } from '../course/pathView.js'
+import { recordLessonCompleted } from '../profile/useWeekActivity.js'
+import { clearAll } from '../../lib/storage.js'
 
 const RETURNING: HomeProgress = {
   xpTotal: 4820,
@@ -159,8 +161,22 @@ describe('Home — the path is the one primary action', () => {
     home({ onOpenStreak: () => {} })
     expect(screen.getByLabelText('Your profile')).toBeTruthy()
     // The bar's flame opens the streak page; the "Inbox" bell it replaced opened Quests.
-    expect(screen.getByRole('button', { name: 'Your streak: 12 days' })).toBeTruthy()
+    // Grey before today's lesson, and the label says so in words rather than colour.
+    expect(
+      screen.getByRole('button', { name: "Your streak: 12 days. Today's lesson will add a day." }),
+    ).toBeTruthy()
     expect(screen.queryByLabelText('Inbox')).toBeNull()
+  })
+
+  it("lights the flame once today's lesson is in", () => {
+    recordLessonCompleted()
+    try {
+      home({ onOpenStreak: () => {} })
+      expect(screen.getByRole('button', { name: 'Your streak: 12 days' })).toBeTruthy()
+    } finally {
+      // The day log is device storage, which outlives a test: leave it as it was found.
+      clearAll()
+    }
   })
 })
 

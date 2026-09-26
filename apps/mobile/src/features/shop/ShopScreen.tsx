@@ -159,6 +159,26 @@ export function ShopScreen({
         </View>
       )}
 
+      {/* First, as Duolingo's shop opens on the freeze. It is bought on the streak page,
+          beside the streak it protects, so the shop points there rather than selling it
+          twice; at the end of the list it sat below some sixteen titles, where nobody
+          looking for it would scroll (round-3 design review). */}
+      {onOpenStreak !== undefined && (
+        <>
+          <Text style={styles.section} role="heading" aria-level={2}>
+            {t('shop:section.streak')}
+          </Text>
+          <Card level={1} style={styles.freeze} testID="shop-freeze">
+            <Art name="rewards/streak-freeze" size={space[8]} />
+            <View style={styles.freezeText}>
+              <Text style={styles.freezeTitle}>{t('shop:freeze.title')}</Text>
+              <Text style={styles.freezeBody}>{t('shop:freeze.body')}</Text>
+            </View>
+            <Button label={t('shop:freeze.cta')} onPress={onOpenStreak} size="sm" variant="secondary" fullWidth={false} />
+          </Card>
+        </>
+      )}
+
       <Text style={styles.section} role="heading" aria-level={2}>
         {t('shop:section.titles')}
       </Text>
@@ -220,23 +240,6 @@ export function ShopScreen({
           reads as unfinished to App Review (2.1) and as a promise to everyone else; the
           shop shows what it sells. */}
 
-      {/* Duolingo's shop opens on the freeze. Ours is sold on the streak page, beside the
-          streak it protects, so the shop points there rather than selling it twice. */}
-      {onOpenStreak !== undefined && (
-        <>
-          <Text style={styles.section} role="heading" aria-level={2}>
-            {t('shop:section.streak')}
-          </Text>
-          <Card level={1} style={styles.freeze} testID="shop-freeze">
-            <Art name="rewards/streak-freeze" size={space[8]} />
-            <View style={styles.freezeText}>
-              <Text style={styles.freezeTitle}>{t('shop:freeze.title')}</Text>
-              <Text style={styles.freezeBody}>{t('shop:freeze.body')}</Text>
-            </View>
-            <Button label={t('shop:freeze.cta')} onPress={onOpenStreak} size="sm" variant="secondary" fullWidth={false} />
-          </Card>
-        </>
-      )}
       <View style={styles.tail} />
     </ScrollView>
   )

@@ -43,6 +43,14 @@ const http = require('node:http')
 const { spawnSync } = require('node:child_process')
 const { createRequire } = require('node:module')
 const { chromium } = require('playwright')
+
+/**
+ * Steps in the shipped course, from the pack itself: the path grows as units are added
+ * (v1.1.0 went from 7 to 33), and a walk that hardcoded the count failed on content.
+ */
+const COURSE_STEPS = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '..', 'packages', 'content', 'packs', 'courses', 'first-week.v1.json'), 'utf8'),
+).items.reduce((n, unit) => n + unit.nodes.length, 0)
 const { launchOptions } = require('./chromium.cjs')
 const { browserContext } = require('./lib/browser-harness.cjs')
 
@@ -323,7 +331,7 @@ async function waitFor(check, ms) {
     await waitFor(async () => (await pathSteps()).length > 0, 5000)
     const firstPath = await pathSteps()
     step('Home shows the course path with one current step, the first',
-      firstPath.length === 7 && firstPath.filter((s) => s.state === 'current').length === 1 && firstPath[0]?.state === 'current',
+      firstPath.length === COURSE_STEPS && firstPath.filter((s) => s.state === 'current').length === 1 && firstPath[0]?.state === 'current',
       firstPath.map((s) => s.state[0]).join(''))
     await shot('home-path')
 
@@ -346,7 +354,9 @@ async function waitFor(check, ms) {
     await page.getByRole('tab', { name: /Quests/ }).first().click()
     await page.waitForTimeout(2000)
     const questRow = await one('SELECT quest, credited, perform_done FROM quest_days WHERE account_id = ?', guest.id)
-    const shown = ((await body()).match(/(\d) of 5 done/) ?? [])[1]
+    // Read from the quest's own bar: the tabs stay mounted, so the page's text also holds
+    // Home's path, whose five-step unit reads "0 of 5 done" too.
+    const shown = (((await page.getByTestId('quest-progress').first().textContent().catch(() => '')) ?? '').match(/(\d) of 5 done/) ?? [])[1]
     const expected = questRow ? questDone(questRow) : -1
     step('the Quests tab shows the quest the server pays', questRow !== null && shown !== undefined && Number(shown) === expected,
       `screen ${shown ?? '?'} of 5, server ${expected} of 5`)
@@ -676,7 +686,8 @@ async function waitFor(check, ms) {
     const gated = (await kid.getByTestId('grown-up-gate').count()) > 0
     const sum = ((await kid.getByTestId('grown-up-gate').innerText().catch(() => '')).match(/(\d+) × (\d+)/) ?? [])
     if (sum.length === 3) {
-      await kid.getByLabel('Answer').fill(String(Number(sum[1]) * Number(sum[2])))
+      // The field is named by its question, which is what a screen reader hears.
+      await kid.getByLabel(/^What is \d × \d\?$/).fill(String(Number(sum[1]) * Number(sum[2])))
       await kid.getByTestId('grown-up-continue').click()
       await kid.waitForTimeout(1500)
     }

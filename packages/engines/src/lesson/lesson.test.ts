@@ -19,6 +19,7 @@ import {
   initialState,
   isFinished,
   lastAnswerOf,
+  lessonProgress,
   transition,
   type LessonState,
 } from './machine.js'
@@ -203,6 +204,30 @@ describe('reviewing mistakes at the end', () => {
 })
 
 describe('what the lesson summary and the progress bar read', () => {
+  it('fills the bar with settled questions, so the review round never sends it backwards', () => {
+    let s = started(makeQuestions(3))
+    expect(lessonProgress(s)).toEqual({ current: 0, total: 3 })
+    s = transition(answerCorrectly(s, T0 + 1000), { type: 'CONTINUE', now: T0 + 1100 })
+    expect(lessonProgress(s)).toEqual({ current: 1, total: 3 })
+    // A miss does not move it…
+    s = transition(answerWrongly(s, T0 + 2000), { type: 'CONTINUE', now: T0 + 2100 })
+    expect(lessonProgress(s)).toEqual({ current: 1, total: 3 })
+    s = transition(answerCorrectly(s, T0 + 3000), { type: 'CONTINUE', now: T0 + 3100 })
+    // …and the review round, appended to the questions, does not grow the total.
+    expect(inReview(s)).toBe(true)
+    expect(s.questions).toHaveLength(4)
+    expect(lessonProgress(s)).toEqual({ current: 2, total: 3 })
+    // The missed question's second look settles it, however it goes: the bar ends full.
+    s = answerWrongly(s, T0 + 4000)
+    expect(lessonProgress(s)).toEqual({ current: 3, total: 3 })
+  })
+
+  it('counts every answer in a timed lesson, which has no review to settle a miss', () => {
+    let s = started(makeQuestions(2), { timeLimitMs: 10_000 })
+    s = transition(answerWrongly(s, T0 + 500), { type: 'CONTINUE', now: T0 + 600 })
+    expect(lessonProgress(s)).toEqual({ current: 1, total: 2 })
+  })
+
   it('times the answering: never a pause, never the feedback, and the review counts', () => {
     let s = started(makeQuestions(2))
     // Four seconds on the first question, then five reading the feedback.

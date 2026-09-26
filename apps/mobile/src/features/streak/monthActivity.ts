@@ -12,6 +12,7 @@
 import { useMemo } from 'react'
 import { localDay } from '../../lib/day.js'
 import { firstWeekday } from '../../lib/week.js'
+import { currentLocale } from '../../lib/i18n.js'
 import { readActivityLog } from '../profile/useWeekActivity.js'
 
 export type MonthCell = {
@@ -39,7 +40,9 @@ const A_SUNDAY = new Date(2026, 0, 4)
  * The calendar for the month `today` falls in.
  *
  * `firstWeekday` uses `expo-localization`'s numbering: 1 is Sunday, 2 is Monday.
- * `locale` is for tests; the app passes nothing and gets the device's.
+ * `locale` is the app's language (`useMonthActivity` passes it). Left out, it is the
+ * device's, which is wrong whenever the two differ: an English phone with the app in
+ * Swedish read "M T W T F S S" and "October" beside "1 dag den här månaden".
  */
 export function monthActivity(
   log: Readonly<Record<string, number>>,
@@ -80,7 +83,8 @@ export function monthActivity(
   }
 }
 
-/** This month from the device's lesson log, in the user's week. */
+/** This month from the device's lesson log, in the user's week and the app's language. */
 export function useMonthActivity(): MonthActivity {
-  return useMemo(() => monthActivity(readActivityLog(), new Date(), firstWeekday()), [])
+  const locale = currentLocale()
+  return useMemo(() => monthActivity(readActivityLog(), new Date(), firstWeekday(), locale), [locale])
 }

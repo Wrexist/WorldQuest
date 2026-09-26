@@ -50,7 +50,7 @@ import { factsStrengthened } from '@worldquest/engines'
 import type { GradeResult } from '@worldquest/engines'
 import { Art } from '../../components/Art.js'
 import { Flag } from '../../components/Flag.js'
-import { useT } from '../../lib/i18n.js'
+import { currentLocale, formatNumber, useT } from '../../lib/i18n.js'
 
 /**
  * How a lesson ended, from the user's point of view rather than the machine's.
@@ -301,7 +301,8 @@ export function LessonSummary({
                 order={2}
                 value={t('lesson:summary.stat.time.value', {
                   minutes: time.minutes,
-                  seconds: String(time.seconds).padStart(2, '0'),
+                  // Through Intl like every other number, two digits wide: "1:05".
+                  seconds: formatNumber(time.seconds, currentLocale(), { minimumIntegerDigits: 2 }),
                 })}
                 label={t('lesson:summary.stat.time')}
                 // Neutral: time is a fact about the lesson, not a score (see the header).

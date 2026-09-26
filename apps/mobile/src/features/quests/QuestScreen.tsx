@@ -174,6 +174,7 @@ export function QuestScreen({
           tone="reward"
           showCount={false}
           label={t('quests:progress', { done, total })}
+          testID="quest-progress"
         />
         {quest.complete ? (
           <>

@@ -187,7 +187,7 @@ export function AchievementsScreen({ rows, onStartLesson, onBack }: Achievements
           the groups are cut from the same `sorted` array, in the same order.
 
           Deliberately NOT a separate hero row for the nearest unlock, which the plan for
-          this work asked for. The first row of "Close" already IS the nearest, and a hero
+          this work asked for. The first row of "Up next" already IS the nearest, and a hero
           above it would draw the same card twice. */}
       {GROUPS.map(({ key, rows: pick }) => {
         const group = pick(sorted)

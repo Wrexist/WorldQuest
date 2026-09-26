@@ -47,6 +47,7 @@ import { Stat } from './Stat.js'
 import { useT } from '../lib/i18n.js'
 import { usePreferences } from '../features/settings/usePreferences.js'
 import { avatarArt } from '../features/settings/AvatarPicker.js'
+import { lessonsToday } from '../features/profile/useWeekActivity.js'
 
 export type TopBarProps = {
   /** Initials, when the user has not chosen a portrait. */
@@ -80,6 +81,9 @@ export function TopBar({
   onSettings,
 }: TopBarProps) {
   const t = useT()
+  // Today's lessons from the device's log, the one the daily goal and the week chart
+  // read, so the flame lights the moment a lesson ends rather than after a sync.
+  const countedToday = streak !== undefined && lessonsToday() > 0
   const { preferences } = usePreferences()
   const portrait = avatar === undefined ? avatarArt(preferences.avatar) : null
   const image = avatar ?? (portrait !== null ? <Art name={portrait} size={40} /> : undefined)
@@ -112,11 +116,13 @@ export function TopBar({
         <Pressable
           onPress={onStreak}
           role="button"
-          aria-label={t('home:streak.chip', { count: streak })}
+          aria-label={t(countedToday || streak === 0 ? 'home:streak.chip' : 'home:streak.chip.pending', { count: streak })}
           hitSlop={8}
         >
-          {/* Named by the Pressable, so the chip inside it is silent, like the avatar. */}
-          <Stat kind="streak" value={streak} accessibilityLabel="" />
+          {/* Named by the Pressable, so the chip inside it is silent, like the avatar.
+              Grey until today's lesson is in, as Duolingo's flame is: the chip says
+              whether today has counted, and the label says it in words. */}
+          <Stat kind="streak" value={streak} accessibilityLabel="" dim={!countedToday} />
         </Pressable>
       )}
       {gems !== undefined && gems > 0 && (

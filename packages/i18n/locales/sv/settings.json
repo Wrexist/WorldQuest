@@ -60,7 +60,7 @@
   "settings:gate.title": "Fråga en vuxen",
   "settings:gate.body": "Den här delen är för vuxna. Svara på frågan för att gå vidare.",
   "settings:gate.question": "Vad är {a} × {b}?",
-  "settings:gate.answer": "Svar",
   "settings:gate.wrong": "Det stämmer inte. Här är en ny fråga.",
+  "settings:gate.wrongSpoken": "Det stämmer inte. Här är en ny fråga: vad är {a} × {b}?",
   "settings:about.support": "Hjälp och feedback"
 }

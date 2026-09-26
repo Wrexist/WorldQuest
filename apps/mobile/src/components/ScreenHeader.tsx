@@ -72,7 +72,10 @@ export function ScreenHeader({ title, onBack, trailing }: ScreenHeaderProps) {
       {title === undefined ? (
         <View style={styles.title} />
       ) : (
-        <Text style={styles.title} role="heading" aria-level={1} numberOfLines={1}>
+        // Wraps rather than truncating: one line cut "Ask a grown-up" to "Ask a grown-…" at
+        // 320 pt, and "Your streak" to "Your …" at 200 % text. A title is the one line on
+        // the screen that says where you are, so it gets a second line before it loses a word.
+        <Text style={styles.title} role="heading" aria-level={1}>
           {title}
         </Text>
       )}

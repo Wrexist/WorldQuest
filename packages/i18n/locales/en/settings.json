@@ -107,10 +107,10 @@
   "settings:gate.body__note": "Above the gate question. Addressed to the adult; no blame for a child who tapped here.",
   "settings:gate.question": "What is {a} × {b}?",
   "settings:gate.question__note": "The gate question. {a} and {b} are numbers from 6 to 9. Keep the × sign.",
-  "settings:gate.answer": "Answer",
-  "settings:gate.answer__note": "Accessible label of the number field.",
   "settings:gate.wrong": "That's not it. Here's another one.",
   "settings:gate.wrong__note": "After a wrong answer, above a new question. Calm; never \"wrong!\".",
+  "settings:gate.wrongSpoken": "That's not it. Here's another one: what is {a} × {b}?",
+  "settings:gate.wrongSpoken__note": "Read out by the screen reader after a wrong answer, because the new question appears silently. Same words as settings:gate.wrong, then the new question. {a} and {b} are numbers from 6 to 9. Keep the × sign.",
   "settings:about.support": "Help and feedback",
   "settings:about.support__note": "Row in About that opens the support page. Max 24 characters."
 }

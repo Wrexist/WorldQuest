@@ -32,7 +32,7 @@ export function Stat({ kind, ...rest }: StatProps) {
   return (
     <StatChip
       kind={kind}
-      icon={<Icon name={ICONS[kind]} size={SIZE} color={chipTint(kind)} />}
+      icon={<Icon name={ICONS[kind]} size={SIZE} color={chipTint(kind, rest.dim)} />}
       {...rest}
     />
   )

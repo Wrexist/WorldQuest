@@ -11,7 +11,7 @@
  */
 
 import { useState } from 'react'
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
+import { AccessibilityInfo, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
 import { Button, Card, colors, radius, space, text } from '@worldquest/design'
 import { Art } from '../../components/Art.js'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
@@ -45,13 +45,25 @@ export function GrownUpGate({
       onPass()
       return
     }
+    const next = newQuestion()
     setWrong(true)
     setAnswer('')
-    setQuestion(newQuestion())
+    setQuestion(next)
+    // Said out loud, with the new question in it. `role="alert"` below is a live region
+    // on the web only: in React Native it sets a role description and nothing speaks, so
+    // a blind parent heard nothing while the field emptied and the question changed.
+    AccessibilityInfo.announceForAccessibility(t('settings:gate.wrongSpoken', { a: next.a, b: next.b }))
   }
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+    // `automaticallyAdjustKeyboardInsets`: the number pad has no return key on iOS, so
+    // Continue is the only way on, and at 568 pt the pad covered it.
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={styles.content}
+      keyboardShouldPersistTaps="handled"
+      automaticallyAdjustKeyboardInsets
+    >
       <ScreenHeader title={t('settings:gate.title')} onBack={onCancel} />
       <View style={styles.art}>
         <Art name="atlas/thinking" size={space[9]} />
@@ -67,7 +79,9 @@ export function GrownUpGate({
             setAnswer(value.replace(/\D/g, '').slice(0, 3))
             setWrong(false)
           }}
-          accessibilityLabel={t('settings:gate.answer')}
+          // Named by the question it answers, so a screen reader landing on the field
+          // hears what to type rather than "Answer".
+          accessibilityLabel={t('settings:gate.question', { a: question.a, b: question.b })}
           keyboardType="number-pad"
           inputMode="numeric"
           maxLength={3}
@@ -97,6 +111,9 @@ const styles = StyleSheet.create({
   body: { ...text('body'), color: colors.text.secondary },
   question: { ...text('h2', { numeric: true }), color: colors.text.primary, textAlign: 'center' },
   field: {
+    // Positioned, so it paints above the card's gradient on the web, where an input is
+    // static and an absolutely placed backdrop covers it (native stacks by order).
+    position: 'relative',
     ...text('h2', { numeric: true }),
     color: colors.text.primary,
     backgroundColor: colors.bg.surface,

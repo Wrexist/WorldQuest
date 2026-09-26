@@ -72,6 +72,34 @@ account work, App Store submission, and Duolingo parity. Ranked in working order
 | 46 | P2 | A production build does not fail when the D1 or privacy URLs are missing | A05 | ✅ owner step: the values live in EAS, so the runbook checks them with `eas env:list --environment production` before building |
 | 47 | P3 | The path ends after 13 lessons; quests do not move with path lessons | parity, content | ✅ the path goes on: course v1.1.0 adds a unit per continent (Europe, the Americas, Asia and Oceania, Africa), 33 steps and 63 countries, in the first week's rhythm, validated step by step with and without a screen reader; the order is runbook decision 9, changeable without losing progress. Fixed: a first-week learner's three review tasks named the same facts. ⏳ whether path lessons advance quests is decision 8 |
 
+## Round 3 (26 September 2026, at `b07679c`)
+
+Two more audits of the rendered app after round 2 landed: accessibility and language
+(`wq-a11y-i18n-auditor`) and the screens themselves at 320, 375, 390 and 768
+(`wq-design-reviewer`). Both on the web build in Chromium, so a phone pass still owns
+safe areas, Dynamic Type, haptics and VoiceOver itself.
+
+| # | Pri | Item | Closes | Status |
+|---|---|---|---|---|
+| 48 | P0 | Streak and coins change between tabs: Explore, Quests and Shop read the server alone, so after a lesson Home said 1 day and they said none | design review 1, a11y 1 | ✅ every top bar reads `useOptimisticProgress().shown`; the Shop's wallet keeps the spendable balance |
+| 49 | P0 | A new user's Profile has its avatar in the screen corner and the gear on the top edge | design review 2 | ✅ the empty state's bar has the populated one's padding |
+| 50 | P1 | The grown-up gate says nothing to VoiceOver after a wrong answer, names its field "Answer", hides Continue under the number pad, and draws no field on the web | a11y 3 and 6, design review 3 | ✅ the new question is announced, the field is named by it, the keyboard insets adjust, the field paints above the card |
+| 51 | P1 | The streak calendar and Profile's week letters follow the phone's language, not the app's | a11y 2 | ✅ both take the app's locale and redraw when it changes |
+| 52 | P1 | Screen titles cut to one line ("Ask a grown-…" at 320 pt, "Your …" at 200 % text) | a11y 4, design review 12 | ✅ they wrap |
+| 53 | P1 | Swedish: two different names for the freeze, one misspelt; "Enhet", "Öppna svit", the share line, the review line, two course lines | a11y 5 and 7 | ✅ fixed as proposed; a native speaker still signs off all Swedish (runbook 4) |
+| 54 | P1 | On a 375 or 320 pt phone Home opens with the top bar scrolled away | design review 4 | ✅ the bar is pinned above the scroll view, as Duolingo's is |
+| 55 | P1 | The age wheel opens with 2000 in its band, unchosen, beside a disabled Continue | design review 5 | ✅ the band says "Choose a year" until the wheel moves; tapping the prompt does not answer 2000 |
+| 56 | P1 | The feedback scroll cuts through the question or its map | design review 6 | ✅ it moves only when an option would be under the sheet, and stops in the gap above the options |
+| 57 | P1 | The review round sends the progress bar backwards ("20 / 20" to "21 / 36") | design review 7 | ✅ the bar counts settled questions (`lessonProgress`): a miss is settled by its second look, so it only grows |
+| 58 | P1 | The quest cover says "Answer 5 questions" above five tasks and fourteen answers | design review 8 | ✅ "5 challenges today" |
+| 59 | P1 | The Shop lists the freeze after sixteen titles | design review 9 | ✅ first, as Duolingo's shop opens on it |
+| 60 | P2 | Eleven progress bars read "3 of 10" in English to Swedish VoiceOver users | a11y 9 | ✅ no English fallback in the primitive; the lesson bar has its own translated value |
+| 61 | P2 | The time tile says "1 minute 0 seconds" | a11y 8 | ✅ each part is empty at zero; seconds go through `Intl` |
+| 62 | P2 | Two controls on Home open the streak and say it twice | a11y 10 | ✅ the flame is the control; the fact tile is a fact |
+| 63 | P2 | The region picker offers Antarctica (no countries, a pale blur) and cuts "North America" | design review 10 | ✅ six regions with countries; labels wrap to two lines |
+| 64 | P2 | The flame looks the same at 0 and 1 and cannot say today is not done | design review 11 | ✅ grey until today's lesson is in, and the label says so in words |
+| 65 | P3 | The paywall fallback says lessons are free "in the meantime"; the achievements heading "Close" reads as a button | design review 12 | ✅ "stays free"; "Up next" |
+
 ## Deliberately not copied from Duolingo
 
 | Duolingo | Rule | WorldQuest instead |

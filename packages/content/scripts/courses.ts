@@ -108,11 +108,16 @@ export function catalogueFor(
   }
 }
 
-/** Every copy key a course names, for the locale check. */
+/**
+ * Every copy key a course names, for the locale check. Once each: every unit's steps
+ * share their sentences, and one missing key is one problem, not one per step using it.
+ */
 function keysOf(course: Course): readonly string[] {
   return [
-    course.titleKey,
-    ...course.units.flatMap((unit) => [unit.titleKey, unit.objectiveKey, ...unit.nodes.map((n) => n.objectiveKey)]),
+    ...new Set([
+      course.titleKey,
+      ...course.units.flatMap((unit) => [unit.titleKey, unit.objectiveKey, ...unit.nodes.map((n) => n.objectiveKey)]),
+    ]),
   ]
 }
 

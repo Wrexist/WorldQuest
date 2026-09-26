@@ -43,7 +43,7 @@
  * the fade is a hint, not information — the cheap version wins.
  */
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   Pressable,
   ScrollView,
@@ -171,6 +171,15 @@ export function WheelPicker<T extends string | number>({
     scroller.current?.scrollTo({ y: restingIndex * ROW, animated: false })
   }, [restingIndex, value])
 
+  // Until the wheel is first moved, the row resting in the band says what the empty row
+  // says. Opening at `restingIndex` put a year nobody chose in the band ("2000" on the age
+  // step) above a disabled Continue, which read as answered and broken at once (round-3
+  // design review). Only until a drag begins or a row is tapped, so the years are there
+  // to read as they pass through the band.
+  const [moved, setMoved] = useState(false)
+  const prompt = options.find((option) => option.value === null)?.label
+  const prompting = value === null && !moved && restingIndex > 0 && prompt !== undefined
+
   const pick = (index: number): void => {
     const option = options[index]
     if (option === undefined || option.value === value) return
@@ -211,6 +220,7 @@ export function WheelPicker<T extends string | number>({
         snapToInterval={ROW}
         decelerationRate="fast"
         contentContainerStyle={{ paddingVertical: pad }}
+        onScrollBeginDrag={() => setMoved(true)}
         onMomentumScrollEnd={(event) => {
           const index = Math.round(event.nativeEvent.contentOffset.y / ROW)
           pick(Math.min(options.length - 1, Math.max(0, index)))
@@ -219,6 +229,7 @@ export function WheelPicker<T extends string | number>({
         {options.map((option, index) => {
           const distance = Math.abs(index - selected)
           const isSelected = option.value === value
+          const asks = prompting && index === restingIndex
           return (
             <Pressable
               key={String(option.value ?? 'none')}
@@ -226,27 +237,38 @@ export function WheelPicker<T extends string | number>({
               aria-label={option.label}
               aria-selected={isSelected}
               aria-checked={isSelected}
-              onPress={() => pick(index)}
+              onPress={() => {
+                setMoved(true)
+                // The row that is showing the prompt shows its year at the first tap and
+                // is picked at the second: tapping "Choose a year" must not answer 2000,
+                // the one fast path to an adult's experience this wheel exists to refuse.
+                if (!asks) pick(index)
+              }}
               style={styles.row}
             >
               <Text
                 maxFontSizeMultiplier={ROW_MAX_SCALE}
                 dataSet={{ maxScale: String(ROW_MAX_SCALE) }}
                 numberOfLines={1}
-                style={[
-                  styles.label,
-                  isSelected && styles.labelOn,
-                  // A hint, not information — the band and the type size already say
-                  // which row is chosen, and a screen reader is told outright.
-                  distance > 1 && styles.labelFar,
-                ]}
+                style={
+                  asks
+                    ? styles.promptLabel
+                    : [
+                        styles.label,
+                        isSelected && styles.labelOn,
+                        // A hint, not information — the band and the type size already say
+                        // which row is chosen, and a screen reader is told outright.
+                        distance > 1 && styles.labelFar,
+                      ]
+                }
               >
-                {option.label}
+                {asks ? prompt : option.label}
               </Text>
             </Pressable>
           )
         })}
       </ScrollView>
+
     </View>
   )
 }
@@ -289,4 +311,5 @@ const styles = StyleSheet.create({
   label: { ...text('h3', { numeric: true }), color: colors.text.secondary },
   labelOn: { ...text('h2', { numeric: true }), color: colors.text.primary },
   labelFar: { color: colors.text.tertiary, opacity: 0.6 },
+  promptLabel: { ...text('h3'), color: colors.text.primary },
 })

@@ -15,14 +15,15 @@ import { router } from 'expo-router'
 import { ShopScreen } from '../../src/features/shop/ShopScreen.js'
 import { CATALOGUE } from '../../src/features/shop/catalogue.js'
 import { reconcileOwned, useShop } from '../../src/features/shop/useShop.js'
-import { useProgress } from '../../src/features/home/useProgress.js'
+import { useOptimisticProgress } from '../../src/features/home/useOptimisticProgress.js'
 import { useOnline } from '../../src/lib/connectivity.js'
 import { levelProgress } from '@worldquest/engines'
 
 export default function ShopRoute() {
   // Server state, behind TanStack Query. The wallet is authoritative there — the
-  // number shown here is what the server last said, not a local tally.
-  const { data, status, refetch } = useProgress()
+  // number shown here is what the server last said, not a local tally. The streak chip
+  // is a report, so it reads `shown` like every other tab's bar.
+  const { data, shown, status, refetch } = useOptimisticProgress()
   const shop = useShop()
   const online = useOnline()
 
@@ -52,7 +53,7 @@ export default function ShopRoute() {
       // balance; sending our guess lets the funnel be read before the sync lands, and
       // it is corrected on the next reconcile like every other optimistic number.
       // Same destination as the other tabs' bell.
-      streak={data?.streak ?? 0}
+      streak={shown?.streak}
       onOpenStreak={() => router.push('/streak')}
       onBuy={(item) => shop.buy(item, coins - item.price)}
       onEquip={(id) => shop.equip(id)}

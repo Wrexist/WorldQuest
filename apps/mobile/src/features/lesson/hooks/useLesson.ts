@@ -19,6 +19,7 @@ import {
   gradeLesson,
   initialState,
   isFinished,
+  lessonProgress,
   masteryOf,
   transition,
   type GradeResult,
@@ -240,10 +241,9 @@ export function useLesson({
     state,
     awardFor,
     question: currentQuestion(state),
-    progress: {
-      current: Math.min(state.index + 1, state.questions.length),
-      total: state.questions.length,
-    },
+    // Settled questions out of the lesson's own, in the engine: it never goes backwards
+    // when the review round begins (`lessonProgress`).
+    progress: lessonProgress(state),
     accuracy: accuracy(state),
     optimistic,
     start,

@@ -1,8 +1,11 @@
 import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
+import { AccessibilityInfo } from 'react-native'
 import { GrownUpGate, newQuestion } from './GrownUpGate.js'
 
-const answer = (value: string) => fireEvent.change(screen.getByLabelText('Answer'), { target: { value } })
+/** The field, found the way a screen reader finds it: by the question it answers. */
+const field = () => screen.getByLabelText(/^What is \d × \d\?$/) as HTMLInputElement
+const answer = (value: string) => fireEvent.change(field(), { target: { value } })
 
 describe('the grown-up gate', () => {
   it('lets the right answer through, and nothing else', () => {
@@ -20,7 +23,17 @@ describe('the grown-up gate', () => {
     answer('1')
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
     // A new random question, which may happen to be the same; the field is cleared either way.
-    expect((screen.getByLabelText('Answer') as HTMLInputElement).value).toBe('')
+    expect(field().value).toBe('')
+  })
+
+  it('says the new question out loud, because it appears without a sound', () => {
+    const spoken = vi.spyOn(AccessibilityInfo, 'announceForAccessibility').mockImplementation(() => {})
+    render(<GrownUpGate onPass={() => {}} onCancel={() => {}} question={{ a: 7, b: 8 }} />)
+    answer('1')
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    const next = field().getAttribute('aria-label')?.replace(/^What/, 'what')
+    expect(spoken).toHaveBeenCalledWith(`That's not it. Here's another one: ${next}`)
+    spoken.mockRestore()
   })
 
   it('passes on the product', () => {

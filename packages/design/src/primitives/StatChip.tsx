@@ -25,6 +25,12 @@ export type StatChipProps = {
   icon: React.ReactNode
   /** Full-sentence label for screen readers, e.g. "12 day streak". */
   accessibilityLabel: string
+  /**
+   * Quiet: grey instead of the chip's colour, for a meaning not in effect yet — a streak
+   * today's lesson has not extended. The caller's label must say so in words, because
+   * colour alone never carries the meaning (see the header).
+   */
+  dim?: boolean
   style?: StyleProp<ViewStyle>
   testID?: string
 }
@@ -38,18 +44,19 @@ const TINTS: Record<ChipKind, string> = {
 }
 
 /** The colour the caller should tint its icon, so the pair always matches. */
-export const chipTint = (kind: ChipKind): string => TINTS[kind]
+export const chipTint = (kind: ChipKind, dim = false): string => (dim ? colors.text.secondary : TINTS[kind])
 
-export function StatChip({ kind, value, icon, accessibilityLabel, style, testID }: StatChipProps) {
+export function StatChip({ kind, value, icon, accessibilityLabel, dim = false, style, testID }: StatChipProps) {
+  const tint = chipTint(kind, dim)
   return (
     <View
       accessible
       aria-label={accessibilityLabel}
-      style={[styles.base, { borderColor: TINTS[kind] }, style]}
+      style={[styles.base, { borderColor: tint }, style]}
       testID={testID}
     >
       {icon}
-      <Text style={[styles.value, { color: TINTS[kind] }]}>{value}</Text>
+      <Text style={[styles.value, { color: tint }]}>{value}</Text>
     </View>
   )
 }

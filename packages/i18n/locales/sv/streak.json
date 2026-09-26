@@ -13,7 +13,7 @@
   "streak:ladder.coins": "Ger {amount} mynt",
   "streak:broken.title": "Din svit tog slut",
   "streak:broken.body": "Det händer. Du kan börja om i dag, eller ta tillbaka den gamla.",
-  "streak:freeze.title": "Sviftfrysningar",
+  "streak:freeze.title": "Svitfrysningar",
   "streak:freeze.held": "{held} av {max} sparade",
   "streak:freeze.body": "En frysning täcker en missad dag automatiskt. Du behöver aldrig komma ihåg att använda den.",
   "streak:freeze.buy": "Köp en frysning · {price}",
@@ -39,5 +39,5 @@
   "streak:extended.cta": "Fortsätt",
   "streak:calendar.count": "{count, plural, one {# dag den här månaden} other {# dagar den här månaden}}",
   "streak:share": "Dela din svit",
-  "streak:share.message": "{count, plural, one {Jag började en svit på WorldQuest i dag.} other {Jag har lärt mig något nytt om världen # dagar i rad på WorldQuest.}}"
+  "streak:share.message": "{count, plural, one {Jag började lära mig om världen på WorldQuest i dag.} other {Jag har lärt mig något nytt om världen # dagar i rad på WorldQuest.}}"
 }
