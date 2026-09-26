@@ -12,7 +12,12 @@ export type D1Receipt = { lessonId: string; revision: number; xpAwarded: number;
 export type D1StreakState = { current: number; longest: number; lastActiveDate: string | null; freezesHeld: number }
 /** The engines' `LessonFocus`, as the Worker bounds it. Each field only removes facts. */
 export type D1Focus = { factIds?: string[]; attributes?: string[]; entities?: string[]; difficulty?: { min?: number; max?: number } }
-export type D1PrepareInput = { lessonId: string; locale: 'en' | 'sv'; count: number; screenReader: boolean; focus?: D1Focus }
+/**
+ * `node`: the course step a lesson is for, when it is one (`node.<course>.<name>`). The
+ * Worker counts finished lessons per step from it, which a focus alone cannot do when two
+ * steps share one. Last in the object, as in the Worker's schema: the echo is compared as JSON.
+ */
+export type D1PrepareInput = { lessonId: string; locale: 'en' | 'sv'; count: number; screenReader: boolean; focus?: D1Focus; node?: string }
 export type D1PreparedLesson = { lessonId: string; issuedAt: number; questions: ReturnType<typeof parseD1Question>[]; request: D1PrepareInput }
 const object = (v: unknown): v is Record<string, unknown> => v !== null && typeof v === 'object' && !Array.isArray(v)
 const integer = (v: unknown): v is number => typeof v === 'number' && Number.isSafeInteger(v) && v >= 0
@@ -97,13 +102,16 @@ function focus(value: unknown): D1Focus | undefined {
   }
   return out
 }
+/** A course step's id, as the Worker accepts it. */
+const COURSE_NODE = /^node\.[a-z0-9][a-z0-9.-]{0,99}$/
 function prepareInput(value: unknown): D1PrepareInput {
   if (!object(value) || typeof value.lessonId !== 'string' || !/^[a-zA-Z0-9_-]{1,80}$/.test(value.lessonId)
     || (value.locale !== 'en' && value.locale !== 'sv') || !integer(value.count) || value.count < 5 || value.count > 20
     || typeof value.screenReader !== 'boolean') throw new D1AuthError('INVALID_LESSON_REQUEST')
   const f = focus(value.focus)
+  if (value.node !== undefined && (typeof value.node !== 'string' || !COURSE_NODE.test(value.node))) throw new D1AuthError('INVALID_LESSON_REQUEST')
   return { lessonId: value.lessonId, locale: value.locale, count: value.count, screenReader: value.screenReader,
-    ...(f === undefined ? {} : { focus: f }) }
+    ...(f === undefined ? {} : { focus: f }), ...(value.node === undefined ? {} : { node: value.node }) }
 }
 function prepared(value: unknown): D1PreparedLesson {
   if (!object(value) || typeof value.lessonId !== 'string' || !integer(value.issuedAt) || !Array.isArray(value.questions)
@@ -149,7 +157,8 @@ export function createD1LearningClient(options: {
         || value.memories.length > 1000) throw new D1AuthError('INVALID_RESPONSE')
       return { revision: value.revision, xp: value.xp, coins: value.coins, memories: value.memories.map(parseD1Memory),
         ...(value.streak === undefined ? {} : { streak: streakState(value.streak) }), timeZone: typeof value.timeZone === 'string' ? value.timeZone : 'UTC',
-        finishedByFocus: finishedByFocus(value.finishedByFocus), finishedByDay: finishedByDay(value.finishedByDay) }
+        finishedByFocus: finishedByFocus(value.finishedByFocus), finishedByDay: finishedByDay(value.finishedByDay),
+        finishedByNode: finishedByNode(value.finishedByNode) }
     },
     submit: async (input: D1Submission): Promise<D1Receipt> => {
         const parsed = submission(input), result = receipt(await request('/v1/lessons/submit', parsed))
@@ -172,6 +181,17 @@ function finishedByFocus(value: unknown): D1FocusFinished[] {
   return value.slice(0, 200).flatMap((entry): D1FocusFinished[] =>
     object(entry) && object(entry.focus) && integer(entry.finished) && entry.finished > 0
       ? [{ focus: entry.focus, finished: entry.finished }] : [])
+}
+
+/** Finished lessons for one course step, as the Worker counted them from the tickets that named it. */
+export type D1NodeFinished = { readonly node: string; readonly finished: number }
+
+/** `finishedByNode`: a course path's progress, step by step. Same tolerance as above. */
+function finishedByNode(value: unknown): D1NodeFinished[] {
+  if (!Array.isArray(value)) return []
+  return value.slice(0, 200).flatMap((entry): D1NodeFinished[] =>
+    object(entry) && typeof entry.node === 'string' && COURSE_NODE.test(entry.node) && integer(entry.finished) && entry.finished > 0
+      ? [{ node: entry.node, finished: entry.finished }] : [])
 }
 
 /** Finished lessons on one of the learner's local days, as the Worker counted them. */

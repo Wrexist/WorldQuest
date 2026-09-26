@@ -321,6 +321,7 @@ export function LessonScreen({
   isTaster = false,
   focus,
   focusIsExplicit = false,
+  courseNode,
   length,
 }: {
   onExit: (summary: LessonExit) => void
@@ -368,6 +369,12 @@ export function LessonScreen({
    * On a D1 build only an implied focus may start from a saved lesson when offline.
    */
   focusIsExplicit?: boolean | undefined
+  /**
+   * The course step this lesson is for, when it was started from the path (a step, or
+   * practice of a finished one). Sent with the D1 ticket so the Worker counts the lesson
+   * for that step: its focus alone may be another step's too.
+   */
+  courseNode?: string | undefined
   /**
    * How many questions, when the user asked for a number.
    *
@@ -472,6 +479,7 @@ export function LessonScreen({
     screenReader: screenReaderOn,
     focus,
     explicitFocus: focusIsExplicit,
+    node: courseNode,
   })
   const questions = useMemo<readonly Question[]>(() => {
     if (remoteLessons) return remote.lesson?.questions ?? []
