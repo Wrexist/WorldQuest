@@ -653,10 +653,34 @@ async function waitFor(check, ms) {
     await kid.waitForTimeout(1500)
     // Reached first, so a count of zero means "not offered" rather than "not there yet".
     const kidInSettings = (await kid.getByRole('heading', { name: 'Settings' }).count()) > 0
-    const kidSettingsAsks = await kid.getByRole('button', { name: /^(Link your email|Sign in|Delete account)$/ }).count()
+    const kidSettingsAsks = await kid.getByRole('button', { name: /^(Link your email|Sign in)$/ }).count()
     await kid.screenshot({ path: path.join(SHOTS, 'child-settings.png') })
     step('and nothing on the phone asks a child for an email', kidInSettings && kidProfileAsks === 0 && kidSettingsAsks === 0,
       `profile ${kidProfileAsks}, settings ${kidInSettings ? kidSettingsAsks : 'not reached'}`)
+
+    // A child's progress lives on the server as a guest, so a grown-up can delete it —
+    // behind a question, like every other way out of the app on this device.
+    const kidIds = (await db.prepare('SELECT id FROM accounts WHERE deleted_at IS NULL').all()).results
+      .map((r) => r.id).filter((id) => !known.has(id))
+    await kid.getByRole('button', { name: 'Delete account' }).first().click()
+    await kid.waitForTimeout(1500)
+    const gated = (await kid.getByTestId('grown-up-gate').count()) > 0
+    const sum = ((await kid.getByTestId('grown-up-gate').innerText().catch(() => '')).match(/(\d+) × (\d+)/) ?? [])
+    if (sum.length === 3) {
+      await kid.getByLabel('Answer').fill(String(Number(sum[1]) * Number(sum[2])))
+      await kid.getByTestId('grown-up-continue').click()
+      await kid.waitForTimeout(1500)
+    }
+    for (let i = 0; i < 4; i++) {
+      if ((await kid.getByText('Your account is deleted', { exact: true }).count()) > 0) break
+      const permanent = kid.getByRole('button', { name: 'Delete permanently' })
+      if ((await permanent.count()) > 0) await permanent.first().click()
+      else await kid.getByRole('button', { name: 'Delete account' }).last().click()
+      await kid.waitForTimeout(1500)
+    }
+    const kidLeft = kidIds.length === 0 ? -1 : (await one(`SELECT count(*) AS n FROM accounts WHERE id IN (${kidIds.map(() => '?').join(',')})`, ...kidIds)).n
+    step("a grown-up can delete a child's progress, behind a question", gated && sum.length === 3 && kidLeft === 0,
+      `${gated ? 'asked ' + (sum[0] ?? '?') : 'no gate'} · ${kidLeft} account row(s) left`)
     await kidContext.close()
 
     step('no uncaught errors in the page', errors.length === 0, errors.slice(0, 3).join(' | '))

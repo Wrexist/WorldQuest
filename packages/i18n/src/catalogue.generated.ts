@@ -484,7 +484,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "report.thanks.title": "Thank you",
       "report.thanks.body": "We read these to fix our facts.",
       "report.failed": "That didn't send. Check your connection and try again.",
-      "review.tag": "Previous mistake"
+      "review.tag": "Previous mistake",
+      "new.tag": "New"
     },
     "nav": {
       "home": "Home",
@@ -714,7 +715,13 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "reminder.blocked": "Notifications are off for WorldQuest in your phone's settings.",
       "reminder.blocked.cta": "Open settings",
       "privacy.delete": "Delete account",
-      "privacy.account.deletable": "Deleting removes your account and progress from our servers for good."
+      "privacy.account.deletable": "Deleting removes your account and progress from our servers for good.",
+      "gate.title": "Ask a grown-up",
+      "gate.body": "This part is for grown-ups. Please answer the question to go on.",
+      "gate.question": "What is {a} × {b}?",
+      "gate.answer": "Answer",
+      "gate.wrong": "That's not it. Here's another one.",
+      "about.support": "Help and feedback"
     },
     "shop": {
       "title": "Shop",
@@ -751,7 +758,11 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "title.starSteerer": "Star Steerer",
       "title.cloudSpotter": "Cloud Spotter",
       "title.deepDiver": "Deep Diver",
-      "title.longWayRound": "Long Way Round"
+      "title.longWayRound": "Long Way Round",
+      "section.streak": "Streak",
+      "freeze.title": "Streak freeze",
+      "freeze.body": "Covers one missed day. You buy them on your streak page, where you can see what they protect.",
+      "freeze.cta": "Open streak"
     },
     "splash": {
       "wordmark": "WorldQuest",
@@ -1299,7 +1310,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "report.thanks.title": "Tack",
       "report.thanks.body": "Vi läser dem för att rätta våra fakta.",
       "report.failed": "Det gick inte att skicka. Kontrollera anslutningen och försök igen.",
-      "review.tag": "Tidigare misstag"
+      "review.tag": "Tidigare misstag",
+      "new.tag": "Nytt"
     },
     "nav": {
       "home": "Hem",
@@ -1529,7 +1541,13 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "reminder.blocked": "Aviseringar är avstängda för WorldQuest i telefonens inställningar.",
       "reminder.blocked.cta": "Öppna inställningar",
       "privacy.delete": "Radera konto",
-      "privacy.account.deletable": "När du raderar tas ditt konto och dina framsteg bort från våra servrar för gott."
+      "privacy.account.deletable": "När du raderar tas ditt konto och dina framsteg bort från våra servrar för gott.",
+      "gate.title": "Fråga en vuxen",
+      "gate.body": "Den här delen är för vuxna. Svara på frågan för att gå vidare.",
+      "gate.question": "Vad är {a} × {b}?",
+      "gate.answer": "Svar",
+      "gate.wrong": "Det stämmer inte. Här är en ny fråga.",
+      "about.support": "Hjälp och feedback"
     },
     "shop": {
       "title": "Butik",
@@ -1566,7 +1584,11 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "title.starSteerer": "Stjärnstyraren",
       "title.cloudSpotter": "Molnspanaren",
       "title.deepDiver": "Djupdykaren",
-      "title.longWayRound": "Långa vägen"
+      "title.longWayRound": "Långa vägen",
+      "section.streak": "Svit",
+      "freeze.title": "Sviträddare",
+      "freeze.body": "Täcker en missad dag. Du köper dem på sidan för din svit, där du ser vad de skyddar.",
+      "freeze.cta": "Öppna svit"
     },
     "splash": {
       "wordmark": "WorldQuest",

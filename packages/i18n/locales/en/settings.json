@@ -100,5 +100,17 @@
   "settings:privacy.delete__note": "Row in Privacy that opens account deletion. Plain words; it is found by people looking for exactly this. Max 22 characters.",
   "settings:privacy.account.deletable": "Deleting removes your account and progress from our servers for good.",
   "settings:privacy.account.deletable__note": "Note under the Delete account row. States what deletion does. Calm, factual, no warning tone, and nothing promised for later.",
-  "settings:about.credits__note": "Credits line in About. Points to the licences row, which carries the attributions; the country pages no longer list sources."
+  "settings:about.credits__note": "Credits line in About. Points to the licences row, which carries the attributions; the country pages no longer list sources.",
+  "settings:gate.title": "Ask a grown-up",
+  "settings:gate.title__note": "Heading of the parental gate a child meets before a link out of the app or deleting their progress. Friendly, not a warning.",
+  "settings:gate.body": "This part is for grown-ups. Please answer the question to go on.",
+  "settings:gate.body__note": "Above the gate question. Addressed to the adult; no blame for a child who tapped here.",
+  "settings:gate.question": "What is {a} × {b}?",
+  "settings:gate.question__note": "The gate question. {a} and {b} are numbers from 6 to 9. Keep the × sign.",
+  "settings:gate.answer": "Answer",
+  "settings:gate.answer__note": "Accessible label of the number field.",
+  "settings:gate.wrong": "That's not it. Here's another one.",
+  "settings:gate.wrong__note": "After a wrong answer, above a new question. Calm; never \"wrong!\".",
+  "settings:about.support": "Help and feedback",
+  "settings:about.support__note": "Row in About that opens the support page. Max 24 characters."
 }

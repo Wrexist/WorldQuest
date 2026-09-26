@@ -100,6 +100,13 @@ const PAIRS: Pair[] = [
   // covered the surface it was actually drawn on.
   { name: 'reward.xp on surfaceRaised', fg: p.gold['400'], bg: p.surface['2'], min: 3.0 },
   {
+    name: 'reward.gem on canvas',
+    fg: p.purple['400'],
+    bg: p.space['800'],
+    min: 4.5,
+    note: 'the "New" tag in a lesson: caption-size text, so the body floor',
+  },
+  {
     name: 'reward.gem on surface',
     fg: p.purple['400'],
     bg: p.surface['1'],

@@ -67,6 +67,8 @@ export type ShopScreenProps = {
   readonly onRetry?: (() => void) | undefined
   /** The bell, so the header matches the other tabs. Optional like every other route hook. */
   readonly onOpenInbox?: (() => void) | undefined
+  /** The streak page, where freezes are bought against the streak they protect. */
+  readonly onOpenStreak?: (() => void) | undefined
   readonly onBuy: (item: ShopItem) => void
   /** `null` takes the bought title off and returns to the level one. */
   readonly onEquip: (id: string | null) => void
@@ -83,6 +85,7 @@ export function ShopScreen({
   error = false,
   onRetry,
   onOpenInbox,
+  onOpenStreak,
   onBuy,
   onEquip,
 }: ShopScreenProps) {
@@ -212,6 +215,24 @@ export function ShopScreen({
       {/* No "more to come" section. It promised pets and map skins "being drawn", which
           reads as unfinished to App Review (2.1) and as a promise to everyone else; the
           shop shows what it sells. */}
+
+      {/* Duolingo's shop opens on the freeze. Ours is sold on the streak page, beside the
+          streak it protects, so the shop points there rather than selling it twice. */}
+      {onOpenStreak !== undefined && (
+        <>
+          <Text style={styles.section} role="heading" aria-level={2}>
+            {t('shop:section.streak')}
+          </Text>
+          <Card level={1} style={styles.freeze} testID="shop-freeze">
+            <Art name="rewards/streak-freeze" size={space[8]} />
+            <View style={styles.freezeText}>
+              <Text style={styles.freezeTitle}>{t('shop:freeze.title')}</Text>
+              <Text style={styles.freezeBody}>{t('shop:freeze.body')}</Text>
+            </View>
+            <Button label={t('shop:freeze.cta')} onPress={onOpenStreak} size="sm" variant="secondary" fullWidth={false} />
+          </Card>
+        </>
+      )}
       <View style={styles.tail} />
     </ScrollView>
   )
@@ -446,6 +467,9 @@ const styles = StyleSheet.create({
   emptyTitle: { ...text('h3'), color: colors.text.primary },
   emptyBody: { ...text('body'), color: colors.text.secondary },
 
-  soon: { ...text('body'), color: colors.text.secondary },
+  freeze: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space[3] },
+  freezeText: { flex: 1, minWidth: 160, gap: space[1] },
+  freezeTitle: { ...text('bodyStrong'), color: colors.text.primary },
+  freezeBody: { ...text('caption'), color: colors.text.secondary },
   tail: { height: space[5] },
 })

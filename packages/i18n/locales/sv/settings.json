@@ -56,5 +56,11 @@
   "settings:reminder.blocked": "Aviseringar är avstängda för WorldQuest i telefonens inställningar.",
   "settings:reminder.blocked.cta": "Öppna inställningar",
   "settings:privacy.delete": "Radera konto",
-  "settings:privacy.account.deletable": "När du raderar tas ditt konto och dina framsteg bort från våra servrar för gott."
+  "settings:privacy.account.deletable": "När du raderar tas ditt konto och dina framsteg bort från våra servrar för gott.",
+  "settings:gate.title": "Fråga en vuxen",
+  "settings:gate.body": "Den här delen är för vuxna. Svara på frågan för att gå vidare.",
+  "settings:gate.question": "Vad är {a} × {b}?",
+  "settings:gate.answer": "Svar",
+  "settings:gate.wrong": "Det stämmer inte. Här är en ny fråga.",
+  "settings:about.support": "Hjälp och feedback"
 }

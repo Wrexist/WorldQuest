@@ -33,5 +33,9 @@
   "shop:title.starSteerer": "Stjärnstyraren",
   "shop:title.cloudSpotter": "Molnspanaren",
   "shop:title.deepDiver": "Djupdykaren",
-  "shop:title.longWayRound": "Långa vägen"
+  "shop:title.longWayRound": "Långa vägen",
+  "shop:section.streak": "Svit",
+  "shop:freeze.title": "Sviträddare",
+  "shop:freeze.body": "Täcker en missad dag. Du köper dem på sidan för din svit, där du ser vad de skyddar.",
+  "shop:freeze.cta": "Öppna svit"
 }

@@ -53,6 +53,7 @@ export default function ShopRoute() {
       // it is corrected on the next reconcile like every other optimistic number.
       // Same destination as the other tabs' bell.
       onOpenInbox={() => router.push('/streak')}
+      onOpenStreak={() => router.push('/streak')}
       onBuy={(item) => shop.buy(item, coins - item.price)}
       onEquip={(id) => shop.equip(id)}
     />

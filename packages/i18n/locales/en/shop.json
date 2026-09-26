@@ -68,5 +68,13 @@
   "shop:title.deepDiver": "Deep Diver",
   "shop:title.deepDiver__note": "Purchasable title. Flavour, never rank — the level ladder in titles.json is earned and must stay earned. Max 18 characters.",
   "shop:title.longWayRound": "Long Way Round",
-  "shop:title.longWayRound__note": "Purchasable title. Flavour, never rank — the level ladder in titles.json is earned and must stay earned. Max 18 characters."
+  "shop:title.longWayRound__note": "Purchasable title. Flavour, never rank — the level ladder in titles.json is earned and must stay earned. Max 18 characters.",
+  "shop:section.streak": "Streak",
+  "shop:section.streak__note": "Section heading in the Shop above the streak freeze row.",
+  "shop:freeze.title": "Streak freeze",
+  "shop:freeze.title__note": "Title of the Shop row about streak freezes. Same name as on the streak page.",
+  "shop:freeze.body": "Covers one missed day. You buy them on your streak page, where you can see what they protect.",
+  "shop:freeze.body__note": "Shop row body. Explains why the purchase happens on the streak page rather than here.",
+  "shop:freeze.cta": "Open streak",
+  "shop:freeze.cta__note": "Button on the Shop freeze row. Max 16 characters."
 }

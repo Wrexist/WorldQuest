@@ -43,18 +43,21 @@ import { useSignOut } from '../src/features/account/useSignOut.js'
  * is an EAS environment change; until then the rows have no handler and correctly
  * render as text rather than as buttons that do nothing.
  */
-import { LICENCES_URL, PRIVACY_URL, TERMS_URL } from '../src/lib/links.js'
+import { LICENCES_URL, PRIVACY_URL, SUPPORT_URL, TERMS_URL } from '../src/lib/links.js'
 
 const open = (url: string | undefined) =>
   url === undefined ? undefined : () => void openURL(url)
 
 export default function SettingsRoute() {
+  const account = useAccountStatus()
+  /** A link out of the app: straight there for an adult, through the gate for a child. */
+  const outward = (url: string | undefined, name: string) =>
+    url === undefined ? undefined : account.isChild ? () => router.push(`/grown-up?link=${name}`) : open(url)
   const { preferences, set } = usePreferences()
   const sync = useSyncStatus()
   const entitlement = useEntitlement()
   const purchases = usePurchases()
   const { state } = useOnboarding()
-  const account = useAccountStatus()
   const signOut = useSignOut()
   const leagueOn = useLeagueEnabled()
   const league = useLeagueOptOut()
@@ -150,14 +153,20 @@ export default function SettingsRoute() {
         // than an apology.
         onOpenSystemSettings: () => void openSettings(),
       }}
-      onOpenPrivacyPolicy={open(PRIVACY_URL)}
-      onOpenTerms={open(TERMS_URL)}
-      onOpenLicences={open(LICENCES_URL)}
+      // On a child's device every way out of the app asks a grown-up first (1.3, 5.1.4).
+      onOpenPrivacyPolicy={outward(PRIVACY_URL, 'privacy')}
+      onOpenTerms={outward(TERMS_URL, 'terms')}
+      onOpenLicences={outward(LICENCES_URL, 'licences')}
+      onOpenSupport={outward(SUPPORT_URL, 'support')}
       analyticsConnected={ANALYTICS_CONNECTED}
       // Where accounts can be deleted in the app (the D1 Worker), the way in is here,
       // in Privacy, where people look for it (App Review 5.1.1(v)). Not on a child
       // account: there is no account to delete, only this device's guest progress.
-      {...(isD1() && !account.isChild ? { onDeleteAccount: () => router.push('/account') } : {})}
+      // And a child's progress can be deleted too, by a grown-up: a guest lives on the
+      // server, and "delete my child's data" must not need an email we never took.
+      {...(isD1()
+        ? { onDeleteAccount: () => router.push(account.isChild ? '/grown-up?to=account' : '/account') }
+        : {})}
     />
   )
 }

@@ -22,6 +22,13 @@ import { accountEmail } from '@worldquest/api'
 import { isConfigured, supabase } from '../../lib/supabase.js'
 import { backendConfig, isD1 } from '../../lib/backendConfig.js'
 import { readOnboarding } from '../onboarding/useOnboarding.js'
+import { readJson, writeJson } from '../../lib/storage.js'
+
+/**
+ * Whether the Worker holds this account as `protected`, as last seen. Kept per account
+ * so the adult-only rows do not flash in before the lookup answers on the next launch.
+ */
+const PROTECTED_KEY = 'account.protected.v1'
 
 export type AccountStatus = {
   /** The linked address, or null while the session is still anonymous. */
@@ -61,7 +68,13 @@ export function useAccountStatus(options: AccountStatusOptions = {}): AccountSta
   const enabled = options.enabled ?? true
   const [email, setEmail] = useState<string | null>(null)
   const [answered, setAnswered] = useState(false)
-  const isChild = readOnboarding().isChild === true
+  const [protectedBand, setProtectedBand] = useState(() => readJson<boolean>(PROTECTED_KEY) === true)
+  // A child by this device's own age gate (under 13), or anyone the Worker protects: it
+  // judges from the year alone and protects everyone who might still be under 16. Every
+  // adult-only thing — an email, a sign-in, a league — follows the stricter of the two;
+  // offering a 14-year-old "Create an account" only to end on "not for your age group"
+  // was the difference between them showing (round 2, row 41).
+  const isChild = readOnboarding().isChild === true || protectedBand
 
   useEffect(() => {
     // No backend configured: asking would throw. Not asked for: nothing to do.
@@ -69,7 +82,14 @@ export function useAccountStatus(options: AccountStatusOptions = {}): AccountSta
     let cancelled = false
     const lookup = isD1()
       ? import('../../lib/d1-auth.js').then(({ createD1AccountClient }) =>
-          createD1AccountClient(backendConfig().url).account()).then((account) => account.email)
+          createD1AccountClient(backendConfig().url).account()).then((account) => {
+          const band = account.audience === 'protected'
+          if (!cancelled) {
+            setProtectedBand(band)
+            writeJson(PROTECTED_KEY, band)
+          }
+          return account.email
+        })
       : accountEmail(supabase())
     void lookup
       .then((found) => {

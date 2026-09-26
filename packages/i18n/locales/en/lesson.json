@@ -162,5 +162,7 @@
   "lesson:report.failed": "That didn't send. Check your connection and try again.",
   "lesson:report.failed__note": "The report could not be sent. Keeps the chosen reason for a retry.",
   "lesson:review.tag": "Previous mistake",
-  "lesson:review.tag__note": "Small tag above a question asked again at the end of a lesson because it was missed. Neutral, never \"wrong\". Max 20 characters."
+  "lesson:review.tag__note": "Small tag above a question asked again at the end of a lesson because it was missed. Neutral, never \"wrong\". Max 20 characters.",
+  "lesson:new.tag": "New",
+  "lesson:new.tag__note": "Small tag above a question about something the learner has never met. Tells them not knowing is expected; hearts are never lost on these. One short word."
 }

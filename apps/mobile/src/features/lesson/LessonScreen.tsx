@@ -969,6 +969,11 @@ export function LessonScreen({
           // Duolingo's "previous mistake" tag: this one came back because it was missed.
           <Text style={styles.reviewTag}>{t('lesson:review.tag')}</Text>
         )}
+        {!reviewing && question.isNew && (
+          // And its "new word": this is the first time, so not knowing it is expected —
+          // which is also why a new fact never costs a heart.
+          <Text style={[styles.reviewTag, styles.newTag]}>{t('lesson:new.tag')}</Text>
+        )}
         <Text style={styles.prompt} role="heading">
           {/* The prompt key and its params come from the question template in the
               content pack, so they are validated by `pnpm content:validate` rather
@@ -1637,6 +1642,7 @@ const styles = StyleSheet.create({
   bodyShort: { gap: space[3], paddingBottom: space[4] },
   prompt: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
   reviewTag: { ...text('caption'), color: colors.text.secondary, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 },
+  newTag: { color: colors.reward.gem },
   promptArt: { alignItems: 'center' },
   options: { gap: space[2] },
   /**
