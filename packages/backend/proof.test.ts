@@ -632,8 +632,12 @@ describe('lessons that end before the last question (real workerd and SQLite)', 
     expect((await call('/v1/lessons/submit', a.token, { lessonId: 'se-left', answers: answer(left.questions, 2) })).status).toBe(200)
     // Finished, but nobody chose its focus: the app's own lesson, not a step.
     expect((await call('/v1/lessons/submit', a.token, { lessonId: 'plain', answers: answer(plain.questions) })).status).toBe(200)
-    const snapshot = await (await call('/v1/learning/state', a.token)).json() as { finishedByFocus: unknown }
+    const snapshot = await (await call('/v1/learning/state', a.token)).json() as { finishedByFocus: unknown; finishedByDay: unknown }
     expect(snapshot.finishedByFocus).toEqual([{ focus: sweden, finished: 1 }])
+    // And per day, for the streak calendar: the two finished lessons, not the early exit.
+    const day = (await db.prepare(`SELECT json_extract(result,'$.day') AS day FROM receipts WHERE account_id = ? LIMIT 1`)
+      .bind(a.userId).first<{ day: string }>())?.day
+    expect(snapshot.finishedByDay).toEqual([{ day, finished: 2 }])
     // Owner-bound like everything else in the snapshot.
     const b = await guest()
     expect(await (await call('/v1/learning/state', b.token)).json()).toMatchObject({ finishedByFocus: [] })

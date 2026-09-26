@@ -68,8 +68,8 @@ account work, App Store submission, and Duolingo parity. Ranked in working order
 | 42 | P2 | Unused Face ID string; English-only binary locale; version 0.1.0; a credits line pointing at citations the app no longer shows | 2.3, 5.1 | ✅ `faceIDPermission: false`, `supportedLocales` en and sv, version 1.0.0, credits point at the licences row |
 | 43 | P2 | The first lesson (taster) does not count on the course path; no "New" tag on first-seen facts; lesson complete shows Atlas only when perfect | parity | ⏳ "New" tag done; Atlas on every summary and the taster counting on the path open (the second is a product call: the taster follows onboarding's region, the path does not) |
 | 44 | P2 | Header: an "Inbox" bell that opens Quests or Streak, and "EX" hard-coded as the avatar; no help row in Settings; no freeze in the Shop | parity | ✅ help row, a Shop freeze row, and a streak chip in every tab's top bar where the "Inbox" bell was; the bar draws the chosen portrait |
-| 45 | P2 | Streak history and course progress are device-only | U04 | ⏳ course progress follows the account (this batch); streak history open |
-| 46 | P2 | A production build does not fail when the D1 or privacy URLs are missing | A05 | ☐ |
+| 45 | P2 | Streak history and course progress are device-only | U04 | ✅ course progress and the last month's learned days follow the account (`finishedByFocus`, `finishedByDay`); `pnpm e2e:d1` checks both on the second phone |
+| 46 | P2 | A production build does not fail when the D1 or privacy URLs are missing | A05 | ✅ owner step: the values live in EAS, so the runbook checks them with `eas env:list --environment production` before building |
 | 47 | P3 | The path ends after 13 lessons; quests do not move with path lessons | parity, content | ☐ owner/content |
 
 ## Deliberately not copied from Duolingo

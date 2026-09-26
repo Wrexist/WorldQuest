@@ -72,6 +72,16 @@ eas env:create --environment production --name EXPO_PUBLIC_BACKEND --value d1 --
 eas env:create --environment production --name EXPO_PUBLIC_D1_URL --value https://api.learnworldquest.com --visibility plaintext
 ```
 
+Then check all six are set, because a build without them falls back quietly: no backend
+means no in-app account deletion, and a missing privacy URL hides the link rows.
+
+```bash
+eas env:list --environment production
+```
+
+Worked when: it lists `EXPO_PUBLIC_BACKEND`, `EXPO_PUBLIC_D1_URL` and the four
+`EXPO_PUBLIC_*_URL` pages.
+
 ## 6. Build and try it (45 min)
 
 Run the **iOS TestFlight** workflow in GitHub Actions (build numbers are unique per

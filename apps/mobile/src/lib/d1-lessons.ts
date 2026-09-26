@@ -380,11 +380,39 @@ export async function refreshMemory(): Promise<boolean> {
     store.set(MEMORY_KEY, JSON.stringify(state.memories))
     store.set(FOCUS_FINISHED_KEY, JSON.stringify(state.finishedByFocus))
     announceFocusFinished()
+    foldDays(store, state.finishedByDay)
     return true
   } catch {
     // The previous snapshot stays; the server still decides every grade.
     return false
   }
+}
+
+/**
+ * The account's finished lessons per day, folded into this device's day log, keeping the
+ * higher count per day: the log is what the streak calendar, Profile's week and the
+ * daily goal read, and a phone just signed into starts with an empty one. Written by key
+ * (`features/profile/useWeekActivity.ts` owns it), like the onboarding record in
+ * `d1-age.ts`: a `lib` module importing a feature is a cycle.
+ */
+const ACTIVITY_KEY = 'activity.byDay.v1'
+function foldDays(store: ReturnType<typeof captureStorage>, days: readonly { day: string; finished: number }[]): void {
+  if (days.length === 0) return
+  let log: Record<string, number> = {}
+  try {
+    const parsed: unknown = JSON.parse(store.get(ACTIVITY_KEY) ?? '{}')
+    if (parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)) log = { ...(parsed as Record<string, number>) }
+  } catch {
+    // A log that does not parse is rebuilt from the server's days.
+  }
+  let changed = false
+  for (const { day, finished } of days) {
+    if (typeof log[day] !== 'number' || log[day] < finished) {
+      log[day] = finished
+      changed = true
+    }
+  }
+  if (changed) store.set(ACTIVITY_KEY, JSON.stringify(log))
 }
 
 /** The storage scope whose server state has been fetched this launch. */

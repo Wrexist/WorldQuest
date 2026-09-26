@@ -520,6 +520,15 @@ async function waitFor(check, ms) {
     // finished the current step's first lesson (the offline one), so this phone's path
     // opens on the step's second.
     const pathFollowed = await waitFor(async () => (await phone.getByText('Lesson 2 of 2', { exact: true }).count()) > 0, 15000)
+    // The streak calendar too, opened from the top bar's flame: the first phone learned
+    // today, so this month shows a learned day here as well.
+    await phone.getByRole('button', { name: /^Your streak: / }).first().click()
+    await phone.waitForTimeout(2000)
+    const calendarFollowed = await waitFor(async () => (await phone.getByText(/^\d+ days? this month$/).count()) > 0, 10000)
+    step('and its streak calendar shows the days learned on the first', calendarFollowed,
+      calendarFollowed ? (await phone.getByText(/^\d+ days? this month$/).first().textContent()) ?? '' : 'no learned days shown')
+    await phone.getByRole('button', { name: /back/i }).first().click().catch(() => {})
+    await phone.waitForTimeout(1200)
     step('and its course path carries on from the first phone', pathFollowed,
       pathFollowed ? 'Lesson 2 of 2' : ((await phone.evaluate(() => document.body.innerText)).match(/Lesson \d of \d/) ?? ['no step shown'])[0])
     await phone.getByRole('tab', { name: /Profile/ }).first().click().catch(() => {})

@@ -149,7 +149,7 @@ export function createD1LearningClient(options: {
         || value.memories.length > 1000) throw new D1AuthError('INVALID_RESPONSE')
       return { revision: value.revision, xp: value.xp, coins: value.coins, memories: value.memories.map(parseD1Memory),
         ...(value.streak === undefined ? {} : { streak: streakState(value.streak) }), timeZone: typeof value.timeZone === 'string' ? value.timeZone : 'UTC',
-        finishedByFocus: finishedByFocus(value.finishedByFocus) }
+        finishedByFocus: finishedByFocus(value.finishedByFocus), finishedByDay: finishedByDay(value.finishedByDay) }
     },
     submit: async (input: D1Submission): Promise<D1Receipt> => {
         const parsed = submission(input), result = receipt(await request('/v1/lessons/submit', parsed))
@@ -172,6 +172,17 @@ function finishedByFocus(value: unknown): D1FocusFinished[] {
   return value.slice(0, 200).flatMap((entry): D1FocusFinished[] =>
     object(entry) && object(entry.focus) && integer(entry.finished) && entry.finished > 0
       ? [{ focus: entry.focus, finished: entry.finished }] : [])
+}
+
+/** Finished lessons on one of the learner's local days, as the Worker counted them. */
+export type D1DayFinished = { readonly day: string; readonly finished: number }
+
+/** `finishedByDay`: what a streak calendar follows to another phone. Same tolerance as above. */
+function finishedByDay(value: unknown): D1DayFinished[] {
+  if (!Array.isArray(value)) return []
+  return value.slice(0, 62).flatMap((entry): D1DayFinished[] =>
+    object(entry) && typeof entry.day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(entry.day)
+      && integer(entry.finished) && entry.finished > 0 ? [{ day: entry.day, finished: entry.finished }] : [])
 }
 
 type QueueState = { version: 1; owner: string; entries: D1Submission[]; receipts: D1Receipt[]; tickets: D1PreparedLesson[]; preparing: D1PrepareInput | null }

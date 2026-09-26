@@ -17,6 +17,12 @@ export async function learningState(db: D1Database, owner: string, tokenHash: st
       WHERE r.account_id=? AND json_extract(r.result,'$.finished')=1
         AND json_extract(t.request_json,'$.focus') IS NOT NULL
       GROUP BY json_extract(t.request_json,'$.focus') ORDER BY finished DESC LIMIT ?`).bind(owner, MAX_FOCUSES),
+    // Finished lessons per local day for the last month, from the receipts (each carries
+    // the learner's own day). What the streak calendar and the week chart follow to
+    // another phone: they read a device log that a new phone starts without.
+    db.prepare(`SELECT json_extract(result,'$.day') AS day, count(*) AS finished FROM receipts
+      WHERE account_id=? AND json_extract(result,'$.finished')=1 AND json_extract(result,'$.day') >= ?
+      GROUP BY json_extract(result,'$.day') ORDER BY day DESC LIMIT 62`).bind(owner, monthBefore(Date.now())),
   ])
   const account = rows[0]?.results[0]
   if (!account) throw new ApiError('SESSION_EXPIRED', 401)
@@ -26,7 +32,13 @@ export async function learningState(db: D1Database, owner: string, tokenHash: st
     streak: { current: account.streak_current, longest: account.streak_longest, lastActiveDate: account.streak_last_day,
       freezesHeld: account.freezes_held },
     memories: memory.map(row => JSON.parse(String(row.state)) as MemoryState),
-    finishedByFocus: (rows[2]?.results ?? []).map(row => ({ focus: JSON.parse(String(row.focus)) as unknown, finished: Number(row.finished) })) }
+    finishedByFocus: (rows[2]?.results ?? []).map(row => ({ focus: JSON.parse(String(row.focus)) as unknown, finished: Number(row.finished) })),
+    finishedByDay: (rows[3]?.results ?? []).map(row => ({ day: String(row.day), finished: Number(row.finished) })) }
+}
+
+/** A day more than a month back, as `YYYY-MM-DD`: the device's own log keeps 31 days. */
+function monthBefore(now: number): string {
+  return new Date(now - 32 * 86_400_000).toISOString().slice(0, 10)
 }
 
 /**
