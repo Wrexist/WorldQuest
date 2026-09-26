@@ -129,6 +129,7 @@
     "apps/mobile/src/features/course/courseLesson.test.ts",
     "apps/mobile/src/features/course/pathView.test.ts",
     "apps/mobile/src/features/course/progress.test.ts",
+    "apps/mobile/src/features/course/serverProgress.test.ts",
     "apps/mobile/src/features/explore/CountryScreen.test.tsx",
     "apps/mobile/src/features/explore/ExploreScreen.test.tsx",
     "apps/mobile/src/features/explore/RegionScreen.test.tsx",

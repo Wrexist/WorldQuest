@@ -231,12 +231,18 @@ async function run(): Promise<void> {
   // device-composed lesson is never sent there. Loaded lazily, so a legacy build never
   // loads the D1 client at all.
   if (isD1()) {
-    const [{ flushLessons, prefetchLessons }, { currentLocale }] = await Promise.all([import('./d1-lessons.js'), import('./i18n.js')])
-    await flushLessons()
+    const [{ flushLessons, prefetchLessons, refreshMemoryOnce }, { currentLocale }] = await Promise.all([import('./d1-lessons.js'), import('./i18n.js')])
+    const sent = await flushLessons()
     // Keep a few lessons ready for the next offline start. Ten questions is the Worker's
     // own default; a lesson screen tops these up with the learner's measured length and
     // screen-reader state after every lesson.
     await prefetchLessons({ count: 10, locale: currentLocale() === 'sv' ? 'sv' : 'en', screenReader: false })
+    // A flush that sent something has refreshed the server state already; one that sent
+    // nothing still fetches it once per account, which is how a phone that has just
+    // signed in learns what the account has done elsewhere. After the prefetch, not
+    // before: straight after a sign-in the first attempt ran while the identity change
+    // was still settling and gave up quietly (`pnpm e2e:d1`, the second phone).
+    if (sent.length === 0) await refreshMemoryOnce()
     return
   }
   if (queue.pending.length === 0) return

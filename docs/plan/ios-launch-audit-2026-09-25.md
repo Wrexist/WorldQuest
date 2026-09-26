@@ -47,6 +47,31 @@ Status: ✅ done on this branch · ⏳ in progress · ☐ open.
 | 29 | P0 | Onboarding's birth year never reached the server: every guest `unknown`, adults asked twice, children unprotected server-side until the account screen | S02 | ✅ age band sent when onboarding finishes (or when a later guest is made); the Worker keeps the band only |
 | 30 | P0 | Native bundle over its 4.6 MB budget (4.80 MB), so CI's `verify:full` was red; the gate also measured the legacy build, which nobody ships | cold start, CI | ✅ the first sourcemap breakdown found the legacy Supabase SDK (~280 KB of JS) in D1 builds; D1 builds resolve it to a throwing stub and the gate measures the D1 build: **4.32 MB** on iOS and Android, budget unchanged |
 
+## Round 2 (26 September 2026, at `96220b9`)
+
+Three more read-only audits after rows 1–30 landed: child safety and privacy of the
+account work, App Store submission, and Duolingo parity. Ranked in working order.
+
+| # | Pri | Item | Closes | Status |
+|---|---|---|---|---|
+| 31 | P0 | The age is asked twice and the server keeps the first answer: a parent's year typed on a child's tablet makes the child's server account `eligible`; `/account` has no child check | S02, S03 | ☐ |
+| 32 | P0 | A finished account flow stays adopted after a swipe-back or sign-out; the next visitor's Continue runs "finish onboarding by sign-in" for a sign-in they never did | S01 | ☐ |
+| 33 | P0 | Onboarding's age is sent once and never retried, so a dropped connection leaves the band `unknown` for good | S02 | ☐ |
+| 34 | P1 | Refusals missing from the host's reopen list (`ACCOUNT_NOT_LINKED`, `EMAIL_ALREADY_LINKED`, …); a failed reopen's Retry reports success | S01 | ☐ |
+| 35 | P1 | A child's note says progress stays on the phone, but a D1 guest lives on the server, and a child cannot delete it in the app | 5.1.1, 5.1.4 | ☐ |
+| 36 | P1 | Profile promises a league (placement "with 29 other explorers") that D1 never provides, to children too | rule 7, P-6 | ☐ |
+| 37 | P1 | The reminder ask requests permission but schedules nothing until Settings is opened | parity, notifications | ☐ |
+| 38 | P1 | Beta and "coming soon" copy on the default path: "recovery is still being tested", "more to come… being drawn", "not available yet" | 2.1, 2.2 | ☐ |
+| 39 | P2 | "Create a profile" opens the account hub instead of the link flow on D1 | parity | ☐ |
+| 40 | P2 | Settings links (privacy, terms, licences) open for children with no gate; P0 only if Kids Category | 1.3, 5.1.4 | ☐ |
+| 41 | P2 | Adult-only UI shows to 13–16 year-olds whom the Worker protects (13 vs 16 cut-off) | S02 | ☐ |
+| 42 | P2 | Unused Face ID string; English-only binary locale; version 0.1.0; a credits line pointing at citations the app no longer shows | 2.3, 5.1 | ☐ |
+| 43 | P2 | The first lesson (taster) does not count on the course path; no "New" tag on first-seen facts; lesson complete shows Atlas only when perfect | parity | ☐ |
+| 44 | P2 | Header: an "Inbox" bell that opens Quests or Streak, and "EX" hard-coded as the avatar; no help row in Settings; no freeze in the Shop | parity | ☐ |
+| 45 | P2 | Streak history and course progress are device-only | U04 | ⏳ course progress follows the account (this batch); streak history open |
+| 46 | P2 | A production build does not fail when the D1 or privacy URLs are missing | A05 | ☐ |
+| 47 | P3 | The path ends after 13 lessons; quests do not move with path lessons | parity, content | ☐ owner/content |
+
 ## Deliberately not copied from Duolingo
 
 | Duolingo | Rule | WorldQuest instead |

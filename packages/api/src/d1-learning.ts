@@ -148,7 +148,8 @@ export function createD1LearningClient(options: {
       if (!object(value) || !integer(value.revision) || !integer(value.xp) || !integer(value.coins) || !Array.isArray(value.memories)
         || value.memories.length > 1000) throw new D1AuthError('INVALID_RESPONSE')
       return { revision: value.revision, xp: value.xp, coins: value.coins, memories: value.memories.map(parseD1Memory),
-        ...(value.streak === undefined ? {} : { streak: streakState(value.streak) }), timeZone: typeof value.timeZone === 'string' ? value.timeZone : 'UTC' }
+        ...(value.streak === undefined ? {} : { streak: streakState(value.streak) }), timeZone: typeof value.timeZone === 'string' ? value.timeZone : 'UTC',
+        finishedByFocus: finishedByFocus(value.finishedByFocus) }
     },
     submit: async (input: D1Submission): Promise<D1Receipt> => {
         const parsed = submission(input), result = receipt(await request('/v1/lessons/submit', parsed))
@@ -156,6 +157,21 @@ export function createD1LearningClient(options: {
         return result
     },
   }
+}
+
+/** Finished lessons for one focus the learner chose, as the Worker counted them. */
+export type D1FocusFinished = { readonly focus: Readonly<Record<string, unknown>>; readonly finished: number }
+
+/**
+ * `finishedByFocus` from `/v1/learning/state`: what lets a course path follow the account.
+ * A Worker from before the field sends nothing, which reads as no history rather than an
+ * error; a malformed entry is dropped rather than failing the memory it arrives with.
+ */
+function finishedByFocus(value: unknown): D1FocusFinished[] {
+  if (!Array.isArray(value)) return []
+  return value.slice(0, 200).flatMap((entry): D1FocusFinished[] =>
+    object(entry) && object(entry.focus) && integer(entry.finished) && entry.finished > 0
+      ? [{ focus: entry.focus, finished: entry.finished }] : [])
 }
 
 type QueueState = { version: 1; owner: string; entries: D1Submission[]; receipts: D1Receipt[]; tickets: D1PreparedLesson[]; preparing: D1PrepareInput | null }

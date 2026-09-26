@@ -8,6 +8,15 @@ export async function learningState(db: D1Database, owner: string, tokenHash: st
       FROM accounts a JOIN sessions s ON s.account_id=a.id
       WHERE a.id=? AND a.deleted_at IS NULL AND s.token_hash=? AND s.expires_at>?`).bind(owner, tokenHash, Date.now()),
     db.prepare('SELECT state FROM memories WHERE account_id=? ORDER BY fact_id LIMIT 1001').bind(owner),
+    // Finished lessons per focus the learner chose — a course step, a country — from the
+    // tickets the Worker issued and the receipts it wrote. What lets a course path follow
+    // the account to another phone without the path being stored anywhere: it is derived
+    // from records the server already keeps and already decided ("finished" is its rule).
+    db.prepare(`SELECT json_extract(t.request_json,'$.focus') AS focus, count(*) AS finished
+      FROM receipts r JOIN tickets t ON t.account_id=r.account_id AND t.lesson_id=r.lesson_id
+      WHERE r.account_id=? AND json_extract(r.result,'$.finished')=1
+        AND json_extract(t.request_json,'$.focus') IS NOT NULL
+      GROUP BY json_extract(t.request_json,'$.focus') ORDER BY finished DESC LIMIT ?`).bind(owner, MAX_FOCUSES),
   ])
   const account = rows[0]?.results[0]
   if (!account) throw new ApiError('SESSION_EXPIRED', 401)
@@ -16,8 +25,16 @@ export async function learningState(db: D1Database, owner: string, tokenHash: st
   return { revision: account.revision, xp: account.xp, coins: account.coins, timeZone: account.time_zone,
     streak: { current: account.streak_current, longest: account.streak_longest, lastActiveDate: account.streak_last_day,
       freezesHeld: account.freezes_held },
-    memories: memory.map(row => JSON.parse(String(row.state)) as MemoryState) }
+    memories: memory.map(row => JSON.parse(String(row.state)) as MemoryState),
+    finishedByFocus: (rows[2]?.results ?? []).map(row => ({ focus: JSON.parse(String(row.focus)) as unknown, finished: Number(row.finished) })) }
 }
+
+/**
+ * The most distinct focuses reported. A first-week course has a handful of steps and a
+ * learner practises some countries; the cap keeps the response bounded for someone who
+ * has practised hundreds, keeping the most-played.
+ */
+const MAX_FOCUSES = 200
 
 /** Immutable reviews page by accepted revision and slot, capped to the first page's revision. */
 export async function learningHistory(db: D1Database, owner: string, tokenHash: string,

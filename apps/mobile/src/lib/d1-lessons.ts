@@ -28,7 +28,7 @@ import { backendConfig } from './backendConfig.js'
 import { isOnline } from './connectivity.js'
 import { invalidateProgress } from './query.js'
 import { captureStorage } from './storage.js'
-import { MEMORY_KEY } from './d1-memory.js'
+import { announceFocusFinished, FOCUS_FINISHED_KEY, MEMORY_KEY } from './d1-memory.js'
 import { queueUnlocks, type PendingUnlock } from '../features/achievements/pending.js'
 import { currentUser } from './supabase.js'
 
@@ -366,15 +366,38 @@ export async function receiptFor(id: string): Promise<D1Receipt | null> {
 
 // ── memory (L01) — read by `d1-memory.ts`, written here ─────────────────────
 
-/** Replace the cache with the server's current memory. Quiet on failure, like prefetch. */
-export async function refreshMemory(): Promise<void> {
-  if (!isOnline()) return
+/**
+ * Replace the cache with the server's current memory, and its count of finished lessons
+ * per chosen focus (what a course path follows). Quiet on failure, like prefetch; says
+ * whether it got an answer.
+ */
+export async function refreshMemory(): Promise<boolean> {
+  if (!isOnline()) return false
   try {
     const { client, store } = await open()
     const state = await client.state()
-    if (!store.isCurrent()) return
+    if (!store.isCurrent()) return false
     store.set(MEMORY_KEY, JSON.stringify(state.memories))
+    store.set(FOCUS_FINISHED_KEY, JSON.stringify(state.finishedByFocus))
+    announceFocusFinished()
+    return true
   } catch {
     // The previous snapshot stays; the server still decides every grade.
+    return false
   }
+}
+
+/** The storage scope whose server state has been fetched this launch. */
+let refreshedScope: string | null = null
+
+/**
+ * The server's state once per account per launch, for what a lesson flush alone never
+ * refreshes: a phone that has just signed into an account with history but has played
+ * nothing itself yet. Its path, and the memory its first lesson grades against, would
+ * otherwise start from nothing until that first lesson synced (`pnpm e2e:d1`).
+ */
+export async function refreshMemoryOnce(): Promise<void> {
+  const scope = captureStorage().id
+  if (refreshedScope === scope) return
+  if (await refreshMemory()) refreshedScope = scope
 }

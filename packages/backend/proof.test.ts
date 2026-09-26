@@ -593,6 +593,28 @@ describe('lessons that end before the last question (real workerd and SQLite)', 
     expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'bad2', locale: 'en', count: 5, focus: { planet: 'Mars' } })).status).toBe(400)
   })
 
+  it('counts finished lessons per chosen focus, which is how a course path follows the account', async () => {
+    const a = await guest()
+    const prepare = async (lessonId: string, focus?: Record<string, unknown>) =>
+      (await (await call('/v1/lessons/prepare', a.token, { lessonId, locale: 'en', count: 5, ...(focus ? { focus } : {}) })).json()) as { questions: Question[] }
+    const answer = (questions: Question[], upTo = questions.length) =>
+      questions.slice(0, upTo).map((q, slot) => ({ slot, chosenOptionId: q.options[0]!.id, elapsedMs: 9000 }))
+    const sweden = { entities: ['SE'] }
+    const whole = await prepare('se-whole', sweden)
+    const left = await prepare('se-left', sweden)
+    const plain = await prepare('plain')
+    expect((await call('/v1/lessons/submit', a.token, { lessonId: 'se-whole', answers: answer(whole.questions) })).status).toBe(200)
+    // Left after two questions: graded, but not finished, so it moves no step.
+    expect((await call('/v1/lessons/submit', a.token, { lessonId: 'se-left', answers: answer(left.questions, 2) })).status).toBe(200)
+    // Finished, but nobody chose its focus: the app's own lesson, not a step.
+    expect((await call('/v1/lessons/submit', a.token, { lessonId: 'plain', answers: answer(plain.questions) })).status).toBe(200)
+    const snapshot = await (await call('/v1/learning/state', a.token)).json() as { finishedByFocus: unknown }
+    expect(snapshot.finishedByFocus).toEqual([{ focus: sweden, finished: 1 }])
+    // Owner-bound like everything else in the snapshot.
+    const b = await guest()
+    expect(await (await call('/v1/learning/state', b.token)).json()).toMatchObject({ finishedByFocus: [] })
+  })
+
   it('treats exact facts as steering: those first, the rest of the lesson as usual', async () => {
     const a = await guest()
     const quest = await (await call('/v1/quest/today', a.token)).json() as { quest: { tasks: { slot: string; factIds: string[] }[] } }

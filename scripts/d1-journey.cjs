@@ -465,6 +465,13 @@ async function waitFor(check, ms) {
     const phone = await second.newPage()
     phone.on('pageerror', (e) => errors.push('second phone: ' + String(e)))
     phone.on('console', (m) => { if (m.type() === 'error') errors.push('second phone console: ' + m.text()) })
+    if (process.argv.includes('--debug')) {
+      phone.on('response', (r) => {
+        const u = new URL(r.url())
+        if (u.pathname.startsWith('/v1/') || u.pathname === '/health') console.log(`    [phone net] ${r.request().method()} ${u.pathname} → ${r.status()}`)
+      })
+      phone.on('console', (m) => console.log(`    [phone console.${m.type()}] ${m.text().slice(0, 200)}`))
+    }
     await phone.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' })
     await phone.waitForTimeout(1500)
     await phone.getByRole('button', { name: 'I already have an account' }).first().click()
@@ -505,6 +512,12 @@ async function waitFor(check, ms) {
     await phone.waitForTimeout(2500)
     const landed = new URL(phone.url()).pathname
     step('and lands in the app, not back in onboarding', landed !== '/onboarding', landed)
+    // The course path came along too, derived from the server's records: the first phone
+    // finished the current step's first lesson (the offline one), so this phone's path
+    // opens on the step's second.
+    const pathFollowed = await waitFor(async () => (await phone.getByText('Lesson 2 of 2', { exact: true }).count()) > 0, 15000)
+    step('and its course path carries on from the first phone', pathFollowed,
+      pathFollowed ? 'Lesson 2 of 2' : ((await phone.evaluate(() => document.body.innerText)).match(/Lesson \d of \d/) ?? ['no step shown'])[0])
     await phone.getByRole('tab', { name: /Profile/ }).first().click().catch(() => {})
     await phone.waitForTimeout(2500)
     // The coin balance, by its spoken label: Profile shows XP inside the current level

@@ -26,6 +26,8 @@
 import { useSyncExternalStore } from 'react'
 import { creditLesson, type Course, type CourseProgress } from '@worldquest/engines'
 import { isNumberRecord, isRecord, onStorageScopeChange, readJson, writeJson } from '../../lib/storage.js'
+import { cachedFocusFinished } from '../../lib/d1-memory.js'
+import { withServerProgress } from './serverProgress.js'
 
 const KEY = 'course.progress.v1'
 
@@ -82,7 +84,11 @@ export function courseProgress(courseId: string): CourseProgress {
  */
 export function recordCourseLesson(course: Course, nodeId: string): boolean {
   const stored = read()
-  const before = stored[course.id] ?? EMPTY
+  // Judged against what the path shows, which includes what the account finished on
+  // other phones (`serverProgress.ts`): on a phone just signed into, a step the server
+  // has opened is open here too, and its lesson counts at once rather than after a sync.
+  // Stored as the merged count, so this device catches up rather than keeping two ledgers.
+  const before = withServerProgress(course, stored[course.id] ?? EMPTY, cachedFocusFinished())
   const after = creditLesson(course, before, nodeId)
   if (after === before) return false
   const next: Stored = { ...stored, [course.id]: after }
