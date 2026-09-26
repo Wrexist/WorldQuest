@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { createD1AuthClient, type D1Account, type D1Challenge, type AuthFetch } from '@worldquest/api/d1-auth'
 import { D1AccountScreen } from './D1AccountScreen.js'
-import { resetD1AccountFlow, useD1Account, type D1AccountHost, type D1AccountClient } from './useD1Account.js'
+import { resetD1AccountFlow, useD1Account, type D1AccountHost, type D1AccountClient, type DeviceAge } from './useD1Account.js'
 
 const owner = '11111111-1111-4111-8111-111111111111'
 const session = { userId: owner, token: 'a'.repeat(64), expiresAt: Date.now() + 30 * 86400000 }
@@ -21,7 +21,11 @@ function harness(options: { audience?: D1Account['audience']; linked?: boolean; 
     if (url.endsWith('/renew')) return { ok: false, status: 401, json: async () => ({ error: 'SESSION_EXPIRED' }) }
     if (url.endsWith('/guest')) value = session
     if (url.endsWith('/account')) value = account
-    if (url.endsWith('/audience')) { account.audience = 'protected'; value = { audience: 'protected' } }
+    if (url.endsWith('/audience')) {
+      const year = body && typeof body === 'object' && 'birthYear' in body ? Number(body.birthYear) : 0
+      account.audience = year < new Date().getFullYear() - 16 ? 'eligible' : 'protected'
+      value = { audience: account.audience }
+    }
     if (url.endsWith('/request')) {
       if (body && typeof body === 'object' && 'purpose' in body && (body.purpose === 'link' || body.purpose === 'login' || body.purpose === 'delete')) challenge = { ...challenge, purpose: body.purpose }
       value = challenge
@@ -40,8 +44,11 @@ function harness(options: { audience?: D1Account['audience']; linked?: boolean; 
   const host: D1AccountHost = { changeIdentity: vi.fn(operation => operation()), recoverSession: vi.fn(async () => create()), finishDeletion: vi.fn(async () => {}), resumeIdentity: vi.fn(async () => {}), deletionPending: () => false }
   return { create, host, fetch, values, clear, account }
 }
-function App({ client, host, online = true, entry }: { client: D1AccountClient; host: D1AccountHost; online?: boolean; entry?: 'signIn' }) {
-  const flow = useD1Account(client, host, 'en', online, entry)
+function App({ client, host, online = true, entry, age, owner, onSignedIn }: {
+  client: D1AccountClient; host: D1AccountHost; online?: boolean; entry?: 'signIn' | 'link'
+  age?: DeviceAge; owner?: () => string | null; onSignedIn?: (birthYear: number | undefined) => void
+}) {
+  const flow = useD1Account(client, host, 'en', online, entry, { age, owner, onSignedIn })
   return <D1AccountScreen flow={flow} online={online} onBack={vi.fn()} onSupport={vi.fn()} onDone={vi.fn()} />
 }
 const click = (label: string) => fireEvent.click(screen.getByRole('button', { name: label }))
@@ -81,6 +88,48 @@ describe('D1 account screens with the protected auth transport', () => {
     render(<App client={h.create()} host={h.host} entry="signIn" />)
     expect(await screen.findByRole('heading', { name: 'Sign in' })).toBeTruthy()
     expect(screen.queryByText('Your guest account')).toBeNull()
+  })
+
+  it('never opens an email flow on a device whose age gate said child, whatever the band', async () => {
+    const h = harness({ audience: 'unknown' })
+    render(<App client={h.create()} host={h.host} age={{ birthYear: 2016, isChild: true }} />)
+    await screen.findByText('Your guest account')
+    expect(screen.queryByRole('button', { name: 'Link your email' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Sign in' })).toBeNull()
+    expect(screen.getByRole('button', { name: 'Delete account' })).toBeTruthy()
+  })
+
+  it('sends the year onboarding took instead of asking it a second time', async () => {
+    const h = harness({ audience: 'unknown' })
+    render(<App client={h.create()} host={h.host} age={{ birthYear: 1990, isChild: false }} />)
+    await screen.findByText('Your guest account'); click('Link your email')
+    expect(await screen.findByLabelText('Email')).toBeTruthy()
+    expect(screen.queryByText('Your year of birth')).toBeNull()
+    const sent = h.fetch.mock.calls.find(([url]) => String(url).endsWith('/audience'))
+    expect(JSON.parse(String(sent?.[1].body))).toEqual({ birthYear: 1990 })
+  })
+
+  it('finishes onboarding inside the sign-in, and shows a finished flow to nobody else', async () => {
+    const h = harness({ pending: true })
+    const signedIn = vi.fn()
+    // The pending challenge is a link in this harness; a sign-in is what calls back.
+    const first = render(<App client={h.create()} host={h.host} owner={() => 'person-a'} onSignedIn={signedIn} />)
+    await screen.findByLabelText('Eight-digit code'); code('12345678'); click('Confirm')
+    await screen.findByText('Your email is linked')
+    expect(signedIn).not.toHaveBeenCalled()
+    first.unmount()
+    // Left on "done" by a swipe-back; the next person to open the screen starts afresh.
+    render(<App client={h.create()} host={h.host} owner={() => 'person-b'} />)
+    await screen.findByRole('heading', { name: /^Your (guest|linked) account$/ })
+    expect(screen.queryByText('Your email is linked')).toBeNull()
+  })
+
+  it('"Create a profile" opens on the address, not on a menu with Delete in it', async () => {
+    const h = harness()
+    render(<App client={h.create()} host={h.host} entry="link" />)
+    expect(await screen.findByLabelText('Email')).toBeTruthy()
+    expect(screen.getByRole('heading', { name: 'Link your email' })).toBeTruthy()
+    expect(screen.queryByRole('button', { name: 'Delete account' })).toBeNull()
   })
 
   it('still offers to start an account when opened any other way', async () => {

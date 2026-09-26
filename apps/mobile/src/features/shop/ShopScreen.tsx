@@ -209,14 +209,9 @@ export function ShopScreen({
         </>
       )}
 
-      <Text style={styles.section} role="heading" aria-level={2}>
-        {t('shop:section.soon')}
-      </Text>
-      {/* A sentence, not a row of greyed-out items with prices on them. A disabled
-          price tag is a promise with a number attached, and the number is the part
-          people remember. */}
-      <Text style={styles.soon}>{t('shop:soon.body')}</Text>
-
+      {/* No "more to come" section. It promised pets and map skins "being drawn", which
+          reads as unfinished to App Review (2.1) and as a promise to everyone else; the
+          shop shows what it sells. */}
       <View style={styles.tail} />
     </ScrollView>
   )

@@ -54,6 +54,12 @@ describe('D1 account transition isolation', () => {
     expect(host.capture().namespace).toBe(old.namespace)
     expect(h.activateOwner).toHaveBeenLastCalledWith(old.namespace)
   })
+  it('reopens after a sign-in to an address no account has linked, the commonest typo', async () => {
+    const h = harness(), host = h.create(); await host.resume()
+    const old = host.capture()
+    await expect(host.changeIdentity(async () => { throw new D1AuthError('ACCOUNT_NOT_LINKED') })).rejects.toThrow('ACCOUNT_NOT_LINKED')
+    expect(host.capture().namespace).toBe(old.namespace)
+  })
   it('stays paused after an answer that may have changed the server', async () => {
     const h = harness(), host = h.create(); await host.resume()
     await expect(host.changeIdentity(async () => { throw new TypeError('network') })).rejects.toThrow('network')

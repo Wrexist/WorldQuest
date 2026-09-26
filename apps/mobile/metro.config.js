@@ -68,7 +68,9 @@ const OPTIONAL_AND_UNWANTED = new Set(['@opentelemetry/api'])
  * what shows none does. Read here, at bundle time, from the same variable the app
  * reads (`src/lib/backendConfig.ts`).
  */
-const LEGACY_BACKEND_ABSENT = process.env.EXPO_PUBLIC_BACKEND === 'd1'
+// The same condition `backendConfig()` uses, so the stub is in exactly the builds that
+// choose the Worker: the setting alone, without an address, falls back to legacy there.
+const LEGACY_BACKEND_ABSENT = process.env.EXPO_PUBLIC_BACKEND === 'd1' && (process.env.EXPO_PUBLIC_D1_URL ?? '') !== ''
 const SUPABASE_ABSENT = path.resolve(projectRoot, 'src/lib/supabase-absent.ts')
 
 const resolveTsFromJs = (context, moduleName, platform) => {

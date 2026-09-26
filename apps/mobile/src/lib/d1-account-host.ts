@@ -9,7 +9,10 @@ export type D1LocalStore = { get: (key: string) => string | null; set: (key: str
  * account. Anything else, a lost connection above all, may have changed the server, so
  * it leaves the device paused for the activation step to reconcile.
  */
-const REFUSALS = new Set(['INVALID_CODE', 'INVALID_CHALLENGE', 'RETRY_LATER', 'ACCOUNT_PROTECTED'])
+const REFUSALS = new Set(['INVALID_CODE', 'INVALID_CHALLENGE', 'RETRY_LATER', 'ACCOUNT_PROTECTED',
+  // Refused before the Worker's batch runs (`identity.ts`): a sign-in to an address no
+  // account has linked, a link to one another account holds, and the two re-proof asks.
+  'ACCOUNT_NOT_LINKED', 'EMAIL_ALREADY_LINKED', 'CHALLENGE_REQUIRED', 'REAUTH_REQUIRED'])
 /** Separate from legacy storage: a D1 identity must never open another backend's queue. */
 export function createD1AccountHost(options: {
   baseURL: string; store: D1LocalStore; client: () => D1AccountClient

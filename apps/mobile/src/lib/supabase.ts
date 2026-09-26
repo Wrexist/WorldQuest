@@ -119,6 +119,7 @@ async function d1CurrentUser(accept: (userId: string, created: boolean) => void)
   const birthYear = existing === null ? onboardingBirthYear() : undefined
   const next = existing ? await client.ensureSession() : await client.startGuest()
   accept(next.userId, existing === null)
+  // Marked in the onboarding record by `sendPendingAge` on a later sync if this is lost.
   if (birthYear !== undefined) await sendAge(client, birthYear)
   return { userId: next.userId }
 }

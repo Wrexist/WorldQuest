@@ -15,7 +15,7 @@
  * lie this feature has been since the first week.
  */
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { allowedHours, clampHour, suggestedHour } from '@worldquest/engines'
 import {
   hasPermission,
@@ -26,6 +26,7 @@ import {
 } from '../../lib/notifications.js'
 import { readOnboarding } from '../onboarding/useOnboarding.js'
 import { usePreferences } from './usePreferences.js'
+import { useT } from '../../lib/i18n.js'
 
 export type UseReminder = {
   /** The toggle's value — the preference AND a permission that makes it real. */
@@ -40,6 +41,30 @@ export type UseReminder = {
   readonly earlier: (() => void) | undefined
   readonly later: (() => void) | undefined
   readonly setEnabled: (value: boolean) => void
+}
+
+/**
+ * The reminder's words, in the learner's language and naming their start region.
+ *
+ * Shared by Settings and by Home's ask, which schedules the reminder the moment it is
+ * accepted: the ask used to request permission and stop, so a learner who said yes got
+ * no reminder until they happened to open Settings.
+ */
+export function useReminderCopy(): ReminderCopy {
+  const t = useT()
+  const { preferences } = usePreferences()
+  return useMemo(
+    () => ({
+      title: t('notifications:daily.title'),
+      body: t('notifications:daily.reminder', {
+        region:
+          preferences.startRegion === null
+            ? t('notifications:daily.anywhere')
+            : t(`explore:region.${preferences.startRegion}` as 'explore:region.EU'),
+      }),
+    }),
+    [t, preferences.startRegion],
+  )
 }
 
 export function useReminder(copy: ReminderCopy): UseReminder {

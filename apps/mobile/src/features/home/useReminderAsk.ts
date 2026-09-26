@@ -27,7 +27,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { shouldAskForReminder } from '@worldquest/engines'
 import { readJson, writeJson } from '../../lib/storage.js'
-import { hasPermission, requestPermission } from '../../lib/notifications.js'
+import { hasPermission, requestPermission, syncReminder } from '../../lib/notifications.js'
+import { useReminderCopy } from '../settings/useReminder.js'
 import { lessonsEverCompleted } from '../profile/useWeekActivity.js'
 
 const KEY = 'reminder.ask.v1'
@@ -82,17 +83,19 @@ export function useReminderAsk(): ReminderAsk | undefined {
     setAnswered(true)
   }, [])
 
+  const copy = useReminderCopy()
+
   const onAccept = useCallback((): void => {
     void (async () => {
-      // Already granted — nothing to ask, and the reminder is scheduled by `syncReminder`
-      // on the next Settings visit or preference change either way.
-      const already = await hasPermission()
-      if (!already) await requestPermission()
+      const granted = (await hasPermission()) || (await requestPermission())
+      // Scheduled now. It used to wait for `syncReminder` on the next Settings visit, so
+      // a learner who said yes here got no reminder at all until they went looking.
+      if (granted) await syncReminder(copy)
       // `reachedOs` is what spends the one retry. A user who saw the system dialogue has
       // given us their answer; a user who never got that far has not.
       record(true)
     })()
-  }, [record])
+  }, [record, copy])
 
   // Dismissing is not refusing. It records the ask so the card does not reappear on the
   // next Home mount, but leaves `reachedOs` false so the ninety-day retry is untouched.

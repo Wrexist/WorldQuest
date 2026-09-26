@@ -417,8 +417,12 @@ async function waitFor(check, ms) {
     await page.waitForTimeout(1500)
     await page.getByRole('button', { name: 'Create an account' }).first().click()
     await page.waitForTimeout(1500)
-    await page.getByRole('button', { name: 'Link your email' }).first().click()
-    await page.waitForTimeout(800)
+    // "Create an account" opens on the address itself now; the hub's "Link your email"
+    // is only there if it did not.
+    const hubLink = page.getByRole('button', { name: 'Link your email' })
+    const openedOnHub = (await hubLink.count()) > 0
+    if (openedOnHub) { await hubLink.first().click(); await page.waitForTimeout(800) }
+    step('"Create an account" opens on the email, not on a menu', !openedOnHub)
     // Whatever the screens ask, answered as this learner, and recorded: onboarding took
     // the birth year already, so the account flow asking it again is a finding (S02).
     const seenLinking = []

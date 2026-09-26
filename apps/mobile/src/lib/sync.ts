@@ -243,6 +243,8 @@ async function run(): Promise<void> {
     // before: straight after a sign-in the first attempt ran while the identity change
     // was still settling and gave up quietly (`pnpm e2e:d1`, the second phone).
     if (sent.length === 0) await refreshMemoryOnce()
+    // Onboarding's age, if the Worker does not have it yet (S02).
+    await (await import('./d1-age.js')).sendPendingAge()
     return
   }
   if (queue.pending.length === 0) return

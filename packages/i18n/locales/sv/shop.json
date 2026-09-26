@@ -2,8 +2,6 @@
   "shop:title": "Butik",
   "shop:intro": "Använd mynten du tjänat. Inget här gör lärandet lättare — den delen är lika för alla.",
   "shop:section.titles": "Titlar",
-  "shop:section.soon": "Mer på väg",
-  "shop:soon.body": "Sällskapsdjur, avatarer och karttema ritas just nu. De dyker upp här — inget du köper nu blir sämre när de kommer.",
   "shop:balance": "{count, plural, one {# mynt} other {# mynt}}",
   "shop:price": "{count, plural, one {# mynt} other {# mynt}}",
   "shop:owned": "Ägs",

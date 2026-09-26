@@ -73,13 +73,12 @@ describe('Shop — the rules the economy depends on', () => {
     expect(onBuy).not.toHaveBeenCalled()
   })
 
-  it('sells nothing without artwork behind it', () => {
-    // A pet is priced in the balance table and has no picture. The section says so in
-    // a sentence rather than listing greyed-out rows with prices on them — a disabled
-    // price tag is a promise with a number attached.
+  it('sells nothing without artwork behind it, and promises nothing either', () => {
+    // A pet is priced in the balance table and has no picture, so it is not on sale. The
+    // "more to come, being drawn" section is gone too: to App Review it read as
+    // unfinished (2.1), and to everyone else it was a promise with no date.
     const { container } = shop()
-    expect(screen.getByText(/More to come/i)).toBeTruthy()
-    expect(container.textContent).toMatch(/being drawn/i)
+    expect(container.textContent).not.toMatch(/more to come|being drawn/i)
     // Exactly two buyable rows, both titles. No phantom stock.
     expect(screen.getAllByRole('button', { name: 'Buy' })).toHaveLength(2)
   })

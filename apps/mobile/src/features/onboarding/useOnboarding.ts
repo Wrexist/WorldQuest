@@ -28,6 +28,12 @@ export type OnboardingState = {
    * a deliberate action with a consent step behind it, not a date arithmetic result.
    */
   readonly isChild?: boolean
+  /**
+   * The Worker has an age band for this account (`lib/d1-age.ts`), so the year is not
+   * sent again. Written by that module after the Worker answers, and by a sign-in, which
+   * only ever reaches an account whose band is already set.
+   */
+  readonly ageSent?: boolean
 }
 
 const NOT_DONE: OnboardingState = { completed: false }
@@ -74,6 +80,7 @@ export function finishOnboardingBySignIn(birthYear: number | undefined): void {
     completed: true,
     ...(birthYear !== undefined ? { birthYear } : {}),
     isChild: false,
+    ageSent: true,
   }
   writeJson(KEY, next)
 }

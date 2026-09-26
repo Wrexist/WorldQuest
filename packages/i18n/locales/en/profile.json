@@ -28,7 +28,7 @@
   "profile:world.summary": "{learned} of {total} facts learned",
   "profile:world.summary__note": "Overall progress. Both are whole numbers.",
   "profile:account.title": "Link your email",
-  "profile:account.body": "Add an email address to sign in to your account. Progress recovery is still being tested.",
+  "profile:account.body": "Add an email address to sign in to your account on another phone.",
   "profile:account.cta": "Create an account",
   "profile:account.cta__note": "Button label. Max 20 characters.",
   "profile:empty.title": "Nothing to show yet",
@@ -57,5 +57,5 @@
   "profile:league.title__note": "Navigation row on Profile that opens the weekly league. It existed only as a link from Home, so the one screen a person checks for their own standing did not offer it. Keep it factual — it is a link, not a boast.",
   "profile:league.body": "See where you stand against 29 other explorers this week.",
   "profile:league.body__note": "Navigation row on Profile that opens the weekly league. It existed only as a link from Home, so the one screen a person checks for their own standing did not offer it. Keep it factual — it is a link, not a boast.",
-  "profile:account.body__note": "Current account capability. Do not promise full recovery before second-device verification."
+  "profile:account.body__note": "Current account capability. Signing in on a second phone is verified on the web build against the Worker (pnpm e2e:d1); preferences stay on each device, so never promise that everything carries over."
 }

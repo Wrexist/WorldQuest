@@ -162,7 +162,9 @@ describe('Profile — the account prompt', () => {
     render(
       <ProfileScreen stats={stats} world={world} loading={false} onCreateAccount={() => {}} />,
     )
-    expect(screen.getByText(/Progress recovery is still being tested/)).toBeTruthy()
+    // What it is for, and nothing that reads as unfinished (App Review 2.1).
+    expect(screen.getByText(/sign in to your account on another phone/)).toBeTruthy()
+    expect(document.body.textContent).not.toMatch(/still being tested|not available yet|coming soon/i)
   })
 
   it('disappears once there is nothing to prompt about', () => {

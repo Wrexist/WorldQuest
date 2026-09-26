@@ -6,9 +6,17 @@ export async function recordAudience(db: D1Database, owner: string, session: str
   // With year alone, conservatively protect anyone who might still be under 16.
   // Store only the derived band. A protected account cannot promote itself later.
   const audience = birthYear < year - 16 ? 'eligible' : 'protected'
-  const result = await db.prepare(`UPDATE accounts SET audience = ? WHERE id = ? AND audience = 'unknown'
+  // Set once, with one exception that only ever protects: an `eligible` guest that has
+  // not linked an email may be moved down to `protected`. A parent typing their own year
+  // into "I already have an account" on a child's tablet, then handing it over, must not
+  // leave the child's account eligible for good when the child's own answer arrives from
+  // onboarding. Never the other way, and never for a linked account, whose owner is the
+  // adult who proved the mailbox.
+  const result = await db.prepare(`UPDATE accounts SET audience = ? WHERE id = ?
+    AND (audience = 'unknown' OR (audience = 'eligible' AND ? = 'protected'
+      AND NOT EXISTS (SELECT 1 FROM identities WHERE account_id = accounts.id)))
     AND deleted_at IS NULL AND EXISTS (SELECT 1 FROM sessions WHERE token_hash = ? AND account_id = accounts.id AND expires_at > ?)`)
-    .bind(audience, owner, session, now).run()
+    .bind(audience, owner, audience, session, now).run()
   if (result.meta.changes !== 1) throw new ApiError('AUDIENCE_ALREADY_SET', 409)
   return { audience }
 }

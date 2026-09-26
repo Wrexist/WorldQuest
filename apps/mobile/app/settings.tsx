@@ -13,7 +13,6 @@
  * destination being buried.
  */
 
-import { useMemo } from 'react'
 import { openSettings, openURL } from 'expo-linking'
 import Constants from 'expo-constants'
 import { router } from 'expo-router'
@@ -29,12 +28,11 @@ import { SELLING } from '../src/features/paywall/purchases.js'
 import { ANALYTICS_CONNECTED } from '../src/lib/analytics.js'
 import { isD1 } from '../src/lib/backendConfig.js'
 import { useOnboarding } from '../src/features/onboarding/useOnboarding.js'
-import { useReminder } from '../src/features/settings/useReminder.js'
+import { useReminder, useReminderCopy } from '../src/features/settings/useReminder.js'
 import { useAccountStatus } from '../src/features/account/useAccountStatus.js'
 import { useLeagueOptOut } from '../src/features/league/useLeagueOptOut.js'
 import { useLeagueEnabled } from '../src/features/league/flag.js'
 import { useSignOut } from '../src/features/account/useSignOut.js'
-import { useT } from '../src/lib/i18n.js'
 
 /**
  * Real URLs, not placeholders.
@@ -56,7 +54,6 @@ export default function SettingsRoute() {
   const entitlement = useEntitlement()
   const purchases = usePurchases()
   const { state } = useOnboarding()
-  const t = useT()
   const account = useAccountStatus()
   const signOut = useSignOut()
   const leagueOn = useLeagueEnabled()
@@ -75,18 +72,7 @@ export default function SettingsRoute() {
    * is localised as a WHOLE sentence and never assembled from fragments, and a template
    * with an empty slot is a fragment with extra steps.
    */
-  const copy = useMemo(
-    () => ({
-      title: t('notifications:daily.title'),
-      body: t('notifications:daily.reminder', {
-        region:
-          preferences.startRegion === null
-            ? t('notifications:daily.anywhere')
-            : t(`explore:region.${preferences.startRegion}` as 'explore:region.EU'),
-      }),
-    }),
-    [t, preferences.startRegion],
-  )
+  const copy = useReminderCopy()
   const reminder = useReminder(copy)
 
   /**

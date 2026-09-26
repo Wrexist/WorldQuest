@@ -5,8 +5,11 @@ import { clearSessionStorage, startGuestStorage } from '../../lib/storage.js'
 import { detachSession, isConfigured, resetClient, supabase, withAccountTransition } from '../../lib/supabase.js'
 import { backendConfig, isD1 } from '../../lib/backendConfig.js'
 import { resetChildAccount } from '../../lib/analytics.js'
+import { resetD1AccountFlow } from './useD1Account.js'
 
 export async function signOutEverywhere(): Promise<void> {
+  // Whatever the account screen last showed belonged to the person signing out.
+  resetD1AccountFlow()
   await withAccountTransition(async () => {
     startGuestStorage()
     try {

@@ -137,6 +137,7 @@
     "apps/mobile/src/features/home/HomeScreen.test.tsx",
     "apps/mobile/src/features/home/useDailyGoal.test.ts",
     "apps/mobile/src/features/home/useProgress.test.ts",
+    "apps/mobile/src/features/home/useReminderAsk.test.ts",
     "apps/mobile/src/features/league/LeagueScreen.test.tsx",
     "apps/mobile/src/features/lesson/LessonScreen.test.tsx",
     "apps/mobile/src/features/lesson/LessonSummary.test.tsx",

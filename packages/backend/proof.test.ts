@@ -593,6 +593,30 @@ describe('lessons that end before the last question (real workerd and SQLite)', 
     expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'bad2', locale: 'en', count: 5, focus: { planet: 'Mars' } })).status).toBe(400)
   })
 
+  it("lets a guest's age band go down to protected, never up, and never on a linked account", async () => {
+    const year = new Date().getUTCFullYear()
+    const audience = async (token: string, birthYear: number) =>
+      call('/v1/account/audience', token, { birthYear })
+    const band = async (id: string) =>
+      (await db.prepare('SELECT audience FROM accounts WHERE id = ?').bind(id).first<{ audience: string }>())?.audience
+    // A parent's year, then the child's: the child's answer wins.
+    const tablet = await guest()
+    expect((await audience(tablet.token, year - 40)).status).toBe(200)
+    expect((await audience(tablet.token, year - 9)).status).toBe(200)
+    expect(await band(tablet.userId)).toBe('protected')
+    // A protected account never promotes itself.
+    expect((await audience(tablet.token, year - 40)).status).toBe(409)
+    expect(await band(tablet.userId)).toBe('protected')
+    // A linked account belongs to the adult who proved the mailbox; it is not moved.
+    const adult = await guest()
+    expect((await audience(adult.token, year - 40)).status).toBe(200)
+    await db.prepare('INSERT INTO auth_user (id, name, email, email_verified, created_at, updated_at) VALUES (?, ?, ?, 1, 0, 0)')
+      .bind('subject-adult', 'adult', 'adult@example.invalid').run()
+    await db.prepare('INSERT INTO identities (subject_id, account_id, linked_at) VALUES (?, ?, 0)').bind('subject-adult', adult.userId).run()
+    expect((await audience(adult.token, year - 9)).status).toBe(409)
+    expect(await band(adult.userId)).toBe('eligible')
+  })
+
   it('counts finished lessons per chosen focus, which is how a course path follows the account', async () => {
     const a = await guest()
     const prepare = async (lessonId: string, focus?: Record<string, unknown>) =>

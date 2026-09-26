@@ -65,7 +65,7 @@
   "settings:about.version__note": "Row label next to the app version number. Max 12 characters.",
   "settings:about.licences": "Open source licences",
   "settings:about.licences__note": "Row that lists the libraries and fonts we use. Max 24 characters.",
-  "settings:about.credits": "Map and flag data comes from open sources, listed with every fact.",
+  "settings:about.credits": "Map and flag data comes from open sources, credited under Open source licences.",
   "settings:on": "On",
   "settings:on__note": "Accessibility state for a switch that is enabled.",
   "settings:off": "Off",
@@ -98,6 +98,7 @@
   "settings:reminder.blocked.cta__note": "Opens the phone's own settings page for this app. Max 16 characters.",
   "settings:privacy.delete": "Delete account",
   "settings:privacy.delete__note": "Row in Privacy that opens account deletion. Plain words; it is found by people looking for exactly this. Max 22 characters.",
-  "settings:privacy.account.deletable": "Deleting removes your account and progress from our servers for good. Exporting a copy is not available yet.",
-  "settings:privacy.account.deletable__note": "Note under the Delete account row. States what deletion does and what is not offered yet. Calm, factual, no warning tone."
+  "settings:privacy.account.deletable": "Deleting removes your account and progress from our servers for good.",
+  "settings:privacy.account.deletable__note": "Note under the Delete account row. States what deletion does. Calm, factual, no warning tone, and nothing promised for later.",
+  "settings:about.credits__note": "Credits line in About. Points to the licences row, which carries the attributions; the country pages no longer list sources."
 }

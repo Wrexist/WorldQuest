@@ -35,7 +35,7 @@
   "settings:privacy.account.body": "Det går ännu inte att exportera eller radera kontouppgifter här.",
   "settings:about.version": "Version",
   "settings:about.licences": "Öppen källkod-licenser",
-  "settings:about.credits": "Kart- och flaggdata kommer från öppna källor och anges vid varje fakta.",
+  "settings:about.credits": "Kart- och flaggdata kommer från öppna källor som anges under Öppen källkod-licenser.",
   "settings:on": "På",
   "settings:off": "Av",
   "settings:sync.pending": "{count, plural, one {# lektion väntar på att nå servern} other {# lektioner väntar på att nå servern}}. Den skickas så fort du är uppkopplad.",
@@ -56,5 +56,5 @@
   "settings:reminder.blocked": "Aviseringar är avstängda för WorldQuest i telefonens inställningar.",
   "settings:reminder.blocked.cta": "Öppna inställningar",
   "settings:privacy.delete": "Radera konto",
-  "settings:privacy.account.deletable": "När du raderar tas ditt konto och dina framsteg bort från våra servrar för gott. Det går inte att exportera en kopia än."
+  "settings:privacy.account.deletable": "När du raderar tas ditt konto och dina framsteg bort från våra servrar för gott."
 }
