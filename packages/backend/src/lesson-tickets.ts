@@ -14,9 +14,17 @@ const focusSchema = z.object({
   entities: z.array(z.string().regex(/^[A-Z]{2}$/)).max(300).optional(),
   difficulty: z.object({ min: z.number().int().min(1).max(5).optional(), max: z.number().int().min(1).max(5).optional() }).strict().optional(),
 }).strict()
+/**
+ * The course step a lesson is for, when it is one: `node.<course>.<name>`, the id the app's
+ * course pack gives it. Stored with the ticket and counted per step in the learning state,
+ * because a focus alone cannot say which step a lesson was: two steps may ask about the
+ * same thing (the first week's mix and its check do), and practising a finished step is a
+ * lesson with that step's focus too. Display only: nothing here grades or rewards by it.
+ */
+export const courseNodeSchema = z.string().regex(/^node\.[a-z0-9][a-z0-9.-]{0,99}$/)
 export const prepareLessonSchema = z.object({ lessonId: z.string().regex(/^[a-zA-Z0-9_-]{1,80}$/),
   locale: z.enum(['en', 'sv']), count: z.number().int().min(5).max(20).default(10),
-  screenReader: z.boolean().default(false), focus: focusSchema.optional() }).strict()
+  screenReader: z.boolean().default(false), focus: focusSchema.optional(), node: courseNodeSchema.optional() }).strict()
 type Input = z.infer<typeof prepareLessonSchema>
 /** Parsed focus, with absent fields absent rather than `undefined` (exact optional types). */
 function lessonFocus(f: z.infer<typeof focusSchema>): LessonFocus {

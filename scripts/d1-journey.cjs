@@ -345,10 +345,13 @@ async function waitFor(check, ms) {
     // offline — so Home keeps one ticket issued for exactly that step. The Worker stores
     // the request as it parsed it: attributes before entities.
     const STEP_ONE_FOCUS = '"focus":{"attributes":["flag"],"entities":["SE","NO","US","JP","BR","KE"]}'
+    // Named for its step, which is what the Worker counts it under: the first week's mix
+    // and its check share a focus, and practice on one must never move the other.
+    const STEP_ONE_NODE = '"node":"node.first-week.flags"'
     const stepSaved = await waitFor(async () => (await one(`SELECT count(*) AS n FROM tickets t WHERE account_id = ?
-      AND instr(request_json, ?) > 0 AND NOT EXISTS
-      (SELECT 1 FROM receipts r WHERE r.account_id = t.account_id AND r.lesson_id = t.lesson_id)`, guest.id, STEP_ONE_FOCUS)).n >= 1, 15000)
-    step('and the current step\'s own lesson is saved ahead too', stepSaved)
+      AND instr(request_json, ?) > 0 AND instr(request_json, ?) > 0 AND NOT EXISTS
+      (SELECT 1 FROM receipts r WHERE r.account_id = t.account_id AND r.lesson_id = t.lesson_id)`, guest.id, STEP_ONE_FOCUS, STEP_ONE_NODE)).n >= 1, 15000)
+    step('and the current step\'s own lesson is saved ahead too, named for the step', stepSaved)
 
     // ── the Quests tab shows the server's quest ───────────────────────────────
     await page.getByRole('tab', { name: /Quests/ }).first().click()

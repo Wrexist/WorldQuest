@@ -43,6 +43,9 @@ export function usePrefetchStep(current: NodeStanding | undefined): void {
       locale: currentLocale() === 'sv' ? 'sv' : 'en',
       screenReader,
       focus: { entities: step.focus.entities, attributes: step.focus.attributes },
+      // Named, so the ticket is this step's and no other's: the first week's mix and its
+      // check ask about the same countries.
+      node: step.id,
     })
   }, [step, finished, online, screenReader, itemMs])
 }

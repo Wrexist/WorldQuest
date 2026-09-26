@@ -79,6 +79,15 @@ describe('D1 durable offline submissions', () => {
     expect(JSON.stringify(h.prepare.mock.calls[0]![0].focus)).toBe('{"attributes":["capital"],"entities":["SE"],"difficulty":{"min":1,"max":3}}')
     await expect(queue.prepare({ ...wanted, lessonId: 'bad-focus', focus: { entities: ['sweden'] } })).rejects.toThrow('INVALID_LESSON_REQUEST')
   })
+  it('carries the course step a lesson is for, last, as the Worker echoes it', async () => {
+    const h = harness(), queue = h.create()
+    const ticket = await queue.prepare({ lessonId: 'step', locale: 'en', count: 5, screenReader: false,
+      focus: { entities: ['SE'], attributes: ['flag'] }, node: 'node.first-week.flags' })
+    expect(ticket?.request.node).toBe('node.first-week.flags')
+    expect(Object.keys(h.prepare.mock.calls[0]![0])).toEqual(['lessonId', 'locale', 'count', 'screenReader', 'focus', 'node'])
+    await expect(queue.prepare({ lessonId: 'bad-step', locale: 'en', count: 5, screenReader: false, node: 'Mixed' }))
+      .rejects.toThrow('INVALID_LESSON_REQUEST')
+  })
   it('keeps old work after an account switch during a request', async () => {
     const h = harness(), queue = h.create(); await queue.enqueue(input)
     h.submit.mockImplementationOnce(async () => { h.switchAccount(); return result })

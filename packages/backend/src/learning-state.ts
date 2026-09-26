@@ -23,6 +23,13 @@ export async function learningState(db: D1Database, owner: string, tokenHash: st
     db.prepare(`SELECT json_extract(result,'$.day') AS day, count(*) AS finished FROM receipts
       WHERE account_id=? AND json_extract(result,'$.finished')=1 AND json_extract(result,'$.day') >= ?
       GROUP BY json_extract(result,'$.day') ORDER BY day DESC LIMIT 62`).bind(owner, monthBefore(Date.now())),
+    // Finished lessons per course step, for the tickets that named one. What the path
+    // follows first: a focus shared by two steps cannot say which of them a lesson moved.
+    db.prepare(`SELECT json_extract(t.request_json,'$.node') AS node, count(*) AS finished
+      FROM receipts r JOIN tickets t ON t.account_id=r.account_id AND t.lesson_id=r.lesson_id
+      WHERE r.account_id=? AND json_extract(r.result,'$.finished')=1
+        AND json_extract(t.request_json,'$.node') IS NOT NULL
+      GROUP BY json_extract(t.request_json,'$.node') ORDER BY finished DESC LIMIT ?`).bind(owner, MAX_FOCUSES),
   ])
   const account = rows[0]?.results[0]
   if (!account) throw new ApiError('SESSION_EXPIRED', 401)
@@ -33,7 +40,8 @@ export async function learningState(db: D1Database, owner: string, tokenHash: st
       freezesHeld: account.freezes_held },
     memories: memory.map(row => JSON.parse(String(row.state)) as MemoryState),
     finishedByFocus: (rows[2]?.results ?? []).map(row => ({ focus: JSON.parse(String(row.focus)) as unknown, finished: Number(row.finished) })),
-    finishedByDay: (rows[3]?.results ?? []).map(row => ({ day: String(row.day), finished: Number(row.finished) })) }
+    finishedByDay: (rows[3]?.results ?? []).map(row => ({ day: String(row.day), finished: Number(row.finished) })),
+    finishedByNode: (rows[4]?.results ?? []).map(row => ({ node: String(row.node), finished: Number(row.finished) })) }
 }
 
 /** A day more than a month back, as `YYYY-MM-DD`: the device's own log keeps 31 days. */
@@ -42,9 +50,9 @@ function monthBefore(now: number): string {
 }
 
 /**
- * The most distinct focuses reported. A first-week course has a handful of steps and a
- * learner practises some countries; the cap keeps the response bounded for someone who
- * has practised hundreds, keeping the most-played.
+ * The most distinct focuses, and the most course steps, reported. The course has a few
+ * dozen steps and a learner practises some countries; the cap keeps the response bounded
+ * for someone who has practised hundreds, keeping the most-played.
  */
 const MAX_FOCUSES = 200
 

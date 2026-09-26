@@ -28,7 +28,7 @@ import { backendConfig } from './backendConfig.js'
 import { isOnline } from './connectivity.js'
 import { invalidateProgress } from './query.js'
 import { captureStorage } from './storage.js'
-import { announceFocusFinished, FOCUS_FINISHED_KEY, MEMORY_KEY } from './d1-memory.js'
+import { announceFocusFinished, FOCUS_FINISHED_KEY, MEMORY_KEY, NODE_FINISHED_KEY } from './d1-memory.js'
 import { queueUnlocks, type PendingUnlock } from '../features/achievements/pending.js'
 import { currentUser } from './supabase.js'
 
@@ -90,6 +90,13 @@ export type LessonRequest = {
    * implied focus may be traded for a saved lesson when offline.
    */
   readonly explicitFocus?: boolean | undefined
+  /**
+   * The course step this lesson is for, when it is one. Sent with the ticket so the Worker
+   * counts the lesson for that step, and matched with the focus when a saved ticket is
+   * taken: the first week's mix and its check ask about the same countries, and a lesson
+   * issued for one must not be played, or counted, as the other.
+   */
+  readonly node?: string | undefined
 }
 
 /** The engines' focus, in the wire shape (mutable arrays, absent fields absent). */
@@ -107,6 +114,10 @@ const clampCount = (count: number): number => Math.max(5, Math.min(20, Math.roun
 
 /** The same focus, in the wire shape — the comparison `take` already makes on a resumed preparation. */
 const sameFocus = (a: D1Focus | undefined, b: D1Focus | undefined): boolean => JSON.stringify(a) === JSON.stringify(b)
+
+/** A saved ticket issued for exactly this lesson: the same focus and the same course step (or none). */
+const sameLesson = (t: D1PreparedLesson, focus: D1Focus | undefined, node: string | undefined): boolean =>
+  sameFocus(t.request.focus, focus) && t.request.node === node
 
 /**
  * Whether a saved ticket can be played by this learner in this language.
@@ -163,7 +174,7 @@ async function take(request: LessonRequest): Promise<TakeResult> {
     // playing it is playing what was asked for. It also retires a ticket a learner took
     // and left before answering anything, which would otherwise hold one of the
     // server's twenty slots for good.
-    const exact = (await queue.inspect()).tickets.find((t) => fits(t) && sameFocus(t.request.focus, wanted))
+    const exact = (await queue.inspect()).tickets.find((t) => fits(t) && sameLesson(t, wanted, request.node))
     if (exact) return { kind: 'ready', lesson: exact }
   }
   /**
@@ -197,7 +208,7 @@ async function take(request: LessonRequest): Promise<TakeResult> {
     // A preparation an earlier launch left pending is finished first (the queue holds
     // one), and used if it is the lesson being asked for now.
     const resumed = await queue.prepare()
-    if (resumed && fits(resumed) && JSON.stringify(resumed.request.focus) === JSON.stringify(wanted)) {
+    if (resumed && fits(resumed) && sameLesson(resumed, wanted, request.node)) {
       return { kind: 'ready', lesson: resumed }
     }
     const lesson = await queue.prepare({
@@ -206,6 +217,7 @@ async function take(request: LessonRequest): Promise<TakeResult> {
       count: clampCount(request.count),
       screenReader: request.screenReader,
       ...(wanted ? { focus: wanted } : {}),
+      ...(request.node !== undefined ? { node: request.node } : {}),
     })
     if (!lesson) return offline()
     return { kind: 'ready', lesson }
@@ -268,13 +280,14 @@ async function prefetchFor(request: LessonRequest & { readonly focus: LessonFocu
     const wanted = wireFocus(request.focus)
     const fits = fitsRequest(request)
     const { tickets } = await queue.inspect()
-    if (tickets.some((t) => fits(t) && sameFocus(t.request.focus, wanted))) return
+    if (tickets.some((t) => fits(t) && sameLesson(t, wanted, request.node))) return
     await queue.prepare({
       lessonId: lessonId(),
       locale: request.locale,
       count: clampCount(request.count),
       screenReader: request.screenReader,
       focus: wanted,
+      ...(request.node !== undefined ? { node: request.node } : {}),
     })
   } catch {
     // Next time. The step still starts online, and offline it says so plainly.
@@ -379,6 +392,7 @@ export async function refreshMemory(): Promise<boolean> {
     if (!store.isCurrent()) return false
     store.set(MEMORY_KEY, JSON.stringify(state.memories))
     store.set(FOCUS_FINISHED_KEY, JSON.stringify(state.finishedByFocus))
+    store.set(NODE_FINISHED_KEY, JSON.stringify(state.finishedByNode))
     announceFocusFinished()
     foldDays(store, state.finishedByDay)
     return true

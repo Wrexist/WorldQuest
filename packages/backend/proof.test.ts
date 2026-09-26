@@ -619,8 +619,8 @@ describe('lessons that end before the last question (real workerd and SQLite)', 
 
   it('counts finished lessons per chosen focus, which is how a course path follows the account', async () => {
     const a = await guest()
-    const prepare = async (lessonId: string, focus?: Record<string, unknown>) =>
-      (await (await call('/v1/lessons/prepare', a.token, { lessonId, locale: 'en', count: 5, ...(focus ? { focus } : {}) })).json()) as { questions: Question[] }
+    const prepare = async (lessonId: string, focus?: Record<string, unknown>, node?: string) =>
+      (await (await call('/v1/lessons/prepare', a.token, { lessonId, locale: 'en', count: 5, ...(focus ? { focus } : {}), ...(node ? { node } : {}) })).json()) as { questions: Question[] }
     const answer = (questions: Question[], upTo = questions.length) =>
       questions.slice(0, upTo).map((q, slot) => ({ slot, chosenOptionId: q.options[0]!.id, elapsedMs: 9000 }))
     const sweden = { entities: ['SE'] }
@@ -632,15 +632,21 @@ describe('lessons that end before the last question (real workerd and SQLite)', 
     expect((await call('/v1/lessons/submit', a.token, { lessonId: 'se-left', answers: answer(left.questions, 2) })).status).toBe(200)
     // Finished, but nobody chose its focus: the app's own lesson, not a step.
     expect((await call('/v1/lessons/submit', a.token, { lessonId: 'plain', answers: answer(plain.questions) })).status).toBe(200)
-    const snapshot = await (await call('/v1/learning/state', a.token)).json() as { finishedByFocus: unknown; finishedByDay: unknown }
-    expect(snapshot.finishedByFocus).toEqual([{ focus: sweden, finished: 1 }])
-    // And per day, for the streak calendar: the two finished lessons, not the early exit.
+    // A course step's lesson names the step, and is counted for it as well as its focus.
+    const step = await prepare('se-step', sweden, 'node.first-week.flags')
+    expect((await call('/v1/lessons/submit', a.token, { lessonId: 'se-step', answers: answer(step.questions) })).status).toBe(200)
+    // Only a step id in the course's own shape.
+    expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'bad-node', locale: 'en', count: 5, node: 'drop table' })).status).toBe(400)
+    const snapshot = await (await call('/v1/learning/state', a.token)).json() as { finishedByFocus: unknown; finishedByDay: unknown; finishedByNode: unknown }
+    expect(snapshot.finishedByFocus).toEqual([{ focus: sweden, finished: 2 }])
+    expect(snapshot.finishedByNode).toEqual([{ node: 'node.first-week.flags', finished: 1 }])
+    // And per day, for the streak calendar: the three finished lessons, not the early exit.
     const day = (await db.prepare(`SELECT json_extract(result,'$.day') AS day FROM receipts WHERE account_id = ? LIMIT 1`)
       .bind(a.userId).first<{ day: string }>())?.day
-    expect(snapshot.finishedByDay).toEqual([{ day, finished: 2 }])
+    expect(snapshot.finishedByDay).toEqual([{ day, finished: 3 }])
     // Owner-bound like everything else in the snapshot.
     const b = await guest()
-    expect(await (await call('/v1/learning/state', b.token)).json()).toMatchObject({ finishedByFocus: [] })
+    expect(await (await call('/v1/learning/state', b.token)).json()).toMatchObject({ finishedByFocus: [], finishedByNode: [] })
   })
 
   it('treats exact facts as steering: those first, the rest of the lesson as usual', async () => {
