@@ -122,6 +122,12 @@ export type PractisedCountry = {
  */
 const CELEBRATION_SIZE = 240
 
+/**
+ * Atlas on a summary that is not perfect: smaller than the celebrating 140, because this
+ * one keeps the learner company rather than throwing a party (round 2, row 43).
+ */
+const CALM_ATLAS = 112
+
 /** Wide enough to tell Chad from Romania, small enough that eight fit on a 320pt row. */
 const PRACTISED_FLAG_WIDTH = 44
 
@@ -213,6 +219,14 @@ export function LessonSummary({
             `pointerEvents="none"` because celebration never blocks input, and
             decorative by default — the brief's own code note: a screen reader
             announcing confetti is noise. */}
+        {/* Every summary has Atlas, as every Duolingo lesson ends with a character, but
+            only a perfect one has the confetti. The others get him calm: encouraging after
+            a finished lesson, resting after one left early — company, not a verdict. */}
+        {outcome !== 'perfect' && (
+          <View style={styles.headlineArt}>
+            <Art name={outcome === 'early' ? 'atlas/resting' : 'atlas/encouraging'} size={CALM_ATLAS} />
+          </View>
+        )}
         {outcome === 'perfect' && (
           <View style={styles.headlineArt}>
             {/* Confetti ring only. `celebration/rays` used to sit under it, and on the

@@ -625,3 +625,16 @@ It passes 33/33 at the batch's revision. Getting there found four defects, all f
 What this does not show: native credential storage (SecureStore) through the same
 steps, which is the B02 device pass in the [runbook](ios-launch-runbook.md), and
 preferences, which are per-device by design and do not follow the account.
+
+### Round 2: what the journey proves now (26 September 2026)
+
+After a second round of audits (rows 31–47 of the launch audit), `pnpm e2e:d1` passes
+43/43. On top of the above, it now shows that the second phone's course path and streak
+calendar carry on from the first, derived from records the Worker already keeps (tickets,
+receipts), that a phone just signed into finishes onboarding in the account's own scope
+without being asked again, and that on a ten-year-old's phone the account is protected
+on the server, no email is ever asked, and a grown-up can delete the child's progress
+behind a question (`/grown-up`). The Worker's proofs add the age band's one-way rule: an
+unlinked adult guest may be moved down to protected, never up, and a linked account is
+never moved.
+
