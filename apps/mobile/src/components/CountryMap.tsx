@@ -88,7 +88,7 @@ export function CountryMap({ path, contextPath, width, baseTint, tint, label }: 
           source={base}
           style={[styles.layer, { width, height }]}
           resizeMode="contain"
-          tintColor={baseTint ?? colors.bg.surfacePressed}
+          tintColor={baseTint ?? colors.map.land}
           aria-hidden
         />
       )}
@@ -96,7 +96,7 @@ export function CountryMap({ path, contextPath, width, baseTint, tint, label }: 
         source={country}
         style={[styles.layer, { width, height }]}
         resizeMode="contain"
-        tintColor={tint ?? colors.status.progress}
+        tintColor={tint ?? colors.map.country}
         aria-hidden
       />
     </View>
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
    */
   frame: {
     position: 'relative',
-    backgroundColor: colors.bg.surface,
+    backgroundColor: colors.map.water,
     borderRadius: radius.lg,
     ...squircle,
     overflow: 'hidden',

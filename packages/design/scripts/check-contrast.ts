@@ -55,7 +55,7 @@ const PAIRS: Pair[] = [
   { name: 'header wordmark', fg: tokens.color.chrome.text, bg: tokens.color.chrome.surface, min: 4.5 },
   { name: 'header balance', fg: tokens.color.chrome.text, bg: tokens.color.chrome.counter, min: 4.5 },
   { name: 'header pending streak', fg: tokens.color.chrome.muted, bg: tokens.color.chrome.counter, min: 4.5 },
-  { name: 'course banner text', fg: tokens.color.text.onPrimary, bg: tokens.color.course.banner, min: 4.5 },
+  { name: 'course banner text', fg: tokens.color.course.bannerInk, bg: tokens.color.course.banner, min: 4.5 },
   { name: 'course platform glyph', fg: tokens.color.course.ink, bg: tokens.color.course.face, min: 3 },
   { name: 'course future-step glyph', fg: tokens.color.course.stoneInk, bg: tokens.color.course.stone, min: 3 },
   { name: 'primary label on primary face', fg: tokens.color.text.onPrimary, bg: tokens.color.action.primaryFace, min: 4.5 },

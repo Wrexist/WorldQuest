@@ -103,7 +103,7 @@ const SKINS: Record<PathNodeView['state'], Skin> = {
 const DONE_CHECK: Skin = { ...SKINS.done, ring: colors.reward.xp, glyph: colors.reward.xp }
 const PLATFORM_SKINS: Record<PathNodeView['state'], Skin> = {
   current: { face: colors.course.face, edge: colors.course.edge, ring: null, glyph: colors.course.ink },
-  done: { face: colors.course.banner, edge: colors.course.bannerEdge, ring: null, glyph: colors.text.onPrimary },
+  done: { face: colors.course.banner, edge: colors.course.bannerEdge, ring: null, glyph: colors.course.bannerInk },
   locked: { face: colors.course.stone, edge: colors.course.stoneEdge, ring: null, glyph: colors.course.stoneInk },
 }
 

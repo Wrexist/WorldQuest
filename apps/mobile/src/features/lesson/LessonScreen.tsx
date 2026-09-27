@@ -209,7 +209,7 @@ const WRAPPED_AT = 1.5
  * phone has ever had. At 320×568 the fourth option sat at 559–618 of 568 — reachable by
  * scrolling, and on a quiz an option you cannot see is one you do not consider.
  */
-const SHORT_SCREEN = 700
+const SHORT_SCREEN = 900
 
 /**
  * Below this height, Check sits after the options instead of pinned under them.
@@ -254,7 +254,7 @@ const PINNED_CHECK_MIN_HEIGHT = 600
  * four options need about 690pt there — and this is exactly the number that measurement
  * exists to protect.
  */
-const LOCATOR_WIDTH = 280
+const LOCATOR_WIDTH = 208
 const LOCATOR_WIDTH_SHORT = 132
 
 /**
@@ -283,7 +283,7 @@ const LOCATOR_WIDTH_SHORT_GRID = 208
  * question about a coastline rather than about eyesight.
  */
 // A map question's map IS the prompt, so it stays the larger of the two.
-const MAP_PROMPT_WIDTH = 300
+const MAP_PROMPT_WIDTH = 240
 const MAP_PROMPT_WIDTH_SHORT = 180
 
 /**
@@ -993,7 +993,8 @@ export function LessonScreen({
 
       <ScrollView
         ref={scroller}
-        contentContainerStyle={[styles.body, compact && styles.bodyShort]}
+        testID="lesson-scroll"
+        contentContainerStyle={[styles.body, compact && styles.bodyShort, inlineCheck && styles.bodyTiny]}
         onLayout={(event) => {
           viewport.current = event.nativeEvent.layout.height
           // The sheet arriving is what shrinks this; ask again with the new height.
@@ -1037,7 +1038,7 @@ export function LessonScreen({
           <View style={styles.promptArt} testID="prompt-art">
             <Flag
               path={question.promptAsset}
-              width={FLAG_PROMPT_WIDTH}
+              width={compact ? 180 : FLAG_PROMPT_WIDTH}
               label={tContent(question.promptKey, question.promptParams)}
             />
           </View>
@@ -1066,7 +1067,7 @@ export function LessonScreen({
               // question about the coastline rather than about eyesight.
               width={
                 question.modality === 'map'
-                  ? compact
+                  ? inlineCheck ? 160 : compact
                     ? MAP_PROMPT_WIDTH_SHORT
                     : MAP_PROMPT_WIDTH
                   : compact
@@ -1664,7 +1665,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   clockFill: { height: '100%', backgroundColor: colors.status.streak },
-  screen: { flex: 1, padding: space[4], gap: space[4] },
+  screen: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[3] },
   centered: { alignItems: 'center', justifyContent: 'center' },
   flex: { flex: 1 },
   header: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
@@ -1679,6 +1680,7 @@ const styles = StyleSheet.create({
   // is the difference between four options and three, and the sheet has a surface and a
   // shadow of its own to separate it.
   bodyShort: { gap: space[3], paddingBottom: space[4] },
+  bodyTiny: { gap: space[1] },
   prompt: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
   reviewTag: { ...text('caption'), color: colors.text.secondary, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 },
   newTag: { color: colors.reward.gem },

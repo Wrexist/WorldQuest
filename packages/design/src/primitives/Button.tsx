@@ -45,18 +45,8 @@ export type ButtonProps = {
   testID?: string
 }
 
-/**
- * Face heights. The socket adds the edge on top of these, so the tap target is taller.
- *
- * **`sm` is 40 so the socket lands on exactly 44** — the accessibility floor — because
- * `depth.button` is 4 and the tap target is face + edge. At 36 it measured 40 and the
- * design-shots harness caught it on the shop's six Buy buttons at all three viewports.
- * A 40 pt control looks completely fine in a screenshot and misses under a thumb, which
- * is the entire reason that check measures rather than looks.
- *
- * Anything added here must clear 44 the same way. `sm` is the smallest size this
- * component offers, so this row is the floor for every button in the app.
- */
+/** Face heights; the socket always reserves at least 44pt for touch input,
+ * including flat buttons and themes with a shallow raised edge. */
 const HEIGHTS: Record<ButtonSize, number> = { sm: 40, md: 48, lg: 54 }
 
 type Skin = {
@@ -124,7 +114,7 @@ export function Button({
 
   const skin = SKINS[variant]
   const faceHeight = HEIGHTS[size]
-  const socketHeight = faceHeight + edgeDepth
+  const socketHeight = Math.max(44, faceHeight + edgeDepth)
 
   const faceColor = isInert && !flat ? colors.action.disabled : skin.face
   const edgeColor = isInert && !flat ? colors.action.disabledEdge : skin.edge

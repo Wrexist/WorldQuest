@@ -14,23 +14,8 @@ import { useEffect, useRef } from 'react'
 import { Stack, router, usePathname } from 'expo-router'
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { AppState, type AppStateStatus, StatusBar, StyleSheet } from 'react-native'
-/**
- * `SafeAreaView` from react-native-safe-area-context, NOT the one in react-native.
- *
- * The React Native component is legacy, iOS-only, and — the part that showed on screen —
- * it PAINTS. It carried `bg.canvas` and sat outside `ScreenBackground`, so the flat navy
- * of the status-bar inset met the top of the canvas gradient along a hard horizontal
- * line, about 44 pt down, on every screen in the app. It is visible in all five of the
- * TestFlight screenshots that started this work (docs/design/ios-native-audit.md, N3).
- *
- * The context version is transparent, knows the real insets on both platforms, and takes
- * `edges` — so the gradient can now run to the physical edges of the display while the
- * content stays clear of the notch and the home indicator, which is what iOS does with
- * every full-screen surface it draws.
- *
- * The package was already a dependency and had never been imported: `grep -r
- * useSafeAreaInsets apps/mobile` returned nothing.
- */
+// Context insets support both platforms. Native full-screen modals also need
+// their own safe-area container because they render outside this root surface.
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { colors, layout, motion, ScreenBackground } from '@worldquest/design'
 import { ErrorBoundary } from '../src/components/ErrorBoundary.js'
@@ -268,7 +253,7 @@ export default function RootLayout() {
             gradient could show, that grey surfaced on every route. `sceneStyle` does
             not reach it — it comes from the theme, so the theme is where it is fixed. */}
         <ThemeProvider
-          value={{ ...DefaultTheme, colors: { ...DefaultTheme.colors, background: 'transparent', text: colors.text.primary, card: colors.bg.canvas } }}
+          value={{ ...DefaultTheme, colors: { ...DefaultTheme.colors, background: colors.bg.canvas, text: colors.text.primary, card: colors.bg.canvas } }}
         >
         <QueryProvider>
           <SubscriptionSync />
@@ -282,7 +267,7 @@ export default function RootLayout() {
               // country, collection, streak, shop, achievements, the paywall. Without it
               // half the app is a readable column on a tablet and half is stretched.
               contentStyle: {
-                backgroundColor: 'transparent',
+                backgroundColor: colors.bg.canvas,
                 width: '100%',
                 maxWidth: layout.maxContentWidth,
                 alignSelf: 'center',
@@ -296,7 +281,7 @@ export default function RootLayout() {
                 itself came out 600pt wide and centred, floating with dark bands either
                 side. `(tabs)/_layout.tsx` applies the same cap to its SCENES, which is
                 where it was always meant to go. */}
-            <Stack.Screen name="(tabs)" options={{ contentStyle: { backgroundColor: 'transparent' } }} />
+            <Stack.Screen name="(tabs)" options={{ contentStyle: { backgroundColor: colors.bg.canvas } }} />
             {/* No back gesture: onboarding is a one-way flow, and swiping out of the
                 age gate would leave the app not knowing whether it is talking to a
                 child. The only ways forward are the buttons. */}
@@ -341,7 +326,6 @@ const styles = StyleSheet.create({
   // during the frame before layout, and what shows if the native gradient module is
   // ever absent.
   root: { flex: 1, backgroundColor: colors.bg.canvas },
-  // Transparent, deliberately and load-bearing — see the import note. The gradient is
-  // the layer above this one now, and anything painted here would cover it.
-  safe: { flex: 1, backgroundColor: 'transparent' },
+  // Native modal portals need an opaque canvas as well as the surrounding app.
+  safe: { flex: 1, backgroundColor: colors.bg.canvas },
 })

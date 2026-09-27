@@ -82,9 +82,9 @@ export function SpeechBubble({ children, from = 'start', style }: SpeechBubblePr
 const styles = StyleSheet.create({
   wrap: { alignSelf: 'stretch', position: 'relative' },
   body: {
-    backgroundColor: colors.bg.surface,
+    backgroundColor: colors.journey.sky,
     borderWidth: 2,
-    borderColor: colors.border.strong,
+    borderColor: colors.action.secondary,
     borderRadius: radius.xl,
     ...squircle,
     paddingVertical: space[4],
@@ -100,9 +100,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: TAIL,
     height: TAIL,
-    backgroundColor: colors.bg.surface,
+    backgroundColor: colors.journey.sky,
     borderWidth: 2,
-    borderColor: colors.border.strong,
+    borderColor: colors.action.secondary,
     transform: [{ rotate: '45deg' }],
   },
   // Half the square sits outside the body; the body's own fill hides the inner half,

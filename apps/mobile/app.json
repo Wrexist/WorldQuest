@@ -8,12 +8,12 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "backgroundColor": "#F6F5F0",
+    "backgroundColor": "#F0FAFF",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#F6F5F0"
+      "backgroundColor": "#F0FAFF"
     },
     "ios": {
       "bundleIdentifier": "com.wrexist.worldquest",

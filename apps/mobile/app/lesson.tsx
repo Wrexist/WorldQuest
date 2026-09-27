@@ -7,6 +7,8 @@
  */
 
 import { useRef, useState } from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { colors } from '@worldquest/design'
 import { router, useLocalSearchParams } from 'expo-router'
 import { LessonScreen } from '../src/features/lesson/LessonScreen.js'
 import { useProgress } from '../src/features/home/useProgress.js'
@@ -121,6 +123,7 @@ export default function LessonRoute() {
   const leaving = useRef(false)
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg.canvas }} edges={['top', 'bottom', 'left', 'right']}>
     <LessonScreen
       mode={mode === 'speed' ? 'speed' : 'normal'}
       {...(focus ? { focus } : {})}
@@ -212,5 +215,6 @@ export default function LessonRoute() {
         else router.replace('/')
       })()}
     />
+    </SafeAreaView>
   )
 }
