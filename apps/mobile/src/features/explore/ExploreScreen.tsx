@@ -21,7 +21,6 @@ import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { AdventureArt } from '../../components/AdventureArt.js'
 import { TopBar } from '../../components/TopBar.js'
 import { HeaderJewel } from '../../components/HeaderJewel.js'
-import { AnswerReward } from '../../components/AnswerReward.js'
 import type { ArtName } from '../../lib/art.generated.js'
 import { Flag } from '../../components/Flag.js'
 import type { CountryRow } from './RegionScreen.js'
@@ -107,7 +106,7 @@ export function ExploreScreen({
   // All seven tiles are the same size, so one measurement serves them all. Seeded from
   // the window rather than from zero, so the first frame already has its sky instead of
   // flashing seven navy rectangles and then filling them in.
-  const { width: windowWidth } = useWindowDimensions()
+  const { width: windowWidth, fontScale } = useWindowDimensions()
 
   const [tile, setTile] = useState({ width: estimateTileWidth(windowWidth), height: 0 })
 
@@ -153,7 +152,7 @@ export function ExploreScreen({
       {needle.length === 0 && <>
       <Card style={styles.worldCard} accessibilityLabel={t('explore:world.label')}>
 
-        <HeaderJewel name="globe" size={112} />
+        <HeaderJewel name="globe" size={windowWidth < 360 || fontScale > 1.3 ? 64 : 80} />
         <View style={styles.worldStats}>
           <Text style={styles.worldTitle}>{t('explore:world.label')}</Text>
 
@@ -179,8 +178,21 @@ export function ExploreScreen({
         </View>
       </Card>
 
-      <AnswerReward />
 
+      <View style={styles.grid}>
+        {REGIONS.map((region, index) => (
+          <ContinentTile
+            key={region}
+            region={region}
+            index={index}
+            progress={byRegion.get(region)}
+            art={continentArtSize(tile.width, tile.height)}
+            minHeight={tile.height}
+            onSelect={onSelectRegion}
+            onMeasure={setTile}
+          />
+        ))}
+      </View>
       {onOpenCollection !== undefined && (
         <View
           style={[
@@ -225,20 +237,6 @@ export function ExploreScreen({
         </View>
       )}
 
-      <View style={styles.grid}>
-        {REGIONS.map((region, index) => (
-          <ContinentTile
-            key={region}
-            region={region}
-            index={index}
-            progress={byRegion.get(region)}
-            art={continentArtSize(tile.width, tile.height)}
-            minHeight={tile.height}
-            onSelect={onSelectRegion}
-            onMeasure={setTile}
-          />
-        ))}
-      </View>
       </>}
     </ScrollView>
   )
@@ -394,7 +392,7 @@ const useThemeValues = createThemeStyles((colors) => {
 
   // A row now: globe, then the column of counts. `alignItems: 'center'` so the globe
   // sits against the middle of the stats rather than the top of the card.
-  worldCard: { backgroundColor: colors.journey.sky, borderColor: colors.border.subtle, flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  worldCard: { padding: space[3], backgroundColor: colors.journey.sky, borderColor: colors.border.subtle, flexDirection: 'row', alignItems: 'center', gap: space[3] },
   worldStats: { flex: 1, gap: space[2] },
   worldTitle: { ...text('h3'), color: colors.text.primary },
 

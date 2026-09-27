@@ -149,3 +149,35 @@ existing checks. There are no contrast waivers. The corrected settings render wa
 opened and checked, and all nine dark question layouts were repeated successfully.
 
 No PR, deployment, migration, store release or paid service action was performed.
+
+
+## Follow-up: destination hierarchy and unit artwork
+
+Home and Explore retain their primary-tab roles. Home prioritizes the current
+lesson; Explore prioritizes selecting a region or finding a country. This increment
+serves Priya, the commuter self-improver, without introducing another navigation destination.
+
+- Explore now places illustrated regions immediately after the compact real-world
+  progress summary. Collection shortcuts remain available below the regions.
+- Removed the redundant answer-XP explainer from Explore; reward rules remain at
+  the lesson entry where they explain the action being taken.
+- Reused the existing transparent globe render in Home's unit banner. It hides on
+  narrow layouts or enlarged native text so the lesson entry retains priority.
+- Reduced the Explore globe footprint and summary padding without reducing touch
+  targets, truncating progress labels, changing counts or adding fabricated fills.
+
+Reviewed actual exported Home/Explore renders at 320x568, 390x844, 430x932 and
+768x1024, with a second dark/Swedish/reduced-motion/150%-browser-text matrix.
+At 390x844 the first two region cards and Home's start button are fully visible.
+At 320x568 Home preserves its existing scroll-to-current-lesson behavior; enlarged
+text scrolls naturally. Browser text simulation does not simulate native fontScale.
+
+Targeted Explore/course tests: 54 passed. Mobile TypeScript: passed.
+No dependency, backend, economy, factual art, new motion or app-icon changes.
+Native devices, screen readers and mid-tier Android performance remain untested
+in this increment; the external release gates above remain open.
+
+Follow-up verification: `pnpm verify` passed. The real exported browser flow
+recorded 107 steps: 106 passed and one explicitly skipped because that generated
+lesson contained no image question. No uncaught browser errors. Logs are in
+`node_modules/.cache/refinement-verify.log` and `refinement-e2e.log`.

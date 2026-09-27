@@ -9,9 +9,9 @@ Dark Swedish uses the real language setting and system appearance with reduced m
 
 | Surface | Before | After |
 |---|---|---|
-| Home | [Before](home-before.png) | [After](home-after.png) |
+| Home | [Before](home-before.png) | [Refined](home-refined.png) |
 | Profile | [Before](profile-before.png) | [After](profile-after.png) |
-| Explore | | [After](explore-after.png) |
+| Explore | [Previous](explore-after.png) | [Refined](explore-refined.png) |
 | Quests | | [After](quests-after.png) |
 | Shop | | [After](shop-after.png) |
 | Onboarding | | [After](onboarding-after.png) |

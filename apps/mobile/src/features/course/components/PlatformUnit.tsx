@@ -1,9 +1,10 @@
 import { createThemeStyles } from '@worldquest/design'
 import { useEffect, useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, useWindowDimensions } from 'react-native'
 import { Button, Card, radius, space, text } from '@worldquest/design'
 import { BALANCE } from '@worldquest/engines'
 import { AdventureArt } from '../../../components/AdventureArt.js'
+import { HeaderJewel } from '../../../components/HeaderJewel.js'
 import { RewardMotion } from '../../../components/RewardMotion.js'
 import { Icon } from '../../../components/Icon.js'
 import { tContent, useT } from '../../../lib/i18n.js'
@@ -18,18 +19,21 @@ type Props = {
 
 /** A vertical course of raised platforms. Artwork lives beside the path, never behind it. */
 export function PlatformUnit({ unit, width, total, open, onPress, onPractise, onCurrentLayout }: Props) {
-  const { colors, styles } = useThemeValues()
+  const { styles } = useThemeValues()
   const t = useT()
+  const { fontScale } = useWindowDimensions()
   const title = tContent(unit.titleKey)
   const [pathTop, setPathTop] = useState(0)
   return <View style={styles.unit} testID="path-unit">
     <View style={styles.header}>
       <View style={styles.headerTop}>
-        <Text style={styles.overline}>{t('home:path.unit', { number: unit.number })}</Text>
-        <Icon name="globe" size={space[5]} color={colors.course.bannerInk} />
-      </View>
-      <View accessible role="heading" aria-label={t('home:path.unit.heading', { number: unit.number, title })}>
-        <Text style={styles.title}>{title}</Text>
+        <View style={styles.headerWords}>
+          <Text style={styles.overline}>{t('home:path.unit', { number: unit.number })}</Text>
+          <View accessible role="heading" aria-label={t('home:path.unit.heading', { number: unit.number, title })}>
+            <Text style={styles.title}>{title}</Text>
+          </View>
+        </View>
+        {width >= 340 && fontScale <= 1.3 && <HeaderJewel name="globe" size={64} />}
       </View>
       <Text style={styles.count}>{tContent(unit.objectiveKey)}</Text>
       <Text style={styles.count}>{t('home:path.unit.progress', { done: unit.done, total: unit.nodes.length })}</Text>
@@ -95,7 +99,8 @@ const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
   unit: { gap: space[2] },
   header: { backgroundColor: colors.course.banner, borderRadius: radius.xl, borderBottomWidth: space[2], borderColor: colors.course.bannerEdge, padding: space[4], gap: space[1] },
-  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  headerTop: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  headerWords: { flex: 1, gap: space[1] },
   overline: { ...text('overline'), color: colors.course.bannerInk },
   title: { ...text('h2'), color: colors.course.bannerInk },
   count: { ...text('caption'), color: colors.course.bannerInk },
