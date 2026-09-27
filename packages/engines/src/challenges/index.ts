@@ -4,7 +4,7 @@ export type ChallengeQuestion = {
   options: readonly { id:string; label:string }[];
 }
 export type FriendChallenge = {
-  id:string; locale:'en'|'sv'; expiresAt:number; isCreator:boolean;
+  id:string; locale:'en'|'sv'; expiresAt:number; isCreator:boolean; canCancel:boolean;
   peer:string|null; state:'ready'|'waiting'|'complete'|'expired'; submitted:boolean;
   result:null|{ yours:number|null; theirs:number|null; outcome:'won'|'lost'|'draw'|'unplayed' };
 }

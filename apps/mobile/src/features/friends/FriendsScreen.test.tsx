@@ -11,7 +11,7 @@ const state=vi.hoisted(()=>({online:true,model:{
 }}))
 vi.mock('./useChallenges.js',()=>({useChallenges:()=>state.model}))
 vi.mock('../../lib/connectivity.js',()=>({useOnline:()=>state.online}))
-const challenge:FriendChallenge={id:'round',locale:'en',expiresAt:Date.UTC(2026,9,1),isCreator:false,peer:'Swift Glacier 42',state:'ready',submitted:false,result:null}
+const challenge:FriendChallenge={id:'round',locale:'en',expiresAt:Date.UTC(2026,9,1),isCreator:false,canCancel:false,peer:'Swift Glacier 42',state:'ready',submitted:false,result:null}
 beforeEach(()=>{
   state.online=true
   Object.assign(state.model,{enabled:true,busy:false,error:false,loadError:false,loading:false,notice:null,invite:'',round:null,answers:[],challenges:[]})
@@ -58,4 +58,14 @@ it('shows release eligibility instead of invite controls when unavailable',()=>{
   render(<FriendsScreen onBack={vi.fn()}/>)
   expect(screen.getByText('Challenges are not available yet')).toBeTruthy()
   expect(screen.queryByRole('button',{name:'Create invitation'})).toBeNull()
+})
+
+it('offers cancellation only when the server says the invitation is unused',()=>{
+ state.model.challenges=[{...challenge,isCreator:true,canCancel:true,peer:null}]
+ const view=render(<FriendsScreen onBack={vi.fn()}/>)
+ fireEvent.click(screen.getByRole('button',{name:'Cancel invitation'}))
+ expect(state.model.act).toHaveBeenCalledWith({action:'cancel',id:'round'})
+ state.model.challenges=[{...challenge,isCreator:true,canCancel:false}]
+ view.rerender(<FriendsScreen onBack={vi.fn()}/>)
+ expect(screen.queryByRole('button',{name:'Cancel invitation'})).toBeNull()
 })

@@ -122,3 +122,31 @@ it('silently hides, queues reports once, and blocks future interactions in both 
  await db.prepare('DELETE FROM accounts WHERE id=?').bind(b.userId).run()
  for(const table of ['social_reports','social_blocks','challenge_hides','challenge_plays'])expect(await db.prepare(`SELECT COUNT(*) AS n FROM ${table}`).first()).toEqual({n:0})
 })
+
+it('cancels only unjoined, unstarted invitations and protects accepted attempts',async()=>{
+ const a=await verified(),b=await verified(),c=await create(a)
+ expect(c.canCancel).toBe(true)
+ await actAs(b,{action:'join',inviteCode:code(1)})
+ expect((await call('/v1/challenges',a.token,{action:'cancel',id:c.id})).status).toBe(409)
+ await actAs(b,{action:'start',id:c.id})
+ expect((await call('/v1/challenges',a.token,{action:'cancel',id:c.id})).status).toBe(409)
+ const result=await actAs(b,{action:'submit',id:c.id,answers:await correct(c.id)})
+ expect(result.active?.submitted).toBe(true)
+ expect(result.active?.canCancel).toBe(false)
+ const own=await create(a,2)
+ expect((await actAs(a,{action:'start',id:own.id})).active?.canCancel).toBe(false)
+ expect((await call('/v1/challenges',a.token,{action:'cancel',id:own.id})).status).toBe(409)
+ const unused=await create(a,3)
+ expect((await actAs(a,{action:'cancel',id:unused.id})).active?.state).toBe('expired')
+ expect((await call('/v1/challenges',b.token,{action:'join',inviteCode:code(3)})).status).toBe(409)
+})
+it('atomically arbitrates joining and cancelling the same invitation',async()=>{
+ const a=await verified(),b=await verified(),c=await create(a)
+ const [cancel,join]=await Promise.all([
+  call('/v1/challenges',a.token,{action:'cancel',id:c.id}),
+  call('/v1/challenges',b.token,{action:'join',inviteCode:code(1)}),
+ ])
+ expect([cancel.status,join.status].sort()).toEqual([200,409])
+ const saved=await db.prepare('SELECT closed,guest FROM friend_challenges WHERE id=?').bind(c.id).first<{closed:number;guest:string|null}>()
+ expect(saved).toEqual(join.status===200?{closed:0,guest:b.userId}:{closed:1,guest:null})
+})

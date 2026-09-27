@@ -66,7 +66,7 @@ function ChallengeCard({challenge:c,disabled,reportOpen,onReport,act}:{challenge
       :<Text style={styles.body}>{t(c.submitted?'friends:waiting':'friends:ready')}</Text>}
     {c.state==='ready'&&!c.submitted&&<Button variant="adventure" label={t('friends:play')} onPress={()=>void act({action:'start',id:c.id})} disabled={disabled}/>}
     <Button variant="ghost" label={t('friends:hide')} onPress={()=>void act({action:'hide',id:c.id})} disabled={disabled}/>
-    {c.isCreator&&c.state!=='complete'&&c.state!=='expired'&&<Button variant="ghost" label={t('friends:cancel')} onPress={()=>void act({action:'cancel',id:c.id})} disabled={disabled}/>}
+    {c.canCancel&&<Button variant="ghost" label={t('friends:cancel')} onPress={()=>void act({action:'cancel',id:c.id})} disabled={disabled}/>}
     {c.peer&&<View style={styles.panel}><Button variant="tertiary" label={t('friends:block')} onPress={()=>void act({action:'block',id:c.id})} disabled={disabled}/><Button variant="ghost" label={t('friends:report')} onPress={onReport} disabled={disabled}/>
       {reportOpen&&(['unwanted','cheating','other'] as const).map(reason=><Button key={reason} variant="tertiary" label={t(reason==='unwanted'?'friends:reason.unwanted':reason==='cheating'?'friends:reason.cheating':'friends:reason.other')} onPress={()=>void act({action:'report',id:c.id,reason})} disabled={disabled}/>)}</View>}
   </Card>

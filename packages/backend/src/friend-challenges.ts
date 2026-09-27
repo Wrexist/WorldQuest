@@ -60,6 +60,7 @@ async function present(db:D1Database,row:Row,owner:string,now:number,supplied?:{
   }
   const peer=row.creator===owner?row.guest:row.creator
   return {id:row.id,locale:row.locale,expiresAt:row.expires_at,isCreator:row.creator===owner,
+    canCancel:row.creator===owner && row.guest===null && plays.length===0 && !expired && !blocked,
     peer:peer&&!blocked?handleFor(peer):null, submitted:yours?.finished_at!=null,
     state:finished?'complete':expired?'expired':yours?.finished_at!=null||blocked?'waiting':'ready',
     result:reveal?{yours:yours?.score??null,theirs:theirs?.score??null,outcome}:null}
@@ -142,7 +143,12 @@ export async function challengeAction(db:D1Database,owner:string,session:string,
       if(saved?.payload!==payload)throw new ApiError('IDEMPOTENCY_CONFLICT',409)
     } else if(input.action==='cancel') {
       if(row.creator!==owner)throw new ApiError('NOT_FOUND',404)
-      await transact(db,owner,session,now,[db.prepare('UPDATE friend_challenges SET closed=1 WHERE id=?').bind(challengeId)])
+      // Check at write time: joining or starting may race the earlier membership read.
+      await transact(db,owner,session,now,[db.prepare(`UPDATE friend_challenges SET closed=1
+        WHERE id=? AND creator=? AND guest IS NULL
+        AND NOT EXISTS (SELECT 1 FROM challenge_plays WHERE challenge_id=?)`)
+        .bind(challengeId,owner,challengeId)])
+      if(!(await read(db,owner,challengeId)).closed)throw new ApiError('CHALLENGE_UNAVAILABLE',409)
     } else {
       if((input.action==='block'||input.action==='report')&&!peer)throw new ApiError('NOT_FOUND',404)
       const statements:D1PreparedStatement[]=[]

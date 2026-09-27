@@ -12,7 +12,7 @@ vi.mock('../../lib/query.js',()=>({queryClient:()=>cache}))
 const storage=vi.hoisted(()=>new Map<string,unknown>())
 vi.mock('../../lib/storage.js',()=>({readJson:(key:string)=>storage.get(key)??null,writeJson:(key:string,value:unknown)=>storage.set(key,value),remove:(key:string)=>storage.delete(key)}))
 const wrapper=({children}:{children:ReactNode})=><QueryClientProvider client={cache}>{children}</QueryClientProvider>
-const active={id:'round',locale:'en',expiresAt:100,isCreator:true,peer:null,state:'ready',submitted:false,result:null}
+const active={id:'round',locale:'en',expiresAt:100,isCreator:true,canCancel:true,peer:null,state:'ready',submitted:false,result:null}
 const questions=Array.from({length:10},(_,i)=>({promptKey:'question',promptParams:{},options:[{id:`answer-${i}`,label:'Choice'}]}))
 beforeEach(()=>{cache.clear();storage.clear();api.enabled=true;api.list.mockReset().mockResolvedValue({challenges:[]});api.act.mockReset();api.inviteCode.mockReset().mockReturnValue('a'.repeat(24))})
 

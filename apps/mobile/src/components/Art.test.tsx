@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { render } from '@testing-library/react'
 import { Art } from './Art.js'
+import { AdventureArt } from './AdventureArt.js'
+import { ADVENTURE_ART } from '../lib/adventure.generated.js'
 import { ART_BY_NAME, type ArtName } from '../lib/art.generated.js'
 
 /**
@@ -99,4 +101,13 @@ describe('Art', () => {
     expect(getByRole('img', { name: 'Atlas jumping for joy' })).toBeTruthy()
     expect(getAllByRole('img')).toHaveLength(1)
   })
+})
+
+
+it('renders the passport artwork instead of routing it to the articulated mascot', () => {
+  const { container } = render(<AdventureArt name="passport" />)
+  const images = container.querySelectorAll('img')
+  expect(images).toHaveLength(1)
+  expect(images[0]?.getAttribute('src')).toBe(ADVENTURE_ART.passport)
+  expect(images[0]?.getAttribute('alt')).toBe('')
 })

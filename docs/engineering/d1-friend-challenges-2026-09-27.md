@@ -72,3 +72,12 @@ Local automated tests cover actual workerd/D1, not mocked SQL. Browser acceptanc
 uses two synthetic verified accounts and the real mobile web bundle. This is not a
 claim of two-human production verification, physical iPhone testing, TestFlight
 distribution, a full friend graph, reactions, or a staffed moderation service.
+
+
+## PR 23: invitation cancellation
+
+Only an unjoined invitation with no started attempt can be cancelled. The conditional
+D1 update checks both conditions at write time, so a concurrent join/start cannot lose
+an accepted attempt. The API's `canCancel` capability hides the control once either
+player has committed to the round. Tests cover accepted and started rounds, submission
+after a rejected cancellation, unused invitations, and concurrent join/cancel requests.
