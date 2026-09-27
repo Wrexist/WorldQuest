@@ -5,6 +5,7 @@ const store = new Map<string, string>()
 let online = true
 const prepare = vi.fn()
 const submit = vi.fn()
+const state = vi.fn()
 
 vi.mock('./supabase.js', () => ({ currentUser: async () => ({ userId: 'owner-1' }) }))
 vi.mock('./connectivity.js', () => ({ isOnline: () => online }))
@@ -19,10 +20,10 @@ vi.mock('./storage.js', () => ({
 }))
 vi.mock('@worldquest/api/d1-learning', async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
-  createD1LearningClient: () => ({ prepare, submit, state: async () => ({ memories: [] }) }),
+  createD1LearningClient: () => ({ prepare, submit, state }),
 }))
 
-const { takeLesson, toSubmission, submitLesson, receiptSoon, prefetchFocused } = await import('./d1-lessons.js')
+const { takeLesson, toSubmission, submitLesson, receiptSoon, prefetchFocused, refreshMemory } = await import('./d1-lessons.js')
 
 const question = (id: string) => ({ item: { id, factId: `fact-${id}`, entityId: 'SE', templateId: 't', difficulty: 1, screenReaderSafe: true },
   promptKey: 'q', promptParams: {}, modality: 'text' as const, isNew: true, timeLimitMs: null,
@@ -40,6 +41,7 @@ beforeEach(() => {
     return issued(request.lessonId, request)
   })
   submit.mockReset()
+  state.mockReset().mockResolvedValue({ memories: [], finishedByFocus: [], finishedByNode: [], finishedByDay: [] })
 })
 
 describe('toSubmission', () => {
@@ -170,5 +172,21 @@ describe('receiptSoon', () => {
     const started = Date.now()
     expect(await receiptSoon('l4', 50)).toBeNull()
     expect(Date.now() - started).toBeLessThan(1000)
+  })
+})
+
+
+describe('refreshMemory', () => {
+  it('refreshes step progress and daily activity together without losing unsynced days', async () => {
+    store.set('activity.byDay.v1', JSON.stringify({ '2026-09-26': 3, '2026-09-27': 1 }))
+    const finishedByNode = [{ node: 'node.first-week.mixed', finished: 2 }]
+    const finishedByFocus = [{ focus: { entities: ['SE'], attributes: ['flag'] }, finished: 2 }]
+    state.mockResolvedValue({ memories: [], finishedByNode, finishedByFocus,
+      finishedByDay: [{ day: '2026-09-26', finished: 1 }, { day: '2026-09-27', finished: 2 }] })
+
+    expect(await refreshMemory()).toBe(true)
+    expect(JSON.parse(store.get('d1.nodeFinished.v1')!)).toEqual(finishedByNode)
+    expect(JSON.parse(store.get('d1.focusFinished.v1')!)).toEqual(finishedByFocus)
+    expect(JSON.parse(store.get('activity.byDay.v1')!)).toEqual({ '2026-09-26': 3, '2026-09-27': 2 })
   })
 })
