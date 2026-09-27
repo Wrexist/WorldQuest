@@ -12,10 +12,18 @@ export function RewardMotion({ children, kind = 'pop', active = true }: {
   const value = useRef(new Animated.Value(1)).current
   useEffect(() => {
     value.setValue(1)
-    if (reduced || !active) return
+    if (reduced || !active || AppState.currentState === 'background' || AppState.currentState === 'inactive') return
     value.setValue(0)
-    const animation = Animated.timing(value, { toValue: 1, duration: motion.celebrate.duration * (kind === 'companion' ? 2 : 1),
-      easing: Easing.linear, useNativeDriver: true })
+    // One readable gesture: prepare, lift, settle. Each phase eases to a rest;
+    // the old linear multi-bounce timeline changed velocity abruptly at every key.
+    // Native transforms only, no layout work or timer-driven frames.
+    const phase = (toValue: number, duration: number, easing: (value: number) => number) =>
+      Animated.timing(value, { toValue, duration, easing, useNativeDriver: true, isInteraction: false })
+    const animation = Animated.sequence([
+      phase(.15, motion.quick.duration, Easing.inOut(Easing.cubic)),
+      phase(.72, motion.base.duration, Easing.out(Easing.cubic)),
+      phase(1, motion.quick.duration, Easing.inOut(Easing.cubic)),
+    ])
     animation.start()
     const subscription = AppState.addEventListener('change', state => {
       if (state !== 'active') { animation.stop(); value.setValue(1) }
@@ -24,8 +32,8 @@ export function RewardMotion({ children, kind = 'pop', active = true }: {
   }, [kind, active, reduced, value])
   return <Animated.View pointerEvents="none" aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
     testID="reward-motion" style={{ transform: [
-      { translateY: value.interpolate({ inputRange: [0, .18, .32, .48, .65, .82, 1], outputRange: kind === 'companion' ? [0, -10, 0, -6, 0, -2, 0] : [8, 2, -3, 0, -1, 0, 0] }) },
-      { scale: value.interpolate({ inputRange: [0, .55, .8, 1], outputRange: kind === 'confetti' ? [.45, 1.04, 1.01, 1] : [.8, 1.12, .98, 1] }) },
-      { rotate: value.interpolate({ inputRange: [0, .3, .6, .8, 1], outputRange: kind === 'flame' ? ['-9deg', '8deg', '-5deg', '3deg', '0deg'] : ['0deg', '0deg', '0deg', '0deg', '0deg'] }) },
+      { translateY: value.interpolate({ inputRange: [0, .15, .72, 1], outputRange: kind === 'companion' ? [0, 2, -8, 0] : [4, 5, -2, 0] }) },
+      { scale: value.interpolate({ inputRange: [0, .15, .72, 1], outputRange: kind === 'confetti' ? [.65, .62, 1.04, 1] : [1, .94, 1.06, 1] }) },
+      { rotate: value.interpolate({ inputRange: [0, .15, .72, 1], outputRange: kind === 'flame' ? ['0deg', '-4deg', '3deg', '0deg'] : ['0deg', '0deg', '0deg', '0deg'] }) },
     ] }}>{children}</Animated.View>
 }

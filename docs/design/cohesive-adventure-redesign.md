@@ -181,3 +181,27 @@ Follow-up verification: `pnpm verify` passed. The real exported browser flow
 recorded 107 steps: 106 passed and one explicitly skipped because that generated
 lesson contained no image question. No uncaught browser errors. Logs are in
 `node_modules/.cache/refinement-verify.log` and `refinement-e2e.log`.
+
+
+## Reward motion refinement (September 28)
+
+Reference: user screenshot of the OneThirdDesigner celebration post and
+https://x.com/onethirdesigner/status/2103749509616648627. Direct video retrieval
+returned HTTP 403; its actual motion was not inspected. The screenshot's focal
+reward composition informs direction, not a claimed frame-by-frame reproduction.
+
+The existing RewardMotion wrapper now uses an eased preparation, lift and settle
+(180 + 260 + 180 ms) instead of linear multi-bounce keyframes. Overshoot is restrained
+to 6% for ordinary rewards and 4% for confetti. Native transform animations are
+non-interaction work; buttons are never gated by the reveal. Inactive/background
+mounts and reduced motion show the final state, and backgrounding stops playback.
+No claim, XP, coin, chest persistence or asset changes.
+
+Validation: mobile TypeScript passed; 76 chest/streak tests passed. The actual Expo
+web export passed `node scripts/review-reward-motion.cjs`: multiple moving states,
+a settled non-looping tail, static reduced-motion states and no uncaught errors.
+Frame samples and full-context browser recordings live in
+`node_modules/.cache/reward-motion-review/`. The settled screen was opened for
+visual inspection. This does not establish native frame rate or physical-device
+motion quality. Full repository verification was not repeated for this component-only
+increment; the preceding layout increment's full pass is recorded above.
