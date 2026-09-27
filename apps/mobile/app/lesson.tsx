@@ -136,6 +136,9 @@ export default function LessonRoute() {
           ? courseStep.explicit
           : [attr, entity, region, min, max].some((value) => value !== undefined)
       }
+      // The step itself, for the Worker's per-step count: a step's focus may be another
+      // step's too (`serverProgress.ts`). Review of a finished course is no step.
+      {...(courseStep?.kind === 'node' ? { courseNode: courseStep.nodeId } : {})}
       {...(length !== undefined ? { length } : {})}
       // Set only by the onboarding hand-off. Finishing this one lesson is the single
       // biggest predictor of a user coming back, so it gets its own event rather than

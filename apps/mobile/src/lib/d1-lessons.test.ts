@@ -129,6 +129,17 @@ describe('a course step, kept ready', () => {
     await expect(prefetchFocused(request)).resolves.toBeUndefined()
     expect(prepare).not.toHaveBeenCalled()
   })
+
+  it('names the step on its ticket, and never plays one step as another that asks the same', async () => {
+    // The first week's mix and its check share a focus; each gets its own ticket.
+    await prefetchFocused({ ...request, node: 'node.first-week.mixed' })
+    expect(prepare.mock.calls[0]![0]).toMatchObject({ node: 'node.first-week.mixed' })
+    online = false
+    expect(await takeLesson({ ...request, node: 'node.first-week.check', explicitFocus: true })).toEqual({ kind: 'offline' })
+    const own = await takeLesson({ ...request, node: 'node.first-week.mixed', explicitFocus: true })
+    expect(own.kind).toBe('ready')
+    if (own.kind === 'ready') expect(own.lesson.request.node).toBe('node.first-week.mixed')
+  })
 })
 
 describe('submitLesson', () => {

@@ -43,8 +43,24 @@ const isFocusList = (value: unknown): boolean =>
   value.every((e) => isRecord(e) && isRecord((e as { focus?: unknown }).focus) &&
     typeof (e as { finished?: unknown }).finished === 'number')
 
+/**
+ * The Worker's count of finished lessons per course STEP, for the tickets that named one
+ * (every step's lesson does). What the path reads first: a focus two steps share cannot
+ * say which of them a lesson moved (`features/course/serverProgress.ts`).
+ */
+export const NODE_FINISHED_KEY = 'd1.nodeFinished.v1'
+
+export type NodeFinished = { readonly node: string; readonly finished: number }
+
+const isNodeList = (value: unknown): boolean =>
+  Array.isArray(value) &&
+  value.every((e) => isRecord(e) && typeof (e as { node?: unknown }).node === 'string' &&
+    typeof (e as { finished?: unknown }).finished === 'number')
+
 const NONE: readonly FocusFinished[] = []
+const NO_NODES: readonly NodeFinished[] = []
 let focusSnapshot: readonly FocusFinished[] | null = null
+let nodeSnapshot: readonly NodeFinished[] | null = null
 const focusListeners = new Set<() => void>()
 
 /** Empty before the first fetch, offline on a fresh install, and on a legacy build. */
@@ -52,9 +68,15 @@ export function cachedFocusFinished(): readonly FocusFinished[] {
   return (focusSnapshot ??= readJson<FocusFinished[]>(FOCUS_FINISHED_KEY, isFocusList) ?? NONE)
 }
 
+/** Empty until a Worker that counts per step has answered. */
+export function cachedNodeFinished(): readonly NodeFinished[] {
+  return (nodeSnapshot ??= readJson<NodeFinished[]>(NODE_FINISHED_KEY, isNodeList) ?? NO_NODES)
+}
+
 /** Called by the writer after a fetch, so the path redraws with what the server said. */
 export function announceFocusFinished(): void {
   focusSnapshot = null
+  nodeSnapshot = null
   for (const listener of focusListeners) listener()
 }
 
@@ -63,6 +85,7 @@ function subscribeFocus(listener: () => void): () => void {
   // Another account's counts must never draw this one's path, for even a frame.
   const off = onStorageScopeChange(() => {
     focusSnapshot = null
+    nodeSnapshot = null
     listener()
   })
   return () => {
@@ -73,4 +96,8 @@ function subscribeFocus(listener: () => void): () => void {
 
 export function useFocusFinished(): readonly FocusFinished[] {
   return useSyncExternalStore(subscribeFocus, cachedFocusFinished, cachedFocusFinished)
+}
+
+export function useNodeFinished(): readonly NodeFinished[] {
+  return useSyncExternalStore(subscribeFocus, cachedNodeFinished, cachedNodeFinished)
 }

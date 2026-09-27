@@ -12,7 +12,7 @@
 import { useEffect, useMemo } from 'react'
 import { isD1 } from '../../lib/backendConfig.js'
 import { courseStanding, type Course, type CourseStanding } from '@worldquest/engines'
-import { useFocusFinished } from '../../lib/d1-memory.js'
+import { useFocusFinished, useNodeFinished } from '../../lib/d1-memory.js'
 import { loadCourse } from './course.js'
 import { useCourseProgress } from './progress.js'
 import { withServerProgress } from './serverProgress.js'
@@ -29,6 +29,7 @@ export function useCoursePath(): CoursePath {
   // What the account has finished on any phone, as the server last counted it (D1 only;
   // empty elsewhere, which leaves the device's own count as it was).
   const server = useFocusFinished()
+  const serverSteps = useNodeFinished()
   // Asked for once per account per launch, here as well as by the sync loop, so a missed
   // wake-up cannot leave a newly signed-in phone's path at step one. Loaded lazily: the
   // D1 client reaches native crypto and a legacy build never loads it.
@@ -42,9 +43,9 @@ export function useCoursePath(): CoursePath {
         ? {
             status: 'ready',
             course: loaded.course,
-            standing: courseStanding(loaded.course, withServerProgress(loaded.course, progress, server)),
+            standing: courseStanding(loaded.course, withServerProgress(loaded.course, progress, server, serverSteps)),
           }
         : { status: 'error' },
-    [loaded, progress, server],
+    [loaded, progress, server, serverSteps],
   )
 }
