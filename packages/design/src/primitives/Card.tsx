@@ -1,7 +1,8 @@
+import { createThemeStyles } from '../theme.js'
 ﻿/** A paper surface. Only interactive cards have a physical bottom edge. */
 import type { ReactNode } from 'react'
 import { Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native'
-import { colors, depth, radius, space } from '../tokens.js'
+import { depth, radius, space } from '../tokens.js'
 import { squircle } from '../shape.js'
 
 export type CardProps = {
@@ -19,6 +20,7 @@ export type CardProps = {
 
 export function Card({ children, level = 1, accessibilityLabel, onPress, role,
   'aria-checked': checked, 'aria-disabled': disabled, style, testID }: CardProps) {
+  const { styles } = useThemeValues()
   const shared = {
     accessible: accessibilityLabel !== undefined || onPress !== undefined,
     'aria-label': accessibilityLabel,
@@ -37,7 +39,10 @@ export function Card({ children, level = 1, accessibilityLabel, onPress, role,
   return <View {...shared} style={surface}>{children}</View>
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   base: {
     borderRadius: radius.xl, padding: space[4], ...squircle,
     borderWidth: 1, borderColor: colors.border.subtle,
@@ -46,4 +51,6 @@ const styles = StyleSheet.create({
   raised: { backgroundColor: colors.bg.surfaceRaised },
   interactive: { borderBottomWidth: depth.button },
   pressed: { transform: [{ translateY: depth.chip }], backgroundColor: colors.bg.surfacePressed },
+})
+  return { colors, styles }
 })

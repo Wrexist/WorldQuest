@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * The streak just grew — the beat after the day's first finished lesson.
  *
@@ -19,7 +20,7 @@
 
 import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { useEffect, useRef, useState } from 'react'
-import { Button, colors, space, text, useAnimatedTo, useCountUp } from '@worldquest/design'
+import { Button, space, text, useAnimatedTo, useCountUp } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 import { WeekStrip, type WeekActivity } from '../../components/WeekStrip.js'
@@ -49,6 +50,7 @@ export type StreakExtendedProps = {
 const FLAME = 168
 
 export function StreakExtended({ streak, week, milestoneXp, onContinue, chest, onOpenChest }: StreakExtendedProps) {
+  const { styles } = useThemeValues()
   const t = useT()
   const [landed, setLanded] = useState(false)
   useEffect(() => setLanded(true), [])
@@ -125,7 +127,10 @@ export function StreakExtended({ streak, week, milestoneXp, onContinue, chest, o
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.journey.lavender },
   body: {
     flexGrow: 1,
@@ -145,4 +150,6 @@ const styles = StyleSheet.create({
   chestCopy: { backgroundColor: colors.bg.surface, borderRadius: space[5], padding: space[4], alignSelf: 'stretch', alignItems: 'center', gap: space[2] },
   treasure: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: space[3] },
   receipt: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
+})
+  return { colors, styles }
 })

@@ -118,6 +118,7 @@
     "apps/mobile/src/components/ErrorBoundary.test.tsx",
     "apps/mobile/src/components/Flag.test.tsx",
     "apps/mobile/src/components/ProgressSparkles.test.tsx",
+    "apps/mobile/src/components/Theme.test.tsx",
     "apps/mobile/src/components/TreasureChest.test.tsx",
     "apps/mobile/src/components/WeekStrip.test.tsx",
     "apps/mobile/src/components/mascotPerformance.test.ts",

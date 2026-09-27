@@ -1,3 +1,4 @@
+import { createThemeStyles } from '../theme.js'
 /**
  * The chrome the mockup shows and the walking skeleton skipped: avatar, streak
  * badge, tab bar, and the art slots that carry the map and trophy imagery.
@@ -10,7 +11,7 @@
  */
 
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native'
-import { colors, radius, space } from '../tokens.js'
+import { radius, space } from '../tokens.js'
 import { squircle } from '../shape.js'
 import { fontFamily, text } from '../typography.js'
 
@@ -54,6 +55,7 @@ export function Avatar({
   ringed = true,
   accessibilityLabel,
 }: AvatarProps) {
+  const { styles } = useThemeValues()
   return (
     <View
       accessible
@@ -105,6 +107,7 @@ export type StreakBadgeProps = {
  * than a pill. The count is the loudest thing in the header after the greeting.
  */
 export function StreakBadge({ days, label, icon, accessibilityLabel, onPress }: StreakBadgeProps) {
+  const { styles } = useThemeValues()
   const inner = (
     <>
       <View style={styles.streakRow}>
@@ -164,6 +167,7 @@ export type ArtSlotProps = {
  * the real asset is a one-line change rather than a redesign.
  */
 export function ArtSlot({ tint, art, width = 96, height = 96, style }: ArtSlotProps) {
+  const { styles } = useThemeValues()
   return (
     <View
       // Decorative: the card already carries its meaning in text.
@@ -212,6 +216,7 @@ export type TabBarProps = {
 const TAB_LABEL_MAX_SCALE = 1.2
 
 export function TabBar({ items, activeKey, onSelect }: TabBarProps) {
+  const { styles } = useThemeValues()
   return (
     <View role="tablist" style={styles.tabBar}>
       {items.map((item) => {
@@ -270,7 +275,10 @@ export function TabBar({ items, activeKey, onSelect }: TabBarProps) {
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   avatar: {
     backgroundColor: colors.bg.surfaceRaised,
     borderColor: colors.border.subtle,
@@ -327,4 +335,6 @@ const styles = StyleSheet.create({
     color: colors.text.tertiary,
   },
   tabLabelActive: { color: colors.action.secondary },
+})
+  return { colors, styles }
 })

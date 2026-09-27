@@ -99,5 +99,15 @@
   "lesson:journey.complete": "Du har utforskat hela kursen!",
   "lesson:journey.complete__note": "Post-lesson course reveal. The actual next available lesson comes from saved course progress; starting is optional and the home action is always available.",
   "lesson:feedback.correct.discovery": "Ännu en upptäckt!",
-  "lesson:feedback.correct.discovery__note": "Post-lesson course reveal. The actual next available lesson comes from saved course progress; starting is optional and the home action is always available."
+  "lesson:feedback.correct.discovery__note": "Post-lesson course reveal. The actual next available lesson comes from saved course progress; starting is optional and the home action is always available.",
+  "lesson:intro.title": "Lär känna nästa upptäckter",
+  "lesson:intro.title__note": "Pre-lesson teaching preview of new facts from the actual lesson. Count is total questions, not guaranteed XP.",
+  "lesson:intro.count": "{count, plural, one {# fråga i den här lektionen} other {# frågor i den här lektionen}}",
+  "lesson:intro.count__note": "Pre-lesson teaching preview of new facts from the actual lesson. Count is total questions, not guaranteed XP.",
+  "lesson:intro.body": "Titta på de nya sambanden innan du övar. Lektionen börjar när du är redo.",
+  "lesson:intro.body__note": "Pre-lesson teaching preview of new facts from the actual lesson. Count is total questions, not guaranteed XP.",
+  "lesson:intro.begin": "Starta lektion",
+  "lesson:intro.begin__note": "Pre-lesson teaching preview of new facts from the actual lesson. Count is total questions, not guaranteed XP.",
+  "lesson:intro.leave": "Tillbaka",
+  "lesson:intro.leave__note": "Pre-lesson teaching preview of new facts from the actual lesson. Count is total questions, not guaranteed XP."
 }

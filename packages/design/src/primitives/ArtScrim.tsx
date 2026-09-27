@@ -1,3 +1,4 @@
+import { createThemeStyles } from '../theme.js'
 /**
  * The layer that makes text over artwork readable.
  *
@@ -34,7 +35,7 @@
  */
 
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native'
-import { colors } from '../tokens.js'
+
 
 type GradientComponent = React.ComponentType<{
   colors: readonly string[]
@@ -74,22 +75,23 @@ const TOP = '9E'
 const MIDDLE = 'BF' // 75 %
 const BOTTOM = 'E6' // 90 %
 
-export function ArtScrim({ style }: { style?: StyleProp<ViewStyle> }) {
+export function ArtScrim({ style, blend = false }: { style?: StyleProp<ViewStyle>; blend?: boolean }) {
+  const { colors } = useThemeValues()
   const Gradient = loadGradient()
-  const canvas = colors.bg.canvas
+  const canvas = blend ? colors.journey.sand : colors.bg.canvas
 
   if (Gradient === null) {
-    return <View pointerEvents="none" style={[styles.fill, { backgroundColor: `${canvas}${BOTTOM}` }, style]} />
+    return <View pointerEvents="none" style={[styles.fill, { backgroundColor: `${canvas}${blend ? 'FF' : BOTTOM}` }, style]} />
   }
 
   return (
     <Gradient
       pointerEvents="none"
-      colors={[`${canvas}${TOP}`, `${canvas}${MIDDLE}`, `${canvas}${BOTTOM}`]}
+      colors={blend ? [canvas, canvas, `${canvas}00`] : [`${canvas}${TOP}`, `${canvas}${MIDDLE}`, `${canvas}${BOTTOM}`]}
       // Weighted late: the top half stays light and the bottom third does the work.
-      locations={[0, 0.55, 1]}
-      start={{ x: 0.5, y: 0 }}
-      end={{ x: 0.5, y: 1 }}
+      locations={blend ? [0, 0.36, 0.78] : [0, 0.55, 1]}
+      start={blend ? { x: 0, y: 0.5 } : { x: 0.5, y: 0 }}
+      end={blend ? { x: 1, y: 0.5 } : { x: 0.5, y: 1 }}
       style={[styles.fill, style]}
     />
   )
@@ -97,4 +99,9 @@ export function ArtScrim({ style }: { style?: StyleProp<ViewStyle> }) {
 
 const styles = StyleSheet.create({
   fill: { ...StyleSheet.absoluteFillObject },
+})
+
+const useThemeValues = createThemeStyles((colors) => {
+
+  return { colors }
 })

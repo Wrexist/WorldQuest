@@ -309,7 +309,10 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "mastery.familiar": "Familiar",
       "mastery.proficient": "Proficient",
       "mastery.mastered": "Mastered",
-      "mastery.burnished": "Burnished"
+      "mastery.burnished": "Burnished",
+      "search.label": "Search countries or regions",
+      "search.count": "{count, plural, one {# country in this course} other {# countries in this course}}",
+      "search.empty": "No matching countries. Try another name or region."
     },
     "friends": {
       "title": "Friend challenges",
@@ -410,7 +413,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "streakNotice.dismiss": "Dismiss",
       "path.unit": "Unit {number}",
       "path.unit.heading": "Unit {number}: {title}",
-      "path.unit.progress": "{done} of {total} done",
+      "path.unit.progress": "{done} of {total} unit steps completed",
       "path.start": "Start",
       "path.lesson": "Lesson {lesson} of {lessons}",
       "path.node.current": "Start step {position} of {total}. {objective} Lesson {lesson} of {lessons}.",
@@ -434,7 +437,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "path.xp": "+{amount} XP",
       "path.xp.detail": "Base reward per new correct answer",
       "path.startChallenge": "Start challenge →",
-      "path.continueChallenge": "Continue challenge →"
+      "path.continueChallenge": "Continue challenge →",
+      "path.showCourse": "View whole course",
+      "path.showCurrent": "Back to current unit"
     },
     "league": {
       "title": "League",
@@ -567,7 +572,12 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "journey.start": "Start next challenge →",
       "journey.home": "Back to my journey",
       "journey.complete": "You explored the whole course!",
-      "feedback.correct.discovery": "One more fact explored!"
+      "feedback.correct.discovery": "One more fact explored!",
+      "intro.title": "Meet your next discoveries",
+      "intro.count": "{count, plural, one {# question in this lesson} other {# questions in this lesson}}",
+      "intro.body": "Take a look at these new associations before you practise. Your lesson starts when you are ready.",
+      "intro.begin": "Start lesson",
+      "intro.leave": "Back"
     },
     "nav": {
       "home": "Home",
@@ -805,7 +815,11 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "gate.question": "What is {a} × {b}?",
       "gate.wrong": "That's not it. Here's another one.",
       "gate.wrongSpoken": "That's not it. Here's another one: what is {a} × {b}?",
-      "about.support": "Help and feedback"
+      "about.support": "Help and feedback",
+      "appearance.label": "Theme",
+      "appearance.system": "Match device",
+      "appearance.light": "Light",
+      "appearance.dark": "Dark"
     },
     "shop": {
       "title": "Shop",
@@ -909,7 +923,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "chest.receipt": "A collectible badge for today. Your coins stay in your wallet.",
       "chest.gems": "+1 streak gem",
       "collection.title": "Streak gems",
-      "collection.count": "{count} collected",
+      "collection.count": "{count, plural, one {# collected} other {# collected}}",
       "collection.body": "One learning day, one gem. Keep your collection, even when a streak ends.",
       "collection.empty": "Finish a lesson and open your chest to collect your first gem.",
       "collection.open": "Open today’s chest",
@@ -1241,7 +1255,10 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "mastery.familiar": "Bekant",
       "mastery.proficient": "Säker",
       "mastery.mastered": "Bemästrat",
-      "mastery.burnished": "Slipat"
+      "mastery.burnished": "Slipat",
+      "search.label": "Sök länder eller världsdelar",
+      "search.count": "{count, plural, one {# land i den här kursen} other {# länder i den här kursen}}",
+      "search.empty": "Inga matchande länder. Prova ett annat namn eller en världsdel."
     },
     "friends": {
       "title": "Vänutmaningar",
@@ -1342,7 +1359,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "streakNotice.dismiss": "Dölj",
       "path.unit": "Del {number}",
       "path.unit.heading": "Del {number}: {title}",
-      "path.unit.progress": "{done} av {total} klara",
+      "path.unit.progress": "{done} av {total} enhetssteg klara",
       "path.start": "Starta",
       "path.lesson": "Lektion {lesson} av {lessons}",
       "path.node.current": "Starta steg {position} av {total}. {objective} Lektion {lesson} av {lessons}.",
@@ -1366,7 +1383,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "path.xp": "+{amount} XP",
       "path.xp.detail": "Grundbelöning per nytt rätt svar",
       "path.startChallenge": "Starta utmaningen →",
-      "path.continueChallenge": "Fortsätt utmaningen →"
+      "path.continueChallenge": "Fortsätt utmaningen →",
+      "path.showCourse": "Visa hela kursen",
+      "path.showCurrent": "Tillbaka till aktuell enhet"
     },
     "league": {
       "title": "Liga",
@@ -1499,7 +1518,12 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "journey.start": "Starta nästa utmaning →",
       "journey.home": "Tillbaka till min resa",
       "journey.complete": "Du har utforskat hela kursen!",
-      "feedback.correct.discovery": "Ännu en upptäckt!"
+      "feedback.correct.discovery": "Ännu en upptäckt!",
+      "intro.title": "Lär känna nästa upptäckter",
+      "intro.count": "{count, plural, one {# fråga i den här lektionen} other {# frågor i den här lektionen}}",
+      "intro.body": "Titta på de nya sambanden innan du övar. Lektionen börjar när du är redo.",
+      "intro.begin": "Starta lektion",
+      "intro.leave": "Tillbaka"
     },
     "nav": {
       "home": "Hem",
@@ -1737,7 +1761,11 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "gate.question": "Vad är {a} × {b}?",
       "gate.wrong": "Det stämmer inte. Här är en ny fråga.",
       "gate.wrongSpoken": "Det stämmer inte. Här är en ny fråga: vad är {a} × {b}?",
-      "about.support": "Hjälp och feedback"
+      "about.support": "Hjälp och feedback",
+      "appearance.label": "Tema",
+      "appearance.system": "Följ enheten",
+      "appearance.light": "Ljust",
+      "appearance.dark": "Mörkt"
     },
     "shop": {
       "title": "Butik",
@@ -1841,7 +1869,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "chest.receipt": "Ett samlarmärke för idag. Dina mynt finns kvar i plånboken.",
       "chest.gems": "+1 svitjuvel",
       "collection.title": "Svitjuveler",
-      "collection.count": "{count} samlade",
+      "collection.count": "{count, plural, one {# samlad} other {# samlade}}",
       "collection.body": "En dag av lärande, en juvel. Du behåller samlingen även om sviten tar slut.",
       "collection.empty": "Slutför en lektion och öppna kistan för att samla din första juvel.",
       "collection.open": "Öppna dagens kista",

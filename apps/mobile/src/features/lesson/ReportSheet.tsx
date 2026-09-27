@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * "Report a problem" with the question just answered — the flag on Duolingo's answer
  * sheet, and content-pipeline §6's in-app report (a wrong fact is a P1 bug).
@@ -20,7 +21,7 @@
 
 import { useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import { Button, Card, colors, space, text } from '@worldquest/design'
+import { Button, Card, space, text } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 import { ChoiceRow } from '../../components/SettingsRow.js'
 
@@ -34,6 +35,7 @@ export type ReportSheetProps = {
 }
 
 export function ReportSheet({ onSend, onClose }: ReportSheetProps) {
+  const { styles } = useThemeValues()
   const t = useT()
   const [reason, setReason] = useState<ReportReason | null>(null)
   const [state, setState] = useState<'choosing' | 'sending' | 'sent' | 'failed'>('choosing')
@@ -87,9 +89,14 @@ export function ReportSheet({ onSend, onClose }: ReportSheetProps) {
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   backdrop: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space[5] },
   card: { gap: space[3], width: '100%' },
   title: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
   body: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
+})
+  return { colors, styles }
 })

@@ -1,3 +1,4 @@
+import { createThemeStyles } from '../theme.js'
 /**
  * AnswerOption — the most-tapped component in the product.
  *
@@ -50,7 +51,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native'
-import { colors, radius, space } from '../tokens.js'
+import { radius, space } from '../tokens.js'
 import { useAnimatedTo } from '../motion.js'
 import { squircle } from '../shape.js'
 import { text } from '../typography.js'
@@ -129,40 +130,7 @@ type Skin = {
   badgeFill?: string
 }
 
-const SKINS: Record<AnswerState, Skin> = {
-  idle: {
-    face: colors.option.idle,
-    edge: colors.border.subtle,
-    label: colors.text.primary,
-  },
-  selected: {
-    face: colors.option.selected,
-    edge: colors.option.selectedEdge,
-    label: colors.text.primary,
-    badgeFill: colors.option.selectedEdge,
-  },
-  correct: {
-    face: colors.option.correct,
-    edge: colors.feedback.correct,
-    label: colors.text.primary,
-    badgeFill: colors.feedback.correct,
-  },
-  wrong: {
-    face: colors.option.wrong,
-    edge: colors.status.hearts,
-    label: colors.text.primary,
-    // The one state that most needs the non-colour signal was the one state missing it.
-    // `selected` and `correct` both fill their badge; `wrong` drew its arrow on the bare
-    // track, so the strongest thing distinguishing the option a user got wrong from an
-    // idle one was hue — exactly what `badgeFill`'s own comment says may never happen.
-    badgeFill: colors.status.hearts,
-  },
-  disabled: {
-    face: colors.option.idle,
-    edge: colors.border.subtle,
-    label: colors.text.tertiary,
-  },
-}
+
 
 /**
  * The non-colour half of every state signal — colour may never carry meaning alone
@@ -213,6 +181,7 @@ export function AnswerOption({
   style,
   testID,
 }: AnswerOptionProps) {
+  const { SKINS, styles } = useThemeValues()
   const isInert = state === 'disabled' || state === 'correct' || state === 'wrong'
   const skin = SKINS[state]
 
@@ -382,7 +351,44 @@ export function AnswerOption({
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const SKINS: Record<AnswerState, Skin> = {
+  idle: {
+    face: colors.option.idle,
+    edge: colors.border.subtle,
+    label: colors.text.primary,
+  },
+  selected: {
+    face: colors.option.selected,
+    edge: colors.option.selectedEdge,
+    label: colors.text.primary,
+    badgeFill: colors.option.selectedEdge,
+  },
+  correct: {
+    face: colors.option.correct,
+    edge: colors.feedback.correct,
+    label: colors.text.primary,
+    badgeFill: colors.feedback.correct,
+  },
+  wrong: {
+    face: colors.option.wrong,
+    edge: colors.status.hearts,
+    label: colors.text.primary,
+    // The one state that most needs the non-colour signal was the one state missing it.
+    // `selected` and `correct` both fill their badge; `wrong` drew its arrow on the bare
+    // track, so the strongest thing distinguishing the option a user got wrong from an
+    // idle one was hue — exactly what `badgeFill`'s own comment says may never happen.
+    badgeFill: colors.status.hearts,
+  },
+  disabled: {
+    face: colors.option.idle,
+    edge: colors.border.subtle,
+    label: colors.text.tertiary,
+  },
+}
+  const styles = StyleSheet.create({
   card: {
     minHeight: FACE_HEIGHT,
     alignSelf: 'stretch',
@@ -413,7 +419,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   badgeText: { ...text('caption', { weight: '800' }), color: colors.text.tertiary },
-  badgeTextOn: { color: colors.text.onAccent },
+  badgeTextOn: { color: colors.text.onStatus },
   /**
    * Where a picture-answer sits: the whole row minus the rail, centred in it.
    *
@@ -477,4 +483,6 @@ const styles = StyleSheet.create({
   labelCentre: { textAlign: 'center' },
   glyphWrap: { alignItems: 'center', justifyContent: 'center', minWidth: space[5] },
   glyph: { ...text('h3') },
+})
+  return { colors, SKINS, styles }
 })

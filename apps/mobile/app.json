@@ -6,7 +6,7 @@
     "scheme": "worldquest",
     "version": "1.0.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "backgroundColor": "#F0FAFF",
     "icon": "./assets/icon.png",

@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * "Create a profile" — the ask after a guest's first finished lessons.
  *
@@ -26,7 +27,7 @@
  */
 
 import { Animated, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native'
-import { Button, colors, space, Spacer, text, useScaleIn } from '@worldquest/design'
+import { Button, space, Spacer, text, useScaleIn } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 
@@ -58,6 +59,7 @@ const SHORT_SCREEN = 700
 const LARGE_TEXT = 1.5
 
 export function CreateProfile({ onCreate, onLater, offline = false }: CreateProfileProps) {
+  const { styles } = useThemeValues()
   const t = useT()
   const hero = useScaleIn(0.6)
   const { height, fontScale } = useWindowDimensions()
@@ -108,7 +110,10 @@ export function CreateProfile({ onCreate, onLater, offline = false }: CreateProf
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   screen: { flex: 1 },
   body: {
     flexGrow: 1,
@@ -124,4 +129,6 @@ const styles = StyleSheet.create({
   note: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
   actions: { padding: space[4], gap: space[2] },
   offline: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
+})
+  return { colors, styles }
 })

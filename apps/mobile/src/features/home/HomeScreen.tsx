@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * Home — mockup screen 3, rebuilt around the course path.
  *
@@ -24,11 +25,10 @@
  */
 
 import { useCallback, useRef } from 'react'
-import { Pressable, ScrollView, StyleSheet, Text, View, type LayoutChangeEvent } from 'react-native'
+import { Pressable, useWindowDimensions, ScrollView, StyleSheet, Text, View, type LayoutChangeEvent } from 'react-native'
 import {
   Button,
   Card,
-  colors,
   ProgressBar,
   radius,
   Skeleton,
@@ -215,10 +215,12 @@ export function HomeScreen({
   streakNotice,
   dailyAdventure,
 }: HomeScreenProps) {
+  const { colors, styles } = useThemeValues()
   // Before the early return: hooks cannot be conditional, and the skeleton needs
   // translated copy too.
   const t = useT()
   const bringIntoView = useScrollIntoView()
+  const { height, fontScale } = useWindowDimensions()
 
   if (loading) return <HomeSkeleton />
 
@@ -273,7 +275,7 @@ export function HomeScreen({
             The middle one is the earned TITLE, and the league sits beside it rather than
             replacing it: they are different rewards. The league chip appears only when
             there IS one. */}
-        {dailyAdventure !== undefined ? <DailyAdventure {...dailyAdventure} compact={course !== undefined} /> : <View style={styles.factRow}>
+        {dailyAdventure !== undefined ? <DailyAdventure {...dailyAdventure} compact={height < 700 || fontScale > 1.3} /> : <View style={styles.factRow}>
           {/* Not at zero. The coin chip shows 0 quite happily: a wallet reading 0 is a
               fact about a balance, and a streak reading 0 is a verdict on the person
               holding it. */}
@@ -322,7 +324,7 @@ export function HomeScreen({
             `useScrollIntoView`. */}
         {course !== undefined && (
           <View onLayout={bringIntoView.onPathLayout}>
-            <CoursePath {...course} onCurrentLayout={bringIntoView.onCurrentLayout} />
+            <CoursePath {...course} condensed onCurrentLayout={bringIntoView.onCurrentLayout} />
           </View>
         )}
 
@@ -603,6 +605,7 @@ function Fact({
   readonly value: string
   readonly onPress?: (() => void) | undefined
 }) {
+  const { styles } = useThemeValues()
   const body = (
     <>
       <Icon name={icon} size={18} color={tint} />
@@ -633,6 +636,7 @@ function Fact({
  * data arrives.
  */
 function HomeSkeleton() {
+  const { styles } = useThemeValues()
   const t = useT()
 
   return (
@@ -650,7 +654,10 @@ function HomeSkeleton() {
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   screen: { flex: 1 },
   content: { padding: space[4], gap: space[4], paddingBottom: space[6] },
   flex: { flex: 1 },
@@ -735,4 +742,6 @@ const styles = StyleSheet.create({
     ...squircle,
   },
   offlineText: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
+})
+  return { colors, styles }
 })

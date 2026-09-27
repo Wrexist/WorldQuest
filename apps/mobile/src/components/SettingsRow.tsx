@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * The rows Settings is built from.
  *
@@ -14,7 +15,6 @@
 
 import { Pressable, StyleSheet, Switch, Text, View } from 'react-native'
 import {
-  colors,
   layout,
   radius,
   space,
@@ -44,6 +44,7 @@ export function Section({
   title?: string | undefined
   children: React.ReactNode
 }) {
+  const { styles } = useThemeValues()
   return (
     <View style={styles.section}>
       {title !== undefined && (
@@ -76,6 +77,7 @@ export function SwitchRow({
   onChange,
   accessibilityLabel,
 }: SwitchRowProps) {
+  const { colors, styles } = useThemeValues()
   return (
     <Pressable
       // One element, not four. `role="switch"` plus the state is what makes a reader
@@ -156,6 +158,7 @@ export function ChoiceRow<T extends string>({
   value,
   onChange,
 }: ChoiceRowProps<T>) {
+  const { styles } = useThemeValues()
   return (
     <View style={styles.rowStacked}>
       <Text style={styles.rowLabel} role="heading">
@@ -227,6 +230,7 @@ export function StepperRow({
   previousLabel,
   nextLabel,
 }: StepperRowProps) {
+  const { styles } = useThemeValues()
   return (
     <View style={styles.rowStacked}>
       <Text style={styles.rowLabel} role="heading">
@@ -260,6 +264,7 @@ function StepperButton({
   glyph: 'back' | 'forward'
   onPress?: (() => void) | undefined
 }) {
+  const { colors, styles } = useThemeValues()
   const disabled = onPress === undefined
   return (
     <Pressable
@@ -293,6 +298,7 @@ export function LinkRow({
   // have yet" and "a prop I did not pass" are different types, and this is the first.
   onPress?: (() => void) | undefined
 }) {
+  const { colors, styles } = useThemeValues()
   const content = (
     <>
       <Text style={styles.rowLabel}>{label}</Text>
@@ -324,6 +330,7 @@ export function LinkRow({
 
 /** A paragraph inside a card — used where a section needs to explain itself. */
 export function Note({ title, body }: { title?: string | undefined; body: string }) {
+  const { styles } = useThemeValues()
   return (
     <View style={styles.rowStacked}>
       {title !== undefined && <Text style={styles.rowLabel}>{title}</Text>}
@@ -332,7 +339,10 @@ export function Note({ title, body }: { title?: string | undefined; body: string
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   section: { gap: space[3], flexShrink: 0 },
   sectionTitle: { ...text('overline'), color: colors.text.tertiary, paddingHorizontal: space[1] },
   card: {
@@ -388,7 +398,7 @@ const styles = StyleSheet.create({
     borderColor: colors.action.secondary,
   },
   choiceLabel: { ...text('caption', { weight: '600' }), color: colors.text.secondary },
-  choiceLabelSelected: { color: colors.text.onAccent },
+  choiceLabelSelected: { color: colors.text.onStatus },
 
   stepper: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   stepperButton: {
@@ -414,4 +424,6 @@ const styles = StyleSheet.create({
     minWidth: 76,
     textAlign: 'center',
   },
+})
+  return { colors, styles }
 })

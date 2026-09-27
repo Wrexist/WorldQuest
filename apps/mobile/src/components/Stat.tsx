@@ -1,3 +1,4 @@
+import { useTheme } from '@worldquest/design'
 /**
  * A stat chip with its icon already attached.
  *
@@ -30,11 +31,12 @@ const SIZE = 18
 export type StatProps = Omit<StatChipProps, 'icon'> & { prominent?: boolean }
 
 export function Stat({ kind, prominent = false, ...rest }: StatProps) {
+  const { colors } = useTheme()
   const size = prominent ? 28 : SIZE
   return (
     <StatChip
       kind={kind}
-      icon={kind === 'coin' || kind === 'hearts' || kind === 'gem' ? <DaylightIllustration name={kind === 'coin' ? 'coins' : kind === 'hearts' ? 'heart' : 'gem'} size={size + 2} active={false} /> : <Icon name={ICONS[kind]} size={size} color={chipTint(kind, rest.dim)} />}
+      icon={kind === 'coin' || kind === 'hearts' || kind === 'gem' ? <DaylightIllustration name={kind === 'coin' ? 'coins' : kind === 'hearts' ? 'heart' : 'gem'} size={size + 2} active={false} /> : <Icon name={ICONS[kind]} size={size} color={chipTint(kind, rest.dim, colors)} />}
       {...rest}
     />
   )

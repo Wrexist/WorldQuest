@@ -112,5 +112,13 @@
   "settings:gate.wrongSpoken": "That's not it. Here's another one: what is {a} × {b}?",
   "settings:gate.wrongSpoken__note": "Read out by the screen reader after a wrong answer, because the new question appears silently. Same words as settings:gate.wrong, then the new question. {a} and {b} are numbers from 6 to 9. Keep the × sign.",
   "settings:about.support": "Help and feedback",
-  "settings:about.support__note": "Row in About that opens the support page. Max 24 characters."
+  "settings:about.support__note": "Row in About that opens the support page. Max 24 characters.",
+  "settings:appearance.label": "Theme",
+  "settings:appearance.label__note": "Appearance setting. Changes all interface surfaces immediately; system follows device.",
+  "settings:appearance.system": "Match device",
+  "settings:appearance.system__note": "Appearance setting. Changes all interface surfaces immediately; system follows device.",
+  "settings:appearance.light": "Light",
+  "settings:appearance.light__note": "Appearance setting. Changes all interface surfaces immediately; system follows device.",
+  "settings:appearance.dark": "Dark",
+  "settings:appearance.dark__note": "Appearance setting. Changes all interface surfaces immediately; system follows device."
 }

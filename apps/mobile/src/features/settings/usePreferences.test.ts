@@ -11,7 +11,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { act, cleanup, renderHook } from '@testing-library/react'
 import { usePreferences } from './usePreferences.js'
-import { clearAll, readJson, writeJson } from '../../lib/storage.js'
+import { clearAll, readJson, writeJson, setStorageAccount } from '../../lib/storage.js'
 import type { Preferences } from './usePreferences.js'
 
 describe('usePreferences', () => {
@@ -94,5 +94,21 @@ describe('usePreferences — a stored row this build cannot use', () => {
     const { preferences } = renderHook(() => usePreferences()).result.current
     expect(preferences.language).toBe('sv')
     expect(preferences.avatar).toBeNull()
+  })
+})
+
+
+describe('appearance follows the active account', () => {
+  it('reloads a mounted preference reader and never writes the previous account values', () => {
+    setStorageAccount('theme-account-a')
+    const { result } = renderHook(() => usePreferences())
+    act(() => result.current.set('appearance', 'dark'))
+    act(() => setStorageAccount('theme-account-b'))
+    expect(result.current.preferences.appearance).toBe('system')
+    act(() => result.current.set('sound', true))
+    expect(readJson<Preferences>('preferences.v1')?.appearance).toBe('system')
+    act(() => setStorageAccount('theme-account-a'))
+    expect(result.current.preferences.appearance).toBe('dark')
+    expect(result.current.preferences.sound).toBe(false)
   })
 })

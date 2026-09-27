@@ -1,3 +1,4 @@
+const { beginLesson } = require('../../../scripts/lib/lesson-walk.cjs')
 /**
  * End-to-end smoke test against the REAL exported bundle.
  *
@@ -158,6 +159,8 @@ const skip = (name, why) => {
    * in every pack, and it is what these steps were always trying to say.
    */
   const lessonPrompt = async () => {
+    await beginLesson(page)
+    await beginLesson(page)
     const options = await page.getByTestId('answer-option').all()
     if (options.length === 0) return undefined
     // `.first()` matched the PREVIOUS route's heading — expo-router leaves it mounted
@@ -182,8 +185,10 @@ const skip = (name, why) => {
    * and counting those would report a path while a lesson is on screen — the
    * zero-height-heading trap `lessonPrompt` documents, in a new place.
    */
-  const pathSteps = () =>
-    page.evaluate(() =>
+  const pathSteps = async () => {
+    const expand = page.getByTestId('path-expand')
+    if (await expand.isVisible() && /View whole course/.test(await expand.innerText())) await expand.click()
+    return page.evaluate(() =>
       Array.from(document.querySelectorAll('[data-testid^="path-node-"]'))
         .filter((el) => el.getBoundingClientRect().height > 0)
         .map((el) => ({
@@ -191,6 +196,7 @@ const skip = (name, why) => {
           label: el.getAttribute('aria-label') ?? '',
         })),
     )
+  }
 
   /**
    * Doubles every rendered font size, the way the OS setting does natively.
@@ -674,6 +680,7 @@ const skip = (name, why) => {
     // clicking THAT — pausing the lesson, changing the screen, and satisfying a
     // `text !== before` assertion without ever answering anything. The step went
     // green with an empty feedback string, which is the only reason it was caught.
+    await beginLesson(page)
     const options = await page.getByTestId('answer-option').all()
     const answered = options.length > 0
 
@@ -1022,12 +1029,12 @@ const skip = (name, why) => {
   step('uncollected tiles are shown rather than hidden', tiles > 40, `${tiles} lines of tiles`)
 
   // Search, which is the only way to navigate 65 tiles without scrolling.
-  await page.getByPlaceholder(/Search countries/i).fill('swed')
+  await page.getByPlaceholder(/Search countries/i).filter({ visible: true }).fill('swed')
   await page.waitForTimeout(700)
   const searched = await body()
   step('search narrows the collection', /Sweden/.test(searched) && !/Mongolia/.test(searched))
 
-  await page.getByPlaceholder(/Search countries/i).fill('zzzz')
+  await page.getByPlaceholder(/Search countries/i).filter({ visible: true }).fill('zzzz')
   await page.waitForTimeout(700)
   step('a search with no match offers a way onward', /browse by continent/i.test(await body()))
 
@@ -1097,6 +1104,7 @@ const skip = (name, why) => {
   // ── the speed round ────────────────────────────────────────────────────────
   await page.goto(`http://localhost:${PORT}/lesson?mode=speed`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(1800)
+  await beginLesson(page)
   step('speed round starts a timed lesson', (await lessonPrompt()) !== undefined)
   await page.screenshot({ path: path.join(SHOTS, 'speed-round.png') })
 
@@ -1179,11 +1187,13 @@ const skip = (name, why) => {
   })
   await page.goto(`http://localhost:${PORT}/lesson`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(1800)
+  await beginLesson(page)
   // Answer every question, then leave — the lesson must reach its summary for the
   // completion event to fire at all. Up to 45 answers: a lesson is at most twenty
   // questions, and the review round after them asks each missed one again, so always
   // tapping the first option can take nearly twice that. The loop ends with the options.
   for (let i = 0; i < 45; i++) {
+    await beginLesson(page)
     const options = await page.getByTestId('answer-option').all()
     if (options.length === 0) break
     // Think first. `MIN_CREDIBLE_ANSWER_MS` is 400 and grading DISCARDS anything
@@ -1403,7 +1413,8 @@ const skip = (name, why) => {
     const node = new URL(page.url()).searchParams.get('node')
     const subjects = []
     for (let i = 0; i < 25; i++) {
-      const options = await page.getByTestId('answer-option').all()
+      await beginLesson(page)
+    const options = await page.getByTestId('answer-option').all()
       if (options.length === 0) break
       const subject = await page.evaluate(() => {
         const img = document.querySelector('[data-testid="prompt-art"] img')
@@ -1524,6 +1535,7 @@ const skip = (name, why) => {
   // real bundle.
   await page.goto(`http://localhost:${PORT}/lesson`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(1800)
+  await beginLesson(page)
   await page.getByRole('button', { name: /Pause the lesson/i }).click()
   await page.waitForTimeout(600)
   const paused = await body()
@@ -1634,6 +1646,7 @@ const skip = (name, why) => {
   // gestures work. Those need a device.
   await page.goto(`http://localhost:${PORT}/lesson`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(1500)
+  await beginLesson(page)
 
   const before = await lessonPrompt()
   step('keyboard: a lesson opens', before !== undefined, before)

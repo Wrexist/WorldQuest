@@ -1,48 +1,10 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
- * A country — mockup screen 7.
- *
- * ## The rule that shapes this screen
- *
- * It does NOT spoil what the user has not learned. A fact they have never met shows
- * its label and "Learn it first", not its answer. Otherwise the page is a cheat sheet:
- * a user who cannot recall Sweden's capital opens this, reads it, and the scheduler
- * never finds out they did not know it. The whole point of spaced repetition is that
- * retrieval is effortful — handing over the answer for free is not a shortcut, it is
- * the mechanism failing.
- *
- * Facts already learned are shown in full, because at that point the page is a
- * reference rather than an answer key.
- *
- * ## Sources are NOT on this screen, and that is the same rule again
- *
- * This screen used to list every fact's citation under a heading reading "Where this
- * comes from". It defeated the rule directly above. The list printed
- *
- *   English Wikipedia, “Stockholm”
- *   Swedish Act on the National Flag (SFS 1982:269)
- *   English Wikipedia, “Swedish krona”
- *
- * six inches under three rows that each said "Learn it first". The spoiler guard hid
- * the answers and the citations gave all three away, on the same screen, to a user who
- * had learned none of them — and for the two Wikipedia ones the answer is the title of
- * the article. A free look at an item the scheduler is about to score.
- *
- * The DATA is untouched: every fact still carries `source` and `verifiedAt`, the content
- * pipeline still requires them, and `pnpm content:validate` still fails a fact without
- * one. What changed is that the citation is no longer rendered beside a hidden answer.
- * If sourcing should be user-visible somewhere — and there is a real argument that it
- * should — it belongs where it cannot leak: on a fact the user has already learned, or
- * on a page of its own that is not the quiz.
- *
- * The flag image is the real artwork, from the content pack's own asset path — flags
- * are SOURCED, never generated, because a drawn-from-memory flag with the wrong number
- * of stars is a wrong fact. The flag's DESCRIPTION is separately real content, treated
- * as a fact like any other, which is what makes the flag question screen-reader safe.
- *
- * ## The heart
- *
- * A favourite is a bookmark and nothing more — see `features/favourites`. It changes
- * what the collection can show you; it never changes what the scheduler asks.
+ * Country reference and entry to focused practice.
+ * The September 27 redesign deliberately makes verified facts readable before a
+ * quiz. Viewing a fact grants no mastery, XP or collection unlock; those remain
+ * derived from lesson results. Assessment options still conceal their answers.
+ * Flags and map geometry come from the validated content pack, never generated art.
  */
 
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
@@ -54,7 +16,6 @@ import {
   Button,
   Card,
   ProgressBar,
-  colors,
   palette,
   space,
   text,
@@ -116,7 +77,7 @@ const MASTERY_LABEL: Record<Mastery, TranslationKey> = {
 export type CountryFact = {
   readonly id: string
   readonly attribute: string
-  /** The answer. Withheld from the screen until the user has met it. */
+  /** Verified reference value; reading never changes mastery. */
   readonly value: string
   readonly mastery: Mastery
   readonly due: boolean
@@ -169,6 +130,7 @@ export function CountryScreen({
   favourite = false,
   onToggleFavourite,
 }: CountryScreenProps) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
 
   // A deep link can name a country the shipped packs do not have. Saying so beats an
@@ -285,14 +247,15 @@ export function CountryScreen({
 }
 
 function FactRow({ fact }: { fact: CountryFact }) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   const label = ATTRIBUTE_LABEL[fact.attribute]
   const attribute = label ? t(label) : fact.attribute
   const glyph = ATTRIBUTE_ICON[fact.attribute]
 
-  // The rule at the top of this file, in one line.
+  // Reference access and assessed mastery are separate.
   const known = fact.mastery !== 'unseen'
-  const value = known ? fact.value : t('country:fact.hidden')
+  const value = fact.value
 
   return (
     <View
@@ -317,14 +280,18 @@ function FactRow({ fact }: { fact: CountryFact }) {
       )}
       <View style={styles.factText}>
         <Text style={styles.factAttribute}>{attribute}</Text>
-        <Text style={[styles.factValue, !known && styles.factHidden]}>{value}</Text>
+        <Text style={styles.factValue}>{value}</Text>
+        <Text style={styles.factAttribute}>{t(MASTERY_LABEL[fact.mastery])}</Text>
       </View>
       {fact.due && <Text style={styles.due}>{t('country:fact.due')}</Text>}
     </View>
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   screen: { flex: 1 },
   content: { padding: space[4], gap: space[4] },
   centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },
@@ -357,4 +324,6 @@ const styles = StyleSheet.create({
   factHidden: { color: colors.text.tertiary },
   due: { ...text('caption', { weight: '600' }), color: colors.reward.xp },
 
+})
+  return { colors, styles }
 })

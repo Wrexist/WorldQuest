@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * Seven bars, one per day — the shape of the user's week.
  *
@@ -23,7 +24,7 @@
  */
 
 import { StyleSheet, Text, View } from 'react-native'
-import { colors, radius, space, squircle, text } from '@worldquest/design'
+import { radius, space, squircle, text } from '@worldquest/design'
 import { useT } from '../lib/i18n.js'
 
 export type WeekActivity = readonly { readonly day: string; readonly count: number }[]
@@ -53,6 +54,7 @@ const STRIP_HEIGHT = 96
 const MIN_BAR_PERCENT = 12
 
 export function WeekStrip({ week, emptyLabel }: WeekStripProps) {
+  const { styles } = useThemeValues()
   const t = useT()
   const peak = Math.max(0, ...week.map((d) => d.count))
 
@@ -93,7 +95,10 @@ export function WeekStrip({ week, emptyLabel }: WeekStripProps) {
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   week: { flexDirection: 'row', justifyContent: 'space-between', gap: space[2], height: STRIP_HEIGHT },
   day: { flex: 1, alignItems: 'center', gap: space[1] },
   /**
@@ -121,4 +126,6 @@ const styles = StyleSheet.create({
   bar: { width: '100%', borderRadius: radius.sm, backgroundColor: colors.status.progress, ...squircle },
   label: { ...text('overline'), color: colors.text.tertiary },
   empty: { ...text('body'), color: colors.text.secondary },
+})
+  return { colors, styles }
 })

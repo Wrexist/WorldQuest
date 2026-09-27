@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * The two screens a user only sees when something has already gone wrong.
  *
@@ -9,7 +10,7 @@
  */
 
 import { StyleSheet, Text, View } from 'react-native'
-import { Button, colors, space, text } from '@worldquest/design'
+import { Button, space, text } from '@worldquest/design'
 import { useT, type TranslationKey } from '../lib/i18n.js'
 import { Art } from './Art.js'
 
@@ -32,6 +33,7 @@ export function FailureState({
   onPress,
   detail,
 }: FailureStateProps) {
+  const { styles } = useThemeValues()
   const t = useT()
 
   return (
@@ -60,7 +62,10 @@ export function FailureState({
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   screen: {
     flex: 1,
     alignItems: 'center',
@@ -75,4 +80,6 @@ const styles = StyleSheet.create({
   detail: { gap: space[1], maxWidth: 320 },
   detailLabel: { ...text('overline'), color: colors.text.tertiary, textAlign: 'center' },
   detailText: { ...text('caption'), color: colors.text.tertiary, textAlign: 'center' },
+})
+  return { colors, styles }
 })

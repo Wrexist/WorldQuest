@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * The sheet that opens today's quest — mockup screen 3.
  *
@@ -33,7 +34,7 @@
  */
 
 import { StyleSheet, Text, View } from 'react-native'
-import { Button, Card, colors, radius, space, squircle, text } from '@worldquest/design'
+import { Button, Card, radius, space, squircle, text } from '@worldquest/design'
 import { BALANCE, questProgress, type DailyQuest } from '@worldquest/engines'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
@@ -63,6 +64,7 @@ export type QuestIntroProps = {
 const HERO = 168
 
 export function QuestIntro({ quest, onStart, onClose, resetsIn }: QuestIntroProps) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   const standing = quest === null ? null : questProgress(quest)
 
@@ -143,6 +145,7 @@ function Reward({
   readonly amount: number
   readonly label: string
 }) {
+  const { styles } = useThemeValues()
   return (
     <Card level={2} style={styles.reward} accessibilityLabel={label}>
       {/* The card carries the name, so the pill inside it is silent — otherwise a
@@ -152,7 +155,10 @@ function Reward({
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   screen: { flex: 1 },
   body: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space[3], paddingHorizontal: space[5] },
   title: { ...text('h1'), color: colors.text.primary, textAlign: 'center' },
@@ -163,4 +169,6 @@ const styles = StyleSheet.create({
   reset: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
   resetText: { ...text('caption', { numeric: true }), color: colors.text.tertiary },
   actions: { padding: space[4], gap: space[2] },
+})
+  return { colors, styles }
 })

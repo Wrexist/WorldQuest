@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * Out of hearts — a listed lesson state (screen-catalog.md §5) that had no UI.
  *
@@ -35,7 +36,7 @@
  */
 
 import { StyleSheet, Text, View } from 'react-native'
-import { Button, Card, colors, space, text } from '@worldquest/design'
+import { Button, Card, space, text } from '@worldquest/design'
 import { BALANCE } from '@worldquest/engines'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
@@ -76,6 +77,7 @@ export function OutOfHearts({
   onRevive,
   onFinish,
 }: OutOfHeartsProps) {
+  const { styles } = useThemeValues()
   const t = useT()
   const price = BALANCE.prices.continueLesson
   const canAfford = coins >= price
@@ -124,7 +126,10 @@ export function OutOfHearts({
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   card: { gap: space[3], width: '100%' },
   // Centred here rather than with `alignItems` on the card, which would shrink the
   // buttons to their content width.
@@ -132,4 +137,6 @@ const styles = StyleSheet.create({
   title: { ...text('h3'), color: colors.text.primary, textAlign: 'center' },
   body: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
   note: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
+})
+  return { colors, styles }
 })

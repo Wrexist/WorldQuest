@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * A question for a grown-up, in front of anything on a child's device that leaves the
  * app or cannot be undone: the privacy policy, terms, licences and support pages, and
@@ -12,7 +13,7 @@
 
 import { useState } from 'react'
 import { AccessibilityInfo, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
-import { Button, Card, colors, radius, space, text } from '@worldquest/design'
+import { Button, Card, radius, space, text } from '@worldquest/design'
 import { Art } from '../../components/Art.js'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { useT } from '../../lib/i18n.js'
@@ -35,6 +36,7 @@ export function GrownUpGate({
   /** A seam for tests; the app asks a random one. */
   question?: GateQuestion
 }) {
+  const { styles } = useThemeValues()
   const t = useT()
   const [question, setQuestion] = useState<GateQuestion>(() => first ?? newQuestion())
   const [answer, setAnswer] = useState('')
@@ -103,7 +105,10 @@ export function GrownUpGate({
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   screen: { flex: 1 },
   content: { padding: space[4], gap: space[4] },
   art: { alignItems: 'center' },
@@ -123,4 +128,6 @@ const styles = StyleSheet.create({
     padding: space[3],
     textAlign: 'center',
   },
+})
+  return { colors, styles }
 })

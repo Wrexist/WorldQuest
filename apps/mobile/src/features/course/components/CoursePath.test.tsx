@@ -33,6 +33,14 @@ const steps = (container: HTMLElement) =>
   Array.from(container.querySelectorAll('[data-testid^="path-node-"]')).map((el) => el.getAttribute('aria-label'))
 
 describe('the course path', () => {
+  it('shows zero completed unit segments before any lesson is finished', () => {
+    const { container } = renderPath()
+    const segments = Array.from(container.querySelectorAll('[data-testid^="unit-progress-"]'))
+    expect(segments.length).toBeGreaterThan(0)
+    expect(segments.every(segment => segment.getAttribute('data-completed') === 'false')).toBe(true)
+    expect(screen.getByText('0 of 3 unit steps completed')).toBeTruthy()
+  })
+
   it('keeps platform offsets stable while the explorer follows several completed lessons and the next unit', () => {
     const handlers = { onStart: vi.fn(), onPractise: vi.fn(), onReview: vi.fn(), onPractiseAnyway: vi.fn() }
     const viewFor = (progress: CourseProgress) => <CoursePath {...handlers} path={toPathView({ status: 'ready', course: COURSE, standing: courseStanding(COURSE, progress) })} />
@@ -192,4 +200,15 @@ describe('the course path', () => {
     expect(words).not.toMatch(/\b(course|home):[a-z][a-zA-Z0-9.]+/)
     expect(words).not.toMatch(/\{[a-zA-Z_]+[,}]/)
   })
+})
+
+
+it('keeps Home focused while retaining access to the whole course', () => {
+  const path = toPathView({ status: 'ready', course: COURSE, standing: courseStanding(COURSE, {}) })
+  const { container } = render(<CoursePath condensed path={path} onStart={() => {}} onPractise={() => {}} onReview={() => {}} onPractiseAnyway={() => {}} />)
+  expect(steps(container).length).toBe(COURSE.units[0]!.nodes.length)
+  fireEvent.click(screen.getByTestId('path-expand'))
+  expect(steps(container).length).toBe(TOTAL)
+  fireEvent.click(screen.getByTestId('path-expand'))
+  expect(steps(container).length).toBe(COURSE.units[0]!.nodes.length)
 })

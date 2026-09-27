@@ -1,3 +1,4 @@
+import { useTheme, createThemeStyles } from '@worldquest/design'
 /**
  * The root layout — every route in the app renders inside this.
  *
@@ -17,7 +18,7 @@ import { AppState, type AppStateStatus, StatusBar, StyleSheet } from 'react-nati
 // Context insets support both platforms. Native full-screen modals also need
 // their own safe-area container because they render outside this root surface.
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
-import { colors, layout, motion, ScreenBackground } from '@worldquest/design'
+import { layout, motion, ScreenBackground } from '@worldquest/design'
 import { ErrorBoundary } from '../src/components/ErrorBoundary.js'
 import { readOnboarding } from '../src/features/onboarding/useOnboarding.js'
 import { SplashScreen, useSplashPhase } from '../src/features/splash/SplashScreen.js'
@@ -200,6 +201,8 @@ function SubscriptionSync(): null {
 }
 
 export default function RootLayout() {
+  const { mode } = useTheme()
+  const { colors, styles } = useThemeValues()
   const fontsReady = useAppFonts()
   useAnalyticsAudience()
   useTimeZoneSync()
@@ -222,7 +225,7 @@ export default function RootLayout() {
   if (!fontsReady) {
     return (
       <SafeAreaProvider style={styles.root}>
-        <StatusBar barStyle="dark-content" backgroundColor={colors.bg.canvas} />
+        <StatusBar barStyle={mode === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={colors.bg.canvas} />
         <SplashScreen
           phase={phase}
           // Fonts are the only boot work today and `useFonts` has no retry, so the
@@ -237,7 +240,7 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider style={styles.root}>
-      <StatusBar barStyle="dark-content" backgroundColor={colors.bg.canvas} />
+      <StatusBar barStyle={mode === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={colors.bg.canvas} />
       <ErrorBoundary>
         {/* The gradient is OUTSIDE the safe area now, so it paints the whole display —
             under the status bar, under the home indicator, into the notch. The inset is
@@ -253,7 +256,7 @@ export default function RootLayout() {
             gradient could show, that grey surfaced on every route. `sceneStyle` does
             not reach it — it comes from the theme, so the theme is where it is fixed. */}
         <ThemeProvider
-          value={{ ...DefaultTheme, colors: { ...DefaultTheme.colors, background: colors.bg.canvas, text: colors.text.primary, card: colors.bg.canvas } }}
+          value={{ ...DefaultTheme, dark: mode === 'dark', colors: { ...DefaultTheme.colors, background: colors.bg.canvas, text: colors.text.primary, card: colors.bg.canvas } }}
         >
         <QueryProvider>
           <SubscriptionSync />
@@ -321,11 +324,16 @@ export default function RootLayout() {
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   // The flat canvas stays as the base coat under the gradient: it is what paints
   // during the frame before layout, and what shows if the native gradient module is
   // ever absent.
   root: { flex: 1, backgroundColor: colors.bg.canvas },
   // Native modal portals need an opaque canvas as well as the surrounding app.
   safe: { flex: 1, backgroundColor: colors.bg.canvas },
+})
+  return { colors, styles }
 })

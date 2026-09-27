@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * A card that points at a step on the path.
  *
@@ -19,7 +20,7 @@
 
 import type { ReactNode } from 'react'
 import { StyleSheet, View } from 'react-native'
-import { colors, radius, space, squircle } from '@worldquest/design'
+import { radius, space, squircle } from '@worldquest/design'
 import { TAIL } from './pathGeometry.js'
 
 export type PathBubbleProps = {
@@ -36,6 +37,7 @@ export type PathBubbleProps = {
 }
 
 export function PathBubble({ children, pointing, tailAt, width, tone, testID }: PathBubbleProps) {
+  const { styles } = useThemeValues()
   // Kept clear of the rounded corners, where a tail would poke out of the curve.
   const inset = radius.lg + TAIL
   const start = Math.min(Math.max(tailAt, inset), Math.max(inset, width - inset)) - TAIL / 2
@@ -56,7 +58,10 @@ export function PathBubble({ children, pointing, tailAt, width, tone, testID }: 
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   wrap: { alignSelf: 'stretch', position: 'relative' },
   body: {
     borderWidth: 1,
@@ -82,4 +87,6 @@ const styles = StyleSheet.create({
   // borders never show a seam across the mouth of the tail.
   tailDown: { bottom: -TAIL / 2 },
   tailUp: { top: -TAIL / 2 },
+})
+  return { colors, styles }
 })

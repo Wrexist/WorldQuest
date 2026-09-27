@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * The error and offline halves of the five states, for the screens whose data comes
  * from `useContent`.
@@ -28,7 +29,7 @@
 
 import type { ReactNode } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import { Button, Skeleton, colors, space, text } from '@worldquest/design'
+import { Button, Skeleton, space, text } from '@worldquest/design'
 import { useT } from '../lib/i18n.js'
 import { Art } from './Art.js'
 
@@ -63,6 +64,7 @@ export function ContentGate({
   showLoading = false,
   children,
 }: ContentGateProps) {
+  const { styles } = useThemeValues()
   const t = useT()
 
   if (showLoading && status === 'loading') {
@@ -106,7 +108,10 @@ export function ContentGate({
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   flex: { flex: 1 },
   // No `backgroundColor`. It painted `bg.canvas` flat over the root gradient — the
   // third and last of the stragglers `ScreenBackground` was written to remove, after
@@ -131,4 +136,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: space[4],
   },
   offlineText: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
+})
+  return { colors, styles }
 })

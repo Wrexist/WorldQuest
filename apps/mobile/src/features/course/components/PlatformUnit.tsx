@@ -1,6 +1,7 @@
+import { createThemeStyles } from '@worldquest/design'
 import { useEffect, useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import { Button, Card, colors, radius, space, text } from '@worldquest/design'
+import { Button, Card, radius, space, text } from '@worldquest/design'
 import { BALANCE } from '@worldquest/engines'
 import { AdventureArt } from '../../../components/AdventureArt.js'
 import { RewardMotion } from '../../../components/RewardMotion.js'
@@ -17,6 +18,7 @@ type Props = {
 
 /** A vertical course of raised platforms. Artwork lives beside the path, never behind it. */
 export function PlatformUnit({ unit, width, total, open, onPress, onPractise, onCurrentLayout }: Props) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   const title = tContent(unit.titleKey)
   const [pathTop, setPathTop] = useState(0)
@@ -29,9 +31,10 @@ export function PlatformUnit({ unit, width, total, open, onPress, onPractise, on
       <View accessible role="heading" aria-label={t('home:path.unit.heading', { number: unit.number, title })}>
         <Text style={styles.title}>{title}</Text>
       </View>
+      <Text style={styles.count}>{tContent(unit.objectiveKey)}</Text>
       <Text style={styles.count}>{t('home:path.unit.progress', { done: unit.done, total: unit.nodes.length })}</Text>
       <View style={styles.unitTrack} aria-hidden>
-        {unit.nodes.map(step => <View key={step.id} style={[styles.unitSegment, step.state === 'done' && styles.unitSegmentDone, step.state === 'current' && styles.unitSegmentCurrent]} />)}
+        {unit.nodes.map(step => <View key={step.id} testID={`unit-progress-${step.id}`} dataSet={{ completed: String(step.state === 'done') }} style={[styles.unitSegment, step.state === 'done' && styles.unitSegmentDone]} />)}
       </View>
     </View>
     <View style={styles.path} onLayout={e => setPathTop(e.nativeEvent.layout.y)}>
@@ -41,6 +44,7 @@ export function PlatformUnit({ unit, width, total, open, onPress, onPractise, on
 }
 
 function PlatformStop({ node, index, width, total, open, onPress, onPractise, onCurrentLayout }: Omit<Props, 'unit'> & { node: PathNodeView; index: number }) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   const current = node.state === 'current'
   const selected = open === node.id
@@ -85,7 +89,10 @@ function PlatformStop({ node, index, width, total, open, onPress, onPractise, on
   </View>
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   unit: { gap: space[2] },
   header: { backgroundColor: colors.course.banner, borderRadius: radius.xl, borderBottomWidth: space[2], borderColor: colors.course.bannerEdge, padding: space[4], gap: space[1] },
   headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
@@ -95,7 +102,6 @@ const styles = StyleSheet.create({
   unitTrack: { flexDirection: 'row', gap: space[1], marginTop: space[2] },
   unitSegment: { flex: 1, height: space[2], borderRadius: radius.full, backgroundColor: colors.course.bannerEdge },
   unitSegmentDone: { backgroundColor: colors.action.primaryFace },
-  unitSegmentCurrent: { backgroundColor: colors.course.face },
   rewardRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: space[2] },
   xpBadge: { flexDirection: 'row', alignItems: 'center', gap: space[1], backgroundColor: colors.journey.sand, paddingHorizontal: space[2], paddingVertical: space[1], borderRadius: radius.full },
   xpValue: { ...text('bodyStrong', { numeric: true }), color: colors.text.primary },
@@ -115,4 +121,6 @@ const styles = StyleSheet.create({
   inspection: { gap: space[2] },
   inspectTitle: { ...text('bodyStrong'), color: colors.text.primary },
   inspectBody: { ...text('body'), color: colors.text.secondary },
+})
+  return { colors, styles }
 })

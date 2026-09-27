@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /** Optional Premium presentation. Current runtime has no products.
  * Priced layouts are preparatory; Phase 5 must verify every benefit before enablement.
  * Dismiss remains available on every page. Child accounts use the parental gate.
@@ -11,7 +12,6 @@ import {
   Button,
   Card,
   Spacer,
-  colors,
   radius,
   space,
   text,
@@ -198,6 +198,7 @@ export function PaywallScreen({
   onDismiss,
   source,
 }: PaywallScreenProps) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   /**
    * The three-page tour is for the one moment it was written for: straight off the
@@ -508,14 +509,14 @@ export function PaywallScreen({
           />
         ) : (
           /* Absent when there is nothing to buy, not disabled.
-   
+
              With no plans this drew a full-width `GET PREMIUM` in the disabled skin, and
              at 768 it sat three hundred points below the sentence explaining that the
              store could not be reached — a dead primary action, physically distant from
              the error it cannot act on, while `TRY AGAIN` (the only control that can
              change anything) was a small outline button in the middle of the page. The
              hierarchy said the opposite of the truth.
-   
+
              This codebase already has the rule, twice over: "absent hides the control
              rather than drawing a dead one", on Profile's shop row and on the streak
              badge. A purchase button with no price behind it is the same thing, and
@@ -563,6 +564,7 @@ export function PaywallScreen({
  * one are the same message.
  */
 function ParentalGate({ onContinue }: { onContinue: () => void }) {
+  const { styles } = useThemeValues()
   const t = useT()
 
   return (
@@ -599,6 +601,7 @@ function PlanCard({
   selected: boolean
   onSelect: () => void
 }) {
+  const { styles } = useThemeValues()
   return (
     <Card
       level={selected ? 2 : 1}
@@ -632,7 +635,10 @@ function PlanCard({
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   screen: { flex: 1, padding: space[4], gap: space[4] },
   includesTitle: { ...text('overline'), color: colors.text.tertiary, textAlign: 'center' },
   includes: { alignSelf: 'center', gap: space[2] },
@@ -676,7 +682,7 @@ const styles = StyleSheet.create({
    */
   badge: {
     ...text('caption', { weight: '700' }),
-    color: colors.text.onAccent,
+    color: colors.text.onStatus,
     backgroundColor: colors.action.primary,
     paddingHorizontal: space[2],
     paddingVertical: space[1],
@@ -693,4 +699,6 @@ const styles = StyleSheet.create({
   dismiss: { minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   dismissLabel: { ...text('bodyStrong'), color: colors.text.secondary },
   restore: { ...text('caption'), color: colors.text.secondary },
+})
+  return { colors, styles }
 })

@@ -53,7 +53,7 @@
   "home:streakNotice.dismiss": "Dölj",
   "home:path.unit": "Del {number}",
   "home:path.unit.heading": "Del {number}: {title}",
-  "home:path.unit.progress": "{done} av {total} klara",
+  "home:path.unit.progress": "{done} av {total} enhetssteg klara",
   "home:path.start": "Starta",
   "home:path.lesson": "Lektion {lesson} av {lessons}",
   "home:path.node.current": "Starta steg {position} av {total}. {objective} Lektion {lesson} av {lessons}.",
@@ -87,5 +87,9 @@
   "home:path.startChallenge": "Starta utmaningen →",
   "home:path.startChallenge__note": "Course continuation UI. Encouraging invitation; never a deadline or guaranteed reward. Continue adventure preserves the existing post-lesson reward flow.",
   "home:path.continueChallenge": "Fortsätt utmaningen →",
-  "home:path.continueChallenge__note": "Course continuation UI. Encouraging invitation; never a deadline or guaranteed reward. Continue adventure preserves the existing post-lesson reward flow."
+  "home:path.continueChallenge__note": "Course continuation UI. Encouraging invitation; never a deadline or guaranteed reward. Continue adventure preserves the existing post-lesson reward flow.",
+  "home:path.showCourse": "Visa hela kursen",
+  "home:path.showCourse__note": "Secondary course visibility toggle; does not reset learning progress or navigate away.",
+  "home:path.showCurrent": "Tillbaka till aktuell enhet",
+  "home:path.showCurrent__note": "Secondary course visibility toggle; does not reset learning progress or navigate away."
 }

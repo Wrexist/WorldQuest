@@ -56,7 +56,7 @@
   "streak:chest.gems__note": "Cosmetic dated learning badges, separate from spendable coins. One per completed learning day, stored locally for this account.",
   "streak:collection.title": "Svitjuveler",
   "streak:collection.title__note": "Cosmetic dated learning badges, separate from spendable coins. One per completed learning day, stored locally for this account.",
-  "streak:collection.count": "{count} samlade",
+  "streak:collection.count": "{count, plural, one {# samlad} other {# samlade}}",
   "streak:collection.count__note": "Cosmetic dated learning badges, separate from spendable coins. One per completed learning day, stored locally for this account.",
   "streak:collection.body": "En dag av lärande, en juvel. Du behåller samlingen även om sviten tar slut.",
   "streak:collection.body__note": "Cosmetic dated learning badges, separate from spendable coins. One per completed learning day, stored locally for this account.",

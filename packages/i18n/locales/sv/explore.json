@@ -25,5 +25,11 @@
   "explore:mastery.familiar": "Bekant",
   "explore:mastery.proficient": "Säker",
   "explore:mastery.mastered": "Bemästrat",
-  "explore:mastery.burnished": "Slipat"
+  "explore:mastery.burnished": "Slipat",
+  "explore:search.label": "Sök länder eller världsdelar",
+  "explore:search.label__note": "Country search over installed content. Keep concise; count is validated coverage, not worldwide total.",
+  "explore:search.count": "{count, plural, one {# land i den här kursen} other {# länder i den här kursen}}",
+  "explore:search.count__note": "Country search over installed content. Keep concise; count is validated coverage, not worldwide total.",
+  "explore:search.empty": "Inga matchande länder. Prova ett annat namn eller en världsdel.",
+  "explore:search.empty__note": "Country search over installed content. Keep concise; count is validated coverage, not worldwide total."
 }

@@ -1,7 +1,8 @@
+import { createThemeStyles } from '@worldquest/design'
 /** A true hinged 3D reveal, sampled into one mobile-sized texture. Cosmetic only. */
 import { useEffect, useRef, useState } from 'react'
 import { Animated, AppState, Pressable, StyleSheet, View } from 'react-native'
-import { colors, useReducedMotion } from '@worldquest/design'
+import { useReducedMotion } from '@worldquest/design'
 import sheet from '../../assets/art/soft/chest-sheet.webp'
 import { CHEST_SEQUENCE } from '../lib/soft.generated.js'
 import { useT } from '../lib/i18n.js'
@@ -14,6 +15,7 @@ const frames = Array.from({ length: LAST + 1 }, (_, i) => i)
 const hidden = { 'aria-hidden': true, accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' as const }
 
 export function TreasureChest({ opened, onOpen, onReveal }: { opened: boolean; onOpen: () => void; onReveal?: (() => void) | undefined }) {
+  const { styles } = useThemeValues()
   const t = useT()
   const reduced = useReducedMotion()
   const progress = useRef(new Animated.Value(opened ? LAST : 0)).current
@@ -59,9 +61,14 @@ export function TreasureChest({ opened, onOpen, onReveal }: { opened: boolean; o
     </View>
   </Pressable>
 }
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   frame: { width: FRAME, height: FRAME, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
   halo: { position: 'absolute', width: FRAME * .85, height: FRAME * .85, borderRadius: FRAME,
     backgroundColor: colors.journey.sky },
   viewport: { width: FRAME, height: FRAME, overflow: 'hidden', direction: 'ltr' },
+})
+  return { colors, styles }
 })

@@ -1,3 +1,4 @@
+const { beginLesson } = require('./lib/lesson-walk.cjs')
 /**
  * The accessibility tree, as a screen reader receives it.
  *
@@ -45,11 +46,12 @@ const fs = require('node:fs')
 const path = require('node:path')
 
 const ROOT = process.env.WQ_WEB ?? path.join(process.cwd(), 'node_modules', '.cache', 'wq-web')
-const PORT = 4175
+const PORT = Number(process.env.WQ_A11Y_PORT ?? 4175)
 
 const ROUTES = [
   '/',
   '/lesson',
+  '/lesson?review=question',
   '/explore',
   '/quests',
   '/profile',
@@ -191,6 +193,7 @@ const finding = (route, kind, detail) => findings.push({ route, kind, detail })
     await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'networkidle' })
     await page.waitForTimeout(1200)
 
+    if (route === '/lesson?review=question') await beginLesson(page)
     assertRoute(page, route)
     const nodes = await axTree(page)
     const controls = nodes.filter((n) => INTERACTIVE.has(n.role))

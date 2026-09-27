@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * Onboarding — mockup screen 2.
  *
@@ -101,7 +102,6 @@ import {
   Card,
   ProgressBar,
   Spacer,
-  colors,
   layout,
   radius,
   space,
@@ -500,6 +500,7 @@ export function OnboardingScreen({
   onSignIn,
   countryCount = 0,
 }: OnboardingScreenProps) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   // The head of `STEPS`, and it is a greeting rather than a question — see that list.
   const [step, setStep] = useState<Step>('welcome')
@@ -1478,7 +1479,10 @@ function yearsFor(currentYear: number): readonly number[] {
   return out
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg.canvas },
   welcomeStage: { backgroundColor: colors.journey.sky, borderRadius: radius.xl, margin: space[4], gap: space[3] },
   /**
@@ -1769,4 +1773,6 @@ const styles = StyleSheet.create({
    * size here and the boot reads as two screens rather than one arrival.
    */
   wordmark: { ...text('display'), color: colors.text.primary, textAlign: 'center' },
+})
+  return { colors, styles }
 })

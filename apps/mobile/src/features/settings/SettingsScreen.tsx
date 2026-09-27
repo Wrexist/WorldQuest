@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * Settings — mockup screen 15.
  *
@@ -14,7 +15,7 @@
  */
 
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import { colors, space, text } from '@worldquest/design'
+import { space, text } from '@worldquest/design'
 import {
   ChoiceRow,
   LinkRow,
@@ -226,6 +227,7 @@ export function SettingsScreen({
   analyticsConnected = false,
   onBack,
 }: SettingsScreenProps) {
+  const { styles } = useThemeValues()
   const t = useT()
 
   const languageLabel = (choice: LanguageChoice): string =>
@@ -386,6 +388,12 @@ export function SettingsScreen({
       </Section>
 
       <Section title={t('settings:section.appearance')}>
+        <ChoiceRow
+          label={t('settings:appearance.label')}
+          value={preferences.appearance ?? 'system'}
+          choices={(['system', 'light', 'dark'] as const).map(value => ({ value, label: t(`settings:appearance.${value}`) }))}
+          onChange={value => set('appearance', value)}
+        />
         {/* Twelve portraits shipped and nothing could choose between them, so every
             user was initials. The set exists to cover a real range of skin tones, ages,
             hair textures and head coverings — a set nobody can pick from does none of
@@ -525,11 +533,16 @@ function PremiumSection({ premium }: { premium: PremiumStatus }) {
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   syncArt: { alignSelf: 'center' },
   screen: { flex: 1 },
   content: { padding: space[4], gap: space[5] },
   title: { ...text('h1'), color: colors.text.primary },
   // Room to scroll past the last card rather than ending flush against the tab bar.
   tail: { height: space[5] },
+})
+  return { colors, styles }
 })

@@ -1,3 +1,4 @@
+import { createThemeStyles } from '../theme.js'
 /**
  * AbsentContent — a stand-in that keeps the shape of something that has not arrived.
  *
@@ -49,7 +50,7 @@
 
 import type { ReactNode } from 'react'
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native'
-import { colors, radius, space } from '../tokens.js'
+import { radius, space } from '../tokens.js'
 import { Skeleton } from './Skeleton.js'
 
 export type AbsentState = 'loading' | 'error' | 'offline' | 'unavailable'
@@ -87,6 +88,7 @@ export function AbsentContent({
   style,
   testID,
 }: AbsentContentProps) {
+  const { styles } = useThemeValues()
   const loading = state === 'loading'
 
   return (
@@ -121,7 +123,10 @@ export function AbsentContent({
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   box: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -146,4 +151,6 @@ const styles = StyleSheet.create({
   // No edge while waiting: nothing has gone wrong yet, and a bordered box that then
   // becomes two cards is a flicker of a shape that was never real.
   waiting: { borderColor: colors.bg.surface },
+})
+  return { colors, styles }
 })

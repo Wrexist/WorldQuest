@@ -1,3 +1,4 @@
+import { createThemeStyles } from '../theme.js'
 /**
  * ProgressBar — every list, country and collection answers "how far along am I?".
  *
@@ -12,7 +13,7 @@
  * inside the fill, so it grows with it and disappears at zero.
  */
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native'
-import { colors, radius, space } from '../tokens.js'
+import { radius, space } from '../tokens.js'
 import { text } from '../typography.js'
 import { Tally } from './Tally.js'
 
@@ -84,19 +85,9 @@ export type ProgressBarProps = {
   testID?: string
 }
 
-const FILLS: Record<ProgressTone, string> = {
-  progress: colors.status.progress,
-  reward: colors.reward.xp,
-  streak: colors.status.streak,
-}
 
-const SHEENS: Record<ProgressTone, string> = {
-  progress: colors.status.progressHighlight,
-  reward: colors.reward.coin,
-  // A lighter flame, so the sheen reads on the run-coloured lesson bar. It was the fill
-  // colour itself, which drew the sheen invisibly.
-  streak: colors.status.streakHighlight,
-}
+
+
 
 export function ProgressBar({
   current,
@@ -111,6 +102,7 @@ export function ProgressBar({
   style,
   testID,
 }: ProgressBarProps) {
+  const { FILLS, SHEENS, styles } = useThemeValues()
   const fill = FILLS[tone]
   const safeTotal = Math.max(1, total)
   const pct = Math.min(100, Math.max(0, (current / safeTotal) * 100))
@@ -185,7 +177,22 @@ export function ProgressBar({
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const FILLS: Record<ProgressTone, string> = {
+  progress: colors.status.progress,
+  reward: colors.reward.xp,
+  streak: colors.status.streak,
+}
+  const SHEENS: Record<ProgressTone, string> = {
+  progress: colors.status.progressHighlight,
+  reward: colors.reward.coin,
+  // A lighter flame, so the sheen reads on the run-coloured lesson bar. It was the fill
+  // colour itself, which drew the sheen invisibly.
+  streak: colors.status.streakHighlight,
+}
+  const styles = StyleSheet.create({
   wrap: { gap: space[2] },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   label: { ...text('caption'), color: colors.text.secondary },
@@ -216,4 +223,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.full,
     opacity: 0.55,
   },
+})
+  return { colors, FILLS, SHEENS, styles }
 })

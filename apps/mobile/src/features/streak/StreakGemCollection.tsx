@@ -1,6 +1,7 @@
+import { createThemeStyles } from '@worldquest/design'
 import { useState } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import { Button, Card, colors, radius, space, text } from '@worldquest/design'
+import { Button, Card, radius, space, text } from '@worldquest/design'
 import { DaylightIllustration } from '../../components/DaylightIllustration.js'
 import { currentLocale, formatDate, useT } from '../../lib/i18n.js'
 
@@ -10,6 +11,7 @@ export function StreakGemCollection({ days, onOpenChest }: {
   readonly days: readonly string[]
   readonly onOpenChest?: (() => void) | undefined
 }) {
+  const { styles } = useThemeValues()
   const t = useT()
   const [page, setPage] = useState(0)
   const lastPage = Math.max(0, Math.ceil(days.length / PAGE_SIZE) - 1)
@@ -47,7 +49,10 @@ export function StreakGemCollection({ days, onOpenChest }: {
   </Card>
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   card: { gap: space[3] },
   title: { ...text('h2'), color: colors.text.primary },
   count: { ...text('bodyStrong'), color: colors.text.primary },
@@ -57,4 +62,6 @@ const styles = StyleSheet.create({
   paging: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
   pageButton: { flexGrow: 1 },
   date: { ...text('caption'), color: colors.text.secondary },
+})
+  return { colors, styles }
 })

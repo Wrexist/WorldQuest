@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * The course path — Home's primary action, as a trail you can see.
  *
@@ -29,7 +30,7 @@
 
 import { useCallback, useRef, useState } from 'react'
 import { StyleSheet, Text, View, useWindowDimensions, type LayoutChangeEvent } from 'react-native'
-import { Button, Card, colors, space, text } from '@worldquest/design'
+import { Button, Card, space, text } from '@worldquest/design'
 import { tContent, useT } from '../../../lib/i18n.js'
 import { Art } from '../../../components/Art.js'
 import type { CoursePathView, PathNodeView } from '../pathView.js'
@@ -40,6 +41,8 @@ import { estimatedColumn } from './pathGeometry.js'
 const COMPLETE_ART = 112
 
 export type CoursePathProps = {
+  readonly condensed?: boolean
+
   readonly path: CoursePathView
   /** The current step's lesson. */
   readonly onStart: (nodeId: string) => void
@@ -64,9 +67,12 @@ export function CoursePath({
   onReview,
   onPractiseAnyway,
   onCurrentLayout,
+  condensed = false,
 }: CoursePathProps) {
+  const { styles } = useThemeValues()
   const t = useT()
   // One card open at a time, as the donor's popovers: opening another closes this one.
+  const [showAll, setShowAll] = useState(false)
   const [open, setOpen] = useState<string | null>(null)
   // Home's content width until the path has measured itself (`estimatedColumn`).
   const { width } = useWindowDimensions()
@@ -111,7 +117,7 @@ export function CoursePath({
       style={styles.path}
       onLayout={(event: LayoutChangeEvent) => setMeasured(event.nativeEvent.layout.width)}
     >
-      {path.units.map(unit => <View key={unit.id} onLayout={event => {
+      {path.units.filter(unit => !condensed || showAll || unit.state === 'current' || (path.complete && unit === path.units.at(-1))).map(unit => <View key={unit.id} onLayout={event => {
         unitTop.current.set(unit.id, event.nativeEvent.layout.y)
         report()
       }}>
@@ -120,6 +126,10 @@ export function CoursePath({
           onPractise={id => { setOpen(null); onPractise(id) }}
           onCurrentLayout={(y, height) => { current.current = { unitId: unit.id, y, height }; report() }} />
       </View>)}
+
+      {condensed && path.units.length > 1 && <Button variant="secondary"
+        label={t(showAll ? 'home:path.showCurrent' : 'home:path.showCourse')}
+        onPress={() => setShowAll(value => !value)} testID="path-expand" />}
 
       {path.complete && (
         // Measured from a wrapper because `Card` takes no layout handler, and the card is
@@ -151,11 +161,16 @@ export function CoursePath({
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   path: { gap: space[5] },
   card: { gap: space[3] },
   cardTitle: { ...text('h3'), color: colors.text.primary },
   cardBody: { ...text('body'), color: colors.text.secondary },
   completeBody: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   completeWords: { flex: 1, gap: space[1] },
+})
+  return { colors, styles }
 })

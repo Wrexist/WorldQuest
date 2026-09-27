@@ -1,5 +1,17 @@
 # Design system
 
+## Cohesive adventure contract, September 27, 2026
+
+The approved ice-blue canvas, navy text, ocean-blue course cards, warm gold rewards
+and lime learning action supersede older ivory/emerald directions below. Nunito stays.
+`tokens.json` defines matching `color` and `darkColor` semantic palettes. Runtime
+components use `useTheme` or `createThemeStyles`; never capture light colors in a
+module-level StyleSheet. Theme changes preserve mounted navigation and lesson state.
+System/light/dark selection is account-scoped; navigation and status-bar chrome follow.
+Home initially shows the current unit, with access to the whole course. Zero completed
+steps leaves all completed segments empty. The globe explorer is the production mascot.
+
+
 ## Course platforms — September 27, 2026
 
 The home course now uses a clean canvas and raised oval lesson platforms. Landscape

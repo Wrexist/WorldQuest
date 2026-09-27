@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * Where a country is — the country lit up, with its neighbours around it.
  *
@@ -27,7 +28,7 @@
  */
 
 import { Image, StyleSheet, View } from 'react-native'
-import { ArtSlot, colors, radius, squircle } from '@worldquest/design'
+import { ArtSlot, radius, squircle } from '@worldquest/design'
 import { Icon } from './Icon.js'
 import { mapHeight, mapSource } from '../lib/maps.js'
 
@@ -54,6 +55,7 @@ export type CountryMapProps = {
 }
 
 export function CountryMap({ path, contextPath, width, baseTint, tint, label }: CountryMapProps) {
+  const { colors, styles } = useThemeValues()
   const country = mapSource(path)
   const base = mapSource(contextPath)
   const height = mapHeight(width)
@@ -103,7 +105,10 @@ export function CountryMap({ path, contextPath, width, baseTint, tint, label }: 
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   /**
    * A window, not a cropped image.
    *
@@ -123,4 +128,6 @@ const styles = StyleSheet.create({
   // Absolute so the two masks share an origin. `contain` on both, at identical box
   // sizes, is what keeps the highlight registered with the land behind it.
   layer: { position: 'absolute', top: 0, start: 0 },
+})
+  return { colors, styles }
 })

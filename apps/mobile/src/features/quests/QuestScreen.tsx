@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * Today's Quest — mockup screen 4.
  *
@@ -10,12 +11,11 @@
  * game into an obligation.
  */
 
-import { LinearGradient } from 'expo-linear-gradient'
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
+  ArtScrim,
   Button,
   Card,
-  colors,
   layout,
   radius,
   Skeleton,
@@ -93,6 +93,7 @@ export function QuestScreen({
   streak,
   onOpenStreak,
 }: QuestScreenProps) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
 
   if (loading) return <QuestSkeleton />
@@ -147,7 +148,7 @@ export function QuestScreen({
       </View>
 
       {/* Daily and Achievements, as two halves of one control.
-   
+
           Achievements were a route with no entrance except a row buried on Profile, and
           they are the same KIND of thing as a quest — something with a target you are
           working towards — so the reference files them as the second tab of this screen
@@ -172,14 +173,7 @@ export function QuestScreen({
 
       <Card style={styles.summary}>
         <View pointerEvents="none" style={styles.treasure}><RewardMotion key={done} active kind="pop"><AdventureArt name="treasure" style={{ width: 270, height: 180 }} /></RewardMotion><ProgressSparkles earned={done} /></View>
-        <LinearGradient
-          pointerEvents="none"
-          colors={[colors.journey.sand, colors.journey.sand, `${colors.journey.sand}00`]}
-          locations={[0, 0.36, 0.78]}
-          start={{ x: 0, y: 0.5 }}
-          end={{ x: 1, y: 0.5 }}
-          style={StyleSheet.absoluteFill}
-        />
+        <ArtScrim blend />
         <View style={styles.summaryText}>
         {/* The label already reads "2 of 5 done", so the bar's own counter would
             print the same numbers twice, six pixels apart. */}
@@ -211,9 +205,9 @@ export function QuestScreen({
 
       {/* One primary action. A quest screen whose only affordance is reading is a
           screen the user leaves. */}
-    
+
       {/* When today's quest is replaced.
-   
+
           The reference puts it under the list, and it answers the one question a
           half-finished quest raises: how long have I got. Absent rather than an em-dash
           when the route cannot say — the same rule Home's countdown follows. */}
@@ -243,6 +237,7 @@ export function QuestScreen({
 }
 
 function TaskRow({ task, step }: { task: QuestTask; step: number }) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   const title = t(SLOT_TITLE[task.slot])
   const pop = useCelebration(task.progress)
@@ -282,7 +277,7 @@ function TaskRow({ task, step }: { task: QuestTask; step: number }) {
         testID="quest-step"
       >
         {task.complete ? (
-          <Icon name="check" size={16} color={colors.text.onAccent} />
+          <Icon name="check" size={16} color={colors.text.onStatus} />
         ) : (
           <Text style={styles.stepText}>{String(step)}</Text>
         )}
@@ -336,6 +331,7 @@ function TaskRow({ task, step }: { task: QuestTask; step: number }) {
 }
 
 function QuestSkeleton() {
+  const { styles } = useThemeValues()
   const t = useT()
   return (
     <View style={styles.screen} aria-label={t('common:loading')}>
@@ -350,7 +346,10 @@ function QuestSkeleton() {
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   speed: { backgroundColor: colors.bg.surface, borderColor: colors.journey.lavender, padding: space[4], gap: space[2], marginTop: space[3] },
   speedTitle: { ...text('h3'), color: colors.text.primary },
   screen: { flex: 1 },
@@ -431,7 +430,7 @@ const styles = StyleSheet.create({
   stepText: { ...text('caption', { weight: '800', numeric: true }), color: colors.text.secondary },
   // On the filled green circle, not on the surface — this pair is the one the
   // contrast checker cares about.
-  stepTextDone: { color: colors.text.onAccent },
+  stepTextDone: { color: colors.text.onStatus },
   taskText: { flex: 1, gap: space[2] },
   // `flex: 1` on the title so a long slot name wraps inside the row rather than pushing
   // the icon off it.
@@ -448,4 +447,6 @@ const styles = StyleSheet.create({
   taskCountNumber: { ...text('caption', { weight: '700', numeric: true }) },
   taskXpRow: { flexDirection: 'row', alignItems: 'center', gap: space[1] },
   taskXp: { ...text('caption'), color: colors.reward.xp },
+})
+  return { colors, styles }
 })

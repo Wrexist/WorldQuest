@@ -1,10 +1,12 @@
+import { createThemeStyles } from '@worldquest/design'
 import { useEffect, useRef } from 'react'
 import { Animated, AppState, Easing, StyleSheet, View } from 'react-native'
-import { colors, motion, space, useReducedMotion } from '@worldquest/design'
+import { motion, space, useReducedMotion } from '@worldquest/design'
 import { Icon } from './Icon.js'
 
 /** Cosmetic feedback for newly earned progress. Never replays an old reward on mount. */
 export function ProgressSparkles({ earned }: { earned: number }) {
+  const { colors } = useThemeValues()
   const reduced = useReducedMotion()
   const previous = useRef(earned)
   const progress = useRef(new Animated.Value(1)).current
@@ -41,4 +43,9 @@ export function ProgressSparkles({ earned }: { earned: number }) {
 const styles = StyleSheet.create({
   field: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },
   spark: { position: 'absolute', width: space[4], height: space[4] },
+})
+
+const useThemeValues = createThemeStyles((colors) => {
+
+  return { colors }
 })

@@ -1,3 +1,4 @@
+import { createThemeStyles } from '../theme.js'
 /**
  * SpeechBubble — the surface Atlas talks out of.
  *
@@ -34,7 +35,7 @@
 
 import type { ReactNode } from 'react'
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native'
-import { colors, radius, space } from '../tokens.js'
+import { radius, space } from '../tokens.js'
 import { squircle } from '../shape.js'
 import { text } from '../typography.js'
 
@@ -62,6 +63,7 @@ export type SpeechBubbleProps = {
 const TAIL = 14
 
 export function SpeechBubble({ children, from = 'start', style }: SpeechBubbleProps) {
+  const { styles, TAIL_AT } = useThemeValues()
   return (
     <View style={[styles.wrap, style]}>
       <View
@@ -79,7 +81,16 @@ export function SpeechBubble({ children, from = 'start', style }: SpeechBubblePr
   )
 }
 
-const styles = StyleSheet.create({
+
+
+/**
+ * Looked up rather than nested ternaries, so a fourth direction is one line here and
+ * one line in the union above — and neither is a place a reader has to unpick.
+ */
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   wrap: { alignSelf: 'stretch', position: 'relative' },
   body: {
     backgroundColor: colors.journey.sky,
@@ -111,13 +122,10 @@ const styles = StyleSheet.create({
   tailTop: { top: -TAIL / 2, alignSelf: 'center' },
   tailBottom: { bottom: -TAIL / 2, alignSelf: 'center' },
 })
-
-/**
- * Looked up rather than nested ternaries, so a fourth direction is one line here and
- * one line in the union above — and neither is a place a reader has to unpick.
- */
-const TAIL_AT = {
+  const TAIL_AT = {
   start: styles.tailStart,
   top: styles.tailTop,
   bottom: styles.tailBottom,
 } as const
+  return { colors, styles, TAIL_AT }
+})

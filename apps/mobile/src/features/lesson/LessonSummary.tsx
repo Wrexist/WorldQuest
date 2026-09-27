@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * The end of a lesson — mockup screen 6, and the app's biggest emotional moment.
  *
@@ -35,7 +36,6 @@ import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   Button,
   Card,
-  colors,
   radius,
   space,
   Spacer,
@@ -169,6 +169,7 @@ export function LessonSummary({
   isOffline: boolean
   onExit: () => void
 }) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   const outcome = outcomeOf(result, wasAbandoned)
 
@@ -406,6 +407,7 @@ function StatTile({
   accessibilityLabel: string
   testID: string
 }) {
+  const { styles } = useThemeValues()
   const entrance = useStagger(order, 'expressive')
 
   return (
@@ -429,6 +431,7 @@ function StatTile({
 }
 
 function OfflineNote() {
+  const { styles } = useThemeValues()
   const t = useT()
 
   return (
@@ -438,7 +441,10 @@ function OfflineNote() {
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   dailyGoal: { alignSelf: 'stretch', gap: space[2], backgroundColor: colors.journey.meadow },
   dailyTitle: { ...text('h3'), color: colors.text.primary, textAlign: 'center' },
   screen: { flex: 1, padding: space[4], gap: space[4] },
@@ -498,4 +504,6 @@ const styles = StyleSheet.create({
     ...squircle,
   },
   offlineText: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
+})
+  return { colors, styles }
 })

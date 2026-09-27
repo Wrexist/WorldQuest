@@ -319,7 +319,7 @@ const GROUPS: ReadonlyArray<{
     // `text.onStreak` is drawn only on the flame; its one pair is a curated row above.
     texts: leaves(c.text, 'text').filter(
       // Button-specific labels are checked against their actual faces above.
-      (t) => !['text.onAccent', 'text.onStreak', 'text.onPrimary', 'text.onSecondary', 'text.tertiary'].includes(t.path),
+      (t) => !['text.onAccent', 'text.onStreak', 'text.onPrimary', 'text.onSecondary', 'text.onStatus', 'text.tertiary'].includes(t.path),
     ),
     surfaces: [
       ...leaves(c.bg, 'bg'),
@@ -344,6 +344,17 @@ const GROUPS: ReadonlyArray<{
         s.path !== 'action.disabled',
     ),
     min: tokens.contrastFloors.largeText,
+  },
+  {
+    what: 'small labels on filled status badges',
+    texts: leaves(c.text, 'text').filter(t => t.path === 'text.onStatus'),
+    surfaces: [
+      ...leaves(c.action, 'action').filter(s => ['action.primary', 'action.secondary'].includes(s.path)),
+      ...leaves(c.feedback, 'feedback').filter(s => s.path === 'feedback.correct'),
+      ...leaves(c.option, 'option').filter(s => s.path === 'option.selectedEdge'),
+      ...leaves(c.status, 'status').filter(s => s.path === 'status.hearts'),
+    ],
+    min: tokens.contrastFloors.bodyText,
   },
   {
     what: 'de-emphasised text, ≥18px',
@@ -405,3 +416,31 @@ if (matrixFailed > 0 || staleWaivers.length > 0) {
 
 
 console.log(`✓ all ${PAIRS.length} curated + ${checked} generated pairs pass`)
+
+// Night palette is a first-class theme, including feedback and decorative panels.
+const night = tokens.darkColor
+let nightChecked = 0
+let nightFailed = 0
+const nightPair = (name: string, fg: unknown, bg: unknown, min = 4.5) => {
+  const foreground = resolve(fg), background = resolve(bg)
+  if (!foreground || !background) throw new Error(`Unresolved night pair: ${name}`)
+  nightChecked++
+  const ratio = contrast(foreground, background)
+  if (ratio < min) { nightFailed++; console.error(`Night ${name}: ${ratio.toFixed(2)} < ${min}`) }
+}
+for (const ink of ['primary', 'secondary', 'tertiary']) {
+  for (const surface of ['canvas', 'surface', 'surfaceRaised', 'surfacePressed']) nightPair(`${ink}/${surface}`, night.text[ink], night.bg[surface])
+  for (const surface of ['idle', 'selected', 'correct', 'wrong']) nightPair(`${ink}/option.${surface}`, night.text[ink], night.option[surface])
+  for (const surface of ['meadow', 'sky', 'sand', 'lavender', 'teal', 'peach', 'rose']) nightPair(`${ink}/journey.${surface}`, night.text[ink], night.journey[surface])
+}
+nightPair('primary button', night.text.onPrimary, night.action.primaryFace)
+nightPair('secondary button', night.text.onSecondary, night.action.secondaryFace)
+nightPair('course banner', night.course.bannerInk, night.course.banner)
+nightPair('map highlight', night.map.country, night.map.water, 3)
+nightPair('selected settings label', night.text.onStatus, night.action.secondary)
+nightPair('completed activity mark', night.text.onStatus, night.action.primary)
+nightPair('correct answer letter', night.text.onStatus, night.feedback.correct)
+nightPair('selected answer letter', night.text.onStatus, night.option.selectedEdge)
+nightPair('wrong answer letter', night.text.onStatus, night.status.hearts)
+console.log(`Night: ${nightChecked} pairs checked`)
+if (nightFailed) process.exit(1)

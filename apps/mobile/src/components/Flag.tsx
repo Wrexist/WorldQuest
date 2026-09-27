@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * A country's flag.
  *
@@ -24,7 +25,7 @@
  */
 
 import { Image, StyleSheet, View } from 'react-native'
-import { ArtSlot, colors, radius, squircle } from '@worldquest/design'
+import { ArtSlot, radius, squircle } from '@worldquest/design'
 import { Icon } from './Icon.js'
 import { flagHeight, flagSource } from '../lib/flags.js'
 
@@ -47,6 +48,7 @@ export type FlagProps = {
 }
 
 export function Flag({ path, width, tint, label }: FlagProps) {
+  const { colors, styles } = useThemeValues()
   const source = flagSource(path)
   const height = flagHeight(width)
 
@@ -95,7 +97,10 @@ export function Flag({ path, width, tint, label }: FlagProps) {
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   // The border matters more than it looks. It is what makes a flag read as an object
   // sitting on the card rather than as ink printed on it — and it is doing the most
   // work for the flags with a pale edge, where the artwork and the surface would
@@ -107,4 +112,6 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.border.subtle,
   },
+})
+  return { colors, styles }
 })

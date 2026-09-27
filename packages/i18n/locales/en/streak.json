@@ -97,7 +97,7 @@
   "streak:chest.gems__note": "Cosmetic dated learning badges, separate from spendable coins. One per completed learning day, stored locally for this account.",
   "streak:collection.title": "Streak gems",
   "streak:collection.title__note": "Cosmetic dated learning badges, separate from spendable coins. One per completed learning day, stored locally for this account.",
-  "streak:collection.count": "{count} collected",
+  "streak:collection.count": "{count, plural, one {# collected} other {# collected}}",
   "streak:collection.count__note": "Cosmetic dated learning badges, separate from spendable coins. One per completed learning day, stored locally for this account.",
   "streak:collection.body": "One learning day, one gem. Keep your collection, even when a streak ends.",
   "streak:collection.body__note": "Cosmetic dated learning badges, separate from spendable coins. One per completed learning day, stored locally for this account.",

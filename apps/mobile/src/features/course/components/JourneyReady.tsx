@@ -1,5 +1,6 @@
+import { createThemeStyles } from '@worldquest/design'
 import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { Button, Card, colors, radius, space, staggerStyle, text, useStagger } from '@worldquest/design'
+import { Button, Card, radius, space, staggerStyle, text, useStagger } from '@worldquest/design'
 import { AdventureArt } from '../../../components/AdventureArt.js'
 import { AnswerReward } from '../../../components/AnswerReward.js'
 import { useT, tContent } from '../../../lib/i18n.js'
@@ -13,6 +14,7 @@ export function JourneyReady({ path, onStart, onReview, onHome }: {
   onReview: (id: string) => void
   onHome: () => void
 }) {
+  const { styles } = useThemeValues()
   const t = useT()
   const reveal = useStagger(2, 'expressive')
   const unit = path.status === 'ready' ? path.units.find(u => u.nodes.some(n => n.state === 'current')) : undefined
@@ -45,7 +47,10 @@ export function JourneyReady({ path, onStart, onReview, onHome }: {
     <Button variant="ghost" label={t('lesson:journey.home')} onPress={onHome} />
   </ScrollView>
 }
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   screen: { flexGrow: 1, padding: space[4], gap: space[3], justifyContent: 'center' },
   art: { alignItems: 'center' },
   title: { ...text('h1'), color: colors.text.primary, textAlign: 'center' },
@@ -54,4 +59,6 @@ const styles = StyleSheet.create({
   unit: { ...text('overline'), color: colors.text.secondary, textAlign: 'center' },
   platform: { alignItems: 'center', minHeight: 110 },
   objective: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
+})
+  return { colors, styles }
 })

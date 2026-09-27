@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * Welcome back — hidden screen H2, for a user returning after a week or more.
  *
@@ -27,7 +28,7 @@
  */
 
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
-import { Button, Card, Tally, colors, space, text } from '@worldquest/design'
+import { Button, Card, Tally, space, text } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 
@@ -49,6 +50,7 @@ export function WelcomeBackScreen({
   onStart,
   onDismiss,
 }: WelcomeBackScreenProps) {
+  const { styles } = useThemeValues()
   const t = useT()
 
   return (
@@ -118,7 +120,10 @@ export function WelcomeBackScreen({
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   screen: { flex: 1 },
   // `flexGrow: 1` so `actions`' auto top margin still has free space to consume and the
   // two buttons stay at the bottom of a short screen. When the content is taller than the
@@ -137,4 +142,6 @@ const styles = StyleSheet.create({
   keptNumber: { ...text('h3', { numeric: true }), color: colors.text.primary },
   due: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
   actions: { marginTop: 'auto', gap: space[2] },
+})
+  return { colors, styles }
 })

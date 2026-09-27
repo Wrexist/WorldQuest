@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * Splash — mockup screen 1, and the only screen every single user sees.
  *
@@ -31,7 +32,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Animated, StyleSheet, Text, View } from 'react-native'
-import { Button, colors, space, text, useAnimatedTo } from '@worldquest/design'
+import { Button, space, text, useAnimatedTo } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 import { Icon } from '../../components/Icon.js'
 
@@ -57,6 +58,7 @@ export type SplashScreenProps = {
 }
 
 export function SplashScreen({ phase = 'booting', onRetry }: SplashScreenProps) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
 
   // `useAnimatedTo` collapses to a zero-duration timing under reduced motion, so the
@@ -131,7 +133,10 @@ export function useSplashPhase(ready: boolean): 'booting' | 'slow' | 'failed' {
   return phase
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   root: {
     flex: 1,
     alignItems: 'center',
@@ -148,4 +153,6 @@ const styles = StyleSheet.create({
   statusSlot: { minHeight: 72, alignItems: 'center', justifyContent: 'flex-start', gap: space[3] },
   status: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
   failedTitle: { ...text('h3'), color: colors.text.primary, textAlign: 'center' },
+})
+  return { colors, styles }
 })

@@ -32,5 +32,6 @@
   "profile:league.body": "Se hur du ligger till mot 29 andra utforskare den här veckan.",
   "profile:account.body__note": "Current account capability. Do not promise full recovery before second-device verification.",
   "profile:adventure.title": "Din nästa upptäckt",
-  "profile:adventure.title__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted."
+  "profile:adventure.title__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted.",
+  "profile:account.title__note": "Secondary account action: link an email to the existing account. Keep concise."
 }

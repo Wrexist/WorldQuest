@@ -1,10 +1,12 @@
+import { createThemeStyles } from '@worldquest/design'
 /** Atlas belongs to a little landscape, with separate 3D character and scenery layers. */
 import { Image, StyleSheet, View } from 'react-native'
-import { colors } from '@worldquest/design'
+
 import island from '../../assets/art/atlas3d/expedition.webp'
 import { AtlasCharacter, type AtlasMood } from './AtlasCharacter.js'
 
 export function ExpeditionScene({ size = 260, mood = 'welcome' }: { size?: number; mood?: AtlasMood }) {
+  const { styles } = useThemeValues()
   return <View pointerEvents="none" aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
     style={{ width: size, height: size * .86 }}>
     <View style={[styles.sun, { width: size * .32, height: size * .32, top: size * .035, end: size * .08 }]} />
@@ -17,7 +19,12 @@ export function ExpeditionScene({ size = 260, mood = 'welcome' }: { size?: numbe
     </View>
   </View>
 }
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   sun: { position: 'absolute', borderRadius: 200, backgroundColor: colors.journey.sun },
   cloud: { position: 'absolute', borderRadius: 40, backgroundColor: colors.bg.surfaceRaised },
+})
+  return { colors, styles }
 })

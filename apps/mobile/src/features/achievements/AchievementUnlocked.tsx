@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * One badge, one full screen — the card after the lesson summary.
  *
@@ -39,7 +40,6 @@ import {
 } from 'react-native'
 import {
   Button,
-  colors,
   radius,
   space,
   Spacer,
@@ -77,6 +77,7 @@ const SHORT_SCREEN = 700
 const LARGE_TEXT = 1.5
 
 export function AchievementUnlocked({ unlock, more = 0, onContinue }: AchievementUnlockedProps) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   const medal = useScaleIn(0.5)
   const { height, fontScale } = useWindowDimensions()
@@ -115,7 +116,7 @@ export function AchievementUnlocked({ unlock, more = 0, onContinue }: Achievemen
         {/* The tier in WORDS, with its colour as the second signal — never the colour
             alone, which is a guess for anybody who cannot tell bronze from gold. */}
         <View style={[styles.tier, { borderColor: TIER_COLOR[unlock.tier] }]}>
-          <Text style={[styles.tierText, { color: TIER_COLOR[unlock.tier] }]}>
+          <Text style={[styles.tierText, { color: colors.text.primary }]}>
             {t(TIER_LABEL[unlock.tier])}
           </Text>
         </View>
@@ -139,7 +140,10 @@ export function AchievementUnlocked({ unlock, more = 0, onContinue }: Achievemen
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   screen: { flex: 1 },
   body: {
     flexGrow: 1,
@@ -164,4 +168,6 @@ const styles = StyleSheet.create({
   desc: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
   more: { ...text('bodyStrong'), color: colors.text.primary, textAlign: 'center', marginTop: space[2] },
   actions: { padding: space[4], gap: space[2] },
+})
+  return { colors, styles }
 })

@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * An achievement as an object you could hold, rather than a row in a list.
  *
@@ -17,7 +18,7 @@
  */
 
 import { StyleSheet, View } from 'react-native'
-import { colors, radius } from '@worldquest/design'
+import { radius } from '@worldquest/design'
 import type { Tier } from '@worldquest/engines'
 import { ART_BY_NAME, type ArtName } from '../../lib/art.generated.js'
 import { Art } from '../../components/Art.js'
@@ -96,6 +97,7 @@ const GLYPH_ALONE = 0.66
  * same picture described twice.
  */
 export function AchievementMedal({ achievementId, tier, size }: AchievementMedalProps) {
+  const { styles } = useThemeValues()
   const glyph = glyphFor(achievementId)
 
   return (
@@ -127,7 +129,10 @@ export function AchievementMedal({ achievementId, tier, size }: AchievementMedal
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   medal: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -138,4 +143,6 @@ const styles = StyleSheet.create({
   // already uses for "there, but not yet yours" — `tileEmpty` on Explore and `tileDim`
   // on the collection grid — so a locked medal reads the same as a locked anything.
   locked: { opacity: 0.45 },
+})
+  return { colors, styles }
 })

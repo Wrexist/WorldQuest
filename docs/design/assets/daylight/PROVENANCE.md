@@ -1,5 +1,9 @@
 # Daylight asset provenance
 
+## Approved production identity, September 27, 2026
+
+The owner approved the cheerful globe explorer. Production mascot calls resolve to `WorldMascot` and its existing layered, original globe artwork. Profile now uses the same explorer rather than the robot passport scene. The robot masters documented below remain historical source assets, not the current mascot direction. This redesign generated no new raster artwork or 3D models; it reuses existing typed assets and verified teaching geometry.
+
 Created for WorldQuest on September 26, 2026.
 
 ## Illustration masters

@@ -76,6 +76,7 @@ const banner = `/**
 const body = [
   `export const palette = ${JSON.stringify(resolved.palette, null, 2)} as const`,
   `export const colors = ${JSON.stringify(resolved.color, null, 2)} as const`,
+  `export const darkColors = ${JSON.stringify(resolved.darkColor, null, 2)} as const`,
   `export const space = ${JSON.stringify(resolved.space, null, 2)} as const`,
   `export const radius = ${JSON.stringify(resolved.radius, null, 2)} as const`,
   `export const depth = ${JSON.stringify(resolved.depth, null, 2)} as const`,

@@ -1,0 +1,25 @@
+{
+  "environment": "Windows, Node 22, headless Chromium, 390x844, local exported web app; other verification running; not native startup",
+  "samples": {
+    "before": {
+      "homeReadyMs": [
+        363,
+        354,
+        401,
+        407,
+        494
+      ],
+      "medianMs": 401
+    },
+    "after": {
+      "homeReadyMs": [
+        217,
+        231,
+        254,
+        243,
+        267
+      ],
+      "medianMs": 243
+    }
+  }
+}

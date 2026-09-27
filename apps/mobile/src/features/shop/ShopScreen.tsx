@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * The Shop — where coins finally go.
  *
@@ -36,7 +37,6 @@ import {
   Button,
   Card,
   ProgressBar,
-  colors,
   radius,
   space,
   squircle,
@@ -97,6 +97,7 @@ export function ShopScreen({
   onBuy,
   onEquip,
 }: ShopScreenProps) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
 
   if (error) {
@@ -116,11 +117,11 @@ export function ShopScreen({
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       {/* The same chrome the other four tabs wear.
-   
+
           Shop was the only tab without it, so moving between tabs the header appeared and
           disappeared under you — and the tab it vanished on is the one where identity and
           the inbox are least expected to go missing.
-   
+
           Deliberately WITHOUT `coins`. The wallet card below is a better presentation of
           the same number and the note on it argues why; a chip in the header two hundred
           points above it would state the balance twice on the one screen where it is
@@ -136,7 +137,7 @@ export function ShopScreen({
 
       {/* The balance, as the first thing on the screen rather than a chip beside the
           heading.
-   
+
           It is the number every row on this screen is measured against — "1,000 coins"
           means nothing until you know what you have — and it was a 20pt pill sharing a
           line with the title. The reference gives it a card of its own with the mascot
@@ -331,12 +332,13 @@ function TitleRow({
   readonly onBuy?: () => void
   readonly onEquip: () => void
 }) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
 
   return (
     <Card level={equipped ? 2 : 1} style={[styles.row, equipped && styles.rowOn, explorer && styles.explorerCard]}>
       {/* The slot is reserved even when it is empty.
-   
+
           Only rank titles carry an insignia; the cosmetic ones have no art and never
           will, because they are not ranks. Rendering the image conditionally meant the
           one row with a picture indented its name and the four without it did not, so a
@@ -408,6 +410,7 @@ function TitleRow({
 
 /** Skeleton, never a spinner on primary content — no layout shift on arrival. */
 function SkeletonRows() {
+  const { styles } = useThemeValues()
   return (
     <View aria-hidden>
       {[0, 1, 2].map((i) => (
@@ -419,7 +422,10 @@ function SkeletonRows() {
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   unlock: { backgroundColor: colors.journey.sand, gap: space[2] },
   unlockTitle: { ...text('overline'), color: colors.text.secondary },
   unlockName: { ...text('h3'), color: colors.text.primary },
@@ -493,4 +499,6 @@ const styles = StyleSheet.create({
   freezeTitle: { ...text('bodyStrong'), color: colors.text.primary },
   freezeBody: { ...text('caption'), color: colors.text.secondary },
   tail: { height: space[5] },
+})
+  return { colors, styles }
 })
