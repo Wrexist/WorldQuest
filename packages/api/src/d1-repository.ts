@@ -1,7 +1,7 @@
 import { AccountChangedError, type AccountRepository } from './ports.js'
 import { D1AuthError, type AuthFetch, type createD1AuthClient } from './d1-auth.js'
-import type { ContinuePurchase, FreezePurchase, Progress, ReportReason, StreakRepair } from './contracts.js'
-import type { DailyQuest, QuestTask } from '@worldquest/engines'
+import type { ContinuePurchase, FreezePurchase, Progress, ReportReason, StreakRepair, LeagueCohort } from './contracts.js'
+import type { DailyQuest, QuestTask, ChallengeResponse } from '@worldquest/engines'
 
 /**
  * The account repository over the Cloudflare Worker (ADR 0013).
@@ -12,8 +12,8 @@ import type { DailyQuest, QuestTask } from '@worldquest/engines'
  * · Lessons do not go through `submitLesson`. The Worker grades only lessons it issued
  *   (tickets), so the app uses `createD1LearningClient`/`createD1LessonQueue` for them;
  *   calling the legacy method here is a wiring bug and says so.
- * · Leagues, subscriptions and remote flags do not exist on this backend yet. They answer
- *   "none" rather than failing, which is what the app already shows when they are off.
+ * · Leagues require verified eligible accounts and a separate server rollout flag.
+ *   Subscriptions remain unavailable on this backend.
  *
  * Owner-bound for its whole life, like the learning client: a renewal may change the
  * token, never the owner, and a response for a previous owner is discarded.
@@ -21,6 +21,22 @@ import type { DailyQuest, QuestTask } from '@worldquest/engines'
 const object = (v: unknown): v is Record<string, unknown> => v !== null && typeof v === 'object' && !Array.isArray(v)
 const count = (v: unknown): v is number => typeof v === 'number' && Number.isSafeInteger(v) && v >= 0
 const day = (v: unknown): v is string | null => v === null || (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v))
+const challenge = (v: unknown): boolean => object(v) && typeof v.id === 'string'
+  && (v.locale === 'en' || v.locale === 'sv') && count(v.expiresAt) && typeof v.isCreator === 'boolean'
+  && (v.peer === null || typeof v.peer === 'string') && typeof v.submitted === 'boolean'
+  && ['ready','waiting','complete','expired'].includes(String(v.state))
+  && (v.result === null || object(v.result) && [v.result.yours,v.result.theirs].every(n => n === null || count(n) && n <= 10)
+    && ['won','lost','draw','unplayed'].includes(String(v.result.outcome)))
+function challengeResponse(v: unknown): ChallengeResponse {
+  if (!object(v) || !Array.isArray(v.challenges) || v.challenges.length > 30 || !v.challenges.every(challenge)
+    || !(v.active === undefined || challenge(v.active))
+    || !(v.questions === undefined || Array.isArray(v.questions) && v.questions.length === 10 && v.questions.every((q: unknown) =>
+      object(q) && typeof q.promptKey === 'string' && object(q.promptParams) && Object.values(q.promptParams).every(p => typeof p === 'string')
+      && Array.isArray(q.options) && q.options.length >= 2 && q.options.length <= 8 && q.options.every((o: unknown) => object(o) && typeof o.id === 'string' && typeof o.label === 'string')))) {
+    throw new D1AuthError('INVALID_RESPONSE')
+  }
+  return v as ChallengeResponse
+}
 
 /** A fresh id per offer. Not a secret; it only has to be unlikely to collide. */
 function offerId(prefix: string, randomBytes: () => Uint8Array): string {
@@ -95,6 +111,11 @@ export function createD1AccountRepository(options: {
     return { day: v.day, quest: { id: v.quest.id, date: v.day, tasks, complete: v.quest.complete, bonusClaimed: v.quest.bonusClaimed } }
   }
   return {
+    challenges: {
+      list: async () => challengeResponse(await request('/v1/challenges')),
+      act: async action => challengeResponse(await request('/v1/challenges', action)),
+      inviteCode: () => [...options.randomBytes()].map(b => b.toString(16).padStart(2,'0')).join(''),
+    },
     identity: { backendId: options.auth.endpoint, userId: options.owner },
     fetchTodayQuest,
     submitLesson: async () => { throw new D1AuthError('USE_D1_LESSON_QUEUE') },
@@ -110,9 +131,25 @@ export function createD1AccountRepository(options: {
       ['repaired', 'cooldown', 'insufficient_funds', 'not_for_sale', 'no_streak', 'not_broken', 'nothing_to_restore', 'window_expired']) as StreakRepair,
     buyLessonContinue: async (continueId) => status(await request('/v1/lessons/continue', { requestId: continueId }),
       ['purchased', 'already_paid', 'insufficient_funds', 'not_for_sale']) as ContinuePurchase,
-    fetchLeague: async () => null,
-    fetchLeagueOptOut: async () => true,
-    setLeagueOptOut: async () => {},
+    fetchLeague: async () => {
+      const v = await request('/v1/league')
+      if (v === null) return null
+      if (!object(v) || typeof v.weekId !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(v.weekId)
+        || typeof v.tier !== 'string' || !['bronze','silver','gold','sapphire','ruby','diamond','legend'].includes(v.tier)
+        || ![1,2,3].includes(v.division as number) || !Array.isArray(v.members) || v.members.length > 30
+        || !v.members.every((r: unknown) => object(r) && typeof r.handle === 'string' && r.handle.length <= 80
+          && count(r.weeklyXp) && typeof r.isYou === 'boolean')) throw new D1AuthError('INVALID_RESPONSE')
+      return v as LeagueCohort
+    },
+    fetchLeagueOptOut: async () => {
+      const v = await request('/v1/league/preference')
+      if (!object(v) || typeof v.optedOut !== 'boolean') throw new D1AuthError('INVALID_RESPONSE')
+      return v.optedOut
+    },
+    setLeagueOptOut: async (optedOut) => {
+      const v = await request('/v1/league/preference', { optedOut })
+      if (!object(v) || v.optedOut !== optedOut) throw new D1AuthError('INVALID_RESPONSE')
+    },
     fetchInventory: async () => (await progressWithInventory()).inventory,
     // One request id per item, ever: a cosmetic is bought once, so a retry after a lost
     // response is the same purchase, not a second one.
@@ -132,6 +169,11 @@ export function createD1AccountRepository(options: {
       const v = await request('/v1/reports', { reportId: offerId('report', options.randomBytes), factId, reason })
       if (!object(v) || v.accepted !== true) throw new D1AuthError('INVALID_RESPONSE')
     },
-    fetchFeatureFlags: async () => [],
+    fetchFeatureFlags: async () => {
+      const v = await request('/v1/features')
+      if (!Array.isArray(v) || v.length > 100 || !v.every((f: unknown) => object(f) && typeof f.key === 'string'
+        && typeof f.enabled === 'boolean' && count(f.rolloutPercent) && f.rolloutPercent <= 100)) throw new D1AuthError('INVALID_RESPONSE')
+      return v
+    },
   }
 }

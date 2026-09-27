@@ -613,8 +613,8 @@ const skip = (name, why) => {
   // ── onboarding is remembered ──────────────────────────────────────────────
   await home()
   await page.waitForTimeout(1500)
-  const afterOnboarding = await body()
-  step('a returning user goes straight to Home', afterOnboarding.includes('Explorer'))
+  const homeReady = await page.getByTestId('path-node-current').first().isVisible()
+  step('a returning user goes straight to Home', new URL(page.url()).pathname === '/' && homeReady)
   await page.screenshot({ path: path.join(SHOTS, 'home.png') })
 
   // ── the course path: one lit step, and it opens its own lesson ─────────────
@@ -943,7 +943,8 @@ const skip = (name, why) => {
     'the five tab icons are real artwork, not blank rectangles',
     tabIcons !== null &&
       tabIcons.length === 5 &&
-      tabIcons.every((i) => i.w > 0 && /icons\//.test(i.src)),
+      // Line icons, retained illustrations, and the new studio renders must decode.
+      tabIcons.every((i) => i.w > 0 && /(?:icons\/|art\/(?:playful|soft)\/)/.test(i.src)),
     tabIcons === null ? 'no tablist' : `${tabIcons.filter((i) => i.w > 0).length}/5 decoded`,
   )
 
@@ -1256,6 +1257,11 @@ const skip = (name, why) => {
   step('the first lesson of the day ends on the streak, not a sale',
        (await streakBeat.count()) > 0 && !/nothing to buy|per month|Try it free/i.test(afterSummary),
        afterSummary.slice(0, 80).replace(/\s+/g, ' '))
+  await page.getByTestId('open-streak-chest').click()
+  await page.waitForTimeout(2000)
+  step('the chest reveals a collectible gem, keeping the coin wallet separate',
+    await streakBeat.getByText('+1 streak gem', { exact: true }).count() === 1 &&
+    /coins stay in your wallet/.test(await body()))
   await page.screenshot({ path: path.join(SHOTS, 'streak-extended.png') })
   await streakBeat.getByText('Continue', { exact: true }).click()
   await page.waitForTimeout(1200)
@@ -1310,15 +1316,14 @@ const skip = (name, why) => {
   // is no tab bar on screen at this point in the flow.
   await page.goto(`http://localhost:${PORT}/quests`, { waitUntil: 'networkidle' })
   await page.waitForTimeout(1400)
-  // Matched against the copy the screen actually renders ("1 of 5 done"), not a
-  // guessed "1 / 5". The first version passed on a different branch and printed an
-  // empty detail, which is the same tell that caught the answer-selector bug.
-  // From the quest's own bar: a five-step unit on Home's path reads "0 of 5 done" too.
-  const questBar = (await page.getByTestId('quest-progress').first().textContent().catch(() => '')) ?? ''
-  const questDone = (questBar.match(/(\d) of 5 done/) ?? [])[1]
+  // The graphic milestones expose the same real count to assistive technology.
+  // Assert their semantic value rather than depending on duplicated visible copy.
+  const questBar = page.getByTestId('quest-progress').first()
+  const questDone = Number(await questBar.getAttribute('aria-valuenow'))
+  const questTotal = Number(await questBar.getAttribute('aria-valuemax'))
   step('finishing a lesson ticks a quest task',
-       questDone !== undefined && Number(questDone) > 0,
-       questDone === undefined ? 'no "N of 5 done" on screen' : `${questDone} of 5`)
+       questTotal === 5 && questDone > 0 && questDone <= questTotal,
+       `${questDone} of ${questTotal}`)
   await page.screenshot({ path: path.join(SHOTS, 'quests.png') })
 
   await page.goto(`http://localhost:${PORT}/achievements`, { waitUntil: 'networkidle' })

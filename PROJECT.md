@@ -343,9 +343,9 @@ Four kinds of state. Put each in exactly one place.
 
 Distilled from the mockup ([`docs/design/assets/mockup-v1.png`](docs/design/assets/mockup-v1.png)).
 
-1. **Night-sky canvas, glowing content.** Deep navy gradient background; content
-   floats on it as softly-lit, rounded cards. Light comes from the content, not a
-   light theme.
+1. **Daylight expedition.** White canvas, clear bordered surfaces, matte clay Atlas
+   and a tactile winding lesson path. The September 26 redesign supersedes the
+   original dark mockup; see `docs/design/daylight-redesign.md`.
 2. **One primary action per screen.** The green button. If two things look primary,
    one of them is wrong.
 3. **Colour carries meaning, never decoration.**

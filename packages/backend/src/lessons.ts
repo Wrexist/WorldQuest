@@ -156,7 +156,10 @@ export async function submitLesson(db: D1Database, owner: string, tokenHash: str
         WHERE a.id = ? AND a.revision = ? AND a.deleted_at IS NULL
         AND s.token_hash = ? AND s.expires_at > ?
       ) THEN 1 ELSE 0 END)`).bind(guardId, owner, account.revision, tokenHash, now),
-      db.prepare('INSERT INTO ledger (account_id, lesson_id, xp, coins) VALUES (?, ?, ?, ?)')
+      // Timestamp the commit, not the beginning of a request that may cross Monday.
+      // A late request must never add XP to an already frozen league week.
+      db.prepare(`INSERT INTO ledger (account_id, lesson_id, xp, coins, earned_at)
+        VALUES (?, ?, ?, ?, CAST((julianday('now')-2440587.5)*86400000 AS INTEGER))`)
         .bind(owner, input.lessonId, xpAwarded, coinsAwarded),
     ]
     statements.push(

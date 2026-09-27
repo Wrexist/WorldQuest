@@ -1,5 +1,20 @@
 # Social & leagues *(v2.0)*
 
+> **Private challenge pilot, September 27, 2026:** D1 invitations, identical
+> ten-question rounds, server scoring, silent hiding, blocking and a report queue
+> are implemented locally. This pilot uses a 96-bit invitation code, awards no XP
+> or coins, and excludes protected/unknown audience accounts. These are deliberate
+> narrower rules than the future friend-graph and reward concepts below. Rollout
+> stays disabled pending operator ownership and real-account acceptance. See the
+> [challenge delivery note](../engineering/d1-friend-challenges-2026-09-27.md).
+
+> **D1 implementation, September 27, 2026:** Local weekly placement, real lesson XP,
+> frozen rollover, coin-ledger podium awards, app reads and explicit enrollment now
+> exist. D1 leagues default to opt-out for every account; only verified eligible
+> accounts can opt in. Both deployment flags remain off. See the
+> [implementation and verification note](../engineering/d1-leagues-2026-09-27.md).
+> The August note below describes the historical legacy-backend work.
+
 > **Status, August 2026.** The league's *rules* and its *schema* have landed —
 > `packages/engines/src/leagues` (19 tests) and
 > `supabase/migrations/20260813100000_create_leagues.sql`. The client half has not, and

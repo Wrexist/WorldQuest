@@ -267,13 +267,13 @@ describe('type is set in a font that exists', () => {
   it('resolves a missing weight to the nearest one rather than to undefined', () => {
     // The fallback is a safety net, not a routine path — but a screen a user is
     // looking at should degrade to slightly-wrong type, never to a crash.
-    expect(fontFamily('display', '100')).toBe(typography.font.display['700'])
+    expect(fontFamily('display', '100')).toBe(typography.font.display['600'])
     expect(fontFamily('body', '900')).toBe(typography.font.body['800'])
   })
 
   it('builds a complete style from one call', () => {
     const h2 = text('h2')
-    expect(h2.fontFamily).toBe('Nunito_800ExtraBold')
+    expect(h2.fontFamily).toBe('Inter_700Bold')
     expect(h2.fontSize).toBe(typography.scale.h2.size)
     expect(h2.lineHeight).toBe(typography.scale.h2.lineHeight)
 

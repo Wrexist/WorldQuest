@@ -1,35 +1,6 @@
-import { onStorageScopeChange } from '../../lib/storage.js'
-/**
- * What the user owns, and what they are wearing.
- *
- * ## Optimistic, never authoritative
- *
- * A purchase is a coin spend, and coins are server-authoritative (ADR 0006) for the
- * same reason XP is: a client that debits its own wallet is a client that can mint
- * one. So `buy()` writes the item locally so the row flips to "Owned" in the same
- * frame, and calls `purchase_item` to perform the spend. `reconcileOwned` replaces the
- * local list with the server's on the next visit.
- *
- * Every sentence of that paragraph was true except the two that mattered. `buy()` wrote
- * the row and fired the analytics event and stopped: there was no spend, no endpoint to
- * spend against, and `setOwned` — described here as the reconcile — had no callers
- * anywhere in the repository. `coin_ledger` had never held a negative row and `inventory`
- * had never held any row, so the shop was free, permanently, for everyone. A comment
- * describing a mechanism is not the mechanism.
- *
- * The failure that matters is the reverse one — a user who bought something, went
- * offline, and found it gone. That is why ownership is written to device storage
- * rather than held in React state, and why nothing here ever REMOVES an item on its
- * own. A local row can be stale; it must not be able to lose a purchase.
- *
- * ## Equipping is purely local, and that is correct
- *
- * Which title you wear is a display preference, like the daily goal. It has no value,
- * nobody can cheat by changing it, and it should work instantly with no network. It
- * syncs upward so a new device shows the same hat; it is never read back as truth.
- */
-
-import { useCallback, useSyncExternalStore } from 'react'
+/** Server-confirmed ownership, account-scoped persistence and local equipment preferences. */
+import { onStorageScopeChange, captureStorage } from '../../lib/storage.js'
+import { useCallback, useRef, useState, useSyncExternalStore } from 'react'
 import { readJson, writeJson } from '../../lib/storage.js'
 import { track } from '../../lib/analytics.js'
 import { isConfigured } from '../../lib/supabase.js'
@@ -68,11 +39,7 @@ const subscribe = (l: () => void): (() => void) => {
   return () => listeners.delete(l)
 }
 
-/**
- * Records a purchase locally. Called after the spend is enqueued, never before —
- * the order matters only for the crash case, where an item owned but never paid for
- * is a better outcome than a payment with nothing to show for it.
- */
+/** Cache a purchase only after server confirmation. */
 function own(itemId: string): void {
   const next = snapshot()
   if (next.owned.includes(itemId)) return
@@ -83,6 +50,7 @@ function own(itemId: string): void {
 }
 
 function equip(id: string | null): void {
+  if (id !== null && !snapshot().owned.includes(id)) return
   cached = { ...snapshot(), equippedId: id }
   writeJson(EQUIPPED_KEY, { id })
   emit()
@@ -92,35 +60,8 @@ function equip(id: string | null): void {
 export function setOwned(ids: readonly string[]): void {
   cached = { ...snapshot(), owned: [...ids] }
   writeJson(OWNED_KEY, [...ids])
+  if (cached.equippedId !== null && !ids.includes(cached.equippedId)) equip(null)
   emit()
-}
-
-/**
- * Actually spend the coins.
- *
- * `purchase_item` is the one server action a client initiates directly, and it is safe to
- * expose because it takes only an item id: the price comes from `shop_items` and the user
- * from `auth.uid()`, so the worst a modified client can do is buy something it can afford.
- * Overdraft is refused by the `coins >= 0` check on the wallet, which rolls back the
- * ledger row and the inventory row together.
- *
- * Failure does NOT remove the local row, deliberately, and that is the same rule the
- * module header states: a stale "Owned" is recoverable on the next reconcile, and a
- * purchase that vanishes from under a ten-year-old is not. The server's answer is
- * authoritative in one direction here — it can only ever tell us we own MORE than we
- * thought, until `reconcileOwned` runs.
- */
-async function spend(itemId: string): Promise<void> {
-  if (!isConfigured()) return
-  try {
-    const { status } = await withAccount((account) => account.purchaseItem(itemId))
-    // The wallet moved, so whatever is showing a coin balance is now wrong.
-    if (status === 'purchased') invalidateProgress()
-  } catch {
-    // Swallowed on purpose. The item stays owned locally, `reconcileOwned` will correct
-    // it, and there is no version of "your purchase failed, try again" that belongs in
-    // front of a child mid-session.
-  }
 }
 
 /**
@@ -144,29 +85,46 @@ export type ShopState = {
   readonly owned: ReadonlySet<string>
   readonly equippedId: string | null
   /** `balanceAfter` is for the event only — the server computes the real one. */
-  readonly buy: (item: ShopItem, balanceAfter: number) => void
+  readonly buy: (item: ShopItem, balanceAfter: number) => Promise<void>
+  readonly pendingId: string | null
+  readonly purchaseError: boolean
   readonly equip: (id: string | null, kind?: string) => void
 }
 
 export function useShop(): ShopState {
   const stored = useSyncExternalStore(subscribe, snapshot, snapshot)
 
+  const [pendingId, setPendingId] = useState<string | null>(null)
+  const [purchaseError, setPurchaseError] = useState(false)
+  const busy = useRef(false)
+
   return {
+    pendingId, purchaseError,
     owned: new Set(stored.owned),
     equippedId: stored.equippedId,
-    buy: useCallback((item: ShopItem, balanceAfter: number) => {
-      // The client does NOT decide affordability here — the screen already asked the
-      // engine, and the server asks it again against the authoritative wallet.
-      own(item.id)
-      // `coins_spent` already existed in the registry, unused, waiting for a shop.
-      // A parallel `shop_item_purchased` would have split the sink metric in two.
-      track('coins_spent', { amount: item.price, item_id: item.id, balance_after: balanceAfter })
-      // And THEN actually spend them. This line is what the comment above has claimed
-      // since the shop was built: the optimistic write was real and the spend behind it
-      // never existed, so every item in this shop was free.
-      void spend(item.id)
+    buy: useCallback(async (item: ShopItem, balanceAfter: number) => {
+      if (busy.current || snapshot().owned.includes(item.id)) return
+      const scope = captureStorage()
+      busy.current = true
+      setPendingId(item.id)
+      setPurchaseError(false)
+      try {
+        if (!isConfigured()) throw new Error('Purchase requires a configured account service')
+        const result = await withAccount(account => account.purchaseItem(item.id))
+        if (!scope.isCurrent()) return
+        if (result.status !== 'purchased' && result.status !== 'owned') throw new Error('Purchase declined')
+        own(item.id)
+        invalidateProgress()
+        if (result.status === 'purchased') track('coins_spent', { amount: item.price, item_id: item.id, balance_after: balanceAfter })
+      } catch {
+        if (scope.isCurrent()) setPurchaseError(true)
+      } finally {
+        busy.current = false
+        setPendingId(null)
+      }
     }, []),
     equip: useCallback((id: string | null, kind = 'title') => {
+      if (id !== null && !snapshot().owned.includes(id)) return
       equip(id)
       track('cosmetic_equipped', { item_id: id ?? 'level_title', kind })
     }, []),

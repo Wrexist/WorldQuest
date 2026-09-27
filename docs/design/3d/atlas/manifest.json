@@ -1,0 +1,68 @@
+{
+  "frameSize": 256,
+  "frames": 48,
+  "fps": 20,
+  "decodedAtlasBytes": 12582912,
+  "files": {
+    "welcome-sheet.webp": {
+      "bytes": 1465032,
+      "sha256": "062c5cd852a42c11e0357c4d706043f2a79812ae8c5ee8a0ee28d495b968e93f"
+    },
+    "welcome-poster.webp": {
+      "bytes": 59318,
+      "sha256": "70c4813b39806b75c5ce4087f4d4847422e2f9bc5278ae6b865ba97df01add3c"
+    },
+    "welcome-pose.webp": {
+      "bytes": 62054,
+      "sha256": "604afa190b96b61019b443afc5c09fe10ac72b57962945e71bdf947d02dd3e9a"
+    },
+    "celebrate-sheet.webp": {
+      "bytes": 1427972,
+      "sha256": "73def5faaa3ac26dfe91447d0a26da7aea5a19c602375e2133c70f03c3b3355f"
+    },
+    "celebrate-poster.webp": {
+      "bytes": 62624,
+      "sha256": "62a2f2564a4e2d29dc28419bd7f078c451f3f950e9dc24ae274e8f3debaaba37"
+    },
+    "celebrate-pose.webp": {
+      "bytes": 53898,
+      "sha256": "6e1017a8cf04c9f82e57166c2eea3415fa233fe607654a96f74318755dd7fbd1"
+    },
+    "thinking-sheet.webp": {
+      "bytes": 1433866,
+      "sha256": "afb13acfc24a82a42a9a33a564deee3763b62928512b4d6ef9c3b04b7b1f9cab"
+    },
+    "thinking-poster.webp": {
+      "bytes": 59436,
+      "sha256": "44c0e4eaef5740692ebce1d4269ff5fcf9dce9416bd3929dc9b6f78d96e01020"
+    },
+    "thinking-pose.webp": {
+      "bytes": 58554,
+      "sha256": "bfc47f5595a2eb8c815440134b5cb2590ce3a46f390cd914dbe53c6ffccd0c8f"
+    },
+    "resting-sheet.webp": {
+      "bytes": 1444666,
+      "sha256": "78e268cbd2b547db8ca370a04e8bd63f8e54223a07d3a114a375ab1281225c8a"
+    },
+    "resting-poster.webp": {
+      "bytes": 59896,
+      "sha256": "5e0d7a2094636c614699749d62f36deaf8992f8f398fb54ee540eb93d44c6821"
+    },
+    "resting-pose.webp": {
+      "bytes": 60028,
+      "sha256": "4901f0ea939d1cda785fa68232055f5c3d84d5ac6d4eeda1549b01e1deba0c15"
+    },
+    "encouraging-sheet.webp": {
+      "bytes": 1470678,
+      "sha256": "17d2a55bb440c276d436ac1332425ac2966e47e92b91df1f80c32dcc5ddae6e9"
+    },
+    "encouraging-poster.webp": {
+      "bytes": 59468,
+      "sha256": "c2063c704b9821d78dce52885f1187f0cfac36bb97665b1883f83cb1d4c2d15c"
+    },
+    "encouraging-pose.webp": {
+      "bytes": 58530,
+      "sha256": "1c376d6574d21199d13579d60e1e07b93f34c9acfef9cabc4376408b89a1f1be"
+    }
+  }
+}

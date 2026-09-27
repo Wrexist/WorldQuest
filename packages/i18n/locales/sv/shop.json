@@ -37,5 +37,15 @@
   "shop:section.streak": "Svit",
   "shop:freeze.title": "Svitfrysning",
   "shop:freeze.body": "Täcker en missad dag. Du köper dem på sidan för din svit, där du ser vad de skyddar.",
-  "shop:freeze.cta": "Till din svit"
+  "shop:freeze.cta": "Till din svit",
+  "shop:unlock.title": "Ditt nästa mål",
+  "shop:unlock.title__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted.",
+  "shop:unlock.ready": "Du har tillräckligt med mynt — välj nedan",
+  "shop:unlock.ready__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted.",
+  "shop:unlock.progress": "{coins} / {price} mynt sparade",
+  "shop:unlock.progress__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted.",
+  "shop:purchase.pending": "Bekr?ftar ditt k?p?",
+  "shop:purchase.pending__note": "Purchase status. Ownership appears only after the server confirms it.",
+  "shop:purchase.failed": "K?pet kunde inte bekr?ftas. Anslut igen och f?rs?k p? nytt.",
+  "shop:purchase.failed__note": "Purchase status. Ownership appears only after the server confirms it."
 }

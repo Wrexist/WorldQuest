@@ -550,7 +550,7 @@ export function OnboardingScreen({
     const height = event.nativeEvent.layout.height
     // Only ever grows. Three slides report in some order and the tallest is the one that
     // has to fit; taking the last would size the band to whichever laid out last.
-    if (height > copyHeight + 1) setCopyHeight(height)
+    setCopyHeight(previous => height > previous + 1 ? height : previous)
   }
 
   /**
@@ -982,7 +982,7 @@ export function OnboardingScreen({
                         is the build's own. `t()` is typed per key, so passing `count` to
                         the two that do not take it would be a compile error — which is
                         why this is a conditional rather than a spread. */}
-                    <Text style={styles.body}>
+                    <Text style={[styles.body, styles.slideBody]}>
                       {s.body === 'onboarding:slide.3.body'
                         ? t(s.body, { count: countryCount })
                         : t(s.body)}
@@ -1599,7 +1599,10 @@ const styles = StyleSheet.create({
   },
   // `title` is shared with the taster step, which is not measured and still wants its
   // margins. Cancelled here rather than removed there.
-  slideTitle: { marginTop: 0, marginBottom: 0 },
+  // slideText already supplies the horizontal inset. Avoid doubling it: at
+  // 320pt with large text the extra inset adds lines that cannot fit the pager.
+  slideTitle: { marginTop: 0, marginBottom: 0, paddingHorizontal: 0 },
+  slideBody: { paddingHorizontal: 0 },
   // Fixed, so the picture does not move as the pages do. See HERO.
   hero: { height: HERO, alignItems: 'center', justifyContent: 'center' },
   centred: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: space[5] },

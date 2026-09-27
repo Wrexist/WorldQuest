@@ -1,19 +1,4 @@
-/**
- * This week's cohort, and whether the reader is in one at all.
- *
- * Server state, so TanStack Query rather than anything hand-rolled — and the standings
- * are the one screen in this app where a stale cache is genuinely wrong: a leaderboard
- * from yesterday is a different set of numbers presented as today's. It refetches on
- * focus for that reason.
- *
- * ## Placement is the server's job, not this hook's
- *
- * Nothing here creates a cohort or joins one. `league_members` has no client write
- * policy at all — the absence IS the control (`supabase/CLAUDE.md` rule 3) — so a user
- * appears in a cohort because the server placed them, and the client's entire role is
- * to read the result. That is also why "not in a league" is an ordinary state rather
- * than an error: until the weekly placement job runs, nobody is.
- */
+/** Owner-bound server standings. D1 places opted-in eligible accounts on read and freezes outcomes at the UTC week boundary. The client only presents that result. */
 
 import { useQuery } from '@tanstack/react-query'
 import type { LeagueCohort } from '@worldquest/api'
@@ -29,6 +14,7 @@ import { isConfigured } from '../../lib/supabase.js'
 import { withAccount } from '../../lib/backend.js'
 import { queryKeys } from '../../lib/query.js'
 import { readOnboarding } from '../onboarding/useOnboarding.js'
+import { useLeagueEnabled } from './flag.js'
 
 export type LeagueStatus = 'loading' | 'ready' | 'error'
 
@@ -60,20 +46,21 @@ export function useLeague(): UseLeague {
    * would be. `useOnboarding` explains why the flag is stored rather than recomputed.
    */
   const isChild = readOnboarding().isChild === true
+  const enabled = useLeagueEnabled() && isConfigured() && !isChild
 
   const query = useQuery({
     queryKey: queryKeys.league,
     queryFn: async (): Promise<LeagueCohort | null> => {
       return withAccount((account) => account.fetchLeague())
     },
-    enabled: isConfigured() && !isChild,
+    enabled,
     // A leaderboard from ten minutes ago is a different set of numbers presented as
     // now. Short, and refetched when the screen comes back into view.
     staleTime: 30_000,
     refetchOnWindowFocus: true,
   })
 
-  const cohort = query.data ?? null
+  const cohort = enabled ? query.data ?? null : null
   const rank = cohort === null ? null : rankOf(cohort)
 
   return {
@@ -84,7 +71,7 @@ export function useLeague(): UseLeague {
     rank,
     weekId: cohort?.weekId ?? null,
     status:
-      !isConfigured() || isChild
+      !enabled
         ? 'ready'
         : query.isPending && query.data === undefined
           ? 'loading'

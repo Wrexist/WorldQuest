@@ -1,3 +1,4 @@
+import { StreakGemCollection } from './StreakGemCollection.js'
 /**
  * The streak, and the two things that protect it.
  *
@@ -190,6 +191,8 @@ function MilestoneLadder({ current, broken }: { readonly current: number; readon
 }
 
 export type StreakScreenProps = {
+  readonly gemDays?: readonly string[] | undefined
+  readonly onOpenChest?: (() => void) | undefined
   readonly current: number
   readonly longest: number
   readonly freezesHeld: number
@@ -273,6 +276,8 @@ export type StreakScreenProps = {
 }
 
 export function StreakScreen({
+  gemDays,
+  onOpenChest,
   onBack,
   current,
   longest,
@@ -370,6 +375,8 @@ export function StreakScreen({
           run itself, each learned day joined to the next. It reads the same lesson log
           as Profile's week chart, so the two cannot disagree about a day. */}
       {month !== undefined && <MonthCalendar month={month} />}
+      {gemDays !== undefined && <StreakGemCollection days={gemDays} onOpenChest={onOpenChest} />}
+
 
       <MilestoneLadder current={current} broken={broken} />
 

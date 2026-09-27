@@ -215,7 +215,7 @@ export function standings(members: readonly LeagueMember[], rank: LeagueRank): r
   return ordered.map((member, i) => ({
     ...member,
     position: i + 1,
-    outcome: outcomeFor(i + 1, ordered.length, rank),
+    outcome: member.weeklyXp === 0 ? 'held' : outcomeFor(i + 1, ordered.length, rank),
   }))
 }
 

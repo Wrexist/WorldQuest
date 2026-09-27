@@ -76,5 +76,15 @@
   "shop:freeze.body": "Covers one missed day. You buy them on your streak page, where you can see what they protect.",
   "shop:freeze.body__note": "Shop row body. Explains why the purchase happens on the streak page rather than here.",
   "shop:freeze.cta": "Open streak",
-  "shop:freeze.cta__note": "Button on the Shop freeze row. Max 16 characters."
+  "shop:freeze.cta__note": "Button on the Shop freeze row. Max 16 characters.",
+  "shop:unlock.title": "Your next unlock",
+  "shop:unlock.title__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted.",
+  "shop:unlock.ready": "Enough coins saved — choose it below",
+  "shop:unlock.ready__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted.",
+  "shop:unlock.progress": "{coins} / {price} coins saved",
+  "shop:unlock.progress__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted.",
+  "shop:purchase.pending": "Confirming your purchase?",
+  "shop:purchase.pending__note": "Purchase status. Ownership appears only after the server confirms it.",
+  "shop:purchase.failed": "Your purchase could not be confirmed. Reconnect and try again.",
+  "shop:purchase.failed__note": "Purchase status. Ownership appears only after the server confirms it."
 }

@@ -11,7 +11,7 @@
  */
 
 import { Tabs } from 'expo-router'
-import { TabBar, colors, layout } from '@worldquest/design'
+import { TabBar, layout, colors } from '@worldquest/design'
 import { Icon } from '../../src/components/Icon.js'
 import type { IconName } from '../../src/lib/icons.generated.js'
 import { useT, type TranslationKey } from '../../src/lib/i18n.js'
@@ -46,7 +46,6 @@ const TABS: readonly { name: string; icon: IconName; labelKey: TranslationKey }[
 ]
 
 /** The icon is decorative — the tab is already labelled and announces its own name. */
-const TAB_ICON_SIZE = 22
 
 export default function TabsLayout() {
   const t = useT()
@@ -59,7 +58,7 @@ export default function TabsLayout() {
         // The TAB BAR is deliberately outside this: it is chrome and belongs to the
         // device edge, while the content is a column and belongs to a readable width.
         sceneStyle: {
-          backgroundColor: 'transparent',
+          backgroundColor: colors.bg.canvas,
           width: '100%',
           maxWidth: layout.maxContentWidth,
           alignSelf: 'center',
@@ -72,13 +71,7 @@ export default function TabsLayout() {
             // Tinted per state rather than dimmed with opacity: the inactive colour
             // is a token that passes contrast on the bar's own background, and an
             // opacity would quietly take it below the floor.
-            icon: (active: boolean) => (
-              <Icon
-                name={tab.icon}
-                size={TAB_ICON_SIZE}
-                color={active ? colors.text.onAccent : colors.text.tertiary}
-              />
-            ),
+            icon: (active: boolean) => <Icon name={tab.icon} size={24} color={active ? colors.action.primary : colors.text.tertiary} />,
             label: t(tab.labelKey),
           }))}
           activeKey={state.routes[state.index]?.name ?? 'index'}

@@ -20,5 +20,7 @@
   "common:progress.count": "{current} / {total}",
   "common:progress.count__note": "Progress like 172 / 195. Tabular numerals.",
   "common:loading": "Loading",
-  "common:loading__note": "Accessibility label for a loading screen."
+  "common:loading__note": "Accessibility label for a loading screen.",
+  "common:appName": "WorldQuest",
+  "common:appName__note": "Product wordmark in the persistent header. Brand name; do not translate."
 }

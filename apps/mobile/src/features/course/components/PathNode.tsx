@@ -43,9 +43,11 @@ import {
 } from '@worldquest/design'
 import { tContent, useT } from '../../../lib/i18n.js'
 import { Icon } from '../../../components/Icon.js'
+import { DaylightIllustration } from '../../../components/DaylightIllustration.js'
 import type { IconName } from '../../../lib/icons.generated.js'
 import type { PathNodeView } from '../pathView.js'
 import { PathBubble } from './PathBubble.js'
+import { LessonRing } from './LessonRing.js'
 import {
   BADGE,
   BADGE_GLYPH,
@@ -57,6 +59,7 @@ import {
 } from './pathGeometry.js'
 
 export type PathNodeProps = {
+  readonly compact?: boolean
   readonly node: PathNodeView
   /** Steps in the whole course, for "Step 3 of 7". */
   readonly total: number
@@ -75,10 +78,10 @@ type Skin = { readonly face: string; readonly edge: string; readonly ring: strin
 
 const SKINS: Record<PathNodeView['state'], Skin> = {
   current: {
-    face: colors.action.primary,
+    face: colors.action.primaryFace,
     edge: colors.action.primaryEdge,
     ring: null,
-    glyph: colors.text.onAccent,
+    glyph: colors.text.onPrimary,
   },
   done: {
     face: colors.bg.surfaceRaised,
@@ -98,16 +101,23 @@ const SKINS: Record<PathNodeView['state'], Skin> = {
 
 /** A finished check is a trophy in gold — earned — rather than one more tick. */
 const DONE_CHECK: Skin = { ...SKINS.done, ring: colors.reward.xp, glyph: colors.reward.xp }
+const PLATFORM_SKINS: Record<PathNodeView['state'], Skin> = {
+  current: { face: colors.course.face, edge: colors.course.edge, ring: null, glyph: colors.course.ink },
+  done: { face: colors.course.banner, edge: colors.course.bannerEdge, ring: null, glyph: colors.text.onPrimary },
+  locked: { face: colors.course.stone, edge: colors.course.stoneEdge, ring: null, glyph: colors.course.stoneInk },
+}
 
-export function PathNode({ node, total, swing, column, expanded, onPress, onLayout }: PathNodeProps) {
+export function PathNode({ node, total, swing, column, expanded, onPress, onLayout, compact = false }: PathNodeProps) {
   const t = useT()
   const current = node.state === 'current'
   const size = current ? CURRENT_NODE : NODE
-  const skin = node.state === 'done' && node.kind === 'check' ? DONE_CHECK : SKINS[node.state]
+  const skin = compact ? PLATFORM_SKINS[node.state] : node.state === 'done' && node.kind === 'check' ? DONE_CHECK : SKINS[node.state]
   const glyph: IconName = node.state === 'done' ? (node.kind === 'check' ? 'trophy' : 'check') : node.icon
-  const { translateY, onPressIn, onPressOut } = useFacePress(depth.button)
-  const pop = useCelebration(node.state)
-  const bob = useBob(current)
+  const rise = compact ? space[2] : depth.button
+  const faceHeight = size
+  const { translateY, onPressIn, onPressOut } = useFacePress(rise)
+  const pop = useCelebration(`${node.state}:${node.finished}`)
+  const bob = useBob(current && !compact)
 
   const objective = tContent(node.objectiveKey, { count: node.count })
   // The lesson that comes next, counting from one; a step never reads "Lesson 3 of 2".
@@ -126,33 +136,39 @@ export function PathNode({ node, total, swing, column, expanded, onPress, onLayo
   const offset = physicalSwing(swing)
   const circle = (
     <Animated.View
+      testID="platform-socket"
       style={[
         press3d.socket,
         styles.socket,
+        compact && styles.trailSocket,
         {
           width: size,
-          height: size + depth.button,
+          height: faceHeight + rise,
           transform: [{ translateX: current ? offset : 0 }, { scale: pop }],
         },
       ]}
     >
+      {compact && current && <View style={{ position: 'absolute', top: rise / 2, start: 0, width: size, height: size }}><LessonRing finished={node.finished} lessons={node.lessons} /></View>}
       {/* The edge: sized by `top` and the socket's own bottom, as in `Button`, so it is
           exactly the face's circle, `depth.button` lower. */}
-      <View style={[press3d.edge, styles.round, { top: depth.button, backgroundColor: skin.edge }]} />
+      <View style={[press3d.edge, styles.round, { top: rise, backgroundColor: skin.edge }]} />
       <Animated.View
+        testID="platform-face"
         style={[
           styles.round,
           styles.face,
-          current && styles.halo,
+
           {
             width: size,
-            height: size,
+            height: faceHeight,
             backgroundColor: skin.face,
             transform: [{ translateY }],
           },
           skin.ring !== null && { borderWidth: 2, borderColor: skin.ring },
+          compact && { borderWidth: 0, overflow: 'hidden' },
         ]}
       >
+        {compact && node.state !== 'locked' && <View pointerEvents="none" aria-hidden style={styles.platformShine} />}
         <Icon name={glyph} size={current ? CURRENT_GLYPH : NODE_GLYPH} color={skin.glyph} />
       </Animated.View>
       {node.state === 'locked' && (
@@ -164,7 +180,12 @@ export function PathNode({ node, total, swing, column, expanded, onPress, onLayo
   )
 
   return (
-    <View style={styles.row} onLayout={onLayout}>
+    <View style={[styles.row, compact && { height: 88, justifyContent: 'center' }]} onLayout={onLayout}>
+      {!compact && !current && node.kind === 'check' && (
+        <View style={styles.scenery} pointerEvents="none" aria-hidden>
+          <DaylightIllustration name="treasure-chest" size={NODE} />
+        </View>
+      )}
       <Pressable
         onPress={onPress}
         onPressIn={onPressIn}
@@ -176,16 +197,16 @@ export function PathNode({ node, total, swing, column, expanded, onPress, onLayo
         testID={`path-node-${node.state}`}
         style={current ? styles.stretch : { transform: [{ translateX: offset }] }}
       >
-        {current && (
+        {current && !compact && (
           // Stretched, so the callout spans the column and its tail — placed from the
           // column's start edge — lands over the step at every width, not only at 320.
           <Animated.View style={[styles.callout, { transform: [{ translateY: bob }] }]}>
             <PathBubble pointing="down" tailAt={column / 2 + swing} width={column} tone="current">
-              <Text style={styles.start}>{t('home:path.start')}</Text>
+              <View style={styles.calloutHeader}>
+                <Text style={styles.start}>{t('home:path.start')}</Text>
+                <Text style={styles.lesson}>{t('home:path.lesson', { lesson, lessons: node.lessons })}</Text>
+              </View>
               <Text style={styles.objective}>{objective}</Text>
-              <Text style={styles.lesson}>
-                {t('home:path.lesson', { lesson, lessons: node.lessons })}
-              </Text>
             </PathBubble>
           </Animated.View>
         )}
@@ -228,22 +249,20 @@ function useBob(active: boolean): Animated.Value {
 
 const styles = StyleSheet.create({
   row: { alignSelf: 'stretch', alignItems: 'center' },
+  scenery: { position: 'absolute', start: space[5], bottom: 0 },
   // The current step's target spans the column so its callout can; every other step's
   // target is exactly its circle.
   stretch: { alignSelf: 'stretch', alignItems: 'center', gap: space[3] },
   callout: { alignSelf: 'stretch' },
+  calloutHeader: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2], alignItems: 'center', justifyContent: 'space-between' },
   socket: { alignItems: 'center' },
+  trailSocket: { borderRadius: radius.full },
+  platformShine: { position: 'absolute', top: -space[4], start: space[4], width: space[4], height: 96, backgroundColor: colors.course.shine, opacity: .5, transform: [{ rotate: '38deg' }] },
   round: { borderRadius: radius.full },
   face: { alignItems: 'center', justifyContent: 'center' },
   // The primary's halo, the once-per-screen exception R2 allows — the same values the
   // primary `Button` uses, so the current step and a primary button glow alike.
-  halo: {
-    shadowColor: colors.action.primaryGlow,
-    shadowOpacity: 0.22,
-    shadowRadius: space[2],
-    shadowOffset: { width: 0, height: space[1] },
-    elevation: space[1],
-  },
+
   badge: {
     position: 'absolute',
     end: -space[1],

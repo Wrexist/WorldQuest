@@ -1,5 +1,19 @@
 # Design system
 
+## Course platforms — September 27, 2026
+
+The home course now uses a clean canvas and raised oval lesson platforms. Landscape
+art must not sit behind the lesson path. `color.course` supplies the emerald section
+banner, turquoise face, dark extruded edge, stone future steps and progress-ring
+track. The lesson panel follows its platform in reading order and expands in normal
+flow for large text. Existing destination artwork remains in Explore and Passport.
+
+> **Current visual contract (September 26, 2026):** token version 3 and
+> [Daylight expedition](daylight-redesign.md) supersede the dark palette, card
+> gradients, glow, and artwork descriptions below. Token APIs, localization,
+> target sizes, and reduced-motion requirements still apply. Older visual
+> specifications below are retained as migration history.
+
 The full spec. [`../../PROJECT.md §8`](../../PROJECT.md#8-design-system) has the
 summary; this is the reference you build components from.
 
@@ -374,3 +388,35 @@ value that doesn't exist, add the token.
 
 CI checks: no hex literals outside `tokens.json` · no numeric spacing outside the
 scale · no font size outside the type scale.
+
+### League tier and adventure colors
+
+League banners now use `colors.league[tier]`: bronze copper, silver ice-blue,
+bright gold, sapphire blue, ruby pink, diamond aqua and legend violet. Each provides
+light/dark gradient stops, a contrasting ink color, a metallic edge and a light
+inset division badge. Tier names remain visible; color is never the only signal.
+
+The first-lesson card uses the dedicated aqua `leagueAdventure` palette and
+a standalone rendered globe, without a colored disc. Its `adventure` button variant uses a blue face and darker press
+edge. Every tier stop, badge and adventure text/button pair is contrast-checked.
+The layout wraps for large text and keeps the action in scrollable content.
+
+### Unified application palette — September 27
+
+The five tabs and secondary screens share warm paper, midnight navy text, white
+cards, blue navigation/selection, emerald progress and gold earned rewards. Shared
+journey fields now use clear sky, mint, sand and lavender rather than gray-green
+variants. League tier colors remain meaningful exceptions. Active tabs use the
+same blue field as selected answers and navigation cards. Button contrast remains
+above the body-text floor; selected answers retain both a mark and selected state.
+
+Explore, Quests, Shop, Passport and private challenges share 16-point content
+gutters and section spacing. Wallet and daily rewards share the sand field; the
+streak-freeze panel uses sky. Friends uses the same AnswerOption and ProgressBar
+as lessons, including their existing reduced-motion behavior. No new animation
+engine or decorative looping background was introduced.
+
+Verification for the league color pass (2026-09-27): 18 league tests, mobile
+TypeScript, accessibility lint and all 114 contrast pairs pass. Actual D1-backed
+browser screenshots were reviewed at 320/390/768px, including 200% text with the
+lesson action reachable. Evidence: `reviews/league-colors-2026-09-27/report.json`.

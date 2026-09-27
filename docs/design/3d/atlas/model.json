@@ -1,0 +1,30 @@
+{
+  "author": "WorldQuest original procedural geometry",
+  "clips": [
+    {
+      "name": "welcome",
+      "duration": 2.4,
+      "tracks": 36
+    },
+    {
+      "name": "celebrate",
+      "duration": 2.4,
+      "tracks": 36
+    },
+    {
+      "name": "thinking",
+      "duration": 2.4,
+      "tracks": 36
+    },
+    {
+      "name": "resting",
+      "duration": 2.4,
+      "tracks": 36
+    },
+    {
+      "name": "encouraging",
+      "duration": 2.4,
+      "tracks": 36
+    }
+  ]
+}

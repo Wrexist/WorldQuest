@@ -167,9 +167,9 @@ export default function LessonRoute() {
         // A step on the course path earns its lesson here, before Home is shown again, so
         // the path Home draws is the one this lesson produced. Only a finished lesson, and
         // only on a step that is open (`creditLesson` refuses a locked one).
-        if (completed && fromCourse !== null && courseStep?.kind === 'node') {
-          recordCourseLesson(fromCourse.course, courseStep.nodeId)
-        }
+        const credited = completed && fromCourse !== null && courseStep?.kind === 'node'
+          ? recordCourseLesson(fromCourse.course, courseStep.nodeId)
+          : false
         // Duolingo's rhythm: the lesson (summary, already shown), then the day (the
         // streak), then the daily quest, then any badge, then anything we want from the
         // learner. The order and its reasons live in `afterLesson.ts`.
@@ -183,6 +183,7 @@ export default function LessonRoute() {
         // "there's nothing to buy here yet" is a dead end App Review rejects (2.1) and
         // a learner reads as a bait-and-switch. Never to a subscriber, never to a child.
         const steps = planAfterLesson({
+          revealJourney: credited,
           completed,
           countedTodayBefore: receipt?.streak ? !receipt.streak.extended : countedTodayBefore,
           questCompleted: receipt?.quest ? receipt.quest.coins > 0 : summary.questCompleted,

@@ -139,21 +139,18 @@ const SKINS: Record<AnswerState, Skin> = {
     face: colors.option.selected,
     edge: colors.option.selectedEdge,
     label: colors.text.primary,
-    glow: colors.option.selectedEdge,
     badgeFill: colors.option.selectedEdge,
   },
   correct: {
     face: colors.option.correct,
     edge: colors.feedback.correct,
     label: colors.text.primary,
-    glow: colors.feedback.correct,
     badgeFill: colors.feedback.correct,
   },
   wrong: {
     face: colors.option.wrong,
     edge: colors.status.hearts,
     label: colors.text.primary,
-    glow: colors.status.hearts,
     // The one state that most needs the non-colour signal was the one state missing it.
     // `selected` and `correct` both fill their badge; `wrong` drew its arrow on the bare
     // track, so the strongest thing distinguishing the option a user got wrong from an

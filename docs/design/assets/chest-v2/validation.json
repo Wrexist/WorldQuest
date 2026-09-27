@@ -1,0 +1,43 @@
+{
+  "source": "scripts/build-chest-v2.py + docs/design/3d/chest.scene.js (3d-asset-studio)",
+  "author": "WorldQuest original procedural geometry",
+  "license": "Project-owned original artwork; no external meshes or textures",
+  "frames": 40,
+  "fps": 20,
+  "sheet": {
+    "width": 2560,
+    "height": 1600,
+    "columns": 8,
+    "frameSize": 320
+  },
+  "files": {
+    "chest-sheet.webp": {
+      "bytes": 1232142,
+      "sha256": "46948b22fbde2a448460e624cbf4d842422090dba59f1a1da4c22db69e61ce16"
+    },
+    "chest-closed.webp": {
+      "bytes": 39768,
+      "sha256": "f7fc74614091a7b6ca68b7660ed79721a90ad0055c91ecd860b4704361a0ce98"
+    },
+    "chest-opened.webp": {
+      "bytes": 45150,
+      "sha256": "4113a825c94e1e2b14189697bc5e3e45942de8c1d3bf113101da081fef82c673"
+    },
+    "chest-gem.webp": {
+      "bytes": 4574,
+      "sha256": "dba70fa176e98a71b2ea8ec02eed6e816af76bf29707c201cc46f592e3ede97c"
+    },
+    "studio-coins.webp": {
+      "bytes": 6218,
+      "sha256": "e890452f9f71e1352d3e40f3aa92c1734e78eaf7aadad0f1832c1dea316e6ca0"
+    },
+    "studio-heart.webp": {
+      "bytes": 5284,
+      "sha256": "d1596a8edd3024a2a1e834f2f67b92ad7e0f1cca461a5de52cfb14a5a133111e"
+    },
+    "studio-star.webp": {
+      "bytes": 6780,
+      "sha256": "b0e0b4b7cf67d63daa0e1bf6caeeadea07ae2acd5146a9c99c1562149ea860ec"
+    }
+  }
+}

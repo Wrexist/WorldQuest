@@ -76,6 +76,9 @@ export function generateDailyQuest(input: GenerateInput): DailyQuest {
   const weak: { factId: FactId; stability: number }[] = []
 
   for (const fact of index.facts.values()) {
+    // The catalogue also holds facts withheld from quizzes (and facts without a
+    // matching template). A daily goal must never require an unaskable fact.
+    if ((index.itemsByFact.get(fact.id)?.length ?? 0) === 0) continue
     const state = memory.get(fact.id)
     if (state === undefined) {
       unseen.push(fact.id)

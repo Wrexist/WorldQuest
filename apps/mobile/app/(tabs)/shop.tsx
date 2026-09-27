@@ -43,6 +43,8 @@ export default function ShopRoute() {
       catalogue={CATALOGUE}
       coins={coins}
       owned={shop.owned}
+      pendingId={shop.pendingId}
+      purchaseError={shop.purchaseError}
       equippedId={shop.equippedId}
       levelTitleKey={level.titleKey}
       loading={status === 'loading'}
@@ -55,7 +57,7 @@ export default function ShopRoute() {
       // Same destination as the other tabs' bell.
       streak={shown?.streak ?? 0}
       onOpenStreak={() => router.push('/streak')}
-      onBuy={(item) => shop.buy(item, coins - item.price)}
+      onBuy={(item) => void shop.buy(item, coins - item.price)}
       onEquip={(id) => shop.equip(id)}
     />
   )

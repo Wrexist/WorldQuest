@@ -31,8 +31,8 @@
   "profile:account.body": "Add an email address to sign in to your account on another phone.",
   "profile:account.cta": "Create an account",
   "profile:account.cta__note": "Button label. Max 20 characters.",
-  "profile:empty.title": "Nothing to show yet",
-  "profile:empty.body": "Finish your first lesson and your numbers will start here.",
+  "profile:empty.title": "Your explorer passport",
+  "profile:empty.body": "Every country starts with a little curiosity. Take your first lesson and begin your collection.",
   "profile:empty.cta": "Start a lesson",
   "profile:empty.cta__note": "Button in the Profile empty state. The body copy tells the user to finish a lesson; this is the control that starts one. Max 18 characters.",
   "profile:levelTitle": "Level {level} · {title}",
@@ -57,5 +57,7 @@
   "profile:league.title__note": "Navigation row on Profile that opens the weekly league. It existed only as a link from Home, so the one screen a person checks for their own standing did not offer it. Keep it factual — it is a link, not a boast.",
   "profile:league.body": "See where you stand against 29 other explorers this week.",
   "profile:league.body__note": "Navigation row on Profile that opens the weekly league. It existed only as a link from Home, so the one screen a person checks for their own standing did not offer it. Keep it factual — it is a link, not a boast.",
-  "profile:account.body__note": "Current account capability. Signing in on a second phone is verified on the web build against the Worker (pnpm e2e:d1); preferences stay on each device, so never promise that everything carries over."
+  "profile:account.body__note": "Current account capability. Signing in on a second phone is verified on the web build against the Worker (pnpm e2e:d1); preferences stay on each device, so never promise that everything carries over.",
+  "profile:adventure.title": "Your next discovery",
+  "profile:adventure.title__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted."
 }

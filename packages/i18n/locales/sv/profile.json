@@ -16,8 +16,8 @@
   "profile:account.title": "Koppla din e-post",
   "profile:account.body": "Lägg till en e-postadress för att kunna logga in på ditt konto på en annan telefon.",
   "profile:account.cta": "Skapa ett konto",
-  "profile:empty.title": "Inget att visa ännu",
-  "profile:empty.body": "Gör din första lektion så börjar dina siffror här.",
+  "profile:empty.title": "Ditt upptäckarpass",
+  "profile:empty.body": "Varje land börjar med lite nyfikenhet. Gör din första lektion och börja din samling.",
   "profile:empty.cta": "Starta en lektion",
   "profile:levelTitle": "Nivå {level} · {title}",
   "profile:week.title": "Denna vecka",
@@ -30,5 +30,7 @@
   "profile:stats.longest.short": "bäst {days}",
   "profile:league.title": "Liga",
   "profile:league.body": "Se hur du ligger till mot 29 andra utforskare den här veckan.",
-  "profile:account.body__note": "Current account capability. Do not promise full recovery before second-device verification."
+  "profile:account.body__note": "Current account capability. Do not promise full recovery before second-device verification.",
+  "profile:adventure.title": "Din nästa upptäckt",
+  "profile:adventure.title__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted."
 }

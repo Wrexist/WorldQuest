@@ -1,0 +1,318 @@
+{
+  "routes": {
+    "home": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 93,
+        "emptiestBand": {
+          "px": 20,
+          "percentOfViewport": 4,
+          "startsAtPercent": 42
+        },
+        "headings": [
+          "Explorer!",
+          "Unit 1First countries",
+          "Unit 2Across the continents",
+          "Today's Quest"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 85,
+        "emptiestBand": {
+          "px": 28,
+          "percentOfViewport": 3,
+          "startsAtPercent": 7
+        },
+        "headings": [
+          "Explorer!",
+          "Unit 1First countries",
+          "Unit 2Across the continents",
+          "Today's Quest"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 82,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 4,
+          "startsAtPercent": 82
+        },
+        "headings": [
+          "Explorer!",
+          "Unit 1First countries",
+          "Unit 2Across the continents",
+          "Today's Quest"
+        ]
+      }
+    },
+    "explore": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 82,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 6,
+          "startsAtPercent": 11
+        },
+        "headings": [
+          "Explore"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 84,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 4,
+          "startsAtPercent": 7
+        },
+        "headings": [
+          "Explore"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 87,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 4,
+          "startsAtPercent": 6
+        },
+        "headings": [
+          "Explore"
+        ]
+      }
+    },
+    "profile": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 94,
+        "emptiestBand": {
+          "px": 20,
+          "percentOfViewport": 4,
+          "startsAtPercent": 82
+        },
+        "headings": [
+          "Your explorer passport"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 90,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 4,
+          "startsAtPercent": 7
+        },
+        "headings": [
+          "Your explorer passport"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": null,
+        "contentDensity": 91,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 4,
+          "startsAtPercent": 6
+        },
+        "headings": [
+          "Your explorer passport"
+        ]
+      }
+    },
+    "shop": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 86,
+        "emptiestBand": {
+          "px": 24,
+          "percentOfViewport": 4,
+          "startsAtPercent": 11
+        },
+        "headings": [
+          "Shop",
+          "Titles",
+          "More to come"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 87,
+        "emptiestBand": {
+          "px": 24,
+          "percentOfViewport": 3,
+          "startsAtPercent": 7
+        },
+        "headings": [
+          "Shop",
+          "Titles",
+          "More to come"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 86,
+        "emptiestBand": {
+          "px": 24,
+          "percentOfViewport": 2,
+          "startsAtPercent": 6
+        },
+        "headings": [
+          "Shop",
+          "Titles",
+          "More to come"
+        ]
+      }
+    },
+    "achievements": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 83,
+        "emptiestBand": {
+          "px": 32,
+          "percentOfViewport": 6,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Achievements",
+          "Close",
+          "Everything else"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 87,
+        "emptiestBand": {
+          "px": 32,
+          "percentOfViewport": 4,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Achievements",
+          "Close",
+          "Everything else"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 88,
+        "emptiestBand": {
+          "px": 32,
+          "percentOfViewport": 3,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Achievements",
+          "Close",
+          "Everything else"
+        ]
+      }
+    },
+    "settings": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 80,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 8,
+          "startsAtPercent": 11
+        },
+        "headings": [
+          "Settings",
+          "Learning",
+          "Daily goal",
+          "Account"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 78,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 5,
+          "startsAtPercent": 8
+        },
+        "headings": [
+          "Settings",
+          "Learning",
+          "Daily goal",
+          "Account"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 80,
+        "emptiestBand": {
+          "px": 44,
+          "percentOfViewport": 4,
+          "startsAtPercent": 6
+        },
+        "headings": [
+          "Settings",
+          "Learning",
+          "Daily goal",
+          "Account"
+        ]
+      }
+    }
+  },
+  "states": {},
+  "generatedAt": null
+}

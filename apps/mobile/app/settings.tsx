@@ -143,7 +143,7 @@ export default function SettingsRoute() {
       // Under-13s are never placed in a cohort, so a switch to join one would be one
       // more control that does nothing.
       {...(leagueOn && !account.isChild
-        ? { league: { joined: league.joined, onChange: league.setJoined } }
+        ? { league: { joined: league.joined, onChange: league.setJoined, busy: league.busy || league.loading, error: league.error } }
         : {})}
       reminder={{
         ...reminder,

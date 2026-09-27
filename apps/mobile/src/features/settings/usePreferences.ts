@@ -14,6 +14,7 @@
 
 import { useCallback, useRef, useState } from 'react'
 import { SUPPORTED_LOCALES, setLocale, type Locale } from '@worldquest/i18n'
+import { setAppReducedMotion } from '@worldquest/design'
 import { isRecord, readJson, writeJson } from '../../lib/storage.js'
 import { deviceLocale } from '../../lib/locale.js'
 import { track } from '../../lib/analytics.js'
@@ -178,6 +179,7 @@ export function usePreferences(): UsePreferences {
       latest.current = next
       writeJson(KEY, next)
       setPreferences(next)
+      if (key === 'reduceMotion') setAppReducedMotion(value as boolean)
 
       // The setting and its new value, never anything about who changed it. A
       // preference is a design input in aggregate — "12 % of users turn motion down"
@@ -199,3 +201,8 @@ export function usePreferences(): UsePreferences {
 }
 
 export const LANGUAGE_CHOICES: readonly LanguageChoice[] = ['system', ...SUPPORTED_LOCALES]
+
+/** Apply persisted accessibility preferences before the first screen mounts. */
+export function initializeMotionPreference(): void {
+  setAppReducedMotion(load().reduceMotion)
+}

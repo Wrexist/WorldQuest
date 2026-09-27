@@ -1,0 +1,19 @@
+{
+ "name": "atlas",
+ "generator": "3d-asset-studio",
+ "mode": "sequence",
+ "look": "photoreal",
+ "frame": {
+  "width": 400,
+  "height": 400
+ },
+ "sequence": {
+  "frames": 48,
+  "fps": 20,
+  "loop": false,
+  "pattern": "frames/{i}.webp",
+  "pad": 3,
+  "turntable": false
+ },
+ "animatedWebp": "atlas.webp"
+}

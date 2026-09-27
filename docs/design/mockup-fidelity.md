@@ -1,5 +1,11 @@
 # Mockup fidelity
 
+> The owner's September 26, 2026 redesign intentionally supersedes the dark
+> mockup's palette, photographic artwork, glows and card treatment. See
+> [Daylight expedition](daylight-redesign.md) for the current design and assets.
+> The older comparison below is historical; behavioral and accessibility
+> requirements continue to apply.
+
 How close the built app is to [`assets/mockup-v1.png`](assets/mockup-v1.png), what
 still separates them, and which differences are **deliberate**.
 

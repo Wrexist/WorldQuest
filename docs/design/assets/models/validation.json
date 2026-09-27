@@ -1,0 +1,64 @@
+{
+  "tool": "scripts/validate-daylight-models.cjs",
+  "scope": "Static GLB validation only. Blender preview renders reviewed separately; no native GPU performance claim.",
+  "models": [
+    {
+      "name": "atlas-companion",
+      "bytes": 410164,
+      "triangles": 16416,
+      "animations": [
+        {
+          "name": "Atlas attentive nod",
+          "channels": 1,
+          "seconds": 3
+        },
+        {
+          "name": "Atlas hello wave",
+          "channels": 1,
+          "seconds": 3
+        }
+      ],
+      "sha256": "470d975bafa733e62b5c8f5bcf18bf627e559b272bfe82eca74a60c565af02e9"
+    },
+    {
+      "name": "globe",
+      "bytes": 213292,
+      "triangles": 9900,
+      "animations": [
+        {
+          "name": "Globe rotation",
+          "channels": 1,
+          "seconds": 3
+        }
+      ],
+      "sha256": "8225c837af6d98bdb57f5868d0b92ba83a2680bf6d920c5e0b2bf170ac5d021c"
+    },
+    {
+      "name": "treasure-chest",
+      "bytes": 62944,
+      "triangles": 2576,
+      "animations": [
+        {
+          "name": "Treasure reveal",
+          "channels": 1,
+          "seconds": 3
+        }
+      ],
+      "sha256": "86b2a4b015827c42e57dd334d4e12ba594f13bda114b2c45a2cddac762b968d1"
+    },
+    {
+      "name": "star-trophy",
+      "bytes": 33044,
+      "triangles": 1376,
+      "animations": [],
+      "sha256": "3df093c01d58d340dad41ab67610b83fb0cd927940fbbffdea153f77bab52f88"
+    },
+    {
+      "name": "heart",
+      "bytes": 67244,
+      "triangles": 2584,
+      "animations": [],
+      "sha256": "0bcc5a76180f6568a68d13b88040bf40085e65d23a0ab9a2979e33be7d2b6f40"
+    }
+  ]
+}

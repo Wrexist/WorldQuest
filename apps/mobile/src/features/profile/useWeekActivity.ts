@@ -10,10 +10,13 @@
  * about the shape of their week.
  */
 
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react'
+import { AppState } from 'react-native'
+import { onStorageScopeChange } from '../../lib/storage.js'
 import { isFiniteNumber, isNumberRecord, readJson, writeJson } from '../../lib/storage.js'
 import { localDay } from '../../lib/day.js'
 import { currentLocale } from '../../lib/i18n.js'
+import { useFocusFinished } from '../../lib/d1-memory.js'
 
 /** `YYYY-MM-DD` → lessons completed. Written by the lesson runner on completion. */
 const KEY = 'activity.byDay.v1'
@@ -27,6 +30,15 @@ const KEY = 'activity.byDay.v1'
  * again every time their history aged out.
  */
 const TOTAL_KEY = 'activity.total.v1'
+let revision = 0
+const listeners = new Set<() => void>()
+const notifyActivity = () => { revision++; listeners.forEach(listener => listener()) }
+const subscribeActivity = (listener: () => void) => {
+  listeners.add(listener)
+  return () => { listeners.delete(listener) }
+}
+const snapshotActivity = () => revision
+onStorageScopeChange(notifyActivity)
 
 export type WeekDay = { readonly day: string; readonly count: number }
 
@@ -48,6 +60,20 @@ export function useWeekActivity(): readonly WeekDay[] {
   // The app's language, not the device's: the letters sit beside Swedish words when the
   // app is in Swedish on an English phone. A key, so a language switch redraws them.
   const locale = currentLocale()
+  // The same server snapshot publishes the restored day log and course progress.
+  const serverSnapshot = useFocusFinished()
+  const version = useSyncExternalStore(subscribeActivity, snapshotActivity, snapshotActivity)
+  const [day, setDay] = useState(() => localDay(new Date()))
+  useEffect(() => {
+    const tick = () => setDay(localDay(new Date()))
+    const now = new Date()
+    const midnight = new Date(now)
+    midnight.setHours(24, 0, 1, 0)
+    const timer = setTimeout(tick, midnight.getTime() - now.getTime())
+    const sub = AppState.addEventListener('change', state => { if (state === 'active') tick() })
+    return () => { clearTimeout(timer); sub?.remove?.() }
+  }, [day])
+
   return useMemo(() => {
     const log = readJson<Record<string, number>>(KEY, isNumberRecord) ?? {}
     const today = new Date()
@@ -62,7 +88,8 @@ export function useWeekActivity(): readonly WeekDay[] {
         count: log[isoDay(at)] ?? 0,
       }
     })
-  }, [locale])
+  }, [locale, day, version, serverSnapshot])
+
 }
 
 /**
@@ -113,4 +140,5 @@ export function recordLessonCompleted(now: Date = new Date()): void {
   for (const key of Object.keys(log)) if (key < isoDay(cutoff)) delete log[key]
 
   writeJson(KEY, log)
+  notifyActivity()
 }

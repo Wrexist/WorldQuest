@@ -132,7 +132,16 @@ function notify(): void {
  * leaves the previous cache (or the closed default) exactly as it was; see the header
  * for why that is the deliberate behaviour rather than a shortcut.
  */
-export async function refreshFeatureFlags(): Promise<void> {
+let refreshPromise: Promise<void> | undefined
+export function refreshFeatureFlags(): Promise<void> {
+  if (refreshPromise) return refreshPromise
+  const pending = fetchFlagRows().finally(() => {
+    if (refreshPromise === pending) refreshPromise = undefined
+  })
+  refreshPromise = pending
+  return pending
+}
+async function fetchFlagRows(): Promise<void> {
   try {
     const data = await withAccount((account) => account.fetchFeatureFlags())
     const next = new Map<string, FeatureFlagRow>(
@@ -238,7 +247,12 @@ export function useFeatureFlag(key: string): boolean {
     try {
       void currentUser()
         .then(({ userId: id }) => {
-          if (!cancelled) setUserId(id)
+          if (!cancelled) {
+            setUserId(id)
+            // The initial poll can precede account initialization and fail its scope
+            // guard. Retry once the account is ready, rather than waiting five minutes.
+            void refreshFeatureFlags()
+          }
         })
         .catch(() => {
           // Anonymous sign-in failed — offline, or no backend. Stay unbucketed.
@@ -280,6 +294,7 @@ export const featureFlagsStale = (): boolean => lastFetchFailed
 
 /** Test seam. Not for app code. */
 export function __resetFeatureFlagsForTests(): void {
+  refreshPromise = undefined
   cache = null
   loadedFromDisk = false
   lastFetchFailed = false
@@ -287,6 +302,7 @@ export function __resetFeatureFlagsForTests(): void {
 }
 
 onStorageScopeChange(() => {
+  refreshPromise = undefined
   cache = null
   loadedFromDisk = false
   lastFetchFailed = false

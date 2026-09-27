@@ -1,0 +1,121 @@
+{
+  "results": [
+    {
+      "route": "home",
+      "width": 390,
+      "artworkLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "route": "explore",
+      "width": 390,
+      "artworkLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "route": "quests",
+      "width": 390,
+      "artworkLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "route": "profile",
+      "width": 390,
+      "artworkLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "route": "shop",
+      "width": 390,
+      "artworkLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "route": "home",
+      "width": 320,
+      "artworkLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "route": "explore",
+      "width": 320,
+      "artworkLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "route": "quests",
+      "width": 320,
+      "artworkLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "route": "profile",
+      "width": 320,
+      "artworkLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "route": "shop",
+      "width": 320,
+      "artworkLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "route": "home",
+      "width": 768,
+      "artworkLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "route": "explore",
+      "width": 768,
+      "artworkLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "route": "quests",
+      "width": 768,
+      "artworkLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "route": "profile",
+      "width": 768,
+      "artworkLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "route": "shop",
+      "width": 768,
+      "artworkLoaded": true,
+      "horizontalOverflow": false
+    },
+    {
+      "flow": "Circular platform and ring share a center",
+      "geometry": {
+        "ringRound": 0,
+        "faceRound": 0,
+        "centerX": 0,
+        "centerY": 0
+      },
+      "pass": true
+    },
+    {
+      "flow": "Platform path has no landscape; 320px with doubled text stays within viewport width",
+      "pass": true
+    },
+    {
+      "flow": "Map scrolls selected explanation above the tab bar",
+      "pass": true
+    },
+    {
+      "flow": "Locked step explains how to unlock",
+      "pass": true
+    },
+    {
+      "flow": "Current step starts a real lesson",
+      "pass": true
+    }
+  ],
+  "errors": []
+}

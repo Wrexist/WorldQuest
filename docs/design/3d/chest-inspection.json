@@ -1,0 +1,676 @@
+{
+ "format": "glb",
+ "meshes": 64,
+ "triangles": 22332,
+ "vertices": 13052,
+ "materials": 5,
+ "textures": 0,
+ "maxTexture": 0,
+ "skinned": false,
+ "morphs": false,
+ "animations": [
+  {
+   "name": "Chest anticipationAction",
+   "seconds": 2
+  },
+  {
+   "name": "Gem revealAction",
+   "seconds": 2
+  },
+  {
+   "name": "Hinged domed lidAction",
+   "seconds": 2
+  },
+  {
+   "name": "Reveal sparkle 0Action",
+   "seconds": 2
+  },
+  {
+   "name": "Reveal sparkle 1Action",
+   "seconds": 2
+  },
+  {
+   "name": "Reveal sparkle 2Action",
+   "seconds": 2
+  }
+ ],
+ "extensions": [],
+ "materialTypes": [
+  "MeshStandardMaterial"
+ ],
+ "sizeCm": [
+  15.3,
+  20,
+  11.5
+ ],
+ "fileSize": [
+  1.69,
+  2.21,
+  1.276
+ ],
+ "scale": 0.9049,
+ "geometryOnly": false,
+ "note": null,
+ "parts": [
+  {
+   "name": "Back_wall",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    14.9,
+    6.6,
+    1.8
+   ]
+  },
+  {
+   "name": "Brass_front_strap",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    6.2,
+    0.4
+   ]
+  },
+  {
+   "name": "Brass_front_strap001",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    6.2,
+    0.4
+   ]
+  },
+  {
+   "name": "Chest_floor",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    14.9,
+    2.3,
+    10.1
+   ]
+  },
+  {
+   "name": "Compass_seal",
+   "count": 1,
+   "triangles": 476,
+   "sizeCm": [
+    2.6,
+    2.5,
+    0.3
+   ]
+  },
+  {
+   "name": "Front_wall",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    14.9,
+    6.6,
+    1.8
+   ]
+  },
+  {
+   "name": "One_collectible_streak_gem",
+   "count": 1,
+   "triangles": 24,
+   "sizeCm": [
+    0,
+    0,
+    0
+   ]
+  },
+  {
+   "name": "Arched_enamel_lid",
+   "count": 1,
+   "triangles": 364,
+   "sizeCm": [
+    15.3,
+    4.1,
+    10.5
+   ]
+  },
+  {
+   "name": "Brass_clasp",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    2.7,
+    2.9,
+    1
+   ]
+  },
+  {
+   "name": "Domed_brass_strap",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.5
+   ]
+  },
+  {
+   "name": "Domed_brass_strap001",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.6
+   ]
+  },
+  {
+   "name": "Domed_brass_strap002",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.6
+   ]
+  },
+  {
+   "name": "Domed_brass_strap003",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.7
+   ]
+  },
+  {
+   "name": "Domed_brass_strap004",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.8
+   ]
+  },
+  {
+   "name": "Domed_brass_strap005",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.8,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap006",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.7,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap007",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.6,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap008",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.6,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap009",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.5,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap010",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.5,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap011",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.6,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap012",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.6,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap013",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.7,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap014",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.8,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap015",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.8
+   ]
+  },
+  {
+   "name": "Domed_brass_strap016",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.7
+   ]
+  },
+  {
+   "name": "Domed_brass_strap017",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.6
+   ]
+  },
+  {
+   "name": "Domed_brass_strap018",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.6
+   ]
+  },
+  {
+   "name": "Domed_brass_strap019",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.5
+   ]
+  },
+  {
+   "name": "Domed_brass_strap020",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.5
+   ]
+  },
+  {
+   "name": "Domed_brass_strap021",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.6
+   ]
+  },
+  {
+   "name": "Domed_brass_strap022",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.6
+   ]
+  },
+  {
+   "name": "Domed_brass_strap023",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.7
+   ]
+  },
+  {
+   "name": "Domed_brass_strap024",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.8
+   ]
+  },
+  {
+   "name": "Domed_brass_strap025",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.8,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap026",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.7,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap027",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.6,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap028",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.6,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap029",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.5,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap030",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.5,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap031",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.6,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap032",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.6,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap033",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.7,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap034",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.8,
+    0.9
+   ]
+  },
+  {
+   "name": "Domed_brass_strap035",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.8
+   ]
+  },
+  {
+   "name": "Domed_brass_strap036",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.7
+   ]
+  },
+  {
+   "name": "Domed_brass_strap037",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.6
+   ]
+  },
+  {
+   "name": "Domed_brass_strap038",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.6
+   ]
+  },
+  {
+   "name": "Domed_brass_strap039",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.4,
+    0.9,
+    0.5
+   ]
+  },
+  {
+   "name": "Lid_velvet_underside",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    12.9,
+    0.4,
+    7.9
+   ]
+  },
+  {
+   "name": "Side_wall",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.8,
+    6.6,
+    8.3
+   ]
+  },
+  {
+   "name": "Side_wall001",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    1.8,
+    6.6,
+    8.3
+   ]
+  },
+  {
+   "name": "Soft_brass_foot",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    2.5,
+    2.2,
+    2.5
+   ]
+  },
+  {
+   "name": "Soft_brass_foot001",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    2.5,
+    2.2,
+    2.5
+   ]
+  },
+  {
+   "name": "Soft_brass_foot002",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    2.5,
+    2.2,
+    2.5
+   ]
+  },
+  {
+   "name": "Soft_brass_foot003",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    2.5,
+    2.2,
+    2.5
+   ]
+  },
+  {
+   "name": "Strap_rivet",
+   "count": 1,
+   "triangles": 960,
+   "sizeCm": [
+    0.8,
+    0.8,
+    0.4
+   ]
+  },
+  {
+   "name": "Strap_rivet001",
+   "count": 1,
+   "triangles": 960,
+   "sizeCm": [
+    0.8,
+    0.8,
+    0.4
+   ]
+  },
+  {
+   "name": "Strap_rivet002",
+   "count": 1,
+   "triangles": 960,
+   "sizeCm": [
+    0.8,
+    0.8,
+    0.4
+   ]
+  },
+  {
+   "name": "Strap_rivet003",
+   "count": 1,
+   "triangles": 960,
+   "sizeCm": [
+    0.8,
+    0.8,
+    0.4
+   ]
+  },
+  {
+   "name": "Velvet_cushion",
+   "count": 1,
+   "triangles": 300,
+   "sizeCm": [
+    12.4,
+    1.2,
+    7.6
+   ]
+  },
+  {
+   "name": "Reveal_sparkle",
+   "count": 3,
+   "triangles": 1428,
+   "sizeCm": [
+    12.5,
+    4.8,
+    0
+   ]
+  }
+ ]
+}

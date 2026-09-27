@@ -20,6 +20,12 @@ import { cleanup } from '@testing-library/react'
  */
 afterEach(cleanup)
 
+// Presentational tests have no navigator. Keep a real React context so focus/blur
+// providers can be tested without importing NavigationContainer's native back handler.
+vi.mock('@react-navigation/native', async () => ({
+  NavigationContext: (await import('react')).createContext(undefined),
+}))
+
 // Native Keychain/Keystore itself is exercised by the isolated native proof build.
 vi.mock('expo-secure-store', () => {
   const values = new Map<string, string>()

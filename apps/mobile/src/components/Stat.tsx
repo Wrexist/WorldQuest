@@ -12,6 +12,7 @@
  */
 
 import { StatChip, chipTint, type ChipKind, type StatChipProps } from '@worldquest/design'
+import { DaylightIllustration } from './DaylightIllustration.js'
 import { Icon } from './Icon.js'
 import type { IconName } from '../lib/icons.generated.js'
 
@@ -26,13 +27,14 @@ const ICONS: Record<ChipKind, IconName> = {
 /** Matches the 16pt glyph the chips used to draw, at the chip's own optical size. */
 const SIZE = 18
 
-export type StatProps = Omit<StatChipProps, 'icon'>
+export type StatProps = Omit<StatChipProps, 'icon'> & { prominent?: boolean }
 
-export function Stat({ kind, ...rest }: StatProps) {
+export function Stat({ kind, prominent = false, ...rest }: StatProps) {
+  const size = prominent ? 28 : SIZE
   return (
     <StatChip
       kind={kind}
-      icon={<Icon name={ICONS[kind]} size={SIZE} color={chipTint(kind, rest.dim)} />}
+      icon={kind === 'coin' || kind === 'hearts' || kind === 'gem' ? <DaylightIllustration name={kind === 'coin' ? 'coins' : kind === 'hearts' ? 'heart' : 'gem'} size={size + 2} active={false} /> : <Icon name={ICONS[kind]} size={size} color={chipTint(kind, rest.dim)} />}
       {...rest}
     />
   )

@@ -1,7 +1,11 @@
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { standings, type LeagueRank } from '@worldquest/engines'
 import { LeagueScreen } from './LeagueScreen.js'
+
+// Expo's native gradient ships JSX in .js, outside Vitest's transform. The actual
+// gradients are checked in the exported-browser review, not this interaction suite.
+vi.mock('expo-linear-gradient', async () => ({ LinearGradient: (await import('react-native')).View }))
 
 const RANK: LeagueRank = { tier: 'gold', division: 2 }
 
@@ -28,6 +32,18 @@ const props = {
   onBack: vi.fn(),
   onRetry: vi.fn(),
 }
+
+it('offers explicit enrollment and keeps a pending join disabled', () => {
+  const onJoin=vi.fn()
+  const view=render(<LeagueScreen {...props} rows={null} rank={null} onJoin={onJoin} />)
+  fireEvent.click(screen.getByRole('button',{name:'Join league'}))
+  expect(onJoin).toHaveBeenCalledTimes(1)
+  view.rerender(<LeagueScreen {...props} rows={null} rank={null} onJoin={onJoin} joining />)
+  fireEvent.click(screen.getByRole('button',{name:'Joining league'}))
+  expect(onJoin).toHaveBeenCalledTimes(1)
+  view.rerender(<LeagueScreen {...props} rows={null} rank={null} onJoin={onJoin} joinError />)
+  expect(screen.getByText(/Your choice could not be saved/)).toBeTruthy()
+})
 
 describe('League — the kindness rules', () => {
   it('says how far there is to climb, and has no way to say how far there is to fall', () => {

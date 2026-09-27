@@ -166,5 +166,21 @@
   "lesson:review.tag": "Previous mistake",
   "lesson:review.tag__note": "Small tag above a question asked again at the end of a lesson because it was missed. Neutral, never \"wrong\". Max 20 characters.",
   "lesson:new.tag": "New",
-  "lesson:new.tag__note": "Small tag above a question about something the learner has never met. Tells them not knowing is expected; hearts are never lost on these. One short word."
+  "lesson:new.tag__note": "Small tag above a question about something the learner has never met. Tells them not knowing is expected; hearts are never lost on these. One short word.",
+  "lesson:summary.adventure.prompt": "A little more of the world is yours. Keep exploring?",
+  "lesson:summary.adventure.prompt__note": "Course continuation UI. Encouraging invitation; never a deadline or guaranteed reward. Continue adventure preserves the existing post-lesson reward flow.",
+  "lesson:summary.adventure.continue": "Continue adventure",
+  "lesson:summary.adventure.continue__note": "Course continuation UI. Encouraging invitation; never a deadline or guaranteed reward. Continue adventure preserves the existing post-lesson reward flow.",
+  "lesson:journey.title": "Your next discovery",
+  "lesson:journey.title__note": "Post-lesson course reveal. The actual next available lesson comes from saved course progress; starting is optional and the home action is always available.",
+  "lesson:journey.body": "Every lesson moves your adventure forward. Ready for the next one?",
+  "lesson:journey.body__note": "Post-lesson course reveal. The actual next available lesson comes from saved course progress; starting is optional and the home action is always available.",
+  "lesson:journey.start": "Start next challenge →",
+  "lesson:journey.start__note": "Post-lesson course reveal. The actual next available lesson comes from saved course progress; starting is optional and the home action is always available.",
+  "lesson:journey.home": "Back to my journey",
+  "lesson:journey.home__note": "Post-lesson course reveal. The actual next available lesson comes from saved course progress; starting is optional and the home action is always available.",
+  "lesson:journey.complete": "You explored the whole course!",
+  "lesson:journey.complete__note": "Post-lesson course reveal. The actual next available lesson comes from saved course progress; starting is optional and the home action is always available.",
+  "lesson:feedback.correct.discovery": "One more fact explored!",
+  "lesson:feedback.correct.discovery__note": "Post-lesson course reveal. The actual next available lesson comes from saved course progress; starting is optional and the home action is always available."
 }

@@ -67,6 +67,8 @@ import { useContent } from '../../lib/content.js'
 import { currentLocale, tContent, useT } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
 import { recordLessonCompleted } from '../profile/useWeekActivity.js'
+import { rememberDailyChest } from '../streak/dailyChest.js'
+import { useDailyGoal } from '../home/useDailyGoal.js'
 import { recordSessionHour } from '../../lib/notifications.js'
 import { localDay } from '../../lib/day.js'
 import { recordPredictedAward } from '../../lib/awards.js'
@@ -79,6 +81,8 @@ import { ReportSheet } from './ReportSheet.js'
 import { withAccount } from '../../lib/backend.js'
 import { Icon } from '../../components/Icon.js'
 import { Stat } from '../../components/Stat.js'
+import { EarnedReward } from './EarnedReward.js'
+import { AdventureArt } from '../../components/AdventureArt.js'
 
 type ScreenState = 'loading' | 'error' | 'empty' | 'offline-start' | 'ready'
 
@@ -386,6 +390,7 @@ export function LessonScreen({
   length?: number | undefined
 }) {
   const t = useT()
+  const dailyGoal = useDailyGoal()
   const { index, memory, status, reload, isOffline } = useContent()
   const [screen, setScreen] = useState<ScreenState>('loading')
   // "Report a problem" open over the answer just given. Only where a backend takes
@@ -549,7 +554,11 @@ export function LessonScreen({
     // Local, immediate, and independent of the queue. The weekly chart on Profile
     // must be right the moment the lesson ends — waiting for the server round trip
     // would show an empty week to anyone who finishes a lesson offline.
-    recordLessonCompleted()
+    if (state.phase === 'summary') {
+      recordLessonCompleted()
+      rememberDailyChest({ day: localDay(new Date()), lessonId: state.lessonId,
+        xp: optimistic.xpAwarded, coins: optimistic.coinsAwarded })
+    }
     // What time of day this person actually practises, which is what the daily
     // reminder's hour is learned from (`notifications.md` §6). Recorded here rather
     // than derived from the activity log because that log stores a DAY and a count —
@@ -807,6 +816,7 @@ export function LessonScreen({
       <LessonSummary
         result={lesson.optimistic}
         practised={practised}
+        dailyGoal={dailyGoal}
         timeMs={answeringMs(lesson.state)}
         // The two phases arrive here for very different reasons and the screen says so.
         // Running out of hearts is NOT one of them — the machine sends that to
@@ -923,6 +933,7 @@ export function LessonScreen({
   const checkButton = (
     <Button
       label={t('lesson:check.label')}
+      variant="discovery"
       onPress={lesson.check}
       disabled={noSelection}
       // Why it is dimmed, read after "Check, dimmed" — a disabled control with no
@@ -1330,9 +1341,10 @@ export function LessonScreen({
                 ]}
                 pointerEvents="none"
               >
-                <Art
-                  name={lastAnswer?.wasCorrect === true ? 'atlas/celebrate' : 'atlas/encouraging'}
-                  size={mascot}
+                <AdventureArt
+                  name="explorer"
+                  mood={lastAnswer?.wasCorrect === true ? 'celebrate' : 'encouraging'}
+                  style={{ width: mascot, height: mascot }}
                 />
               </View>
               <View
@@ -1365,9 +1377,7 @@ export function LessonScreen({
               <Text style={styles.feedbackBody}>
                 {correctRun >= STREAK_PRAISE
                   ? t('lesson:feedback.correct.streak')
-                  : t('lesson:feedback.correct.body', {
-                      entityName: question.options.find((o) => o.isCorrect)?.label ?? '',
-                    })}
+                  : t('lesson:feedback.correct.discovery')}
               </Text>
               <View
                 style={styles.rewards}
@@ -1383,16 +1393,14 @@ export function LessonScreen({
                     measureRewards()
                   }}
                 >
-                  <Stat
+                  <EarnedReward
                     kind="xp"
-                    value={`+${lastAward?.xp ?? 0}`}
-                    accessibilityLabel={t('lesson:reward.xp', { amount: lastAward?.xp ?? 0 })}
+                    amount={lastAward?.xp ?? 0}
                   />
                 </View>
-                <Stat
+                <EarnedReward
                   kind="coin"
-                  value={`+${lastAward?.coins ?? 0}`}
-                  accessibilityLabel={t('lesson:reward.coins', { amount: lastAward?.coins ?? 0 })}
+                  amount={lastAward?.coins ?? 0}
                 />
               </View>
             </>
@@ -1422,7 +1430,7 @@ export function LessonScreen({
             </>
           )}
               </View>
-              <Button label={t('common:continue')} onPress={lesson.advance} />
+              <Button variant="discovery" label={t('common:continue')} onPress={lesson.advance} />
               {remoteLessons && (
                 <Button label={t('lesson:report.cta')} variant="ghost" size="sm" onPress={() => setReporting(true)} />
               )}

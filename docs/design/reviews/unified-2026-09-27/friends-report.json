@@ -1,0 +1,12 @@
+{
+  "kind": "Two synthetic verified accounts; real Worker and app",
+  "checks": [
+    "Private invitation join",
+    "Identical ten-question round",
+    "Server graded 10 versus 0",
+    "Results hidden until both finish",
+    "Report queue saved",
+    "Block saved"
+  ],
+  "errors": []
+}

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
-import { courseStanding, type CourseProgress } from '@worldquest/engines'
+import { BALANCE, courseStanding, type CourseProgress } from '@worldquest/engines'
 import { loadCourse } from '../course.js'
 import { toPathView } from '../pathView.js'
 import { CoursePath } from './CoursePath.js'
@@ -33,6 +33,31 @@ const steps = (container: HTMLElement) =>
   Array.from(container.querySelectorAll('[data-testid^="path-node-"]')).map((el) => el.getAttribute('aria-label'))
 
 describe('the course path', () => {
+  it('keeps platform offsets stable while the explorer follows several completed lessons and the next unit', () => {
+    const handlers = { onStart: vi.fn(), onPractise: vi.fn(), onReview: vi.fn(), onPractiseAnyway: vi.fn() }
+    const viewFor = (progress: CourseProgress) => <CoursePath {...handlers} path={toPathView({ status: 'ready', course: COURSE, standing: courseStanding(COURSE, progress) })} />
+    const view = render(viewFor({}))
+    const geometry = () => [1, 2, 3].map(n => screen.getByTestId(`trail-stop-${n}`).getAttribute('style'))
+    const original = geometry()
+    const progress: Record<string, number> = {}
+    const first = COURSE.units[0]!
+    progress[first.nodes[0]!.id] = 1
+    view.rerender(viewFor(progress))
+    expect(screen.getByTestId('trail-guide').getAttribute('data-step')).toBe(first.nodes[0]!.id)
+    expect(screen.getByTestId('trail-next').textContent).toContain('Lesson 2 of 2')
+    expect(screen.getByTestId('lesson-ring').getAttribute('data-progress')).toBe('0.5')
+    for (const [index, node] of first.nodes.entries()) {
+      progress[node.id] = node.lessons
+      view.rerender(viewFor({ ...progress }))
+      const next = first.nodes[index + 1] ?? COURSE.units[1]!.nodes[0]!
+      expect(screen.getByTestId('trail-guide').getAttribute('data-step')).toBe(next.id)
+      expect(geometry()).toEqual(original)
+      expect(screen.getAllByTestId('path-node-current')).toHaveLength(1)
+      expect(screen.getByTestId('lesson-ring').getAttribute('data-progress')).toBe('0')
+    }
+    fireEvent.click(screen.getByTestId('path-node-current'))
+    expect(handlers.onStart).toHaveBeenLastCalledWith(COURSE.units[1]!.nodes[0]!.id)
+  })
   it('lights exactly one step, and it starts its lesson in one tap', () => {
     const { onStart } = renderPath()
     const start = screen.getAllByRole('button', { name: /^Start step/ })
@@ -71,6 +96,14 @@ describe('the course path', () => {
   it('counts which lesson of the step comes next', () => {
     const { container } = renderPath({ 'node.first-week.flags': 1 })
     expect(container.textContent).toContain('Lesson 2 of 2')
+  })
+
+  it('shows the base XP rule and continues the unfinished challenge', () => {
+    const { onStart } = renderPath({ 'node.first-week.flags': 1 })
+    expect(screen.getByText(`+${BALANCE.xp.correctAnswer} XP`)).toBeTruthy()
+    expect(screen.getByText('Base reward per new correct answer')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Continue challenge →' }))
+    expect(onStart).toHaveBeenCalledWith('node.first-week.flags')
   })
 
   it('opens a card under a done step offering practice, rather than starting a lesson', () => {

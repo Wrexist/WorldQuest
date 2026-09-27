@@ -44,6 +44,7 @@ import { Art } from '../../components/Art.js'
 import { Icon } from '../../components/Icon.js'
 import type { IconName } from '../../lib/icons.generated.js'
 import { Stat } from '../../components/Stat.js'
+import { DailyAdventure, type DailyAdventureProps } from './DailyAdventure.js'
 import { TopBar } from '../../components/TopBar.js'
 import { StreakNoticeCard, type StreakNoticeCardProps } from '../streak/StreakNoticeCard.js'
 import { CoursePath, type CoursePathProps } from '../course/components/CoursePath.js'
@@ -83,6 +84,7 @@ export type HomeProgress = {
 const WORLD_GLOBE = 56
 
 export type HomeScreenProps = {
+  readonly dailyAdventure?: DailyAdventureProps | undefined
   readonly progress: HomeProgress | null
   readonly loading: boolean
   readonly isOffline: boolean
@@ -211,6 +213,7 @@ export function HomeScreen({
   league,
   reminderAsk,
   streakNotice,
+  dailyAdventure,
 }: HomeScreenProps) {
   // Before the early return: hooks cannot be conditional, and the skeleton needs
   // translated copy too.
@@ -255,12 +258,12 @@ export function HomeScreen({
             a few points lower — one mascot per screen, beside the part of the path you
             are on — and the greeting is two lines of words again, which is what lets the
             path's first step reach the fold on a 320 pt phone. */}
-        <View>
+        {course === undefined && <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline', gap: space[2] }}>
           <Text style={styles.salutation}>{t(greetingKey(new Date().getHours()))}</Text>
           <Text style={styles.explorer} role="heading">
             {t('home:greeting.role')}
           </Text>
-        </View>
+        </View>}
 
         {/* Three facts about today, in a row, above everything you can act on — the
             answer to "where am I?" before the screen asks anything of you. The quest's
@@ -270,11 +273,11 @@ export function HomeScreen({
             The middle one is the earned TITLE, and the league sits beside it rather than
             replacing it: they are different rewards. The league chip appears only when
             there IS one. */}
-        <View style={styles.factRow}>
-          {/* Not at zero, and not a button. The top bar's flame is the streak's one
-              control, and it states 0 as plainly as the coin chip states a balance; this
-              tile is the celebration of a streak, so it waits for one. A second control
-              for the same page was two stops saying the same thing to a screen reader. */}
+        {dailyAdventure !== undefined ? <DailyAdventure {...dailyAdventure} compact={course !== undefined} /> : <View style={styles.factRow}>
+          {/* Not at zero. The coin chip shows 0 quite happily: a wallet reading 0 is a
+              fact about a balance, and a streak reading 0 is a verdict on the person
+              holding it. */}
+
           {progress !== null && progress.streak > 0 && (
             <Fact
               icon="streak"
@@ -312,7 +315,7 @@ export function HomeScreen({
               onPress={league.onPress}
             />
           )}
-        </View>
+        </View>}
 
         {/* The course path — the one primary action, and the reason Home exists.
             Measured so the step you are on can be scrolled into view: see
@@ -536,7 +539,7 @@ function useScrollIntoView() {
     // Once per step AND viewport: the offline banner is pinned above the scroll view, so
     // going offline shrinks the viewport from the top and can push a step that was in
     // view below the fold — that is a new question, not a repeat of the old one.
-    const key = `${y}:${viewport.current}`
+    const key = `${y}:${at.height}:${viewport.current}`
     if (shown.current === key) return
     shown.current = key
     const bottom = y + at.height
@@ -603,12 +606,10 @@ function Fact({
   const body = (
     <>
       <Icon name={icon} size={18} color={tint} />
-      <Text style={styles.factValue} numberOfLines={1}>
-        {value}
-      </Text>
-      <Text style={styles.factLabel} numberOfLines={1}>
-        {label}
-      </Text>
+      <View style={styles.factWords}>
+        <Text style={styles.factValue}>{value}</Text>
+        <Text style={styles.factLabel}>{label}</Text>
+      </View>
     </>
   )
 
@@ -651,7 +652,7 @@ function HomeSkeleton() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1 },
-  content: { padding: space[4], gap: space[3], paddingBottom: space[5] },
+  content: { padding: space[4], gap: space[4], paddingBottom: space[6] },
   flex: { flex: 1 },
 
   // Three across, `flex: 1` rather than a percentage — a percentage plus a gap
@@ -659,9 +660,10 @@ const styles = StyleSheet.create({
   factRow: { flexDirection: 'row', gap: space[2] },
   fact: {
     flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
-    gap: space[1],
-    paddingVertical: space[3],
+    gap: space[2],
+    paddingVertical: space[2],
     paddingHorizontal: space[2],
     borderRadius: radius.lg,
     ...squircle,
@@ -669,10 +671,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border.subtle,
     // A real target even for the two that are pressable, without the tile growing.
-    minHeight: 72,
+    minHeight: 56,
     justifyContent: 'center',
   },
   factValue: { ...text('bodyStrong', { numeric: true }), color: colors.text.primary },
+  factWords: { flexShrink: 1 },
   factLabel: { ...text('caption'), color: colors.text.tertiary },
 
   salutation: { ...text('body'), color: colors.text.secondary },

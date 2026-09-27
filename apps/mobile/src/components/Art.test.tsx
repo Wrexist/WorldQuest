@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { render } from '@testing-library/react'
 import { Art } from './Art.js'
+import { AdventureArt } from './AdventureArt.js'
+import { ADVENTURE_ART } from '../lib/adventure.generated.js'
 import { ART_BY_NAME, type ArtName } from '../lib/art.generated.js'
 
 /**
@@ -50,10 +52,10 @@ describe('Art', () => {
   it('fills a box that is wider than the art, rather than letterboxing inside it', () => {
     const box = { width: 390, height: 220 }
     const bleed = render(
-      <Art name="onboarding/explore" size={box.width} height={box.height} frame="bleed" />,
+      <Art name="continents/EU" size={box.width} height={box.height} frame="bleed" />,
     )
     const fill = render(
-      <Art name="onboarding/explore" size={box.width} height={box.height} frame="fill" />,
+      <Art name="continents/EU" size={box.width} height={box.height} frame="fill" />,
     )
     // The element carrying the size is react-native-web's `Image` wrapper; the `img`
     // inside it is the source, drawn to fill its parent.
@@ -92,11 +94,20 @@ describe('Art', () => {
     // No caller does yet — there is no screen where the picture carries information the
     // text does not. The path exists so that when one arrives it is a prop rather than
     // a rewrite, and it is tested so that it still works when it is first used.
-    const { container } = render(
+    const { getByRole, getAllByRole } = render(
       <Art name="atlas/celebrate" size={64} label="Atlas jumping for joy" />,
     )
-    const img = container.querySelector('img')
-    expect(img?.getAttribute('alt')).toBe('Atlas jumping for joy')
-    expect(container.querySelector('[aria-hidden="true"]')).toBeNull()
+    // The articulated character is one accessible image, not eight announced limbs.
+    expect(getByRole('img', { name: 'Atlas jumping for joy' })).toBeTruthy()
+    expect(getAllByRole('img')).toHaveLength(1)
   })
+})
+
+
+it('renders the passport artwork instead of routing it to the articulated mascot', () => {
+  const { container } = render(<AdventureArt name="passport" />)
+  const images = container.querySelectorAll('img')
+  expect(images).toHaveLength(1)
+  expect(images[0]?.getAttribute('src')).toBe(ADVENTURE_ART.passport)
+  expect(images[0]?.getAttribute('alt')).toBe('')
 })

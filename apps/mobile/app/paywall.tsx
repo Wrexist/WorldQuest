@@ -29,6 +29,7 @@ import { useEntitlement } from '../src/features/paywall/useEntitlement.js'
 import { useOnboarding } from '../src/features/onboarding/useOnboarding.js'
 import { useOnline } from '../src/lib/connectivity.js'
 import { track } from '../src/lib/analytics.js'
+import { nextAfterLesson } from '../src/features/lesson/afterLesson.js'
 
 const SOURCES = ['onboarding', 'hearts', 'settings', 'stats'] as const
 type Source = (typeof SOURCES)[number]
@@ -37,7 +38,8 @@ const sourceOf = (raw: string | undefined): Source =>
   SOURCES.find((s) => s === raw) ?? 'settings'
 
 export default function PaywallRoute() {
-  const { source, countries } = useLocalSearchParams<{
+  const { source, countries, then } = useLocalSearchParams<{
+    then?: string
     source?: string
     countries?: string
   }>()
@@ -77,6 +79,10 @@ export default function PaywallRoute() {
 
   const dismiss = (): void => {
     track('paywall_dismissed', { source: from })
+    if (from === 'onboarding' && then !== undefined) {
+      router.replace(nextAfterLesson({ then }))
+      return
+    }
     if (router.canGoBack()) router.back()
     else router.replace('/')
   }

@@ -6,19 +6,19 @@
     "scheme": "worldquest",
     "version": "1.0.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    "backgroundColor": "#070D1B",
+    "backgroundColor": "#F6F5F0",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "cover",
-      "backgroundColor": "#070D1B"
+      "resizeMode": "contain",
+      "backgroundColor": "#F6F5F0"
     },
     "ios": {
       "bundleIdentifier": "com.wrexist.worldquest",
       "supportsTablet": true,
-      "buildNumber": "1",
+      "buildNumber": "10",
       "config": {
         "usesNonExemptEncryption": false
       },
@@ -77,7 +77,7 @@
       "package": "com.wrexist.worldquest",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#070D1B"
+        "backgroundColor": "#F6F5F0"
       },
       "versionCode": 1,
       "permissions": [],
@@ -95,7 +95,10 @@
       [
         "expo-localization",
         {
-          "supportedLocales": ["en", "sv"]
+          "supportedLocales": [
+            "en",
+            "sv"
+          ]
         }
       ],
       [
@@ -115,7 +118,7 @@
     "experiments": {
       "typedRoutes": false
     },
-    "primaryColor": "#FFC800",
+    "primaryColor": "#80601E",
     "runtimeVersion": {
       "policy": "appVersion"
     },

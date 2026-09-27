@@ -1,0 +1,30 @@
+{
+ "name": "header-jewels",
+ "generator": "3d-asset-studio",
+ "mode": "icons",
+ "look": "photoreal",
+ "frame": {
+  "width": 384,
+  "height": 384
+ },
+ "icons": [
+  {
+   "name": "globe",
+   "src": "icons/globe.webp",
+   "width": 384,
+   "height": 384
+  },
+  {
+   "name": "flame",
+   "src": "icons/flame.webp",
+   "width": 384,
+   "height": 384
+  },
+  {
+   "name": "coins",
+   "src": "icons/coins.webp",
+   "width": 384,
+   "height": 384
+  }
+ ]
+}

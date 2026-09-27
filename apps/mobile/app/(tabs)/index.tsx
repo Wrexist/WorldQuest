@@ -13,6 +13,7 @@ import { useContent } from '../../src/lib/content.js'
 import { useOnline } from '../../src/lib/connectivity.js'
 import { useOptimisticProgress } from '../../src/features/home/useOptimisticProgress.js'
 import { useDailyGoal } from '../../src/features/home/useDailyGoal.js'
+import { useWeekActivity } from '../../src/features/profile/useWeekActivity.js'
 import { useDailyQuest } from '../../src/features/quests/useDailyQuest.js'
 import { questFocus, questStanding } from '@worldquest/engines'
 import { focusToParams } from '../../src/features/lesson/focusParams.js'
@@ -103,6 +104,7 @@ export default function HomeRoute() {
 
   const coverPage = useQuestCover()
   const goal = useDailyGoal()
+  const week = useWeekActivity()
   const { quest } = useDailyQuest()
   const standing = quest === null ? undefined : questStanding(quest)
   const focus = quest === null ? undefined : questFocus(quest)
@@ -166,6 +168,7 @@ export default function HomeRoute() {
   return (
     <HomeScreen
       progress={progress}
+      dailyAdventure={{ goal, week, streak: progress.streak, onPress: () => router.push('/streak') }}
       loading={status === 'loading'}
       // The radio first, and the failed refresh second. This read
       // `isStale || status === 'error'`, and `staleTime` is 60 seconds — so Home told

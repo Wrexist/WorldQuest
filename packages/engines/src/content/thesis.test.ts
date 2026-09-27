@@ -179,14 +179,17 @@ describe('the platform thesis', () => {
 describe('question construction', () => {
   // Exhaustive corpus × 40 seeds; Vitest 4 also enforces synchronous timeouts.
   it('never offers the same label twice', { timeout: 15_000 }, () => {
+    const collisions: { seed: number; item: string; labels: string[] }[] = []
     for (let seed = 0; seed < 40; seed++) {
       for (const item of index.items) {
         const q = buildQuestion(index, item, 'en', seededRng(seed))
         if (!q) continue
         const labels = q.options.map((o) => o.label.toLowerCase())
-        expect(new Set(labels).size, `${item.id} has duplicate options`).toBe(labels.length)
+        // Collect failures without building thousands of successful assertion objects.
+        if (new Set(labels).size !== labels.length) collisions.push({ seed, item: item.id, labels })
       }
     }
+    expect(collisions).toEqual([])
   })
 
   it('always includes exactly one correct option', () => {

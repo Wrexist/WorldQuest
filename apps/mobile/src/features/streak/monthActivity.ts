@@ -13,7 +13,7 @@ import { useMemo } from 'react'
 import { localDay } from '../../lib/day.js'
 import { firstWeekday } from '../../lib/week.js'
 import { currentLocale } from '../../lib/i18n.js'
-import { readActivityLog } from '../profile/useWeekActivity.js'
+import { readActivityLog, useWeekActivity } from '../profile/useWeekActivity.js'
 
 export type MonthCell = {
   readonly dayOfMonth: number
@@ -86,5 +86,6 @@ export function monthActivity(
 /** This month from the device's lesson log, in the user's week and the app's language. */
 export function useMonthActivity(): MonthActivity {
   const locale = currentLocale()
-  return useMemo(() => monthActivity(readActivityLog(), new Date(), firstWeekday(), locale), [locale])
+  const activity = useWeekActivity()
+  return useMemo(() => monthActivity(readActivityLog(), new Date(), firstWeekday(), locale), [locale, activity])
 }

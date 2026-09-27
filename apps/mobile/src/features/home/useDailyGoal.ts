@@ -85,7 +85,7 @@ function storedTargetFor(day: string, minutes: number): number | null {
   // which is a repair that happens after the render has committed.
   const { value } = peekJson<StoredGoal>(KEY)
   if (value === null || value.day !== day || value.minutes !== minutes) return null
-  return value.target
+  return Number.isSafeInteger(value.target) && value.target > 0 ? value.target : null
 }
 
 /**

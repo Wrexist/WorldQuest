@@ -1,0 +1,9 @@
+{
+ "name": "coins",
+ "generator": "3d-asset-studio",
+ "mode": "none",
+ "look": "photoreal",
+ "models": [
+  "coins.glb"
+ ]
+}

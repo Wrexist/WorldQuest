@@ -103,6 +103,10 @@ import { useState } from 'react'
 import { Image, StyleSheet, View } from 'react-native'
 import { colors, radius, squircle } from '@worldquest/design'
 import { ART_BY_NAME, ART_GEOMETRY, type ArtName } from '../lib/art.generated.js'
+import { CLASSIC_ART } from '../lib/classic.generated.js'
+import { AtlasCharacter, type AtlasMood } from './AtlasCharacter.js'
+import { DaylightIllustration } from './DaylightIllustration.js'
+import { RewardMotion } from './RewardMotion.js'
 
 export type ArtProps = {
   readonly name: ArtName
@@ -137,7 +141,24 @@ export type ArtProps = {
  */
 const WHOLE_FRAME = 0.85
 
-export function Art({ name, size, height, label, frame = 'auto' }: ArtProps) {
+export function Art(props: ArtProps) {
+  const { name, size, height, label } = props
+  if ((name.startsWith('atlas/') || name.startsWith('onboarding/') ||
+    ['states/empty-profile', 'states/empty-caught-up', 'states/offline', 'states/error-generic'].includes(name))) {
+    const mood: AtlasMood = /celebrate|conquer|caught-up/.test(name) ? 'celebrate'
+      : /thinking|learn|broken|offline|error/.test(name) ? 'thinking'
+      : /resting|empty-profile/.test(name) ? 'resting'
+      : /encouraging/.test(name) ? 'encouraging' : 'welcome'
+    return <AtlasCharacter size={size} height={height} mood={mood} label={label} />
+  }
+  if (label === undefined && name === 'states/empty-collection') return <DaylightIllustration name="treasure-chest" size={size} />
+  if (label === undefined && (name.startsWith('celebration/') || name.startsWith('rewards/'))) {
+    return <RewardMotion kind={name.startsWith('celebration/') ? 'confetti' : name.endsWith('flame') ? 'flame' : 'pop'}><StillArt {...props} /></RewardMotion>
+  }
+  return <StillArt {...props} />
+}
+
+function StillArt({ name, size, height, label, frame = 'auto' }: ArtProps) {
   /**
    * A decode that fails leaves a HOLE, and a hole is worse than an absence.
    *
@@ -155,10 +176,11 @@ export function Art({ name, size, height, label, frame = 'auto' }: ArtProps) {
    * above about `label`), so nothing a user needs is behind them.
    */
   const [failed, setFailed] = useState(false)
-  const asset = ART_BY_NAME[name]
+  const classic = name in CLASSIC_ART ? CLASSIC_ART[name as keyof typeof CLASSIC_ART] : undefined
+  const asset = classic?.asset ?? ART_BY_NAME[name]
   // Metro gives a number, Vite a URL string — see types/assets.d.ts.
   const source = typeof asset === 'string' ? { uri: asset } : asset
-  const geometry = ART_GEOMETRY[name]
+  const geometry = classic?.geometry ?? ART_GEOMETRY[name]
 
   const panel =
     frame === 'auto' && geometry.w >= WHOLE_FRAME && geometry.h >= WHOLE_FRAME
@@ -195,7 +217,8 @@ export function Art({ name, size, height, label, frame = 'auto' }: ArtProps) {
    * both kinds of asset, which is why this is one mode rather than two.
    */
   const boxCovered = Math.max(box.width, box.height * geometry.aspect)
-  const imageWidth = frame === 'fill' ? Math.max(subjectFits, boxCovered) : subjectFits
+  const isOpaquePanel = geometry.w >= WHOLE_FRAME && geometry.h >= WHOLE_FRAME
+  const imageWidth = frame === 'fill' && isOpaquePanel ? Math.max(subjectFits, boxCovered) : subjectFits
   const imageHeight = imageWidth / geometry.aspect
 
   // The image is centred by the frame; this is the leftover — how far the subject's own
