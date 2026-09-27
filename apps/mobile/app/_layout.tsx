@@ -12,7 +12,7 @@
 
 import { useEffect, useRef } from 'react'
 import { Stack, router, usePathname } from 'expo-router'
-import { DarkTheme, ThemeProvider } from '@react-navigation/native'
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { AppState, type AppStateStatus, StatusBar, StyleSheet } from 'react-native'
 /**
  * `SafeAreaView` from react-native-safe-area-context, NOT the one in react-native.
@@ -47,6 +47,7 @@ import { QueryProvider } from '../src/lib/query.js'
 import { initCrashReporting } from '../src/lib/reporting.js'
 import { isConfigured } from '../src/lib/supabase.js'
 import { startFeatureFlagPolling } from '../src/lib/featureFlags.js'
+import { initializeMotionPreference } from '../src/features/settings/usePreferences.js'
 
 /**
  * At module scope, deliberately — not in an effect.
@@ -62,6 +63,7 @@ import { startFeatureFlagPolling } from '../src/lib/featureFlags.js'
  * transport later does not mean re-wiring this file.
  */
 initCrashReporting()
+initializeMotionPreference()
 
 /**
  * Also at module scope, and also never torn down — same shape as the `NetInfo`
@@ -235,7 +237,7 @@ export default function RootLayout() {
   if (!fontsReady) {
     return (
       <SafeAreaProvider style={styles.root}>
-        <StatusBar barStyle="light-content" backgroundColor={colors.bg.canvas} />
+        <StatusBar barStyle="dark-content" backgroundColor={colors.bg.canvas} />
         <SplashScreen
           phase={phase}
           // Fonts are the only boot work today and `useFonts` has no retry, so the
@@ -250,7 +252,7 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider style={styles.root}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.bg.canvas} />
+      <StatusBar barStyle="dark-content" backgroundColor={colors.bg.canvas} />
       <ErrorBoundary>
         {/* The gradient is OUTSIDE the safe area now, so it paints the whole display —
             under the status bar, under the home indicator, into the notch. The inset is
@@ -266,7 +268,7 @@ export default function RootLayout() {
             gradient could show, that grey surfaced on every route. `sceneStyle` does
             not reach it — it comes from the theme, so the theme is where it is fixed. */}
         <ThemeProvider
-          value={{ ...DarkTheme, colors: { ...DarkTheme.colors, background: 'transparent' } }}
+          value={{ ...DefaultTheme, colors: { ...DefaultTheme.colors, background: 'transparent', text: colors.text.primary, card: colors.bg.canvas } }}
         >
         <QueryProvider>
           <SubscriptionSync />
@@ -308,6 +310,7 @@ export default function RootLayout() {
                 button, which knows what comes next. A swipe back would land on nothing —
                 the summary behind them has already been replaced. */}
             <Stack.Screen name="streak-extended" options={{ gestureEnabled: false }} />
+            <Stack.Screen name="journey-ready" options={{ gestureEnabled: false }} />
             <Stack.Screen name="achievement-unlocked" options={{ gestureEnabled: false }} />
             <Stack.Screen name="create-profile" options={{ gestureEnabled: false }} />
             <Stack.Screen name="welcome-back" options={{ gestureEnabled: false }} />

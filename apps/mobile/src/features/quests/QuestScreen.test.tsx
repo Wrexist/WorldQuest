@@ -90,7 +90,7 @@ describe('Quests — the five states', () => {
     render(<QuestScreen quest={done} loading={false} onStart={() => {}} />)
     expect(screen.getByText('All five. Nice work.')).toBeTruthy()
     // Nothing left to do today — a Continue button here would lead nowhere.
-    expect(screen.queryByRole('button', { name: 'Continue' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Continue quest →' })).toBeNull()
   })
 })
 
@@ -116,7 +116,7 @@ describe('Quests — behaviour', () => {
   it('starts a lesson from the primary action', () => {
     const onStart = vi.fn()
     render(<QuestScreen quest={quest()} loading={false} onStart={onStart} />)
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Continue quest →' }))
     expect(onStart).toHaveBeenCalledOnce()
   })
 

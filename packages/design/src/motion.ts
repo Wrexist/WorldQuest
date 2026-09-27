@@ -22,7 +22,7 @@
  * Spec: docs/design/design-system.md §8 · docs/design/accessibility.md
  */
 
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
 import {
   AccessibilityInfo,
   Animated,
@@ -35,7 +35,22 @@ import { motion } from './tokens.js'
 export type MotionStep = keyof typeof motion
 
 /** The most recent reduced-motion answer from the platform. See `useReducedMotion`. */
-let lastKnownReduced = false
+// Begin still while the asynchronous platform preference is unknown.
+let lastKnownReduced = true
+let appReducedMotion = false
+const preferenceListeners = new Set<() => void>()
+const subscribePreference = (listener: () => void) => {
+  preferenceListeners.add(listener)
+  return () => { preferenceListeners.delete(listener) }
+}
+const readPreference = () => appReducedMotion
+
+/** The app setting can reduce movement further, but can never override the OS request. */
+export function setAppReducedMotion(value: boolean): void {
+  if (value === appReducedMotion) return
+  appReducedMotion = value
+  preferenceListeners.forEach(listener => listener())
+}
 
 /**
  * Whether the user has asked for less movement.
@@ -44,6 +59,7 @@ let lastKnownReduced = false
  * user who turns it on mid-session has told us they need it NOW.
  */
 export function useReducedMotion(): boolean {
+  const appReduced = useSyncExternalStore(subscribePreference, readPreference, readPreference)
   // Seeded with the last answer any instance received, not with `false`. The read below
   // is async, so a component that mounts mid-session and animates on mount — the
   // lesson's feedback sheet, once per answer — would otherwise spend its first frames
@@ -75,13 +91,24 @@ export function useReducedMotion(): boolean {
       },
     ) as { remove?: () => void } | undefined
 
+    // React Native Web does not emit reduceMotionChanged. Listen to its actual
+    // media query as well, so an OS preference changed mid-animation stops it.
+    const media = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)') : undefined
+    const onMediaChange = (event: { matches: boolean }) => {
+      lastKnownReduced = event.matches
+      setReduced(event.matches)
+    }
+    media?.addEventListener?.('change', onMediaChange)
+
     return () => {
       alive = false
       subscription?.remove?.()
+      media?.removeEventListener?.('change', onMediaChange)
     }
   }, [])
 
-  return reduced
+  return reduced || appReduced
 }
 
 export type Timing = {

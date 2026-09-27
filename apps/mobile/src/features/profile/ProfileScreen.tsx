@@ -14,7 +14,7 @@
  * it is the accessible default the component was built around.
  */
 
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
 import {
   Avatar,
   Button,
@@ -34,10 +34,13 @@ import { levelProgress, type Tier, type WorldProgress } from '@worldquest/engine
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { REGIONS, type RegionCode } from '../explore/ExploreScreen.js'
 import { Art } from '../../components/Art.js'
+import { AdventureArt } from '../../components/AdventureArt.js'
 import { avatarArt } from '../settings/AvatarPicker.js'
 import { INSIGNIA_SIZE, insigniaFor } from '../../lib/insignia.js'
 import { Icon } from '../../components/Icon.js'
 import { TopBar } from '../../components/TopBar.js'
+import { AnswerReward } from '../../components/AnswerReward.js'
+import { StreakGemCollection } from '../streak/StreakGemCollection.js'
 import { AchievementMedal } from '../achievements/AchievementMedal.js'
 import { WeekStrip, type WeekActivity } from '../../components/WeekStrip.js'
 import type { IconName } from '../../lib/icons.generated.js'
@@ -115,6 +118,7 @@ export type ProfileScreenProps = {
    * and can say what each is for; a row on Profile is a trophy shelf, and a shelf of
    * things you have not won is not a shelf.
    */
+  readonly gemDays?: readonly string[] | undefined
   readonly badges?: readonly ProfileBadge[] | undefined
   /** Opens the achievements screen from the badge row's heading. */
   readonly onOpenAchievements?: (() => void) | undefined
@@ -127,6 +131,7 @@ export type ProfileScreenProps = {
    * on it — and it was the one place that did not offer it.
    */
   readonly onOpenLeague?: (() => void) | undefined
+  readonly onOpenFriends?: (() => void) | undefined
   /** Opens Settings — the gear, now that More is not a tab. */
   readonly onOpenSettings?: (() => void) | undefined
   /** Renames the explorer. Absent renders the identity without a pencil. */
@@ -149,12 +154,15 @@ export function ProfileScreen({
   onStartLesson,
   avatar,
   badges,
+  gemDays = [],
   onOpenAchievements,
   onOpenLeague,
+  onOpenFriends,
   onOpenSettings,
   onRename,
 }: ProfileScreenProps) {
   const t = useT()
+  const { height: viewportHeight, width: viewportWidth } = useWindowDimensions()
   // Falls back to initials when nothing is chosen, and also when a stored id names an
   // avatar this build does not ship — a set that shrinks must not leave a blank circle.
   const portrait = avatarArt(avatar ?? null)
@@ -163,7 +171,7 @@ export function ProfileScreen({
 
   if (stats === null || stats.xpTotal === 0) {
     return (
-      <View style={styles.screen}>
+      <ScrollView style={styles.screen} contentContainerStyle={styles.emptyContent}>
         {/* The gear, on the state that needs it MOST.
 
             Settings stopped being a tab in the August 2026 redesign and moved behind
@@ -207,7 +215,9 @@ export function ProfileScreen({
             a 390-wide phone empty below it — the most common reason a screen in this app
             reads as unfinished, and the same defect in seven other places. */}
         <EmptyState
-          art={<Art name="states/empty-profile" size={140} />}
+          compact
+          art={<AdventureArt name="passport" style={{ width: Math.min(viewportWidth - 64, 480), height: Math.min(300, viewportHeight * .34), borderRadius: 22 }} />}
+          style={styles.emptyHero}
           title={t('profile:empty.title')}
           body={t('profile:empty.body')}
           {...(onStartLesson !== undefined
@@ -217,16 +227,21 @@ export function ProfileScreen({
                 // a dead end — the one place a new user is most likely to be looking for
                 // a way in.
                 action: (
+                  <View style={styles.adventureAction}>
+                  <AnswerReward />
                   <Button
+                    variant="discovery"
                     label={t('profile:empty.cta')}
                     onPress={onStartLesson}
                     fullWidth={false}
                   />
+                  </View>
                 ),
               }
             : {})}
         />
-      </View>
+        {onOpenFriends && <Button style={styles.friendsEntry} variant="secondary" label={t('friends:title')} onPress={onOpenFriends}/>}
+      </ScrollView>
     )
   }
 
@@ -256,7 +271,8 @@ export function ProfileScreen({
           Stacked, the title reads as what it is: something you are called, under the
           face you chose. */}
       <View style={styles.identity}>
-        <View style={styles.portrait}>
+        <AdventureArt name="passport" style={{ width: '100%', aspectRatio: 4 / 3, borderRadius: 22 }} />
+        {portrait !== null && <View style={styles.portrait}>
           <Avatar
             size={PORTRAIT}
             ringed={false}
@@ -264,7 +280,7 @@ export function ProfileScreen({
             initials="EX"
             {...(portrait !== null ? { image: <Art name={portrait} size={PORTRAIT} /> } : {})}
           />
-        </View>
+        </View>}
         <View style={styles.nameRow}>
           <Text style={styles.name} role="heading">
             {t('profile:anonymous')}
@@ -341,6 +357,12 @@ export function ProfileScreen({
       </Card>
 
       {week !== undefined && <WeeklyActivity week={week} />}
+      {gemDays.length > 0 && <StreakGemCollection days={gemDays} />}
+      {onStartLesson !== undefined && <Card style={styles.adventureAction}>
+        <Text style={styles.adventureTitle}>{t('profile:adventure.title')}</Text>
+        <AnswerReward />
+        <Button variant="discovery" label={t('lesson:summary.adventure.continue')} onPress={onStartLesson} />
+      </Card>}
 
       {/* Three numbers, not six.
    
@@ -384,6 +406,7 @@ export function ProfileScreen({
           <Text style={styles.subtitle}>{t('profile:league.body')}</Text>
         </Section>
       )}
+      {onOpenFriends && <Section title={t('friends:title')} onPress={onOpenFriends}><Text style={styles.subtitle}>{t('friends:intro')}</Text></Section>}
 
       {/* The trophy shelf.
    
@@ -566,11 +589,17 @@ function WeeklyActivity({ week }: { readonly week: WeekActivity }) {
 }
 
 const styles = StyleSheet.create({
+  adventureAction: { alignSelf: 'stretch', gap: space[3] },
+  friendsEntry: { marginHorizontal: space[4], marginBottom: space[6] },
+  adventureTitle: { ...text('h3'), color: colors.text.primary },
   insignia: { alignSelf: 'flex-start', marginBottom: space[1] },
   levelTitle: { ...text('h3'), color: colors.text.primary, marginBottom: space[2] },
   screen: { flex: 1 },
-  content: { padding: space[4], gap: space[4] },
+  emptyHero: { backgroundColor: colors.journey.sky, borderRadius: radius['2xl'], marginVertical: space[3], marginHorizontal: space[4], paddingVertical: space[3] },
+  content: { padding: space[4], gap: space[4], paddingBottom: space[6] },
+  emptyContent: { flexGrow: 1 },
   emptyBar: { paddingHorizontal: space[4], paddingTop: space[4] },
+
   /**
    * Anchored to the upper third, not centred.
    *
@@ -595,29 +624,29 @@ const styles = StyleSheet.create({
 
   levelCard: { gap: space[2] },
 
-  section: { gap: space[2] },
+  section: { gap: space[3], flexShrink: 0 },
   sectionTitle: { ...text('overline'), color: colors.text.tertiary },
 
   // Three across, each taking a third. `flex: 1` on the tiles rather than a percentage
   // width, because a percentage plus a gap overflows the row by the gap — the same trap
   // the lesson's answer grid and onboarding's continent grid each document.
-  statRow: { flexDirection: 'row', gap: space[2] },
+  statRow: { flexDirection: 'row', gap: space[2], flexShrink: 0 },
   badgeRow: { flexDirection: 'row', gap: space[3], alignItems: 'center' },
   sectionHead: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
-  identity: { alignItems: 'center', gap: space[1] },
+  identity: { alignItems: 'center', gap: space[2], flexShrink: 0 },
   // A ring drawn by the layout rather than by `Avatar`, so it can be the accent and thick
   // enough to read at 96 — `ringed` is a hairline sized for the 40pt header avatar.
   portrait: {
     padding: space[1],
     borderRadius: radius.full,
     borderWidth: 3,
-    borderColor: colors.action.primaryEdge,
-    backgroundColor: colors.bg.surface,
+    borderColor: colors.border.subtle,
+    backgroundColor: colors.journey.sky,
   },
   nameRow: { flexDirection: 'row', alignItems: 'center', gap: space[1], marginTop: space[2] },
   pencil: { padding: space[1] },
   wornTitle: { ...text('body'), color: colors.text.secondary },
-  levelRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  levelRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space[2] },
   levelNumber: { ...text('h3'), color: colors.text.primary },
   // Tabular, like every other fraction in the app: two numbers that change independently
   // must not shift each other sideways as they do.
@@ -634,6 +663,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     ...squircle,
     backgroundColor: colors.bg.surface,
+    borderWidth: 2, borderColor: colors.border.subtle,
   },
   statValue: { ...text('numeric'), color: colors.text.primary },
   statLabel: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },

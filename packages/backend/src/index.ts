@@ -15,6 +15,8 @@ import { setTimeZone } from './time-zone'
 import { todayQuest } from './quest-state'
 import { progress, spend, spendSchema, type SpendKind } from './economy'
 import { fileReport, reportSchema } from './reports'
+import { fetchLeague, leagueEligible, leagueOptOut, setLeagueOptOut, settleLeagues } from './leagues'
+import { challengesEligible, challengeAction, challengeActionSchema, listChallenges } from './friend-challenges'
 
 const codeRequest = z.object({ email: z.string().trim().toLowerCase().email().max(254),
   purpose: z.enum(['link', 'login', 'delete']), locale: z.enum(['en', 'sv']) }).strict()
@@ -60,6 +62,7 @@ export function createWorker(mail?: MailDelivery, clock: Clock = Date.now) { ret
   async scheduled(_event: ScheduledController, env: Env): Promise<void> {
     await pruneDeletionReceipts(env.DB, clock())
     await pruneSessionRotations(env.DB, clock())
+    if (env.API_ENABLED === 'true' && env.LEAGUES_ENABLED === 'true') await settleLeagues(env.DB, clock())
   },
   async fetch(request: Request, env: Env): Promise<Response> {
     try {
@@ -98,6 +101,35 @@ export function createWorker(mail?: MailDelivery, clock: Clock = Date.now) { ret
       }
       const { account, tokenHash } = await authenticate(env.DB, request, clock())
       const now = clock()
+      if (request.method === 'GET' && path === '/v1/features') {
+        const enabled = env.LEAGUES_ENABLED === 'true' && await leagueEligible(env.DB, account.id, tokenHash, now)
+        const challenges = env.CHALLENGES_ENABLED === 'true' && await challengesEligible(env.DB, account.id, tokenHash, now)
+        return json([...(enabled ? [{ key: 'weekly_league', enabled: true, rolloutPercent: 100 }] : []),
+          ...(challenges ? [{ key: 'friend_challenges', enabled: true, rolloutPercent: 100 }] : [])])
+      }
+      if (path === '/v1/challenges') {
+        if (env.CHALLENGES_ENABLED !== 'true') throw new ApiError('FEATURE_UNAVAILABLE',503)
+        if (!await challengesEligible(env.DB,account.id,tokenHash,now)) throw new ApiError('SOCIAL_ACCOUNT_REQUIRED',403)
+        if (request.method === 'GET') return json(await listChallenges(env.DB,account.id,now))
+        if (request.method === 'POST') {
+          const parsed=challengeActionSchema.safeParse(await body(request))
+          if (!parsed.success) throw new ApiError('INVALID_BODY',400)
+          return json(await challengeAction(env.DB,account.id,tokenHash,parsed.data,now))
+        }
+        throw new ApiError('NOT_FOUND',404)
+      }
+      if (path === '/v1/league' || path === '/v1/league/preference') {
+        if (env.LEAGUES_ENABLED !== 'true') throw new ApiError('FEATURE_UNAVAILABLE', 503)
+        if (!await leagueEligible(env.DB, account.id, tokenHash, now)) throw new ApiError('SOCIAL_ACCOUNT_REQUIRED', 403)
+        if (request.method === 'GET' && path === '/v1/league') return json(await fetchLeague(env.DB, account.id, tokenHash, now))
+        if (request.method === 'GET') return json({ optedOut: await leagueOptOut(env.DB, account.id) })
+        if (request.method === 'POST' && path === '/v1/league/preference') {
+          const input = z.object({ optedOut: z.boolean() }).strict().safeParse(await body(request))
+          if (!input.success) throw new ApiError('INVALID_BODY', 400)
+          return json(await setLeagueOptOut(env.DB, account.id, tokenHash, input.data.optedOut, now))
+        }
+        throw new ApiError('NOT_FOUND', 404)
+      }
       if (request.method === 'POST' && path === '/v1/account/audience') {
         const input = z.object({ birthYear: z.number().int() }).strict().safeParse(await body(request))
         if (!input.success) throw new ApiError('INVALID_BODY', 400)

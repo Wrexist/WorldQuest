@@ -26,7 +26,7 @@ import { squircle } from '../shape.js'
 import { text } from '../typography.js'
 import { press3d, useFacePress } from './press3d.js'
 
-export type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'destructive' | 'ghost'
+export type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'destructive' | 'ghost' | 'discovery' | 'adventure'
 export type ButtonSize = 'sm' | 'md' | 'lg'
 
 export type ButtonProps = {
@@ -69,16 +69,20 @@ type Skin = {
 }
 
 const SKINS: Record<ButtonVariant, Skin> = {
+  discovery: {
+    face: colors.course.face,
+    edge: colors.course.bannerEdge,
+    label: colors.course.ink,
+  },
   primary: {
-    face: colors.action.primary,
+    face: colors.action.primaryFace,
     edge: colors.action.primaryEdge,
-    label: colors.text.onAccent,
-    glow: colors.action.primaryGlow,
+    label: colors.text.onPrimary,
   },
   secondary: {
-    face: colors.action.secondary,
+    face: colors.action.secondaryFace,
     edge: colors.action.secondaryEdge,
-    label: colors.text.onAccent,
+    label: colors.text.onSecondary,
   },
   destructive: {
     face: colors.action.destructive,
@@ -97,6 +101,7 @@ const SKINS: Record<ButtonVariant, Skin> = {
   // Genuinely flat. For "skip", "not now", "log out" — the actions we must offer
   // without inviting.
   ghost: { face: 'transparent', edge: 'transparent', label: colors.text.secondary },
+  adventure: { face: colors.leagueAdventure.button, edge: colors.leagueAdventure.buttonEdge, label: colors.leagueAdventure.buttonText },
 }
 
 export function Button({

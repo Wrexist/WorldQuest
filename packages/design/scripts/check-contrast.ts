@@ -44,6 +44,23 @@ const p = tokens.palette
 type Pair = { name: string; fg: string; bg: string; min: number; note?: string }
 
 const PAIRS: Pair[] = [
+  ...Object.entries(tokens.color.league as typeof import('../src/tokens.js').colors.league).flatMap(([tier, theme]) => [
+    { name: `${tier} banner light`, fg: theme.ink, bg: theme.start, min: 4.5 },
+    { name: `${tier} banner dark`, fg: theme.ink, bg: theme.end, min: 4.5 },
+    { name: `${tier} division badge`, fg: theme.ink, bg: theme.highlight, min: 4.5 },
+  ]),
+  { name: 'adventure card light', fg: tokens.color.leagueAdventure.ink, bg: tokens.color.leagueAdventure.start, min: 4.5 },
+  { name: 'adventure card dark', fg: tokens.color.leagueAdventure.ink, bg: tokens.color.leagueAdventure.end, min: 4.5 },
+  { name: 'adventure button', fg: tokens.color.leagueAdventure.buttonText, bg: tokens.color.leagueAdventure.button, min: 4.5 },
+  { name: 'header wordmark', fg: tokens.color.chrome.text, bg: tokens.color.chrome.surface, min: 4.5 },
+  { name: 'header balance', fg: tokens.color.chrome.text, bg: tokens.color.chrome.counter, min: 4.5 },
+  { name: 'header pending streak', fg: tokens.color.chrome.muted, bg: tokens.color.chrome.counter, min: 4.5 },
+  { name: 'course banner text', fg: tokens.color.text.onPrimary, bg: tokens.color.course.banner, min: 4.5 },
+  { name: 'course platform glyph', fg: tokens.color.course.ink, bg: tokens.color.course.face, min: 3 },
+  { name: 'course future-step glyph', fg: tokens.color.course.stoneInk, bg: tokens.color.course.stone, min: 3 },
+  { name: 'primary label on primary face', fg: tokens.color.text.onPrimary, bg: tokens.color.action.primaryFace, min: 4.5 },
+  { name: 'secondary label on secondary face', fg: tokens.color.text.onSecondary, bg: tokens.color.action.secondaryFace, min: 4.5 },
+  ...Object.entries(tokens.color.journey).filter(([key]) => ['meadow','sky','sand','lavender','teal','peach','rose'].includes(key)).flatMap(([key, value]) => ['2','3'].map(level => ({ name: `text.${level} on ${key}`, fg: p.text[level], bg: value as string, min: 4.5 }))),
   // Body text
   { name: 'text.primary on surface', fg: p.text['1'], bg: p.surface['1'], min: 4.5 },
   { name: 'text.primary on canvas', fg: p.text['1'], bg: p.space['800'], min: 4.5 },
@@ -63,20 +80,20 @@ const PAIRS: Pair[] = [
   // Button labels are ≥18px bold, so the 3:1 large-text floor applies.
   {
     name: 'white on action.primary (≥18px bold)',
-    fg: p.text['1'],
+    fg: tokens.color.text.onAccent,
     bg: p.green['500'],
     min: 3.0,
     note: 'button labels only — never caption text on green',
   },
   {
     name: 'white on action.secondary (≥18px bold)',
-    fg: p.text['1'],
+    fg: tokens.color.text.onAccent,
     bg: p.blue['500'],
     min: 3.0,
   },
   {
     name: 'white on action.destructive (≥18px bold)',
-    fg: p.text['1'],
+    fg: tokens.color.text.onAccent,
     bg: p.red['600'],
     min: 3.0,
   },
@@ -301,7 +318,8 @@ const GROUPS: ReadonlyArray<{
     what: 'body text on a surface',
     // `text.onStreak` is drawn only on the flame; its one pair is a curated row above.
     texts: leaves(c.text, 'text').filter(
-      (t) => t.path !== 'text.onAccent' && t.path !== 'text.onStreak' && t.path !== 'text.tertiary',
+      // Button-specific labels are checked against their actual faces above.
+      (t) => !['text.onAccent', 'text.onStreak', 'text.onPrimary', 'text.onSecondary', 'text.tertiary'].includes(t.path),
     ),
     surfaces: [
       ...leaves(c.bg, 'bg'),
@@ -320,6 +338,8 @@ const GROUPS: ReadonlyArray<{
       (s) =>
         !s.path.endsWith('Edge') &&
         !s.path.endsWith('Glow') &&
+        // Bright faces use the dark onPrimary/onSecondary labels checked above.
+        !s.path.endsWith('Face') &&
         s.path !== 'action.tertiary' &&
         s.path !== 'action.disabled',
     ),

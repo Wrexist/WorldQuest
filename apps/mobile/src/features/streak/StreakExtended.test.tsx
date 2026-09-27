@@ -6,6 +6,20 @@ import { StreakExtended } from './StreakExtended.js'
 const week = Array.from({ length: 7 }, (_, i) => ({ day: 'MTWTFSS'[i]!, count: i === 6 ? 1 : 0 }))
 
 describe('StreakExtended', () => {
+  it('reveals one collectible gem once and leaves Continue available', () => {
+    const onOpenChest = vi.fn()
+    const onContinue = vi.fn()
+    render(<StreakExtended streak={1} week={week} onContinue={onContinue}
+      chest={{ day: '2026-09-26', lessonId: 'one', xp: 15, coins: 5, opened: false }}
+      onOpenChest={onOpenChest} />)
+    fireEvent.click(screen.getByTestId('open-streak-chest'))
+    fireEvent.click(screen.getByTestId('streak-chest'))
+    expect(onOpenChest).toHaveBeenCalledOnce()
+    expect(screen.getByText('+1 streak gem')).toBeTruthy()
+    expect(screen.getByText('A collectible badge for today. Your coins stay in your wallet.')).toBeTruthy()
+    fireEvent.click(screen.getByText('Continue'))
+    expect(onContinue).toHaveBeenCalledOnce()
+  })
   it('names the streak once for a screen reader and leads with one button', () => {
     const onContinue = vi.fn()
     render(<StreakExtended streak={4} week={week} onContinue={onContinue} />)

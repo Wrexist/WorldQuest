@@ -59,7 +59,7 @@ export function PathBubble({ children, pointing, tailAt, width, tone, testID }: 
 const styles = StyleSheet.create({
   wrap: { alignSelf: 'stretch', position: 'relative' },
   body: {
-    borderWidth: 2,
+    borderWidth: 1,
     borderRadius: radius.lg,
     ...squircle,
     paddingVertical: space[3],
@@ -69,13 +69,13 @@ const styles = StyleSheet.create({
   // The edge colour is the whole difference between the two tones: the callout belongs to
   // the one primary action and is edged in its green; the card is neutral slate, the
   // colour `border.strong` exists to be because it means nothing.
-  current: { backgroundColor: colors.bg.surfaceRaised, borderColor: colors.action.primary },
+  current: { backgroundColor: colors.bg.surface, borderColor: colors.action.primary },
   quiet: { backgroundColor: colors.bg.surface, borderColor: colors.border.strong },
   tail: {
     position: 'absolute',
     width: TAIL,
     height: TAIL,
-    borderWidth: 2,
+    borderWidth: 1,
     transform: [{ rotate: '45deg' }],
   },
   // Half the square outside the body; the body's own fill hides the inner half, so the two

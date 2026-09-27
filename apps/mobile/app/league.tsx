@@ -11,10 +11,14 @@ import { weekEnd } from '@worldquest/engines'
 import { LeagueScreen } from '../src/features/league/LeagueScreen.js'
 import { useLeague } from '../src/features/league/useLeague.js'
 import { useOnline } from '../src/lib/connectivity.js'
+import { useLeagueOptOut } from '../src/features/league/useLeagueOptOut.js'
+import { useLeagueEnabled } from '../src/features/league/flag.js'
 
 export default function LeagueRoute() {
   const league = useLeague()
   const online = useOnline()
+  const preference = useLeagueOptOut()
+  const enabled = useLeagueEnabled()
 
   /**
    * Whole hours until the week turns over, rounded UP.
@@ -37,6 +41,9 @@ export default function LeagueRoute() {
       rank={league.rank}
       status={league.status}
       offline={!online}
+      onJoin={enabled && !preference.joined ? () => preference.setJoined(true) : undefined}
+      joining={preference.busy || preference.loading}
+      joinError={preference.error}
       {...(hoursLeft !== undefined ? { hoursLeft } : {})}
       // Placement is earned by learning — see `onStartLesson`.
       onStartLesson={() => router.push('/lesson')}

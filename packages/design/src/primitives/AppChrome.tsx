@@ -273,7 +273,7 @@ export function TabBar({ items, activeKey, onSelect }: TabBarProps) {
 const styles = StyleSheet.create({
   avatar: {
     backgroundColor: colors.bg.surfaceRaised,
-    borderColor: colors.reward.xp,
+    borderColor: colors.border.subtle,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
     // Two pixels, and in the strong slate rather than the subtle one. The bar is the
     // app's permanent furniture; a 1px hairline in a near-canvas colour left it
     // floating with no clear top on a dark screen.
-    borderTopWidth: 2,
+    borderTopWidth: 1,
     borderTopColor: colors.border.subtle,
     paddingTop: space[2],
     paddingBottom: space[2],
@@ -313,13 +313,13 @@ const styles = StyleSheet.create({
   tabChip: {
     // 44pt minimum touch target, met by the chip rather than by hit slop.
     width: 52,
-    height: 40,
+    height: 44,
     borderRadius: radius.lg,
     ...squircle,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  tabChipActive: { backgroundColor: colors.action.secondary },
+  tabChipActive: { backgroundColor: colors.journey.sky },
   tabLabel: {
     // Title case, not the overline's uppercase — the mockup's bar reads "Explore",
     // not "EXPLORE", and five uppercase labels at this size become a fence.

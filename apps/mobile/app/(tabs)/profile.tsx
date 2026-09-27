@@ -7,7 +7,7 @@
  * lesson ends rather than after a sync.
  */
 
-import { useMemo } from 'react'
+import { useMemo, useSyncExternalStore } from 'react'
 import { router } from 'expo-router'
 import { equippedTitleKey, levelProgress, worldProgress, type Tier } from '@worldquest/engines'
 import { CATALOGUE } from '../../src/features/shop/catalogue.js'
@@ -20,7 +20,9 @@ import { useOptimisticProgress } from '../../src/features/home/useOptimisticProg
 import { ContentGate } from '../../src/components/ContentGate.js'
 import { useContent } from '../../src/lib/content.js'
 import { useAccountStatus } from '../../src/features/account/useAccountStatus.js'
+import { readStreakGems, subscribeStreakGems } from '../../src/features/streak/dailyChest.js'
 import { useLeagueEnabled } from '../../src/features/league/flag.js'
+import { useFeatureFlag } from '../../src/lib/featureFlags.js'
 
 export default function ProfileRoute() {
   const { preferences } = usePreferences()
@@ -31,6 +33,7 @@ export default function ProfileRoute() {
   const week = useWeekActivity()
   const shop = useShop()
   const achievements = useAchievements()
+  const gemDays = useSyncExternalStore(subscribeStreakGems, readStreakGems, readStreakGems)
 
   /**
    * The trophy shelf: earned badges, most recent first.
@@ -66,6 +69,7 @@ export default function ProfileRoute() {
 
   const account = useAccountStatus()
   const leagueOn = useLeagueEnabled()
+  const friendsOn = useFeatureFlag('friend_challenges')
 
   const world = useMemo(() => {
     if (index === null) return null
@@ -128,9 +132,11 @@ export default function ProfileRoute() {
         wornTitleKey={worn}
         avatar={preferences.avatar}
         badges={badges}
+        gemDays={gemDays}
         // Only where leagues run, and never for a child: D1 builds have none, and the
         // row promised a placement "with 29 other explorers" that would not come.
         {...(leagueOn && !account.isChild ? { onOpenLeague: () => router.push('/league') } : {})}
+        {...(friendsOn && !account.isChild ? { onOpenFriends: () => router.push('/friends') } : {})}
         onOpenAchievements={() => router.push('/achievements')}
         // The gear. Settings stopped being a tab when Shop took the fifth slot, and
         // this is where it went — see `app/settings.tsx`.

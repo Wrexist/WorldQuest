@@ -199,12 +199,15 @@ export function t<K extends TranslationKey>(key: K, ...args: TranslationArgs<K>)
  * genuinely originates in content. Everywhere else, `t` is the one to reach for, and
  * reaching for this instead silently opts out of the type safety.
  */
-export function tContent(key: string, params?: Record<string, string | number>): string {
-  if (!i18n.exists(key)) {
+export function tContent(key: string, params?: Record<string, string | number>, locale?: Locale): string {
+  // Shared challenges keep the prompt in the same language as their stored options.
+  // This must not change the player's language preference for the rest of the app.
+  const options = locale === undefined ? params : { ...params, lng: locale }
+  if (!i18n.exists(key, options)) {
     if (isDev()) console.warn(`[i18n] content referenced a missing key: ${key}`)
     return key
   }
-  return params === undefined ? i18n.t(key) : i18n.t(key, params)
+  return options === undefined ? i18n.t(key) : i18n.t(key, options)
 }
 
 // ── locale selection ────────────────────────────────────────────────────────

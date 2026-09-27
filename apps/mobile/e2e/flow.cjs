@@ -943,7 +943,8 @@ const skip = (name, why) => {
     'the five tab icons are real artwork, not blank rectangles',
     tabIcons !== null &&
       tabIcons.length === 5 &&
-      tabIcons.every((i) => i.w > 0 && /icons\//.test(i.src)),
+      // Line icons, retained illustrations, and the new studio renders must decode.
+      tabIcons.every((i) => i.w > 0 && /(?:icons\/|art\/(?:playful|soft)\/)/.test(i.src)),
     tabIcons === null ? 'no tablist' : `${tabIcons.filter((i) => i.w > 0).length}/5 decoded`,
   )
 
@@ -1256,6 +1257,11 @@ const skip = (name, why) => {
   step('the first lesson of the day ends on the streak, not a sale',
        (await streakBeat.count()) > 0 && !/nothing to buy|per month|Try it free/i.test(afterSummary),
        afterSummary.slice(0, 80).replace(/\s+/g, ' '))
+  await page.getByTestId('open-streak-chest').click()
+  await page.waitForTimeout(2000)
+  step('the chest reveals a collectible gem, keeping the coin wallet separate',
+    await streakBeat.getByText('+1 streak gem', { exact: true }).count() === 1 &&
+    /coins stay in your wallet/.test(await body()))
   await page.screenshot({ path: path.join(SHOTS, 'streak-extended.png') })
   await streakBeat.getByText('Continue', { exact: true }).click()
   await page.waitForTimeout(1200)

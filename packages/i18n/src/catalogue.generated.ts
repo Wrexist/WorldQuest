@@ -230,7 +230,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "error.generic.title": "That didn't load",
       "error.generic.body": "Let's try again.",
       "progress.count": "{current} / {total}",
-      "loading": "Loading"
+      "loading": "Loading",
+      "appName": "WorldQuest"
     },
     "country": {
       "favourite.label": "Star this country",
@@ -310,6 +311,51 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "mastery.mastered": "Mastered",
       "mastery.burnished": "Burnished"
     },
+    "friends": {
+      "title": "Friend challenges",
+      "hero": "A little world rivalry",
+      "intro": "Invite someone you know to explore the same ten questions.",
+      "rules": "You both have 48 hours. Accuracy wins, then time from opening the quiz, including pauses. Challenges award no XP or coins.",
+      "create": "Create invitation",
+      "inviteReady": "Your private invitation",
+      "share": "Share code",
+      "shareMessage": "Try a WorldQuest challenge with me. Open Friend challenges and enter this code: {code}",
+      "haveCode": "Got an invitation?",
+      "codeLabel": "Private challenge code",
+      "join": "Join challenge",
+      "yourChallenges": "Your challenges",
+      "empty": "No challenges yet. Create an invitation or enter a code from a friend.",
+      "refresh": "Refresh challenges",
+      "unavailable": "Challenges are not available yet",
+      "accountNeeded": "Private challenges require an eligible, verified account and an enabled release.",
+      "offline": "You're offline. Reconnect to create, join or submit a challenge.",
+      "error": "That request could not be completed. Check your connection and try again. You can have up to three open invitations.",
+      "reported": "Your report has been received.",
+      "blocked": "Explorer blocked. They cannot join your future challenges.",
+      "progress": "Question {count} of 10",
+      "readyToSend": "All ten are ready",
+      "resultPrivacy": "Results appear when both explorers finish, or when the invitation expires.",
+      "sending": "Sending results",
+      "submit": "Send results",
+      "lockAnswer": "Lock answer",
+      "privateInvite": "Private invitation",
+      "expires": "Ends {date}",
+      "won": "You won this round",
+      "lost": "A good round together",
+      "draw": "An even match",
+      "unplayed": "This round has ended",
+      "score": "You: {yours}/10 · Friend: {theirs}/10",
+      "waiting": "Your answers are saved. Waiting for your friend.",
+      "ready": "The same ten questions for both explorers.",
+      "play": "Open challenge",
+      "hide": "Hide challenge",
+      "cancel": "Cancel invitation",
+      "block": "Block explorer",
+      "report": "Report explorer",
+      "reason.unwanted": "Unwanted invitations",
+      "reason.cheating": "Unfair play",
+      "reason.other": "Another concern"
+    },
     "home": {
       "greeting.morning": "Good morning,",
       "greeting.afternoon": "Good afternoon,",
@@ -378,7 +424,17 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "path.review": "Keep reviewing",
       "path.error.title": "The course didn't load",
       "path.error.body": "Lessons still work, so you can practise now.",
-      "path.error.cta": "Practise now"
+      "path.error.cta": "Practise now",
+      "daily.title": "Your daily goal",
+      "daily.complete": "Daily goal complete!",
+      "daily.count": "{done} / {target} lessons",
+      "daily.open": "Daily goal: {done} of {target} lessons. {days} learning days this week. View your streak.",
+      "daily.rest": "A little more of the world is yours. See you on your next adventure.",
+      "daily.started": "One step closer. Your next adventure is waiting on the path.",
+      "path.xp": "+{amount} XP",
+      "path.xp.detail": "Base reward per new correct answer",
+      "path.startChallenge": "Start challenge →",
+      "path.continueChallenge": "Continue challenge →"
     },
     "league": {
       "title": "League",
@@ -403,12 +459,20 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "error.title": "Could not load the league",
       "error.body": "Your XP is safe — this is just the leaderboard.",
       "settings.label": "Leagues",
-      "settings.help": "A weekly leaderboard with 29 other people. Nobody sees your name, and you can leave at any time.",
+      "settings.help": "A weekly group of up to 30 explorers. Only your assigned explorer name and XP are shared. Leaving stops next week?s placement.",
       "home.chip": "{tier}",
       "home.position": "{position} of {total}",
       "offline.title": "You are offline",
       "offline.body": "The leaderboard needs a connection. Your XP is still counting — it will be here when you are back.",
-      "offline.badge": "Offline — these standings may be behind."
+      "offline.badge": "Offline — these standings may be behind.",
+      "join.title": "A little friendly competition",
+      "join.body": "Join a weekly group of explorers. Only your assigned explorer name and earned XP are shared; you can leave in Settings.",
+      "join.action": "Join league",
+      "join.pending": "Joining league",
+      "join.error": "Your choice could not be saved. Check your connection and try again.",
+      "tier.legend": "Legend League",
+      "first.title": "Your first step starts here",
+      "first.body": "Finish a lesson to earn your first weekly XP. Your group fills as other explorers join."
     },
     "lesson": {
       "prompt.capital_of": "What is the capital of {entityName}?",
@@ -495,7 +559,15 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "report.thanks.body": "We read these to fix our facts.",
       "report.failed": "That didn't send. Check your connection and try again.",
       "review.tag": "Previous mistake",
-      "new.tag": "New"
+      "new.tag": "New",
+      "summary.adventure.prompt": "A little more of the world is yours. Keep exploring?",
+      "summary.adventure.continue": "Continue adventure",
+      "journey.title": "Your next discovery",
+      "journey.body": "Every lesson moves your adventure forward. Ready for the next one?",
+      "journey.start": "Start next challenge →",
+      "journey.home": "Back to my journey",
+      "journey.complete": "You explored the whole course!",
+      "feedback.correct.discovery": "One more fact explored!"
     },
     "nav": {
       "home": "Home",
@@ -620,8 +692,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "account.title": "Link your email",
       "account.body": "Add an email address to sign in to your account on another phone.",
       "account.cta": "Create an account",
-      "empty.title": "Nothing to show yet",
-      "empty.body": "Finish your first lesson and your numbers will start here.",
+      "empty.title": "Your explorer passport",
+      "empty.body": "Every country starts with a little curiosity. Take your first lesson and begin your collection.",
       "empty.cta": "Start a lesson",
       "levelTitle": "Level {level} · {title}",
       "week.title": "This week",
@@ -633,7 +705,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "badges.title": "Recent badges",
       "stats.longest.short": "best {days}",
       "league.title": "League",
-      "league.body": "See where you stand against 29 other explorers this week."
+      "league.body": "See where you stand against 29 other explorers this week.",
+      "adventure.title": "Your next discovery"
     },
     "quests": {
       "title": "Today's Quest",
@@ -669,7 +742,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "done.reward.coins": "Bonus: {amount} coins",
       "done.streak": "{count, plural, one {# day in a row} other {# days in a row}}",
       "done.milestone": "Streak milestone — {amount} XP",
-      "done.cta": "Nice"
+      "done.cta": "Nice",
+      "adventure.continue": "Continue quest →"
     },
     "settings": {
       "title": "Settings",
@@ -772,7 +846,12 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "section.streak": "Streak",
       "freeze.title": "Streak freeze",
       "freeze.body": "Covers one missed day. You buy them on your streak page, where you can see what they protect.",
-      "freeze.cta": "Open streak"
+      "freeze.cta": "Open streak",
+      "unlock.title": "Your next unlock",
+      "unlock.ready": "Enough coins saved — choose it below",
+      "unlock.progress": "{coins} / {price} coins saved",
+      "purchase.pending": "Confirming your purchase?",
+      "purchase.failed": "Your purchase could not be confirmed. Reconnect and try again."
     },
     "splash": {
       "wordmark": "WorldQuest",
@@ -821,7 +900,24 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "extended.cta": "Continue",
       "calendar.count": "{count, plural, one {# day this month} other {# days this month}}",
       "share": "Share your streak",
-      "share.message": "{count, plural, one {I started a learning streak on WorldQuest today.} other {I've learned something new about the world # days in a row on WorldQuest.}}"
+      "share.message": "{count, plural, one {I started a learning streak on WorldQuest today.} other {I've learned something new about the world # days in a row on WorldQuest.}}",
+      "chest.open": "Open chest",
+      "chest.opened": "Opened streak chest",
+      "chest.ready": "Your streak chest",
+      "chest.hint": "A learning day, a new keepsake. Tap to open!",
+      "chest.revealed": "Today's treasure",
+      "chest.receipt": "A collectible badge for today. Your coins stay in your wallet.",
+      "chest.gems": "+1 streak gem",
+      "collection.title": "Streak gems",
+      "collection.count": "{count} collected",
+      "collection.body": "One learning day, one gem. Keep your collection, even when a streak ends.",
+      "collection.empty": "Finish a lesson and open your chest to collect your first gem.",
+      "collection.open": "Open today’s chest",
+      "collection.badge": "Learning gem: {date}",
+      "collection.device": "Your gem collection is saved on this device.",
+      "collection.page": "Gems {first}–{last} of {total}",
+      "collection.newer": "Newer gems",
+      "collection.older": "Older gems"
     },
     "titles": {
       "wanderer": "Wanderer",
@@ -1066,7 +1162,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "error.generic.title": "Det gick inte att ladda",
       "error.generic.body": "Vi försöker igen.",
       "progress.count": "{current} / {total}",
-      "loading": "Laddar"
+      "loading": "Laddar",
+      "appName": "WorldQuest"
     },
     "country": {
       "favourite.label": "Stjärnmärk landet",
@@ -1146,6 +1243,51 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "mastery.mastered": "Bemästrat",
       "mastery.burnished": "Slipat"
     },
+    "friends": {
+      "title": "Vänutmaningar",
+      "hero": "Upptäck världen tillsammans",
+      "intro": "Bjud in någon du känner att utforska samma tio frågor.",
+      "rules": "Ni har 48 timmar på er. Flest rätt vinner, sedan tiden från att frågorna öppnas, inklusive pauser. Utmaningar ger inga XP eller mynt.",
+      "create": "Skapa inbjudan",
+      "inviteReady": "Din privata inbjudan",
+      "share": "Dela kod",
+      "shareMessage": "Prova en WorldQuest-utmaning med mig. Öppna Vänutmaningar och ange koden: {code}",
+      "haveCode": "Har du en inbjudan?",
+      "codeLabel": "Privat utmaningskod",
+      "join": "Gå med",
+      "yourChallenges": "Dina utmaningar",
+      "empty": "Inga utmaningar ännu. Skapa en inbjudan eller ange en kod från en vän.",
+      "refresh": "Uppdatera utmaningar",
+      "unavailable": "Utmaningar är inte tillgängliga ännu",
+      "accountNeeded": "Privata utmaningar kräver ett behörigt, verifierat konto och en aktiverad version.",
+      "offline": "Du är offline. Anslut igen för att skapa, gå med i eller skicka in en utmaning.",
+      "error": "Begäran kunde inte slutföras. Kontrollera anslutningen och försök igen. Du kan ha högst tre öppna inbjudningar.",
+      "reported": "Din rapport är mottagen.",
+      "blocked": "Upptäckaren är blockerad och kan inte gå med i dina framtida utmaningar.",
+      "progress": "Fråga {count} av 10",
+      "readyToSend": "Alla tio är klara",
+      "resultPrivacy": "Resultaten visas när båda är klara eller när inbjudan löper ut.",
+      "sending": "Skickar resultat",
+      "submit": "Skicka resultat",
+      "lockAnswer": "Lås svaret",
+      "privateInvite": "Privat inbjudan",
+      "expires": "Slutar {date}",
+      "won": "Du vann omgången",
+      "lost": "En bra omgång tillsammans",
+      "draw": "En jämn match",
+      "unplayed": "Omgången har avslutats",
+      "score": "Du: {yours}/10 · Vän: {theirs}/10",
+      "waiting": "Dina svar är sparade. Väntar på din vän.",
+      "ready": "Samma tio frågor för båda upptäckarna.",
+      "play": "Öppna utmaning",
+      "hide": "Dölj utmaning",
+      "cancel": "Avbryt inbjudan",
+      "block": "Blockera upptäckare",
+      "report": "Rapportera upptäckare",
+      "reason.unwanted": "Oönskade inbjudningar",
+      "reason.cheating": "Orättvist spel",
+      "reason.other": "Annat problem"
+    },
     "home": {
       "greeting.morning": "God morgon,",
       "greeting.afternoon": "God eftermiddag,",
@@ -1214,7 +1356,17 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "path.review": "Fortsätt repetera",
       "path.error.title": "Kursen gick inte att ladda",
       "path.error.body": "Lektionerna fungerar ändå, så du kan öva nu.",
-      "path.error.cta": "Öva nu"
+      "path.error.cta": "Öva nu",
+      "daily.title": "Ditt dagliga mål",
+      "daily.complete": "Dagens mål är klart!",
+      "daily.count": "{done} / {target} lektioner",
+      "daily.open": "Dagens mål: {done} av {target} lektioner. {days} studiedagar den här veckan. Visa din svit.",
+      "daily.rest": "Du kan lite mer om världen nu. Vi ses på nästa äventyr.",
+      "daily.started": "Ett steg närmare. Nästa äventyr väntar på stigen.",
+      "path.xp": "+{amount} XP",
+      "path.xp.detail": "Grundbelöning per nytt rätt svar",
+      "path.startChallenge": "Starta utmaningen →",
+      "path.continueChallenge": "Fortsätt utmaningen →"
     },
     "league": {
       "title": "Liga",
@@ -1239,12 +1391,20 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "error.title": "Kunde inte ladda ligan",
       "error.body": "Din XP är trygg — det här är bara topplistan.",
       "settings.label": "Ligor",
-      "settings.help": "En topplista varje vecka med 29 andra. Ingen ser ditt namn, och du kan lämna när du vill.",
+      "settings.help": "En veckogrupp med upp till 30 uppt?ckare. Bara ditt tilldelade uppt?ckarnamn och XP delas. Om du l?mnar deltar du inte n?sta vecka.",
       "home.chip": "{tier}",
       "home.position": "{position} av {total}",
       "offline.title": "Du är offline",
       "offline.body": "Topplistan behöver uppkoppling. Din XP räknas fortfarande — den finns här när du är tillbaka.",
-      "offline.badge": "Offline — listan kan vara efter."
+      "offline.badge": "Offline — listan kan vara efter.",
+      "join.title": "Lite v?nskaplig t?vlan",
+      "join.body": "G? med i en veckogrupp med uppt?ckare. Bara ditt tilldelade uppt?ckarnamn och intj?nade XP delas; du kan l?mna i Inst?llningar.",
+      "join.action": "G? med",
+      "join.pending": "Ansluter",
+      "join.error": "Ditt val kunde inte sparas. Kontrollera anslutningen och f?rs?k igen.",
+      "tier.legend": "Legendligan",
+      "first.title": "Ditt f?rsta steg b?rjar h?r",
+      "first.body": "Slutf?r en lektion f?r att f? veckans f?rsta XP. Din grupp fylls p? n?r fler uppt?ckare g?r med."
     },
     "lesson": {
       "prompt.capital_of": "Vad är huvudstaden i {entityName}?",
@@ -1331,7 +1491,15 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "report.thanks.body": "Vi läser dem för att rätta våra fakta.",
       "report.failed": "Det gick inte att skicka. Kontrollera anslutningen och försök igen.",
       "review.tag": "Tidigare misstag",
-      "new.tag": "Nytt"
+      "new.tag": "Nytt",
+      "summary.adventure.prompt": "Du har upptäckt lite mer av världen. Utforska vidare?",
+      "summary.adventure.continue": "Fortsätt äventyret",
+      "journey.title": "Din nästa upptäckt",
+      "journey.body": "Varje lektion tar ditt äventyr framåt. Redo för nästa?",
+      "journey.start": "Starta nästa utmaning →",
+      "journey.home": "Tillbaka till min resa",
+      "journey.complete": "Du har utforskat hela kursen!",
+      "feedback.correct.discovery": "Ännu en upptäckt!"
     },
     "nav": {
       "home": "Hem",
@@ -1456,8 +1624,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "account.title": "Koppla din e-post",
       "account.body": "Lägg till en e-postadress för att kunna logga in på ditt konto på en annan telefon.",
       "account.cta": "Skapa ett konto",
-      "empty.title": "Inget att visa ännu",
-      "empty.body": "Gör din första lektion så börjar dina siffror här.",
+      "empty.title": "Ditt upptäckarpass",
+      "empty.body": "Varje land börjar med lite nyfikenhet. Gör din första lektion och börja din samling.",
       "empty.cta": "Starta en lektion",
       "levelTitle": "Nivå {level} · {title}",
       "week.title": "Denna vecka",
@@ -1469,7 +1637,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "badges.title": "Senaste märken",
       "stats.longest.short": "bäst {days}",
       "league.title": "Liga",
-      "league.body": "Se hur du ligger till mot 29 andra utforskare den här veckan."
+      "league.body": "Se hur du ligger till mot 29 andra utforskare den här veckan.",
+      "adventure.title": "Din nästa upptäckt"
     },
     "quests": {
       "title": "Dagens uppdrag",
@@ -1505,7 +1674,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "done.reward.coins": "Bonus: {amount} mynt",
       "done.streak": "{count, plural, one {# dag i rad} other {# dagar i rad}}",
       "done.milestone": "Milstolpe i svit — {amount} XP",
-      "done.cta": "Fint"
+      "done.cta": "Fint",
+      "adventure.continue": "Fortsätt uppdraget →"
     },
     "settings": {
       "title": "Inställningar",
@@ -1608,7 +1778,12 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "section.streak": "Svit",
       "freeze.title": "Svitfrysning",
       "freeze.body": "Täcker en missad dag. Du köper dem på sidan för din svit, där du ser vad de skyddar.",
-      "freeze.cta": "Till din svit"
+      "freeze.cta": "Till din svit",
+      "unlock.title": "Ditt nästa mål",
+      "unlock.ready": "Du har tillräckligt med mynt — välj nedan",
+      "unlock.progress": "{coins} / {price} mynt sparade",
+      "purchase.pending": "Bekr?ftar ditt k?p?",
+      "purchase.failed": "K?pet kunde inte bekr?ftas. Anslut igen och f?rs?k p? nytt."
     },
     "splash": {
       "wordmark": "WorldQuest",
@@ -1657,7 +1832,24 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "extended.cta": "Fortsätt",
       "calendar.count": "{count, plural, one {# dag den här månaden} other {# dagar den här månaden}}",
       "share": "Dela din svit",
-      "share.message": "{count, plural, one {Jag började lära mig om världen på WorldQuest i dag.} other {Jag har lärt mig något nytt om världen # dagar i rad på WorldQuest.}}"
+      "share.message": "{count, plural, one {Jag började lära mig om världen på WorldQuest i dag.} other {Jag har lärt mig något nytt om världen # dagar i rad på WorldQuest.}}",
+      "chest.open": "Öppna kistan",
+      "chest.opened": "Öppnad svitkista",
+      "chest.ready": "Din svitkista",
+      "chest.hint": "En dag av lärande, ett nytt minne. Tryck för att öppna!",
+      "chest.revealed": "Dagens skatt",
+      "chest.receipt": "Ett samlarmärke för idag. Dina mynt finns kvar i plånboken.",
+      "chest.gems": "+1 svitjuvel",
+      "collection.title": "Svitjuveler",
+      "collection.count": "{count} samlade",
+      "collection.body": "En dag av lärande, en juvel. Du behåller samlingen även om sviten tar slut.",
+      "collection.empty": "Slutför en lektion och öppna kistan för att samla din första juvel.",
+      "collection.open": "Öppna dagens kista",
+      "collection.badge": "Lärandejuvel: {date}",
+      "collection.device": "Din juvelsamling sparas på den här enheten.",
+      "collection.page": "Juveler {first}–{last} av {total}",
+      "collection.newer": "Nyare juveler",
+      "collection.older": "Äldre juveler"
     },
     "titles": {
       "wanderer": "Vandrare",

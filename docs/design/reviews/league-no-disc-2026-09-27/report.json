@@ -1,0 +1,102 @@
+{
+  "kind": "Local app + real D1; synthetic verified test account",
+  "checks": [
+    "Explicit join",
+    "Persisted membership after screen remount",
+    "Zero XP not promoted",
+    "320/390/768 width",
+    "200% text and reachable lesson action",
+    "One-tap opt-out saved"
+  ],
+  "errors": [],
+  "requests": [
+    {
+      "path": "/v1/auth/guest",
+      "status": 201
+    },
+    {
+      "path": "/v1/account",
+      "status": 200
+    },
+    {
+      "path": "/v1/account/audience",
+      "status": 200
+    },
+    {
+      "path": "/v1/progress",
+      "status": 200
+    },
+    {
+      "path": "/v1/lessons/prepare",
+      "status": 200
+    },
+    {
+      "path": "/v1/features",
+      "status": 200
+    },
+    {
+      "path": "/v1/account",
+      "status": 200
+    },
+    {
+      "path": "/v1/account/time-zone",
+      "status": 200
+    },
+    {
+      "path": "/v1/league/preference",
+      "status": 200
+    },
+    {
+      "path": "/v1/league",
+      "status": 200
+    },
+    {
+      "path": "/v1/league/preference",
+      "status": 200
+    },
+    {
+      "path": "/v1/league",
+      "status": 200
+    },
+    {
+      "path": "/v1/learning/state",
+      "status": 200
+    },
+    {
+      "path": "/v1/features",
+      "status": 200
+    },
+    {
+      "path": "/v1/quest/today",
+      "status": 200
+    },
+    {
+      "path": "/v1/lessons/prepare",
+      "status": 200
+    },
+    {
+      "path": "/v1/features",
+      "status": 200
+    },
+    {
+      "path": "/v1/league/preference",
+      "status": 200
+    },
+    {
+      "path": "/v1/account",
+      "status": 200
+    },
+    {
+      "path": "/v1/league/preference",
+      "status": 200
+    },
+    {
+      "path": "/v1/features",
+      "status": 200
+    },
+    {
+      "path": "/v1/league/preference",
+      "status": 200
+    }
+  ]
+}

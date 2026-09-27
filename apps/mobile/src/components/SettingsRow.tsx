@@ -59,6 +59,7 @@ export function Section({
 // ── switch row ──────────────────────────────────────────────────────────────
 
 export type SwitchRowProps = {
+  readonly disabled?: boolean | undefined
   readonly label: string
   readonly help?: string | undefined
   readonly value: boolean
@@ -68,6 +69,7 @@ export type SwitchRowProps = {
 }
 
 export function SwitchRow({
+  disabled,
   label,
   help,
   value,
@@ -92,6 +94,8 @@ export function SwitchRow({
       aria-label={accessibilityLabel ?? label}
       accessibilityHint={help}
       aria-checked={value}
+      aria-disabled={disabled}
+      disabled={disabled}
       onPress={() => onChange(!value)}
       style={styles.row}
     >
@@ -101,8 +105,8 @@ export function SwitchRow({
       </View>
       <Switch
         value={value}
-        trackColor={{ false: colors.bg.canvas, true: colors.action.primary }}
-        thumbColor={colors.text.primary}
+        trackColor={{ false: colors.border.strong, true: colors.action.primary }}
+        thumbColor={colors.text.onAccent}
         // Presentational. The row owns the gesture and the semantics; this draws the
         // state and nothing else. It deliberately has no `onValueChange`: with the
         // row also handling press, two handlers would fire on one tap and cancel out
@@ -329,10 +333,12 @@ export function Note({ title, body }: { title?: string | undefined; body: string
 }
 
 const styles = StyleSheet.create({
-  section: { gap: space[2] },
+  section: { gap: space[3], flexShrink: 0 },
   sectionTitle: { ...text('overline'), color: colors.text.tertiary, paddingHorizontal: space[1] },
   card: {
     backgroundColor: colors.bg.surface,
+    borderWidth: 2,
+    borderColor: colors.border.subtle,
     borderRadius: radius.lg,
     ...squircle,
     overflow: 'hidden',

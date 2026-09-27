@@ -52,7 +52,7 @@ export function StatChip({ kind, value, icon, accessibilityLabel, dim = false, s
     <View
       accessible
       aria-label={accessibilityLabel}
-      style={[styles.base, { borderColor: tint }, style]}
+      style={[styles.base, style]}
       testID={testID}
     >
       {icon}
@@ -63,13 +63,15 @@ export function StatChip({ kind, value, icon, accessibilityLabel, dim = false, s
 
 const styles = StyleSheet.create({
   base: {
+    flexShrink: 0,
     flexDirection: 'row', alignItems: 'center', gap: space[1],
     paddingHorizontal: space[3], paddingVertical: space[2],
     borderRadius: radius.full,
-    backgroundColor: colors.bg.surfaceRaised,
+    backgroundColor: colors.bg.surface,
     // A ring in the chip's own meaning-colour is applied by the caller-facing tint
     // below. Without it a chip on a raised card vanishes into the card.
-    borderWidth: 2,
+    borderWidth: 1,
+    borderColor: colors.border.subtle,
     minHeight: 34,
   },
   // `bodyStrong`, not `caption`: the number is the entire point of a chip and it has

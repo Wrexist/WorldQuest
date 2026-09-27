@@ -17,15 +17,18 @@ import { useWeekActivity } from '../src/features/profile/useWeekActivity.js'
 import { nextAfterLesson } from '../src/features/lesson/afterLesson.js'
 import { hapticCelebrate } from '../src/lib/haptics.js'
 import { soundStreak } from '../src/lib/sound.js'
+import { readDailyChest, openDailyChest } from '../src/features/streak/dailyChest.js'
 
 export default function StreakExtendedRoute() {
   // The whole query, passed on whole: the unlocks for a badge card further down the
   // chain ride through this screen without it knowing they exist (`afterLesson.ts`).
-  const params = useLocalSearchParams<{ then?: string; countries?: string; unlocks?: string }>()
+  const params = useLocalSearchParams<{ then?: string; countries?: string; unlocks?: string; from?: string }>()
   const { shown, status } = useOptimisticProgress()
   const week = useWeekActivity()
+  const chest = readDailyChest()
   const streak = shown?.streak ?? 0
-  const next = nextAfterLesson(params)
+  const fromCollection = params.from === 'collection'
+  const next = fromCollection ? '/streak' : nextAfterLesson(params)
   const milestones = BALANCE.xp.streakMilestones as Readonly<Record<number, number>>
 
   // Decide once the figures have settled: a cold start reads the persisted cache, and
@@ -49,8 +52,9 @@ export default function StreakExtendedRoute() {
     <StreakExtended
       streak={streak}
       week={week}
-      milestoneXp={milestones[streak]}
-      onContinue={() => router.replace(next)}
+      {...(chest !== null ? { chest, onOpenChest: () => openDailyChest(chest.day, chest.lessonId) } : {})}
+      milestoneXp={fromCollection ? undefined : milestones[streak]}
+      onContinue={() => fromCollection && router.canGoBack() ? router.back() : router.replace(next)}
     />
   )
 }

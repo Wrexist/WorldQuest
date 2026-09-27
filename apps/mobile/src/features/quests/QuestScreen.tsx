@@ -10,19 +10,19 @@
  * game into an obligation.
  */
 
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   Button,
   Card,
   colors,
   layout,
-  ProgressBar,
   radius,
   Skeleton,
   space,
   squircle,
   Tally,
   text,
+  useCelebration,
 } from '@worldquest/design'
 import {
   COMPLETION_BONUS,
@@ -35,6 +35,10 @@ import {
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { SPEED_SECONDS } from '../lesson/modes.js'
 import { Art } from '../../components/Art.js'
+import { AdventureArt } from '../../components/AdventureArt.js'
+import { QuestMilestones } from '../../components/QuestMilestones.js'
+import { RewardMotion } from '../../components/RewardMotion.js'
+import { ProgressSparkles } from '../../components/ProgressSparkles.js'
 import { Icon } from '../../components/Icon.js'
 import { SLOT_ICON, SLOT_TITLE } from './slots.js'
 import { TopBar } from '../../components/TopBar.js'
@@ -138,7 +142,7 @@ export function QuestScreen({
 
             Decorative, like every other Atlas: the heading beside it already says what
             the screen is. */}
-        <Art name="atlas/thinking" size={HEADER_ART} />
+        <AdventureArt name="explorer" style={{ width: HEADER_ART, height: HEADER_ART }} />
       </View>
 
       {/* Daily and Achievements, as two halves of one control.
@@ -166,13 +170,14 @@ export function QuestScreen({
       )}
 
       <Card style={styles.summary}>
+        <View pointerEvents="none" style={styles.treasure}><RewardMotion key={done} active kind="pop"><AdventureArt name="treasure" style={{ width: 270, height: 180 }} /></RewardMotion><ProgressSparkles earned={done} /></View>
+        <View style={styles.summaryText}>
         {/* The label already reads "2 of 5 done", so the bar's own counter would
             print the same numbers twice, six pixels apart. */}
-        <ProgressBar
+        <Text style={styles.progressTitle}>{t('quests:progress', { done, total })}</Text>
+        <QuestMilestones
           current={done}
           total={total}
-          tone="reward"
-          showCount={false}
           label={t('quests:progress', { done, total })}
           testID="quest-progress"
         />
@@ -184,7 +189,10 @@ export function QuestScreen({
         ) : (
           <Text style={styles.bonus}>{t('quests:reward.bonus', { xp: COMPLETION_BONUS })}</Text>
         )}
+        </View>
       </Card>
+
+      {!quest.complete && <Button variant="discovery" label={t('quests:adventure.continue')} onPress={onStart} />}
 
       <View style={styles.list} testID="quest-tasks">
         {quest.tasks.map((task, i) => (
@@ -194,7 +202,6 @@ export function QuestScreen({
 
       {/* One primary action. A quest screen whose only affordance is reading is a
           screen the user leaves. */}
-      {!quest.complete && <Button label={t('common:continue')} onPress={onStart} />}
     
       {/* When today's quest is replaced.
    
@@ -229,6 +236,8 @@ export function QuestScreen({
 function TaskRow({ task, step }: { task: QuestTask; step: number }) {
   const t = useT()
   const title = t(SLOT_TITLE[task.slot])
+  const pop = useCelebration(task.progress)
+  const tone = ({ locate: [colors.journey.sky, colors.action.secondary], recognise: [colors.journey.peach, colors.status.streak], recall: [colors.journey.lavender, colors.reward.gem], discover: [colors.journey.sand, colors.reward.xp], perform: [colors.journey.meadow, colors.status.progress] } as const)[task.slot]
 
   return (
     <View
@@ -250,6 +259,9 @@ function TaskRow({ task, step }: { task: QuestTask; step: number }) {
           bar at 95 % look alike at a glance, and a tick does not.
           `aria-hidden` because the row already announces its title and its state;
           a reader saying "3" before every task is noise. */}
+      <Animated.View style={[styles.taskArt, { backgroundColor: tone[0], transform: [{ scale: pop }] }]}>
+      <Icon name={SLOT_ICON[task.slot]} size={30} color={tone[1]} />
+      <ProgressSparkles earned={task.progress} />
       <View
         style={[styles.step, task.complete && styles.stepDone]}
         aria-hidden
@@ -266,6 +278,7 @@ function TaskRow({ task, step }: { task: QuestTask; step: number }) {
           <Text style={styles.stepText}>{String(step)}</Text>
         )}
       </View>
+      </Animated.View>
 
       <View style={styles.taskText}>
         {/* Icon then title, `space[1]` apart — the icon↔label rung, and the same pair
@@ -279,19 +292,12 @@ function TaskRow({ task, step }: { task: QuestTask; step: number }) {
               glyph is 16, so half the difference — `space[1]`, on the scale — drops it
               onto the first line's optical centre and it stays there however many lines
               the title takes. */}
-          <View style={styles.taskHeadIcon}>
-            <Icon
-              name={SLOT_ICON[task.slot]}
-              size={16}
-              color={task.complete ? colors.text.tertiary : colors.action.primary}
-            />
-          </View>
           <Text style={[styles.taskTitle, task.complete && styles.taskTitleDone]}>{title}</Text>
         </View>
         {task.goal !== undefined && (
           <Text style={styles.taskBody}>{t(GOAL_BODY[task.goal])}</Text>
         )}
-        <ProgressBar current={task.progress} total={task.target} showCount={false} />
+        <QuestMilestones current={task.progress} total={task.target} label={title} decorative />
       </View>
 
       <View style={styles.taskMeta}>
@@ -311,7 +317,7 @@ function TaskRow({ task, step }: { task: QuestTask; step: number }) {
         {/* The bolt is the same one the tab bar and the lesson summary use for XP, at
             the reward tint the figure beside it already carries. A gold number on its own
             was the only unlabelled quantity on the screen. */}
-        <View style={styles.taskXpRow}>
+        <View style={[styles.taskXpRow, { backgroundColor: colors.journey.sand, borderRadius: radius.full, padding: space[1] }]}>
           <Icon name="xp" size={12} color={colors.reward.xp} />
           <Text style={styles.taskXp}>{t('quests:reward.task', { xp: TASK_XP })}</Text>
         </View>
@@ -336,10 +342,10 @@ function QuestSkeleton() {
 }
 
 const styles = StyleSheet.create({
-  speed: { padding: space[4], gap: space[2], marginTop: space[3] },
+  speed: { backgroundColor: colors.bg.surface, borderColor: colors.journey.lavender, padding: space[4], gap: space[2], marginTop: space[3] },
   speedTitle: { ...text('h3'), color: colors.text.primary },
   screen: { flex: 1 },
-  content: { padding: space[4], gap: space[3] },
+  content: { padding: space[4], gap: space[4], paddingBottom: space[6] },
   centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },
 
   // One control, two halves. A hairline tray with a raised pill in it, which is the
@@ -362,7 +368,7 @@ const styles = StyleSheet.create({
     minHeight: layout.minTouchTarget,
     borderRadius: radius.full,
   },
-  segmentOn: { backgroundColor: colors.bg.surfaceRaised },
+  segmentOn: { backgroundColor: colors.journey.sky },
   segmentText: { ...text('bodyStrong'), color: colors.text.secondary },
   segmentTextOn: { ...text('bodyStrong'), color: colors.text.primary },
   reset: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[2] },
@@ -373,7 +379,11 @@ const styles = StyleSheet.create({
   subtitle: { ...text('body'), color: colors.text.secondary },
   cta: { marginTop: space[3] },
 
-  summary: { gap: space[2] },
+  summary: { backgroundColor: colors.journey.sand, borderColor: colors.league.gold.edge, minHeight: 180, justifyContent: 'center', overflow: 'hidden' },
+  summaryText: { width: '58%', gap: space[3], backgroundColor: colors.journey.sand, padding: space[2], borderRadius: radius.md },
+  treasure: { position: 'absolute', end: -4, top: 0 },
+  progressTitle: { ...text('h2'), color: colors.text.primary },
+  taskArt: { width: space[8]+space[1], height: space[8]+space[3], borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.bg.surface, borderBottomWidth: space[1] },
   bonus: { ...text('caption', { weight: '600' }), color: colors.reward.xp },
   completeTitle: { ...text('h3'), color: colors.feedback.correct },
 
@@ -386,15 +396,18 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     ...squircle,
     backgroundColor: colors.bg.surface,
+    borderWidth: 1,
+    borderColor: colors.border.subtle,
   },
   // Done tasks recede rather than disappear — the list keeps its shape all day, so
   // the user's sense of "how much is left" does not jump around.
-  taskDone: { opacity: 0.6 },
+  taskDone: { backgroundColor: colors.journey.meadow, borderWidth: 1, borderColor: colors.feedback.correctEdge },
   // 28pt, not 44: this is decoration inside an already-accessible row, not a
   // control. Growing it to a tap target would promise a tap that does nothing.
   step: {
-    width: 28,
-    height: 28,
+    position: 'absolute', end: -4, bottom: -5,
+    width: 21,
+    height: 21,
     borderRadius: radius.full,
     alignItems: 'center',
     justifyContent: 'center',

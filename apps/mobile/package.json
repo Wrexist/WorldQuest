@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.29.7",
+    "@expo-google-fonts/inter": "0.4.2",
     "@expo-google-fonts/nunito": "^0.4.2",
     "@react-native-community/netinfo": "11.4.1",
     "@react-navigation/native": "7.3.14",

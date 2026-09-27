@@ -15,6 +15,7 @@ import {
   resolveLocale,
   setLocale,
   t,
+  tContent,
 } from './index.js'
 import { hasPluralRules, pluralRulesArePolyfilled } from './intl-polyfill.js'
 import { NAMESPACES } from './keys.js'
@@ -27,6 +28,15 @@ import { join } from 'node:path'
 // test's failure into a mystery.
 afterEach(async () => {
   await setLocale(FALLBACK_LOCALE)
+})
+
+it('renders shared content in its stored language without changing the app language', async () => {
+  await setLocale('en')
+  const english = tContent('lesson:prompt.capital_of', { entityName: 'Italy' })
+  await setLocale('sv')
+  expect(tContent('lesson:prompt.capital_of', { entityName: 'Italy' }, 'en')).toBe(english)
+  expect(currentLocale()).toBe('sv')
+  expect(tContent('lesson:prompt.capital_of', { entityName: 'Italy' })).not.toBe(english)
 })
 
 const keysOf = (locale: string, ns: string): string[] =>

@@ -1,0 +1,19 @@
+{
+ "name": "worldquest-chest",
+ "generator": "3d-asset-studio",
+ "mode": "sequence",
+ "look": "photoreal",
+ "frame": {
+  "width": 480,
+  "height": 480
+ },
+ "sequence": {
+  "frames": 40,
+  "fps": 20,
+  "loop": false,
+  "pattern": "frames/{i}.webp",
+  "pad": 3,
+  "turntable": false
+ },
+ "animatedWebp": "worldquest-chest.webp"
+}

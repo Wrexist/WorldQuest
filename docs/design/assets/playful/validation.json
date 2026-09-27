@@ -1,0 +1,387 @@
+{
+  "style": "WorldQuest playful vector v1",
+  "count": 95,
+  "totalBytes": 1146932,
+  "assets": {
+    "atlas--broken-compass": {
+      "bytes": 18072,
+      "sha256": "5e9f14342bc9489b0fc464a9f7e92a911930bf7ba6db22b10cb075ddf042a1d8"
+    },
+    "atlas--celebrate": {
+      "bytes": 14702,
+      "sha256": "8d17028f5f852c57d02b4322492ac22dec9459ff325f7c2acb17ad90e00a4111"
+    },
+    "atlas--encouraging": {
+      "bytes": 14702,
+      "sha256": "8d17028f5f852c57d02b4322492ac22dec9459ff325f7c2acb17ad90e00a4111"
+    },
+    "atlas--explorer": {
+      "bytes": 15734,
+      "sha256": "4961bc5b4aca70a0cd8e6da3ecfa04841875bfa4b0f6680b00ac87320e62a31e"
+    },
+    "atlas--resting": {
+      "bytes": 18072,
+      "sha256": "5e9f14342bc9489b0fc464a9f7e92a911930bf7ba6db22b10cb075ddf042a1d8"
+    },
+    "atlas--thinking": {
+      "bytes": 18072,
+      "sha256": "5e9f14342bc9489b0fc464a9f7e92a911930bf7ba6db22b10cb075ddf042a1d8"
+    },
+    "atlas--waving-back": {
+      "bytes": 15734,
+      "sha256": "4961bc5b4aca70a0cd8e6da3ecfa04841875bfa4b0f6680b00ac87320e62a31e"
+    },
+    "atlas--welcome": {
+      "bytes": 15734,
+      "sha256": "4961bc5b4aca70a0cd8e6da3ecfa04841875bfa4b0f6680b00ac87320e62a31e"
+    },
+    "onboarding--conquer": {
+      "bytes": 14702,
+      "sha256": "8d17028f5f852c57d02b4322492ac22dec9459ff325f7c2acb17ad90e00a4111"
+    },
+    "onboarding--explore": {
+      "bytes": 15734,
+      "sha256": "4961bc5b4aca70a0cd8e6da3ecfa04841875bfa4b0f6680b00ac87320e62a31e"
+    },
+    "onboarding--learn": {
+      "bytes": 18072,
+      "sha256": "5e9f14342bc9489b0fc464a9f7e92a911930bf7ba6db22b10cb075ddf042a1d8"
+    },
+    "states--empty-caught-up": {
+      "bytes": 14702,
+      "sha256": "8d17028f5f852c57d02b4322492ac22dec9459ff325f7c2acb17ad90e00a4111"
+    },
+    "states--empty-collection": {
+      "bytes": 5722,
+      "sha256": "58812ed5ec1a890f86f9cea1e2a02ebe31ed491209bea3b75dac96fdc1532c1a"
+    },
+    "states--empty-profile": {
+      "bytes": 18072,
+      "sha256": "5e9f14342bc9489b0fc464a9f7e92a911930bf7ba6db22b10cb075ddf042a1d8"
+    },
+    "states--error-generic": {
+      "bytes": 18072,
+      "sha256": "5e9f14342bc9489b0fc464a9f7e92a911930bf7ba6db22b10cb075ddf042a1d8"
+    },
+    "states--hearts-empty": {
+      "bytes": 8764,
+      "sha256": "2462b6cb38f1ec983c03a7c68bfb708f2f4fe26dcd9689b7e93bedc1485eb796"
+    },
+    "states--offline": {
+      "bytes": 18072,
+      "sha256": "5e9f14342bc9489b0fc464a9f7e92a911930bf7ba6db22b10cb075ddf042a1d8"
+    },
+    "celebration--burst": {
+      "bytes": 10326,
+      "sha256": "caf0a2281ac3e82722e4036ce6bffba8f9756a133c6c5db3f493a0aa6e18eaa3"
+    },
+    "celebration--rays": {
+      "bytes": 9232,
+      "sha256": "a0aa3628dbdbd79b013e169fcfca7a4f45fe375641823667e7fd7c5592290d79"
+    },
+    "achievements--glyph-capitals": {
+      "bytes": 6764,
+      "sha256": "fd8b89368caf17998167e46fb302854d2a5037e172853e999ffbda83e90b9f31"
+    },
+    "achievements--glyph-collections": {
+      "bytes": 8328,
+      "sha256": "e9e058451420bbd705fb053cf5fd719ff4329f475ffdbeb5e471d5bf9fc40976"
+    },
+    "achievements--glyph-consistency": {
+      "bytes": 9730,
+      "sha256": "df83a0d13de86ecba45ac174c2773edea474b30667831228957a2ddb763019f1"
+    },
+    "achievements--glyph-countries": {
+      "bytes": 12866,
+      "sha256": "a4e9858854b576d223a90c00d144b1e6977d8d0f42dc58529471c0086244562f"
+    },
+    "achievements--glyph-events": {
+      "bytes": 6828,
+      "sha256": "6a7154a295852722aeea8ff19241497f60366af78e8462327a756205569ed679"
+    },
+    "achievements--glyph-exploration": {
+      "bytes": 13756,
+      "sha256": "79006f84bb9d6a23f5535d729acad8a55018dccf86d315e93733c0dbdcd6aae1"
+    },
+    "achievements--glyph-flags": {
+      "bytes": 5664,
+      "sha256": "d52467846991764942933f426abb77ae73de15130a48671775ce4d886f7014d2"
+    },
+    "achievements--glyph-hidden": {
+      "bytes": 10066,
+      "sha256": "af3f64ab16c9141e5d83936710c5fc09fe7ea9556e63339d2b534ecde0db590b"
+    },
+    "achievements--glyph-landmarks": {
+      "bytes": 8652,
+      "sha256": "3112c2ea3b86f7130e35565475509638ab478e809a40b63b6365d46888edccaf"
+    },
+    "achievements--glyph-legendary": {
+      "bytes": 8078,
+      "sha256": "47f6046cb9830c1c70901233ff781aaaaf32acf70a418bec9987ecb0394ef320"
+    },
+    "achievements--glyph-perfect": {
+      "bytes": 6856,
+      "sha256": "3bfe46592225e7e5bf335a744bdbefb01a4dcdbc7a2564fd4403c96919a73bcb"
+    },
+    "achievements--glyph-premium": {
+      "bytes": 6012,
+      "sha256": "9773c9e0937ed241b4057197d85c730def94b482aaf783ad11cdd55f7cc75be9"
+    },
+    "achievements--glyph-social": {
+      "bytes": 9710,
+      "sha256": "c3fdba12af85b4ec2754d52cbd757f272a6cced065ce6ec3f94ce23fb682796b"
+    },
+    "achievements--tier-bronze": {
+      "bytes": 17222,
+      "sha256": "b4b8079183c2408191cd5b96ecedf76059c84cbf89e0347b5028d4b506321ab4"
+    },
+    "achievements--tier-gold": {
+      "bytes": 18062,
+      "sha256": "20d58d80ef099507a1f2f47e4c9f7db3c87ffb95cd4d2adf75ff70005491059f"
+    },
+    "achievements--tier-legendary": {
+      "bytes": 15922,
+      "sha256": "c36f355df47dc54f9573ca912076cf0a43e3f5db205c2508dcf311bcbd58ec37"
+    },
+    "achievements--tier-platinum": {
+      "bytes": 16570,
+      "sha256": "6351b92b5cd94e99995f07e9fcfcd611b0c8606f8ea128cf4c63fdbbe9e52a44"
+    },
+    "achievements--tier-silver": {
+      "bytes": 14792,
+      "sha256": "e04a2700e747fc89b42bd9ed3a1999a64a75468c386cc4c162582d2039d5e6b0"
+    },
+    "avatars--avatar-01": {
+      "bytes": 18540,
+      "sha256": "a8a4cef6f4f4c39b4e5a37ff18416f03e4c1c03b5e916a1138290c0b4b9219a7"
+    },
+    "avatars--avatar-02": {
+      "bytes": 21634,
+      "sha256": "843f99be596a006cc620a85b27cc9d07fff3e2120dbc0e31e47d4bb4b34d040d"
+    },
+    "avatars--avatar-03": {
+      "bytes": 19312,
+      "sha256": "3f65342f69921179520c43fe6387bafee96b306b46e95d91636334f72ecca732"
+    },
+    "avatars--avatar-04": {
+      "bytes": 19590,
+      "sha256": "42dee6103f6fa7b5934efaba51fa2b979c261568fbc22009874d742243bac9a5"
+    },
+    "avatars--avatar-05": {
+      "bytes": 21774,
+      "sha256": "9ed92f446fb56c930622362a47eb4b01d405b004511135af5d715e1e73dc6771"
+    },
+    "avatars--avatar-06": {
+      "bytes": 19742,
+      "sha256": "74b70f7e56ae36f4b33f2a092ac5b57ebfc587747fce2c3be14d57d45ff0e25d"
+    },
+    "avatars--avatar-07": {
+      "bytes": 18700,
+      "sha256": "d64d7a6108965ad8438845a47ff424f5c85dc076c3a09664170425525ed85ca4"
+    },
+    "avatars--avatar-08": {
+      "bytes": 21368,
+      "sha256": "1800696612c04a792e3dc2f51e92afd07657d99f2a5893f67c42600917d56a8d"
+    },
+    "avatars--avatar-09": {
+      "bytes": 19204,
+      "sha256": "c902ccf9526fb09e62ac35d8f1786797a0aa3df4c01d8693d4ff9982155f8d4b"
+    },
+    "avatars--avatar-10": {
+      "bytes": 19526,
+      "sha256": "5329af8c5eb2c3fd36f081dab48e8c8ae72a4f174540b376bd98a919a82d2b67"
+    },
+    "avatars--avatar-11": {
+      "bytes": 21508,
+      "sha256": "c1294ebf19a419598402b8062d5ce355c906f4d1b9af5c7026d9bbd02e48b8d8"
+    },
+    "avatars--avatar-12": {
+      "bytes": 19458,
+      "sha256": "c608220a4fcabe3211da5ef06515867326a346643d7752cb66482c76245edd49"
+    },
+    "continents--AF": {
+      "bytes": 4722,
+      "sha256": "a1d3b4c8f6b4d59480556ce0a8599612f125968f420c2685614e0420693a201e"
+    },
+    "continents--AN": {
+      "bytes": 5376,
+      "sha256": "524ef30fe53dabffe110257e6d079dfea7f0eeee906662f931041bf3cedde417"
+    },
+    "continents--AS": {
+      "bytes": 10268,
+      "sha256": "b27beef8e9e766ffbd00073ea2e1aaa11efbda80908781d404de8035ef089e4b"
+    },
+    "continents--EU": {
+      "bytes": 8234,
+      "sha256": "6516c1e8ad4f83143e35af35b4ba6f0463e4ab13a829d5176ded2539aae9ec6d"
+    },
+    "continents--NA": {
+      "bytes": 8458,
+      "sha256": "0f448f8f9281005694a19882ecf49131463137c6a6e9c830701b0fa757214524"
+    },
+    "continents--OC": {
+      "bytes": 4444,
+      "sha256": "6983878207f688d59bf78f1750a0012910d4cd84034a3ccf4718bf6a54275e7b"
+    },
+    "continents--SA": {
+      "bytes": 3628,
+      "sha256": "fae4c0269247b1b222065b6d2e3a034846868d5bb513bb329b7590c2fa379100"
+    },
+    "continents-silhouette--AF": {
+      "bytes": 5624,
+      "sha256": "810fc8affd846d3e9c82f6b0142498b43f13314be40f573341db817aa64eebe3"
+    },
+    "continents-silhouette--AS": {
+      "bytes": 11574,
+      "sha256": "ef1575dc9b013709736643ef7f9b8f6d0c8d5730ac3163b37cf70c609993b88c"
+    },
+    "continents-silhouette--EU": {
+      "bytes": 9126,
+      "sha256": "6a522000dc7c6595fb5eaf7e27de1a3874354564014c95971225d2359ec76e19"
+    },
+    "continents-silhouette--NA": {
+      "bytes": 9334,
+      "sha256": "7a19b4427326c7b8bc914d3089482f19fee16535239c48269563baa44bb90799"
+    },
+    "continents-silhouette--OC": {
+      "bytes": 5236,
+      "sha256": "2876c81490bb085798e8c0ad272fc15d017626be0d0e6f3f368d18af4ad9ab92"
+    },
+    "continents-silhouette--SA": {
+      "bytes": 4558,
+      "sha256": "b6a2c66428078f9cefc752b7b5ab92f409c4a9a0c7e2791234f47638677357d5"
+    },
+    "levels--cartographer": {
+      "bytes": 12836,
+      "sha256": "b73ab05b926eabf47b9ed227a3c59b9fbf5e557ad16711d1a9759bc8cca65251"
+    },
+    "levels--circumnavigator": {
+      "bytes": 15578,
+      "sha256": "a2a7746cb13f91dfb6f4b58504f7ba901c32dfba4714a6e2891cac80427f531a"
+    },
+    "levels--globetrotter": {
+      "bytes": 15742,
+      "sha256": "867a0abc46de26fad08fda0987633cfdaab1925a03997cb3f59724c7c98e670c"
+    },
+    "levels--navigator": {
+      "bytes": 15578,
+      "sha256": "a2a7746cb13f91dfb6f4b58504f7ba901c32dfba4714a6e2891cac80427f531a"
+    },
+    "levels--pathfinder": {
+      "bytes": 15578,
+      "sha256": "a2a7746cb13f91dfb6f4b58504f7ba901c32dfba4714a6e2891cac80427f531a"
+    },
+    "levels--scout": {
+      "bytes": 10874,
+      "sha256": "523cff2bea0007168c7dd9c44e0240f79d01569a4b4d3089f51831458c61a3be"
+    },
+    "levels--trailblazer": {
+      "bytes": 11622,
+      "sha256": "c9c76e4c4e92885fc5d278a62c9d06770ad1111a1af4745f7e253a633127ce42"
+    },
+    "levels--voyager": {
+      "bytes": 15742,
+      "sha256": "867a0abc46de26fad08fda0987633cfdaab1925a03997cb3f59724c7c98e670c"
+    },
+    "levels--wanderer": {
+      "bytes": 12462,
+      "sha256": "38541f82128b339379688f779954b82f0b56c008c34f22541ca748ce8661576b"
+    },
+    "levels--worldkeeper": {
+      "bytes": 10930,
+      "sha256": "9e2252246552ccf10bd68da193c08b3cb62d13047a9929e41279fb22469b51ee"
+    },
+    "rewards--globe": {
+      "bytes": 12866,
+      "sha256": "a4e9858854b576d223a90c00d144b1e6977d8d0f42dc58529471c0086244562f"
+    },
+    "rewards--streak-flame": {
+      "bytes": 9730,
+      "sha256": "df83a0d13de86ecba45ac174c2773edea474b30667831228957a2ddb763019f1"
+    },
+    "rewards--streak-freeze": {
+      "bytes": 12636,
+      "sha256": "089b2aa49750f5968277d30a61613b8177620c7a1d0d9ff7004a9a20e032f614"
+    },
+    "rig--leg-left": {
+      "bytes": 2534,
+      "sha256": "5231b8c9e3fc6ae29d3f040398f5daae52eee32b7e71ee4d05abcababbf231f9"
+    },
+    "rig--leg-right": {
+      "bytes": 2532,
+      "sha256": "54c7e0fa8e84d5af8b09fa5b3cc0f0331ec5f7c0184ceddce3d91b9d61a0e207"
+    },
+    "rig--arm-left": {
+      "bytes": 3572,
+      "sha256": "e7aab2dc6bac3caf0a05d013e2b2b7b890d2fac6e8a43e65f7dd9fd68be31f8f"
+    },
+    "rig--arm-right": {
+      "bytes": 4090,
+      "sha256": "0dabd7d251da7fdabc56c050da143b6f30d2832f8a26288c8a786fd5419ec0d8"
+    },
+    "rig--body": {
+      "bytes": 5676,
+      "sha256": "2b6f061eb4ae67b1ff3f7dfdc7cd5f5a2a424c52145d41653b3b47ba479d297f"
+    },
+    "rig--head": {
+      "bytes": 7490,
+      "sha256": "73cd7b5e2c9926dddf728ffde5ad4e56cfcf99dfa68854e81a730966a5bf67f1"
+    },
+    "rig--eyes": {
+      "bytes": 2940,
+      "sha256": "7fdb56959280a1c9955facc48ae5e9b0825ea02109df13e56c8699440525b89c"
+    },
+    "props--atlas-welcome": {
+      "bytes": 15734,
+      "sha256": "4961bc5b4aca70a0cd8e6da3ecfa04841875bfa4b0f6680b00ac87320e62a31e"
+    },
+    "props--atlas-celebrate": {
+      "bytes": 14702,
+      "sha256": "8d17028f5f852c57d02b4322492ac22dec9459ff325f7c2acb17ad90e00a4111"
+    },
+    "props--atlas-calm": {
+      "bytes": 18072,
+      "sha256": "5e9f14342bc9489b0fc464a9f7e92a911930bf7ba6db22b10cb075ddf042a1d8"
+    },
+    "props--atlas-companion": {
+      "bytes": 15734,
+      "sha256": "4961bc5b4aca70a0cd8e6da3ecfa04841875bfa4b0f6680b00ac87320e62a31e"
+    },
+    "props--globe": {
+      "bytes": 12866,
+      "sha256": "a4e9858854b576d223a90c00d144b1e6977d8d0f42dc58529471c0086244562f"
+    },
+    "props--heart": {
+      "bytes": 8764,
+      "sha256": "2462b6cb38f1ec983c03a7c68bfb708f2f4fe26dcd9689b7e93bedc1485eb796"
+    },
+    "props--house": {
+      "bytes": 6940,
+      "sha256": "627c09062241d5e0ed9bd49acb7d7f309653a5173787a4e1572f5175ae15c7e3"
+    },
+    "props--passport": {
+      "bytes": 9106,
+      "sha256": "49151d5e14d0e69bc8cdd0e2ee0bf12f194250f906996b14f6fd3dac58e62867"
+    },
+    "props--gem": {
+      "bytes": 11984,
+      "sha256": "cd1975ffc516393c612f4758cd397a2f4f6d920bdda2b3ddb4d2541226a2e96e"
+    },
+    "props--chest-base": {
+      "bytes": 5166,
+      "sha256": "94dfbb7bd334cbb2504ff2b0471580969ebb682598c4e68acb86a2fc9f584fb0"
+    },
+    "props--chest-lid": {
+      "bytes": 3330,
+      "sha256": "16139c4578f173ae04d77a6e7299f28dd1edcc4b881198e7d740c9bdbe2a1db8"
+    },
+    "props--star-trophy": {
+      "bytes": 8696,
+      "sha256": "9a00610b2e4df9a6bd083b2fdb48337b07ea0c51476f1224be189f4aa4269be8"
+    },
+    "props--treasure-chest": {
+      "bytes": 5722,
+      "sha256": "58812ed5ec1a890f86f9cea1e2a02ebe31ed491209bea3b75dac96fdc1532c1a"
+    }
+  }
+}

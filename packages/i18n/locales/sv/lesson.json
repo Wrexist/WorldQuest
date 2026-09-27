@@ -83,5 +83,21 @@
   "lesson:report.thanks.body": "Vi läser dem för att rätta våra fakta.",
   "lesson:report.failed": "Det gick inte att skicka. Kontrollera anslutningen och försök igen.",
   "lesson:review.tag": "Tidigare misstag",
-  "lesson:new.tag": "Nytt"
+  "lesson:new.tag": "Nytt",
+  "lesson:summary.adventure.prompt": "Du har upptäckt lite mer av världen. Utforska vidare?",
+  "lesson:summary.adventure.prompt__note": "Course continuation UI. Encouraging invitation; never a deadline or guaranteed reward. Continue adventure preserves the existing post-lesson reward flow.",
+  "lesson:summary.adventure.continue": "Fortsätt äventyret",
+  "lesson:summary.adventure.continue__note": "Course continuation UI. Encouraging invitation; never a deadline or guaranteed reward. Continue adventure preserves the existing post-lesson reward flow.",
+  "lesson:journey.title": "Din nästa upptäckt",
+  "lesson:journey.title__note": "Post-lesson course reveal. The actual next available lesson comes from saved course progress; starting is optional and the home action is always available.",
+  "lesson:journey.body": "Varje lektion tar ditt äventyr framåt. Redo för nästa?",
+  "lesson:journey.body__note": "Post-lesson course reveal. The actual next available lesson comes from saved course progress; starting is optional and the home action is always available.",
+  "lesson:journey.start": "Starta nästa utmaning →",
+  "lesson:journey.start__note": "Post-lesson course reveal. The actual next available lesson comes from saved course progress; starting is optional and the home action is always available.",
+  "lesson:journey.home": "Tillbaka till min resa",
+  "lesson:journey.home__note": "Post-lesson course reveal. The actual next available lesson comes from saved course progress; starting is optional and the home action is always available.",
+  "lesson:journey.complete": "Du har utforskat hela kursen!",
+  "lesson:journey.complete__note": "Post-lesson course reveal. The actual next available lesson comes from saved course progress; starting is optional and the home action is always available.",
+  "lesson:feedback.correct.discovery": "Ännu en upptäckt!",
+  "lesson:feedback.correct.discovery__note": "Post-lesson course reveal. The actual next available lesson comes from saved course progress; starting is optional and the home action is always available."
 }

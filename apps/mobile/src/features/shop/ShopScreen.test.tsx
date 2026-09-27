@@ -42,6 +42,18 @@ const shop = (over: Partial<React.ComponentProps<typeof ShopScreen>> = {}) => {
 }
 
 describe('Shop — the rules the economy depends on', () => {
+  it('tracks an unowned title without spending the wallet', () => {
+    const { onBuy } = shop({ coins: 12, owned: new Set(['title.flag-fanatic']) })
+    const goal = screen.getByTestId('shop-next-unlock')
+    expect(goal.textContent).toContain('Map Nerd')
+    expect(goal.textContent).toContain(`12 / ${PRICE} coins saved`)
+    expect(onBuy).not.toHaveBeenCalled()
+  })
+
+  it('hides the savings target when all titles are owned', () => {
+    shop({ owned: new Set(CATALOGUE.map(item => item.id)) })
+    expect(screen.queryByTestId('shop-next-unlock')).toBeNull()
+  })
   it('says in its first sentence that nothing here is an advantage', () => {
     // Rule 1 of xp-economy.md, in words a ten-year-old reads before any price.
     shop()

@@ -26,7 +26,8 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import { Share } from 'react-native'
-import { router } from 'expo-router'
+import { router, useFocusEffect } from 'expo-router'
+import { readDailyChest, readStreakGems } from '../src/features/streak/dailyChest.js'
 import { currentStreak, repairAvailability, type RecoveryState } from '@worldquest/engines'
 import { withAccount } from '../src/lib/backend.js'
 import { StreakScreen } from '../src/features/streak/StreakScreen.js'
@@ -40,6 +41,10 @@ import { invalidateProgress } from '../src/lib/query.js'
 import { isConfigured } from '../src/lib/supabase.js'
 
 export default function StreakRoute() {
+  const [treasure, setTreasure] = useState(() => ({ days: readStreakGems(), chest: readDailyChest() }))
+  useFocusEffect(useCallback(() => {
+    setTreasure({ days: readStreakGems(), chest: readDailyChest() })
+  }, []))
   // `shown` carries the streak the server would compute once it sees the lessons still
   // in the queue, so a user who did today's lesson offline is not told "No days yet".
   // Everything else on this screen — the record, the freezes, the break date — stays
@@ -185,6 +190,8 @@ export default function StreakRoute() {
   return (
     <ContentGate status={status} onRetry={refetch} showLoading>
       <StreakScreen
+        gemDays={treasure.days}
+        onOpenChest={treasure.chest !== null && !treasure.chest.opened ? () => router.push('/streak-extended?from=collection') : undefined}
         onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))}
         // What the streak IS today, not what the database last wrote. `streaks.current` is
         // only updated when a lesson lands, so a user who missed two days was being shown

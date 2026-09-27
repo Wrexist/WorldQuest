@@ -65,7 +65,7 @@ describe('Profile — the five states', () => {
     // "0 XP, 0 coins, 0 streak, 0 mastered" is a worse first impression than a
     // sentence saying where the numbers will come from.
     render(<ProfileScreen stats={null} world={null} loading={false} />)
-    expect(screen.getByText('Nothing to show yet')).toBeTruthy()
+    expect(screen.getByText('Your explorer passport')).toBeTruthy()
     expect(screen.queryByLabelText(/Total XP/)).toBeNull()
   })
 
@@ -77,7 +77,7 @@ describe('Profile — the five states', () => {
         loading={false}
       />,
     )
-    expect(screen.getByText('Nothing to show yet')).toBeTruthy()
+    expect(screen.getByText('Your explorer passport')).toBeTruthy()
   })
 })
 

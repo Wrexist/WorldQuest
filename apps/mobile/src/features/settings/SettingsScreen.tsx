@@ -185,7 +185,7 @@ export type SettingsScreenProps = {
    * Present, it must leave in ONE tap: `social-and-leagues.md` §4 makes that a product
    * rule, so there is no confirmation and nothing to talk the user out of it.
    */
-  readonly league?: { readonly joined: boolean; readonly onChange: (value: boolean) => void } | undefined
+  readonly league?: { readonly joined: boolean; readonly onChange: (value: boolean) => void; readonly busy?: boolean; readonly error?: boolean } | undefined
   readonly onOpenPrivacyPolicy?: (() => void) | undefined
   readonly onOpenTerms?: (() => void) | undefined
   readonly onOpenLicences?: (() => void) | undefined
@@ -359,8 +359,10 @@ export function SettingsScreen({
             // show, so the sentence can promise there isn't one.
             help={t('league:settings.help')}
             value={league.joined}
+            disabled={league.busy}
             onChange={league.onChange}
           />
+          {league.error && <Note body={t('league:join.error')} />}
         </Section>
       )}
 

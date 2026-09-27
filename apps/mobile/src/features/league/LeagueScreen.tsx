@@ -1,41 +1,7 @@
-/**
- * The weekly league — thirty people, one number each.
- *
- * ## Why it took this long
- *
- * The engine and the migration have been finished and unreachable since they were
- * written. `scripts/reachability.ts` records why: no Docker in the environment they were
- * authored in, so the migration never met a real Postgres, `pnpm db:types` could not
- * regenerate from it, and `supabase test db` could not prove the RLS policies. Shipping
- * an unproven row policy on a leaderboard that children must never appear in was the one
- * guess not worth making. CI has now run all 35 of those tests green against this schema,
- * so the client half is built on evidence.
- *
- * ## The kindness rules, which are most of this file
- *
- * `docs/systems/social-and-leagues.md` §4 lists them and they are not decoration — they
- * are the difference between a leaderboard a ten-year-old can look at and one that
- * teaches them they are behind:
- *
- * · **Never how far behind you are.** The screen shows the distance to promotion and has
- *   no way to express the distance to relegation. `xpToPromotion` in the engine answers
- *   one direction only, by construction.
- * · **Inactive members are removed, not sorted to the bottom.** Somebody who had a hard
- *   week does not become the thing thirty people are beating. Done in `standings()`.
- * · **Demotion is announced quietly, once.** There is no red, no alarm, and no push.
- * · **No user-authored text.** The handle is assigned — `Swift Glacier 42`, from two
- *   curated word lists — so there is nothing to moderate and nothing to report. A
- *   `CHECK` on the column means a future code path that tried to write a display name
- *   fails at the database rather than on this screen.
- *
- * ## What is deliberately absent
- *
- * No avatars, no profiles, no tapping a row. A leaderboard row goes nowhere, because
- * every destination it could have is a person, and this product does not have a place
- * where one user looks at another. The row is a handle and a number.
- */
+/** Weekly league: assigned handles, genuine XP, explicit enrollment and a useful first-lesson state. No peer profiles, free text or pressure about demotion. */
 
 import { FlatList, StyleSheet, Text, View } from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient'
 import {
   Button,
   Card,
@@ -57,6 +23,8 @@ import {
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { Art } from '../../components/Art.js'
 import { Icon } from '../../components/Icon.js'
+import { WorldMascot } from '../../components/WorldMascot.js'
+import { HeaderJewel } from '../../components/HeaderJewel.js'
 import { useT } from '../../lib/i18n.js'
 import type { TranslationKey } from '@worldquest/i18n'
 
@@ -89,6 +57,9 @@ export type LeagueScreenProps = {
    */
   readonly onStartLesson?: (() => void) | undefined
   readonly onRetry: () => void
+  readonly onJoin?: (() => void) | undefined
+  readonly joining?: boolean | undefined
+  readonly joinError?: boolean | undefined
 }
 
 /** The hero on the empty and error states. */
@@ -103,6 +74,9 @@ export function LeagueScreen({
   onBack,
   onStartLesson,
   onRetry,
+  onJoin,
+  joining,
+  joinError,
 }: LeagueScreenProps) {
   const t = useT()
 
@@ -140,15 +114,16 @@ export function LeagueScreen({
            places people into cohorts weekly, so until that has happened for you there
            is no league. Said as a "next week" rather than as an absence. */
         <EmptyState
-          art={<Art name="rewards/globe" size={ART} />}
-          title={t('league:empty.title')}
-          body={t('league:empty.body')}
-          {...(onStartLesson !== undefined
+          art={<WorldMascot mood="welcome" style={{ width: ART, height: ART }} />}
+          title={t(onJoin ? 'league:join.title' : 'league:empty.title')}
+          body={t(joinError ? 'league:join.error' : onJoin ? 'league:join.body' : 'league:empty.body')}
+          {...(onJoin !== undefined || onStartLesson !== undefined
             ? {
                 action: (
                   <Button
-                    label={t('league:empty.action')}
-                    onPress={onStartLesson}
+                    label={t(onJoin ? joining ? 'league:join.pending' : 'league:join.action' : 'league:empty.action')}
+                    onPress={onJoin ?? onStartLesson!}
+                    disabled={joining === true}
                     fullWidth={false}
                   />
                 ),
@@ -156,7 +131,7 @@ export function LeagueScreen({
             : {})}
         />
       ) : (
-        <Standings rows={rows} rank={rank} hoursLeft={hoursLeft} offline={offline === true} />
+        <Standings rows={rows} rank={rank} hoursLeft={hoursLeft} offline={offline === true} onStartLesson={onStartLesson} />
       )}
     </View>
   )
@@ -167,15 +142,18 @@ function Standings({
   rank,
   hoursLeft,
   offline,
+  onStartLesson,
 }: {
   readonly rows: readonly Standing[]
   readonly rank: LeagueRank
   readonly hoursLeft: number | undefined
   readonly offline: boolean
+  readonly onStartLesson: (() => void) | undefined
 }) {
   const t = useT()
   const toPromotion = xpToPromotion(rows)
   const you = rows.find((r) => r.isYou === true)
+  const tier = colors.league[rank.tier]
 
   return (
     <FlatList
@@ -184,12 +162,21 @@ function Standings({
       contentContainerStyle={styles.content}
       ListHeaderComponent={
         <View style={styles.header}>
-          <Text style={styles.tier} role="heading">
-            {t(`league:tier.${rank.tier}` as TranslationKey)}
-          </Text>
-          <Text style={styles.division}>
-            {t('league:division', { division: rank.division })}
-          </Text>
+          <LinearGradient colors={[tier.start, tier.end]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.leagueHero, { borderColor: tier.edge }]}>
+            <View style={styles.heroCopy}>
+              <Text style={[styles.tier, { color: tier.ink }]} role="heading">
+                {t(`league:tier.${rank.tier}` as TranslationKey)}
+              </Text>
+              <View style={[styles.divisionBadge, { backgroundColor: tier.highlight, borderColor: tier.edge }]}>
+                <Icon name="star" size={space[4]} color={tier.ink} />
+                <Text style={[styles.division, { color: tier.ink }]}>{t('league:division', { division: rank.division })}</Text>
+              </View>
+              {hoursLeft !== undefined && <Text style={[styles.heroTime, { color: tier.ink }]}>{t('league:endsIn', { hours: hoursLeft })}</Text>}
+            </View>
+            <View style={[styles.medallion, { backgroundColor: tier.highlight, borderColor: tier.edge }]}>
+              <WorldMascot mood="encouraging" style={styles.companion} />
+            </View>
+          </LinearGradient>
 
           {/* Only ever the distance UP. There is no prop, no string and no branch on
               this screen that could express the distance to relegation — §4's first
@@ -199,24 +186,38 @@ function Standings({
               {t('league:toPromotion', { xp: toPromotion })}
             </Text>
           )}
-          {you !== undefined && toPromotion === 0 && (
+          {you !== undefined && you.weeklyXp > 0 && toPromotion === 0 && (
             <Text style={styles.inZone}>{t('league:inZone')}</Text>
-          )}
-
-          {hoursLeft !== undefined && (
-            <Text style={styles.timeLeft}>{t('league:endsIn', { hours: hoursLeft })}</Text>
           )}
 
           {/* The promotion line, stated once as a fact about the week rather than
               repeated beside every row. */}
-          <Text style={styles.rule}>{t('league:promoteRule', { count: PROMOTED })}</Text>
+          <View style={[styles.promotionLegend,{backgroundColor:tier.highlight}]}>
+            <Icon name="forward" size={space[4]} color={tier.ink}/>
+            <Text style={[styles.rule,{color:tier.ink}]}>{t('league:promoteRule', { count: PROMOTED })}</Text>
+          </View>
 
           {/* A badge, not a wall — see the `offline` prop. Says which numbers these are
               rather than hiding them or passing them off as current. */}
           {offline && <Text style={styles.stale}>{t('league:offline.badge')}</Text>}
         </View>
       }
-      renderItem={({ item }) => <Row row={item} />}
+      renderItem={({ item }) => <Row row={item} tier={rank.tier} />}
+      ListFooterComponent={you?.weeklyXp === 0 && onStartLesson ? (
+        <LinearGradient colors={[colors.leagueAdventure.start, colors.leagueAdventure.end]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.firstLesson}>
+          <View style={styles.adventureArt}>
+            <View style={styles.globeArt}><HeaderJewel name="globe" size={space[9] + space[5]} /></View>
+            <View style={styles.starTrail} aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+              <Icon name="star" size={space[5]} color={colors.leagueAdventure.ink} />
+              <View style={styles.trailDot} />
+              <Icon name="flag" size={space[6]} color={colors.leagueAdventure.ink} />
+            </View>
+          </View>
+          <Text style={styles.firstTitle}>{t('league:first.title')}</Text>
+          <Text style={styles.firstBody}>{t('league:first.body')}</Text>
+          <Button variant="adventure" label={t('league:empty.action')} onPress={onStartLesson} />
+        </LinearGradient>
+      ) : null}
       // Thirty rows fit without virtualisation tuning, and the whole list is the point:
       // a leaderboard you have to page through is a leaderboard you cannot place
       // yourself in.
@@ -225,14 +226,15 @@ function Standings({
   )
 }
 
-function Row({ row }: { readonly row: Standing }) {
+function Row({ row, tier }: { readonly row: Standing; readonly tier: LeagueRank['tier'] }) {
   const t = useT()
   const promoting = row.outcome === 'promoted'
+  const theme=colors.league[tier]
 
   return (
     <Card
       level={row.isYou === true ? 2 : 1}
-      style={[styles.row, row.isYou === true && styles.rowYou]}
+      style={[styles.row, row.isYou === true && { backgroundColor:theme.highlight,borderColor:theme.edge,borderBottomWidth:space[1] }]}
       // One element to a screen reader, saying the three things that matter in the
       // order a person would: where they are, who it is, and what they scored.
       accessibilityLabel={t('league:row.label', {
@@ -241,7 +243,10 @@ function Row({ row }: { readonly row: Standing }) {
         xp: row.weeklyXp,
       })}
     >
-      <Text style={[styles.position, promoting && styles.positionUp]}>{row.position}</Text>
+      <View style={[styles.rankBadge,{backgroundColor:theme.start,borderColor:theme.edge}]}>
+        <Text style={[styles.position,{color:theme.ink}]}>{row.position}</Text>
+      </View>
+      {row.isYou && <HeaderJewel name="globe" size={space[8]} />}
       <Text style={[styles.handle, row.isYou === true && styles.handleYou]} numberOfLines={1}>
         {row.isYou === true ? t('league:you') : row.handle}
       </Text>
@@ -249,7 +254,10 @@ function Row({ row }: { readonly row: Standing }) {
       {/* An arrow on the rows that would go up, and NOTHING on the rows that would go
           down. The asymmetry is the point: this screen has no way to draw a demotion. */}
       {promoting && <Icon name="forward" size={14} color={colors.status.progress} />}
-      <Text style={styles.xp}>{t('league:xp', { xp: row.weeklyXp })}</Text>
+      <View style={[styles.xpChip,{backgroundColor:theme.start}]}>
+        <Icon name="xp" size={space[4]} color={theme.ink}/>
+        <Text style={[styles.xp,{color:theme.ink}]}>{t('league:xp', { xp: row.weeklyXp })}</Text>
+      </View>
     </Card>
   )
 }
@@ -271,8 +279,21 @@ const styles = StyleSheet.create({
   content: { padding: space[4], gap: space[2] },
   /** Upper third rather than dead centre — same reasoning as ProfileScreen's `centered`. */
   header: { gap: space[1], marginBottom: space[2] },
-  tier: { ...text('h1'), color: colors.text.primary },
-  division: { ...text('body'), color: colors.text.secondary },
+  leagueHero: { borderBottomWidth: space[1], borderRadius: radius['2xl'], padding: space[4], flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: space[2] },
+  divisionBadge: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: space[1], paddingHorizontal: space[2], paddingVertical: space[1], borderRadius: radius.md, borderWidth: 1, marginTop: space[2] },
+  medallion: { borderRadius: radius.full, borderWidth: space[1] },
+  heroCopy: { flexGrow: 1, flexBasis: ART },
+  companion: { width: space[9] + space[6], height: space[9] + space[6] },
+  tier: { ...text('h1'), color: colors.chrome.text },
+  division: { ...text('body'), color: colors.chrome.muted },
+  heroTime: { ...text('caption'), color: colors.chrome.muted, marginTop: space[2] },
+  firstLesson: { marginTop: space[4], padding: space[5], gap: space[3], borderRadius: radius['2xl'], borderBottomWidth: space[1], borderColor: colors.leagueAdventure.button },
+  adventureArt: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: space[3] },
+  globeArt: { padding: space[1] },
+  starTrail: { flexDirection: 'row', alignItems: 'center', gap: space[3], transform: [{ rotate: '-12deg' }] },
+  trailDot: { width: space[2], height: space[2], borderRadius: radius.full, backgroundColor: colors.leagueAdventure.ink },
+  firstTitle: { ...text('h2'), color: colors.leagueAdventure.ink },
+  firstBody: { ...text('body'), color: colors.leagueAdventure.ink },
   toPromotion: { ...text('bodyStrong'), color: colors.status.progress, marginTop: space[2] },
   inZone: { ...text('bodyStrong'), color: colors.status.progress, marginTop: space[2] },
   timeLeft: { ...text('caption'), color: colors.text.secondary },
@@ -283,12 +304,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: space[3],
+    flexWrap: 'wrap',
     paddingHorizontal: space[3],
     minHeight: layout.minTouchTarget,
     borderRadius: radius.md,
     ...squircle,
   },
-  rowYou: { borderWidth: 1, borderColor: colors.action.secondary },
+  rankBadge: { minWidth:space[7],minHeight:space[7],padding:space[1],alignItems:'center',justifyContent:'center',borderRadius:radius.md,borderWidth:1 },
+  promotionLegend: { alignSelf:'flex-start',flexDirection:'row',alignItems:'center',flexWrap:'wrap',gap:space[2],padding:space[2],borderRadius:radius.full,marginTop:space[2] },
+  xpChip: { flexDirection:'row',alignItems:'center',flexWrap:'wrap',gap:space[1],padding:space[2],borderRadius:radius.full },
   position: {
     ...text('bodyStrong'),
     color: colors.text.tertiary,
@@ -298,7 +322,6 @@ const styles = StyleSheet.create({
     // handle it belongs to — `pnpm lint:a11y` catches it. React Native's own types do
     // not accept the logical `end`, so the width does the work on its own and the digits
     // sit at the reading edge in both directions.
-    minWidth: 24,
   },
   positionUp: { color: colors.status.progress },
   handle: { ...text('body'), color: colors.text.secondary, flexShrink: 1 },

@@ -140,6 +140,7 @@ describe('standings', () => {
       { tier: 'bronze', division: 1 },
     )
     expect(rows.map((r) => r.handle)).toEqual(['Bold Fjord 01', 'Quiet Mesa 07'])
+    expect(rows.find(r => r.isYou)?.outcome).toBe('held')
   })
 
   it('says how far the promotion line is, and never how far the drop is', () => {

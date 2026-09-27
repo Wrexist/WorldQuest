@@ -17,12 +17,16 @@
  * the celebration still lands — it just does not travel. Nothing blocks the button.
  */
 
-import { Animated, StyleSheet, Text, View } from 'react-native'
-import { useEffect, useState } from 'react'
+import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { useEffect, useRef, useState } from 'react'
 import { Button, colors, space, text, useAnimatedTo, useCountUp } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 import { WeekStrip, type WeekActivity } from '../../components/WeekStrip.js'
+import { RewardMotion } from '../../components/RewardMotion.js'
+import { TreasureChest } from '../../components/TreasureChest.js'
+import { DaylightIllustration } from '../../components/DaylightIllustration.js'
+import type { DailyChest } from './dailyChest.js'
 
 export type StreakExtendedProps = {
   /** The streak after today's lesson. Always at least 1 when this screen draws. */
@@ -31,6 +35,8 @@ export type StreakExtendedProps = {
   /** XP paid for hitting a 7/30/100/365 milestone today; absent on every other day. */
   readonly milestoneXp?: number | undefined
   readonly onContinue: () => void
+  readonly chest?: DailyChest | undefined
+  readonly onOpenChest?: (() => void) | undefined
 }
 
 /**
@@ -42,12 +48,21 @@ export type StreakExtendedProps = {
  */
 const FLAME = 168
 
-export function StreakExtended({ streak, week, milestoneXp, onContinue }: StreakExtendedProps) {
+export function StreakExtended({ streak, week, milestoneXp, onContinue, chest, onOpenChest }: StreakExtendedProps) {
   const t = useT()
   const [landed, setLanded] = useState(false)
   useEffect(() => setLanded(true), [])
   const arrival = useAnimatedTo(landed ? 1 : 0, 'celebrate')
   const shown = useCountUp(landed ? streak : Math.max(0, streak - 1))
+  const [opened, setOpened] = useState(chest?.opened ?? false)
+  const [revealed, setRevealed] = useState(opened)
+  const claimed = useRef(opened)
+  const open = () => {
+    if (claimed.current) return
+    claimed.current = true
+    setOpened(true)
+    onOpenChest?.()
+  }
 
   const flame = {
     transform: [{ scale: arrival.interpolate({ inputRange: [0, 1], outputRange: [0.5, 1] }) }],
@@ -55,12 +70,14 @@ export function StreakExtended({ streak, week, milestoneXp, onContinue }: Streak
 
   return (
     <View style={styles.screen} testID="streak-extended">
-      <View style={styles.body}>
-        <View style={styles.hero} pointerEvents="none">
+      <ScrollView contentContainerStyle={styles.body}>
+        {chest !== undefined ? (
+          <TreasureChest opened={opened} onOpen={open} onReveal={() => setRevealed(true)} />
+        ) : <View style={styles.hero} pointerEvents="none">
           <Animated.View style={[flame, { opacity: arrival }]}>
             <Art name="rewards/streak-flame" size={FLAME} />
           </Animated.View>
-        </View>
+        </View>}
 
         {/* The count is the headline. Screen readers get the settled number once, not
             every frame of the tick-up. */}
@@ -78,6 +95,19 @@ export function StreakExtended({ streak, week, milestoneXp, onContinue }: Streak
           {streak === 1 ? t('streak:extended.first') : t('streak:extended.body')}
         </Text>
 
+        {chest !== undefined && (
+          <View style={styles.chestCopy}>
+            <Text style={styles.title}>{t(revealed ? 'streak:chest.revealed' : 'streak:chest.ready')}</Text>
+            {revealed ? <>
+              <View style={styles.treasure} role="status" aria-live="polite">
+                <RewardMotion kind="pop"><DaylightIllustration name="gem" size={48} active={false} /></RewardMotion>
+                <Text style={styles.title}>{t('streak:chest.gems')}</Text>
+              </View>
+              <Text style={styles.receipt}>{t('streak:chest.receipt')}</Text>
+            </> : <Text style={styles.body1}>{t('streak:chest.hint')}</Text>}
+          </View>
+        )}
+
         {milestoneXp !== undefined && (
           <Text style={styles.milestone}>{t('streak:extended.milestone', { count: streak, amount: milestoneXp })}</Text>
         )}
@@ -85,23 +115,24 @@ export function StreakExtended({ streak, week, milestoneXp, onContinue }: Streak
         <View style={styles.week}>
           <WeekStrip week={week} />
         </View>
-      </View>
+      </ScrollView>
 
       <View style={styles.actions}>
-        <Button label={t('streak:extended.cta')} onPress={onContinue} />
+        {chest !== undefined && !opened && <Button label={t('streak:chest.open')} onPress={open} testID="open-streak-chest" />}
+        <Button label={t('streak:extended.cta')} variant={chest !== undefined && !opened ? 'ghost' : 'primary'} onPress={onContinue} />
       </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1 },
+  screen: { flex: 1, backgroundColor: colors.journey.lavender },
   body: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: 'center',
-    justifyContent: 'center',
     gap: space[2],
     paddingHorizontal: space[5],
+    paddingVertical: space[4],
   },
   hero: { width: FLAME, height: FLAME, alignItems: 'center', justifyContent: 'center' },
   // The number is the headline, as large as the type scale goes.
@@ -110,5 +141,8 @@ const styles = StyleSheet.create({
   body1: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
   milestone: { ...text('bodyStrong', { numeric: true }), color: colors.reward.xp, textAlign: 'center' },
   week: { alignSelf: 'stretch', marginTop: space[4] },
-  actions: { padding: space[4], gap: space[2] },
+  actions: { backgroundColor: colors.bg.canvas, borderTopLeftRadius: space[6], borderTopRightRadius: space[6], padding: space[4], gap: space[2] },
+  chestCopy: { backgroundColor: colors.bg.surface, borderRadius: space[5], padding: space[4], alignSelf: 'stretch', alignItems: 'center', gap: space[2] },
+  treasure: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: space[3] },
+  receipt: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
 })

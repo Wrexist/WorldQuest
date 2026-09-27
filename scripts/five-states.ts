@@ -157,7 +157,6 @@ const WAIVED: Record<string, Partial<Record<State, string>>> = {
   },
   'settings/SettingsScreen': {
     empty: 'a fixed list of settings cannot be empty',
-    loading: 'preferences are read synchronously from device storage',
     offline:
       'every setting writes locally and takes effect immediately; the sync row already ' +
       'reports what is queued, and a second banner saying the same thing is noise',

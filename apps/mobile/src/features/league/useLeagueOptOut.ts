@@ -1,60 +1,48 @@
-/**
- * Leaving the league, and coming back.
- *
- * `docs/systems/social-and-leagues.md` §4: "**Leagues are opt-out in one tap.**" That is
- * a product rule with teeth — the only social surface in the app has to be leaveable
- * without a dialogue, a confirmation, or a "are you sure you want to lose your streak of
- * promotions" (there is no such streak, deliberately, and §4 says so too).
- *
- * Opting out does not delete the current week. The row stops the NEXT placement and the
- * week already running finishes on its own, because removing a member mid-week would
- * renumber twenty-nine other people's positions for a reason none of them can see.
- */
-
-import { useCallback, useEffect, useState } from 'react'
+﻿/** Opt-in preferences are server-owned. A failed change never looks saved. */
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { isConfigured } from '../../lib/supabase.js'
 import { withAccount } from '../../lib/backend.js'
 import { queryClient, queryKeys } from '../../lib/query.js'
+import { useLeagueEnabled } from './flag.js'
 
-export type UseLeagueOptOut = {
-  /** True when the user is IN the league — the sense a Settings switch wants. */
-  readonly joined: boolean
-  readonly setJoined: (value: boolean) => void
-}
-
-export function useLeagueOptOut(): UseLeagueOptOut {
-  const [optedOut, setOptedOut] = useState(false)
-
+export function useLeagueOptOut() {
+  const enabled = useLeagueEnabled() && isConfigured()
+  const [joined, setValue] = useState(false)
+  const [loading, setLoading] = useState(enabled)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState(false)
+  const locked = useRef(false)
+  const generation = useRef(0)
   useEffect(() => {
-    if (!isConfigured()) return
-    let cancelled = false
-    void withAccount((account) => account.fetchLeagueOptOut())
-      .then((value) => {
-        if (!cancelled) setOptedOut(value)
-      })
-      // Swallowed: not knowing must not break Settings. Defaulting to "joined" is the
-      // safe direction for a control — it shows the switch ON and the user can turn it
-      // off, rather than showing OFF and hiding the fact that they are in a league.
-      .catch(() => {})
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
+    const current = ++generation.current
+    setValue(false)
+    setLoading(enabled)
+    setError(false)
+    if (enabled) void withAccount(account => account.fetchLeagueOptOut()).then(out => {
+      if (generation.current === current) setValue(!out)
+    }).catch(() => {
+      if (generation.current === current) setError(true)
+    }).finally(() => {
+      if (generation.current === current) setLoading(false)
+    })
+    return () => { generation.current++ }
+  }, [enabled])
   const setJoined = useCallback((value: boolean): void => {
-    // Optimistic, because this is a switch and a switch that waits for a round trip
-    // reads as broken. The server is still the record; a failure restores it below.
-    setOptedOut(!value)
-    void (async () => {
-      try {
-        await withAccount((account) => account.setLeagueOptOut(!value))
-        // The standings belong to a different answer now.
-        void queryClient().invalidateQueries({ queryKey: queryKeys.league })
-      } catch {
-        setOptedOut(value)
-      }
-    })()
-  }, [])
-
-  return { joined: !optedOut, setJoined }
+    if (!enabled || loading || locked.current) return
+    const current = generation.current
+    locked.current = true
+    setBusy(true)
+    setError(false)
+    void withAccount(account => account.setLeagueOptOut(!value)).then(() => {
+      if (generation.current !== current) return
+      setValue(value)
+      void queryClient().invalidateQueries({ queryKey: queryKeys.league })
+    }).catch(() => {
+      if (generation.current === current) setError(true)
+    }).finally(() => {
+      locked.current = false
+      if (generation.current === current) setBusy(false)
+    })
+  }, [enabled, loading])
+  return { joined, setJoined, loading, busy, error }
 }

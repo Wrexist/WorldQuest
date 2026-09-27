@@ -35,6 +35,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   Button,
   Card,
+  ProgressBar,
   colors,
   radius,
   space,
@@ -46,6 +47,8 @@ import { coinsShort, purchase, type ShopItem } from '@worldquest/engines'
 import { Icon } from '../../components/Icon.js'
 import { TopBar } from '../../components/TopBar.js'
 import { Art } from '../../components/Art.js'
+import { AdventureArt } from '../../components/AdventureArt.js'
+import { CoinWallet } from '../../components/CoinWallet.js'
 import type { ArtName } from '../../lib/art.generated.js'
 import type { IconName } from '../../lib/icons.generated.js'
 import { INSIGNIA_SIZE, insigniaFor } from '../../lib/insignia.js'
@@ -63,6 +66,8 @@ export type ShopScreenProps = {
   readonly levelTitleKey: string
   readonly loading: boolean
   readonly isOffline: boolean
+  readonly pendingId?: string | null
+  readonly purchaseError?: boolean
   readonly error?: boolean
   readonly onRetry?: (() => void) | undefined
   /** The bell, so the header matches the other tabs. Optional like every other route hook. */
@@ -84,6 +89,8 @@ export function ShopScreen({
   loading,
   isOffline,
   error = false,
+  pendingId = null,
+  purchaseError = false,
   onRetry,
   streak,
   onOpenStreak,
@@ -104,6 +111,7 @@ export function ShopScreen({
   }
 
   const titles = catalogue.filter((i) => i.kind === 'title')
+  const nextUnlock = [...titles].filter(item => !owned.has(item.id)).sort((a, b) => a.price - b.price)[0]
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
@@ -134,21 +142,19 @@ export function ShopScreen({
           line with the title. The reference gives it a card of its own with the mascot
           leaning in, which is what makes it read as YOUR balance rather than as a unit
           label. Atlas is decorative; the card says what it is in words. */}
-      <Card level={2} style={styles.wallet} accessibilityLabel={t('shop:balance', { count: coins })}>
-        <View style={styles.walletText}>
-          <Text style={styles.walletLabel}>{t('shop:balance.label')}</Text>
-          <View style={styles.walletAmount}>
-            <Icon name="coins" size={24} color={colors.reward.coin} />
-            <Text style={styles.walletNumber}>{coins}</Text>
-          </View>
-        </View>
-        <View style={styles.walletArt} pointerEvents="none">
-          <Art name="atlas/explorer" size={WALLET_ART} />
-        </View>
-      </Card>
+      <CoinWallet coins={coins} />
 
       {/* The rule the whole screen obeys, in the first sentence a child reads. */}
       <Text style={styles.intro}>{t('shop:intro')}</Text>
+      {!loading && nextUnlock !== undefined && <Card style={styles.unlock} testID="shop-next-unlock">
+        <View style={styles.header}>
+          <Text style={styles.unlockTitle}>{t('shop:unlock.title')}</Text>
+          <Icon name="star" size={24} color={colors.reward.coin} />
+        </View>
+        <Text style={styles.unlockName}>{t(nextUnlock.nameKey as TranslationKey)}</Text>
+        <ProgressBar current={Math.min(coins, nextUnlock.price)} total={Math.max(1, nextUnlock.price)} showCount={false}
+          label={coins >= nextUnlock.price ? t('shop:unlock.ready') : t('shop:unlock.progress', { coins, price: nextUnlock.price })} />
+      </Card>}
 
       {isOffline && (
         // Not an error. A purchase is a server decision (ADR 0006) so it waits; owned
@@ -174,7 +180,7 @@ export function ShopScreen({
               <Text style={styles.freezeTitle}>{t('shop:freeze.title')}</Text>
               <Text style={styles.freezeBody}>{t('shop:freeze.body')}</Text>
             </View>
-            <Button label={t('shop:freeze.cta')} onPress={onOpenStreak} size="sm" variant="secondary" fullWidth={false} />
+            <Button label={t('shop:freeze.cta')} onPress={onOpenStreak} size="sm" variant="discovery" fullWidth={false} />
           </Card>
         </>
       )}
@@ -197,6 +203,7 @@ export function ShopScreen({
         <>
           {/* Always first, and described as earned rather than as a fallback. */}
           <TitleRow
+            explorer
             name={t(levelTitleKey as TranslationKey)}
             help={t('shop:levelTitle.help')}
             insignia={insigniaFor(levelTitleKey)}
@@ -227,7 +234,7 @@ export function ShopScreen({
                     ? t('shop:short', { count: short })
                     : undefined
                 }
-                canBuy={outcome.ok && !isOffline}
+                canBuy={outcome.ok && !isOffline && pendingId === null}
                 onBuy={() => onBuy(item)}
                 onEquip={() => onEquip(item.id)}
               />
@@ -236,6 +243,8 @@ export function ShopScreen({
         </>
       )}
 
+      {pendingId !== null && <Text role="status" aria-live="polite" style={{ ...text('body'), color: colors.text.secondary }}>{t('shop:purchase.pending')}</Text>}
+      {purchaseError && <Text role="alert" style={{ ...text('body'), color: colors.text.secondary }}>{t('shop:purchase.failed')}</Text>}
       {/* No "more to come" section. It promised pets and map skins "being drawn", which
           reads as unfinished to App Review (2.1) and as a promise to everyone else; the
           shop shows what it sells. */}
@@ -262,7 +271,6 @@ export function ShopScreen({
  * glyph gets the empty slot it has today rather than a wrong one.
  */
 /** Atlas leaning into the wallet card. Sized to the card, not to the mascot. */
-const WALLET_ART = 96
 
 const TITLE_ICON: Partial<Record<string, IconName>> = {
   'title.flag-fanatic': 'flag',
@@ -288,6 +296,7 @@ const TITLE_ICON: Partial<Record<string, IconName>> = {
 }
 
 function TitleRow({
+  explorer = false,
   name,
   help,
   insignia,
@@ -300,6 +309,7 @@ function TitleRow({
   onBuy,
   onEquip,
 }: {
+  readonly explorer?: boolean
   readonly name: string
   readonly help?: string
   /**
@@ -324,7 +334,7 @@ function TitleRow({
   const t = useT()
 
   return (
-    <Card level={equipped ? 2 : 1} style={[styles.row, equipped && styles.rowOn]}>
+    <Card level={equipped ? 2 : 1} style={[styles.row, equipped && styles.rowOn, explorer && styles.explorerCard]}>
       {/* The slot is reserved even when it is empty.
    
           Only rank titles carry an insignia; the cosmetic ones have no art and never
@@ -332,8 +342,8 @@ function TitleRow({
           one row with a picture indented its name and the four without it did not, so a
           list of otherwise identical rows had two left edges and the earned title read
           as a different KIND of thing rather than as the same thing, owned. */}
-      <View style={styles.insignia}>
-        {insignia != null ? (
+      <View style={[styles.insignia, explorer && { width: 96 }]}>
+        {explorer ? <AdventureArt name="explorer" style={{ width: 96, height: 116 }} /> : insignia != null ? (
           <Art name={insignia} size={INSIGNIA_SIZE} />
         ) : glyph !== undefined ? (
           // Dimmed until it is owned, so the column reads as a set of things you could
@@ -343,7 +353,7 @@ function TitleRow({
           </View>
         ) : null}
       </View>
-      <View style={styles.rowText}>
+      <View style={[styles.rowText, explorer && { minWidth: 120 }]}>
         <Text style={styles.rowName}>{name}</Text>
         {help !== undefined && <Text style={styles.rowHelp}>{help}</Text>}
         {/* A coin beside the price, in the coin's own tint.
@@ -410,10 +420,14 @@ function SkeletonRows() {
 }
 
 const styles = StyleSheet.create({
+  unlock: { backgroundColor: colors.journey.sand, gap: space[2] },
+  unlockTitle: { ...text('overline'), color: colors.text.secondary },
+  unlockName: { ...text('h3'), color: colors.text.primary },
+  explorerCard: { flexWrap: 'wrap', backgroundColor: colors.journey.sky, borderColor: colors.border.subtle },
   screen: { flex: 1 },
-  content: { padding: space[4], gap: space[3] },
+  content: { padding: space[4], gap: space[4], paddingBottom: space[6] },
 
-  wallet: { flexDirection: 'row', alignItems: 'center', overflow: 'hidden' },
+  wallet: { backgroundColor: colors.journey.sand, borderColor: colors.league.gold.edge, flexDirection: 'row', alignItems: 'center', overflow: 'hidden' },
   walletText: { flex: 1, gap: space[1] },
   walletLabel: { ...text('caption'), color: colors.text.secondary },
   walletAmount: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
@@ -453,7 +467,7 @@ const styles = StyleSheet.create({
   section: { ...text('overline'), color: colors.text.secondary, marginTop: space[3] },
 
   row: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
-  rowOn: { borderColor: colors.status.progress },
+  rowOn: { backgroundColor: colors.journey.meadow, borderColor: colors.status.progress },
   rowSkeleton: { minHeight: 64 },
   skeletonBar: { height: 16, flex: 1, borderRadius: radius.sm, backgroundColor: colors.bg.surfaceRaised, ...squircle },
   insignia: { width: INSIGNIA_SIZE, alignItems: 'center' },
@@ -474,7 +488,7 @@ const styles = StyleSheet.create({
   emptyTitle: { ...text('h3'), color: colors.text.primary },
   emptyBody: { ...text('body'), color: colors.text.secondary },
 
-  freeze: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space[3] },
+  freeze: { backgroundColor: colors.journey.sky, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space[3] },
   freezeText: { flex: 1, minWidth: 160, gap: space[1] },
   freezeTitle: { ...text('bodyStrong'), color: colors.text.primary },
   freezeBody: { ...text('caption'), color: colors.text.secondary },

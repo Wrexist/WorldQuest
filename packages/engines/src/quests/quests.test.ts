@@ -81,6 +81,25 @@ const generate = (memory: Map<FactId, MemoryState>, accuracy = 0.8, seed = 1): D
   })
 
 describe('generation', () => {
+  it.each([false, true])('excludes withheld and template-less facts, including remembered ones (%s)', (remembered) => {
+    const blocked: Fact[] = [
+      { ...fact('C0.withheld', 'C0', 'capital'), quizzable: false },
+      { ...fact('C1.awaiting-review', 'C1', 'flag'), sensitivity: 'review-required' },
+      fact('C2.no-template', 'C2', 'unavailable'),
+    ]
+    const mixed = buildIndex({ entities: ids.map(entity), facts: [...index.facts.values(), ...blocked],
+      templates: [template('capital'), template('flag')] })
+    const blockedIds = new Set(blocked.map(f => f.id))
+    const memory = remembered ? memoryFor([...mixed.facts.keys()], -1) : new Map<FactId, MemoryState>()
+    for (let seed = 0; seed < 30; seed++) {
+      const quest = generateDailyQuest({ userId: 'u1', date: '2026-08-01', index: mixed, memory,
+        now: NOW, rng: seededRng(seed), recentAccuracy: .8 })
+      const selected = quest.tasks.flatMap(task => task.factIds)
+      expect(selected.length).toBeGreaterThan(0)
+      expect(selected.some(id => blockedIds.has(id))).toBe(false)
+    }
+  })
+
   it('always produces exactly five slots, in order', () => {
     // A quest screen with three cards on it looks broken, and "come back when you
     // have more history" is not an answer.

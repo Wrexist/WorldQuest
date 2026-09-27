@@ -42,7 +42,7 @@ import {
   squircle,
   staggerStyle,
   text,
-  useCelebration,
+  useScaleIn,
   useCountUp,
   useStagger,
 } from '@worldquest/design'
@@ -50,6 +50,7 @@ import { factsStrengthened } from '@worldquest/engines'
 import type { GradeResult } from '@worldquest/engines'
 import { Art } from '../../components/Art.js'
 import { Flag } from '../../components/Flag.js'
+import { AdventureArt } from '../../components/AdventureArt.js'
 import { currentLocale, formatNumber, useT } from '../../lib/i18n.js'
 
 /**
@@ -134,12 +135,14 @@ const PRACTISED_FLAG_WIDTH = 44
 export function LessonSummary({
   result,
   practised = [],
+  dailyGoal,
   timeMs,
   wasAbandoned,
   isOffline,
   onExit,
 }: {
   result: GradeResult | null
+  dailyGoal?: { readonly done: number; readonly target: number } | undefined
   /**
    * The countries behind the facts just answered.
    *
@@ -172,9 +175,8 @@ export function LessonSummary({
   const xp = result?.xpAwarded ?? 0
   const counted = useCountUp(xp)
 
-  // Only a perfect lesson pops. A celebration that fires every time is wallpaper, and
-  // the point of this one is that it means something happened.
-  const scale = useCelebration(outcome === 'perfect' ? 'perfect' : null)
+  // A completed lesson gets a bounded entrance; early exits keep the value still.
+  const entrance = useScaleIn(wasAbandoned ? 1 : .88)
 
   const strengthened = useMemo(() => (result === null ? 0 : factsStrengthened(result)), [result])
   const accuracyPct = result === null ? 0 : Math.round(result.accuracy * 100)
@@ -219,12 +221,11 @@ export function LessonSummary({
             `pointerEvents="none"` because celebration never blocks input, and
             decorative by default — the brief's own code note: a screen reader
             announcing confetti is noise. */}
-        {/* Every summary has Atlas, as every Duolingo lesson ends with a character, but
-            only a perfect one has the confetti. The others get him calm: encouraging after
-            a finished lesson, resting after one left early — company, not a verdict. */}
+        {/* Every completed lesson gets a bounded explorer celebration. Perfect lessons
+            add confetti; early exits retain the resting character and no motion. */}
         {outcome !== 'perfect' && (
           <View style={styles.headlineArt}>
-            <Art name={outcome === 'early' ? 'atlas/resting' : 'atlas/encouraging'} size={CALM_ATLAS} />
+            {outcome === 'early' ? <Art name="atlas/resting" size={CALM_ATLAS} /> : <AdventureArt name="explorer" mood="celebrate" style={{ width: 140, height: 160 }} />}
           </View>
         )}
         {outcome === 'perfect' && (
@@ -235,7 +236,7 @@ export function LessonSummary({
             <View style={styles.celebration} pointerEvents="none">
               <Art name="celebration/burst" size={CELEBRATION_SIZE} />
             </View>
-            <Art name="atlas/celebrate" size={140} />
+            <AdventureArt name="explorer" mood="celebrate" style={{ width: 140, height: 160 }} />
           </View>
         )}
         {/* `heading` and not a bare Text: this is the first thing a screen reader
@@ -251,7 +252,7 @@ export function LessonSummary({
 
         {result !== null && (
           <>
-            <Animated.View style={[styles.hero, { transform: [{ scale }] }]}>
+            <Animated.View style={[styles.hero, entrance]}>
               <Card
                 level={2}
                 accessibilityLabel={t('lesson:reward.xp', { amount: xp })}
@@ -335,6 +336,13 @@ export function LessonSummary({
           </>
         )}
 
+        {!wasAbandoned && dailyGoal !== undefined && (
+          <Card level={1} style={styles.dailyGoal} testID="summary-daily-goal">
+            <Text style={styles.dailyTitle}>{t(dailyGoal.done >= dailyGoal.target ? 'home:daily.complete' : 'home:daily.title')}</Text>
+            <Text style={styles.subtitle}>{t('home:daily.count', { done: Math.min(dailyGoal.done, dailyGoal.target), target: dailyGoal.target })}</Text>
+            <Text style={styles.subtitle}>{t(dailyGoal.done >= dailyGoal.target ? 'home:daily.rest' : 'home:daily.started')}</Text>
+          </Card>
+        )}
         {practised.length > 0 && (
           <Animated.View
             style={[styles.practised, staggerStyle(practisedIn)]}
@@ -361,8 +369,10 @@ export function LessonSummary({
         <Spacer />
       </ScrollView>
 
+      {!wasAbandoned && result !== null && <Text style={styles.nextPrompt}>{t('lesson:summary.adventure.prompt')}</Text>}
       <Button
-        label={t('common:continue')}
+        label={t(wasAbandoned ? 'common:continue' : 'lesson:summary.adventure.continue')}
+        variant={wasAbandoned ? 'primary' : 'discovery'}
         onPress={onExit}
         fullWidth
         size="lg"
@@ -429,6 +439,8 @@ function OfflineNote() {
 }
 
 const styles = StyleSheet.create({
+  dailyGoal: { alignSelf: 'stretch', gap: space[2], backgroundColor: colors.journey.meadow },
+  dailyTitle: { ...text('h3'), color: colors.text.primary, textAlign: 'center' },
   screen: { flex: 1, padding: space[4], gap: space[4] },
   body: { flexGrow: 1, alignItems: 'center', gap: space[4] },
 
@@ -449,7 +461,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  xpCard: { alignItems: 'center', paddingVertical: space[5] },
+  xpCard: { alignItems: 'center', paddingVertical: space[5], backgroundColor: colors.journey.sand },
   xpValue: { ...text('hero'), color: colors.reward.xp },
   xpUnit: { ...text('overline'), color: colors.text.secondary },
 
@@ -478,6 +490,7 @@ const styles = StyleSheet.create({
   flags: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2], justifyContent: 'center' },
 
   cta: { marginTop: space[2] },
+  nextPrompt: { ...text('bodyStrong'), color: colors.text.primary, textAlign: 'center' },
   offline: {
     backgroundColor: colors.bg.surfaceRaised,
     padding: space[3],

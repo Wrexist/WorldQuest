@@ -58,5 +58,7 @@
   "quests:done.milestone": "Streak milestone — {amount} XP",
   "quests:done.milestone__note": "Shown ONLY on a day that hits a streak milestone (7, 30, 100 or 365 days), which is the only day a streak pays anything. {amount} is a whole number.",
   "quests:done.cta": "Nice",
-  "quests:done.cta__note": "The button that leaves the quest-complete screen. Deliberately not 'Claim' — the reward is already granted, and a button that claims what you have been given is a lie about who did what. Max 8 characters."
+  "quests:done.cta__note": "The button that leaves the quest-complete screen. Deliberately not 'Claim' — the reward is already granted, and a button that claims what you have been given is a lie about who did what. Max 8 characters.",
+  "quests:adventure.continue": "Continue quest →",
+  "quests:adventure.continue__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted."
 }

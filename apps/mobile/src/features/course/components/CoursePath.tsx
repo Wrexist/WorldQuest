@@ -7,16 +7,15 @@
  * than a list (the whole account, with what was refused, is in
  * `.claude/skills/dna-transplant/references/duolingo-worldquest.md`, graft six):
  *
- * 1. **One lit step on a winding line.** Position is the sequence: steps zig-zag down
- *    the column, the one you are on is bigger, lit and labelled Start, what is behind
- *    you is ticked, what is ahead is visible and dimmed.
+ * 1. **One lit platform on a winding course.** Raised faces show the current lesson,
+ *    finished steps and upcoming work. The explorer sits beside the active platform.
  * 2. **Every step answers a tap.** The current one starts; a done one opens a card with
  *    Practise; a closed one opens a card saying how it opens. Nothing is a dead tap.
  * 3. **A banner per unit** says where you are: the unit, its objective, a count.
  *
  * ## Order is path order, for everyone
  *
- * Units, then their steps, then any open card right after the step it belongs to — so a
+ * Units, then their steps with each action or explanation immediately after its step — so a
  * screen reader and a keyboard walk the path in the order a finger does, and each step's
  * label says its state ("Step 3 of 7, not open yet. …").
  *
@@ -28,16 +27,14 @@
  * by Home's skeleton; the path itself is synchronous and has no wait of its own.
  */
 
-import { Fragment, useCallback, useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { StyleSheet, Text, View, useWindowDimensions, type LayoutChangeEvent } from 'react-native'
 import { Button, Card, colors, space, text } from '@worldquest/design'
 import { tContent, useT } from '../../../lib/i18n.js'
 import { Art } from '../../../components/Art.js'
 import type { CoursePathView, PathNodeView } from '../pathView.js'
-import { PathBubble } from './PathBubble.js'
-import { PathNode } from './PathNode.js'
-import { UnitHeader } from './UnitHeader.js'
-import { estimatedColumn, swingFor } from './pathGeometry.js'
+import { PlatformUnit } from './PlatformUnit.js'
+import { estimatedColumn } from './pathGeometry.js'
 
 /** Atlas on the finished-course card: he is the celebration, so he is the size of one. */
 const COMPLETE_ART = 112
@@ -114,72 +111,15 @@ export function CoursePath({
       style={styles.path}
       onLayout={(event: LayoutChangeEvent) => setMeasured(event.nativeEvent.layout.width)}
     >
-      {path.units.map((unit) => (
-        <View
-          key={unit.id}
-          style={styles.unit}
-          onLayout={(event: LayoutChangeEvent) => {
-            unitTop.current.set(unit.id, event.nativeEvent.layout.y)
-            report()
-          }}
-        >
-          <UnitHeader unit={unit} withAtlas={unit.state === 'current'} />
-          {unit.nodes.map((node, index) => {
-            const swing = swingFor(index, column)
-            const expanded = open === node.id
-            return (
-              <Fragment key={node.id}>
-                <PathNode
-                  node={node}
-                  total={path.total}
-                  swing={swing}
-                  column={column}
-                  expanded={expanded}
-                  onPress={pressed(node)}
-                  onLayout={
-                    node.state === 'current'
-                      ? (event: LayoutChangeEvent) => {
-                          const { y, height } = event.nativeEvent.layout
-                          current.current = { unitId: unit.id, y, height }
-                          report()
-                        }
-                      : undefined
-                  }
-                />
-                {expanded && (
-                  <PathBubble
-                    pointing="up"
-                    tailAt={column / 2 + swing}
-                    width={column}
-                    tone="quiet"
-                    testID="path-card"
-                  >
-                    <Text style={styles.bubbleTitle}>{tContent(node.objectiveKey, { count: node.count })}</Text>
-                    <Text style={styles.bubbleBody}>
-                      {node.state === 'done' ? t('home:path.done.body') : t('home:path.locked.body')}
-                    </Text>
-                    {node.state === 'done' && (
-                      // Blue, not green: practice is a way back, and the one green on this
-                      // screen belongs to the step you are on.
-                      <Button
-                        label={t('home:path.practise')}
-                        variant="secondary"
-                        size="md"
-                        onPress={() => {
-                          setOpen(null)
-                          onPractise(node.id)
-                        }}
-                        testID="path-practise"
-                        style={styles.practise}
-                      />
-                    )}
-                  </PathBubble>
-                )}
-              </Fragment>
-            )
-          })}
-        </View>
-      ))}
+      {path.units.map(unit => <View key={unit.id} onLayout={event => {
+        unitTop.current.set(unit.id, event.nativeEvent.layout.y)
+        report()
+      }}>
+        <PlatformUnit unit={unit} width={column} total={path.total} open={open}
+          onPress={node => pressed(node)()}
+          onPractise={id => { setOpen(null); onPractise(id) }}
+          onCurrentLayout={(y, height) => { current.current = { unitId: unit.id, y, height }; report() }} />
+      </View>)}
 
       {path.complete && (
         // Measured from a wrapper because `Card` takes no layout handler, and the card is
@@ -213,14 +153,9 @@ export function CoursePath({
 
 const styles = StyleSheet.create({
   path: { gap: space[5] },
-  // Related things close: a unit's steps sit a card-gap apart, and units a section apart.
-  unit: { gap: space[3] },
   card: { gap: space[3] },
   cardTitle: { ...text('h3'), color: colors.text.primary },
   cardBody: { ...text('body'), color: colors.text.secondary },
-  bubbleTitle: { ...text('bodyStrong'), color: colors.text.primary },
-  bubbleBody: { ...text('caption'), color: colors.text.secondary },
-  practise: { marginTop: space[2] },
   completeBody: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   completeWords: { flex: 1, gap: space[1] },
 })

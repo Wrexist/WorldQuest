@@ -367,7 +367,7 @@ for (const platform of ['ios', 'android']) {
   rmSync(dir, { recursive: true, force: true })
   try {
     // Invoke Node directly: npx is a .cmd shim on Windows, not an executable.
-    execFileSync(process.execPath, [EXPO_CLI, 'export', '--platform', platform, '--output-dir', dir], {
+    execFileSync(process.execPath, [EXPO_CLI, 'export', '--platform', platform, '--output-dir', dir, '--max-workers', '2'], {
       cwd: MOBILE,
       stdio: 'pipe',
       maxBuffer: 1 << 26,

@@ -10,6 +10,11 @@ export type AccountIdentity = {
 
 /** A handle is bound to one account. Adapters must never borrow a later user's token. */
 export type AccountRepository = {
+  readonly challenges?: {
+    readonly list: () => Promise<import('@worldquest/engines').ChallengeResponse>
+    readonly act: (action: import('@worldquest/engines').ChallengeAction) => Promise<import('@worldquest/engines').ChallengeResponse>
+    readonly inviteCode: () => string
+  }
   readonly identity: AccountIdentity
   readonly submitLesson: (request: SubmitLessonRequest) => Promise<SubmitLessonResponse>
   readonly fetchProgress: () => Promise<Progress>

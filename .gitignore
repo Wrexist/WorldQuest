@@ -83,3 +83,7 @@ apps/mobile/android/
 .wrangler/
 .dev.vars
 .dev.vars.*
+
+# Regenerable 3D Asset Studio review sheets; final renders and scene sources are kept.
+docs/design/3d/*.preview/
+docs/design/assets/models/*.blend1

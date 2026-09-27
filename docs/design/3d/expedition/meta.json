@@ -1,0 +1,13 @@
+{
+ "name": "expedition",
+ "generator": "3d-asset-studio",
+ "mode": "still",
+ "look": "photoreal",
+ "frame": {
+  "width": 800,
+  "height": 480
+ },
+ "files": [
+  "expedition.webp"
+ ]
+}

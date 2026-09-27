@@ -14,6 +14,11 @@ const BADGE = { achievementId: 'ach.flags.collector', tier: 'bronze' as const }
 const OTHER = { achievementId: 'ach.lessons.done', tier: 'silver' as const }
 
 describe('planAfterLesson', () => {
+  it('reveals the next course lesson after the rewards and offers', () => {
+    expect(planAfterLesson({ ...base, questCompleted: true, unlocked: 1, offerProfile: true, offerPaywall: true, revealJourney: true }))
+      .toEqual(['streak', 'quest', 'achievements', 'profile', 'paywall', 'journey'])
+    expect(planAfterLesson({ ...base, completed: false, revealJourney: true })).toEqual([])
+  })
   it('celebrates the streak once a day, on the first finished lesson', () => {
     expect(planAfterLesson(base)).toEqual(['streak'])
     expect(planAfterLesson({ ...base, countedTodayBefore: true })).toEqual([])
@@ -89,6 +94,10 @@ describe('parseSteps', () => {
 })
 
 describe('nextAfterLesson', () => {
+  it('preserves the next challenge through the final offer', () => {
+    expect(nextAfterLesson({ then: 'paywall,journey' })).toBe('/paywall?then=journey&source=onboarding')
+    expect(nextAfterLesson({ then: 'journey' })).toBe('/journey-ready')
+  })
   it('walks a chain one screen at a time', () => {
     expect(nextAfterLesson({ then: 'quest,paywall', countries: 'SE' })).toBe(
       '/quest-complete?then=paywall&countries=SE',

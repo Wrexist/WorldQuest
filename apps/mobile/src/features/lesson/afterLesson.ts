@@ -23,11 +23,12 @@
 import type { PendingUnlock } from '../achievements/pending.js'
 import { formatUnlocks, parseUnlocks } from '../achievements/unlockParams.js'
 
-export type AfterLessonStep = 'streak' | 'quest' | 'achievements' | 'profile' | 'paywall'
+export type AfterLessonStep = 'streak' | 'quest' | 'achievements' | 'profile' | 'paywall' | 'journey'
 
-const ORDER: readonly AfterLessonStep[] = ['streak', 'quest', 'achievements', 'profile', 'paywall']
+const ORDER: readonly AfterLessonStep[] = ['streak', 'quest', 'achievements', 'profile', 'paywall', 'journey']
 
 const PATHS: Record<AfterLessonStep, string> = {
+  journey: '/journey-ready',
   streak: '/streak-extended',
   quest: '/quest-complete',
   achievements: '/achievement-unlocked',
@@ -36,6 +37,8 @@ const PATHS: Record<AfterLessonStep, string> = {
 }
 
 export type AfterLessonInput = {
+  /** Show the real next course challenge after a credited course lesson. */
+  readonly revealJourney?: boolean
   /** Finished rather than ended early. An abandoned lesson is not a day's activity. */
   readonly completed: boolean
   /** Whether today already counted in the streak before this lesson started. */
@@ -68,6 +71,7 @@ export function planAfterLesson(input: AfterLessonInput): readonly AfterLessonSt
   // leave is an offer at the worst moment to make one.
   if (input.completed && input.offerProfile) steps.push('profile')
   if (input.offerPaywall) steps.push('paywall')
+  if (input.completed && input.revealJourney) steps.push('journey')
   return steps
 }
 
@@ -102,7 +106,6 @@ export function hrefFor(steps: readonly AfterLessonStep[], carry: AfterLessonCar
   const unlocks = carry.unlocks ?? []
   if (unlocks.length > 0 && steps.includes('achievements')) query.set('unlocks', formatUnlocks(unlocks))
   if (first === 'paywall') {
-    query.delete('then')
     query.set('source', 'onboarding')
   }
   const search = query.toString()

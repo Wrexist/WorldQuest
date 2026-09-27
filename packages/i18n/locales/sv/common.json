@@ -10,5 +10,7 @@
   "common:error.generic.title": "Det gick inte att ladda",
   "common:error.generic.body": "Vi försöker igen.",
   "common:progress.count": "{current} / {total}",
-  "common:loading": "Laddar"
+  "common:loading": "Laddar",
+  "common:appName": "WorldQuest",
+  "common:appName__note": "Product wordmark in the persistent header. Brand name; do not translate."
 }

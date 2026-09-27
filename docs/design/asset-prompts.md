@@ -1,5 +1,10 @@
 # Asset prompts
 
+> September 26, 2026: the daylight Atlas and prop family supersedes the dark
+> illustration treatment below. Current masters, generation prompts and provenance
+> are in [daylight/PROVENANCE.md](assets/daylight/PROVENANCE.md); reusable Blender
+> and GLB assets are in `assets/models`. Existing factual flag/map rules still apply.
+
 Every visual asset WorldQuest needs, as a copy-paste prompt.
 
 Works with Midjourney, DALL·E, Higgsfield, Ideogram, Firefly. **Always prepend the

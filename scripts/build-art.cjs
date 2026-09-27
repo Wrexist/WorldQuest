@@ -962,6 +962,13 @@ ${geometryEntries.join('\n')}
   }
 
   writeIndex(ILLUSTRATIONS, geometry)
+  // The daylight set is an intentional replacement family. Keep its typed geometry
+  // and platform icons in sync when rebuilding the older illustration catalogue.
+  const { execFileSync } = require('node:child_process')
+  execFileSync(process.execPath, [join(__dirname, 'build-playful-art.cjs')], { stdio: 'inherit' })
+  execFileSync(process.execPath, [join(__dirname, 'build-soft-assets.cjs')], { stdio: 'inherit' })
+  execFileSync(process.execPath, [join(__dirname, 'build-atlas-assets.cjs')], { stdio: 'inherit' })
+  execFileSync(process.execPath, [join(__dirname, 'build-adventure-art.cjs')], { stdio: 'inherit' })
   console.log(`\n✓ ${APP_ICONS.length} app icons + ${ILLUSTRATIONS.length} illustrations · ${(bytes / 1024 / 1024).toFixed(2)} MB total`)
   reportGaps()
 })()

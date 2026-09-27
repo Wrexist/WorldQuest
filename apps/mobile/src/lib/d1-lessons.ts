@@ -379,8 +379,8 @@ export async function refreshMemory(): Promise<boolean> {
     if (!store.isCurrent()) return false
     store.set(MEMORY_KEY, JSON.stringify(state.memories))
     store.set(FOCUS_FINISHED_KEY, JSON.stringify(state.finishedByFocus))
-    announceFocusFinished()
     foldDays(store, state.finishedByDay)
+    announceFocusFinished()
     return true
   } catch {
     // The previous snapshot stays; the server still decides every grade.

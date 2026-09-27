@@ -32,5 +32,7 @@
   "quests:done.reward.coins": "Bonus: {amount} mynt",
   "quests:done.streak": "{count, plural, one {# dag i rad} other {# dagar i rad}}",
   "quests:done.milestone": "Milstolpe i svit — {amount} XP",
-  "quests:done.cta": "Fint"
+  "quests:done.cta": "Fint",
+  "quests:adventure.continue": "Fortsätt uppdraget →",
+  "quests:adventure.continue__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted."
 }

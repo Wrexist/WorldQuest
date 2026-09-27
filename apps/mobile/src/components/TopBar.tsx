@@ -10,18 +10,7 @@
  * and — the one that actually bites — five different answers to what the bar does when
  * the numbers are still loading.
  *
- * ## The gem chip is real, and hidden at zero
- *
- * `Progress` deliberately does not carry gems today, and the reason is written down in
- * `packages/api/src/client.ts`: the column has been 0 on every row this product has ever
- * created, and fetching a currency nothing grants and nothing spends "made the app look
- * like it had a gem economy to anyone reading this type".
- *
- * The redesign draws a gem balance next to the coins. So the chip is built, wired, and
- * rendered only when there is a balance to render — which is the same rule the streak
- * badge already follows one prop over, and for the same reason: a wallet reading 0 is a
- * fact about a balance, a currency reading 0 that can never be anything else is set
- * dressing. When gems are granted by something, they appear here with no further change.
+ * Coins are the spendable wallet. Streak gems are cosmetic keepsakes on the streak screen.
  *
  * ## The streak chip and the gear are optional, and absent means absent
  *
@@ -39,11 +28,12 @@
  * learner had picked in Settings. With no `avatar` given it now reads the preference.
  */
 
-import { StyleSheet, View, Pressable } from 'react-native'
-import { Avatar, colors, layout, space } from '@worldquest/design'
+import { StyleSheet, View, Pressable, Text, useWindowDimensions } from 'react-native'
+import { Avatar, colors, layout, radius, space, text } from '@worldquest/design'
 import { Art } from './Art.js'
+import { HeaderJewel } from './HeaderJewel.js'
+
 import { Icon } from './Icon.js'
-import { Stat } from './Stat.js'
 import { useT } from '../lib/i18n.js'
 import { usePreferences } from '../features/settings/usePreferences.js'
 import { avatarArt } from '../features/settings/AvatarPicker.js'
@@ -56,8 +46,6 @@ export type TopBarProps = {
   readonly avatar?: React.ReactNode | undefined
   /** Spendable coins. Rendered at zero — a balance is a fact, not a verdict. */
   readonly coins?: number | undefined
-  /** Premium currency. Rendered only when there is one — see the note above. */
-  readonly gems?: number | undefined
   readonly onAvatar?: (() => void) | undefined
   /** The current streak, drawn as a flame chip. Shown with `onStreak`, at zero too. */
   readonly streak?: number | undefined
@@ -67,22 +55,22 @@ export type TopBarProps = {
   readonly onSettings?: (() => void) | undefined
 }
 
-/** The chips' own optical size, matching `Stat`. */
+/** Settings glyph inside its full touch target. */
 const GLYPH = 20
 
 export function TopBar({
   initials,
   avatar,
   coins,
-  gems,
   onAvatar,
   streak,
   onStreak,
   onSettings,
 }: TopBarProps) {
   const t = useT()
-  // Today's lessons from the device's log, the one the daily goal and the week chart
-  // read, so the flame lights the moment a lesson ends rather than after a sync.
+  const { width, fontScale } = useWindowDimensions()
+  const showBrand = streak === undefined || width / fontScale >= layout.baseWidth
+  // Use the same device log as the daily goal, so the pending state updates immediately.
   const countedToday = streak !== undefined && lessonsToday() > 0
   const { preferences } = usePreferences()
   const portrait = avatar === undefined ? avatarArt(preferences.avatar) : null
@@ -92,7 +80,7 @@ export function TopBar({
   // fallback-to-initials path is the absent one.
   const face = {
     ...(initials !== undefined ? { initials } : {}),
-    ...(image !== undefined ? { image } : {}),
+    ...(image === undefined ? {} : { image }),
   }
 
   return (
@@ -101,15 +89,16 @@ export function TopBar({
           element with its own name, so wrapping it in a button that does nothing would
           add a second focus stop announcing the same thing. */}
       {onAvatar === undefined ? (
-        <Avatar {...face} accessibilityLabel={t('home:avatar.label')} />
+        image === undefined ? <View accessible aria-label={t('home:avatar.label')}><HeaderJewel name="globe" size={48} /></View> : <Avatar {...face} accessibilityLabel={t('home:avatar.label')} />
       ) : (
         <Pressable onPress={onAvatar} role="button" aria-label={t('home:avatar.label')}>
           {/* Named by the Pressable, so the picture inside it is silent. Two nested
               elements with the same name is the same word twice to a screen reader. */}
-          <Avatar {...face} accessibilityLabel="" />
+          {image === undefined ? <HeaderJewel name="globe" size={48} /> : <Avatar {...face} accessibilityLabel="" />}
         </Pressable>
       )}
 
+      {showBrand && <Text style={styles.brand}>{t('common:appName')}</Text>}
       <View style={styles.spacer} />
 
       {streak !== undefined && onStreak !== undefined && (
@@ -120,20 +109,19 @@ export function TopBar({
           hitSlop={8}
         >
           {/* Named by the Pressable, so the chip inside it is silent, like the avatar.
-              Grey until today's lesson is in, as Duolingo's flame is: the chip says
-              whether today has counted, and the label says it in words. */}
-          <Stat kind="streak" value={streak} accessibilityLabel="" dim={!countedToday} />
+              The muted number indicates a pending day; the label explains it in words. */}
+          <View style={styles.counter} aria-hidden>
+            <HeaderJewel name="flame" size={36} />
+            <Text style={[styles.value, !countedToday && styles.pending]}>{streak}</Text>
+          </View>
         </Pressable>
       )}
-      {gems !== undefined && gems > 0 && (
-        <Stat kind="gem" value={gems} accessibilityLabel={t('home:stats.gems', { amount: gems })} />
-      )}
+
       {coins !== undefined && (
-        <Stat
-          kind="coin"
-          value={coins}
-          accessibilityLabel={t('home:stats.coins', { amount: coins })}
-        />
+        <View accessible aria-label={t('home:stats.coins', { amount: coins })} style={styles.counter}>
+          <HeaderJewel name="coins" size={36} />
+          <Text style={styles.value}>{coins}</Text>
+        </View>
       )}
 
       {onSettings !== undefined && (
@@ -144,7 +132,7 @@ export function TopBar({
           style={styles.chrome}
           hitSlop={8}
         >
-          <Icon name="settings" size={GLYPH} color={colors.text.secondary} />
+          <Icon name="settings" size={GLYPH} color={colors.chrome.text} />
         </Pressable>
       )}
     </View>
@@ -154,13 +142,33 @@ export function TopBar({
 const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
-    gap: space[2],
-    paddingBottom: space[3],
+    gap: space[1],
+    padding: space[3],
+    borderRadius: radius['2xl'],
+    backgroundColor: colors.chrome.surface,
+    borderBottomWidth: space[1],
+    borderColor: colors.chrome.edge,
   },
   spacer: { flex: 1 },
-  // A real target around a 20pt glyph. A glyph in a bare `View` with a label is one iOS
-  // never focuses and no finger can reliably hit (the old bell was).
+  brand: { ...text('bodyStrong'), color: colors.chrome.text, flexShrink: 1 },
+  counter: {
+    minHeight: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space[1],
+    paddingHorizontal: space[1],
+    borderRadius: radius.lg,
+    borderBottomWidth: space[1],
+    backgroundColor: colors.chrome.counter,
+    borderColor: colors.chrome.counterEdge,
+  },
+  value: { ...text('h3', { numeric: true }), color: colors.chrome.text },
+  pending: { color: colors.chrome.muted },
+  // A real target around a 20pt glyph. The bell used to be a bare `View` with a label,
+  // which iOS never focuses and no finger can reliably hit.
+
   chrome: {
     width: layout.minTouchTarget,
     height: layout.minTouchTarget,

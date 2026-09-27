@@ -1,0 +1,33 @@
+{
+ "name": "worldquest-rewards",
+ "generator": "3d-asset-studio",
+ "mode": "icons",
+ "look": "photoreal",
+ "frame": {
+  "width": 320,
+  "height": 320
+ },
+ "icons": [
+  {
+   "name": "heart",
+   "src": "icons/heart.webp",
+   "width": 320,
+   "height": 320
+  },
+  {
+   "name": "star",
+   "src": "icons/star.webp",
+   "width": 320,
+   "height": 320
+  },
+  {
+   "name": "coins",
+   "src": "icons/coins.webp",
+   "width": 320,
+   "height": 320
+  }
+ ],
+ "models": [
+  "worldquest-rewards.glb"
+ ]
+}
