@@ -10,6 +10,7 @@
  * game into an obligation.
  */
 
+import { LinearGradient } from 'expo-linear-gradient'
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   Button,
@@ -171,6 +172,14 @@ export function QuestScreen({
 
       <Card style={styles.summary}>
         <View pointerEvents="none" style={styles.treasure}><RewardMotion key={done} active kind="pop"><AdventureArt name="treasure" style={{ width: 270, height: 180 }} /></RewardMotion><ProgressSparkles earned={done} /></View>
+        <LinearGradient
+          pointerEvents="none"
+          colors={[colors.journey.sand, colors.journey.sand, `${colors.journey.sand}00`]}
+          locations={[0, 0.36, 0.78]}
+          start={{ x: 0, y: 0.5 }}
+          end={{ x: 1, y: 0.5 }}
+          style={StyleSheet.absoluteFill}
+        />
         <View style={styles.summaryText}>
         {/* The label already reads "2 of 5 done", so the bar's own counter would
             print the same numbers twice, six pixels apart. */}
@@ -380,7 +389,7 @@ const styles = StyleSheet.create({
   cta: { marginTop: space[3] },
 
   summary: { backgroundColor: colors.journey.sand, borderColor: colors.league.gold.edge, minHeight: 180, justifyContent: 'center', overflow: 'hidden' },
-  summaryText: { width: '58%', gap: space[3], backgroundColor: colors.journey.sand, padding: space[2], borderRadius: radius.md },
+  summaryText: { width: '58%', gap: space[3], padding: space[2] },
   treasure: { position: 'absolute', end: -4, top: 0 },
   progressTitle: { ...text('h2'), color: colors.text.primary },
   taskArt: { width: space[8]+space[1], height: space[8]+space[3], borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.bg.surface, borderBottomWidth: space[1] },
