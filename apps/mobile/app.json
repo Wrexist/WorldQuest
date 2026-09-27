@@ -77,7 +77,7 @@
       "package": "com.wrexist.worldquest",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#F6F5F0"
+        "backgroundColor": "#070D1B"
       },
       "versionCode": 1,
       "permissions": [],
