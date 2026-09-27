@@ -152,6 +152,7 @@ export function Art(props: ArtProps) {
       : /encouraging/.test(name) ? 'encouraging' : 'welcome'
     return <AtlasCharacter size={size} height={height} mood={mood} label={label} />
   }
+  if (label === undefined && name === 'rewards/streak-freeze') return <DaylightIllustration name="streak-freeze" size={size} />
   if (label === undefined && name === 'states/empty-collection') return <DaylightIllustration name="treasure-chest" size={size} />
   if (label === undefined && (name.startsWith('celebration/') || name.startsWith('rewards/'))) {
     return <RewardMotion kind={name.startsWith('celebration/') ? 'confetti' : name.endsWith('flame') ? 'flame' : 'pop'}><StillArt {...props} /></RewardMotion>

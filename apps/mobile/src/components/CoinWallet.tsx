@@ -2,7 +2,7 @@ import { createThemeStyles } from '@worldquest/design'
 import { Animated, StyleSheet, Text, View } from 'react-native'
 import { radius, space, text, useCelebration } from '@worldquest/design'
 import { useT } from '../lib/i18n.js'
-import { HeaderJewel } from './HeaderJewel.js'
+import { DaylightIllustration } from './DaylightIllustration.js'
 import { Icon } from './Icon.js'
 import { WorldMapArt } from './WorldMapArt.js'
 
@@ -21,7 +21,7 @@ export function CoinWallet({ coins }: { coins: number }) {
         <View style={styles.rule} />
       </View>
       <View style={styles.art} pointerEvents="none" aria-hidden>
-        <HeaderJewel name="coins" size={126} />
+        <DaylightIllustration name="coins" size={126} active={false} />
         <View style={styles.sparkle}><Icon name="star" size={space[4]} color={colors.league.gold.start} /></View>
         <View style={styles.sparkleSmall}><Icon name="star" size={space[2]} color={colors.league.gold.highlight} /></View>
       </View>

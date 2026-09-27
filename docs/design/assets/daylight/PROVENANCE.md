@@ -61,3 +61,6 @@ bounds, and writes 640-pixel WebPs plus a typed import/geometry manifest. Images
 are at most 120 KB each. All native image references resolve to workspace files.
 `node scripts/build-daylight-maps.cjs` creates the separate map masks from Natural
 Earth; those images do not come from generative art.
+
+
+September 28: the Expedition family adds seven original Blender props and a host-generated decorative island. Sources, exact prompt, runtime integration and verification: `docs/design/assets/expedition/README.md`. Historical assets remain preserved.

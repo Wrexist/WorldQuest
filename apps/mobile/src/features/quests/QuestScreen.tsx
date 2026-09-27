@@ -13,7 +13,6 @@ import { createThemeStyles } from '@worldquest/design'
 
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
-  ArtScrim,
   Button,
   Card,
   layout,
@@ -36,6 +35,7 @@ import {
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { SPEED_SECONDS } from '../lesson/modes.js'
 import { Art } from '../../components/Art.js'
+import { DaylightIllustration } from '../../components/DaylightIllustration.js'
 import { AdventureArt } from '../../components/AdventureArt.js'
 import { QuestMilestones } from '../../components/QuestMilestones.js'
 import { RewardMotion } from '../../components/RewardMotion.js'
@@ -172,8 +172,6 @@ export function QuestScreen({
       )}
 
       <Card style={styles.summary}>
-        <View pointerEvents="none" style={styles.treasure}><RewardMotion key={done} active kind="pop"><AdventureArt name="treasure" style={{ width: 270, height: 180 }} /></RewardMotion><ProgressSparkles earned={done} /></View>
-        <ArtScrim blend />
         <View style={styles.summaryText}>
         {/* The label already reads "2 of 5 done", so the bar's own counter would
             print the same numbers twice, six pixels apart. */}
@@ -193,6 +191,7 @@ export function QuestScreen({
           <Text style={styles.bonus}>{t('quests:reward.bonus', { xp: COMPLETION_BONUS })}</Text>
         )}
         </View>
+        <View pointerEvents="none" style={styles.treasure}><RewardMotion key={done} kind="pop"><DaylightIllustration name="treasure-chest" size={112} active={false} /></RewardMotion><ProgressSparkles earned={done} /></View>
       </Card>
 
       {!quest.complete && <Button variant="discovery" label={t('quests:adventure.continue')} onPress={onStart} />}
@@ -387,9 +386,9 @@ const useThemeValues = createThemeStyles((colors) => {
   subtitle: { ...text('body'), color: colors.text.secondary },
   cta: { marginTop: space[3] },
 
-  summary: { backgroundColor: colors.journey.sand, borderColor: colors.league.gold.edge, minHeight: 180, justifyContent: 'center', overflow: 'hidden' },
-  summaryText: { width: '58%', gap: space[3], padding: space[2] },
-  treasure: { position: 'absolute', end: -4, top: 0 },
+  summary: { backgroundColor: colors.journey.sand, borderColor: colors.league.gold.edge, minHeight: 180, flexDirection: 'row', alignItems: 'center', gap: space[2], overflow: 'hidden' },
+  summaryText: { flex: 1, gap: space[3], padding: space[2] },
+  treasure: { width: 112, height: 140, alignItems: 'center', justifyContent: 'center' },
   progressTitle: { ...text('h2'), color: colors.text.primary },
   taskArt: { width: space[8]+space[1], height: space[8]+space[3], borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.bg.surface, borderBottomWidth: space[1] },
   bonus: { ...text('caption', { weight: '600' }), color: colors.reward.xp },

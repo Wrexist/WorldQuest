@@ -205,3 +205,13 @@ Frame samples and full-context browser recordings live in
 visual inspection. This does not establish native frame rate or physical-device
 motion quality. Full repository verification was not repeated for this component-only
 increment; the preceding layout increment's full pass is recorded above.
+
+
+## Expedition asset increment
+
+Seven real Blender/GLB props, eight individual runtime illustrations and a matching
+40-frame chest opening are integrated into Explore, Quests, achievements, streak
+rewards and the Shop wallet. See [asset provenance and app captures](assets/expedition/README.md).
+The approved globe character, factual teaching assets and economy are unchanged.
+199 affected tests and mobile TypeScript pass; asset-integration iOS/Android bundles
+pass. Physical-device quality/performance and the prior external release gates remain open.

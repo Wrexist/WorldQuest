@@ -20,7 +20,7 @@ import type { WorldProgress } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { AdventureArt } from '../../components/AdventureArt.js'
 import { TopBar } from '../../components/TopBar.js'
-import { HeaderJewel } from '../../components/HeaderJewel.js'
+import { DaylightIllustration } from '../../components/DaylightIllustration.js'
 import type { ArtName } from '../../lib/art.generated.js'
 import { Flag } from '../../components/Flag.js'
 import type { CountryRow } from './RegionScreen.js'
@@ -152,7 +152,7 @@ export function ExploreScreen({
       {needle.length === 0 && <>
       <Card style={styles.worldCard} accessibilityLabel={t('explore:world.label')}>
 
-        <HeaderJewel name="globe" size={windowWidth < 360 || fontScale > 1.3 ? 64 : 80} />
+        <DaylightIllustration name="discovery-island" size={windowWidth < 360 || fontScale > 1.3 ? 80 : 112} active={false} />
         <View style={styles.worldStats}>
           <Text style={styles.worldTitle}>{t('explore:world.label')}</Text>
 
@@ -207,7 +207,7 @@ export function ExploreScreen({
             onPress={() => onOpenCollection('flags')}
             style={[styles.collection, { backgroundColor: colors.journey.sky }]}
           >
-            <Icon name="flag" size={22} color={colors.action.primary} />
+            <DaylightIllustration name="passport" size={40} active={false} />
             <View style={styles.collectionText}>
               <Text style={styles.collectionName}>{t('collection:flags.title')}</Text>
               <Text style={styles.collectionHint} numberOfLines={2}>
@@ -224,7 +224,7 @@ export function ExploreScreen({
             onPress={() => onOpenCollection('countries')}
             style={[styles.collection, { backgroundColor: colors.journey.lavender }]}
           >
-            <Icon name="explore" size={22} color={colors.action.primary} />
+            <DaylightIllustration name="compass" size={40} active={false} />
             <View style={styles.collectionText}>
 
               <Text style={styles.collectionName}>{t('collection:countries.title')}</Text>
