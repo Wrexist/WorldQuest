@@ -13,6 +13,7 @@ The original production dependency graph contained 38 advisory/version entries, 
 | fast-uri 3.1.5 | Override 3.x to 3.1.7 | AJV/schema URL processing in tool/config paths |
 | @xmldom/xmldom 0.8.13 / 0.9.10 | Keep families, update to 0.8.15 / 0.9.12 | Expo plist/XML processing; mostly build inputs |
 | js-yaml 3.15.1 / 4.3.1 | Keep families, update to 3.15.2 / 4.3.2 | CLI/config input parsing |
+| undici 6.28.0 / 7.29.0 | Keep families, update to 6.28.1 / 7.29.1 (GHSA-3wwx-pv8p-q78v, 29 September 2026) | Expo CLI and config fetches; the WebSocket decompression DoS needs a hostile server, and the app never opens one through undici |
 | uuid 7.0.3 under xcode | Scoped `xcode>uuid` override to 11.1.1 | Xcode project generation uses v4, while the advisory concerns v3/v5/v6 buffer writes; upgrade still removes the affected dependency |
 | image-size 1.2.1 | Local bounds/progress patch | Metro parses image assets; malformed ICNS or ISO/JXL input can hang workers. No shipped remote-image upload entry point was found in this audit |
 | decode-uri-component 0.2.2 | Backport 0.5.0 linear decoder, retain CommonJS and plus-to-space API | React Navigation → query-string → deep-link parameters; malformed links are a runtime concern |
