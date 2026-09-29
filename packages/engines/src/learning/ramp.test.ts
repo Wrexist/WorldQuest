@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { RAMP_MIN_REVIEWS, RAMP_STAGES, START_LEVELS, difficultyRamp, experienceFrom, type StartLevel } from './ramp.js'
+import { START_LEVELS, difficultyRamp, experienceFrom, type StartLevel } from './ramp.js'
+
+/** The ramp's tuning, restated: stage thresholds in facts practised, and reviews before accuracy counts. */
+const RAMP_STAGES = [0, 15, 40, 80, 140] as const
+const RAMP_MIN_REVIEWS = 20
 import type { MemoryState } from './types.js'
 
 const LEVELS = Object.keys(START_LEVELS) as StartLevel[]

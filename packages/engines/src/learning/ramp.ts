@@ -52,7 +52,7 @@ export type Experience = {
 }
 
 /** Facts practised at which each stage begins. Stage 0 is everyone's first lessons. */
-export const RAMP_STAGES = [0, 15, 40, 80, 140] as const
+const RAMP_STAGES = [0, 15, 40, 80, 140] as const
 
 /** The ceiling of the band and the hardest presentation to prefer, per level per stage. */
 const PLAN: Record<StartLevel, { readonly max: readonly number[]; readonly modifier: readonly number[] }> = {
@@ -62,10 +62,10 @@ const PLAN: Record<StartLevel, { readonly max: readonly number[]; readonly modif
 }
 
 /** Accuracy at or above which the learner moves a stage early, and at or below which one late. */
-export const RAMP_AHEAD = 0.9
-export const RAMP_BEHIND = 0.6
+const RAMP_AHEAD = 0.9
+const RAMP_BEHIND = 0.6
 /** Accuracy is not read before this many reviews: three lucky answers are not a trend. */
-export const RAMP_MIN_REVIEWS = 20
+const RAMP_MIN_REVIEWS = 20
 
 export type Ramp = {
   readonly stage: number
