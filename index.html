@@ -2,54 +2,288 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>WorldQuest — learn the world a few minutes a day</title>
-<meta name="description" content="Short daily geography lessons: countries, flags, capitals and where they are. No ads.">
-<link rel="stylesheet" href="./style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WorldQuest — learn the world, a few minutes a day</title>
+<meta name="description" content="Short daily geography lessons for iPhone: flags, capitals, maps and more for 65 countries. Spaced review, no ads, safe for kids.">
+<meta name="theme-color" content="#062F4E">
+<meta property="og:title" content="WorldQuest — learn the world, a few minutes a day">
+<meta property="og:description" content="Flags, capitals and maps as a daily habit. No ads, no tracking, safe for kids.">
+<meta property="og:image" content="https://wrexist.github.io/WorldQuest/assets/img/og.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/img/favicon.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/Nunito-900Black.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/models/globe.glb" as="fetch" crossorigin>
+<link rel="stylesheet" href="assets/site.css">
+<script type="module" src="assets/js/model-viewer.min.js"></script>
+<script defer src="assets/site.js"></script>
 </head>
 <body>
-<div class="wrap">
+<a class="skip" href="#main">Skip to content</a>
 
-<header>
-  <p class="back">WorldQuest</p>
-  <h1>Learn the world a few minutes a day.</h1>
-  <p class="lede">Countries, flags, capitals and where they are, as a daily habit rather than a study chore.</p>
+<header class="nav" id="nav">
+  <div class="container">
+    <a class="brand" href="./"><img src="assets/img/globe-jewel.webp" alt="" width="40" height="40">WorldQuest</a>
+    <nav aria-label="Main">
+      <ul class="nav-links">
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#world">The course</a></li>
+        <li><a href="#rewards">Rewards</a></li>
+        <li><a href="#parents">For parents</a></li>
+        <li><a href="support.html">Support</a></li>
+      </ul>
+    </nav>
+    <a class="pill" href="#soon">Coming soon</a>
+  </div>
 </header>
 
-<div class="cards">
-  <div class="card">
-    <h3>Short lessons</h3>
-    <p>Most take a few minutes, and they end. No endless feed.</p>
+<main id="main">
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="stars" aria-hidden="true"></div>
+  <div class="cloud c1" aria-hidden="true" data-depth="0.25"></div>
+  <div class="cloud c2" aria-hidden="true" data-depth="0.4"></div>
+  <div class="cloud c3" aria-hidden="true" data-depth="0.15"></div>
+
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow"><b>New</b> Geography for iPhone</span>
+      <h1 id="hero-title">See the world.<br><span class="hl">Remember it.</span></h1>
+      <p class="lede">Flags, capitals and maps as a five-minute daily habit. WorldQuest brings back what you're about to forget, so it stays learned.</p>
+      <div class="cta-row">
+        <a class="btn" href="#soon">Get it on iPhone
+          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="btn ghost" href="#how">See how it works</a>
+      </div>
+      <ul class="stats" aria-label="In the app today">
+        <li><strong data-count="65">65</strong><span>countries</span></li>
+        <li><strong data-count="347">347</strong><span>checked facts</span></li>
+        <li><strong data-count="7">7</strong><span>continents</span></li>
+        <li><strong>0</strong><span>ads, ever</span></li>
+      </ul>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="halo" aria-hidden="true"></div>
+      <div class="ring" aria-hidden="true"></div>
+      <div class="ring r2" aria-hidden="true"></div>
+      <model-viewer id="hero-globe" src="assets/models/globe.glb" alt="A 3D globe you can spin" loading="eager"
+        camera-controls disable-zoom disable-pan auto-rotate auto-rotate-delay="0" rotation-per-second="18deg"
+        interaction-prompt="none" camera-orbit="-20deg 78deg 118%" field-of-view="28deg"
+        shadow-intensity="1.1" shadow-softness=".9" exposure="1.05" environment-image="neutral"
+        animation-name="Globe rotation" autoplay></model-viewer>
+      <img class="mascot" src="assets/img/mascot.webp" alt="Atlas, the WorldQuest globe, waving hello" width="640" height="620" data-depth="0.6">
+      <div class="float f1" data-depth="1.1" aria-hidden="true"><img src="assets/img/compass.webp" alt="" width="400" height="400"></div>
+      <div class="float f2" data-depth="0.8" aria-hidden="true"><img src="assets/img/gem.webp" alt="" width="400" height="400"></div>
+      <div class="float f3" data-depth="1.3" aria-hidden="true"><img src="assets/img/chest.webp" alt="" width="400" height="400"></div>
+      <div class="float f4" data-depth="0.9" aria-hidden="true"><img src="assets/img/coins.webp" alt="" width="400" height="400"></div>
+      <span class="drag-hint" aria-hidden="true">Drag to spin the globe</span>
+    </div>
   </div>
-  <div class="card">
-    <h3>Made to stick</h3>
-    <p>What you are about to forget comes back just before you would.</p>
-  </div>
-  <div class="card">
-    <h3>Never punishing</h3>
-    <p>A wrong answer shows you the right one. A missed day can be repaired.</p>
-  </div>
-  <div class="card">
-    <h3>Works offline</h3>
-    <p>Finish a lesson with no signal. It syncs when you are back.</p>
-  </div>
+</section>
+
+<div class="strip container">
+  <ul>
+    <li class="reveal"><img src="assets/img/compass.webp" alt="" width="52" height="52"><div>Five minutes a day<small>Short lessons that end</small></div></li>
+    <li class="reveal d1"><img src="assets/img/passport.webp" alt="" width="52" height="52"><div>Play without an account<small>Nothing to sign up for</small></div></li>
+    <li class="reveal d2"><img src="assets/img/freeze.webp" alt="" width="52" height="52"><div>Works offline<small>Syncs when you're back</small></div></li>
+    <li class="reveal d3"><img src="assets/img/trophy.webp" alt="" width="52" height="52"><div>No ads, no tracking<small>For anyone, of any age</small></div></li>
+  </ul>
 </div>
 
-<div class="callout">
-  <p><strong>No ads, no tracking.</strong> WorldQuest shows no adverts and contains no
-  advertising or analytics SDKs. You can play without an account.</p>
-</div>
+<section class="section" id="how" aria-labelledby="how-title">
+  <div class="container center">
+    <span class="kicker reveal">How it works</span>
+    <h2 class="h2 reveal" id="how-title">A lesson in three moves.</h2>
+    <p class="sub reveal">No lectures and no walls of text. You meet a few new facts, answer questions about them, and the app decides when you'll see each one again.</p>
 
-<nav class="links" aria-label="Pages">
-  <a href="./support.html">Support</a>
-  <a href="./privacy.html">Privacy policy</a>
-  <a href="./terms.html">Terms</a>
-  <a href="./licences.html">Licences</a>
-</nav>
+    <div class="phones">
+      <div class="step reveal">
+        <div class="phone" data-tilt><div class="screen pad"><img src="assets/img/screen-intro.webp" alt="Lesson introduction showing Germany, Spain and France on maps" width="390" height="844" loading="lazy"></div></div>
+        <span class="num">1</span>
+        <h3>Meet it</h3>
+        <p>New countries arrive with their map, so the shape comes before the quiz.</p>
+      </div>
+      <div class="step reveal d1">
+        <div class="phone" data-tilt><div class="screen pad"><img src="assets/img/screen-question.webp" alt="Question: Where in the world is Norway? with four continents to choose from" width="390" height="759" loading="lazy"></div></div>
+        <span class="num">2</span>
+        <h3>Answer it</h3>
+        <p>Pick, then check. A wrong answer shows you the right one and moves on. No buzzer.</p>
+      </div>
+      <div class="step reveal d2">
+        <div class="phone" data-tilt><div class="screen pad"><img src="assets/img/screen-complete.webp" alt="Lesson complete screen with XP, accuracy, time and coins" width="390" height="844" loading="lazy"></div></div>
+        <span class="num">3</span>
+        <h3>Keep it</h3>
+        <p>Each fact is scheduled to come back right before you'd forget it. That's what makes it stick.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-</div>
-<footer>
-  <div class="wrap">© 2026 WorldQuest · <a href="mailto:isacmolin@gmail.com">isacmolin@gmail.com</a></div>
+<section class="section world" id="world" aria-labelledby="world-title">
+  <div class="container world-grid">
+    <div class="island-wrap reveal"><img src="assets/img/island.webp" alt="An illustrated floating island with a waterfall, a tent and a compass" width="900" height="900" loading="lazy"></div>
+    <div>
+      <span class="kicker reveal">The course</span>
+      <h2 class="h2 reveal" id="world-title">One path around the world.</h2>
+      <p class="sub reveal">Start with a first week of famous flags and places, then travel continent by continent. Each step is one short lesson, and review comes back along the way.</p>
+      <ol class="units">
+        <li class="reveal"><span>1</span>First countries<em>Your first week</em></li>
+        <li class="reveal"><span>2</span>Across the continents<em>Your first week</em></li>
+        <li class="reveal d1"><span>3</span>Europe</li>
+        <li class="reveal d1"><span>4</span>The Americas</li>
+        <li class="reveal d2"><span>5</span>Asia and Oceania</li>
+        <li class="reveal d2"><span>6</span>Africa</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="rail" aria-label="Continents in WorldQuest" tabindex="0">
+    <article class="card-dest reveal"><img src="assets/img/europe.webp" alt="" width="800" height="533" loading="lazy"><div><h3>Europe</h3><p>From Portugal to Finland</p></div></article>
+    <article class="card-dest reveal d1"><img src="assets/img/asia.webp" alt="" width="800" height="533" loading="lazy"><div><h3>Asia</h3><p>From Japan to Pakistan</p></div></article>
+    <article class="card-dest reveal d2"><img src="assets/img/africa.webp" alt="" width="800" height="533" loading="lazy"><div><h3>Africa</h3><p>From Egypt to South Africa</p></div></article>
+    <article class="card-dest reveal d3"><img src="assets/img/north-america.webp" alt="" width="800" height="533" loading="lazy"><div><h3>North America</h3><p>From Canada to Panama</p></div></article>
+    <article class="card-dest reveal"><img src="assets/img/south-america.webp" alt="" width="800" height="533" loading="lazy"><div><h3>South America</h3><p>From Brazil to Chile</p></div></article>
+    <article class="card-dest reveal d1"><img src="assets/img/oceania.webp" alt="" width="800" height="533" loading="lazy"><div><h3>Oceania</h3><p>From Australia to Fiji</p></div></article>
+  </div>
+</section>
+
+<section class="section showroom" id="rewards" aria-labelledby="rewards-title">
+  <div class="container">
+    <div class="center">
+      <span class="kicker reveal">Rewards</span>
+      <h2 class="h2 reveal" id="rewards-title">Little things that feel earned.</h2>
+      <p class="sub reveal">Every reward in WorldQuest comes from learning, and none of it is for sale. Pick one and give it a spin.</p>
+    </div>
+
+    <div class="show-grid">
+      <div class="viewer reveal">
+        <span class="tip" aria-hidden="true">Drag to rotate</span>
+        <model-viewer id="showcase" src="assets/models/treasure-chest.glb" alt="A 3D treasure chest" loading="lazy"
+          camera-controls disable-zoom disable-pan auto-rotate rotation-per-second="14deg" interaction-prompt="none"
+          camera-orbit="-25deg 72deg 135%" shadow-intensity="1" exposure="1.1" environment-image="neutral"></model-viewer>
+      </div>
+      <div class="reveal d1">
+        <ul class="picker" role="list">
+          <li><button type="button" aria-pressed="true" data-model="treasure-chest" data-anim="Chest anticipation and hinged opening" data-title="Quest chest" data-body="Five small challenges a day, about ten minutes in all. Finish them and the chest opens."><img src="assets/img/chest.webp" alt="" width="64" height="64">Chest</button></li>
+          <li><button type="button" aria-pressed="false" data-model="streak-freeze" data-title="Streak freeze" data-body="Life happens. A freeze covers a missed day on its own, so a busy Tuesday doesn't undo a month."><img src="assets/img/freeze.webp" alt="" width="64" height="64">Freeze</button></li>
+          <li><button type="button" aria-pressed="false" data-model="star-trophy" data-title="Achievements" data-body="Milestones worth celebrating, from your first flag to a whole continent."><img src="assets/img/trophy.webp" alt="" width="64" height="64">Trophy</button></li>
+          <li><button type="button" aria-pressed="false" data-model="coins" data-title="Coins" data-body="Earned by learning, spent in the Shop on freezes and titles. There is nothing to buy with money."><img src="assets/img/coins.webp" alt="" width="64" height="64">Coins</button></li>
+          <li><button type="button" aria-pressed="false" data-model="passport" data-title="Your passport" data-body="Every flag you learn is stamped in. Watch the collection grow."><img src="assets/img/passport.webp" alt="" width="64" height="64">Passport</button></li>
+          <li><button type="button" aria-pressed="false" data-model="compass" data-title="Explore" data-body="Browse every country by continent and see what you know about each one."><img src="assets/img/compass.webp" alt="" width="64" height="64">Compass</button></li>
+        </ul>
+        <div class="detail" aria-live="polite">
+          <h3 id="detail-title">Quest chest</h3>
+          <p id="detail-body">Five small challenges a day, about ten minutes in all. Finish them and the chest opens.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="why-title">
+  <div class="container">
+    <div class="center">
+      <span class="kicker reveal">Why it works</span>
+      <h2 class="h2 reveal" id="why-title">Built on how memory works.</h2>
+      <p class="sub reveal">Not a trivia game. WorldQuest keeps track of every fact you've met and brings each one back at the right moment.</p>
+    </div>
+    <div class="features">
+      <article class="feature big reveal">
+        <div>
+          <img src="assets/img/compass.webp" alt="" width="88" height="88" loading="lazy">
+          <h3>A daily plan, made for you</h3>
+          <p>Each day mixes new countries with the ones you're starting to forget. Five challenges, about ten minutes, and then you're done. It never becomes an endless feed.</p>
+        </div>
+        <div class="phone" data-tilt><div class="screen"><img src="assets/img/screen-quests.webp" alt="Today's Quest screen with five challenges and a treasure chest" width="390" height="844" loading="lazy"></div></div>
+      </article>
+      <article class="feature reveal d1">
+        <img src="assets/img/gem.webp" alt="" width="88" height="88" loading="lazy">
+        <h3>Mistakes are the lesson</h3>
+        <p>Missed questions come back once at the end of the lesson as practice. No hearts lost, no shame.</p>
+      </article>
+      <article class="feature reveal">
+        <img src="assets/img/freeze.webp" alt="" width="88" height="88" loading="lazy">
+        <h3>Streaks that forgive</h3>
+        <p>A freeze covers a missed day, and after a break you can often repair the streak. We'd rather you came back.</p>
+      </article>
+      <article class="feature reveal d1">
+        <img src="assets/img/passport.webp" alt="" width="88" height="88" loading="lazy">
+        <h3>Facts you can trust</h3>
+        <p>Every fact carries a source and the date it was checked, and the values are cross-checked against an independent dataset.</p>
+      </article>
+      <article class="feature reveal d2">
+        <img src="assets/img/coins.webp" alt="" width="88" height="88" loading="lazy">
+        <h3>Offline by design</h3>
+        <p>Finish a lesson on a plane or in a tunnel. Progress waits on your phone and syncs when you're back.</p>
+      </article>
+      <article class="feature reveal d3">
+        <img src="assets/img/trophy.webp" alt="" width="88" height="88" loading="lazy">
+        <h3>English and Swedish</h3>
+        <p>The whole app, every question and every country name, in either language. Switch any time in Settings.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="parents" id="parents" aria-labelledby="parents-title">
+  <div class="container">
+    <div class="parents-card reveal">
+      <img src="assets/img/mascot.webp" alt="" width="260" height="252" loading="lazy">
+      <div>
+        <span class="kicker">For parents</span>
+        <h2 class="h2" id="parents-title">Safe for curious kids.</h2>
+        <p class="sub">Children's protections are built into the app and our server, not left as a setting to remember.</p>
+        <ul class="checks">
+          <li>No ads and no tracking, for anyone</li>
+          <li>No email asked for on a child's device</li>
+          <li>No leaderboards, chat or strangers</li>
+          <li>A grown-up question before any link out</li>
+          <li>No purchases at all</li>
+          <li>Delete everything any time, in the app</li>
+        </ul>
+        <p style="margin-top:22px"><a href="privacy.html"><strong>Read the privacy policy</strong></a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="final" id="soon" aria-labelledby="soon-title">
+  <div class="stars" aria-hidden="true"></div>
+  <img class="prop p1" src="assets/img/passport.webp" alt="" width="400" height="400" loading="lazy">
+  <img class="prop p2" src="assets/img/trophy.webp" alt="" width="400" height="400" loading="lazy">
+  <img class="prop p3" src="assets/img/gem.webp" alt="" width="400" height="400" loading="lazy">
+  <img class="prop p4" src="assets/img/chest.webp" alt="" width="400" height="400" loading="lazy">
+  <div class="container">
+    <img class="mascot" src="assets/img/mascot.webp" alt="" width="180" height="174" loading="lazy">
+    <h2 class="h2 reveal" id="soon-title">Your first country is a minute away.</h2>
+    <p class="sub reveal">WorldQuest is coming to iPhone, free and without ads, in English and Swedish.</p>
+    <div class="cta-row reveal">
+      <a class="btn" href="mailto:isacmolin@gmail.com?subject=Tell%20me%20when%20WorldQuest%20launches">Tell me when it launches</a>
+      <a class="btn ghost" href="support.html">Questions? Visit support</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div>
+      <a class="brand" href="./"><img src="assets/img/globe-jewel.webp" alt="" width="40" height="40">WorldQuest</a>
+      <p>Learn the world, a few minutes a day.</p>
+    </div>
+    <div>
+      <h4>Product</h4>
+      <ul><li><a href="#how">How it works</a></li><li><a href="#world">The course</a></li><li><a href="#rewards">Rewards</a></li><li><a href="#parents">For parents</a></li></ul>
+    </div>
+    <div>
+      <h4>Help and legal</h4>
+      <ul><li><a href="support.html">Support</a></li><li><a href="privacy.html">Privacy policy</a></li><li><a href="terms.html">Terms</a></li><li><a href="licences.html">Licences</a></li></ul>
+    </div>
+    <p class="legal">© 2026 WorldQuest · Map outlines from Natural Earth · Flags from flag-icons (MIT)</p>
+  </div>
 </footer>
 </body>
 </html>

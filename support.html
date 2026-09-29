@@ -2,25 +2,39 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Support — WorldQuest</title>
 <meta name="description" content="Help with WorldQuest: progress, streaks, accounts, wrong facts, and how to reach a person.">
-<link rel="stylesheet" href="./style.css">
+<meta name="theme-color" content="#062F4E">
+<link rel="icon" href="assets/img/favicon.png">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/site.css">
+<script defer src="assets/site.js"></script>
 </head>
 <body>
-<div class="wrap">
-
-<header>
-  <a class="back" href="./">← WorldQuest</a>
-  <h1>Support</h1>
-  <p class="lede">A person reads every message, usually within a couple of days.</p>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav" id="nav">
+  <div class="container">
+    <a class="brand" href="./"><img src="assets/img/globe-jewel.webp" alt="" width="40" height="40">WorldQuest</a>
+    <nav aria-label="Main">
+      <ul class="nav-links">
+        <li><a href="./#how">How it works</a></li>
+        <li><a href="./#world">The course</a></li>
+        <li><a href="./#parents">For parents</a></li>
+        <li><a href="support.html">Support</a></li>
+      </ul>
+    </nav>
+    <a class="pill" href="./#soon">Coming soon</a>
+  </div>
 </header>
-
+<main id="main">
+<section class="doc-hero"><div class="container"><h1>Support</h1><p>A person reads every message, usually within a couple of days.</p></div></section>
+<article class="doc">
 <div class="contact">
   <p>Write to us about anything: a bug, a wrong fact, your account, your data.</p>
   <a class="em" href="mailto:isacmolin@gmail.com">isacmolin@gmail.com</a>
 </div>
-<p style="text-align:center;font-size:15px;color:var(--t3)">It helps to include your
+<p style="text-align:center;font-size:15px">It helps to include your
 iPhone model, the app version (Settings › About), and what you expected to happen.</p>
 
 <h2>Common questions</h2>
@@ -93,10 +107,25 @@ iPhone model, the app version (Settings › About), and what you expected to hap
     <p>No. WorldQuest 1.0 is free and has no in-app purchases or ads.</p>
   </div>
 </details>
-
-</div>
-<footer>
-  <div class="wrap">© 2026 WorldQuest · <a href="./">Home</a> · <a href="./privacy.html">Privacy</a> · <a href="./terms.html">Terms</a></div>
+</article>
+<div class="doc-end"></div>
+</main>
+<footer class="footer">
+  <div class="container">
+    <div>
+      <a class="brand" href="./"><img src="assets/img/globe-jewel.webp" alt="" width="40" height="40">WorldQuest</a>
+      <p>Learn the world, a few minutes a day.</p>
+    </div>
+    <div>
+      <h4>Product</h4>
+      <ul><li><a href="./#how">How it works</a></li><li><a href="./#world">The course</a></li><li><a href="./#rewards">Rewards</a></li><li><a href="./#parents">For parents</a></li></ul>
+    </div>
+    <div>
+      <h4>Help and legal</h4>
+      <ul><li><a href="support.html">Support</a></li><li><a href="privacy.html">Privacy policy</a></li><li><a href="terms.html">Terms</a></li><li><a href="licences.html">Licences</a></li></ul>
+    </div>
+    <p class="legal">© 2026 WorldQuest · Map outlines from Natural Earth · Flags from flag-icons (MIT)</p>
+  </div>
 </footer>
 </body>
 </html>
