@@ -18,7 +18,7 @@ import { entitiesInGroup, type LessonFocus } from '@worldquest/engines'
 import { useContent } from '../../lib/content.js'
 import { parseFocusParams } from './focusParams.js'
 import { usePreferences } from '../settings/usePreferences.js'
-import { LEVELS } from '../onboarding/levels.js'
+import { useDifficultyRamp } from './useDifficultyRamp.js'
 
 /** The raw `useLocalSearchParams` slice this reads — strings, exactly as the URL had them. */
 export type FocusSearchParams = {
@@ -36,6 +36,7 @@ export function useLessonFocus(params: FocusSearchParams): LessonFocus | undefin
   const { index } = useContent()
   const parsed = parseFocusParams({ facts, attr, entity, region, min, max, len })
   const { preferences } = usePreferences()
+  const ramp = useDifficultyRamp()
 
   /**
    * What onboarding asked for, used only where the URL asked for nothing.
@@ -52,9 +53,9 @@ export function useLessonFocus(params: FocusSearchParams): LessonFocus | undefin
    * overrides — and it drops out entirely for the daily quest, which arrives with exact
    * `factIds` and has already decided what today is about.
    *
-   * It fades on its own, which is the point of a STARTING preference. FSRS infers a real
-   * per-learner difficulty within a session or two and the scheduler's own ordering takes
-   * over; this only has to make the first few lessons feel like they were meant for you.
+   * It is a STARTING preference, so it widens: the band is `difficultyRamp`'s, whose
+   * ceiling rises as the learner practises (a beginner meets difficulty-5 facts after a
+   * few weeks, never on day one), and FSRS still orders what is due.
    */
   return useMemo<LessonFocus | undefined>(() => {
     if (index === null) return undefined
@@ -73,7 +74,7 @@ export function useLessonFocus(params: FocusSearchParams): LessonFocus | undefin
         ? entitiesInGroup(index.index, 'region', preferences.startRegion)
         : []
     const startBand = unfocused && parsed.difficulty === undefined
-      ? LEVELS[preferences.startLevel]
+      ? ramp.band
       : undefined
 
     const built: LessonFocus = {
@@ -95,5 +96,5 @@ export function useLessonFocus(params: FocusSearchParams): LessonFocus | undefin
     // The raw param STRINGS, not `parsed`. `parseFocusParams` returns a fresh object on
     // every render, so depending on it would defeat the memo entirely — and the memo is
     // what stops a new `focus` identity from recomposing the lesson mid-question.
-  }, [index, facts, attr, entity, region, min, max, preferences.startRegion, preferences.startLevel])
+  }, [index, facts, attr, entity, region, min, max, preferences.startRegion, ramp.band])
 }

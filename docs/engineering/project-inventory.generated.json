@@ -246,6 +246,7 @@
     "packages/engines/src/leagues/leagues.test.ts",
     "packages/engines/src/learning/fsrs.reference.test.ts",
     "packages/engines/src/learning/fsrs.test.ts",
+    "packages/engines/src/learning/ramp.test.ts",
     "packages/engines/src/learning/selection.test.ts",
     "packages/engines/src/lesson/focus.test.ts",
     "packages/engines/src/lesson/lesson.test.ts",

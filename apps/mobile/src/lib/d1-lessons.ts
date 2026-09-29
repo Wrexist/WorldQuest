@@ -97,6 +97,8 @@ export type LessonRequest = {
    * issued for one must not be played, or counted, as the other.
    */
   readonly node?: string | undefined
+  /** How hard a way of asking to prefer (`difficultyRamp`). Presentation only; not part of the focus. */
+  readonly maxModifier?: number | undefined
 }
 
 /** The engines' focus, in the wire shape (mutable arrays, absent fields absent). */
@@ -218,6 +220,7 @@ async function take(request: LessonRequest): Promise<TakeResult> {
       screenReader: request.screenReader,
       ...(wanted ? { focus: wanted } : {}),
       ...(request.node !== undefined ? { node: request.node } : {}),
+      ...(request.maxModifier !== undefined ? { maxModifier: request.maxModifier } : {}),
     })
     if (!lesson) return offline()
     return { kind: 'ready', lesson }
@@ -249,7 +252,8 @@ async function prefetch(request: Omit<LessonRequest, 'focus'>): Promise<void> {
       const matching = tickets.filter((t) => t.request.locale === request.locale
         && t.request.screenReader === request.screenReader && t.request.focus === undefined)
       if (matching.length >= READY) return
-      await queue.prepare({ lessonId: lessonId(), locale: request.locale, count: clampCount(request.count), screenReader: request.screenReader })
+      await queue.prepare({ lessonId: lessonId(), locale: request.locale, count: clampCount(request.count), screenReader: request.screenReader,
+        ...(request.maxModifier !== undefined ? { maxModifier: request.maxModifier } : {}) })
     }
   } catch {
     // Next time. Nothing the learner did is at stake here.

@@ -538,6 +538,23 @@ describe('composeLesson', () => {
     })
   })
 
+  describe('a beginner is asked the plain way first (difficultyRamp)', () => {
+    const lesson = (maxModifier?: number) =>
+      composeLesson({ index, memory: [], now: T0, rng: seededRng(21), locale: 'en', count: 20,
+        ...(maxModifier === undefined ? {} : { maxModifier }) })
+    const hardShare = (questions: readonly Question[]) =>
+      questions.filter((q) => (index.templates.get(q.item.templateId)?.difficultyModifier ?? 0) > 0).length / questions.length
+
+    it('prefers presentations no harder than the ramp allows', () => {
+      expect(hardShare(lesson(0))).toBeLessThan(hardShare(lesson()))
+      expect(hardShare(lesson(0))).toBeLessThanOrEqual(0.25)
+    })
+
+    it('drops no fact — it reorders rather than filtering', () => {
+      expect(new Set(lesson(0).map((q) => q.item.factId))).toEqual(new Set(lesson().map((q) => q.item.factId)))
+    })
+  })
+
   it('returns only screen-reader-safe questions when asked', () => {
     const questions = composeLesson({
       index, memory: [], now: T0, rng: seededRng(3), locale: 'en',

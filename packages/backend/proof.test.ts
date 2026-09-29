@@ -593,6 +593,20 @@ describe('lessons that end before the last question (real workerd and SQLite)', 
     expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'bad2', locale: 'en', count: 5, focus: { planet: 'Mars' } })).status).toBe(400)
   })
 
+  it('keeps a beginner on the plain way of asking, and bounds that preference', async () => {
+    const a = await guest()
+    const plain = await call('/v1/lessons/prepare', a.token, { lessonId: 'plain', locale: 'en', count: 20, maxModifier: 0 })
+    expect(plain.status).toBe(200)
+    const lesson = await plain.json() as { questions: Question[]; request: { maxModifier?: number } }
+    expect(lesson.request.maxModifier).toBe(0)
+    // Ordered, not filtered: a fact whose only presentation is harder still appears, so a
+    // few can remain — but the plain forward question is the rule, not the exception.
+    const reverse = lesson.questions.filter(q => /reverse|calling-code|country-to-map/.test(q.item.templateId))
+    expect(reverse.length).toBeLessThanOrEqual(Math.ceil(lesson.questions.length / 4))
+    expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'hard', locale: 'en', count: 5, maxModifier: 3 })).status).toBe(400)
+    expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'half', locale: 'en', count: 5, maxModifier: 0.5 })).status).toBe(400)
+  })
+
   it("lets a guest's age band go down to protected, never up, and never on a linked account", async () => {
     const year = new Date().getUTCFullYear()
     const audience = async (token: string, birthYear: number) =>

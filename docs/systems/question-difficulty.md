@@ -90,6 +90,31 @@ harder — but that was difficulty coming from the *interface*, not from the fac
 charging a learner for it was the tell that the question was wrong. Making it a picture
 question made it a recognition task, which is where the modifier now says it sits.
 
+## The ramp: where a learner starts, and how it widens
+
+`difficultyRamp` (`packages/engines/src/learning/ramp.ts`) turns the onboarding answer
+into two dials and moves them as the learner practises:
+
+| | Band (authored `Fact.difficulty`) | Hardest way of asking to prefer |
+|---|---|---|
+| Just starting (`new`) | 1–3, ceiling rising to 5 | modifier 0 (forward questions), rising to 2 |
+| Some (`some`) | 1–4, ceiling rising to 5 | 1, rising to 2 |
+| Confident (`confident`) | 3–5 | 1, then 2 |
+
+- **Stages count facts practised** (0, 15, 40, 80, 140), never days. Accuracy over at
+  least 20 reviews moves a learner one stage early (≥ 90 %) or late (≤ 60 %), never more.
+- **Only the ceiling moves.** The band also filters due reviews, and raising the floor
+  would stop easy facts a learner has met from ever coming back.
+- **The band applies to free practice**; a course step or a chosen country keeps its own
+  focus. **The shape preference applies to every lesson** and is an ordering in
+  `itemsForFact`, never a filter, so no fact is dropped for having only a harder form.
+- The app computes it from its memory snapshot and asks the Worker with `maxModifier`
+  beside the focus (not inside it: course progress is counted per focus).
+
+These are authored thresholds, not measured ones, like the priors above. When
+`review_log` has users, the stage boundaries are the first thing to tune against
+observed accuracy.
+
 ## Rules that hold regardless
 
 - **A modifier is never negative.** A way of asking can add difficulty; it cannot make a

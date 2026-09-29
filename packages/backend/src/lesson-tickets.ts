@@ -24,7 +24,9 @@ const focusSchema = z.object({
 export const courseNodeSchema = z.string().regex(/^node\.[a-z0-9][a-z0-9.-]{0,99}$/)
 export const prepareLessonSchema = z.object({ lessonId: z.string().regex(/^[a-zA-Z0-9_-]{1,80}$/),
   locale: z.enum(['en', 'sv']), count: z.number().int().min(5).max(20).default(10),
-  screenReader: z.boolean().default(false), focus: focusSchema.optional(), node: courseNodeSchema.optional() }).strict()
+  screenReader: z.boolean().default(false), focus: focusSchema.optional(), node: courseNodeSchema.optional(),
+  /** How hard a way of asking to prefer (the app's `difficultyRamp`). Presentation only: it orders templates, never chooses facts. */
+  maxModifier: z.number().int().min(0).max(2).optional() }).strict()
 type Input = z.infer<typeof prepareLessonSchema>
 /** Parsed focus, with absent fields absent rather than `undefined` (exact optional types). */
 function lessonFocus(f: z.infer<typeof focusSchema>): LessonFocus {
@@ -65,7 +67,8 @@ export async function prepareLesson(db: D1Database, owner: string, tokenHash: st
     const seed = crypto.getRandomValues(new Uint32Array(1))[0]!
     const topicFilter = input.focus ? focusFilter(learningContent, lessonFocus(input.focus)) : undefined
     const base = { index: learningContent, memory, now, locale: input.locale, screenReaderOnly: input.screenReader,
-      modalities: ['text', 'image', 'map'] as ('text' | 'image' | 'map')[] }
+      modalities: ['text', 'image', 'map'] as ('text' | 'image' | 'map')[],
+      ...(input.maxModifier === undefined ? {} : { maxModifier: input.maxModifier }) }
     let questions = composeLesson({ ...base, rng: seededRng(seed), count: input.count,
       ...(topicFilter ? { topicFilter } : {}),
       // One entity in focus means the entity is not the question (the app's own rule).

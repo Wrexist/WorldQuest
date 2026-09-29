@@ -145,6 +145,13 @@ export function itemsForFact(
      * revealing template is still there, last, and is used only when nothing else can be.
      */
     deprioritizeEntityAnswers?: boolean
+    /**
+     * Prefer presentations whose template is at most this much harder than the fact
+     * (`Template.difficultyModifier`), from `difficultyRamp`. Ordered, not filtered, for
+     * the same reason as above: a fact whose only way of being asked is harder is still
+     * asked, after the easier ones, rather than silently dropped.
+     */
+    preferModifierAtMost?: number
   } = {},
 ): Item[] {
   const candidates = index.itemsByFact.get(factId) ?? []
@@ -155,17 +162,22 @@ export function itemsForFact(
     return modality !== undefined && options.modalities.includes(modality)
   })
   const shuffled = shuffle(usable, rng)
-  if (!options.deprioritizeEntityAnswers) return shuffled
+  const cap = options.preferModifierAtMost
+  if (!options.deprioritizeEntityAnswers && cap === undefined) return shuffled
 
-  // A stable partition rather than a sort: within each half the shuffle's order stands,
-  // so which forward template gets asked is still random.
-  const asksSomething: Item[] = []
-  const namesTheEntity: Item[] = []
-  for (const item of shuffled) {
+  // A stable sort on two penalties rather than a reshuffle: within each group the
+  // shuffle's order stands, so which acceptable template gets asked is still random.
+  // Naming the entity outranks being too hard: a question whose answer is the lesson's
+  // own subject is not a question at all, a hard one still is.
+  const penalty = (item: Item): number => {
     const template = index.templates.get(item.templateId)
-    ;(template?.answer.from === 'entity.names' ? namesTheEntity : asksSomething).push(item)
+    const reveals = options.deprioritizeEntityAnswers === true && template?.answer.from === 'entity.names' ? 2 : 0
+    const tooHard = cap !== undefined && (template?.difficultyModifier ?? 0) > cap ? 1 : 0
+    return reveals + tooHard
   }
-  return [...asksSomething, ...namesTheEntity]
+  return shuffled.map((item, i) => ({ item, i, p: penalty(item) }))
+    .sort((a, b) => a.p - b.p || a.i - b.i)
+    .map(({ item }) => item)
 }
 
 /** Distractor pools, in the order the strategy prefers them. */

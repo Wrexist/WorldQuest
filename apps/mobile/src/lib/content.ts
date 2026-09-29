@@ -67,7 +67,7 @@ export type LoadedContent = {
    * path it took before the picker existed rather than running a predicate that always
    * says yes.
    */
-  compose: (opts: { count?: number; focus?: LessonFocus }) => readonly Question[]
+  compose: (opts: { count?: number; focus?: LessonFocus; maxModifier?: number }) => readonly Question[]
 }
 
 /**
@@ -197,7 +197,7 @@ export function useContent() {
       })
       return {
         index: built,
-        compose: ({ count = 10, focus }) => {
+        compose: ({ count = 10, focus, maxModifier }) => {
           const topicFilter = focus ? focusFilter(built, focus) : undefined
           return composeLesson({
             index: built,
@@ -211,6 +211,7 @@ export function useContent() {
             // for the translation.
             locale: currentLocale(),
             count,
+            ...(maxModifier !== undefined ? { maxModifier } : {}),
             modalities: PRESENTABLE,
             // Swaps `tpl.flag-to-country.mc4` for `tpl.flag-describe.mc4` — same fact,
             // same `user_facts` row, same scheduler, described in words instead of

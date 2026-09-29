@@ -58,6 +58,8 @@ export type ComposeInput = {
    * revealing templates last rather than removing them.
    */
   readonly entityIsGiven?: boolean
+  /** Prefer presentations at most this hard (`difficultyRamp().maxModifier`). */
+  readonly maxModifier?: number
 }
 
 export function composeLesson(input: ComposeInput): readonly Question[] {
@@ -73,6 +75,7 @@ export function composeLesson(input: ComposeInput): readonly Question[] {
     modalities,
     catchUpMode,
     entityIsGiven,
+    maxModifier,
   } = input
 
   const seen = new Set(memory.map((m) => m.factId))
@@ -133,6 +136,7 @@ export function composeLesson(input: ComposeInput): readonly Question[] {
       ...(screenReaderOnly !== undefined ? { screenReaderOnly } : {}),
       ...(modalities !== undefined ? { modalities } : {}),
       ...(entityIsGiven !== undefined ? { deprioritizeEntityAnswers: entityIsGiven } : {}),
+      ...(maxModifier !== undefined ? { preferModifierAtMost: maxModifier } : {}),
     })) {
       const question = buildQuestion(index, item, locale, rng, { isNew: !seen.has(factId) })
       if (question) {

@@ -77,6 +77,7 @@ import { enqueueLesson } from '../../lib/sync.js'
 import { isD1 } from '../../lib/backendConfig.js'
 import { prefetchLessons, submitLesson as submitD1Lesson } from '../../lib/d1-lessons.js'
 import { useScreenReaderStatus } from '../../lib/screenReader.js'
+import { useDifficultyRamp } from './useDifficultyRamp.js'
 import { useD1Lesson } from './hooks/useD1Lesson.js'
 import { ReportSheet } from './ReportSheet.js'
 import { withAccount } from '../../lib/backend.js'
@@ -483,10 +484,13 @@ export function LessonScreen({
   // server issues the lesson for one presentation, and it cannot be recomposed after.
   const screenReaderStatus = useScreenReaderStatus()
   const screenReaderOn = screenReaderStatus === true
+  // The plain way of asking first for someone just starting, harder shapes as they go.
+  const { maxModifier } = useDifficultyRamp()
   const remote = useD1Lesson(remoteLessons && screenReaderStatus !== null, {
     count: length ?? lessonLength(itemMs),
     locale: currentLocale() === 'sv' ? 'sv' : 'en',
     screenReader: screenReaderOn,
+    maxModifier,
     focus,
     explicitFocus: focusIsExplicit,
     node: courseNode,
@@ -496,9 +500,10 @@ export function LessonScreen({
     if (status !== 'ready' || !index) return []
     return index.compose({
       count: length ?? lessonLength(itemMs),
+      maxModifier,
       ...(focus ? { focus } : {}),
     })
-  }, [remoteLessons, remote.lesson, status, index, itemMs, focus, length])
+  }, [remoteLessons, remote.lesson, status, index, itemMs, focus, length, maxModifier])
 
   const handleComplete = useCallback((state: LessonState, optimistic: GradeResult) => {
     /**
@@ -523,7 +528,7 @@ export function LessonScreen({
       // the answered prefix; the server decides whether it was a finished lesson.
       if (remote.lesson) {
         void submitD1Lesson(remote.lesson, state.answers).then(() =>
-          prefetchLessons({ count: remote.lesson!.request.count, locale: remote.lesson!.request.locale, screenReader: screenReaderOn }),
+          prefetchLessons({ count: remote.lesson!.request.count, locale: remote.lesson!.request.locale, screenReader: screenReaderOn, maxModifier }),
         )
       }
     } else {
