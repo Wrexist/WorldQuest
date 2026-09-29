@@ -302,8 +302,18 @@ const EXPO_CLI = require.resolve('expo/bin/cli', { paths: [MOBILE] })
  * one the production environment ships (docs/plan/ios-launch-runbook.md); measuring the
  * legacy build was measuring an app nobody installs. When the legacy adapter is removed
  * after cutover, the stub and the setting both go with it.
+ *
+ * ── 2026-09-30 · 4.6 → 5.0, and what bought it ─────────────────────────────────────
+ * The geography packs grew from 65 countries to 194 (every UN member and the Holy See):
+ * 350 facts to 1,047, three times the questions, with the island scenery and the 3D
+ * mascot rig on top. The bundle measured **4.92 MB**. The weight is the content itself,
+ * imported as JSON: ~0.5 MB of packs, of which ~0.19 MB is the per-fact citations the
+ * country page shows. Stripping `$comment`/`$schema` would save 14 KB, not worth it.
+ * The next lever, before this budget moves again: load the citations lazily as an asset
+ * (they are read only on `app/country/[code]`), or the packs themselves, which the
+ * `status` in `useContent` already allows. Measured on iOS and Android alike.
  */
-const BUDGET_MB = 4.6
+const BUDGET_MB = 5.0
 
 /** Warn from 90 % of the budget, so the wall is visible before it is hit. */
 const WARN_AT = BUDGET_MB * 0.9

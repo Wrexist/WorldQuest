@@ -249,8 +249,15 @@ describe('submit-lesson bundle', () => {
     // per-fact because the question is per-fact. Compressing it into an index into a
     // six-element table would save 4 KB and make the one file that documents this
     // relationship unreadable.
+    //
+    // 190 000 → 260 000 on 30 September 2026, for no code at all: the geography pack
+    // grew from 65 countries to 194, 350 facts to 1,047, and `answers.ts` and
+    // `ATTRIBUTE_BY_FACT` are per-fact by design (above). They tripled with it; the
+    // per-entry assertion above still holds, so nothing became less compact. This is the
+    // legacy function (D1 is selected, ADR 0013); the Worker ships the same content and
+    // its own tests pass on workerd.
     const total = files.reduce((sum, f) => sum + f.content.length, 0)
-    expect(total).toBeLessThan(190_000)
+    expect(total).toBeLessThan(260_000)
   })
 
   it('never accepts a client-supplied reward value', () => {

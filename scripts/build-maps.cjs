@@ -254,10 +254,15 @@ ${contextEntries}
   }
 
   const pack = JSON.parse(readFileSync(PACK, 'utf8'))
+  // A country Natural Earth cannot draw at this scale ships WITHOUT a map rather than with
+  // an invented one: its entity declares no `assets.map`, says why in a `$comment`, and
+  // the map questions simply never pick it (the engine finds no asset). Tuvalu, whose
+  // nine atolls are below 1:50m, was the first.
+  const mapped = pack.items.filter((i) => i.assets?.map !== undefined || i.assets?.mapContext !== undefined)
 
   // The pack is the contract, exactly as with the flags. If it names a geometry file
   // this script does not write, the app draws a placeholder where a map should be.
-  const mismatched = pack.items
+  const mismatched = mapped
     .filter(
       (i) =>
         i.assets?.map?.path !== `geo/countries/${i.id}.png` ||
@@ -301,7 +306,7 @@ ${contextEntries}
 
   const unmatched = []
   const entries = []
-  for (const item of pack.items) {
+  for (const item of mapped) {
     const numeric = iso.alpha2ToNumeric(item.id)
     const group = numeric === undefined ? undefined : groupsByNumeric.get(String(numeric))
     if (group === undefined) {

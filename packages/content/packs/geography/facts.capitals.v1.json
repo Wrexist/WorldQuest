@@ -2,7 +2,7 @@
   "$schema": "../../schema/pack.schema.json",
   "$comment": "Capital facts. One pack per attribute keeps IDs unique and lets a locale or a correction ship without touching unrelated content. `value.id` is the ISO 3166-2 code of the subdivision the city sits in, and it is DOCUMENTATION — nothing reads it. It is present only where the code was confirmed at authoring time; absent means unconfirmed, never irrelevant. A wrong code is worse than no code.",
   "packId": "geography.facts.capitals",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "subject": "geography",
   "kind": "facts",
   "locales": [
@@ -1506,6 +1506,3129 @@
         "name": "English Wikipedia, “Harare”",
         "url": "https://en.wikipedia.org/wiki/Harare",
         "verifiedAt": "2026-08-01"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AL.capital",
+      "entity": "AL",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Tirana",
+          "sv": "Tirana"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Tirana”",
+        "url": "https://en.wikipedia.org/wiki/Tirana",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AD.capital",
+      "entity": "AD",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Andorra la Vella",
+          "sv": "Andorra la Vella"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Andorra la Vella”",
+        "url": "https://en.wikipedia.org/wiki/Andorra_la_Vella",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BY.capital",
+      "entity": "BY",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Minsk",
+          "sv": "Minsk"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "europe",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Minsk”",
+        "url": "https://en.wikipedia.org/wiki/Minsk",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BA.capital",
+      "entity": "BA",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Sarajevo",
+          "sv": "Sarajevo"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Sarajevo”",
+        "url": "https://en.wikipedia.org/wiki/Sarajevo",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BG.capital",
+      "entity": "BG",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Sofia",
+          "sv": "Sofia"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "europe",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Sofia”",
+        "url": "https://en.wikipedia.org/wiki/Sofia",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HR.capital",
+      "entity": "HR",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Zagreb",
+          "sv": "Zagreb"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Zagreb”",
+        "url": "https://en.wikipedia.org/wiki/Zagreb",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CY.capital",
+      "entity": "CY",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Nicosia",
+          "sv": "Nicosia"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Nicosia”",
+        "url": "https://en.wikipedia.org/wiki/Nicosia",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.EE.capital",
+      "entity": "EE",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Tallinn",
+          "sv": "Tallinn"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "europe",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Tallinn”",
+        "url": "https://en.wikipedia.org/wiki/Tallinn",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IS.capital",
+      "entity": "IS",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Reykjavík",
+          "sv": "Reykjavik"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "capital",
+        "europe",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Reykjavík”",
+        "url": "https://en.wikipedia.org/wiki/Reykjav%C3%ADk",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IE.capital",
+      "entity": "IE",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Dublin",
+          "sv": "Dublin"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "capital",
+        "europe",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Dublin”",
+        "url": "https://en.wikipedia.org/wiki/Dublin",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LV.capital",
+      "entity": "LV",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Riga",
+          "sv": "Riga"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "europe",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Riga”",
+        "url": "https://en.wikipedia.org/wiki/Riga",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LI.capital",
+      "entity": "LI",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Vaduz",
+          "sv": "Vaduz"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "europe",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Vaduz”",
+        "url": "https://en.wikipedia.org/wiki/Vaduz",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LT.capital",
+      "entity": "LT",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Vilnius",
+          "sv": "Vilnius"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "europe",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Vilnius”",
+        "url": "https://en.wikipedia.org/wiki/Vilnius",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "$comment": "Not quizzed: the capital shares the country's name in at least one shipped language, so every way of asking it names its own answer (a free point, not a question). Kept for the country page, which cites it.",
+      "id": "geo.LU.capital",
+      "entity": "LU",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Luxembourg City",
+          "sv": "Luxemburg"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "europe",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Luxembourg City”",
+        "url": "https://en.wikipedia.org/wiki/Luxembourg_City",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable",
+      "quizzable": false
+    },
+    {
+      "id": "geo.MT.capital",
+      "entity": "MT",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Valletta",
+          "sv": "Valletta"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Valletta”",
+        "url": "https://en.wikipedia.org/wiki/Valletta",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MD.capital",
+      "entity": "MD",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Chișinău",
+          "sv": "Chișinău"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "europe",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Chișinău”",
+        "url": "https://en.wikipedia.org/wiki/Chi%C8%99in%C4%83u",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "$comment": "Not quizzed: the capital shares the country's name in at least one shipped language, so every way of asking it names its own answer (a free point, not a question). Kept for the country page, which cites it.",
+      "id": "geo.MC.capital",
+      "entity": "MC",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Monaco",
+          "sv": "Monaco"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "europe",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Monaco”",
+        "url": "https://en.wikipedia.org/wiki/Monaco",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable",
+      "quizzable": false
+    },
+    {
+      "id": "geo.ME.capital",
+      "entity": "ME",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Podgorica",
+          "sv": "Podgorica"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Podgorica”",
+        "url": "https://en.wikipedia.org/wiki/Podgorica",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MK.capital",
+      "entity": "MK",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Skopje",
+          "sv": "Skopje"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Skopje”",
+        "url": "https://en.wikipedia.org/wiki/Skopje",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RU.capital",
+      "entity": "RU",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Moscow",
+          "sv": "Moskva"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "capital",
+        "europe",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Moscow”",
+        "url": "https://en.wikipedia.org/wiki/Moscow",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "$comment": "Not quizzed: the capital shares the country's name in at least one shipped language, so every way of asking it names its own answer (a free point, not a question). Kept for the country page, which cites it.",
+      "id": "geo.SM.capital",
+      "entity": "SM",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "City of San Marino",
+          "sv": "San Marino"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “City of San Marino”",
+        "url": "https://en.wikipedia.org/wiki/City_of_San_Marino",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable",
+      "quizzable": false
+    },
+    {
+      "id": "geo.RS.capital",
+      "entity": "RS",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Belgrade",
+          "sv": "Belgrad"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Belgrade”",
+        "url": "https://en.wikipedia.org/wiki/Belgrade",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SK.capital",
+      "entity": "SK",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Bratislava",
+          "sv": "Bratislava"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "europe",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Bratislava”",
+        "url": "https://en.wikipedia.org/wiki/Bratislava",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SI.capital",
+      "entity": "SI",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Ljubljana",
+          "sv": "Ljubljana"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Ljubljana”",
+        "url": "https://en.wikipedia.org/wiki/Ljubljana",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GB.capital",
+      "entity": "GB",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "London",
+          "sv": "London"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "capital",
+        "europe",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “London”",
+        "url": "https://en.wikipedia.org/wiki/London",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "$comment": "Not quizzed: the capital shares the country's name in at least one shipped language, so every way of asking it names its own answer (a free point, not a question). Kept for the country page, which cites it.",
+      "id": "geo.VA.capital",
+      "entity": "VA",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Vatican City",
+          "sv": "Vatikanstaten"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Vatican City”",
+        "url": "https://en.wikipedia.org/wiki/Vatican_City",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable",
+      "quizzable": false
+    },
+    {
+      "id": "geo.AF.capital",
+      "entity": "AF",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Kabul",
+          "sv": "Kabul"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "asia",
+        "south-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Kabul”",
+        "url": "https://en.wikipedia.org/wiki/Kabul",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AM.capital",
+      "entity": "AM",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Yerevan",
+          "sv": "Jerevan"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Yerevan”",
+        "url": "https://en.wikipedia.org/wiki/Yerevan",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AZ.capital",
+      "entity": "AZ",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Baku",
+          "sv": "Baku"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Baku”",
+        "url": "https://en.wikipedia.org/wiki/Baku",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BH.capital",
+      "entity": "BH",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Manama",
+          "sv": "Manama"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Manama”",
+        "url": "https://en.wikipedia.org/wiki/Manama",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BT.capital",
+      "entity": "BT",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Thimphu",
+          "sv": "Thimphu"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "asia",
+        "south-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Thimphu”",
+        "url": "https://en.wikipedia.org/wiki/Thimphu",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BN.capital",
+      "entity": "BN",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Bandar Seri Begawan",
+          "sv": "Bandar Seri Begawan"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "asia",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Bandar Seri Begawan”",
+        "url": "https://en.wikipedia.org/wiki/Bandar_Seri_Begawan",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KH.capital",
+      "entity": "KH",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Phnom Penh",
+          "sv": "Phnom Penh"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "asia",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Phnom Penh”",
+        "url": "https://en.wikipedia.org/wiki/Phnom_Penh",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GE.capital",
+      "entity": "GE",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Tbilisi",
+          "sv": "Tbilisi"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Tbilisi”",
+        "url": "https://en.wikipedia.org/wiki/Tbilisi",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IR.capital",
+      "entity": "IR",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Tehran",
+          "sv": "Teheran"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "asia",
+        "south-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Tehran”",
+        "url": "https://en.wikipedia.org/wiki/Tehran",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IQ.capital",
+      "entity": "IQ",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Baghdad",
+          "sv": "Bagdad"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Baghdad”",
+        "url": "https://en.wikipedia.org/wiki/Baghdad",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "$comment": "CONTESTED — needs a second author's sign-off before it can be quizzed. Jerusalem is Israel's declared capital; most states keep embassies in Tel Aviv and the UN does not recognise it. Contested sovereignty, content-pipeline.md §5 rules 2 and 4. Resolve it deliberately, per docs/systems/content-pipeline.md#sensitive-content.",
+      "id": "geo.IL.capital",
+      "entity": "IL",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Jerusalem",
+          "sv": "Jerusalem"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Jerusalem”",
+        "url": "https://en.wikipedia.org/wiki/Jerusalem",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable",
+      "sensitivity": "review-required",
+      "quizzable": false
+    },
+    {
+      "id": "geo.JO.capital",
+      "entity": "JO",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Amman",
+          "sv": "Amman"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Amman”",
+        "url": "https://en.wikipedia.org/wiki/Amman",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KZ.capital",
+      "entity": "KZ",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Astana",
+          "sv": "Astana"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "asia",
+        "central-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Astana”",
+        "url": "https://en.wikipedia.org/wiki/Astana",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KW.capital",
+      "entity": "KW",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Kuwait City",
+          "sv": "Kuwait City"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Kuwait City”",
+        "url": "https://en.wikipedia.org/wiki/Kuwait_City",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KG.capital",
+      "entity": "KG",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Bishkek",
+          "sv": "Bisjkek"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "asia",
+        "central-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Bishkek”",
+        "url": "https://en.wikipedia.org/wiki/Bishkek",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LA.capital",
+      "entity": "LA",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Vientiane",
+          "sv": "Vientiane"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "asia",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Vientiane”",
+        "url": "https://en.wikipedia.org/wiki/Vientiane",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LB.capital",
+      "entity": "LB",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Beirut",
+          "sv": "Beirut"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Beirut”",
+        "url": "https://en.wikipedia.org/wiki/Beirut",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MV.capital",
+      "entity": "MV",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Malé",
+          "sv": "Malé"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "asia",
+        "south-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Malé”",
+        "url": "https://en.wikipedia.org/wiki/Mal%C3%A9",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MM.capital",
+      "entity": "MM",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Naypyidaw",
+          "sv": "Naypyidaw"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "asia",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Naypyidaw”",
+        "url": "https://en.wikipedia.org/wiki/Naypyidaw",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.OM.capital",
+      "entity": "OM",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Muscat",
+          "sv": "Muskat"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Muscat”",
+        "url": "https://en.wikipedia.org/wiki/Muscat",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.QA.capital",
+      "entity": "QA",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Doha",
+          "sv": "Doha"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Doha”",
+        "url": "https://en.wikipedia.org/wiki/Doha",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SA.capital",
+      "entity": "SA",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Riyadh",
+          "sv": "Riyadh"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Riyadh”",
+        "url": "https://en.wikipedia.org/wiki/Riyadh",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "$comment": "Not quizzed: the capital shares the country's name in at least one shipped language, so every way of asking it names its own answer (a free point, not a question). Kept for the country page, which cites it.",
+      "id": "geo.SG.capital",
+      "entity": "SG",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Singapore",
+          "sv": "Singapore"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "capital",
+        "asia",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Singapore”",
+        "url": "https://en.wikipedia.org/wiki/Singapore",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable",
+      "quizzable": false
+    },
+    {
+      "$comment": "CONTESTED — needs a second author's sign-off before it can be quizzed. The legislative capital is Sri Jayawardenepura Kotte, but Colombo is the executive and commercial capital and is what both reference datasets and most atlases give. Two defensible answers; resolve deliberately. Resolve it deliberately, per docs/systems/content-pipeline.md#sensitive-content.",
+      "id": "geo.LK.capital",
+      "entity": "LK",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Sri Jayawardenepura Kotte",
+          "sv": "Sri Jayawardenepura Kotte"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "asia",
+        "south-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Sri Jayawardenepura Kotte”",
+        "url": "https://en.wikipedia.org/wiki/Sri_Jayawardenepura_Kotte",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable",
+      "sensitivity": "review-required",
+      "quizzable": false
+    },
+    {
+      "id": "geo.SY.capital",
+      "entity": "SY",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Damascus",
+          "sv": "Damaskus"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Damascus”",
+        "url": "https://en.wikipedia.org/wiki/Damascus",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TJ.capital",
+      "entity": "TJ",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Dushanbe",
+          "sv": "Dusjanbe"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "asia",
+        "central-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Dushanbe”",
+        "url": "https://en.wikipedia.org/wiki/Dushanbe",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TL.capital",
+      "entity": "TL",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Dili",
+          "sv": "Dili"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "asia",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Dili”",
+        "url": "https://en.wikipedia.org/wiki/Dili",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TR.capital",
+      "entity": "TR",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Ankara",
+          "sv": "Ankara"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Ankara”",
+        "url": "https://en.wikipedia.org/wiki/Ankara",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TM.capital",
+      "entity": "TM",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Ashgabat",
+          "sv": "Asjchabad"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "asia",
+        "central-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Ashgabat”",
+        "url": "https://en.wikipedia.org/wiki/Ashgabat",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AE.capital",
+      "entity": "AE",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Abu Dhabi",
+          "sv": "Abu Dhabi"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Abu Dhabi”",
+        "url": "https://en.wikipedia.org/wiki/Abu_Dhabi",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UZ.capital",
+      "entity": "UZ",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Tashkent",
+          "sv": "Tasjkent"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "asia",
+        "central-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Tashkent”",
+        "url": "https://en.wikipedia.org/wiki/Tashkent",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.YE.capital",
+      "entity": "YE",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Sanaa",
+          "sv": "Sanaa"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Sanaa”",
+        "url": "https://en.wikipedia.org/wiki/Sanaa",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AO.capital",
+      "entity": "AO",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Luanda",
+          "sv": "Luanda"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "africa",
+        "middle-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Luanda”",
+        "url": "https://en.wikipedia.org/wiki/Luanda",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BJ.capital",
+      "entity": "BJ",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Porto-Novo",
+          "sv": "Porto-Novo"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Porto-Novo”",
+        "url": "https://en.wikipedia.org/wiki/Porto-Novo",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BF.capital",
+      "entity": "BF",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Ouagadougou",
+          "sv": "Ouagadougou"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Ouagadougou”",
+        "url": "https://en.wikipedia.org/wiki/Ouagadougou",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BI.capital",
+      "entity": "BI",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Gitega",
+          "sv": "Gitega"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Gitega”",
+        "url": "https://en.wikipedia.org/wiki/Gitega",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CV.capital",
+      "entity": "CV",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Praia",
+          "sv": "Praia"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Praia”",
+        "url": "https://en.wikipedia.org/wiki/Praia",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CM.capital",
+      "entity": "CM",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Yaoundé",
+          "sv": "Yaoundé"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "middle-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Yaoundé”",
+        "url": "https://en.wikipedia.org/wiki/Yaound%C3%A9",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CF.capital",
+      "entity": "CF",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Bangui",
+          "sv": "Bangui"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "middle-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Bangui”",
+        "url": "https://en.wikipedia.org/wiki/Bangui",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TD.capital",
+      "entity": "TD",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "N'Djamena",
+          "sv": "N'Djamena"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "middle-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “N'Djamena”",
+        "url": "https://en.wikipedia.org/wiki/N'Djamena",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KM.capital",
+      "entity": "KM",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Moroni",
+          "sv": "Moroni"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Moroni, Comoros”",
+        "url": "https://en.wikipedia.org/wiki/Moroni,_Comoros",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CG.capital",
+      "entity": "CG",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Brazzaville",
+          "sv": "Brazzaville"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "africa",
+        "middle-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Brazzaville”",
+        "url": "https://en.wikipedia.org/wiki/Brazzaville",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CD.capital",
+      "entity": "CD",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Kinshasa",
+          "sv": "Kinshasa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "africa",
+        "middle-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Kinshasa”",
+        "url": "https://en.wikipedia.org/wiki/Kinshasa",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CI.capital",
+      "entity": "CI",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Yamoussoukro",
+          "sv": "Yamoussoukro"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Yamoussoukro”",
+        "url": "https://en.wikipedia.org/wiki/Yamoussoukro",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "$comment": "Not quizzed: the capital shares the country's name in at least one shipped language, so every way of asking it names its own answer (a free point, not a question). Kept for the country page, which cites it.",
+      "id": "geo.DJ.capital",
+      "entity": "DJ",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Djibouti",
+          "sv": "Djibouti"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Djibouti (city)”",
+        "url": "https://en.wikipedia.org/wiki/Djibouti_(city)",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable",
+      "quizzable": false
+    },
+    {
+      "id": "geo.GQ.capital",
+      "entity": "GQ",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Malabo",
+          "sv": "Malabo"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "africa",
+        "middle-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Malabo”",
+        "url": "https://en.wikipedia.org/wiki/Malabo",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ER.capital",
+      "entity": "ER",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Asmara",
+          "sv": "Asmara"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Asmara”",
+        "url": "https://en.wikipedia.org/wiki/Asmara",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "$comment": "CONTESTED — needs a second author's sign-off before it can be quizzed. Mbabane is the executive capital and Lobamba the royal and legislative one; the reference datasets disagree with each other. Two defensible answers. Resolve it deliberately, per docs/systems/content-pipeline.md#sensitive-content.",
+      "id": "geo.SZ.capital",
+      "entity": "SZ",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Mbabane",
+          "sv": "Mbabane"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "africa",
+        "southern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Mbabane”",
+        "url": "https://en.wikipedia.org/wiki/Mbabane",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable",
+      "sensitivity": "review-required",
+      "quizzable": false
+    },
+    {
+      "id": "geo.GA.capital",
+      "entity": "GA",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Libreville",
+          "sv": "Libreville"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "middle-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Libreville”",
+        "url": "https://en.wikipedia.org/wiki/Libreville",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GM.capital",
+      "entity": "GM",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Banjul",
+          "sv": "Banjul"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Banjul”",
+        "url": "https://en.wikipedia.org/wiki/Banjul",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GN.capital",
+      "entity": "GN",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Conakry",
+          "sv": "Conakry"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Conakry”",
+        "url": "https://en.wikipedia.org/wiki/Conakry",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GW.capital",
+      "entity": "GW",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Bissau",
+          "sv": "Bissau"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Bissau”",
+        "url": "https://en.wikipedia.org/wiki/Bissau",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LS.capital",
+      "entity": "LS",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Maseru",
+          "sv": "Maseru"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "africa",
+        "southern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Maseru”",
+        "url": "https://en.wikipedia.org/wiki/Maseru",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LR.capital",
+      "entity": "LR",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Monrovia",
+          "sv": "Monrovia"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Monrovia”",
+        "url": "https://en.wikipedia.org/wiki/Monrovia",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LY.capital",
+      "entity": "LY",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Tripoli",
+          "sv": "Tripoli"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "africa",
+        "northern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Tripoli, Libya”",
+        "url": "https://en.wikipedia.org/wiki/Tripoli,_Libya",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MG.capital",
+      "entity": "MG",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Antananarivo",
+          "sv": "Antananarivo"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Antananarivo”",
+        "url": "https://en.wikipedia.org/wiki/Antananarivo",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MW.capital",
+      "entity": "MW",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Lilongwe",
+          "sv": "Lilongwe"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Lilongwe”",
+        "url": "https://en.wikipedia.org/wiki/Lilongwe",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MR.capital",
+      "entity": "MR",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Nouakchott",
+          "sv": "Nouakchott"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Nouakchott”",
+        "url": "https://en.wikipedia.org/wiki/Nouakchott",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MU.capital",
+      "entity": "MU",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Port Louis",
+          "sv": "Port Louis"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Port Louis”",
+        "url": "https://en.wikipedia.org/wiki/Port_Louis",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MZ.capital",
+      "entity": "MZ",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Maputo",
+          "sv": "Maputo"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Maputo”",
+        "url": "https://en.wikipedia.org/wiki/Maputo",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NE.capital",
+      "entity": "NE",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Niamey",
+          "sv": "Niamey"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Niamey”",
+        "url": "https://en.wikipedia.org/wiki/Niamey",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RW.capital",
+      "entity": "RW",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Kigali",
+          "sv": "Kigali"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Kigali”",
+        "url": "https://en.wikipedia.org/wiki/Kigali",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ST.capital",
+      "entity": "ST",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "São Tomé",
+          "sv": "São Tomé"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "africa",
+        "middle-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “São Tomé”",
+        "url": "https://en.wikipedia.org/wiki/S%C3%A3o_Tom%C3%A9",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SC.capital",
+      "entity": "SC",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Victoria",
+          "sv": "Victoria"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Victoria, Seychelles”",
+        "url": "https://en.wikipedia.org/wiki/Victoria,_Seychelles",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SL.capital",
+      "entity": "SL",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Freetown",
+          "sv": "Freetown"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Freetown”",
+        "url": "https://en.wikipedia.org/wiki/Freetown",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SO.capital",
+      "entity": "SO",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Mogadishu",
+          "sv": "Mogadishu"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Mogadishu”",
+        "url": "https://en.wikipedia.org/wiki/Mogadishu",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SS.capital",
+      "entity": "SS",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Juba",
+          "sv": "Juba"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Juba, South Sudan”",
+        "url": "https://en.wikipedia.org/wiki/Juba,_South_Sudan",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SD.capital",
+      "entity": "SD",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Khartoum",
+          "sv": "Khartoum"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "africa",
+        "northern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Khartoum”",
+        "url": "https://en.wikipedia.org/wiki/Khartoum",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TG.capital",
+      "entity": "TG",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Lomé",
+          "sv": "Lomé"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Lomé”",
+        "url": "https://en.wikipedia.org/wiki/Lom%C3%A9",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZM.capital",
+      "entity": "ZM",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Lusaka",
+          "sv": "Lusaka"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Lusaka”",
+        "url": "https://en.wikipedia.org/wiki/Lusaka",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AG.capital",
+      "entity": "AG",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Saint John's",
+          "sv": "Saint John's"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “St. John's, Antigua and Barbuda”",
+        "url": "https://en.wikipedia.org/wiki/St._John's,_Antigua_and_Barbuda",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BS.capital",
+      "entity": "BS",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Nassau",
+          "sv": "Nassau"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Nassau, The Bahamas”",
+        "url": "https://en.wikipedia.org/wiki/Nassau,_The_Bahamas",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BB.capital",
+      "entity": "BB",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Bridgetown",
+          "sv": "Bridgetown"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Bridgetown”",
+        "url": "https://en.wikipedia.org/wiki/Bridgetown",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BZ.capital",
+      "entity": "BZ",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Belmopan",
+          "sv": "Belmopan"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Belmopan”",
+        "url": "https://en.wikipedia.org/wiki/Belmopan",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DM.capital",
+      "entity": "DM",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Roseau",
+          "sv": "Roseau"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Roseau”",
+        "url": "https://en.wikipedia.org/wiki/Roseau",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DO.capital",
+      "entity": "DO",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Santo Domingo",
+          "sv": "Santo Domingo"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Santo Domingo”",
+        "url": "https://en.wikipedia.org/wiki/Santo_Domingo",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SV.capital",
+      "entity": "SV",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "San Salvador",
+          "sv": "San Salvador"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “San Salvador”",
+        "url": "https://en.wikipedia.org/wiki/San_Salvador",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GD.capital",
+      "entity": "GD",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "St. George's",
+          "sv": "St. George's"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “St. George's, Grenada”",
+        "url": "https://en.wikipedia.org/wiki/St._George's,_Grenada",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HT.capital",
+      "entity": "HT",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Port-au-Prince",
+          "sv": "Port-au-Prince"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Port-au-Prince”",
+        "url": "https://en.wikipedia.org/wiki/Port-au-Prince",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HN.capital",
+      "entity": "HN",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Tegucigalpa",
+          "sv": "Tegucigalpa"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Tegucigalpa”",
+        "url": "https://en.wikipedia.org/wiki/Tegucigalpa",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JM.capital",
+      "entity": "JM",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Kingston",
+          "sv": "Kingston"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Kingston”",
+        "url": "https://en.wikipedia.org/wiki/Kingston",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NI.capital",
+      "entity": "NI",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Managua",
+          "sv": "Managua"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Managua”",
+        "url": "https://en.wikipedia.org/wiki/Managua",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KN.capital",
+      "entity": "KN",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Basseterre",
+          "sv": "Basseterre"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Basseterre”",
+        "url": "https://en.wikipedia.org/wiki/Basseterre",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LC.capital",
+      "entity": "LC",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Castries",
+          "sv": "Castries"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Castries”",
+        "url": "https://en.wikipedia.org/wiki/Castries",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VC.capital",
+      "entity": "VC",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Kingstown",
+          "sv": "Kingstown"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Kingstown”",
+        "url": "https://en.wikipedia.org/wiki/Kingstown",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TT.capital",
+      "entity": "TT",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Port of Spain",
+          "sv": "Port of Spain"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Port of Spain”",
+        "url": "https://en.wikipedia.org/wiki/Port_of_Spain",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "$comment": "CONTESTED — needs a second author's sign-off before it can be quizzed. Sucre is the constitutional capital; La Paz is the seat of government, and atlases give either. Two defensible answers. Resolve it deliberately, per docs/systems/content-pipeline.md#sensitive-content.",
+      "id": "geo.BO.capital",
+      "entity": "BO",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Sucre",
+          "sv": "Sucre"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "south-america",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Sucre”",
+        "url": "https://en.wikipedia.org/wiki/Sucre",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable",
+      "sensitivity": "review-required",
+      "quizzable": false
+    },
+    {
+      "id": "geo.EC.capital",
+      "entity": "EC",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Quito",
+          "sv": "Quito"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "south-america",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Quito”",
+        "url": "https://en.wikipedia.org/wiki/Quito",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GY.capital",
+      "entity": "GY",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Georgetown",
+          "sv": "Georgetown"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "south-america",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Georgetown, Guyana”",
+        "url": "https://en.wikipedia.org/wiki/Georgetown,_Guyana",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PY.capital",
+      "entity": "PY",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Asunción",
+          "sv": "Asunción"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "south-america",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Asunción”",
+        "url": "https://en.wikipedia.org/wiki/Asunci%C3%B3n",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SR.capital",
+      "entity": "SR",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Paramaribo",
+          "sv": "Paramaribo"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "south-america",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Paramaribo”",
+        "url": "https://en.wikipedia.org/wiki/Paramaribo",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UY.capital",
+      "entity": "UY",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Montevideo",
+          "sv": "Montevideo"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "capital",
+        "south-america",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Montevideo”",
+        "url": "https://en.wikipedia.org/wiki/Montevideo",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VE.capital",
+      "entity": "VE",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Caracas",
+          "sv": "Caracas"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "capital",
+        "south-america",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Caracas”",
+        "url": "https://en.wikipedia.org/wiki/Caracas",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KI.capital",
+      "entity": "KI",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "South Tarawa",
+          "sv": "South Tarawa"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "oceania",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “South Tarawa”",
+        "url": "https://en.wikipedia.org/wiki/South_Tarawa",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MH.capital",
+      "entity": "MH",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Majuro",
+          "sv": "Majuro"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "oceania",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Majuro”",
+        "url": "https://en.wikipedia.org/wiki/Majuro",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FM.capital",
+      "entity": "FM",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Palikir",
+          "sv": "Palikir"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "oceania",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Palikir”",
+        "url": "https://en.wikipedia.org/wiki/Palikir",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "$comment": "CONTESTED — needs a second author's sign-off before it can be quizzed. Nauru has no official capital; Yaren is the seat of government. \"What is the capital of Nauru?\" has no correct answer as asked. Resolve it deliberately, per docs/systems/content-pipeline.md#sensitive-content.",
+      "id": "geo.NR.capital",
+      "entity": "NR",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Yaren",
+          "sv": "Yaren"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "oceania",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Yaren”",
+        "url": "https://en.wikipedia.org/wiki/Yaren",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable",
+      "sensitivity": "review-required",
+      "quizzable": false
+    },
+    {
+      "id": "geo.PW.capital",
+      "entity": "PW",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Ngerulmud",
+          "sv": "Ngerulmud"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "oceania",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Ngerulmud”",
+        "url": "https://en.wikipedia.org/wiki/Ngerulmud",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.WS.capital",
+      "entity": "WS",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Apia",
+          "sv": "Apia"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "capital",
+        "oceania",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Apia”",
+        "url": "https://en.wikipedia.org/wiki/Apia",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SB.capital",
+      "entity": "SB",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Honiara",
+          "sv": "Honiara"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "oceania",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Honiara”",
+        "url": "https://en.wikipedia.org/wiki/Honiara",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TO.capital",
+      "entity": "TO",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Nukuʻalofa",
+          "sv": "Nukuʻalofa"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "oceania",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Nukuʻalofa”",
+        "url": "https://en.wikipedia.org/wiki/Nuku%CA%BBalofa",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TV.capital",
+      "entity": "TV",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Funafuti",
+          "sv": "Funafuti"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "oceania",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Funafuti”",
+        "url": "https://en.wikipedia.org/wiki/Funafuti",
+        "verifiedAt": "2026-09-29"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VU.capital",
+      "entity": "VU",
+      "attribute": "capital",
+      "value": {
+        "names": {
+          "en": "Port Vila",
+          "sv": "Port Vila"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "capital",
+        "oceania",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "English Wikipedia, “Port Vila”",
+        "url": "https://en.wikipedia.org/wiki/Port_Vila",
+        "verifiedAt": "2026-09-29"
       },
       "volatility": "stable"
     }

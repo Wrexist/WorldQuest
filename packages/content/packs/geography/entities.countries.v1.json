@@ -2,7 +2,7 @@
   "$schema": "../../schema/pack.schema.json",
   "$comment": "Every country the app knows. The Phase 1 exit criterion — adding a country means editing THIS FILE (plus its facts) and nothing else, no engine change, no screen change — has now been exercised fifty-five times rather than argued about. packages/engines/src/content/thesis.test.ts still asserts it. Author by SUBREGION: a subregion with fewer than four members cannot fill a four-option question, so a country added alone teaches nobody until its neighbours land. `pnpm content:stats` says which are thin.",
   "packId": "geography.entities",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "subject": "geography",
   "kind": "entities",
   "locales": [
@@ -1596,6 +1596,3131 @@
         },
         "mapContext": {
           "path": "geo/context/FI.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "AL",
+      "type": "country",
+      "names": {
+        "en": "Albania",
+        "sv": "Albanien"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/AL.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/AL.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/AL.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "AD",
+      "type": "country",
+      "names": {
+        "en": "Andorra",
+        "sv": "Andorra"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/AD.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/AD.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/AD.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "BY",
+      "type": "country",
+      "names": {
+        "en": "Belarus",
+        "sv": "Belarus"
+      },
+      "region": "EU",
+      "subregion": "eastern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/BY.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BY.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BY.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "BA",
+      "type": "country",
+      "names": {
+        "en": "Bosnia and Herzegovina",
+        "sv": "Bosnien och Hercegovina"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/BA.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BA.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BA.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "BG",
+      "type": "country",
+      "names": {
+        "en": "Bulgaria",
+        "sv": "Bulgarien"
+      },
+      "region": "EU",
+      "subregion": "eastern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/BG.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BG.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BG.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "HR",
+      "type": "country",
+      "names": {
+        "en": "Croatia",
+        "sv": "Kroatien"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/HR.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/HR.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/HR.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "CY",
+      "type": "country",
+      "names": {
+        "en": "Cyprus",
+        "sv": "Cypern"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/CY.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/CY.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/CY.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "EE",
+      "type": "country",
+      "names": {
+        "en": "Estonia",
+        "sv": "Estland"
+      },
+      "region": "EU",
+      "subregion": "northern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/EE.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/EE.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/EE.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "IS",
+      "type": "country",
+      "names": {
+        "en": "Iceland",
+        "sv": "Island"
+      },
+      "region": "EU",
+      "subregion": "northern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/IS.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/IS.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/IS.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "IE",
+      "type": "country",
+      "names": {
+        "en": "Ireland",
+        "sv": "Irland"
+      },
+      "region": "EU",
+      "subregion": "northern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/IE.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/IE.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/IE.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "LV",
+      "type": "country",
+      "names": {
+        "en": "Latvia",
+        "sv": "Lettland"
+      },
+      "region": "EU",
+      "subregion": "northern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/LV.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LV.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LV.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "LI",
+      "type": "country",
+      "names": {
+        "en": "Liechtenstein",
+        "sv": "Liechtenstein"
+      },
+      "region": "EU",
+      "subregion": "western-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/LI.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LI.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LI.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "LT",
+      "type": "country",
+      "names": {
+        "en": "Lithuania",
+        "sv": "Litauen"
+      },
+      "region": "EU",
+      "subregion": "northern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/LT.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LT.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LT.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "LU",
+      "type": "country",
+      "names": {
+        "en": "Luxembourg",
+        "sv": "Luxemburg"
+      },
+      "region": "EU",
+      "subregion": "western-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/LU.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LU.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LU.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "MT",
+      "type": "country",
+      "names": {
+        "en": "Malta",
+        "sv": "Malta"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/MT.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MT.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MT.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "MD",
+      "type": "country",
+      "names": {
+        "en": "Moldova",
+        "sv": "Moldavien"
+      },
+      "region": "EU",
+      "subregion": "eastern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/MD.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MD.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MD.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "MC",
+      "type": "country",
+      "names": {
+        "en": "Monaco",
+        "sv": "Monaco"
+      },
+      "region": "EU",
+      "subregion": "western-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/MC.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MC.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MC.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "ME",
+      "type": "country",
+      "names": {
+        "en": "Montenegro",
+        "sv": "Montenegro"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/ME.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/ME.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/ME.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "MK",
+      "type": "country",
+      "names": {
+        "en": "North Macedonia",
+        "sv": "Nordmakedonien"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/MK.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MK.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MK.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "RU",
+      "type": "country",
+      "names": {
+        "en": "Russia",
+        "sv": "Ryssland"
+      },
+      "region": "EU",
+      "subregion": "eastern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/RU.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/RU.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/RU.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "SM",
+      "type": "country",
+      "names": {
+        "en": "San Marino",
+        "sv": "San Marino"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/SM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "RS",
+      "type": "country",
+      "names": {
+        "en": "Serbia",
+        "sv": "Serbien"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/RS.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/RS.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/RS.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "SK",
+      "type": "country",
+      "names": {
+        "en": "Slovakia",
+        "sv": "Slovakien"
+      },
+      "region": "EU",
+      "subregion": "eastern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/SK.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SK.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SK.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "SI",
+      "type": "country",
+      "names": {
+        "en": "Slovenia",
+        "sv": "Slovenien"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/SI.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SI.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SI.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "GB",
+      "type": "country",
+      "names": {
+        "en": "United Kingdom",
+        "sv": "Storbritannien"
+      },
+      "namesInSentence": {
+        "en": "the United Kingdom"
+      },
+      "region": "EU",
+      "subregion": "northern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/GB.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/GB.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/GB.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "VA",
+      "type": "country",
+      "names": {
+        "en": "Vatican City",
+        "sv": "Vatikanstaten"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/VA.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/VA.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/VA.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "AF",
+      "type": "country",
+      "names": {
+        "en": "Afghanistan",
+        "sv": "Afghanistan"
+      },
+      "region": "AS",
+      "subregion": "south-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/AF.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/AF.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/AF.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "AM",
+      "type": "country",
+      "names": {
+        "en": "Armenia",
+        "sv": "Armenien"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/AM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/AM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/AM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "AZ",
+      "type": "country",
+      "names": {
+        "en": "Azerbaijan",
+        "sv": "Azerbajdzjan"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/AZ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/AZ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/AZ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "BH",
+      "type": "country",
+      "names": {
+        "en": "Bahrain",
+        "sv": "Bahrain"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/BH.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BH.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BH.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "BT",
+      "type": "country",
+      "names": {
+        "en": "Bhutan",
+        "sv": "Bhutan"
+      },
+      "region": "AS",
+      "subregion": "south-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/BT.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BT.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BT.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "BN",
+      "type": "country",
+      "names": {
+        "en": "Brunei",
+        "sv": "Brunei"
+      },
+      "region": "AS",
+      "subregion": "south-east-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/BN.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BN.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BN.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "KH",
+      "type": "country",
+      "names": {
+        "en": "Cambodia",
+        "sv": "Kambodja"
+      },
+      "region": "AS",
+      "subregion": "south-east-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/KH.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/KH.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/KH.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "GE",
+      "type": "country",
+      "names": {
+        "en": "Georgia",
+        "sv": "Georgien"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/GE.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/GE.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/GE.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "IR",
+      "type": "country",
+      "names": {
+        "en": "Iran",
+        "sv": "Iran"
+      },
+      "region": "AS",
+      "subregion": "south-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/IR.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/IR.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/IR.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "IQ",
+      "type": "country",
+      "names": {
+        "en": "Iraq",
+        "sv": "Irak"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/IQ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/IQ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/IQ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "IL",
+      "type": "country",
+      "names": {
+        "en": "Israel",
+        "sv": "Israel"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/IL.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/IL.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/IL.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "JO",
+      "type": "country",
+      "names": {
+        "en": "Jordan",
+        "sv": "Jordanien"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/JO.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/JO.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/JO.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "KZ",
+      "type": "country",
+      "names": {
+        "en": "Kazakhstan",
+        "sv": "Kazakstan"
+      },
+      "region": "AS",
+      "subregion": "central-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/KZ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/KZ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/KZ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "KW",
+      "type": "country",
+      "names": {
+        "en": "Kuwait",
+        "sv": "Kuwait"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/KW.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/KW.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/KW.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "KG",
+      "type": "country",
+      "names": {
+        "en": "Kyrgyzstan",
+        "sv": "Kirgizistan"
+      },
+      "region": "AS",
+      "subregion": "central-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/KG.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/KG.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/KG.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "LA",
+      "type": "country",
+      "names": {
+        "en": "Laos",
+        "sv": "Laos"
+      },
+      "region": "AS",
+      "subregion": "south-east-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/LA.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LA.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LA.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "LB",
+      "type": "country",
+      "names": {
+        "en": "Lebanon",
+        "sv": "Libanon"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/LB.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LB.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LB.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "MV",
+      "type": "country",
+      "names": {
+        "en": "Maldives",
+        "sv": "Maldiverna"
+      },
+      "region": "AS",
+      "subregion": "south-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/MV.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MV.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MV.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "MM",
+      "type": "country",
+      "names": {
+        "en": "Myanmar",
+        "sv": "Myanmar"
+      },
+      "region": "AS",
+      "subregion": "south-east-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/MM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "OM",
+      "type": "country",
+      "names": {
+        "en": "Oman",
+        "sv": "Oman"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/OM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/OM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/OM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "QA",
+      "type": "country",
+      "names": {
+        "en": "Qatar",
+        "sv": "Qatar"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/QA.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/QA.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/QA.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "SA",
+      "type": "country",
+      "names": {
+        "en": "Saudi Arabia",
+        "sv": "Saudiarabien"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/SA.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SA.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SA.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "SG",
+      "type": "country",
+      "names": {
+        "en": "Singapore",
+        "sv": "Singapore"
+      },
+      "region": "AS",
+      "subregion": "south-east-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/SG.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SG.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SG.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "LK",
+      "type": "country",
+      "names": {
+        "en": "Sri Lanka",
+        "sv": "Sri Lanka"
+      },
+      "region": "AS",
+      "subregion": "south-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/LK.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LK.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LK.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "SY",
+      "type": "country",
+      "names": {
+        "en": "Syria",
+        "sv": "Syrien"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/SY.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SY.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SY.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "TJ",
+      "type": "country",
+      "names": {
+        "en": "Tajikistan",
+        "sv": "Tadzjikistan"
+      },
+      "region": "AS",
+      "subregion": "central-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/TJ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/TJ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/TJ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "TL",
+      "type": "country",
+      "names": {
+        "en": "Timor-Leste",
+        "sv": "Östtimor"
+      },
+      "region": "AS",
+      "subregion": "south-east-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/TL.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/TL.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/TL.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "TR",
+      "type": "country",
+      "names": {
+        "en": "Türkiye",
+        "sv": "Turkiet"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/TR.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/TR.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/TR.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "TM",
+      "type": "country",
+      "names": {
+        "en": "Turkmenistan",
+        "sv": "Turkmenistan"
+      },
+      "region": "AS",
+      "subregion": "central-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/TM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/TM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/TM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "AE",
+      "type": "country",
+      "names": {
+        "en": "United Arab Emirates",
+        "sv": "Förenade Arabemiraten"
+      },
+      "namesInSentence": {
+        "en": "the United Arab Emirates"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/AE.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/AE.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/AE.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "UZ",
+      "type": "country",
+      "names": {
+        "en": "Uzbekistan",
+        "sv": "Uzbekistan"
+      },
+      "region": "AS",
+      "subregion": "central-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/UZ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/UZ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/UZ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "YE",
+      "type": "country",
+      "names": {
+        "en": "Yemen",
+        "sv": "Jemen"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/YE.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/YE.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/YE.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "AO",
+      "type": "country",
+      "names": {
+        "en": "Angola",
+        "sv": "Angola"
+      },
+      "region": "AF",
+      "subregion": "middle-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/AO.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/AO.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/AO.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "BJ",
+      "type": "country",
+      "names": {
+        "en": "Benin",
+        "sv": "Benin"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/BJ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BJ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BJ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "BF",
+      "type": "country",
+      "names": {
+        "en": "Burkina Faso",
+        "sv": "Burkina Faso"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/BF.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BF.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BF.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "BI",
+      "type": "country",
+      "names": {
+        "en": "Burundi",
+        "sv": "Burundi"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/BI.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BI.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BI.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "CV",
+      "type": "country",
+      "names": {
+        "en": "Cape Verde",
+        "sv": "Kap Verde"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/CV.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/CV.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/CV.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "CM",
+      "type": "country",
+      "names": {
+        "en": "Cameroon",
+        "sv": "Kamerun"
+      },
+      "region": "AF",
+      "subregion": "middle-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/CM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/CM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/CM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "CF",
+      "type": "country",
+      "names": {
+        "en": "Central African Republic",
+        "sv": "Centralafrikanska republiken"
+      },
+      "namesInSentence": {
+        "en": "the Central African Republic"
+      },
+      "region": "AF",
+      "subregion": "middle-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/CF.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/CF.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/CF.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "TD",
+      "type": "country",
+      "names": {
+        "en": "Chad",
+        "sv": "Tchad"
+      },
+      "region": "AF",
+      "subregion": "middle-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/TD.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/TD.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/TD.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "KM",
+      "type": "country",
+      "names": {
+        "en": "Comoros",
+        "sv": "Komorerna"
+      },
+      "namesInSentence": {
+        "en": "the Comoros"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/KM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/KM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/KM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "CG",
+      "type": "country",
+      "names": {
+        "en": "Republic of the Congo",
+        "sv": "Kongo-Brazzaville"
+      },
+      "namesInSentence": {
+        "en": "the Republic of the Congo"
+      },
+      "region": "AF",
+      "subregion": "middle-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/CG.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/CG.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/CG.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "CD",
+      "type": "country",
+      "names": {
+        "en": "Democratic Republic of the Congo",
+        "sv": "Kongo-Kinshasa"
+      },
+      "namesInSentence": {
+        "en": "the Democratic Republic of the Congo"
+      },
+      "region": "AF",
+      "subregion": "middle-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/CD.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/CD.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/CD.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "CI",
+      "type": "country",
+      "names": {
+        "en": "Côte d'Ivoire",
+        "sv": "Elfenbenskusten"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/CI.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/CI.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/CI.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "DJ",
+      "type": "country",
+      "names": {
+        "en": "Djibouti",
+        "sv": "Djibouti"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/DJ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/DJ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/DJ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "GQ",
+      "type": "country",
+      "names": {
+        "en": "Equatorial Guinea",
+        "sv": "Ekvatorialguinea"
+      },
+      "region": "AF",
+      "subregion": "middle-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/GQ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/GQ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/GQ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "ER",
+      "type": "country",
+      "names": {
+        "en": "Eritrea",
+        "sv": "Eritrea"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/ER.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/ER.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/ER.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "SZ",
+      "type": "country",
+      "names": {
+        "en": "Eswatini",
+        "sv": "Eswatini"
+      },
+      "region": "AF",
+      "subregion": "southern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/SZ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SZ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SZ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "GA",
+      "type": "country",
+      "names": {
+        "en": "Gabon",
+        "sv": "Gabon"
+      },
+      "region": "AF",
+      "subregion": "middle-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/GA.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/GA.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/GA.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "GM",
+      "type": "country",
+      "names": {
+        "en": "Gambia",
+        "sv": "Gambia"
+      },
+      "namesInSentence": {
+        "en": "the Gambia"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/GM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/GM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/GM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "GN",
+      "type": "country",
+      "names": {
+        "en": "Guinea",
+        "sv": "Guinea"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/GN.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/GN.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/GN.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "GW",
+      "type": "country",
+      "names": {
+        "en": "Guinea-Bissau",
+        "sv": "Guinea-Bissau"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/GW.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/GW.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/GW.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "LS",
+      "type": "country",
+      "names": {
+        "en": "Lesotho",
+        "sv": "Lesotho"
+      },
+      "region": "AF",
+      "subregion": "southern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/LS.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LS.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LS.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "LR",
+      "type": "country",
+      "names": {
+        "en": "Liberia",
+        "sv": "Liberia"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/LR.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LR.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LR.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "LY",
+      "type": "country",
+      "names": {
+        "en": "Libya",
+        "sv": "Libyen"
+      },
+      "region": "AF",
+      "subregion": "northern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/LY.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LY.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LY.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "MG",
+      "type": "country",
+      "names": {
+        "en": "Madagascar",
+        "sv": "Madagaskar"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/MG.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MG.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MG.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "MW",
+      "type": "country",
+      "names": {
+        "en": "Malawi",
+        "sv": "Malawi"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/MW.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MW.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MW.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "MR",
+      "type": "country",
+      "names": {
+        "en": "Mauritania",
+        "sv": "Mauretanien"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/MR.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MR.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MR.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "MU",
+      "type": "country",
+      "names": {
+        "en": "Mauritius",
+        "sv": "Mauritius"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/MU.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MU.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MU.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "MZ",
+      "type": "country",
+      "names": {
+        "en": "Mozambique",
+        "sv": "Moçambique"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/MZ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MZ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MZ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "NE",
+      "type": "country",
+      "names": {
+        "en": "Niger",
+        "sv": "Niger"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/NE.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/NE.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/NE.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "RW",
+      "type": "country",
+      "names": {
+        "en": "Rwanda",
+        "sv": "Rwanda"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/RW.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/RW.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/RW.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "ST",
+      "type": "country",
+      "names": {
+        "en": "São Tomé and Príncipe",
+        "sv": "São Tomé och Príncipe"
+      },
+      "region": "AF",
+      "subregion": "middle-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/ST.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/ST.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/ST.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "SC",
+      "type": "country",
+      "names": {
+        "en": "Seychelles",
+        "sv": "Seychellerna"
+      },
+      "namesInSentence": {
+        "en": "the Seychelles"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/SC.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SC.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SC.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "SL",
+      "type": "country",
+      "names": {
+        "en": "Sierra Leone",
+        "sv": "Sierra Leone"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/SL.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SL.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SL.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "SO",
+      "type": "country",
+      "names": {
+        "en": "Somalia",
+        "sv": "Somalia"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/SO.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SO.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SO.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "SS",
+      "type": "country",
+      "names": {
+        "en": "South Sudan",
+        "sv": "Sydsudan"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/SS.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SS.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SS.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "SD",
+      "type": "country",
+      "names": {
+        "en": "Sudan",
+        "sv": "Sudan"
+      },
+      "region": "AF",
+      "subregion": "northern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/SD.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SD.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SD.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "TG",
+      "type": "country",
+      "names": {
+        "en": "Togo",
+        "sv": "Togo"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/TG.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/TG.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/TG.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "ZM",
+      "type": "country",
+      "names": {
+        "en": "Zambia",
+        "sv": "Zambia"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/ZM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/ZM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/ZM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "AG",
+      "type": "country",
+      "names": {
+        "en": "Antigua and Barbuda",
+        "sv": "Antigua och Barbuda"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/AG.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/AG.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/AG.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "BS",
+      "type": "country",
+      "names": {
+        "en": "Bahamas",
+        "sv": "Bahamas"
+      },
+      "namesInSentence": {
+        "en": "the Bahamas"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/BS.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BS.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BS.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "BB",
+      "type": "country",
+      "names": {
+        "en": "Barbados",
+        "sv": "Barbados"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/BB.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BB.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BB.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "BZ",
+      "type": "country",
+      "names": {
+        "en": "Belize",
+        "sv": "Belize"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/BZ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BZ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BZ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "DM",
+      "type": "country",
+      "names": {
+        "en": "Dominica",
+        "sv": "Dominica"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/DM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/DM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/DM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "DO",
+      "type": "country",
+      "names": {
+        "en": "Dominican Republic",
+        "sv": "Dominikanska republiken"
+      },
+      "namesInSentence": {
+        "en": "the Dominican Republic"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/DO.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/DO.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/DO.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "SV",
+      "type": "country",
+      "names": {
+        "en": "El Salvador",
+        "sv": "El Salvador"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/SV.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SV.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SV.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "GD",
+      "type": "country",
+      "names": {
+        "en": "Grenada",
+        "sv": "Grenada"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/GD.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/GD.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/GD.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "HT",
+      "type": "country",
+      "names": {
+        "en": "Haiti",
+        "sv": "Haiti"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/HT.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/HT.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/HT.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "HN",
+      "type": "country",
+      "names": {
+        "en": "Honduras",
+        "sv": "Honduras"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/HN.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/HN.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/HN.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "JM",
+      "type": "country",
+      "names": {
+        "en": "Jamaica",
+        "sv": "Jamaica"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/JM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/JM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/JM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "NI",
+      "type": "country",
+      "names": {
+        "en": "Nicaragua",
+        "sv": "Nicaragua"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/NI.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/NI.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/NI.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "KN",
+      "type": "country",
+      "names": {
+        "en": "Saint Kitts and Nevis",
+        "sv": "S:t Kitts och Nevis"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/KN.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/KN.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/KN.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "LC",
+      "type": "country",
+      "names": {
+        "en": "Saint Lucia",
+        "sv": "S:t Lucia"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/LC.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LC.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LC.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "VC",
+      "type": "country",
+      "names": {
+        "en": "Saint Vincent and the Grenadines",
+        "sv": "S:t Vincent och Grenadinerna"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/VC.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/VC.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/VC.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "TT",
+      "type": "country",
+      "names": {
+        "en": "Trinidad and Tobago",
+        "sv": "Trinidad och Tobago"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/TT.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/TT.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/TT.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "BO",
+      "type": "country",
+      "names": {
+        "en": "Bolivia",
+        "sv": "Bolivia"
+      },
+      "region": "SA",
+      "subregion": "south-america",
+      "assets": {
+        "flag": {
+          "path": "flags/BO.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BO.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BO.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "EC",
+      "type": "country",
+      "names": {
+        "en": "Ecuador",
+        "sv": "Ecuador"
+      },
+      "region": "SA",
+      "subregion": "south-america",
+      "assets": {
+        "flag": {
+          "path": "flags/EC.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/EC.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/EC.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "GY",
+      "type": "country",
+      "names": {
+        "en": "Guyana",
+        "sv": "Guyana"
+      },
+      "region": "SA",
+      "subregion": "south-america",
+      "assets": {
+        "flag": {
+          "path": "flags/GY.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/GY.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/GY.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "PY",
+      "type": "country",
+      "names": {
+        "en": "Paraguay",
+        "sv": "Paraguay"
+      },
+      "region": "SA",
+      "subregion": "south-america",
+      "assets": {
+        "flag": {
+          "path": "flags/PY.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/PY.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/PY.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "SR",
+      "type": "country",
+      "names": {
+        "en": "Suriname",
+        "sv": "Surinam"
+      },
+      "region": "SA",
+      "subregion": "south-america",
+      "assets": {
+        "flag": {
+          "path": "flags/SR.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SR.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SR.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "UY",
+      "type": "country",
+      "names": {
+        "en": "Uruguay",
+        "sv": "Uruguay"
+      },
+      "region": "SA",
+      "subregion": "south-america",
+      "assets": {
+        "flag": {
+          "path": "flags/UY.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/UY.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/UY.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "VE",
+      "type": "country",
+      "names": {
+        "en": "Venezuela",
+        "sv": "Venezuela"
+      },
+      "region": "SA",
+      "subregion": "south-america",
+      "assets": {
+        "flag": {
+          "path": "flags/VE.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/VE.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/VE.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "KI",
+      "type": "country",
+      "names": {
+        "en": "Kiribati",
+        "sv": "Kiribati"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/KI.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/KI.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/KI.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "MH",
+      "type": "country",
+      "names": {
+        "en": "Marshall Islands",
+        "sv": "Marshallöarna"
+      },
+      "namesInSentence": {
+        "en": "the Marshall Islands"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/MH.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MH.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MH.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "FM",
+      "type": "country",
+      "names": {
+        "en": "Micronesia",
+        "sv": "Mikronesien"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/FM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/FM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/FM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "NR",
+      "type": "country",
+      "names": {
+        "en": "Nauru",
+        "sv": "Nauru"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/NR.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/NR.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/NR.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "PW",
+      "type": "country",
+      "names": {
+        "en": "Palau",
+        "sv": "Palau"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/PW.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/PW.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/PW.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "WS",
+      "type": "country",
+      "names": {
+        "en": "Samoa",
+        "sv": "Samoa"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/WS.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/WS.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/WS.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "SB",
+      "type": "country",
+      "names": {
+        "en": "Solomon Islands",
+        "sv": "Salomonöarna"
+      },
+      "namesInSentence": {
+        "en": "the Solomon Islands"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/SB.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SB.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SB.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "id": "TO",
+      "type": "country",
+      "names": {
+        "en": "Tonga",
+        "sv": "Tonga"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/TO.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/TO.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/TO.png",
+          "licenseRef": "natural-earth-region"
+        }
+      }
+    },
+    {
+      "$comment": "No map: Natural Earth 1:50m has no outline for Tuvalu, whose atolls are below that scale. Never draw one (docs/design/asset-prompts.md); map questions skip an entity without a map asset.",
+      "id": "TV",
+      "type": "country",
+      "names": {
+        "en": "Tuvalu",
+        "sv": "Tuvalu"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/TV.png",
+          "licenseRef": "flag-icons"
+        }
+      }
+    },
+    {
+      "id": "VU",
+      "type": "country",
+      "names": {
+        "en": "Vanuatu",
+        "sv": "Vanuatu"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/VU.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/VU.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/VU.png",
           "licenseRef": "natural-earth-region"
         }
       }

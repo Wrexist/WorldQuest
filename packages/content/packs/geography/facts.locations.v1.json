@@ -14,6 +14,181 @@
   "generatedAt": "2026-08-03",
   "items": [
     {
+      "id": "geo.AD.continent",
+      "entity": "AD",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AE.continent",
+      "entity": "AE",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AF.continent",
+      "entity": "AF",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "asia",
+        "south-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AG.continent",
+      "entity": "AG",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AL.continent",
+      "entity": "AL",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AM.continent",
+      "entity": "AM",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AO.continent",
+      "entity": "AO",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "africa",
+        "middle-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.AR.continent",
       "entity": "AR",
       "attribute": "location",
@@ -89,6 +264,81 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.AZ.continent",
+      "entity": "AZ",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BA.continent",
+      "entity": "BA",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BB.continent",
+      "entity": "BB",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.BD.continent",
       "entity": "BD",
       "attribute": "location",
@@ -139,6 +389,181 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.BF.continent",
+      "entity": "BF",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BG.continent",
+      "entity": "BG",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "europe",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BH.continent",
+      "entity": "BH",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BI.continent",
+      "entity": "BI",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BJ.continent",
+      "entity": "BJ",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BN.continent",
+      "entity": "BN",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "asia",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BO.continent",
+      "entity": "BO",
+      "attribute": "location",
+      "value": {
+        "id": "south-america",
+        "names": {
+          "en": "South America",
+          "sv": "Sydamerika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "south-america",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.BR.continent",
       "entity": "BR",
       "attribute": "location",
@@ -154,6 +579,56 @@
         "location",
         "south-america",
         "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BS.continent",
+      "entity": "BS",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BT.continent",
+      "entity": "BT",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "asia",
+        "south-asia",
         "core"
       ],
       "source": {
@@ -189,6 +664,56 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.BY.continent",
+      "entity": "BY",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "europe",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BZ.continent",
+      "entity": "BZ",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.CA.continent",
       "entity": "CA",
       "attribute": "location",
@@ -204,6 +729,56 @@
         "location",
         "north-america",
         "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CD.continent",
+      "entity": "CD",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "middle-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CG.continent",
+      "entity": "CG",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "middle-africa",
         "core"
       ],
       "source": {
@@ -239,6 +814,31 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.CI.continent",
+      "entity": "CI",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.CL.continent",
       "entity": "CL",
       "attribute": "location",
@@ -254,6 +854,31 @@
         "location",
         "south-america",
         "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CM.continent",
+      "entity": "CM",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "middle-africa",
         "core"
       ],
       "source": {
@@ -364,6 +989,56 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.CV.continent",
+      "entity": "CV",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CY.continent",
+      "entity": "CY",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.CZ.continent",
       "entity": "CZ",
       "attribute": "location",
@@ -414,6 +1089,31 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.DJ.continent",
+      "entity": "DJ",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.DK.continent",
       "entity": "DK",
       "attribute": "location",
@@ -429,6 +1129,56 @@
         "location",
         "europe",
         "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DM.continent",
+      "entity": "DM",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DO.continent",
+      "entity": "DO",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "north-america",
+        "north-america",
         "core"
       ],
       "source": {
@@ -464,6 +1214,56 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.EC.continent",
+      "entity": "EC",
+      "attribute": "location",
+      "value": {
+        "id": "south-america",
+        "names": {
+          "en": "South America",
+          "sv": "Sydamerika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "south-america",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.EE.continent",
+      "entity": "EE",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "europe",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.EG.continent",
       "entity": "EG",
       "attribute": "location",
@@ -479,6 +1279,31 @@
         "location",
         "africa",
         "northern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ER.continent",
+      "entity": "ER",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "eastern-africa",
         "core"
       ],
       "source": {
@@ -589,6 +1414,31 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.FM.continent",
+      "entity": "FM",
+      "attribute": "location",
+      "value": {
+        "id": "oceania",
+        "names": {
+          "en": "Oceania",
+          "sv": "Oceanien"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "oceania",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.FR.continent",
       "entity": "FR",
       "attribute": "location",
@@ -614,6 +1464,106 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.GA.continent",
+      "entity": "GA",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "middle-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GB.continent",
+      "entity": "GB",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "location",
+        "europe",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GD.continent",
+      "entity": "GD",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GE.continent",
+      "entity": "GE",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.GH.continent",
       "entity": "GH",
       "attribute": "location",
@@ -629,6 +1579,81 @@
         "location",
         "africa",
         "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GM.continent",
+      "entity": "GM",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GN.continent",
+      "entity": "GN",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GQ.continent",
+      "entity": "GQ",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "middle-africa",
         "core"
       ],
       "source": {
@@ -666,6 +1691,131 @@
     {
       "id": "geo.GT.continent",
       "entity": "GT",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GW.continent",
+      "entity": "GW",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GY.continent",
+      "entity": "GY",
+      "attribute": "location",
+      "value": {
+        "id": "south-america",
+        "names": {
+          "en": "South America",
+          "sv": "Sydamerika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "south-america",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HN.continent",
+      "entity": "HN",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HR.continent",
+      "entity": "HR",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HT.continent",
+      "entity": "HT",
       "attribute": "location",
       "value": {
         "id": "north-america",
@@ -739,6 +1889,56 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.IE.continent",
+      "entity": "IE",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "location",
+        "europe",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IL.continent",
+      "entity": "IL",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.IN.continent",
       "entity": "IN",
       "attribute": "location",
@@ -764,6 +1964,81 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.IQ.continent",
+      "entity": "IQ",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IR.continent",
+      "entity": "IR",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "asia",
+        "south-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IS.continent",
+      "entity": "IS",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "europe",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.IT.continent",
       "entity": "IT",
       "attribute": "location",
@@ -779,6 +2054,56 @@
         "location",
         "europe",
         "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JM.continent",
+      "entity": "JM",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JO.continent",
+      "entity": "JO",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "asia",
+        "western-asia",
         "core"
       ],
       "source": {
@@ -839,6 +2164,131 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.KG.continent",
+      "entity": "KG",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "asia",
+        "central-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KH.continent",
+      "entity": "KH",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "asia",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KI.continent",
+      "entity": "KI",
+      "attribute": "location",
+      "value": {
+        "id": "oceania",
+        "names": {
+          "en": "Oceania",
+          "sv": "Oceanien"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "oceania",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KM.continent",
+      "entity": "KM",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KN.continent",
+      "entity": "KN",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.KP.continent",
       "entity": "KP",
       "attribute": "location",
@@ -889,6 +2339,331 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.KW.continent",
+      "entity": "KW",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KZ.continent",
+      "entity": "KZ",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "asia",
+        "central-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LA.continent",
+      "entity": "LA",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "asia",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LB.continent",
+      "entity": "LB",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LC.continent",
+      "entity": "LC",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LI.continent",
+      "entity": "LI",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "europe",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LK.continent",
+      "entity": "LK",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "asia",
+        "south-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LR.continent",
+      "entity": "LR",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LS.continent",
+      "entity": "LS",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "africa",
+        "southern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LT.continent",
+      "entity": "LT",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "europe",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LU.continent",
+      "entity": "LU",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "europe",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LV.continent",
+      "entity": "LV",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "europe",
+        "northern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LY.continent",
+      "entity": "LY",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "africa",
+        "northern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.MA.continent",
       "entity": "MA",
       "attribute": "location",
@@ -904,6 +2679,156 @@
         "location",
         "africa",
         "northern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MC.continent",
+      "entity": "MC",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "europe",
+        "western-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MD.continent",
+      "entity": "MD",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "europe",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ME.continent",
+      "entity": "ME",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MG.continent",
+      "entity": "MG",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MH.continent",
+      "entity": "MH",
+      "attribute": "location",
+      "value": {
+        "id": "oceania",
+        "names": {
+          "en": "Oceania",
+          "sv": "Oceanien"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "oceania",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MK.continent",
+      "entity": "MK",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "europe",
+        "southern-europe",
         "core"
       ],
       "source": {
@@ -939,6 +2864,31 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.MM.continent",
+      "entity": "MM",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "asia",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.MN.continent",
       "entity": "MN",
       "attribute": "location",
@@ -954,6 +2904,131 @@
         "location",
         "asia",
         "east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MR.continent",
+      "entity": "MR",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MT.continent",
+      "entity": "MT",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MU.continent",
+      "entity": "MU",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MV.continent",
+      "entity": "MV",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "asia",
+        "south-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MW.continent",
+      "entity": "MW",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "eastern-africa",
         "core"
       ],
       "source": {
@@ -1014,6 +3089,31 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.MZ.continent",
+      "entity": "MZ",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.NA.continent",
       "entity": "NA",
       "attribute": "location",
@@ -1039,6 +3139,31 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.NE.continent",
+      "entity": "NE",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.NG.continent",
       "entity": "NG",
       "attribute": "location",
@@ -1054,6 +3179,31 @@
         "location",
         "africa",
         "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NI.continent",
+      "entity": "NI",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "north-america",
+        "north-america",
         "core"
       ],
       "source": {
@@ -1139,6 +3289,31 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.NR.continent",
+      "entity": "NR",
+      "attribute": "location",
+      "value": {
+        "id": "oceania",
+        "names": {
+          "en": "Oceania",
+          "sv": "Oceanien"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "oceania",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.NZ.continent",
       "entity": "NZ",
       "attribute": "location",
@@ -1154,6 +3329,31 @@
         "location",
         "oceania",
         "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.OM.continent",
+      "entity": "OM",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "asia",
+        "western-asia",
         "core"
       ],
       "source": {
@@ -1339,6 +3539,81 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.PW.continent",
+      "entity": "PW",
+      "attribute": "location",
+      "value": {
+        "id": "oceania",
+        "names": {
+          "en": "Oceania",
+          "sv": "Oceanien"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "oceania",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PY.continent",
+      "entity": "PY",
+      "attribute": "location",
+      "value": {
+        "id": "south-america",
+        "names": {
+          "en": "South America",
+          "sv": "Sydamerika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "south-america",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.QA.continent",
+      "entity": "QA",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.RO.continent",
       "entity": "RO",
       "attribute": "location",
@@ -1354,6 +3629,181 @@
         "location",
         "europe",
         "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RS.continent",
+      "entity": "RS",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RU.continent",
+      "entity": "RU",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "location",
+        "europe",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RW.continent",
+      "entity": "RW",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SA.continent",
+      "entity": "SA",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SB.continent",
+      "entity": "SB",
+      "attribute": "location",
+      "value": {
+        "id": "oceania",
+        "names": {
+          "en": "Oceania",
+          "sv": "Oceanien"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "oceania",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SC.continent",
+      "entity": "SC",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SD.continent",
+      "entity": "SD",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "africa",
+        "northern-africa",
         "core"
       ],
       "source": {
@@ -1389,8 +3839,358 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.SG.continent",
+      "entity": "SG",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "asia",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SI.continent",
+      "entity": "SI",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SK.continent",
+      "entity": "SK",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "europe",
+        "eastern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SL.continent",
+      "entity": "SL",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SM.continent",
+      "entity": "SM",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.SN.continent",
       "entity": "SN",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "western-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SO.continent",
+      "entity": "SO",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SR.continent",
+      "entity": "SR",
+      "attribute": "location",
+      "value": {
+        "id": "south-america",
+        "names": {
+          "en": "South America",
+          "sv": "Sydamerika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "south-america",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SS.continent",
+      "entity": "SS",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "eastern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ST.continent",
+      "entity": "ST",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "africa",
+        "middle-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SV.continent",
+      "entity": "SV",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SY.continent",
+      "entity": "SY",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SZ.continent",
+      "entity": "SZ",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "africa",
+        "southern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TD.continent",
+      "entity": "TD",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "middle-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TG.continent",
+      "entity": "TG",
       "attribute": "location",
       "value": {
         "id": "africa",
@@ -1439,6 +4239,81 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.TJ.continent",
+      "entity": "TJ",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "asia",
+        "central-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TL.continent",
+      "entity": "TL",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "asia",
+        "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TM.continent",
+      "entity": "TM",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "asia",
+        "central-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.TN.continent",
       "entity": "TN",
       "attribute": "location",
@@ -1454,6 +4329,106 @@
         "location",
         "africa",
         "northern-africa",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TO.continent",
+      "entity": "TO",
+      "attribute": "location",
+      "value": {
+        "id": "oceania",
+        "names": {
+          "en": "Oceania",
+          "sv": "Oceanien"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "oceania",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TR.continent",
+      "entity": "TR",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TT.continent",
+      "entity": "TT",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TV.continent",
+      "entity": "TV",
+      "attribute": "location",
+      "value": {
+        "id": "oceania",
+        "names": {
+          "en": "Oceania",
+          "sv": "Oceanien"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "oceania",
+        "oceania",
         "core"
       ],
       "source": {
@@ -1564,6 +4539,131 @@
       "volatility": "stable"
     },
     {
+      "id": "geo.UY.continent",
+      "entity": "UY",
+      "attribute": "location",
+      "value": {
+        "id": "south-america",
+        "names": {
+          "en": "South America",
+          "sv": "Sydamerika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "south-america",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UZ.continent",
+      "entity": "UZ",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "asia",
+        "central-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VA.continent",
+      "entity": "VA",
+      "attribute": "location",
+      "value": {
+        "id": "europe",
+        "names": {
+          "en": "Europe",
+          "sv": "Europa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "location",
+        "europe",
+        "southern-europe",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VC.continent",
+      "entity": "VC",
+      "attribute": "location",
+      "value": {
+        "id": "north-america",
+        "names": {
+          "en": "North America",
+          "sv": "Nordamerika"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "north-america",
+        "north-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VE.continent",
+      "entity": "VE",
+      "attribute": "location",
+      "value": {
+        "id": "south-america",
+        "names": {
+          "en": "South America",
+          "sv": "Sydamerika"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "location",
+        "south-america",
+        "south-america",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
       "id": "geo.VN.continent",
       "entity": "VN",
       "attribute": "location",
@@ -1579,6 +4679,106 @@
         "location",
         "asia",
         "south-east-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VU.continent",
+      "entity": "VU",
+      "attribute": "location",
+      "value": {
+        "id": "oceania",
+        "names": {
+          "en": "Oceania",
+          "sv": "Oceanien"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "location",
+        "oceania",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.WS.continent",
+      "entity": "WS",
+      "attribute": "location",
+      "value": {
+        "id": "oceania",
+        "names": {
+          "en": "Oceania",
+          "sv": "Oceanien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "oceania",
+        "oceania",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.YE.continent",
+      "entity": "YE",
+      "attribute": "location",
+      "value": {
+        "id": "asia",
+        "names": {
+          "en": "Asia",
+          "sv": "Asien"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "asia",
+        "western-asia",
+        "core"
+      ],
+      "source": {
+        "name": "WorldQuest editorial classification, on the seven-continent model (deliberately NOT UN M49 — see the note at the top of build-locations.cjs)",
+        "url": "https://www.britannica.com/science/continent",
+        "verifiedAt": "2026-08-05"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZM.continent",
+      "entity": "ZM",
+      "attribute": "location",
+      "value": {
+        "id": "africa",
+        "names": {
+          "en": "Africa",
+          "sv": "Afrika"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "location",
+        "africa",
+        "eastern-africa",
         "core"
       ],
       "source": {

@@ -2,7 +2,7 @@
   "$schema": "../../schema/pack.schema.json",
   "$comment": "Definitions are CONTENT, not code. Adding an achievement is a pack release — the engine in packages/engines/src/achievements evaluates these and knows nothing about geography. IDs ship in user save data and in dashboards. Renaming one is a migration, not a rename. Thresholds may be tuned; ids may not. `backfill: false` marks a rule that CANNOT be replayed from history. Grown from 12 to 30 on 2026-08-13. The starter set was deliberately small for a stated reason — \"an achievement for 100 flags is a locked row for everyone until there are 100 flags\" — and that rule is what shaped this batch rather than being set aside by it: EVERY threshold here is capped at what the packs actually hold. Currency, capital, calling-code and flag top out at 65 because there are 65; language tops out at 26 because there are 26; and the thirteen regional sets name the real members of a real subregion, so each is finishable today. That is also why this is 30 and not the 35 asked for — five more would have had to be locked rows, and a shelf of things nobody can win is worse than a short shelf. Regional set ids are lowercase and unpunctuated (`ach.set.eastasia`) because they have to satisfy two rules at once: this schema admits only `^ach\\.[a-z0-9-]+\\.[a-z0-9-]+$`, and the copy key is derived from the id by convention — `achievements:set.eastasia.name` — while `namespace:screen.element` admits no hyphens. The intersection is lowercase without punctuation. These are the first ids in the set with a multi-word segment, which is why nothing had found the conflict. The NAME a user reads is \"East Asia\", from the locale file; the id is a machine identifier and permanent.",
   "packId": "core.achievements",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "subject": "core",
   "kind": "achievements",
   "locales": [
@@ -30,15 +30,15 @@
         },
         {
           "tier": "silver",
-          "threshold": 20
+          "threshold": 25
         },
         {
           "tier": "gold",
-          "threshold": 40
+          "threshold": 80
         },
         {
           "tier": "platinum",
-          "threshold": 65
+          "threshold": 192
         }
       ],
       "showProgress": true,
@@ -65,15 +65,15 @@
         },
         {
           "tier": "silver",
-          "threshold": 20
+          "threshold": 25
         },
         {
           "tier": "gold",
-          "threshold": 40
+          "threshold": 80
         },
         {
           "tier": "platinum",
-          "threshold": 63
+          "threshold": 181
         }
       ],
       "showProgress": true,
@@ -101,11 +101,11 @@
         },
         {
           "tier": "gold",
-          "threshold": 35
+          "threshold": 60
         },
         {
           "tier": "platinum",
-          "threshold": 65
+          "threshold": 194
         }
       ],
       "showProgress": true,
@@ -370,15 +370,15 @@
         },
         {
           "tier": "silver",
-          "threshold": 20
+          "threshold": 25
         },
         {
           "tier": "gold",
-          "threshold": 40
+          "threshold": 80
         },
         {
           "tier": "platinum",
-          "threshold": 64
+          "threshold": 184
         }
       ],
       "showProgress": true,
@@ -405,15 +405,15 @@
         },
         {
           "tier": "silver",
-          "threshold": 20
+          "threshold": 25
         },
         {
           "tier": "gold",
-          "threshold": 40
+          "threshold": 80
         },
         {
           "tier": "platinum",
-          "threshold": 64
+          "threshold": 192
         }
       ],
       "showProgress": true,
@@ -440,15 +440,15 @@
         },
         {
           "tier": "silver",
-          "threshold": 20
+          "threshold": 25
         },
         {
           "tier": "gold",
-          "threshold": 40
+          "threshold": 80
         },
         {
           "tier": "platinum",
-          "threshold": 65
+          "threshold": 193
         }
       ],
       "showProgress": true,
@@ -479,11 +479,11 @@
         },
         {
           "tier": "gold",
-          "threshold": 20
+          "threshold": 40
         },
         {
           "tier": "platinum",
-          "threshold": 26
+          "threshold": 91
         }
       ],
       "showProgress": true,
@@ -511,11 +511,11 @@
         },
         {
           "tier": "gold",
-          "threshold": 250
+          "threshold": 400
         },
         {
           "tier": "legendary",
-          "threshold": 347
+          "threshold": 1033
         }
       ],
       "showProgress": true,

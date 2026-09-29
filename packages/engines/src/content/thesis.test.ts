@@ -177,10 +177,12 @@ describe('the platform thesis', () => {
 })
 
 describe('question construction', () => {
-  // Exhaustive corpus × 40 seeds; Vitest 4 also enforces synchronous timeouts.
-  it('never offers the same label twice', { timeout: 15_000 }, () => {
+  // Exhaustive over the corpus, × 12 seeds. It was × 40 over 65 countries; at 194 the
+  // same budget of about 36,000 questions is 12 seeds, and every item is still built
+  // under every seed. Vitest 4 enforces synchronous timeouts.
+  it('never offers the same label twice', { timeout: 60_000 }, () => {
     const collisions: { seed: number; item: string; labels: string[] }[] = []
-    for (let seed = 0; seed < 40; seed++) {
+    for (let seed = 0; seed < 12; seed++) {
       for (const item of index.items) {
         const q = buildQuestion(index, item, 'en', seededRng(seed))
         if (!q) continue
@@ -330,7 +332,7 @@ describe('question construction', () => {
         id: 'geo.SE.currency',
         entity: 'SE',
         attribute: 'currency',
-        value: { names: { en: 'Krona' } },
+        value: { names: { en: 'Riksdaler' } },
         difficulty: 2,
         tags: ['currency', 'core'],
         volatility: 'stable',
@@ -771,18 +773,19 @@ describe('question construction', () => {
       .get('geo.SE.flag')!
       .find((i) => i.templateId === 'tpl.flag-to-country.mc4')!
     const q = buildQuestion(index, item, 'en', seededRng(1))!
-    const nordic = new Set(['Sweden', 'Norway', 'Denmark', 'Finland'])
+    const nordic = new Set(['Sweden', 'Norway', 'Denmark', 'Finland', 'Iceland'])
     for (const option of q.options) {
       expect(nordic.has(option.label), `${option.label} is not a Nordic cross`).toBe(true)
     }
   })
 
   it('falls back rather than inventing similarity it was never told about', () => {
-    // Only Japan and South Korea share `like:central-circle`, which is one short of
-    // a four-option question. Falling back to the region is right; quietly widening
-    // to "any flag" and calling it visual similarity is not.
+    // Only Bahrain and Qatar share `like:serrated-band`, which is two short of a
+    // four-option question. Falling back to the region is right; quietly widening to
+    // "any flag" and calling it visual similarity is not. (This was Japan and South
+    // Korea's `central-circle` until the 194-country pack gave that tag eight flags.)
     const item = index.itemsByFact
-      .get('geo.JP.flag')!
+      .get('geo.QA.flag')!
       .find((i) => i.templateId === 'tpl.flag-to-country.mc4')!
     const q = buildQuestion(index, item, 'en', seededRng(3))!
     expect(q.options).toHaveLength(4)
@@ -1078,7 +1081,10 @@ describe('the locator map', () => {
       // Told apart by MODALITY, never by naming the template — a second map template
       // must get the same answer without editing this test.
       if (template.modality === 'map') continue
-      const item = index.items.find((i) => i.templateId === template.id)
+      // The first item that composes: in a pack of 194 countries the first item of a
+      // template can be one the ambiguity rule refuses (a shared currency asked
+      // backwards), which is correct and says nothing about the locator.
+      const item = index.items.find((i) => i.templateId === template.id && buildQuestion(index, i, 'en', seededRng(5)) !== null)
       // Loudly, not `continue`. This loop stepped silently over any template with no
       // items for its attribute, so `tpl.country-to-map.mc4` shipped completely
       // unchecked by it — the "guard that could never fail" shape again.

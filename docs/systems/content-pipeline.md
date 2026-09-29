@@ -459,7 +459,7 @@ whether the value is right. The strongest statement the pipeline could make abou
 "Sweden's capital is Stockholm" was that somebody had written down where they got it.
 
 **`pnpm content:crosscheck` asks a second, independent dataset the same questions.**
-`world-countries@5.1.0` (ODbL), pinned exactly, covering 349 values: capitals,
+`world-countries@5.1.0` (ODbL), pinned exactly, covering 1,049 values (194 countries): capitals,
 currencies, calling codes, languages, regions, and the countries' own English names. It
 runs inside `pnpm verify`.
 

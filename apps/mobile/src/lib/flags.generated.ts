@@ -70,6 +70,135 @@ import SE from '../../assets/flags/SE.png'
 import NO from '../../assets/flags/NO.png'
 import DK from '../../assets/flags/DK.png'
 import FI from '../../assets/flags/FI.png'
+import AL from '../../assets/flags/AL.png'
+import AD from '../../assets/flags/AD.png'
+import BY from '../../assets/flags/BY.png'
+import BA from '../../assets/flags/BA.png'
+import BG from '../../assets/flags/BG.png'
+import HR from '../../assets/flags/HR.png'
+import CY from '../../assets/flags/CY.png'
+import EE from '../../assets/flags/EE.png'
+import IS from '../../assets/flags/IS.png'
+import IE from '../../assets/flags/IE.png'
+import LV from '../../assets/flags/LV.png'
+import LI from '../../assets/flags/LI.png'
+import LT from '../../assets/flags/LT.png'
+import LU from '../../assets/flags/LU.png'
+import MT from '../../assets/flags/MT.png'
+import MD from '../../assets/flags/MD.png'
+import MC from '../../assets/flags/MC.png'
+import ME from '../../assets/flags/ME.png'
+import MK from '../../assets/flags/MK.png'
+import RU from '../../assets/flags/RU.png'
+import SM from '../../assets/flags/SM.png'
+import RS from '../../assets/flags/RS.png'
+import SK from '../../assets/flags/SK.png'
+import SI from '../../assets/flags/SI.png'
+import GB from '../../assets/flags/GB.png'
+import VA from '../../assets/flags/VA.png'
+import AF from '../../assets/flags/AF.png'
+import AM from '../../assets/flags/AM.png'
+import AZ from '../../assets/flags/AZ.png'
+import BH from '../../assets/flags/BH.png'
+import BT from '../../assets/flags/BT.png'
+import BN from '../../assets/flags/BN.png'
+import KH from '../../assets/flags/KH.png'
+import GE from '../../assets/flags/GE.png'
+import IR from '../../assets/flags/IR.png'
+import IQ from '../../assets/flags/IQ.png'
+import IL from '../../assets/flags/IL.png'
+import JO from '../../assets/flags/JO.png'
+import KZ from '../../assets/flags/KZ.png'
+import KW from '../../assets/flags/KW.png'
+import KG from '../../assets/flags/KG.png'
+import LA from '../../assets/flags/LA.png'
+import LB from '../../assets/flags/LB.png'
+import MV from '../../assets/flags/MV.png'
+import MM from '../../assets/flags/MM.png'
+import OM from '../../assets/flags/OM.png'
+import QA from '../../assets/flags/QA.png'
+import SA from '../../assets/flags/SA.png'
+import SG from '../../assets/flags/SG.png'
+import LK from '../../assets/flags/LK.png'
+import SY from '../../assets/flags/SY.png'
+import TJ from '../../assets/flags/TJ.png'
+import TL from '../../assets/flags/TL.png'
+import TR from '../../assets/flags/TR.png'
+import TM from '../../assets/flags/TM.png'
+import AE from '../../assets/flags/AE.png'
+import UZ from '../../assets/flags/UZ.png'
+import YE from '../../assets/flags/YE.png'
+import AO from '../../assets/flags/AO.png'
+import BJ from '../../assets/flags/BJ.png'
+import BF from '../../assets/flags/BF.png'
+import BI from '../../assets/flags/BI.png'
+import CV from '../../assets/flags/CV.png'
+import CM from '../../assets/flags/CM.png'
+import CF from '../../assets/flags/CF.png'
+import TD from '../../assets/flags/TD.png'
+import KM from '../../assets/flags/KM.png'
+import CG from '../../assets/flags/CG.png'
+import CD from '../../assets/flags/CD.png'
+import CI from '../../assets/flags/CI.png'
+import DJ from '../../assets/flags/DJ.png'
+import GQ from '../../assets/flags/GQ.png'
+import ER from '../../assets/flags/ER.png'
+import SZ from '../../assets/flags/SZ.png'
+import GA from '../../assets/flags/GA.png'
+import GM from '../../assets/flags/GM.png'
+import GN from '../../assets/flags/GN.png'
+import GW from '../../assets/flags/GW.png'
+import LS from '../../assets/flags/LS.png'
+import LR from '../../assets/flags/LR.png'
+import LY from '../../assets/flags/LY.png'
+import MG from '../../assets/flags/MG.png'
+import MW from '../../assets/flags/MW.png'
+import MR from '../../assets/flags/MR.png'
+import MU from '../../assets/flags/MU.png'
+import MZ from '../../assets/flags/MZ.png'
+import NE from '../../assets/flags/NE.png'
+import RW from '../../assets/flags/RW.png'
+import ST from '../../assets/flags/ST.png'
+import SC from '../../assets/flags/SC.png'
+import SL from '../../assets/flags/SL.png'
+import SO from '../../assets/flags/SO.png'
+import SS from '../../assets/flags/SS.png'
+import SD from '../../assets/flags/SD.png'
+import TG from '../../assets/flags/TG.png'
+import ZM from '../../assets/flags/ZM.png'
+import AG from '../../assets/flags/AG.png'
+import BS from '../../assets/flags/BS.png'
+import BB from '../../assets/flags/BB.png'
+import BZ from '../../assets/flags/BZ.png'
+import DM from '../../assets/flags/DM.png'
+import DO from '../../assets/flags/DO.png'
+import SV from '../../assets/flags/SV.png'
+import GD from '../../assets/flags/GD.png'
+import HT from '../../assets/flags/HT.png'
+import HN from '../../assets/flags/HN.png'
+import JM from '../../assets/flags/JM.png'
+import NI from '../../assets/flags/NI.png'
+import KN from '../../assets/flags/KN.png'
+import LC from '../../assets/flags/LC.png'
+import VC from '../../assets/flags/VC.png'
+import TT from '../../assets/flags/TT.png'
+import BO from '../../assets/flags/BO.png'
+import EC from '../../assets/flags/EC.png'
+import GY from '../../assets/flags/GY.png'
+import PY from '../../assets/flags/PY.png'
+import SR from '../../assets/flags/SR.png'
+import UY from '../../assets/flags/UY.png'
+import VE from '../../assets/flags/VE.png'
+import KI from '../../assets/flags/KI.png'
+import MH from '../../assets/flags/MH.png'
+import FM from '../../assets/flags/FM.png'
+import NR from '../../assets/flags/NR.png'
+import PW from '../../assets/flags/PW.png'
+import WS from '../../assets/flags/WS.png'
+import SB from '../../assets/flags/SB.png'
+import TO from '../../assets/flags/TO.png'
+import TV from '../../assets/flags/TV.png'
+import VU from '../../assets/flags/VU.png'
 
 /**
  * Metro hands back an opaque numeric handle; Vite — vitest and the screenshot
@@ -145,4 +274,133 @@ export const FLAG_BY_PATH: Readonly<Record<string, AssetModule>> = {
   'flags/NO.png': NO,
   'flags/DK.png': DK,
   'flags/FI.png': FI,
+  'flags/AL.png': AL,
+  'flags/AD.png': AD,
+  'flags/BY.png': BY,
+  'flags/BA.png': BA,
+  'flags/BG.png': BG,
+  'flags/HR.png': HR,
+  'flags/CY.png': CY,
+  'flags/EE.png': EE,
+  'flags/IS.png': IS,
+  'flags/IE.png': IE,
+  'flags/LV.png': LV,
+  'flags/LI.png': LI,
+  'flags/LT.png': LT,
+  'flags/LU.png': LU,
+  'flags/MT.png': MT,
+  'flags/MD.png': MD,
+  'flags/MC.png': MC,
+  'flags/ME.png': ME,
+  'flags/MK.png': MK,
+  'flags/RU.png': RU,
+  'flags/SM.png': SM,
+  'flags/RS.png': RS,
+  'flags/SK.png': SK,
+  'flags/SI.png': SI,
+  'flags/GB.png': GB,
+  'flags/VA.png': VA,
+  'flags/AF.png': AF,
+  'flags/AM.png': AM,
+  'flags/AZ.png': AZ,
+  'flags/BH.png': BH,
+  'flags/BT.png': BT,
+  'flags/BN.png': BN,
+  'flags/KH.png': KH,
+  'flags/GE.png': GE,
+  'flags/IR.png': IR,
+  'flags/IQ.png': IQ,
+  'flags/IL.png': IL,
+  'flags/JO.png': JO,
+  'flags/KZ.png': KZ,
+  'flags/KW.png': KW,
+  'flags/KG.png': KG,
+  'flags/LA.png': LA,
+  'flags/LB.png': LB,
+  'flags/MV.png': MV,
+  'flags/MM.png': MM,
+  'flags/OM.png': OM,
+  'flags/QA.png': QA,
+  'flags/SA.png': SA,
+  'flags/SG.png': SG,
+  'flags/LK.png': LK,
+  'flags/SY.png': SY,
+  'flags/TJ.png': TJ,
+  'flags/TL.png': TL,
+  'flags/TR.png': TR,
+  'flags/TM.png': TM,
+  'flags/AE.png': AE,
+  'flags/UZ.png': UZ,
+  'flags/YE.png': YE,
+  'flags/AO.png': AO,
+  'flags/BJ.png': BJ,
+  'flags/BF.png': BF,
+  'flags/BI.png': BI,
+  'flags/CV.png': CV,
+  'flags/CM.png': CM,
+  'flags/CF.png': CF,
+  'flags/TD.png': TD,
+  'flags/KM.png': KM,
+  'flags/CG.png': CG,
+  'flags/CD.png': CD,
+  'flags/CI.png': CI,
+  'flags/DJ.png': DJ,
+  'flags/GQ.png': GQ,
+  'flags/ER.png': ER,
+  'flags/SZ.png': SZ,
+  'flags/GA.png': GA,
+  'flags/GM.png': GM,
+  'flags/GN.png': GN,
+  'flags/GW.png': GW,
+  'flags/LS.png': LS,
+  'flags/LR.png': LR,
+  'flags/LY.png': LY,
+  'flags/MG.png': MG,
+  'flags/MW.png': MW,
+  'flags/MR.png': MR,
+  'flags/MU.png': MU,
+  'flags/MZ.png': MZ,
+  'flags/NE.png': NE,
+  'flags/RW.png': RW,
+  'flags/ST.png': ST,
+  'flags/SC.png': SC,
+  'flags/SL.png': SL,
+  'flags/SO.png': SO,
+  'flags/SS.png': SS,
+  'flags/SD.png': SD,
+  'flags/TG.png': TG,
+  'flags/ZM.png': ZM,
+  'flags/AG.png': AG,
+  'flags/BS.png': BS,
+  'flags/BB.png': BB,
+  'flags/BZ.png': BZ,
+  'flags/DM.png': DM,
+  'flags/DO.png': DO,
+  'flags/SV.png': SV,
+  'flags/GD.png': GD,
+  'flags/HT.png': HT,
+  'flags/HN.png': HN,
+  'flags/JM.png': JM,
+  'flags/NI.png': NI,
+  'flags/KN.png': KN,
+  'flags/LC.png': LC,
+  'flags/VC.png': VC,
+  'flags/TT.png': TT,
+  'flags/BO.png': BO,
+  'flags/EC.png': EC,
+  'flags/GY.png': GY,
+  'flags/PY.png': PY,
+  'flags/SR.png': SR,
+  'flags/UY.png': UY,
+  'flags/VE.png': VE,
+  'flags/KI.png': KI,
+  'flags/MH.png': MH,
+  'flags/FM.png': FM,
+  'flags/NR.png': NR,
+  'flags/PW.png': PW,
+  'flags/WS.png': WS,
+  'flags/SB.png': SB,
+  'flags/TO.png': TO,
+  'flags/TV.png': TV,
+  'flags/VU.png': VU,
 }

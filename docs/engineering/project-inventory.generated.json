@@ -71,8 +71,8 @@
     "react-native-screens": "~4.16.0"
   },
   "packs": 12,
-  "entities": 65,
-  "facts": 350,
+  "entities": 194,
+  "facts": 1047,
   "templates": 13,
   "locales": [
     "en",
