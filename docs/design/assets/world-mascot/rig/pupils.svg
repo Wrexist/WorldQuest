@@ -1,1 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 300 300"><ellipse cx="123" cy="138" rx="14" ry="22" fill="#062957"/><ellipse cx="183" cy="121" rx="13" ry="21" fill="#062957"/><ellipse cx="129" cy="129" rx="5" ry="7" fill="#FFFFFF"/><ellipse cx="189" cy="112" rx="5" ry="6" fill="#FFFFFF"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 300 300"><defs>
+      <radialGradient id="iris" cx="45%" cy="62%" r="60%"><stop offset="0" stop-color="#2E7FE6"/><stop offset=".7" stop-color="#0B3F8C"/><stop offset="1" stop-color="#062957"/></radialGradient>
+      <filter id="glint" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0.8"/></filter></defs>
+    <ellipse cx="123" cy="138" rx="14" ry="22" fill="url(#iris)"/><ellipse cx="183" cy="121" rx="13" ry="21" fill="url(#iris)"/>
+    <ellipse cx="124" cy="141" rx="8" ry="13" fill="#062957"/><ellipse cx="184" cy="124" rx="7.5" ry="12.5" fill="#062957"/>
+    <ellipse cx="129" cy="129" rx="5" ry="7" fill="#FFFFFF"/><ellipse cx="189" cy="112" rx="5" ry="6" fill="#FFFFFF"/>
+    <circle cx="119" cy="150" r="2.4" fill="#FFFFFF" opacity=".8" filter="url(#glint)"/><circle cx="179" cy="133" r="2.2" fill="#FFFFFF" opacity=".8" filter="url(#glint)"/></svg>
