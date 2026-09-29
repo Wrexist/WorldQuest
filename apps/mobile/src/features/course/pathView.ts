@@ -39,6 +39,8 @@ export type PathUnitView = {
   readonly number: number
   readonly titleKey: string
   readonly objectiveKey: string
+  /** The pack's decorative scenery name, when the unit has one. */
+  readonly scenery?: string
   readonly state: NodeState
   readonly done: number
   readonly nodes: readonly PathNodeView[]
@@ -84,6 +86,7 @@ export function toPathView(path: CoursePath): CoursePathView {
       number: unit.position + 1,
       titleKey: unit.unit.titleKey,
       objectiveKey: unit.unit.objectiveKey,
+      ...(unit.unit.scenery === undefined ? {} : { scenery: unit.unit.scenery }),
       state: unit.state,
       done: unit.done,
       nodes: unit.nodes.map((step) => ({

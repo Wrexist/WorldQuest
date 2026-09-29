@@ -279,6 +279,11 @@ i18n key (`course:<course>.…` in `packages/i18n/locales`).
   the course's own (`courses.first-week` → `first-week`). A node id is the key finished
   lessons are counted under in save data, so a later version may add, reorder or retune
   steps and never rename one. `PROJECT.md §4` lists the format.
+- **`scenery` is optional and decorative.** A unit may name the illustration the app
+  draws above its banner (`island`, `discovery-island`, `europe`, `asia`, `africa`,
+  `north-america`, `south-america`, `oceania`, `antarctica`; the schema lists them).
+  Imaginary art only, never a map or a flag; an app that does not have a name draws
+  nothing. `first-week` 1.2.0 names one per unit.
 - **`focus` is the engines' `LessonFocus`, narrowed**: `entities` and `attributes`, both
   required and non-empty. An absent list would mean "everything", which is not a step.
 - **Copy counts come from the data.** A step's objective receives `{count}` = how many

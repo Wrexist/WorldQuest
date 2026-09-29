@@ -284,6 +284,7 @@ alone is never a control unless it is universally understood (back, close, setti
 | `motion.base` | 260 | `easeInOut` | Screen transitions, sheets |
 | `motion.expressive` | 420 | `spring(damping 0.7, stiffness 180)` | Card entrance, mascot, celebration card |
 | `motion.celebrate` | 900 | Lottie | Correct answer, level up, unlock |
+| `motion.drift` | 4200 (looped) | `easeInOut` (sine) | Ambient float of decorative scenery (`useDrift`): path props, the island stage. Off under Reduce Motion and in the background |
 
 **Principles**
 - Things **scale and spring**; they do not fade in place. Fade is for disappearing.

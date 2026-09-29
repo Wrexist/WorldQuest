@@ -35,6 +35,10 @@ import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { REGIONS, type RegionCode } from '../explore/ExploreScreen.js'
 import { Art } from '../../components/Art.js'
 import { AdventureArt } from '../../components/AdventureArt.js'
+import { SceneryBanner } from '../../components/Scenery.js'
+
+/** The explorer's island at the top of Profile: a place, with Atlas standing in it. */
+const IDENTITY_SCENE = 240
 import { avatarArt } from '../settings/AvatarPicker.js'
 import { INSIGNIA_SIZE, insigniaFor } from '../../lib/insignia.js'
 import { Icon } from '../../components/Icon.js'
@@ -217,7 +221,9 @@ export function ProfileScreen({
             reads as unfinished, and the same defect in seven other places. */}
         <EmptyState
           compact
-          art={<AdventureArt name="explorer" style={{ width: Math.min(viewportWidth - 64, 480), height: Math.min(300, viewportHeight * .34), borderRadius: 22 }} />}
+          art={<SceneryBanner name="discovery-island" rounded="all" height={Math.min(300, viewportHeight * .34)} style={{ width: Math.min(viewportWidth - 64, 480) }}>
+            <AdventureArt name="explorer" style={{ width: Math.min(300, viewportHeight * .34) * .4, height: Math.min(300, viewportHeight * .34) * .46 }} />
+          </SceneryBanner>}
           style={styles.emptyHero}
           title={t('profile:empty.title')}
           body={t('profile:empty.body')}
@@ -272,7 +278,9 @@ export function ProfileScreen({
           Stacked, the title reads as what it is: something you are called, under the
           face you chose. */}
       <View style={styles.identity}>
-        <AdventureArt name="explorer" style={{ width: '100%', aspectRatio: 4 / 3, borderRadius: 22 }} />
+        <SceneryBanner name="discovery-island" rounded="all" height={IDENTITY_SCENE}>
+          <AdventureArt name="explorer" style={{ width: IDENTITY_SCENE * .4, height: IDENTITY_SCENE * .46 }} />
+        </SceneryBanner>
         {portrait !== null && <View style={styles.portrait}>
           <Avatar
             size={PORTRAIT}

@@ -139,7 +139,7 @@ sends an eight-digit code." Add a support email.
 9. **The path after week one (5 min):** done with a default you can change. After the
    brief's first week the path goes on with one unit per continent, in the order the first
    week met them: Europe, the Americas, Asia and Oceania, Africa (33 steps, 63 countries;
-   `packages/content/packs/courses/first-week.v1.json` v1.1.0). Reordering units later
+   `packages/content/packs/courses/first-week.v1.json` v1.2.0; v1.2.0 adds each unit's decorative scenery). Reordering units later
    keeps every learner's finished steps. Switzerland and South Africa stay out of the
    path until their capitals are signed off (both are review-required). Check the
    Swedish unit names with the rest of the course copy (decision 4).

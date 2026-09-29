@@ -26,6 +26,7 @@ import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } fr
 import {
   AccessibilityInfo,
   Animated,
+  AppState,
   Easing,
   useWindowDimensions,
   type LayoutChangeEvent,
@@ -333,6 +334,52 @@ export function useStagger(index: number, step: MotionStep = 'base'): Animated.V
   }, [index, reduced, value, timing.duration, timing.easing])
 
   return value
+}
+
+/**
+ * A slow, endless rise and fall for decorative scenery — an island beside the path, a
+ * cloud behind a banner. The `drift` step: long enough to read as weather, not as a
+ * control asking to be tapped.
+ *
+ * `phase` (0–1) offsets one drifter from its neighbours so a column of them never bobs
+ * in step, which is the tell of one animation copied down a page. Seeded and held at
+ * rest (0) under Reduce Motion, while the app is in the background, and when `active`
+ * is false — a list can pause everything off screen.
+ */
+export function useDrift(phase = 0, active = true): Animated.Value {
+  const reduced = useReducedMotion()
+  const value = useRef(new Animated.Value(0)).current
+  useEffect(() => {
+    value.setValue(0)
+    if (reduced || !active) return
+    const half = motion.drift.duration / 2
+    const ease = Easing.inOut(Easing.sin)
+    const loop = Animated.loop(Animated.sequence([
+      Animated.timing(value, { toValue: 1, duration: half, easing: ease, useNativeDriver: true, isInteraction: false }),
+      Animated.timing(value, { toValue: 0, duration: half, easing: ease, useNativeDriver: true, isInteraction: false }),
+    ]))
+    // Starts after the screen has settled, never on the first frame. By then the OS has
+    // answered whether motion is wanted — `useReducedMotion` is seeded optimistically and
+    // corrected asynchronously — so a user who asked for stillness never sees one bob.
+    const start = setTimeout(() => loop.start(), motion.base.duration + Math.max(0, Math.min(1, phase)) * half)
+    const subscription = AppState.addEventListener('change', state => {
+      if (state === 'active') loop.start()
+      else { loop.stop(); value.setValue(0) }
+    })
+    // `?.` twice: react-native-web can hand back nothing to unsubscribe (see motion.test).
+    return () => { clearTimeout(start); loop.stop(); subscription?.remove?.() }
+  }, [reduced, active, phase, value])
+  return value
+}
+
+/** `useDrift`'s value as a transform: `rise` points up and back, with a hair of tilt. */
+export function driftStyle(value: Animated.Value, rise: number) {
+  return {
+    transform: [
+      { translateY: value.interpolate({ inputRange: [0, 1], outputRange: [0, -rise] }) },
+      { rotate: value.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '-1.5deg'] }) },
+    ],
+  }
 }
 
 /**

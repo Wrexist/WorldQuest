@@ -67,6 +67,7 @@ import { BALANCE } from '@worldquest/engines'
 import { useEffect, useState } from 'react'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
+import { IslandStage } from '../../components/Scenery.js'
 import { Icon } from '../../components/Icon.js'
 import { Stat } from '../../components/Stat.js'
 
@@ -105,10 +106,11 @@ const HERO = 200
  * this screen was. The thing it frames is the mascot, celebrating, which is the pose the
  * lesson summary already uses for the same feeling.
  *
- * 0.42 of the ring, measured off the shot: large enough to fill the hole, small enough
- * that the confetti still reads as confetti around him rather than as a border.
+ * Half the ring, standing on the floating island (September 2026): the island fills the
+ * hole the confetti frames, so Atlas reads as arriving somewhere rather than floating in
+ * a doughnut, and the confetti still reads as confetti around the place.
  */
-const HERO_SUBJECT = 0.42
+const HERO_SUBJECT = 0.46
 
 export function QuestComplete({ done, total, streak, milestoneXp, onDone }: QuestCompleteProps) {
   const { colors, styles } = useThemeValues()
@@ -131,7 +133,7 @@ export function QuestComplete({ done, total, streak, milestoneXp, onDone }: Ques
           <Art name="celebration/burst" size={HERO} />
           <View style={StyleSheet.absoluteFill}>
             <View style={styles.heroSubject}>
-              <Art name="atlas/celebrate" size={Math.round(HERO * HERO_SUBJECT)} />
+              <IslandStage size={Math.round(HERO * .92)}><Art name="atlas/celebrate" size={Math.round(HERO * HERO_SUBJECT)} /></IslandStage>
             </View>
           </View>
         </Animated.View>

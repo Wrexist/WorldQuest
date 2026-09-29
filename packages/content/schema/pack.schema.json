@@ -130,6 +130,11 @@
         },
         "titleKey": { "$ref": "#/$defs/i18nKey" },
         "objectiveKey": { "$ref": "#/$defs/i18nKey" },
+        "scenery": {
+          "type": "string",
+          "enum": ["island", "discovery-island", "europe", "asia", "africa", "north-america", "south-america", "oceania", "antarctica"],
+          "description": "Optional decorative illustration drawn above the unit. Imaginary scenery, never a map or a flag; an app without that art draws nothing."
+        },
         "nodes": {
           "type": "array",
           "minItems": 1,

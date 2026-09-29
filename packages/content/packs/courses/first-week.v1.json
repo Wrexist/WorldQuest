@@ -2,7 +2,7 @@
   "$schema": "../../schema/pack.schema.json",
   "$comment": "The first-week course from docs/product/launch-brief.md (\"First week: World foundations\"), as the path on Home. Units and nodes only: every country name, flag, place and capital comes from the geography packs, and every word a learner reads is an i18n key in packages/i18n/locales/*/course.json. Node ids ship in save data as the keys finished lessons are counted under, so they are permanent; a later version may add, reorder or retune nodes, never rename one.\n\nOne node per day of the brief, and one deliberate difference from its table: day 1 practises the flags of all six countries days 2 and 3 use (SE, NO, US, JP, BR, KE), not only the first four. Each fact is asked at most once per lesson, and the D1 Worker refuses a focused lesson under five questions (FOCUS_TOO_NARROW, the engines' MIN_LESSON_ITEMS), so four flags would open the path on an empty lesson for every learner on the release backend. Moving BR and KE forward a day also closes a gap in the table itself: day 6 mixes the flags of all twelve and never introduced those two. `pnpm content:validate` composes every node with the real engine and fails any that cannot fill a lesson with and without a screen reader, so this cannot regress silently.\n\nThe brief's day 7 is \"after a delay\"; this version has no time gate, so the check opens when day 6 is done and relies on the composer serving due work first. Days are not a scheduler (the brief says so): a node opens when the one before it has its finished lessons. Awaiting native-speaker editorial approval (L18) like the rest of the course copy.\n\nv1.1.0 continues the path past the brief's week, so a learner who walks it in a few days does not reach the end of new content in their first week: one unit per continent for the countries the geography packs hold, in the order the first week met each continent (Europe with SE on day 1, the Americas with US, Asia with JP and Oceania with AU on day 4, Africa with KE), each in the first week's rhythm and the same step sentences. The Americas are one group because a one-attribute step needs five facts and each half of the continent has four. CH and ZA stay out, because a check asks every attribute of every country before it: CH's capital is review-required (its constitution names none), and ZA's is too (it has three) and it has no location question (its name answers it; see scripts/build-locations.cjs). Both stay in Explore. Appended after the first week, so no node moved and no finished lesson changed meaning.",
   "packId": "courses.first-week",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "subject": "geography",
   "kind": "course",
   "locales": [
@@ -17,6 +17,7 @@
       "id": "unit.first-week.first-countries",
       "titleKey": "course:firstWeek.unit.first.title",
       "objectiveKey": "course:firstWeek.unit.first.objective",
+      "scenery": "island",
       "nodes": [
         {
           "id": "node.first-week.flags",
@@ -54,6 +55,7 @@
       "id": "unit.first-week.continents",
       "titleKey": "course:firstWeek.unit.continents.title",
       "objectiveKey": "course:firstWeek.unit.continents.objective",
+      "scenery": "discovery-island",
       "nodes": [
         {
           "id": "node.first-week.new-countries",
@@ -101,6 +103,7 @@
       "id": "unit.first-week.europe",
       "titleKey": "course:firstWeek.unit.europe.title",
       "objectiveKey": "course:firstWeek.unit.europe.objective",
+      "scenery": "europe",
       "nodes": [
         {
           "id": "node.first-week.europe-flags",
@@ -178,6 +181,7 @@
       "id": "unit.first-week.americas",
       "titleKey": "course:firstWeek.unit.americas.title",
       "objectiveKey": "course:firstWeek.unit.americas.objective",
+      "scenery": "north-america",
       "nodes": [
         {
           "id": "node.first-week.americas-flags",
@@ -235,6 +239,7 @@
       "id": "unit.first-week.asia-oceania",
       "titleKey": "course:firstWeek.unit.asiaOceania.title",
       "objectiveKey": "course:firstWeek.unit.asiaOceania.objective",
+      "scenery": "asia",
       "nodes": [
         {
           "id": "node.first-week.asia-oceania-flags",
@@ -312,6 +317,7 @@
       "id": "unit.first-week.africa",
       "titleKey": "course:firstWeek.unit.africa.title",
       "objectiveKey": "course:firstWeek.unit.africa.objective",
+      "scenery": "africa",
       "nodes": [
         {
           "id": "node.first-week.africa-flags",

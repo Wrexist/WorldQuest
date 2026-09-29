@@ -127,6 +127,7 @@ import {
   type RegionCode,
 } from '../explore/ExploreScreen.js'
 import { Art } from '../../components/Art.js'
+import { IslandStage, SceneryBanner, type SceneryName } from '../../components/Scenery.js'
 import { Icon } from '../../components/Icon.js'
 import { WheelPicker, type WheelOption } from '../../components/WheelPicker.js'
 import type { LevelChoice } from './levels.js'
@@ -431,6 +432,19 @@ const REGION_ART = 72
 const HERO = 220
 
 /**
+ * The island Atlas stands on at welcome and before the taster: about the hero band's own
+ * height, so O7's fixed band still holds, with Atlas half of it, feet on the lawn.
+ */
+const STAGE = 232
+const STAGE_ATLAS = 120
+
+/**
+ * Welcome has the whole sky panel to itself and nothing else to show, so its island is
+ * the size of a place rather than of an icon. Not in a band, so O7 does not bind it.
+ */
+const WELCOME_STAGE = 300
+
+/**
  * The three value slides, each with the illustration briefed for it.
  *
  * The art is a property of the slide rather than a lookup beside it, so a fourth slide
@@ -445,10 +459,10 @@ const HERO = 220
  * screen a new user ever sees.
  */
 const SLIDES = [
-  { title: 'onboarding:slide.1.title', body: 'onboarding:slide.1.body', art: 'onboarding/explore' },
-  { title: 'onboarding:slide.2.title', body: 'onboarding:slide.2.body', art: 'onboarding/learn' },
-  { title: 'onboarding:slide.3.title', body: 'onboarding:slide.3.body', art: 'onboarding/conquer' },
-] as const satisfies readonly { title: TranslationKey; body: TranslationKey; art: ArtName }[]
+  { title: 'onboarding:slide.1.title', body: 'onboarding:slide.1.body', art: 'onboarding/explore', scene: 'europe' },
+  { title: 'onboarding:slide.2.title', body: 'onboarding:slide.2.body', art: 'onboarding/learn', scene: 'island' },
+  { title: 'onboarding:slide.3.title', body: 'onboarding:slide.3.body', art: 'onboarding/conquer', scene: 'stage' },
+] as const satisfies readonly { title: TranslationKey; body: TranslationKey; art: ArtName; scene: SceneryName | 'stage' }[]
 
 /**
  * The slide hero's band: the page's own width, at the art's own aspect.
@@ -918,8 +932,8 @@ export function OnboardingScreen({
                 the subject here, not the speaker: there is no bubble, because a character
                 who greets you by putting a sentence in a speech balloon is a character
                 delivering a line rather than one turning up. */}
-            <Animated.View style={[styles.hero, arrivalStyle]}>
-              <Art name="atlas/welcome" size={HERO} />
+            <Animated.View style={[styles.hero, styles.welcomeHero, arrivalStyle]}>
+              <IslandStage size={WELCOME_STAGE}><Art name="atlas/welcome" size={WELCOME_STAGE * .5} /></IslandStage>
             </Animated.View>
 
             {/* The same wordmark the splash was showing a moment ago, from the same key.
@@ -976,7 +990,15 @@ export function OnboardingScreen({
                       off. It still FITS the art inside the box, so the same whole-frame
                       slide came out 330 wide in a 390 band with canvas showing down both
                       sides — the bordered rectangle again, minus its border. See `Art`. */}
-                  <Art name={s.art} size={page} height={band} frame="fill" />
+                  {/* A place on every page, since September 2026: a painted scene for
+                      the first two, and Atlas on his island for the promise of the third.
+                      The band's height is unchanged, so O7 (no vertical step between
+                      pages) holds; the scenes are cover-cropped to it. */}
+                  {s.scene === 'stage'
+                    ? <View style={[styles.slideStage, { width: page, height: band }]}>
+                        <IslandStage size={Math.min(page * .82, band)}><Art name={s.art} size={Math.min(page * .82, band) * .5} /></IslandStage>
+                      </View>
+                    : <SceneryBanner name={s.scene} height={band} style={[styles.slideScene, { width: page - space[6] }]} />}
                   <View style={styles.slideText} onLayout={onCopyLayout}>
                     <Text style={[styles.title, styles.slideTitle]}>{t(s.title)}</Text>
                     {/* The third slide's body is the only one carrying a number, and it
@@ -1326,7 +1348,7 @@ export function OnboardingScreen({
                 build had measured this asset as a whole-frame panel — see
                 `scripts/build-art.cjs` and Audit 4. */}
             <View style={styles.hero}>
-              <Art name="atlas/welcome" size={HERO} />
+              <IslandStage size={STAGE}><Art name="atlas/welcome" size={STAGE_ATLAS} /></IslandStage>
             </View>
             <Text style={styles.title}>{t('onboarding:taster.title')}</Text>
             <Text style={styles.body}>{t('onboarding:taster.body')}</Text>
@@ -1610,6 +1632,9 @@ const useThemeValues = createThemeStyles((colors) => {
   slideBody: { paddingHorizontal: 0 },
   // Fixed, so the picture does not move as the pages do. See HERO.
   hero: { height: HERO, alignItems: 'center', justifyContent: 'center' },
+  slideStage: { alignItems: 'center', justifyContent: 'center' },
+  welcomeHero: { height: WELCOME_STAGE },
+  slideScene: { alignSelf: 'center', borderRadius: radius.xl },
   centred: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: space[5] },
   /**
    * The vertical steps, sized for the SHORT phone rather than the design target.

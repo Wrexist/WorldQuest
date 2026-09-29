@@ -51,6 +51,7 @@ import type { GradeResult } from '@worldquest/engines'
 import { Art } from '../../components/Art.js'
 import { Flag } from '../../components/Flag.js'
 import { AdventureArt } from '../../components/AdventureArt.js'
+import { IslandStage } from '../../components/Scenery.js'
 import { currentLocale, formatNumber, useT } from '../../lib/i18n.js'
 
 /**
@@ -128,6 +129,12 @@ const CELEBRATION_SIZE = 240
  * one keeps the learner company rather than throwing a party (round 2, row 43).
  */
 const CALM_ATLAS = 112
+
+/**
+ * The island Atlas celebrates on. Wide enough that he reads as standing on it rather
+ * than in front of a picture; the column below still starts above the fold on an SE.
+ */
+const ISLAND_STAGE = 220
 
 /** Wide enough to tell Chad from Romania, small enough that eight fit on a 320pt row. */
 const PRACTISED_FLAG_WIDTH = 44
@@ -226,7 +233,7 @@ export function LessonSummary({
             add confetti; early exits retain the resting character and no motion. */}
         {outcome !== 'perfect' && (
           <View style={styles.headlineArt}>
-            {outcome === 'early' ? <Art name="atlas/resting" size={CALM_ATLAS} /> : <AdventureArt name="explorer" mood="celebrate" style={{ width: 140, height: 160 }} />}
+            {outcome === 'early' ? <Art name="atlas/resting" size={CALM_ATLAS} /> : <IslandStage size={ISLAND_STAGE}><AdventureArt name="explorer" mood="celebrate" style={{ width: 96, height: 110 }} /></IslandStage>}
           </View>
         )}
         {outcome === 'perfect' && (
@@ -237,7 +244,7 @@ export function LessonSummary({
             <View style={styles.celebration} pointerEvents="none">
               <Art name="celebration/burst" size={CELEBRATION_SIZE} />
             </View>
-            <AdventureArt name="explorer" mood="celebrate" style={{ width: 140, height: 160 }} />
+            <IslandStage size={ISLAND_STAGE}><AdventureArt name="explorer" mood="celebrate" style={{ width: 96, height: 110 }} /></IslandStage>
           </View>
         )}
         {/* `heading` and not a bare Text: this is the first thing a screen reader
