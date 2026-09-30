@@ -27,3 +27,36 @@ Replaced the shared coarse keyframes with separate, continuously eased tracks sa
 `mascotPerformance.ts` owns deterministic curves and rig pivots. `useMascotMotion.ts` owns playback, focus/background cleanup and reduced motion. `WorldMascot.tsx` only composes the artwork. Resizing does not restart the performance, and focus resumes quiet eye movement without replaying an earned celebration. Runtime drawing remains transform-only, without a JS frame loop or layout animation.
 
 Revision validation: 15 motion/component tests, TypeScript and 22 browser checks passed. In-app video and sampled motion frames: reviews/world-mascot-polish-2026-09-27/. Native device validation remains outstanding.
+
+## 3D shading and emotions (September 29–30)
+
+The rig is re-rendered in the island's soft 3D (lit sphere, raised continents, glossy
+eyes, blush, scarf folds, soled boots) at 900 px, with the same outlines and pivots. It
+now has 20 layers: per-eye lids tinted to the globe's shading, and new mouths (`laugh`,
+`surprised`, `smirk`) and extras (`tears`, `sparkles`, `zzz`).
+
+Ten moods. Each has a **face** (`FACE` in `mascotPerformance.ts`: eyes, mouth, lid
+height, brow height, pupil size, extras) that is the still frame under Reduce Motion,
+an **entrance** played once, and an **idle** loop afterwards:
+
+| Mood | Used for | Entrance | Idle |
+|---|---|---|---|
+| welcome | greetings, the path guide | wave | wink, glance left and right, tiny hop |
+| celebrate | lesson complete | hop | small happy shake |
+| laughing | a perfect lesson; any boop | belly-laugh shake, tears of joy | chuckles |
+| surprised | new things | jolt: brows up, pupils shrink, arms up | glances round |
+| proud | quest complete | chin up, scarf in the wind, one slow wink | sparkles twinkle, another wink |
+| sleepy | offline | nods off, jolts, nods again; Zzz rise | breathing, a droop |
+| wink | tips | a wink | as welcome |
+| thinking, encouraging, resting | as before | as before | glances, breathing |
+
+**Boop:** the Atlas beside the current step on Home is a button ("Atlas, your guide.
+Tap for a giggle."): a tap plays the laugh on its own clock over whatever he is doing.
+Elsewhere he stays decorative and hidden from assistive technology.
+
+Three clocks (entrance, idle, boop) are summed per track on the native driver; idle
+starts after the entrance and stops on blur, background and Reduce Motion, like
+everything else. Every track rests at both ends (`mascotPerformance.test.ts`), so no
+loop pops and no entrance leaves him mid-pose. Nothing laughs at the learner, and no
+emotion is attached to a wrong answer. Preview GIFs were rendered from the sampled
+tracks; a device pass for smoothness remains outstanding.

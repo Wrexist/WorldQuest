@@ -3,8 +3,12 @@ import { EXPEDITION_ART } from '../lib/expedition.generated.js'
 import { ADVENTURE_ART } from '../lib/adventure.generated.js'
 import { WorldMascot, type AtlasMood } from './WorldMascot.js'
 /** Scenery and the shared articulated companion; labels and actions stay native. */
-export function AdventureArt({ name, style, mood = 'welcome' }: { name: keyof typeof ADVENTURE_ART; style?: StyleProp<ImageStyle>; mood?: AtlasMood }) {
-  if (name === 'explorer') return <WorldMascot style={style as StyleProp<ViewStyle>} mood={mood} />
+export function AdventureArt({ name, style, mood = 'welcome', boopLabel }: {
+  name: keyof typeof ADVENTURE_ART; style?: StyleProp<ImageStyle>; mood?: AtlasMood
+  /** Makes Atlas tappable (he laughs); the button's accessible name. */
+  boopLabel?: string
+}) {
+  if (name === 'explorer') return <WorldMascot style={style as StyleProp<ViewStyle>} mood={mood} onBoopLabel={boopLabel} />
   const source = name === 'treasure' ? EXPEDITION_ART['treasure-chest'].asset : ADVENTURE_ART[name]
   return <Image source={typeof source === 'string' ? { uri: source } : source} style={style} resizeMode={name === 'treasure' ? 'contain' : 'cover'} alt="" aria-hidden accessibilityElementsHidden importantForAccessibility="no-hide-descendants" />
 }

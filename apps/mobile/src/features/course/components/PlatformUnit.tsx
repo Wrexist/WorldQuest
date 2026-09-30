@@ -78,9 +78,11 @@ function PlatformStop({ node, index, width, total, open, onPress, onPractise, on
       <View style={{ position: 'absolute', start: center - 40, top: space[4], width: 80 }} testID={`trail-stop-${node.position}`}>
         <PathNode node={node} total={total} swing={0} column={80} expanded={selected} onPress={() => onPress(node)} compact />
       </View>
-      {current && <View pointerEvents="none" aria-hidden testID="trail-guide" dataSet={{ step: node.id }} style={[styles.guide, { start: center < width / 2 ? width - 112 : space[2] }]}>
-        <AdventureArt name="explorer" mood="welcome" style={styles.explorer} />
-        <View style={styles.guideGround} />
+      {current && <View pointerEvents="box-none" testID="trail-guide" dataSet={{ step: node.id }} style={[styles.guide, { start: center < width / 2 ? width - 112 : space[2] }]}>
+        {/* The one Atlas you can poke: tap him and he laughs. A button with a name, so a
+            screen reader meets it as the small game it is rather than as a picture. */}
+        <AdventureArt name="explorer" mood="welcome" style={styles.explorer} boopLabel={t('home:path.guide.boop')} />
+        <View pointerEvents="none" aria-hidden style={styles.guideGround} />
       </View>}
     </View>
     {showAction && <View style={styles.actionWrap} testID="trail-next">

@@ -117,6 +117,43 @@ const parts = {
   happyEyes: `<path d="M100 135q12-21 26-4M162 121q11-20 23-4" fill="none" stroke="${c.ink}" stroke-width="7" stroke-linecap="round"/>
     <path d="M104 131q9-13 18-3M166 117q8-12 16-3" fill="none" stroke="${c.inkSoft}" stroke-width="1.6" stroke-linecap="round" opacity=".6"/>`,
 
+  // ── Emotions (September 2026). Each is its own layer so the runtime can swap faces and
+  // animate lids and extras without redrawing the head. Lids are the eye's own outline
+  // in skin, pivoted at the eye's top (LID_PIVOTS in mascotPerformance.ts): scaled down
+  // they are open and invisible, scaled to 1 they close the eye, and anywhere between
+  // they are the droop of sleepy or the half-lid of smug. Each lid is tinted to the
+  // globe's shading where its eye sits (the key light is upper left), so a closed eye
+  // reads as skin, not as a patch.
+  lidLeft: `<defs>${vertical('lidL', '#2B86EE', '#0B6ADB')}</defs>
+    <ellipse cx="115" cy="133" rx="25.5" ry="34.5" fill="url(#lidL)" transform="rotate(13 115 133)"/>
+    <path d="M91 142q24 30 50 -2" fill="none" stroke="${c.ink}" stroke-width="3.2" stroke-linecap="round" transform="rotate(13 115 133)"/>`,
+  lidRight: `<defs>${vertical('lidR', '#0F6FE0', '#0859C4')}</defs>
+    <ellipse cx="175" cy="117" rx="23.5" ry="32.5" fill="url(#lidR)" transform="rotate(-8 175 117)"/>
+    <path d="M152 125q23 29 47 -2" fill="none" stroke="${c.ink}" stroke-width="3.2" stroke-linecap="round" transform="rotate(-8 175 117)"/>`,
+  laugh: `<defs>${vertical('mouthL', '#0B3572', c.ink)}${vertical('tongueL', c.coralLight, c.coral)}
+      <clipPath id="ml"><path d="M122 164q27 14 55 -6q6 34 -27 40q-26 1 -28 -34"/></clipPath></defs>
+    <path d="M122 164q27 14 55 -6q6 34 -27 40q-26 1 -28 -34" fill="url(#mouthL)"/>
+    <g clip-path="url(#ml)"><path d="M123 164q27 13 54 -6l-1 8q-26 17 -52 5z" fill="${c.white}"/>
+      <ellipse cx="150" cy="196" rx="19" ry="11" fill="url(#tongueL)"/></g>
+    <path d="M122 164q27 14 55 -6" fill="none" stroke="${c.ink}" stroke-width="2.4" stroke-linecap="round"/>`,
+  surprised: `<defs>${vertical('mouthO', '#0B3572', c.ink)}</defs>
+    <ellipse cx="150" cy="180" rx="10" ry="13" fill="url(#mouthO)"/>
+    <ellipse cx="150" cy="187" rx="6" ry="4" fill="${c.coral}" opacity=".9"/>`,
+  smirk: `<path d="M130 176q22 10 40 -12" fill="none" stroke="${c.ink}" stroke-width="5" stroke-linecap="round"/>
+    <path d="M167 166q5 -1 7 -6" fill="none" stroke="${c.ink}" stroke-width="3.4" stroke-linecap="round"/>`,
+  tears: `<defs>${vertical('tear', '#BFE8FF', '#5AB8FF')}</defs>
+    <path d="M86 142q-7 10 -2 15q6 4 9 -3q1 -5 -7 -12z" fill="url(#tear)" stroke="#fff" stroke-width="1.2"/>
+    <path d="M203 124q8 9 4 15q-6 4 -9 -2q-1 -5 5 -13z" fill="url(#tear)" stroke="#fff" stroke-width="1.2"/>`,
+  sparkles: `<g fill="${c.goldLight}" stroke="${c.gold}" stroke-width="1.2" stroke-linejoin="round">
+      <path d="M44 60l4 10l10 4l-10 4l-4 10l-4 -10l-10 -4l10 -4z"/>
+      <path d="M250 44l3 7l7 3l-7 3l-3 7l-3 -7l-7 -3l7 -3z"/>
+      <path d="M262 96l2.4 5.6l5.6 2.4l-5.6 2.4l-2.4 5.6l-2.4 -5.6l-5.6 -2.4l5.6 -2.4z"/>
+      <path d="M30 118l2 5l5 2l-5 2l-2 5l-2 -5l-5 -2l5 -2z"/></g>`,
+  zzz: `<g fill="none" stroke="${c.inkSoft}" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M214 42h14l-14 16h14" stroke-width="4"/>
+      <path d="M238 20h10l-10 11h10" stroke-width="3.2"/>
+      <path d="M256 4h7l-7 8h7" stroke-width="2.6"/></g>`,
+
   scarf: `<defs>${vertical('cloth', c.coralLight, c.coral)}${vertical('knot', c.coral, c.coralDeep)}${blur('fold', 1.4)}
       <clipPath id="s"><path d="M97 197q51 16 102-15q-6 27-21 45q-34-10-53-23q-9 20-18 12q1-12 7-15q-16 4-17-4z"/></clipPath></defs>
     <path d="M97 197q51 16 102-15q-6 27-21 45q-34-10-53-23q-9 20-18 12q1-12 7-15q-16 4-17-4z" fill="url(#cloth)"/>

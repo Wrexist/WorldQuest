@@ -439,7 +439,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "path.startChallenge": "Start challenge →",
       "path.continueChallenge": "Continue challenge →",
       "path.showCourse": "View whole course",
-      "path.showCurrent": "Back to current unit"
+      "path.showCurrent": "Back to current unit",
+      "path.guide.boop": "Atlas, your guide. Tap for a giggle."
     },
     "league": {
       "title": "League",
@@ -1385,7 +1386,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "path.startChallenge": "Starta utmaningen →",
       "path.continueChallenge": "Fortsätt utmaningen →",
       "path.showCourse": "Visa hela kursen",
-      "path.showCurrent": "Tillbaka till aktuell enhet"
+      "path.showCurrent": "Tillbaka till aktuell enhet",
+      "path.guide.boop": "Atlas, din guide. Tryck för ett fniss."
     },
     "league": {
       "title": "Liga",

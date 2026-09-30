@@ -67,6 +67,7 @@ import { BALANCE } from '@worldquest/engines'
 import { useEffect, useState } from 'react'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
+import { AtlasCharacter } from '../../components/AtlasCharacter.js'
 import { IslandStage } from '../../components/Scenery.js'
 import { Icon } from '../../components/Icon.js'
 import { Stat } from '../../components/Stat.js'
@@ -133,7 +134,7 @@ export function QuestComplete({ done, total, streak, milestoneXp, onDone }: Ques
           <Art name="celebration/burst" size={HERO} />
           <View style={StyleSheet.absoluteFill}>
             <View style={styles.heroSubject}>
-              <IslandStage size={Math.round(HERO * .92)}><Art name="atlas/celebrate" size={Math.round(HERO * HERO_SUBJECT)} /></IslandStage>
+              <IslandStage size={Math.round(HERO * .92)}><AtlasCharacter mood="proud" size={Math.round(HERO * HERO_SUBJECT)} /></IslandStage>
             </View>
           </View>
         </Animated.View>

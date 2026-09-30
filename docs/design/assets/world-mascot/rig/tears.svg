@@ -1,0 +1,3 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 300 300"><defs><linearGradient id="tear" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#BFE8FF"/><stop offset="1" stop-color="#5AB8FF"/></linearGradient></defs>
+    <path d="M86 142q-7 10 -2 15q6 4 9 -3q1 -5 -7 -12z" fill="url(#tear)" stroke="#fff" stroke-width="1.2"/>
+    <path d="M203 124q8 9 4 15q-6 4 -9 -2q-1 -5 5 -13z" fill="url(#tear)" stroke="#fff" stroke-width="1.2"/></svg>

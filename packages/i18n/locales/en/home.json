@@ -158,5 +158,7 @@
   "home:path.showCourse": "View whole course",
   "home:path.showCourse__note": "Secondary course visibility toggle; does not reset learning progress or navigate away.",
   "home:path.showCurrent": "Back to current unit",
-  "home:path.showCurrent__note": "Secondary course visibility toggle; does not reset learning progress or navigate away."
+  "home:path.showCurrent__note": "Secondary course visibility toggle; does not reset learning progress or navigate away.",
+  "home:path.guide.boop": "Atlas, your guide. Tap for a giggle.",
+  "home:path.guide.boop__note": "Accessible name of the mascot beside the current step on Home. Tapping it makes Atlas laugh; nothing else happens. Playful, no instruction beyond that. Max 40 characters."
 }

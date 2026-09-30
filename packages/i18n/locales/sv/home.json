@@ -91,5 +91,7 @@
   "home:path.showCourse": "Visa hela kursen",
   "home:path.showCourse__note": "Secondary course visibility toggle; does not reset learning progress or navigate away.",
   "home:path.showCurrent": "Tillbaka till aktuell enhet",
-  "home:path.showCurrent__note": "Secondary course visibility toggle; does not reset learning progress or navigate away."
+  "home:path.showCurrent__note": "Secondary course visibility toggle; does not reset learning progress or navigate away.",
+  "home:path.guide.boop": "Atlas, din guide. Tryck för ett fniss.",
+  "home:path.guide.boop__note": "Tillgängligt namn för maskoten bredvid nästa steg på Hem. Ett tryck får Atlas att skratta; inget annat händer. Max 40 tecken."
 }

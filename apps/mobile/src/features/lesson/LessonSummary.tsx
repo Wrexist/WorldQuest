@@ -244,7 +244,8 @@ export function LessonSummary({
             <View style={styles.celebration} pointerEvents="none">
               <Art name="celebration/burst" size={CELEBRATION_SIZE} />
             </View>
-            <IslandStage size={ISLAND_STAGE}><AdventureArt name="explorer" mood="celebrate" style={{ width: 96, height: 110 }} /></IslandStage>
+            {/* A perfect lesson gets the laugh: tears of joy, a belly shake. */}
+            <IslandStage size={ISLAND_STAGE}><AdventureArt name="explorer" mood="laughing" style={{ width: 96, height: 110 }} /></IslandStage>
           </View>
         )}
         {/* `heading` and not a bare Text: this is the first thing a screen reader

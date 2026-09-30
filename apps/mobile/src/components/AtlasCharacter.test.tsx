@@ -84,3 +84,31 @@ describe('Atlas and motion preferences', () => {
 
 
 
+
+describe('Booping Atlas', () => {
+  it('is a named button only where a screen opts in, and laughs when tapped', async () => {
+    const { WorldMascot } = await import('./WorldMascot.js')
+    const { fireEvent } = await import('@testing-library/react')
+    const decorative = render(<WorldMascot style={{ width: 120, height: 120 }} />)
+    expect(decorative.queryByRole('button')).toBeNull()
+    decorative.unmount()
+
+    // Reduced motion, where the laughing face is HELD (jsdom finishes any animation in a
+    // frame, which would end the laugh before it could be seen).
+    setAppReducedMotion(true)
+    const view = render(<WorldMascot style={{ width: 120, height: 120 }} onBoopLabel="Atlas, your guide. Tap for a giggle." />)
+    const button = view.getByRole('button', { name: 'Atlas, your guide. Tap for a giggle.' })
+    const mouth = () => (view.getByTestId('mascot-mouth').querySelector('img') ?? view.getByTestId('mascot-mouth')).getAttribute('src') ?? ''
+    expect(mouth()).not.toContain('laugh')
+    act(() => { fireEvent.click(button) })
+    expect(mouth()).toContain('laugh')
+    expect(view.getByTestId('mascot-tears')).toBeTruthy()
+  })
+
+  it.each<AtlasMood>(['laughing', 'surprised', 'proud', 'sleepy', 'wink'])('draws the %s face with motion reduced', mood => {
+    setAppReducedMotion(true)
+    const view = render(<AtlasCharacter size={140} mood={mood} />)
+    expect(view.getByTestId('mascot-body')).toBeTruthy()
+    expect(view.getByTestId('mascot-mouth')).toBeTruthy()
+  })
+})
