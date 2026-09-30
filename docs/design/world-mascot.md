@@ -28,35 +28,38 @@ Replaced the shared coarse keyframes with separate, continuously eased tracks sa
 
 Revision validation: 15 motion/component tests, TypeScript and 22 browser checks passed. In-app video and sampled motion frames: reviews/world-mascot-polish-2026-09-27/. Native device validation remains outstanding.
 
-## 3D shading and emotions (September 29–30)
+## Atlas in real 3D (September 30)
 
-The rig is re-rendered in the island's soft 3D (lit sphere, raised continents, glossy
-eyes, blush, scarf folds, soled boots) at 900 px, with the same outlines and pivots. It
-now has 20 layers: per-eye lids tinted to the globe's shading, and new mouths (`laugh`,
-`surprised`, `smirk`) and extras (`tears`, `sparkles`, `zzz`).
+The layered 2D rig (September 27–29, including its shaded re-render and emotion pass)
+was retired on owner review: layered flat art could not reach the finish of the island
+and the Expedition props. Atlas is now a real 3D character built in Blender.
 
-Ten moods. Each has a **face** (`FACE` in `mascotPerformance.ts`: eyes, mouth, lid
-height, brow height, pupil size, extras) that is the still frame under Reduce Motion,
-an **entrance** played once, and an **idle** loop afterwards:
+- **Model:** `scripts/build-globe-mascot.py` builds him procedurally (no downloaded mesh
+  or texture): an icosphere with raised, imaginary continents baked in as geometry and
+  vertex colour (deep water, shallows, sand, land, hills) and kept off the face; glossy
+  eyeballs with iris, pupil and two glints on a gaze pivot; hinged eyelids with lash
+  lines; brows on pivots; mouths bent onto the sphere (smile, laugh with teeth and
+  tongue, O, smirk, gentle, thinking); blush; a coral bandana with knot and tails; mitten
+  arms on shoulder pivots; boots with soles and laces; tears, sparkles and Zzz. Master:
+  `docs/design/assets/world-mascot-3d/atlas.blend`.
+- **Faces:** `FACE` in the script sets each of the ten moods' rest look; stills are in
+  `docs/design/assets/world-mascot-3d/stills/`.
+- **Acting:** `scripts/globe_mascot_acting.py` keys one two-second performance per mood
+  (36 frames at 18 fps), every channel starting and ending at rest: welcome waves,
+  celebrate crouches and springs, laughing clutches his belly and shakes with tears,
+  surprised jolts, proud puts his hands on his hips and winks, sleepy nods off and
+  jerks awake, thinking tilts with a hand to his chin, encouraging nods, resting
+  breathes, wink winks.
+- **Render:** Cycles, AgX Punchy, key, fill, rim and top area lights, a shadow catcher,
+  transparent film.
+- **Runtime:** `scripts/build-globe-mascot-art.cjs` packs each mood into a 6×6 sheet of
+  256 px cells plus a 480 px still (`apps/mobile/assets/art/atlas-globe`,
+  `src/lib/atlasGlobe.generated.ts`). `WorldMascot` steps through the sheet like the
+  treasure chest: no 3D engine, no video. He plays his mood when he appears and again
+  every few seconds while visible (sleepy dozes continuously), stops at rest on blur,
+  background and Reduce Motion, and shows the still under Reduce Motion. The Atlas
+  beside the current step on Home is a button that laughs when tapped.
 
-| Mood | Used for | Entrance | Idle |
-|---|---|---|---|
-| welcome | greetings, the path guide | wave | wink, glance left and right, tiny hop |
-| celebrate | lesson complete | hop | small happy shake |
-| laughing | a perfect lesson; any boop | belly-laugh shake, tears of joy | chuckles |
-| surprised | new things | jolt: brows up, pupils shrink, arms up | glances round |
-| proud | quest complete | chin up, scarf in the wind, one slow wink | sparkles twinkle, another wink |
-| sleepy | offline | nods off, jolts, nods again; Zzz rise | breathing, a droop |
-| wink | tips | a wink | as welcome |
-| thinking, encouraging, resting | as before | as before | glances, breathing |
-
-**Boop:** the Atlas beside the current step on Home is a button ("Atlas, your guide.
-Tap for a giggle."): a tap plays the laugh on its own clock over whatever he is doing.
-Elsewhere he stays decorative and hidden from assistive technology.
-
-Three clocks (entrance, idle, boop) are summed per track on the native driver; idle
-starts after the entrance and stops on blur, background and Reduce Motion, like
-everything else. Every track rests at both ends (`mascotPerformance.test.ts`), so no
-loop pops and no entrance leaves him mid-pose. Nothing laughs at the learner, and no
-emotion is attached to a wrong answer. Preview GIFs were rendered from the sampled
-tracks; a device pass for smoothness remains outstanding.
+Rebuild: `blender --background --python scripts/build-globe-mascot.py -- --stills --sheets`
+(about 30 minutes for all ten moods), then `node scripts/build-globe-mascot-art.cjs`.
+A device pass for smoothness remains outstanding.
