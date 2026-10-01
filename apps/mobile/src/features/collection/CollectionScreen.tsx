@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * Collection — mockup screen 10 (flags) and its country twin.
  *
@@ -38,7 +39,6 @@ import { Flag } from '../../components/Flag.js'
 import {
   Button,
   Card,
-  colors,
   layout,
   ProgressBar,
   radius,
@@ -124,6 +124,7 @@ export function CollectionScreen({
   onOpen,
   onStartLesson,
 }: CollectionScreenProps) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   const [filter, setFilter] = useState<CollectionFilter>('all')
   const [query, setQuery] = useState('')
@@ -207,13 +208,13 @@ export function CollectionScreen({
         />
 
         {/* Scrolls sideways rather than wrapping.
-   
+
             Four chips do not fit one row at 320, so "Starred" dropped alone onto a
             second line — a row of controls that changes height between devices, with
             one member visually demoted for no reason a user could infer. Wrapping is
             also the wrong direction to fail: a fifth filter, or a locale with longer
             words, makes the block taller on exactly the screens with least room.
-   
+
             `alwaysBounceHorizontal` off so it does not rubber-band on a phone wide
             enough to hold all four, where there is nothing to scroll to. */}
         <ScrollView
@@ -306,6 +307,7 @@ function Tile({
   readonly wide: boolean
   readonly onOpen: ((id: string) => void) | undefined
 }) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   // This grid is the case `motion.stagger`'s `maxItems` was written for: sixty-five
   // tiles at 40 ms each would take two and a half seconds to finish arriving. The
@@ -382,7 +384,10 @@ function Tile({
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   root: { flex: 1 },
   header: { padding: space[4], gap: space[3] },
   title: { ...text('h1'), color: colors.text.primary },
@@ -482,4 +487,6 @@ const styles = StyleSheet.create({
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[2] },
   emptyTitle: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
   emptyBody: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
+})
+  return { colors, styles }
 })

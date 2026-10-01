@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 import { StreakGemCollection } from './StreakGemCollection.js'
 /**
  * The streak, and the two things that protect it.
@@ -32,7 +33,7 @@ import { StreakGemCollection } from './StreakGemCollection.js'
 
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
-import { Button, Card, Tally, colors, space, text } from '@worldquest/design'
+import { Button, Card, Tally, space, text } from '@worldquest/design'
 import {
   FREEZE_PRICE,
   MAX_FREEZES,
@@ -92,6 +93,7 @@ const LADDER_TICK = 18
  * window follows. This is a thing to look forward to, not a thing to be afraid of.
  */
 function MilestoneLine({ current, broken }: { current: number; broken: boolean }) {
+  const { styles } = useThemeValues()
   const t = useT()
   if (broken || current <= 0) return null
 
@@ -128,6 +130,7 @@ function MilestoneLine({ current, broken }: { current: number; broken: boolean }
  * repair window follows: this is a thing to look forward to.
  */
 function MilestoneLadder({ current, broken }: { readonly current: number; readonly broken: boolean }) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
 
   // Nothing, on the day it broke. `MilestoneLine` already refuses to say "3 days to your
@@ -296,6 +299,7 @@ export function StreakScreen({
   onRepair,
   offline = false,
 }: StreakScreenProps) {
+  const { styles } = useThemeValues()
   const t = useT()
 
   const broken = !repairOffer.available
@@ -492,6 +496,7 @@ function RepairAction({
   readonly repairNotice: 'insufficient_funds' | 'failed' | null
   readonly offline: boolean
 }) {
+  const { styles } = useThemeValues()
   const t = useT()
 
   if (!repairOffer.available) {
@@ -546,7 +551,10 @@ function RepairAction({
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   screen: { flex: 1 },
   content: { padding: space[4], gap: space[3] },
   hero: { alignItems: 'center', gap: space[1], paddingVertical: space[5] },
@@ -590,4 +598,6 @@ const styles = StyleSheet.create({
   heldNone: { ...text('caption', { weight: '700', numeric: true }), color: colors.text.secondary },
   body: { ...text('body'), color: colors.text.secondary },
   note: { ...text('caption'), color: colors.text.tertiary },
+})
+  return { colors, styles }
 })

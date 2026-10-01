@@ -49,60 +49,38 @@ const renderCountry = (facts: readonly CountryFact[] = [capital, flag]) =>
     />,
   )
 
-describe('Country — the no-spoiler rule', () => {
-  it('withholds the answer to a fact the user has never met', () => {
-    // This is the whole point of the screen. A user who cannot recall Stockholm
-    // opens this page, reads it, and the scheduler never learns they did not know
-    // it. Retrieval has to be effortful or the mechanism is not working.
-    renderCountry()
-    expect(screen.queryByText('Stockholm')).toBeNull()
-    expect(screen.getByText('Learn it first')).toBeTruthy()
-  })
-
-  it('still names the fact that exists', () => {
-    // Hiding the answer must not hide that there IS a capital to learn.
-    renderCountry()
+describe('Country reference separates learning from assessed progress', () => {
+  it('shows an unfamiliar verified capital without marking it learned', () => {
+    const { container } = renderCountry()
+    expect(screen.getByText('Stockholm')).toBeTruthy()
+    expect(screen.queryByText('Learn it first')).toBeNull()
     expect(screen.getByText('Capital')).toBeTruthy()
+    expect(container.textContent).toContain('1 of 2')
   })
-
-  it('shows a learned fact in full', () => {
-    // Past mastery the page is a reference, not an answer key.
+  it('keeps learned facts readable too', () => {
     renderCountry()
     expect(screen.getByText('a yellow Nordic cross on a blue field')).toBeTruthy()
   })
-
-  it('does not leak the answer through the accessibility label either', () => {
-    // A screen reader user must get the same treatment. Putting the value in the
-    // label would hand the answer to exactly the users who cannot see it hidden.
+  it('announces the same fact and its actual mastery to screen readers', () => {
     const { container } = renderCountry()
-    const labels = Array.from(container.querySelectorAll('[aria-label]'), (el) =>
-      el.getAttribute('aria-label'),
-    )
-    expect(labels.some((label) => label?.includes('Stockholm'))).toBe(false)
-    expect(labels.some((label) => label?.includes('Learn it first'))).toBe(true)
+    const labels = Array.from(container.querySelectorAll('[aria-label]'), el => el.getAttribute('aria-label'))
+    expect(labels.some(label => label?.includes('Stockholm'))).toBe(true)
+    expect(labels.some(label => label?.includes('Learn it first'))).toBe(false)
+  })
+  it('retains the original value and mastery after viewing', () => {
+    renderCountry()
+    expect(capital.value).toBe('Stockholm')
+    expect(capital.mastery).toBe('unseen')
   })
 })
 
 describe('Country — provenance stays out of the quiz', () => {
   it('never renders a fact\u2019s source', () => {
-    // This block used to assert the OPPOSITE — that a "Where this comes from" list was
-    // on screen — and it sat directly below three tests asserting that Stockholm is
-    // not. Both passed, because the fixture's citation was a UN methodology page that
-    // does not name the city while the shipped pack cites the Wikipedia article, whose
-    // title IS the city.
-    //
-    // On a device that meant three rows reading "Learn it first" above a list reading
-    // "English Wikipedia, “Stockholm”" / "Swedish krona". The spoiler guard hid the
-    // answers and the citations handed all of them over, on the same screen, to a user
-    // who had learned none of them.
-    //
-    // The DATA still carries `source` and `verifiedAt` and `pnpm content:validate`
-    // still fails a fact without them. This asserts only that the citation is not drawn
-    // next to a hidden answer.
+    // Provenance is retained in pack metadata; this compact reference is not a bibliography.
     const { container } = renderCountry()
 
     expect(container.textContent).not.toContain('Wikipedia')
-    expect(container.textContent).not.toContain('Stockholm')
+    expect(container.textContent).toContain('Stockholm')
     expect(screen.queryByText(/Where this comes from/)).toBeNull()
     expect(screen.queryByText(/Checked/)).toBeNull()
   })

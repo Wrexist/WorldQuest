@@ -20,12 +20,12 @@ import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 import { FONT_FAMILIES } from '@worldquest/design'
 import {
-  Inter_400Regular,
-  Inter_600SemiBold,
-  Inter_700Bold,
-  Inter_800ExtraBold,
-  Inter_900Black,
-} from '@expo-google-fonts/inter'
+  Nunito_400Regular,
+  Nunito_600SemiBold,
+  Nunito_700Bold,
+  Nunito_800ExtraBold,
+  Nunito_900Black,
+} from '@expo-google-fonts/nunito'
 
 /**
  * Family name → font file.
@@ -37,11 +37,11 @@ import {
  * One crisp family with weight-specific files, matching the expedition design tokens.
  */
 const FONTS: Record<string, number> = {
-  Inter_400Regular,
-  Inter_600SemiBold,
-  Inter_700Bold,
-  Inter_800ExtraBold,
-  Inter_900Black,
+  Nunito_400Regular,
+  Nunito_600SemiBold,
+  Nunito_700Bold,
+  Nunito_800ExtraBold,
+  Nunito_900Black,
 }
 
 // Fails loudly at import rather than rendering a screen in the wrong face. This is

@@ -1031,3 +1031,6 @@ already been decided.
 If only one thing gets commissioned: **§1 and §4**. A logo and Atlas turn a competent
 dark-mode app into WorldQuest, and everything after that is polish on something that
 already has a face.
+
+
+September 28: the Expedition family adds seven original Blender props and a host-generated decorative island. Sources, exact prompt, runtime integration and verification: `docs/design/assets/expedition/README.md`. Historical assets remain preserved.

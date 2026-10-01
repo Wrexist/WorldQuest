@@ -1,6 +1,7 @@
+import { createThemeStyles } from '@worldquest/design'
 /** One achievable daily target, and seven honest days of activity. */
 import { StyleSheet, Text, View } from 'react-native'
-import { Card, ProgressBar, colors, radius, space, text } from '@worldquest/design'
+import { Card, ProgressBar, radius, space, text } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 import { Icon } from '../../components/Icon.js'
 
@@ -9,6 +10,7 @@ import type { DailyGoal } from './useDailyGoal.js'
 
 export type DailyAdventureProps = { goal: DailyGoal; week: WeekActivity; streak?: number | undefined; onPress?: (() => void) | undefined; compact?: boolean }
 export function DailyAdventure({ goal, week, streak = 0, onPress, compact = false }: DailyAdventureProps) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   const complete = goal.done >= goal.target
   const label = t('home:daily.count', { done: Math.min(goal.done, goal.target), target: goal.target })
@@ -27,14 +29,17 @@ export function DailyAdventure({ goal, week, streak = 0, onPress, compact = fals
       {streak > 0 && <View style={styles.streak}><Icon name="streak" size={space[4]} color={colors.status.streak} /><Text style={styles.caption}>{streak}</Text></View>}
       {week.map((day, i) => <View key={i} style={styles.day}>
         <Text style={styles.dayLabel}>{day.day}</Text>
-        <View style={[styles.stamp, day.count > 0 && styles.stampDone]}>
-          {day.count > 0 && <Icon name="check" size={space[3]} color={colors.text.onAccent} />}
+        <View style={[styles.stamp, i === week.length - 1 && styles.stampToday, day.count > 0 && styles.stampDone]}>
+          {day.count > 0 && <Icon name="check" size={space[3]} color={colors.text.onStatus} />}
         </View>
       </View>)}
     </View>}
   </Card>
 }
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   card: { backgroundColor: colors.journey.sand, borderColor: colors.league.gold.edge, gap: space[2], padding: space[3], flexShrink: 0 },
   top: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space[2] },
   heading: { ...text('bodyStrong'), color: colors.text.primary, flexGrow: 1 },
@@ -42,7 +47,10 @@ const styles = StyleSheet.create({
   week: { flexDirection: 'row', gap: space[1] },
   day: { flex: 1, flexDirection: 'row', gap: space[1], alignItems: 'center', justifyContent: 'center' },
   stamp: { width: space[4], height: space[4], borderRadius: radius.full, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.bg.surfacePressed },
+  stampToday: { borderWidth: 2, borderColor: colors.action.secondary },
   stampDone: { backgroundColor: colors.action.primary },
   dayLabel: { ...text('overline'), color: colors.text.secondary },
   streak: { flexDirection: 'row', alignItems: 'center', gap: space[1], marginEnd: space[2] },
+})
+  return { colors, styles }
 })

@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * Profile — mockup screen 13.
  *
@@ -19,7 +20,6 @@ import {
   Avatar,
   Button,
   Card,
-  colors,
   EmptyState,
   palette,
   ProgressBar,
@@ -161,6 +161,7 @@ export function ProfileScreen({
   onOpenSettings,
   onRename,
 }: ProfileScreenProps) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   const { height: viewportHeight, width: viewportWidth } = useWindowDimensions()
   // Falls back to initials when nothing is chosen, and also when a stored id names an
@@ -216,7 +217,7 @@ export function ProfileScreen({
             reads as unfinished, and the same defect in seven other places. */}
         <EmptyState
           compact
-          art={<AdventureArt name="passport" style={{ width: Math.min(viewportWidth - 64, 480), height: Math.min(300, viewportHeight * .34), borderRadius: 22 }} />}
+          art={<AdventureArt name="explorer" style={{ width: Math.min(viewportWidth - 64, 480), height: Math.min(300, viewportHeight * .34), borderRadius: 22 }} />}
           style={styles.emptyHero}
           title={t('profile:empty.title')}
           body={t('profile:empty.body')}
@@ -265,13 +266,13 @@ export function ProfileScreen({
       />
 
       {/* Portrait, name, worn title — one block, centred.
-   
+
           It was an avatar with the name beside it and the title three lines down inside
           the level card, so the two halves of an identity sat in different components.
           Stacked, the title reads as what it is: something you are called, under the
           face you chose. */}
       <View style={styles.identity}>
-        <AdventureArt name="passport" style={{ width: '100%', aspectRatio: 4 / 3, borderRadius: 22 }} />
+        <AdventureArt name="explorer" style={{ width: '100%', aspectRatio: 4 / 3, borderRadius: 22 }} />
         {portrait !== null && <View style={styles.portrait}>
           <Avatar
             size={PORTRAIT}
@@ -305,12 +306,12 @@ export function ProfileScreen({
       </View>
 
       {/* Level on the left, the XP fraction on the right, the bar under both.
-   
+
           The insignia and the title used to live in here too, which made one card carry
           the level number three separate times. The title has moved up to the identity
           block where it belongs, and what is left is the one thing a level card is for:
           how far through this level you are, in the same units on the bar and beside it.
-   
+
           The fraction is `earnedInLevel / levelSpan` — the position INSIDE the band, not
           the lifetime total against the next threshold. Those two differ by every point
           earned before this level and the second one is what makes a bar disagree with
@@ -365,13 +366,13 @@ export function ProfileScreen({
       </Card>}
 
       {/* Three numbers, not six.
-   
+
           It was a six-tile grid holding XP, coins, streak, longest streak, facts and
           countries — and two of those six now have a better home: the coin balance is in
           the bar at the top of every tab, and lifetime XP is the fraction on the level
           card directly above. Printing them again here was the same defect this file
           already records for the level number, one section down.
-   
+
           What is left is what a record is actually for: how much you know, how much of
           the world that covers, and whether you came back. Longest streak keeps its place
           as the caption under the live one rather than as a seventh tile — same unit, and
@@ -409,7 +410,7 @@ export function ProfileScreen({
       {onOpenFriends && <Section title={t('friends:title')} onPress={onOpenFriends}><Text style={styles.subtitle}>{t('friends:intro')}</Text></Section>}
 
       {/* The trophy shelf.
-   
+
           Earned only, newest first — see `badges`. The heading is the way in to the full
           set, which is where a locked achievement can be shown next to what it is for. */}
       {earned.length > 0 && (
@@ -494,6 +495,7 @@ function Section({
   onPress?: (() => void) | undefined
   children: React.ReactNode
 }) {
+  const { colors, styles } = useThemeValues()
   return (
     <View style={styles.section}>
       {onPress === undefined ? (
@@ -540,6 +542,7 @@ function Stat({
   /** A second, quieter number about the same thing — the streak's record. */
   readonly caption?: string | undefined
 }) {
+  const { styles } = useThemeValues()
   return (
     // One element: a reader says "Facts learned, 347" rather than three disconnected
     // nodes, and the caption joins that one phrase rather than trailing after it.
@@ -557,6 +560,7 @@ function Stat({
 }
 
 function ProfileSkeleton() {
+  const { styles } = useThemeValues()
   const t = useT()
   return (
     <View style={styles.screen} aria-label={t('common:loading')}>
@@ -588,7 +592,10 @@ function WeeklyActivity({ week }: { readonly week: WeekActivity }) {
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   adventureAction: { alignSelf: 'stretch', gap: space[3] },
   friendsEntry: { marginHorizontal: space[4], marginBottom: space[6] },
   adventureTitle: { ...text('h3'), color: colors.text.primary },
@@ -676,4 +683,6 @@ const styles = StyleSheet.create({
   spacer: { flex: 1 },
   accountCard: { gap: space[3] },
   cardTitle: { ...text('h3'), color: colors.text.primary },
+})
+  return { colors, styles }
 })

@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * One continent's countries.
  *
@@ -21,7 +22,6 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   ArtScrim,
   Button,
-  colors,
   palette,
   ProgressBar,
   radius,
@@ -53,14 +53,7 @@ const MASTERY_LABEL: Record<Mastery, TranslationKey> = {
 }
 
 /** Colour by how well it is known — muted for unseen, reward gold once mastered. */
-const MASTERY_COLOR: Record<Mastery, string> = {
-  unseen: colors.text.tertiary,
-  learning: colors.status.progress,
-  familiar: colors.status.progress,
-  proficient: colors.feedback.correct,
-  mastered: colors.reward.xp,
-  burnished: colors.reward.xp,
-}
+
 
 export type CountryRow = {
   readonly id: string
@@ -137,6 +130,7 @@ export function RegionScreen({
   onStartLesson,
   onBack,
 }: RegionScreenProps) {
+  const { MASTERY_COLOR, styles } = useThemeValues()
   const t = useT()
   // Measured, like the Explore tile's: the sky has to cover the banner at every width,
   // and a constant would leave a bare stripe on a tablet.
@@ -165,12 +159,12 @@ export function RegionScreen({
       {onBack !== undefined && <ScreenHeader onBack={onBack} />}
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       {/* The continent's own sky, again.
-   
+
           Tapping Europe on Explore meant leaving a card with weather on it and landing
           on a plain list — the art stopped at the door. This screen already knew its
           region and drew a 4pt colour swatch with it, which is the same information at
           a hundredth of the weight.
-   
+
           The same art, the same `ArtScrim`, and the same measured sizing as the tile it
           came from — imported rather than re-declared, so a continent cannot have one
           picture on Explore and another one step in. */}
@@ -195,13 +189,13 @@ export function RegionScreen({
         </View>
 
         {/* The continent's own shape, on the continent's own screen.
-   
+
             The Explore grid carries these as watermarks and this is where one of them
             gets to be the picture: the banner is 100 % about this one place, so the
             landmass belongs here at least as much as it does on a tile. Same treatment —
             bottom-trailing, dimmed, clipped by the banner — so arriving from a tile feels
             like the same object getting larger rather than a different screen.
-   
+
             Decorative: the heading names the continent one line below it. */}
         {CONTINENT_SILHOUETTE[region] !== undefined && (
           <View style={styles.bannerShape} pointerEvents="none">
@@ -292,7 +286,18 @@ export function RegionScreen({
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const MASTERY_COLOR: Record<Mastery, string> = {
+  unseen: colors.text.tertiary,
+  learning: colors.status.progress,
+  familiar: colors.status.progress,
+  proficient: colors.feedback.correct,
+  mastered: colors.reward.xp,
+  burnished: colors.reward.xp,
+}
+  const styles = StyleSheet.create({
   screen: { flex: 1 },
   content: { padding: space[4], gap: space[4] },
   centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },
@@ -341,4 +346,6 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
   },
   mastery: { ...text('caption', { weight: '600' }) },
+})
+  return { colors, MASTERY_COLOR, styles }
 })

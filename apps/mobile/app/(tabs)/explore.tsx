@@ -9,9 +9,10 @@
 
 import { useMemo } from 'react'
 import { useRouter } from 'expo-router'
-import { worldProgress } from '@worldquest/engines'
+import { entityProgress, worldProgress } from '@worldquest/engines'
 import { ExploreScreen } from '../../src/features/explore/ExploreScreen.js'
 import { ContentGate } from '../../src/components/ContentGate.js'
+import { currentLocale } from '../../src/lib/i18n.js'
 import { useContent } from '../../src/lib/content.js'
 import { useOptimisticProgress } from '../../src/features/home/useOptimisticProgress.js'
 
@@ -30,6 +31,14 @@ export default function ExploreRoute() {
     [index, memory],
   )
 
+  const countries = useMemo(() => index === null ? [] : [...index.index.entities.values()].map(entity => ({
+    id: entity.id,
+    name: entity.names[currentLocale()] ?? entity.names.en ?? entity.id,
+    region: entity.region ?? '',
+    flagPath: entity.assets?.flag?.path,
+    progress: entityProgress(index.index, entity.id, memory, Date.now()),
+  })).sort((a, b) => a.name.localeCompare(b.name, currentLocale())), [index, memory])
+
   return (
     // `status` was destructured here and only ever read as `=== 'loading'`, so a
     // content load that failed rendered an empty grid with no explanation and no way
@@ -37,6 +46,8 @@ export default function ExploreRoute() {
     <ContentGate status={status} onRetry={reload} isOffline={isOffline}>
       <ExploreScreen
         world={world}
+        countries={countries}
+        onSelectCountry={id => router.push(`/country/${id}`)}
         loading={status === 'loading'}
         onOpenCollection={(kind) => router.push(`/collection/${kind}`)}
         onSelectRegion={(region) => router.push(`/region/${region}`)}

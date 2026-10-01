@@ -1,8 +1,10 @@
+import { createThemeStyles } from '@worldquest/design'
 import { useEffect, useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
-import { Button, Card, colors, radius, space, text } from '@worldquest/design'
+import { StyleSheet, Text, View, useWindowDimensions } from 'react-native'
+import { Button, Card, radius, space, text } from '@worldquest/design'
 import { BALANCE } from '@worldquest/engines'
 import { AdventureArt } from '../../../components/AdventureArt.js'
+import { HeaderJewel } from '../../../components/HeaderJewel.js'
 import { RewardMotion } from '../../../components/RewardMotion.js'
 import { Icon } from '../../../components/Icon.js'
 import { tContent, useT } from '../../../lib/i18n.js'
@@ -17,21 +19,26 @@ type Props = {
 
 /** A vertical course of raised platforms. Artwork lives beside the path, never behind it. */
 export function PlatformUnit({ unit, width, total, open, onPress, onPractise, onCurrentLayout }: Props) {
+  const { styles } = useThemeValues()
   const t = useT()
+  const { fontScale } = useWindowDimensions()
   const title = tContent(unit.titleKey)
   const [pathTop, setPathTop] = useState(0)
   return <View style={styles.unit} testID="path-unit">
     <View style={styles.header}>
       <View style={styles.headerTop}>
-        <Text style={styles.overline}>{t('home:path.unit', { number: unit.number })}</Text>
-        <Icon name="globe" size={space[5]} color={colors.text.onPrimary} />
+        <View style={styles.headerWords}>
+          <Text style={styles.overline}>{t('home:path.unit', { number: unit.number })}</Text>
+          <View accessible role="heading" aria-label={t('home:path.unit.heading', { number: unit.number, title })}>
+            <Text style={styles.title}>{title}</Text>
+          </View>
+        </View>
+        {width >= 340 && fontScale <= 1.3 && <HeaderJewel name="globe" size={64} />}
       </View>
-      <View accessible role="heading" aria-label={t('home:path.unit.heading', { number: unit.number, title })}>
-        <Text style={styles.title}>{title}</Text>
-      </View>
+      <Text style={styles.count}>{tContent(unit.objectiveKey)}</Text>
       <Text style={styles.count}>{t('home:path.unit.progress', { done: unit.done, total: unit.nodes.length })}</Text>
       <View style={styles.unitTrack} aria-hidden>
-        {unit.nodes.map(step => <View key={step.id} style={[styles.unitSegment, step.state === 'done' && styles.unitSegmentDone, step.state === 'current' && styles.unitSegmentCurrent]} />)}
+        {unit.nodes.map(step => <View key={step.id} testID={`unit-progress-${step.id}`} dataSet={{ completed: String(step.state === 'done') }} style={[styles.unitSegment, step.state === 'done' && styles.unitSegmentDone]} />)}
       </View>
     </View>
     <View style={styles.path} onLayout={e => setPathTop(e.nativeEvent.layout.y)}>
@@ -41,6 +48,7 @@ export function PlatformUnit({ unit, width, total, open, onPress, onPractise, on
 }
 
 function PlatformStop({ node, index, width, total, open, onPress, onPractise, onCurrentLayout }: Omit<Props, 'unit'> & { node: PathNodeView; index: number }) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   const current = node.state === 'current'
   const selected = open === node.id
@@ -85,21 +93,24 @@ function PlatformStop({ node, index, width, total, open, onPress, onPractise, on
   </View>
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   unit: { gap: space[2] },
   header: { backgroundColor: colors.course.banner, borderRadius: radius.xl, borderBottomWidth: space[2], borderColor: colors.course.bannerEdge, padding: space[4], gap: space[1] },
-  headerTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  overline: { ...text('overline'), color: colors.text.onPrimary },
-  title: { ...text('h2'), color: colors.text.onPrimary },
-  count: { ...text('caption'), color: colors.text.onPrimary },
+  headerTop: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  headerWords: { flex: 1, gap: space[1] },
+  overline: { ...text('overline'), color: colors.course.bannerInk },
+  title: { ...text('h2'), color: colors.course.bannerInk },
+  count: { ...text('caption'), color: colors.course.bannerInk },
   unitTrack: { flexDirection: 'row', gap: space[1], marginTop: space[2] },
   unitSegment: { flex: 1, height: space[2], borderRadius: radius.full, backgroundColor: colors.course.bannerEdge },
   unitSegmentDone: { backgroundColor: colors.action.primaryFace },
-  unitSegmentCurrent: { backgroundColor: colors.course.face },
   rewardRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: space[2] },
   xpBadge: { flexDirection: 'row', alignItems: 'center', gap: space[1], backgroundColor: colors.journey.sand, paddingHorizontal: space[2], paddingVertical: space[1], borderRadius: radius.full },
   xpValue: { ...text('bodyStrong', { numeric: true }), color: colors.text.primary },
-  rewardHint: { ...text('caption'), color: colors.text.onPrimary },
+  rewardHint: { ...text('caption'), color: colors.course.bannerInk },
   path: { gap: space[1] },
   stop: { gap: space[2], paddingBottom: space[1] },
   platformRow: { height: 112 },
@@ -110,9 +121,11 @@ const styles = StyleSheet.create({
   actionWrap: { marginBottom: 0 },
   tail: { position: 'absolute', top: -space[2], width: space[4], height: space[4], transform: [{ rotate: '45deg' }], backgroundColor: colors.course.banner },
   action: { backgroundColor: colors.course.banner, borderRadius: radius.xl, padding: space[3], gap: space[2], borderBottomWidth: space[1], borderColor: colors.course.bannerEdge },
-  lesson: { ...text('caption', { weight: '700' }), color: colors.text.onPrimary },
-  objective: { ...text('h3'), color: colors.text.onPrimary },
+  lesson: { ...text('caption', { weight: '700' }), color: colors.course.bannerInk },
+  objective: { ...text('h3'), color: colors.course.bannerInk },
   inspection: { gap: space[2] },
   inspectTitle: { ...text('bodyStrong'), color: colors.text.primary },
   inspectBody: { ...text('body'), color: colors.text.secondary },
+})
+  return { colors, styles }
 })

@@ -358,3 +358,15 @@ describe('Lesson — select, then check', () => {
     expect(disabled(checkButton())).toBe(true)
   })
 })
+
+
+describe('the unfamiliar-fact introduction', () => {
+  it('teaches the issued associations before starting the same lesson', () => {
+    render(<LessonScreen showIntroduction onExit={() => {}} />)
+    expect(screen.getByTestId('lesson-introduction')).toBeTruthy()
+    expect(screen.queryByTestId('answer-option')).toBeNull()
+    fireEvent.click(screen.getByTestId('lesson-begin'))
+    expect(screen.queryByTestId('lesson-introduction')).toBeNull()
+    expect(answerButtons()).toHaveLength(4)
+  })
+})

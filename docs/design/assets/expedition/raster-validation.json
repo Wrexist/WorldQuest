@@ -1,0 +1,122 @@
+[
+  {
+    "name": "coins",
+    "dimensions": [
+      640,
+      640
+    ],
+    "visibleAlphaBounds": [
+      103,
+      120,
+      529,
+      491
+    ],
+    "alphaThreshold": 8,
+    "sha256": "d0076f944efe0adbb0f636131fcadcdfeb407b171fbc8a7ee26a92c32d41683e"
+  },
+  {
+    "name": "compass",
+    "dimensions": [
+      640,
+      640
+    ],
+    "visibleAlphaBounds": [
+      115,
+      84,
+      521,
+      559
+    ],
+    "alphaThreshold": 8,
+    "sha256": "4f38f18d8781219770c22b5c0fb2ad12eecab67477776eb93fbdf7f80f26f6f4"
+  },
+  {
+    "name": "discovery-island",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "visibleAlphaBounds": [
+      100,
+      62,
+      1173,
+      1198
+    ],
+    "alphaThreshold": 8,
+    "sha256": "0f6ecf60f92fa1f0faff314e66050c1b4d5bea1b0371fb4625dba86cb5ffacde"
+  },
+  {
+    "name": "gem",
+    "dimensions": [
+      640,
+      640
+    ],
+    "visibleAlphaBounds": [
+      110,
+      114,
+      519,
+      541
+    ],
+    "alphaThreshold": 8,
+    "sha256": "c41f75192ac15af95442854e36f5df35f6008bf87b782671f262dad2cf52eb6d"
+  },
+  {
+    "name": "passport",
+    "dimensions": [
+      640,
+      640
+    ],
+    "visibleAlphaBounds": [
+      141,
+      83,
+      483,
+      597
+    ],
+    "alphaThreshold": 8,
+    "sha256": "1495e0ffada6639ba5cf6a78f5a32dbcacc41ee3335a7d43b58e7e49f95c3998"
+  },
+  {
+    "name": "star-trophy",
+    "dimensions": [
+      640,
+      640
+    ],
+    "visibleAlphaBounds": [
+      132,
+      92,
+      508,
+      581
+    ],
+    "alphaThreshold": 8,
+    "sha256": "3d73f722f7fd10f5cf6deb0382380f832760cbd6a90c7a50a02b6ff0d4ba9286"
+  },
+  {
+    "name": "streak-freeze",
+    "dimensions": [
+      640,
+      640
+    ],
+    "visibleAlphaBounds": [
+      111,
+      136,
+      529,
+      552
+    ],
+    "alphaThreshold": 8,
+    "sha256": "10773c7e05feb16c8ed9ed8cca1a0a40dad4b3d209120f164e42c8c12d0a2cdd"
+  },
+  {
+    "name": "treasure-chest",
+    "dimensions": [
+      640,
+      640
+    ],
+    "visibleAlphaBounds": [
+      122,
+      41,
+      535,
+      557
+    ],
+    "alphaThreshold": 8,
+    "sha256": "de7cdf77f40fcbd2b119cc229223f747a95799917cbe759cf4e5ffdfa6a75681"
+  }
+]

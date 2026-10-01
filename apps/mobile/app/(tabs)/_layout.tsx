@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * Five tabs, forever (PROJECT.md §7).
  *
@@ -11,7 +12,7 @@
  */
 
 import { Tabs } from 'expo-router'
-import { TabBar, layout, colors } from '@worldquest/design'
+import { TabBar, layout} from '@worldquest/design'
 import { Icon } from '../../src/components/Icon.js'
 import type { IconName } from '../../src/lib/icons.generated.js'
 import { useT, type TranslationKey } from '../../src/lib/i18n.js'
@@ -48,6 +49,7 @@ const TABS: readonly { name: string; icon: IconName; labelKey: TranslationKey }[
 /** The icon is decorative — the tab is already labelled and announces its own name. */
 
 export default function TabsLayout() {
+  const { colors } = useThemeValues()
   const t = useT()
 
   return (
@@ -97,3 +99,8 @@ export default function TabsLayout() {
     </Tabs>
   )
 }
+
+const useThemeValues = createThemeStyles((colors) => {
+
+  return { colors }
+})

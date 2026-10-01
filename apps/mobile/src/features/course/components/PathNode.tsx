@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * One step on the course path.
  *
@@ -30,7 +31,6 @@
 import { useEffect, useRef } from 'react'
 import { Animated, Pressable, StyleSheet, Text, View, type LayoutChangeEvent } from 'react-native'
 import {
-  colors,
   depth,
   motion,
   press3d,
@@ -76,38 +76,14 @@ export type PathNodeProps = {
 
 type Skin = { readonly face: string; readonly edge: string; readonly ring: string | null; readonly glyph: string }
 
-const SKINS: Record<PathNodeView['state'], Skin> = {
-  current: {
-    face: colors.action.primaryFace,
-    edge: colors.action.primaryEdge,
-    ring: null,
-    glyph: colors.text.onPrimary,
-  },
-  done: {
-    face: colors.bg.surfaceRaised,
-    edge: colors.border.strong,
-    ring: colors.status.progress,
-    glyph: colors.status.progress,
-  },
-  locked: {
-    face: colors.bg.surface,
-    edge: colors.border.subtle,
-    // The slate ring is what gives a closed step a boundary at 3:1 against the canvas —
-    // without it the dimmed face is navy on navy and the step is not there at all.
-    ring: colors.border.strong,
-    glyph: colors.text.tertiary,
-  },
-}
+
 
 /** A finished check is a trophy in gold — earned — rather than one more tick. */
-const DONE_CHECK: Skin = { ...SKINS.done, ring: colors.reward.xp, glyph: colors.reward.xp }
-const PLATFORM_SKINS: Record<PathNodeView['state'], Skin> = {
-  current: { face: colors.course.face, edge: colors.course.edge, ring: null, glyph: colors.course.ink },
-  done: { face: colors.course.banner, edge: colors.course.bannerEdge, ring: null, glyph: colors.text.onPrimary },
-  locked: { face: colors.course.stone, edge: colors.course.stoneEdge, ring: null, glyph: colors.course.stoneInk },
-}
+
+
 
 export function PathNode({ node, total, swing, column, expanded, onPress, onLayout, compact = false }: PathNodeProps) {
+  const { colors, SKINS, DONE_CHECK, PLATFORM_SKINS, styles } = useThemeValues()
   const t = useT()
   const current = node.state === 'current'
   const size = current ? CURRENT_NODE : NODE
@@ -247,7 +223,38 @@ function useBob(active: boolean): Animated.Value {
   return offset
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const SKINS: Record<PathNodeView['state'], Skin> = {
+  current: {
+    face: colors.action.primaryFace,
+    edge: colors.action.primaryEdge,
+    ring: null,
+    glyph: colors.text.onPrimary,
+  },
+  done: {
+    face: colors.bg.surfaceRaised,
+    edge: colors.border.strong,
+    ring: colors.status.progress,
+    glyph: colors.status.progress,
+  },
+  locked: {
+    face: colors.bg.surface,
+    edge: colors.border.subtle,
+    // The slate ring is what gives a closed step a boundary at 3:1 against the canvas —
+    // without it the dimmed face is navy on navy and the step is not there at all.
+    ring: colors.border.strong,
+    glyph: colors.text.tertiary,
+  },
+}
+  const DONE_CHECK: Skin = { ...SKINS.done, ring: colors.reward.xp, glyph: colors.reward.xp }
+  const PLATFORM_SKINS: Record<PathNodeView['state'], Skin> = {
+  current: { face: colors.course.face, edge: colors.course.edge, ring: null, glyph: colors.course.ink },
+  done: { face: colors.course.banner, edge: colors.course.bannerEdge, ring: null, glyph: colors.course.bannerInk },
+  locked: { face: colors.course.stone, edge: colors.course.stoneEdge, ring: null, glyph: colors.course.stoneInk },
+}
+  const styles = StyleSheet.create({
   row: { alignSelf: 'stretch', alignItems: 'center' },
   scenery: { position: 'absolute', start: space[5], bottom: 0 },
   // The current step's target spans the column so its callout can; every other step's
@@ -281,4 +288,6 @@ const styles = StyleSheet.create({
   start: { ...text('button'), color: colors.status.progress },
   objective: { ...text('bodyStrong'), color: colors.text.primary },
   lesson: { ...text('caption'), color: colors.text.secondary },
+})
+  return { colors, SKINS, DONE_CHECK, PLATFORM_SKINS, styles }
 })

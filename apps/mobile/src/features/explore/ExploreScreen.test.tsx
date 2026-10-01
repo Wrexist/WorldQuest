@@ -140,3 +140,19 @@ describe('Explore', () => {
     expect(container.textContent).not.toMatch(/\{[a-zA-Z_]+[,}]/)
   })
 })
+
+
+it('searches installed countries and regions, opens real details, and explains no results', () => {
+  const onSelectCountry = vi.fn()
+  const countries = [{ id: 'SE', name: 'Sweden', region: 'EU', flagPath: 'flags/SE.png', progress: {
+    entityId: 'SE', mastery: 'unseen' as const, factsTotal: 3, factsLearned: 0, factsDue: 0, factsSeen: 0, complete: false,
+  } }]
+  render(<ExploreScreen world={world()} loading={false} countries={countries} onSelectCountry={onSelectCountry} onSelectRegion={() => {}} />)
+  fireEvent.change(screen.getByTestId('explore-search'), { target: { value: 'Europe' } })
+  expect(screen.getByText('Sweden')).toBeTruthy()
+  fireEvent.click(screen.getByText('Sweden'))
+  expect(onSelectCountry).toHaveBeenCalledWith('SE')
+  fireEvent.change(screen.getByTestId('explore-search'), { target: { value: 'no such country' } })
+  expect(screen.getByText('No matching countries. Try another name or region.')).toBeTruthy()
+  expect(screen.queryByText('Sweden')).toBeNull()
+})

@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * A wheel — one long list, snapped to a centre band.
  *
@@ -52,7 +53,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native'
-import { colors, radius, space, squircle, text } from '@worldquest/design'
+import { radius, space, squircle, text } from '@worldquest/design'
 import { hapticSelect } from '../lib/haptics.js'
 
 export type WheelOption<T> = {
@@ -143,6 +144,7 @@ export function WheelPicker<T extends string | number>({
   testID,
   restingIndex = 0,
 }: WheelPickerProps<T>) {
+  const { styles } = useThemeValues()
   const scroller = useRef<ScrollView>(null)
   // Measured, not assumed: the same wheel is 220 pt tall on a phone that can afford it
   // and 132 on one that cannot, and nothing else about it changes.
@@ -273,7 +275,10 @@ export function WheelPicker<T extends string | number>({
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   /**
    * The wheel sits on its own surface, and that is not decoration.
    *
@@ -312,4 +317,6 @@ const styles = StyleSheet.create({
   labelOn: { ...text('h2', { numeric: true }), color: colors.text.primary },
   labelFar: { color: colors.text.tertiary, opacity: 0.6 },
   promptLabel: { ...text('h3'), color: colors.text.primary },
+})
+  return { colors, styles }
 })

@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * Achievements.
  *
@@ -19,7 +20,6 @@ import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   Button,
   Card,
-  colors,
   ProgressBar,
   radius,
   space,
@@ -36,10 +36,11 @@ import {
   type AchievementProgress,
 } from '@worldquest/engines'
 import { tContent, useT, type TranslationKey } from '../../lib/i18n.js'
+import { DaylightIllustration } from '../../components/DaylightIllustration.js'
 import { Art } from '../../components/Art.js'
 import { AchievementMedal } from './AchievementMedal.js'
 import { achievementDescKey, achievementNameKey } from './useAchievements.js'
-import { TIER_COLOR, TIER_LABEL } from './tiers.js'
+import { TIER_LABEL } from './tiers.js'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 
 export type AchievementRow = {
@@ -112,6 +113,7 @@ const GROUPS: readonly {
 ]
 
 export function AchievementsScreen({ rows, onStartLesson, onBack }: AchievementsScreenProps) {
+  const { styles } = useThemeValues()
   const t = useT()
 
   const unlocked = rows.filter((row) => row.progress.tier !== null).length
@@ -166,6 +168,7 @@ export function AchievementsScreen({ rows, onStartLesson, onBack }: Achievements
         <ScreenHeader title={t('achievements:title')} onBack={onBack} />
       )}
       <View style={styles.header}>
+        <DaylightIllustration name="star-trophy" size={64} active={false} />
         {/* The title moves into the header row when there is one, so it is not said
             twice. Without a router — the screenshot renderer — it stays here rather
             than vanishing. */}
@@ -228,6 +231,7 @@ function remainingToNextTier({ def, progress }: AchievementRow): number {
 const MEDAL = 56
 
 function AchievementCard({ row, index }: { row: AchievementRow; index: number }) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   const entrance = useStagger(index)
   const { def, progress } = row
@@ -266,7 +270,7 @@ function AchievementCard({ row, index }: { row: AchievementRow; index: number })
         <Text
           style={[
             styles.tier,
-            { color: progress.tier === null ? colors.text.tertiary : TIER_COLOR[progress.tier] },
+            { color: progress.tier === null ? colors.text.tertiary : colors.text.primary },
           ]}
         >
           {progress.tier === null ? t('achievements:locked') : t(TIER_LABEL[progress.tier])}
@@ -290,12 +294,15 @@ function AchievementCard({ row, index }: { row: AchievementRow; index: number })
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   screen: { flex: 1 },
   content: { padding: space[4], gap: space[3] },
   centered: { alignItems: 'center', justifyContent: 'center', padding: space[5], gap: space[3] },
 
-  header: { gap: space[1] },
+  header: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space[3] },
   group: { gap: space[3] },
   // `overline`, the same as every other section heading in the app. A heading that
   // competes with the card titles under it turns a grouping into three more rows.
@@ -310,4 +317,6 @@ const styles = StyleSheet.create({
   name: { ...text('bodyStrong'), color: colors.text.primary },
   tier: { ...text('caption', { weight: '700' }) },
   remaining: { ...text('caption'), color: colors.text.tertiary },
+})
+  return { colors, styles }
 })

@@ -93,7 +93,7 @@ describe('token integrity', () => {
 
     expect(appJson.expo.backgroundColor.toLowerCase()).toBe(colors.bg.canvas.toLowerCase())
     expect(appJson.expo.android.adaptiveIcon.backgroundColor.toLowerCase()).toBe(
-      colors.bg.canvas.toLowerCase(),
+      colors.brand.iconBackground.toLowerCase(),
     )
     // The splash's own backdrop is the third copy, and it is the one a user sees for
     // longest: it is what fills the screen either side of the splash image on any
@@ -273,7 +273,7 @@ describe('type is set in a font that exists', () => {
 
   it('builds a complete style from one call', () => {
     const h2 = text('h2')
-    expect(h2.fontFamily).toBe('Inter_700Bold')
+    expect(h2.fontFamily).toBe('Nunito_700Bold')
     expect(h2.fontSize).toBe(typography.scale.h2.size)
     expect(h2.lineHeight).toBe(typography.scale.h2.lineHeight)
 

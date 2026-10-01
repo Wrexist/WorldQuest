@@ -117,6 +117,6 @@ safe areas, Dynamic Type, haptics and VoiceOver itself.
 
 1. `cd apps/mobile && npx eas credentials` → iOS → production: distribution certificate and App Store profile. Then `pnpm check:ios-creds` with `EXPO_TOKEN` and read its output.
 2. App Store Connect: age rating, Kids Category decision (S15), App Privacy label matching the manifest above, EU trader status, agreements/tax/banking.
-3. Domain: publish privacy, terms, support and licence pages, then set `EXPO_PUBLIC_PRIVACY_URL`, `_TERMS_URL`, `_LICENCES_URL` and `_SUPPORT_URL` in the EAS production environment (`src/lib/links.ts`); no code change needed.
+3. ✅ Pages: privacy, terms, support and licences on GitHub Pages (`gh-pages`), and the four `EXPO_PUBLIC_*_URL` values set in EAS production (29 September 2026). Email still needs a domain (runbook 3).
 4. Production backend: an email sender, remote migrations 0002–0009 and a deployed Worker with `API_ENABLED=true`, then `EXPO_PUBLIC_BACKEND=d1` and `EXPO_PUBLIC_D1_URL` in the EAS production environment.
 5. Real-device TestFlight pass (A11/U09–U13) and review notes stating guest mode needs no login (A13).

@@ -105,7 +105,7 @@
   "home:path.unit__note": "Small label above a unit's title on the Home course path. {number} is the unit's position, from 1. Drawn in capitals by the style, not by the string. Max 12 characters.",
   "home:path.unit.heading": "Unit {number}: {title}",
   "home:path.unit.heading__note": "What a screen reader announces for a unit header, as one heading: the small label and the title together. {title} is the unit's title, already translated.",
-  "home:path.unit.progress": "{done} of {total} done",
+  "home:path.unit.progress": "{done} of {total} unit steps completed",
   "home:path.unit.progress__note": "How many steps of this unit are finished, on the unit header's progress bar. Whole numbers. A count, never framed as falling behind.",
   "home:path.start": "Start",
   "home:path.start__note": "Callout over the current step on the Home course path — the one primary action on Home. Verb, imperative. Drawn in capitals by the style. Max 10 characters.",
@@ -154,5 +154,9 @@
   "home:path.startChallenge": "Start challenge →",
   "home:path.startChallenge__note": "Course continuation UI. Encouraging invitation; never a deadline or guaranteed reward. Continue adventure preserves the existing post-lesson reward flow.",
   "home:path.continueChallenge": "Continue challenge →",
-  "home:path.continueChallenge__note": "Course continuation UI. Encouraging invitation; never a deadline or guaranteed reward. Continue adventure preserves the existing post-lesson reward flow."
+  "home:path.continueChallenge__note": "Course continuation UI. Encouraging invitation; never a deadline or guaranteed reward. Continue adventure preserves the existing post-lesson reward flow.",
+  "home:path.showCourse": "View whole course",
+  "home:path.showCourse__note": "Secondary course visibility toggle; does not reset learning progress or navigate away.",
+  "home:path.showCurrent": "Back to current unit",
+  "home:path.showCurrent__note": "Secondary course visibility toggle; does not reset learning progress or navigate away."
 }

@@ -1,3 +1,4 @@
+import { createThemeStyles } from '../theme.js'
 /**
  * EmptyState — the block a screen shows when it has nothing to show.
  *
@@ -43,7 +44,7 @@
 
 import type { ReactNode } from 'react'
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native'
-import { colors, space } from '../tokens.js'
+import { space } from '../tokens.js'
 import { text } from '../typography.js'
 
 export type EmptyStateProps = {
@@ -96,6 +97,7 @@ export function EmptyState({
   style,
   testID,
 }: EmptyStateProps) {
+  const { styles } = useThemeValues()
   return (
     <View style={[compact ? styles.compact : styles.fill, style]} testID={testID}>
       {art !== undefined && <View style={styles.art}>{art}</View>}
@@ -115,7 +117,10 @@ const shared = {
   gap: space[3],
 } as const
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   /**
    * `flex: 1` and centred.
    *
@@ -141,4 +146,6 @@ const styles = StyleSheet.create({
   // kind of thing from the sentence explaining it, and the space says so.
   action: { marginTop: space[2], alignItems: 'center' },
   footnote: { alignItems: 'center', maxWidth: BODY_WIDTH },
+})
+  return { colors, styles }
 })

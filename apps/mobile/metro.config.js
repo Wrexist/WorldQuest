@@ -23,6 +23,14 @@ const workspaceRoot = path.resolve(projectRoot, '../..')
 const config = getDefaultConfig(projectRoot)
 
 config.watchFolders = [workspaceRoot]
+// Agent checkouts are separate projects, not app source. Crawling their transient
+// node_modules trees causes ENOENT races and can discover duplicate React copies.
+const inheritedBlockList = config.resolver.blockList
+config.resolver.blockList = [
+  ...(Array.isArray(inheritedBlockList) ? inheritedBlockList : inheritedBlockList ? [inheritedBlockList] : []),
+  /[\\/]\.claude[\\/]worktrees[\\/].*/,
+]
+
 config.resolver.nodeModulesPaths = [
   path.resolve(projectRoot, 'node_modules'),
   path.resolve(workspaceRoot, 'node_modules'),

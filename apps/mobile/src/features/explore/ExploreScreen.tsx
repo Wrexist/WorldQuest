@@ -1,10 +1,10 @@
+import { createThemeStyles } from '@worldquest/design'
 
 
 import { useState } from 'react'
-import { Animated, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
+import { Animated, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native'
 import {
   Card,
-  colors,
   palette,
   ProgressBar,
   radius,
@@ -20,9 +20,10 @@ import type { WorldProgress } from '@worldquest/engines'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { AdventureArt } from '../../components/AdventureArt.js'
 import { TopBar } from '../../components/TopBar.js'
-import { HeaderJewel } from '../../components/HeaderJewel.js'
-import { AnswerReward } from '../../components/AnswerReward.js'
+import { DaylightIllustration } from '../../components/DaylightIllustration.js'
 import type { ArtName } from '../../lib/art.generated.js'
+import { Flag } from '../../components/Flag.js'
+import type { CountryRow } from './RegionScreen.js'
 import { Icon } from '../../components/Icon.js'
 
 export const REGIONS = ['EU', 'AS', 'AF', 'NA', 'SA', 'OC', 'AN'] as const
@@ -62,6 +63,8 @@ export const REGION_NAME: Record<RegionCode, TranslationKey> = {
 }
 
 export type ExploreScreenProps = {
+  readonly countries?: readonly (CountryRow & { region: string })[]
+  readonly onSelectCountry?: (id: string) => void
   readonly world: WorldProgress | null
 
   readonly onOpenCollection?: ((kind: 'flags' | 'countries') => void) | undefined
@@ -84,6 +87,8 @@ const estimateTileWidth = (windowWidth: number) => (windowWidth - space[4] * 2) 
 
 export function ExploreScreen({
   world,
+  countries = [],
+  onSelectCountry,
   loading,
   onSelectRegion,
   onOpenCollection,
@@ -91,12 +96,17 @@ export function ExploreScreen({
   streak,
   onOpenStreak,
 }: ExploreScreenProps) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
+  const [query, setQuery] = useState('')
+  const normalize = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase().trim()
+  const needle = normalize(query)
+  const matches = countries.filter(country => normalize(country.name).includes(needle) || (REGIONS.includes(country.region as RegionCode) && normalize(t(REGION_NAME[country.region as RegionCode])).includes(needle)))
 
   // All seven tiles are the same size, so one measurement serves them all. Seeded from
   // the window rather than from zero, so the first frame already has its sky instead of
   // flashing seven navy rectangles and then filling them in.
-  const { width: windowWidth } = useWindowDimensions()
+  const { width: windowWidth, fontScale } = useWindowDimensions()
 
   const [tile, setTile] = useState({ width: estimateTileWidth(windowWidth), height: 0 })
 
@@ -123,9 +133,26 @@ export function ExploreScreen({
 
       </View>
 
+      <TextInput accessibilityLabel={t('explore:search.label')}
+        placeholder={t('explore:search.label')} placeholderTextColor={colors.text.tertiary}
+        value={query} onChangeText={setQuery} autoCorrect={false} returnKeyType="search"
+        style={styles.search} testID="explore-search" />
+      {needle.length > 0 && <View style={styles.searchResults}>
+        <Text style={styles.subtitle} accessibilityLiveRegion="polite">{t('explore:search.count', { count: matches.length })}</Text>
+        {matches.length === 0 && <Text style={styles.subtitle}>{t('explore:search.empty')}</Text>}
+        {matches.map(country => <Card key={country.id} onPress={() => onSelectCountry?.(country.id)} style={styles.searchRow}>
+          {country.flagPath && <Flag path={country.flagPath} width={36} label="" />}
+          <View style={styles.headerText}>
+            <Text style={styles.collectionName}>{country.name}</Text>
+            <Text style={styles.subtitle}>{t(`explore:mastery.${country.progress.mastery}`)}</Text>
+          </View>
+          <Icon name="chevron" size={18} />
+        </Card>)}
+      </View>}
+      {needle.length === 0 && <>
       <Card style={styles.worldCard} accessibilityLabel={t('explore:world.label')}>
 
-        <HeaderJewel name="globe" size={112} />
+        <DaylightIllustration name="discovery-island" size={windowWidth < 360 || fontScale > 1.3 ? 80 : 112} active={false} />
         <View style={styles.worldStats}>
           <Text style={styles.worldTitle}>{t('explore:world.label')}</Text>
 
@@ -151,8 +178,21 @@ export function ExploreScreen({
         </View>
       </Card>
 
-      <AnswerReward />
 
+      <View style={styles.grid}>
+        {REGIONS.map((region, index) => (
+          <ContinentTile
+            key={region}
+            region={region}
+            index={index}
+            progress={byRegion.get(region)}
+            art={continentArtSize(tile.width, tile.height)}
+            minHeight={tile.height}
+            onSelect={onSelectRegion}
+            onMeasure={setTile}
+          />
+        ))}
+      </View>
       {onOpenCollection !== undefined && (
         <View
           style={[
@@ -167,7 +207,7 @@ export function ExploreScreen({
             onPress={() => onOpenCollection('flags')}
             style={[styles.collection, { backgroundColor: colors.journey.sky }]}
           >
-            <Icon name="flag" size={22} color={colors.action.primary} />
+            <DaylightIllustration name="passport" size={40} active={false} />
             <View style={styles.collectionText}>
               <Text style={styles.collectionName}>{t('collection:flags.title')}</Text>
               <Text style={styles.collectionHint} numberOfLines={2}>
@@ -184,7 +224,7 @@ export function ExploreScreen({
             onPress={() => onOpenCollection('countries')}
             style={[styles.collection, { backgroundColor: colors.journey.lavender }]}
           >
-            <Icon name="explore" size={22} color={colors.action.primary} />
+            <DaylightIllustration name="compass" size={40} active={false} />
             <View style={styles.collectionText}>
 
               <Text style={styles.collectionName}>{t('collection:countries.title')}</Text>
@@ -197,20 +237,7 @@ export function ExploreScreen({
         </View>
       )}
 
-      <View style={styles.grid}>
-        {REGIONS.map((region, index) => (
-          <ContinentTile
-            key={region}
-            region={region}
-            index={index}
-            progress={byRegion.get(region)}
-            art={continentArtSize(tile.width, tile.height)}
-            minHeight={tile.height}
-            onSelect={onSelectRegion}
-            onMeasure={setTile}
-          />
-        ))}
-      </View>
+      </>}
     </ScrollView>
   )
 }
@@ -232,6 +259,7 @@ function ContinentTile({
   readonly onSelect: (region: RegionCode) => void
   readonly onMeasure: (next: (current: TileSize) => TileSize) => void
 }) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   const entrance = useStagger(index)
   const tint = palette.continent[region]
@@ -307,6 +335,7 @@ function ContinentTile({
 }
 
 function ExploreSkeleton() {
+  const { styles } = useThemeValues()
   const t = useT()
   return (
     <View style={styles.screen} aria-label={t('common:loading')}>
@@ -323,7 +352,13 @@ function ExploreSkeleton() {
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
+  search: { minHeight: 48, borderWidth: 1, borderColor: colors.border.subtle, borderRadius: radius.lg, backgroundColor: colors.bg.surface, paddingHorizontal: space[4], ...text('body'), color: colors.text.primary },
+  searchResults: { gap: space[3] },
+  searchRow: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
   collections: { flexDirection: 'row', gap: space[3], marginBottom: space[1] },
   // One per line on a narrow phone. Each card keeps `flex: 1`, which in a column means
   // it takes the full width rather than a half of it — and a full-width row is the shape
@@ -357,7 +392,7 @@ const styles = StyleSheet.create({
 
   // A row now: globe, then the column of counts. `alignItems: 'center'` so the globe
   // sits against the middle of the stats rather than the top of the card.
-  worldCard: { backgroundColor: colors.journey.sky, borderColor: colors.border.subtle, flexDirection: 'row', alignItems: 'center', gap: space[3] },
+  worldCard: { padding: space[3], backgroundColor: colors.journey.sky, borderColor: colors.border.subtle, flexDirection: 'row', alignItems: 'center', gap: space[3] },
   worldStats: { flex: 1, gap: space[2] },
   worldTitle: { ...text('h3'), color: colors.text.primary },
 
@@ -408,4 +443,6 @@ const styles = StyleSheet.create({
   // visible.
 
   regionDue: { ...text('caption'), color: colors.text.secondary, flex: 1 },
+})
+  return { colors, styles }
 })

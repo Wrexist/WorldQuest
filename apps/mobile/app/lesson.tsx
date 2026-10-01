@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * The lesson runner, as a full-screen route outside the tabs.
  *
@@ -7,6 +8,8 @@
  */
 
 import { useRef, useState } from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context'
+
 import { router, useLocalSearchParams } from 'expo-router'
 import { LessonScreen } from '../src/features/lesson/LessonScreen.js'
 import { useProgress } from '../src/features/home/useProgress.js'
@@ -40,6 +43,7 @@ import { recordCourseLesson } from '../src/features/course/progress.js'
 const RECEIPT_WAIT_MS = 1500
 
 export default function LessonRoute() {
+  const { colors } = useThemeValues()
   // `/lesson?mode=speed`. A query param rather than a second route: it is the same
   // runner, the same items and the same scoring — only the clock differs.
   const { mode, taster, facts, attr, entity, region, min, max, len, node, review } = useLocalSearchParams<{
@@ -121,7 +125,9 @@ export default function LessonRoute() {
   const leaving = useRef(false)
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg.canvas }} edges={['top', 'bottom', 'left', 'right']}>
     <LessonScreen
+      showIntroduction
       mode={mode === 'speed' ? 'speed' : 'normal'}
       {...(focus ? { focus } : {})}
       // A place, topic or band in the link is the learner's choice; quest facts and
@@ -212,5 +218,11 @@ export default function LessonRoute() {
         else router.replace('/')
       })()}
     />
+    </SafeAreaView>
   )
 }
+
+const useThemeValues = createThemeStyles((colors) => {
+
+  return { colors }
+})

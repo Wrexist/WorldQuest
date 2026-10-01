@@ -1,6 +1,7 @@
+import { createThemeStyles } from '@worldquest/design'
 import { useEffect, useRef, useState } from 'react'
 import { AccessibilityInfo, Platform, ScrollView, Share, StyleSheet, Text, TextInput, View } from 'react-native'
-import { AnswerOption, Button, Card, colors, ProgressBar, radius, Skeleton, space, text } from '@worldquest/design'
+import { AnswerOption, Button, Card, ProgressBar, radius, Skeleton, space, text } from '@worldquest/design'
 import type { ChallengeQuestion, FriendChallenge } from '@worldquest/engines'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { WorldMascot } from '../../components/WorldMascot.js'
@@ -9,6 +10,7 @@ import { formatDate, currentLocale, tContent, useT } from '../../lib/i18n.js'
 import { useChallenges } from './useChallenges.js'
 
 export function FriendsScreen({onBack}:{onBack:()=>void}) {
+  const { colors, styles } = useThemeValues()
   const t=useT(),online=useOnline(),model=useChallenges()
   const [code,setCode]=useState(''),[report,setReport]=useState<string|null>(null)
   const disabled=model.busy||!online
@@ -46,6 +48,7 @@ export function FriendsScreen({onBack}:{onBack:()=>void}) {
   </View>
 }
 function Question({question,locale,onAnswer,disabled}:{question:ChallengeQuestion;locale:FriendChallenge['locale'];onAnswer:(id:string)=>void;disabled:boolean}) {
+  const { styles } = useThemeValues()
   const t=useT(),[selected,setSelected]=useState<string|null>(null)
   const prompt=useRef<Text>(null)
   useEffect(()=>{
@@ -57,6 +60,7 @@ function Question({question,locale,onAnswer,disabled}:{question:ChallengeQuestio
   </View>
 }
 function ChallengeCard({challenge:c,disabled,reportOpen,onReport,act}:{challenge:FriendChallenge;disabled:boolean;reportOpen:boolean;onReport:()=>void;act:ReturnType<typeof useChallenges>['act']}) {
+  const { styles } = useThemeValues()
   const t=useT()
   return <Card style={styles.panel}>
     <Text style={styles.title}>{c.peer??t('friends:privateInvite')}</Text>
@@ -71,11 +75,16 @@ function ChallengeCard({challenge:c,disabled,reportOpen,onReport,act}:{challenge
       {reportOpen&&(['unwanted','cheating','other'] as const).map(reason=><Button key={reason} variant="tertiary" label={t(reason==='unwanted'?'friends:reason.unwanted':reason==='cheating'?'friends:reason.cheating':'friends:reason.other')} onPress={()=>void act({action:'report',id:c.id,reason})} disabled={disabled}/>)}</View>}
   </Card>
 }
-const styles=StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles=StyleSheet.create({
   screen:{flex:1},content:{padding:space[4],gap:space[4],paddingBottom:space[9]},panel:{padding:space[4],gap:space[3]},
   hero:{padding:space[4],gap:space[4],backgroundColor:colors.leagueAdventure.start,borderColor:colors.leagueAdventure.end},
   heroTop:{flexDirection:'row',alignItems:'center',flexWrap:'wrap',gap:space[2]},heroCopy:{flex:1,minWidth:space[9]+space[9]},
   mascot:{width:space[9]+space[6],height:space[9]+space[6]},title:{...text('h2'),color:colors.text.primary},body:{...text('body'),color:colors.text.secondary},
   score:{...text('h3'),color:colors.action.secondary,backgroundColor:colors.journey.sky,padding:space[3],borderRadius:radius.lg},
   code:{...text('bodyStrong'),color:colors.text.primary,backgroundColor:colors.journey.sky,padding:space[3],borderRadius:radius.md},input:{...text('body'),color:colors.text.primary,backgroundColor:colors.bg.surface,minHeight:space[8],padding:space[3],borderWidth:1,borderColor:colors.border.strong,borderRadius:radius.md},
+})
+  return { colors, styles }
 })

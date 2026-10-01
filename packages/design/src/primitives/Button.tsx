@@ -1,3 +1,4 @@
+import { createThemeStyles } from '../theme.js'
 /**
  * Button — the primary interactive primitive.
  *
@@ -21,7 +22,7 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native'
-import { colors, depth, radius, space } from '../tokens.js'
+import { depth, radius, space } from '../tokens.js'
 import { squircle } from '../shape.js'
 import { text } from '../typography.js'
 import { press3d, useFacePress } from './press3d.js'
@@ -45,18 +46,8 @@ export type ButtonProps = {
   testID?: string
 }
 
-/**
- * Face heights. The socket adds the edge on top of these, so the tap target is taller.
- *
- * **`sm` is 40 so the socket lands on exactly 44** — the accessibility floor — because
- * `depth.button` is 4 and the tap target is face + edge. At 36 it measured 40 and the
- * design-shots harness caught it on the shop's six Buy buttons at all three viewports.
- * A 40 pt control looks completely fine in a screenshot and misses under a thumb, which
- * is the entire reason that check measures rather than looks.
- *
- * Anything added here must clear 44 the same way. `sm` is the smallest size this
- * component offers, so this row is the floor for every button in the app.
- */
+/** Face heights; the socket always reserves at least 44pt for touch input,
+ * including flat buttons and themes with a shallow raised edge. */
 const HEIGHTS: Record<ButtonSize, number> = { sm: 40, md: 48, lg: 54 }
 
 type Skin = {
@@ -68,41 +59,7 @@ type Skin = {
   glow?: string
 }
 
-const SKINS: Record<ButtonVariant, Skin> = {
-  discovery: {
-    face: colors.course.face,
-    edge: colors.course.bannerEdge,
-    label: colors.course.ink,
-  },
-  primary: {
-    face: colors.action.primaryFace,
-    edge: colors.action.primaryEdge,
-    label: colors.text.onPrimary,
-  },
-  secondary: {
-    face: colors.action.secondaryFace,
-    edge: colors.action.secondaryEdge,
-    label: colors.text.onSecondary,
-  },
-  destructive: {
-    face: colors.action.destructive,
-    edge: colors.action.destructiveEdge,
-    label: colors.text.onAccent,
-  },
-  // Outlined: the "face" is the canvas showing through, and the edge doubles as the
-  // ring. Duolingo's secondary control, and the reason it still reads as pressable
-  // when it has no fill.
-  tertiary: {
-    face: colors.bg.surface,
-    edge: colors.action.tertiaryEdge,
-    label: colors.text.primary,
-    outlined: true,
-  },
-  // Genuinely flat. For "skip", "not now", "log out" — the actions we must offer
-  // without inviting.
-  ghost: { face: 'transparent', edge: 'transparent', label: colors.text.secondary },
-  adventure: { face: colors.leagueAdventure.button, edge: colors.leagueAdventure.buttonEdge, label: colors.leagueAdventure.buttonText },
-}
+
 
 export function Button({
   label,
@@ -117,6 +74,7 @@ export function Button({
   style,
   testID,
 }: ButtonProps) {
+  const { colors, SKINS } = useThemeValues()
   const isInert = disabled || loading
   const flat = variant === 'ghost'
   const edgeDepth = flat ? 0 : depth.button
@@ -124,7 +82,7 @@ export function Button({
 
   const skin = SKINS[variant]
   const faceHeight = HEIGHTS[size]
-  const socketHeight = faceHeight + edgeDepth
+  const socketHeight = Math.max(44, faceHeight + edgeDepth)
 
   const faceColor = isInert && !flat ? colors.action.disabled : skin.face
   const edgeColor = isInert && !flat ? colors.action.disabledEdge : skin.edge
@@ -288,4 +246,43 @@ const styles = StyleSheet.create({
    * for the same reason `labelSm` is a step rather than a smaller size.
    */
   labelGhost: text('bodyStrong'),
+})
+
+const useThemeValues = createThemeStyles((colors) => {
+  const SKINS: Record<ButtonVariant, Skin> = {
+  discovery: {
+    face: colors.course.face,
+    edge: colors.course.bannerEdge,
+    label: colors.course.ink,
+  },
+  primary: {
+    face: colors.action.primaryFace,
+    edge: colors.action.primaryEdge,
+    label: colors.text.onPrimary,
+  },
+  secondary: {
+    face: colors.action.secondaryFace,
+    edge: colors.action.secondaryEdge,
+    label: colors.text.onSecondary,
+  },
+  destructive: {
+    face: colors.action.destructive,
+    edge: colors.action.destructiveEdge,
+    label: colors.text.onAccent,
+  },
+  // Outlined: the "face" is the canvas showing through, and the edge doubles as the
+  // ring. Duolingo's secondary control, and the reason it still reads as pressable
+  // when it has no fill.
+  tertiary: {
+    face: colors.bg.surface,
+    edge: colors.action.tertiaryEdge,
+    label: colors.text.primary,
+    outlined: true,
+  },
+  // Genuinely flat. For "skip", "not now", "log out" — the actions we must offer
+  // without inviting.
+  ghost: { face: 'transparent', edge: 'transparent', label: colors.text.secondary },
+  adventure: { face: colors.leagueAdventure.button, edge: colors.leagueAdventure.buttonEdge, label: colors.leagueAdventure.buttonText },
+}
+  return { colors, SKINS }
 })

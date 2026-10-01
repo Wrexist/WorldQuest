@@ -59,5 +59,6 @@
   "profile:league.body__note": "Navigation row on Profile that opens the weekly league. It existed only as a link from Home, so the one screen a person checks for their own standing did not offer it. Keep it factual — it is a link, not a boast.",
   "profile:account.body__note": "Current account capability. Signing in on a second phone is verified on the web build against the Worker (pnpm e2e:d1); preferences stay on each device, so never promise that everything carries over.",
   "profile:adventure.title": "Your next discovery",
-  "profile:adventure.title__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted."
+  "profile:adventure.title__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted.",
+  "profile:account.title__note": "Secondary account action: link an email to the existing account. Keep concise."
 }

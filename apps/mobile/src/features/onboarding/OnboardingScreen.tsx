@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * Onboarding — mockup screen 2.
  *
@@ -101,7 +102,6 @@ import {
   Card,
   ProgressBar,
   Spacer,
-  colors,
   layout,
   radius,
   space,
@@ -500,6 +500,7 @@ export function OnboardingScreen({
   onSignIn,
   countryCount = 0,
 }: OnboardingScreenProps) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   // The head of `STEPS`, and it is a greeting rather than a question — see that list.
   const [step, setStep] = useState<Step>('welcome')
@@ -912,7 +913,7 @@ export function OnboardingScreen({
 
       <Animated.View style={[styles.stepFill, stepStyle]}>
         {step === 'welcome' && (
-          <View style={styles.centred}>
+          <View style={[styles.centred, styles.welcomeStage]}>
             {/* Atlas at the slides' hero size rather than the questions' `askArt`. He is
                 the subject here, not the speaker: there is no bubble, because a character
                 who greets you by putting a sentence in a speech balloon is a character
@@ -1189,7 +1190,7 @@ export function OnboardingScreen({
                           track('onboarding_region_selected', { region: code })
                         })
                       }
-                      style={[styles.regionCell, chosen && styles.regionCellOn]}
+                      style={[styles.regionCell, { backgroundColor: ({ EU: colors.journey.sky, AS: colors.journey.peach, AF: colors.journey.sand, NA: colors.journey.teal, SA: colors.journey.meadow, OC: colors.journey.lavender, AN: colors.journey.sky })[code] }, chosen && styles.regionCellOn]}
                     >
                       {/* Sky, then landmass, the same two layers the Explore tiles use.
                           The sky alone is seven coloured gradients — correct as atmosphere
@@ -1318,7 +1319,7 @@ export function OnboardingScreen({
         )}
 
         {step === 'taster' && (
-          <View style={styles.centred}>
+          <View style={[styles.centred, styles.welcomeStage]}>
             {/* Atlas waving from a globe. The taster is the handover into the first
                 lesson, and this is the one frame briefed as "confident and inviting".
                 It photographed as a small robot in an empty bordered box, because the
@@ -1478,8 +1479,12 @@ function yearsFor(currentYear: number): readonly number[] {
   return out
 }
 
-const styles = StyleSheet.create({
-  root: { flex: 1 },
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: colors.bg.canvas },
+  welcomeStage: { backgroundColor: colors.journey.sky, borderRadius: radius.xl, margin: space[4], gap: space[3] },
   /**
    * Atlas and his bubble, side by side.
    *
@@ -1720,7 +1725,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border.subtle,
     backgroundColor: colors.bg.surface,
   },
-  anywhereOn: { borderColor: colors.action.primaryEdge },
+  anywhereOn: { borderColor: colors.action.primaryEdge, backgroundColor: colors.journey.meadow },
   // Under the level's own label, so the row says what the choice MEANS rather than
   // making the user infer it from three adjectives.
   levelBody: { ...text('caption'), color: colors.text.secondary, marginTop: space[1] },
@@ -1768,4 +1773,6 @@ const styles = StyleSheet.create({
    * size here and the boot reads as two screens rather than one arrival.
    */
   wordmark: { ...text('display'), color: colors.text.primary, textAlign: 'center' },
+})
+  return { colors, styles }
 })

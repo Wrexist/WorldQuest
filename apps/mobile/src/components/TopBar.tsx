@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * The row every tab starts with: who you are, what you own, and the way into the inbox.
  *
@@ -29,7 +30,7 @@
  */
 
 import { StyleSheet, View, Pressable, Text, useWindowDimensions } from 'react-native'
-import { Avatar, colors, layout, radius, space, text } from '@worldquest/design'
+import { Avatar, layout, radius, space, text } from '@worldquest/design'
 import { Art } from './Art.js'
 import { HeaderJewel } from './HeaderJewel.js'
 
@@ -67,6 +68,7 @@ export function TopBar({
   onStreak,
   onSettings,
 }: TopBarProps) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   const { width, fontScale } = useWindowDimensions()
   const showBrand = streak === undefined || width / fontScale >= layout.baseWidth
@@ -139,7 +141,10 @@ export function TopBar({
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -175,4 +180,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+})
+  return { colors, styles }
 })

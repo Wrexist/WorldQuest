@@ -1,12 +1,14 @@
+import { createThemeStyles } from '@worldquest/design'
 import { Animated, StyleSheet, Text, View } from 'react-native'
-import { colors, radius, space, text, useCelebration } from '@worldquest/design'
+import { radius, space, text, useCelebration } from '@worldquest/design'
 import { useT } from '../lib/i18n.js'
-import { HeaderJewel } from './HeaderJewel.js'
+import { DaylightIllustration } from './DaylightIllustration.js'
 import { Icon } from './Icon.js'
 import { WorldMapArt } from './WorldMapArt.js'
 
 /** A real wallet amount with a bounded coin reveal and a pop when the balance changes. */
 export function CoinWallet({ coins }: { coins: number }) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   const pop = useCelebration(coins)
   return <View style={styles.wallet} accessible aria-label={t('shop:balance', { count: coins })} testID="coin-wallet">
@@ -19,7 +21,7 @@ export function CoinWallet({ coins }: { coins: number }) {
         <View style={styles.rule} />
       </View>
       <View style={styles.art} pointerEvents="none" aria-hidden>
-        <HeaderJewel name="coins" size={126} />
+        <DaylightIllustration name="coins" size={126} active={false} />
         <View style={styles.sparkle}><Icon name="star" size={space[4]} color={colors.league.gold.start} /></View>
         <View style={styles.sparkleSmall}><Icon name="star" size={space[2]} color={colors.league.gold.highlight} /></View>
       </View>
@@ -27,7 +29,10 @@ export function CoinWallet({ coins }: { coins: number }) {
     <View style={styles.footer}><Icon name="globe" size={space[4]} color={colors.league.gold.start} /><Text style={styles.footerText}>WorldQuest</Text></View>
   </View>
 }
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   wallet: { minHeight: space[9]*3, backgroundColor: colors.chrome.surface, borderRadius: radius['2xl'], borderBottomWidth: space[1], borderColor: colors.chrome.edge, overflow: 'hidden', padding: space[4] },
   row: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: space[3] },
   words: { flex: 1, minWidth: space[9], gap: space[2] },
@@ -41,4 +46,6 @@ const styles = StyleSheet.create({
   sparkleSmall: { position: 'absolute', start: 8, bottom: 4 },
   footer: { flexDirection: 'row', alignItems: 'center', gap: space[2], marginTop: space[3] },
   footerText: { ...text('caption', { weight: '600' }), color: colors.league.gold.start },
+})
+  return { colors, styles }
 })

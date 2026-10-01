@@ -1,3 +1,4 @@
+const { beginLesson } = require('./lib/lesson-walk.cjs')
 /**
  * Screenshot any set of routes from the REAL exported bundle, at three viewports.
  *
@@ -70,6 +71,7 @@ const VIEWPORTS = [
    */
   { name: '320', width: 320, height: 568 },
   { name: '390', width: 390, height: 844 },
+  { name: '430', width: 430, height: 932 },
   { name: '768', width: 768, height: 1024 },
 ]
 
@@ -408,6 +410,7 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
   const shootFlagQuestion = async (page, shot) => {
     await page.goto(`http://localhost:${PORT}/lesson?attr=flag`, { waitUntil: 'networkidle' })
     await page.waitForTimeout(1600)
+    await beginLesson(page, shot)
 
     /**
      * Walked forward rather than shot on arrival, because `attr=flag` narrows to the
@@ -455,6 +458,7 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
   const shootLessonPhases = async (page, shot) => {
     await page.goto(`http://localhost:${PORT}/lesson`, { waitUntil: 'networkidle' })
     await page.waitForTimeout(1600)
+    await beginLesson(page, shot)
 
     const close = page.getByRole('button', { name: /close|exit|quit|pause/i }).first()
     if ((await close.count()) > 0) {
@@ -517,6 +521,7 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
     if ((await onward.count()) === 0) return
     await onward.click()
     await page.waitForTimeout(1600)
+    await beginLesson(page, shot)
     for (let beat = 0; beat < 6; beat++) {
       if ((await page.getByTestId('streak-extended').count()) > 0) {
         await shot('streak-extended')
@@ -537,6 +542,8 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
   for (const viewport of VIEWPORTS) {
     const page = await browser.newPage({
       ...browserContext,
+      reducedMotion: process.env.WQ_REDUCED_MOTION === '1' ? 'reduce' : 'no-preference',
+      colorScheme: process.env.WQ_APPEARANCE === 'dark' ? 'dark' : 'light',
       viewport: { width: viewport.width, height: viewport.height },
       /**
        * Notifications GRANTED, because denied is not the state worth photographing.
@@ -596,12 +603,29 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
     }
 
     await completeOnboarding(page, SHOOT_FLOWS ? shot : async () => {})
+    if (process.env.WQ_LOCALE === 'sv') {
+      await page.goto(`http://localhost:${PORT}/settings`, { waitUntil: 'networkidle' })
+      await page.getByRole('radio', { name: 'Svenska', exact: true }).click()
+      await page.waitForTimeout(500)
+    }
 
     for (const route of ROUTES) {
       const slug = routeSlug(route)
       await page.goto(`http://localhost:${PORT}${route}`, { waitUntil: 'networkidle' })
       await page.waitForTimeout(1200)
       assertRoute(page, route)
+      const scale = Number(process.env.WQ_TEXT_SCALE ?? 1)
+      if (scale !== 1) await page.evaluate(factor => {
+        // Browser text enlargement, not a claim about native Dynamic Type.
+        const sizes = [...document.body.querySelectorAll('*')].map(node => ({ node, font: parseFloat(getComputedStyle(node).fontSize), line: parseFloat(getComputedStyle(node).lineHeight) }))
+        for (const { node, font, line } of sizes) {
+          const cap = Number(node.closest('[data-max-scale]')?.getAttribute('data-max-scale') ?? factor)
+          const effective = Math.min(factor, cap)
+          if (Number.isFinite(font)) node.style.setProperty('font-size', `${font * effective}px`, 'important')
+          if (Number.isFinite(line)) node.style.setProperty('line-height', `${line * effective}px`, 'important')
+        }
+      }, scale)
+      if (scale !== 1) await page.waitForTimeout(800)
       await page.screenshot({ path: path.join(OUT, `${slug}@${viewport.name}.png`) })
 
       /**

@@ -49,5 +49,11 @@
   "explore:mastery.mastered": "Mastered",
   "explore:mastery.mastered__note": "Mastery level label. Max 14 characters.",
   "explore:mastery.burnished": "Burnished",
-  "explore:mastery.burnished__note": "The level above mastered — kept fresh over months. Max 14 characters."
+  "explore:mastery.burnished__note": "The level above mastered — kept fresh over months. Max 14 characters.",
+  "explore:search.label": "Search countries or regions",
+  "explore:search.label__note": "Country search over installed content. Keep concise; count is validated coverage, not worldwide total.",
+  "explore:search.count": "{count, plural, one {# country in this course} other {# countries in this course}}",
+  "explore:search.count__note": "Country search over installed content. Keep concise; count is validated coverage, not worldwide total.",
+  "explore:search.empty": "No matching countries. Try another name or region.",
+  "explore:search.empty__note": "Country search over installed content. Keep concise; count is validated coverage, not worldwide total."
 }

@@ -1,3 +1,4 @@
+import { createThemeStyles } from '../theme.js'
 /**
  * StatChip — XP, coins, streak and hearts. One component, four meanings, because
  * they share a shape and differ only in token.
@@ -35,19 +36,14 @@ export type StatChipProps = {
   testID?: string
 }
 
-const TINTS: Record<ChipKind, string> = {
-  xp: colors.reward.xp,
-  coin: colors.reward.coin,
-  streak: colors.status.streak,
-  hearts: colors.status.hearts,
-  gem: colors.reward.gem,
+export const chipTint = (kind: ChipKind, dim = false, theme: import('../theme.js').ThemeColors = colors): string => {
+  const tints = { xp: theme.reward.xp, coin: theme.reward.coin, streak: theme.status.streak, hearts: theme.status.hearts, gem: theme.reward.gem }
+  return dim ? theme.text.secondary : tints[kind]
 }
 
-/** The colour the caller should tint its icon, so the pair always matches. */
-export const chipTint = (kind: ChipKind, dim = false): string => (dim ? colors.text.secondary : TINTS[kind])
-
 export function StatChip({ kind, value, icon, accessibilityLabel, dim = false, style, testID }: StatChipProps) {
-  const tint = chipTint(kind, dim)
+  const { colors, styles } = useThemeValues()
+  const tint = chipTint(kind, dim, colors)
   return (
     <View
       accessible
@@ -61,7 +57,10 @@ export function StatChip({ kind, value, icon, accessibilityLabel, dim = false, s
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   base: {
     flexShrink: 0,
     flexDirection: 'row', alignItems: 'center', gap: space[1],
@@ -78,4 +77,6 @@ const styles = StyleSheet.create({
   // to survive being read at arm's length, mid-lesson, by someone whose attention is
   // on the question. Tabular so a streak ticking 9 → 10 does not jog the row.
   value: text('bodyStrong', { numeric: true }),
+})
+  return { colors, styles }
 })

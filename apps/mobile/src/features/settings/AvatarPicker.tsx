@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * Choosing a face.
  *
@@ -19,7 +20,7 @@
  */
 
 import { Pressable, ScrollView, StyleSheet } from 'react-native'
-import { Avatar, colors, radius, space } from '@worldquest/design'
+import { Avatar, radius, space } from '@worldquest/design'
 import { Art } from '../../components/Art.js'
 import { ART_BY_NAME, type ArtName } from '../../lib/art.generated.js'
 import { useT } from '../../lib/i18n.js'
@@ -53,6 +54,7 @@ export type AvatarPickerProps = {
 }
 
 export function AvatarPicker({ value, onChange }: AvatarPickerProps) {
+  const { styles } = useThemeValues()
   const t = useT()
 
   return (
@@ -106,6 +108,7 @@ function Option({
   onPress: () => void
   children: React.ReactNode
 }) {
+  const { styles } = useThemeValues()
   return (
     <Pressable
       role="radio"
@@ -122,7 +125,10 @@ function Option({
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   row: { gap: space[3], paddingVertical: space[2], paddingHorizontal: space[1] },
   option: {
     borderRadius: radius.full,
@@ -131,4 +137,6 @@ const styles = StyleSheet.create({
     padding: 2,
   },
   selected: { borderColor: colors.action.primary },
+})
+  return { colors, styles }
 })

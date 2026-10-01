@@ -16,11 +16,16 @@ Choose iOS → production → create the distribution certificate and App Store 
 Then check: `EXPO_TOKEN=… pnpm check:ios-creds` and read its output (it passes on
 missing inputs, so the words matter, not the exit code).
 
-## 2. Domain and pages (30 min + DNS wait)
+## 2. Pages (done 29 September 2026)
 
-Buy `learnworldquest.com` (quoted $10.46/year in Cloudflare). Publish four pages:
-privacy policy, terms, support, licences. Then set, in the EAS **production**
-environment (no code change):
+The four pages are on GitHub Pages, published from the `gh-pages` branch (site files
+only): <https://wrexist.github.io/WorldQuest/> with `privacy.html`, `terms.html`,
+`support.html` and `licences.html`. They describe the D1 build: guest play, optional
+email, age group only on the server, immediate deletion, no analytics or purchases.
+Update them before shipping anything that changes that (analytics, purchases, leagues,
+friends). The EAS **production** variables below are set to those URLs. A custom
+domain is still needed for email (step 3); when it exists, the pages can move to it by
+changing these four values.
 
 ```bash
 eas env:create --environment production --name EXPO_PUBLIC_PRIVACY_URL --value https://… --visibility plaintext
@@ -33,7 +38,7 @@ Worked when: Settings › Privacy shows tappable Privacy policy and Terms rows.
 
 ## 3. Email (20 min + DNS wait)
 
-Create a Resend account, verify the domain (SPF/DKIM/DMARC records), turn off open and
+Buy a domain first (the pages do not need one; the sign-in email does). Create a Resend account, verify the domain (SPF/DKIM/DMARC records), turn off open and
 click tracking. Details: [account email setup](../engineering/account-email-setup.md).
 
 ```bash

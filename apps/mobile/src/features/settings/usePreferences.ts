@@ -12,10 +12,10 @@
  * it at whatever the phone said the day they tapped it.
  */
 
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { SUPPORTED_LOCALES, setLocale, type Locale } from '@worldquest/i18n'
-import { setAppReducedMotion } from '@worldquest/design'
-import { isRecord, readJson, writeJson } from '../../lib/storage.js'
+import { setAppReducedMotion, setAppearance, type AppearanceChoice } from '@worldquest/design'
+import { isRecord, readJson, writeJson, onStorageScopeChange } from '../../lib/storage.js'
 import { deviceLocale } from '../../lib/locale.js'
 import { track } from '../../lib/analytics.js'
 
@@ -28,6 +28,7 @@ export type DailyGoal = (typeof DAILY_GOALS)[number]
 export type LanguageChoice = 'system' | Locale
 
 export type Preferences = {
+  readonly appearance: AppearanceChoice
   readonly dailyGoalMinutes: DailyGoal
   readonly reminder: boolean
   /**
@@ -74,6 +75,7 @@ export type Preferences = {
  * `lib/analytics.ts`, so this toggle is about adult consent only.
  */
 export const DEFAULTS: Preferences = {
+  appearance: 'system',
   dailyGoalMinutes: 10,
   reminder: true,
   // Learn it rather than assert it — see the type. A default of 19 would be a guess
@@ -109,6 +111,7 @@ export const DEFAULTS: Preferences = {
  * 'object'.
  */
 const VALID: Record<keyof Preferences, (value: unknown) => boolean> = {
+  appearance: v => v === 'system' || v === 'light' || v === 'dark',
   dailyGoalMinutes: (v) => DAILY_GOALS.includes(v as DailyGoal),
   reminder: (v) => typeof v === 'boolean',
   reminderHour: (v) => v === null || (typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= 23),
@@ -172,6 +175,11 @@ export function usePreferences(): UsePreferences {
    * twice, and under StrictMode it does.
    */
   const latest = useRef(preferences)
+  useEffect(() => onStorageScopeChange(() => {
+    const next = load()
+    latest.current = next
+    setPreferences(next)
+  }), [])
 
   const set = useCallback(
     <K extends keyof Preferences>(key: K, value: Preferences[K]): void => {
@@ -179,6 +187,7 @@ export function usePreferences(): UsePreferences {
       latest.current = next
       writeJson(KEY, next)
       setPreferences(next)
+      if (key === 'appearance') setAppearance(value as AppearanceChoice)
       if (key === 'reduceMotion') setAppReducedMotion(value as boolean)
 
       // The setting and its new value, never anything about who changed it. A
@@ -204,5 +213,9 @@ export const LANGUAGE_CHOICES: readonly LanguageChoice[] = ['system', ...SUPPORT
 
 /** Apply persisted accessibility preferences before the first screen mounts. */
 export function initializeMotionPreference(): void {
+  setAppearance(load().appearance)
   setAppReducedMotion(load().reduceMotion)
 }
+
+// Preferences follow the active account, just like the cache that owns them.
+onStorageScopeChange(initializeMotionPreference)

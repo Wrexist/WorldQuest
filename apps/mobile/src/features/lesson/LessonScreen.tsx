@@ -1,3 +1,5 @@
+import { LessonIntroduction } from './LessonIntroduction.js'
+import { createThemeStyles } from '@worldquest/design'
 /**
  * The lesson screen — mockup screens 5 and 6.
  *
@@ -24,7 +26,6 @@ import {
 import {
   AnswerOption,
   Button,
-  colors,
   layout,
   ProgressBar,
   radius,
@@ -209,7 +210,7 @@ const WRAPPED_AT = 1.5
  * phone has ever had. At 320×568 the fourth option sat at 559–618 of 568 — reachable by
  * scrolling, and on a quiz an option you cannot see is one you do not consider.
  */
-const SHORT_SCREEN = 700
+const SHORT_SCREEN = 900
 
 /**
  * Below this height, Check sits after the options instead of pinned under them.
@@ -254,7 +255,7 @@ const PINNED_CHECK_MIN_HEIGHT = 600
  * four options need about 690pt there — and this is exactly the number that measurement
  * exists to protect.
  */
-const LOCATOR_WIDTH = 280
+const LOCATOR_WIDTH = 208
 const LOCATOR_WIDTH_SHORT = 132
 
 /**
@@ -283,7 +284,7 @@ const LOCATOR_WIDTH_SHORT_GRID = 208
  * question about a coastline rather than about eyesight.
  */
 // A map question's map IS the prompt, so it stays the larger of the two.
-const MAP_PROMPT_WIDTH = 300
+const MAP_PROMPT_WIDTH = 240
 const MAP_PROMPT_WIDTH_SHORT = 180
 
 /**
@@ -321,6 +322,7 @@ export function LessonScreen({
   onExit,
   onLeave,
   mode = 'normal',
+  showIntroduction = false,
   coins = 0,
   isTaster = false,
   focus,
@@ -328,6 +330,7 @@ export function LessonScreen({
   courseNode,
   length,
 }: {
+  showIntroduction?: boolean
   onExit: (summary: LessonExit) => void
   /**
    * Leave a lesson that never started — offline with nothing saved, a failure, or a focus
@@ -389,9 +392,11 @@ export function LessonScreen({
    */
   length?: number | undefined
 }) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   const dailyGoal = useDailyGoal()
   const { index, memory, status, reload, isOffline } = useContent()
+  const [introduced, setIntroduced] = useState(false)
   const [screen, setScreen] = useState<ScreenState>('loading')
   // "Report a problem" open over the answer just given. Only where a backend takes
   // reports (the Worker): a link that could only fail is a link not to show.
@@ -792,7 +797,7 @@ export function LessonScreen({
     if (source === 'offline') return setScreen('offline-start')
     if (source === 'too-narrow' || questions.length === 0) return setScreen('empty')
     setScreen('ready')
-    if (lesson.state.phase === 'idle') {
+    if (lesson.state.phase === 'idle' && (!showIntroduction || introduced || mode === 'speed' || !questions.some(question => question.isNew))) {
       // The ticket's id on D1: it is the idempotency key the server issued under.
       lesson.start(remoteLessons && remote.lesson ? remote.lesson.lessonId : makeUuid())
       track('lesson_started', {
@@ -803,12 +808,16 @@ export function LessonScreen({
         was_offline: isOffline,
       })
     }
-  }, [status, questions, lesson, isOffline, remoteLessons, remote.status, remote.lesson])
+  }, [status, questions, lesson, isOffline, remoteLessons, remote.status, remote.lesson, showIntroduction, introduced, mode])
 
   if (screen === 'loading') return <LoadingState />
   if (screen === 'error') return <ErrorState onRetry={remoteLessons ? remote.retry : reload} onLeave={onLeave} />
   if (screen === 'offline-start') return <OfflineStartState onRetry={remote.retry} onLeave={onLeave} />
   if (screen === 'empty') return <EmptyState onLeave={onLeave} />
+
+  if (showIntroduction && !introduced && mode !== 'speed' && questions.some(question => question.isNew)) {
+    return <LessonIntroduction questions={questions} onBegin={() => setIntroduced(true)} onLeave={onLeave} />
+  }
 
   if (lesson.state.phase === 'summary' || lesson.state.phase === 'abandoned') {
     const practised = practisedCountries(index?.index, lesson.state.answers)
@@ -993,7 +1002,8 @@ export function LessonScreen({
 
       <ScrollView
         ref={scroller}
-        contentContainerStyle={[styles.body, compact && styles.bodyShort]}
+        testID="lesson-scroll"
+        contentContainerStyle={[styles.body, compact && styles.bodyShort, inlineCheck && styles.bodyTiny]}
         onLayout={(event) => {
           viewport.current = event.nativeEvent.layout.height
           // The sheet arriving is what shrinks this; ask again with the new height.
@@ -1037,7 +1047,7 @@ export function LessonScreen({
           <View style={styles.promptArt} testID="prompt-art">
             <Flag
               path={question.promptAsset}
-              width={FLAG_PROMPT_WIDTH}
+              width={compact ? 180 : FLAG_PROMPT_WIDTH}
               label={tContent(question.promptKey, question.promptParams)}
             />
           </View>
@@ -1066,7 +1076,7 @@ export function LessonScreen({
               // question about the coastline rather than about eyesight.
               width={
                 question.modality === 'map'
-                  ? compact
+                  ? inlineCheck ? 160 : compact
                     ? MAP_PROMPT_WIDTH_SHORT
                     : MAP_PROMPT_WIDTH
                   : compact
@@ -1242,18 +1252,18 @@ export function LessonScreen({
             />
           ) : (
             /* The verdict, the reward and the way onward as ONE pinned sheet.
-   
+
                Measured off the reference rather than eyeballed: the mascot is 37.5 % of
                the screen wide, sits ~7 % in from the edge, and its lower body is
                OCCLUDED BY THE BUTTON rather than cropped by the panel — it leans out
                from behind the furniture, which is what makes it read as arriving rather
                than as a sticker placed in a box.
-   
+
                The first reading of that reference was wrong and the measurement caught
                it: the mascot's top is 89 px BELOW the panel edge, so it does not break
                the top edge at all. Two of the three grafted mechanics would have been
                built around a thing that was not happening.
-   
+
                This block used to sit in the scroll flow with the button pinned beneath
                it, so the praise and the way onward were two objects with a gap between
                them. One sheet is the mechanic worth taking. */
@@ -1275,20 +1285,20 @@ export function LessonScreen({
               testID="answer-sheet"
             >
               {/* The thing the question was ABOUT, now that it can be shown.
-   
+
                   "Hur ser Japans flagga ut?" is asked in words and answered in words,
                   so before this the flag never appeared at all: four sentences, a
                   locator map for context, and a user who finishes a flag question
                   without ever seeing the flag. In an app whose first promise is "flags,
                   capitals and landmarks", that is the fact not being taught.
-   
+
                   It cannot go beside the prompt — drawing the flag next to "what does
                   Japan's flag look like?" hands the answer to anyone who can see it,
                   silently and only to sighted users. After grading there is nothing
                   left to give away: the correct option is already marked, and the
                   engine only sets `revealAsset` when the picture is not already on
                   screen (see Question.revealAsset).
-   
+
                   Labelled, like the flag prompt and unlike every decorative flag in the
                   app: here the picture is the answer being taught, so a reader that
                   skipped it would be skipping the lesson. */}
@@ -1360,14 +1370,14 @@ export function LessonScreen({
                 {t('lesson:feedback.correct.title')}
               </Text>
               {/* One warm line under the headline, and it tells the truth.
-   
+
                   `feedback.correct.body` — "You found {entityName} 🎉" — has been in the
                   catalogue since the first week, with a translator note saying "shown
                   under the celebration headline", and NOTHING HAS EVER RENDERED IT. The
                   correct branch was a single word and a reward chip, which is why the
                   reference's version of this sheet reads warmer than ours: it has the
                   sentence we already wrote.
-   
+
                   The reference also says "Great job! You're on a roll." after every
                   correct answer, including the first of the lesson. That is flattery,
                   and the voice spec is explicit that we state the truth — so the roll
@@ -1472,6 +1482,7 @@ function RiseIn({ children, style }: { children: ReactNode; style: StyleProp<Vie
  * announced every second, which would make the mode unusable with a screen reader.
  */
 function Countdown({ seconds, running }: { seconds: number; running: boolean }) {
+  const { styles } = useThemeValues()
   const t = useT()
   const [left, setLeft] = useState(seconds)
 
@@ -1526,6 +1537,7 @@ const makeUuid = (): string =>
 
 /** Skeleton, never a spinner, on primary content — no layout shift on arrival. */
 function LoadingState() {
+  const { styles } = useThemeValues()
   const t = useT()
 
   return (
@@ -1584,6 +1596,7 @@ function practisedCountries(
 }
 
 function ErrorState({ onRetry, onLeave }: { onRetry: () => void; onLeave: (() => void) | undefined }) {
+  const { styles } = useThemeValues()
   const t = useT()
 
   return (
@@ -1608,6 +1621,7 @@ function LeaveButton({ onLeave }: { onLeave: (() => void) | undefined }) {
 
 /** Never a dead end — an empty queue is celebrated, then offers what is next. */
 function EmptyState({ onLeave }: { onLeave: (() => void) | undefined }) {
+  const { styles } = useThemeValues()
   const t = useT()
 
   return (
@@ -1632,6 +1646,7 @@ function EmptyState({ onLeave }: { onLeave: (() => void) | undefined }) {
  * offers the retry; answers already given are safe in the queue either way.
  */
 function OfflineStartState({ onRetry, onLeave }: { onRetry: () => void; onLeave: (() => void) | undefined }) {
+  const { styles } = useThemeValues()
   const t = useT()
 
   return (
@@ -1646,6 +1661,7 @@ function OfflineStartState({ onRetry, onLeave }: { onRetry: () => void; onLeave:
 }
 
 function OfflineBanner() {
+  const { styles } = useThemeValues()
   const t = useT()
 
   return (
@@ -1655,7 +1671,10 @@ function OfflineBanner() {
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   clockTrack: {
     width: 56,
     height: 6,
@@ -1664,7 +1683,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   clockFill: { height: '100%', backgroundColor: colors.status.streak },
-  screen: { flex: 1, padding: space[4], gap: space[4] },
+  screen: { flex: 1, backgroundColor: colors.bg.canvas, padding: space[4], gap: space[3] },
   centered: { alignItems: 'center', justifyContent: 'center' },
   flex: { flex: 1 },
   header: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
@@ -1679,6 +1698,7 @@ const styles = StyleSheet.create({
   // is the difference between four options and three, and the sheet has a surface and a
   // shadow of its own to separate it.
   bodyShort: { gap: space[3], paddingBottom: space[4] },
+  bodyTiny: { gap: space[1] },
   prompt: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
   reviewTag: { ...text('caption'), color: colors.text.secondary, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 },
   newTag: { color: colors.reward.gem },
@@ -1774,4 +1794,6 @@ const styles = StyleSheet.create({
     ...squircle,
   },
   offlineText: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
+})
+  return { colors, styles }
 })

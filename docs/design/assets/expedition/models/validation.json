@@ -1,0 +1,72 @@
+{
+  "tool": "scripts/validate-expedition-models.cjs",
+  "scope": "Static GLB validation only. Blender preview renders reviewed separately; no native GPU performance claim.",
+  "models": [
+    {
+      "name": "gem",
+      "bytes": 40492,
+      "triangles": 1740,
+      "animations": [
+        {
+          "name": "Crystal lift and settle",
+          "channels": 1,
+          "seconds": 3
+        }
+      ],
+      "sha256": "fcd40f8809b2d5a4f9f5c37ef2ac41e9dbb50ef33f21bb551ff3e7c6e025545f"
+    },
+    {
+      "name": "passport",
+      "bytes": 104216,
+      "triangles": 4764,
+      "animations": [],
+      "sha256": "ec5e486a6188d3e7ba4efe3e4d499b9add4d8bda0f2163b4175cee458edbb754"
+    },
+    {
+      "name": "compass",
+      "bytes": 369748,
+      "triangles": 15280,
+      "animations": [],
+      "sha256": "3333911d2b4c5a0aa90369fad4ccef053ed2d24e4767708551a39b35d9427f77"
+    },
+    {
+      "name": "coins",
+      "bytes": 393036,
+      "triangles": 18860,
+      "animations": [],
+      "sha256": "8979051285718663f7253e21f9e1b36a751a1fac55dde36ef6518eaf9d5f1bb0"
+    },
+    {
+      "name": "star-trophy",
+      "bytes": 64904,
+      "triangles": 3280,
+      "animations": [],
+      "sha256": "5aeeb67bdac7c27db8a6cd2a2a1600cc039ff0cf92acbfe9e21199de93e88205"
+    },
+    {
+      "name": "streak-freeze",
+      "bytes": 52656,
+      "triangles": 2452,
+      "animations": [],
+      "sha256": "a6e5aa2d76a9bcaa033906e21ba615ea88ee22818d7383b3ceb658b31e56a03b"
+    },
+    {
+      "name": "treasure-chest",
+      "bytes": 203092,
+      "triangles": 8536,
+      "animations": [
+        {
+          "name": "Chest anticipation and hinged opening",
+          "channels": 1,
+          "seconds": 3
+        },
+        {
+          "name": "Collectible reveal",
+          "channels": 1,
+          "seconds": 3
+        }
+      ],
+      "sha256": "162bd94b7441e40f3cd19d9860d417f24f2d71d1dc97fc1b32e5891a62a8127e"
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * The header for a full-screen route: a back control and a title.
  *
@@ -32,7 +33,7 @@
  */
 
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import { colors, layout, space, text } from '@worldquest/design'
+import { layout, space, text } from '@worldquest/design'
 import { t } from '../lib/i18n.js'
 import { Icon } from './Icon.js'
 
@@ -52,6 +53,7 @@ export type ScreenHeaderProps = {
 }
 
 export function ScreenHeader({ title, onBack, trailing }: ScreenHeaderProps) {
+  const { colors, styles } = useThemeValues()
   return (
     <View style={styles.header}>
       <Pressable
@@ -87,7 +89,10 @@ export function ScreenHeader({ title, onBack, trailing }: ScreenHeaderProps) {
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -106,4 +111,6 @@ const styles = StyleSheet.create({
   glyph: { ...text('h2'), color: colors.text.primary },
   title: { ...text('h2'), color: colors.text.primary, flex: 1 },
   trailing: { minWidth: layout.minTouchTarget, alignItems: 'flex-end' },
+})
+  return { colors, styles }
 })

@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * The quest is finished — mockup screen 8.
  *
@@ -56,7 +57,6 @@ import { Animated, StyleSheet, Text, View } from 'react-native'
 import {
   Button,
   Card,
-  colors,
   radius,
   space,
   squircle,
@@ -111,6 +111,7 @@ const HERO = 200
 const HERO_SUBJECT = 0.42
 
 export function QuestComplete({ done, total, streak, milestoneXp, onDone }: QuestCompleteProps) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
 
   // One frame late on purpose, so the animation has a "from" to travel out of. A value
@@ -143,7 +144,7 @@ export function QuestComplete({ done, total, streak, milestoneXp, onDone }: Ques
         {/* The score, as a number rather than as a ribbon. `done / total` and not a
             percentage: the tasks are what the user just did, and "5 of 5" is the
             sentence the Quests tab has been showing them all day.
-   
+
             Only when it agrees with the headline. This screen is reachable only because a
             quest finished, but it is reachable by a router and a router can be pointed at
             it — and the first render of it printed "0 of 5 done" directly under "Quest
@@ -198,6 +199,7 @@ function Reward({
   readonly amount: number
   readonly label: string
 }) {
+  const { styles } = useThemeValues()
   return (
     <Card level={2} style={styles.reward} accessibilityLabel={label}>
       {/* Named by the card, so the pill inside it is silent. */}
@@ -206,7 +208,10 @@ function Reward({
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   screen: { flex: 1 },
   body: {
     flex: 1,
@@ -232,4 +237,6 @@ const styles = StyleSheet.create({
   streakText: { ...text('bodyStrong', { numeric: true }), color: colors.text.primary },
   milestone: { ...text('caption', { numeric: true }), color: colors.reward.xp },
   actions: { padding: space[4], gap: space[2] },
+})
+  return { colors, styles }
 })

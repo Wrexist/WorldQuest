@@ -1,3 +1,4 @@
+import { useTheme } from '@worldquest/design'
 /**
  * A UI icon.
  *
@@ -25,7 +26,7 @@
  */
 
 import { Image, type ImageSourcePropType } from 'react-native'
-import { colors } from '@worldquest/design'
+
 import { ICON_BY_NAME, type IconName } from '../lib/icons.generated.js'
 
 /**
@@ -55,13 +56,14 @@ export type IconProps = {
 
 const DEFAULT_SIZE = 24
 
-export function Icon({ name, size = DEFAULT_SIZE, color = colors.text.primary, label }: IconProps) {
+export function Icon({ name, size = DEFAULT_SIZE, color, label }: IconProps) {
+  const { colors } = useTheme()
   return (
     <Image
       source={source(name)}
       style={{ width: size, height: size }}
       // The whole point: one white mask, recoloured per use.
-      tintColor={color}
+      tintColor={color ?? colors.text.primary}
       // `alt=""` plus aria-hidden, or a real name. `aria-hidden` rather than
       // `accessibilityElementsHidden` — the latter is iOS-only and react-native-web
       // ignores it, which is the same family of bug as the `accessibilityState` one

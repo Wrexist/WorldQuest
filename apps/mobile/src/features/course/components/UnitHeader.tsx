@@ -1,5 +1,6 @@
+import { createThemeStyles } from '@worldquest/design'
 import { StyleSheet, Text, View } from 'react-native'
-import { ProgressBar, colors, space, text } from '@worldquest/design'
+import { ProgressBar, space, text } from '@worldquest/design'
 import { tContent, useT } from '../../../lib/i18n.js'
 import { AdventureArt } from '../../../components/AdventureArt.js'
 import type { PathUnitView } from '../pathView.js'
@@ -10,6 +11,7 @@ export type UnitHeaderProps = {
 }
 
 export function UnitHeader({ unit, withAtlas }: UnitHeaderProps) {
+  const { styles } = useThemeValues()
   const t = useT()
   const title = tContent(unit.titleKey)
   const count = t('home:path.unit.progress', { done: unit.done, total: unit.nodes.length })
@@ -25,7 +27,10 @@ export function UnitHeader({ unit, withAtlas }: UnitHeaderProps) {
     {withAtlas && <AdventureArt name="explorer" style={{ width: 116, height: 140 }} />}
   </View>
 }
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   hero: { flexDirection: 'row', alignItems: 'center', padding: space[4], gap: space[3], borderRadius: 18, backgroundColor: colors.journey.meadow, borderWidth: 1, borderColor: colors.border.subtle },
   scenic: { backgroundColor: 'transparent', borderWidth: 0, padding: 0, marginBottom: 12 },
   onScenery: { color: colors.text.primary },
@@ -34,4 +39,6 @@ const styles = StyleSheet.create({
   title: { ...text('h2'), color: colors.text.primary },
   objective: { ...text('body'), color: colors.text.secondary },
   art: { width: 112, height: 128, alignItems: 'center', justifyContent: 'center' },
+})
+  return { colors, styles }
 })

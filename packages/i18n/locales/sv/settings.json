@@ -62,5 +62,13 @@
   "settings:gate.question": "Vad är {a} × {b}?",
   "settings:gate.wrong": "Det stämmer inte. Här är en ny fråga.",
   "settings:gate.wrongSpoken": "Det stämmer inte. Här är en ny fråga: vad är {a} × {b}?",
-  "settings:about.support": "Hjälp och feedback"
+  "settings:about.support": "Hjälp och feedback",
+  "settings:appearance.label": "Tema",
+  "settings:appearance.label__note": "Appearance setting. Changes all interface surfaces immediately; system follows device.",
+  "settings:appearance.system": "Följ enheten",
+  "settings:appearance.system__note": "Appearance setting. Changes all interface surfaces immediately; system follows device.",
+  "settings:appearance.light": "Ljust",
+  "settings:appearance.light__note": "Appearance setting. Changes all interface surfaces immediately; system follows device.",
+  "settings:appearance.dark": "Mörkt",
+  "settings:appearance.dark__note": "Appearance setting. Changes all interface surfaces immediately; system follows device."
 }

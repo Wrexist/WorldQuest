@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * An illustration.
  *
@@ -101,7 +102,7 @@
 
 import { useState } from 'react'
 import { Image, StyleSheet, View } from 'react-native'
-import { colors, radius, squircle } from '@worldquest/design'
+import { radius, squircle } from '@worldquest/design'
 import { ART_BY_NAME, ART_GEOMETRY, type ArtName } from '../lib/art.generated.js'
 import { CLASSIC_ART } from '../lib/classic.generated.js'
 import { AtlasCharacter, type AtlasMood } from './AtlasCharacter.js'
@@ -151,6 +152,7 @@ export function Art(props: ArtProps) {
       : /encouraging/.test(name) ? 'encouraging' : 'welcome'
     return <AtlasCharacter size={size} height={height} mood={mood} label={label} />
   }
+  if (label === undefined && name === 'rewards/streak-freeze') return <DaylightIllustration name="streak-freeze" size={size} />
   if (label === undefined && name === 'states/empty-collection') return <DaylightIllustration name="treasure-chest" size={size} />
   if (label === undefined && (name.startsWith('celebration/') || name.startsWith('rewards/'))) {
     return <RewardMotion kind={name.startsWith('celebration/') ? 'confetti' : name.endsWith('flame') ? 'flame' : 'pop'}><StillArt {...props} /></RewardMotion>
@@ -159,6 +161,7 @@ export function Art(props: ArtProps) {
 }
 
 function StillArt({ name, size, height, label, frame = 'auto' }: ArtProps) {
+  const { colors } = useThemeValues()
   /**
    * A decode that fails leaves a HOLE, and a hole is worse than an absence.
    *
@@ -306,4 +309,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+})
+
+const useThemeValues = createThemeStyles((colors) => {
+
+  return { colors }
 })

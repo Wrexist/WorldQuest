@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * This month, one cell a day: the streak screen's calendar.
  *
@@ -24,7 +25,7 @@
  */
 
 import { StyleSheet, Text, View } from 'react-native'
-import { Card, colors, radius, space, text } from '@worldquest/design'
+import { Card, radius, space, text } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 import type { MonthActivity } from './monthActivity.js'
 
@@ -38,6 +39,7 @@ const DAY_HEIGHT = 32
 const TODAY_RING = 2
 
 export function MonthCalendar({ month }: { month: MonthActivity }) {
+  const { styles } = useThemeValues()
   const t = useT()
 
   return (
@@ -106,7 +108,10 @@ export function MonthCalendar({ month }: { month: MonthActivity }) {
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   card: { gap: space[3] },
   header: {
     flexDirection: 'row',
@@ -139,4 +144,6 @@ const styles = StyleSheet.create({
   number: { ...text('caption', { numeric: true }), color: colors.text.secondary },
   numberLearned: { ...text('caption', { weight: '800', numeric: true }), color: colors.text.onStreak },
   numberToday: { ...text('caption', { weight: '800', numeric: true }), color: colors.text.primary },
+})
+  return { colors, styles }
 })

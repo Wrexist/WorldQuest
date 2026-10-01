@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * The one action a screen is for, pinned where the thumb already is.
  *
@@ -31,7 +32,7 @@
  */
 
 import { StyleSheet, View, type ViewStyle } from 'react-native'
-import { colors, space } from '@worldquest/design'
+import { space } from '@worldquest/design'
 
 export type StickyFooterProps = {
   readonly children: React.ReactNode
@@ -39,10 +40,14 @@ export type StickyFooterProps = {
 }
 
 export function StickyFooter({ children, style }: StickyFooterProps) {
+  const { styles } = useThemeValues()
   return <View style={[styles.footer, style]}>{children}</View>
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   footer: {
     padding: space[4],
     gap: space[2],
@@ -53,4 +58,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.border.subtle,
   },
+})
+  return { colors, styles }
 })

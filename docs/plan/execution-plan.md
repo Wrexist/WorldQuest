@@ -251,3 +251,12 @@ Add advanced geography assessment, richer content, proven social features and op
 - Re-estimate after the D1/auth proof and the first connected multi-day journey.
 - Treat Phases 7-8 ideas as hypotheses; do not delay a trustworthy small course for every optional feature.
 - App Store submission, external accounts and native-device evidence remain explicit release work.
+
+
+### September 27: cohesive adventure redesign evidence
+
+See [implementation and verification](../design/cohesive-adventure-redesign.md) and
+[real app captures](../design/assets/cohesive-adventure/README.md). Shared appearance,
+Home scope/progress, globe identity, pre-lesson teaching, Explore search and readable
+country references are implemented. Existing backend, native device, privacy, billing,
+social eligibility and store gates above remain open; this UI work does not close them.

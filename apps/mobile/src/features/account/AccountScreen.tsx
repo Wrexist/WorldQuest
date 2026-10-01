@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * Giving an anonymous account a way home — mockup-adjacent, and the last dead end.
  *
@@ -41,7 +42,6 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput
 import {
   Button,
   Card,
-  colors,
   layout,
   ProgressBar,
   radius,
@@ -174,6 +174,7 @@ export function AccountScreen({
   onBack,
   onLinkInstead,
 }: AccountScreenProps) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
 
   return (
@@ -363,6 +364,7 @@ function Steps({ stage }: { readonly stage: 'email' | 'code' }) {
  * sentence worth reading.
  */
 function Done({ mode, onDone }: { readonly mode: AccountMode; readonly onDone: () => void }) {
+  const { styles } = useThemeValues()
   const t = useT()
   return (
     <>
@@ -380,7 +382,10 @@ function Done({ mode, onDone }: { readonly mode: AccountMode; readonly onDone: (
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   /**
    * No `backgroundColor`.
    *
@@ -428,4 +433,6 @@ const styles = StyleSheet.create({
 
   hero: { alignItems: 'center' },
   doneTitle: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
+})
+  return { colors, styles }
 })

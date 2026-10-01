@@ -25,7 +25,7 @@ parts.brows = `<path d="M92 95q10-16 24-14M165 73q14-6 24 8" fill="none" stroke=
  for (const [name, body] of Object.entries(parts)) {
   const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 300 300">${body}</svg>`;
   fs.writeFileSync(path.join(source,name+'.svg'),svg);
-  await sharp(Buffer.from(svg)).webp({lossless:true}).toFile(path.join(out,name+'.webp'));
+  await sharp(Buffer.from(svg)).png().toFile(path.join(out,name+'.png'));
  }
  console.log('Built',Object.keys(parts).length,'transparent rig layers');
 })();

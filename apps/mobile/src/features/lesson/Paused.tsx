@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * Paused — the lesson state the machine has had since it was written, with no way in.
  *
@@ -28,7 +29,7 @@
  */
 
 import { StyleSheet, Text, View } from 'react-native'
-import { Button, Card, colors, space, text } from '@worldquest/design'
+import { Button, Card, space, text } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 
@@ -41,6 +42,7 @@ export type PausedProps = {
 }
 
 export function Paused({ answered, onResume, onFinish }: PausedProps) {
+  const { styles } = useThemeValues()
   const t = useT()
 
   return (
@@ -78,7 +80,10 @@ export function Paused({ answered, onResume, onFinish }: PausedProps) {
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   // Centred without `alignItems` on the card, which would shrink both buttons.
   art: { alignSelf: 'center' },
   // A full screen, not an overlay. The first version absolutely-filled over the
@@ -94,4 +99,6 @@ const styles = StyleSheet.create({
   card: { gap: space[3], width: '100%' },
   title: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
   body: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
+})
+  return { colors, styles }
 })

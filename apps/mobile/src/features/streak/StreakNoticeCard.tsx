@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /**
  * The streak card on Home: a freeze that did its job, or a streak that can come back.
  *
@@ -22,7 +23,7 @@
  */
 
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import { Button, Card, colors, layout, space, text } from '@worldquest/design'
+import { Button, Card, layout, space, text } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 import { Icon } from '../../components/Icon.js'
@@ -40,6 +41,7 @@ export type StreakNoticeCardProps = {
 const ART = 56
 
 export function StreakNoticeCard({ notice, onDismiss, onOpenStreak }: StreakNoticeCardProps) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
 
   const title =
@@ -95,7 +97,10 @@ export function StreakNoticeCard({ notice, onDismiss, onOpenStreak }: StreakNoti
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   card: { gap: space[3] },
   row: { flexDirection: 'row', alignItems: 'flex-start', gap: space[3] },
   // Takes whatever the art and the X leave, and wraps — at 200 % text this is several
@@ -113,4 +118,6 @@ const styles = StyleSheet.create({
     marginEnd: -space[2],
     marginTop: -space[2],
   },
+})
+  return { colors, styles }
 })

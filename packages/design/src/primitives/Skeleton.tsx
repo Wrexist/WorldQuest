@@ -1,3 +1,4 @@
+import { createThemeStyles } from '../theme.js'
 /**
  * Skeleton — loading placeholders that match the final layout.
  *
@@ -7,7 +8,7 @@
  */
 import { useEffect, useRef } from 'react'
 import { AccessibilityInfo, Animated, StyleSheet, type StyleProp, type ViewStyle } from 'react-native'
-import { colors, motion, radius } from '../tokens.js'
+import { motion, radius } from '../tokens.js'
 import { squircle } from '../shape.js'
 
 export type SkeletonProps = {
@@ -26,6 +27,7 @@ export function Skeleton({
   style,
   testID,
 }: SkeletonProps) {
+  const { styles } = useThemeValues()
   const opacity = useRef(new Animated.Value(0.4)).current
 
   useEffect(() => {
@@ -64,6 +66,11 @@ export function Skeleton({
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   base: { backgroundColor: colors.bg.surfaceRaised },
+})
+  return { colors, styles }
 })

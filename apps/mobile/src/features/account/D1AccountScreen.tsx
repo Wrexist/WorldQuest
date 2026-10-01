@@ -1,6 +1,7 @@
+import { createThemeStyles } from '@worldquest/design'
 import { useEffect, useState } from 'react'
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
-import { Button, Card, Skeleton, colors, layout, radius, space, text } from '@worldquest/design'
+import { Button, Card, Skeleton, layout, radius, space, text } from '@worldquest/design'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { Art } from '../../components/Art.js'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
@@ -20,6 +21,7 @@ const errorKeys: Readonly<Record<string, TranslationKey>> = {
 
 /** H16–H18: Alex saves progress; Priya returns on another device. One action per step. */
 export function D1AccountScreen({ flow, online, onBack, onSupport, onDone }: Props) {
+  const { colors, styles } = useThemeValues()
   const t = useT(), { state } = flow
   const [now, setNow] = useState(Date.now)
   useEffect(() => {
@@ -137,11 +139,16 @@ export function D1AccountScreen({ flow, online, onBack, onSupport, onDone }: Pro
   </View>
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   screen: { flex: 1, minWidth: 0 }, content: { padding: space[4], gap: space[4] },
   title: { ...text('h2'), color: colors.text.primary }, body: { ...text('body'), color: colors.text.secondary },
   error: { ...text('body'), color: colors.status.error },
   field: { ...text('body'), color: colors.text.primary, backgroundColor: colors.bg.surface, borderRadius: radius.md,
     minHeight: layout.minTouchTarget, minWidth: 0, padding: space[3], borderWidth: 1, borderColor: colors.border.strong },
   code: { ...text('h2'), textAlign: 'center' },
+})
+  return { colors, styles }
 })

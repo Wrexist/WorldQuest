@@ -1,3 +1,4 @@
+import { createThemeStyles } from '@worldquest/design'
 /** Weekly league: assigned handles, genuine XP, explicit enrollment and a useful first-lesson state. No peer profiles, free text or pressure about demotion. */
 
 import { FlatList, StyleSheet, Text, View } from 'react-native'
@@ -5,7 +6,6 @@ import { LinearGradient } from 'expo-linear-gradient'
 import {
   Button,
   Card,
-  colors,
   EmptyState,
   layout,
   radius,
@@ -78,6 +78,7 @@ export function LeagueScreen({
   joining,
   joinError,
 }: LeagueScreenProps) {
+  const { styles } = useThemeValues()
   const t = useT()
 
   return (
@@ -150,6 +151,7 @@ function Standings({
   readonly offline: boolean
   readonly onStartLesson: (() => void) | undefined
 }) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   const toPromotion = xpToPromotion(rows)
   const you = rows.find((r) => r.isYou === true)
@@ -227,6 +229,7 @@ function Standings({
 }
 
 function Row({ row, tier }: { readonly row: Standing; readonly tier: LeagueRank['tier'] }) {
+  const { colors, styles } = useThemeValues()
   const t = useT()
   const promoting = row.outcome === 'promoted'
   const theme=colors.league[tier]
@@ -262,7 +265,10 @@ function Row({ row, tier }: { readonly row: Standing; readonly tier: LeagueRank[
   )
 }
 
-const styles = StyleSheet.create({
+
+
+const useThemeValues = createThemeStyles((colors) => {
+  const styles = StyleSheet.create({
   /**
    * No `backgroundColor`.
    *
@@ -329,4 +335,6 @@ const styles = StyleSheet.create({
   xp: { ...text('bodyStrong'), color: colors.text.primary },
   spacer: { flex: 1 },
 
+})
+  return { colors, styles }
 })
