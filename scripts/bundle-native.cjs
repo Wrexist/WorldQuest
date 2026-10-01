@@ -312,8 +312,29 @@ const EXPO_CLI = require.resolve('expo/bin/cli', { paths: [MOBILE] })
  * The next lever, before this budget moves again: load the citations lazily as an asset
  * (they are read only on `app/country/[code]`), or the packs themselves, which the
  * `status` in `useContent` already allows. Measured on iOS and Android alike.
+ *
+ * ── 2026-10-01 · 5.0 → 5.1, and what bought it ─────────────────────────────────────
+ * Nine more attributes per country (6,700 facts across the app and the Worker) measured
+ * 5.35 MB. Eight of those packs, ~0.35 MB, are now `delivery: "server"` and out of the bundle,
+ * which left 5.01 MB: the typed-answer, matching-board and shaped-lesson code, the difficulty
+ * ramp, and the mascot art on top. 0.1 MB of headroom, not more. The next lever is the one
+ * above: load the per-fact citations lazily.
+ *
+ * ── 2026-10-01 · 5.1 → 5.2, and what bought it: the 3D atlas (ADR 0017) ──────────────
+ * Before the atlas the bundle measured ~5.09 MB: the uncommitted work since the last note
+ * had already spent the 0.1 MB. The atlas measured 5.24 MB on arrival and was trimmed to
+ * **5.17 MB (iOS) / 5.16 MB (Android)**, ~0.08 MB of bytecode, attributed by source map:
+ *   · renderer, view, shaders, camera, scene policy  ~45 KB JS — the feature itself
+ *   · expo-file-system + expo-asset + expo-gl        ~28 KB JS — binary asset read, GL
+ *   · the atlas registry (194 countries, 187 pins)   ~18 KB JS — packed as two strings,
+ *     down from 101 KB of object literals; provenance moved to the docs manifest
+ *   · the dev-only `/atlas-lab` is constant-folded out of production (~4 KB saved)
+ * Every byte of geometry and imagery (1.1 MB texture, 0.9 MB rings, 0.15 MB ID raster) is
+ * an ASSET, outside this number. three.js was rejected for this reason (~0.6 MB).
+ * The raise was a product call made with the feature request, and is reported as one.
+ * The lever above — lazy citations — still recovers ~0.19 MB, more than this costs.
  */
-const BUDGET_MB = 5.0
+const BUDGET_MB = 5.2
 
 /** Warn from 90 % of the budget, so the wall is visible before it is hit. */
 const WARN_AT = BUDGET_MB * 0.9

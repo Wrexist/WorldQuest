@@ -228,6 +228,56 @@ for (const entity of items<Entity>('entities.countries.v1.json')) {
   if (ours !== undefined) check('name', entity.id, ours, [ref.name.common])
 }
 
+/**
+ * The nine attributes from `scripts/build-deep-facts.cjs`, asked the same questions again.
+ *
+ * The generator already refuses any value two sources do not both state, so these agree with
+ * the reference by construction on the day they are written. This is for the day after: a
+ * hand edit, a regenerated pack from a newer reference, or a fact copied between countries
+ * would otherwise be a wrong value wearing a correct citation. Geometry-based facts (hemisphere,
+ * and the Natural Earth half of area, borders and coast) are checked by the generator only —
+ * there is no geometry here to compare against.
+ */
+type DeepRef = RefCountry & {
+  readonly cca3?: string
+  readonly tld?: readonly string[]
+  readonly landlocked?: boolean
+  readonly borders?: readonly string[]
+  readonly area?: number
+  readonly name: { readonly common: string; readonly native?: Readonly<Record<string, { readonly common: string }>> }
+}
+const deep = (code: string): DeepRef | undefined => byCode.get(code) as DeepRef | undefined
+const entityIds = new Set(items<Entity>('entities.countries.v1.json').map((e) => e.id))
+const alpha2Of = new Map((countries as unknown as readonly DeepRef[]).map((c) => [c.cca3, c.cca2] as const))
+
+for (const fact of items<Fact>('facts.alpha3.v1.json')) {
+  check('alpha3', fact.entity, en(fact.value), [deep(fact.entity)?.cca3 ?? ''])
+}
+for (const fact of items<Fact>('facts.tld.v1.json')) {
+  check('tld', fact.entity, en(fact.value), deep(fact.entity)?.tld ?? [])
+}
+for (const fact of items<Fact>('facts.currency-codes.v1.json')) {
+  check('currencyCode', fact.entity, en(fact.value), Object.keys(deep(fact.entity)?.currencies ?? {}))
+}
+for (const fact of items<Fact>('facts.native-names.v1.json')) {
+  check('nativeName', fact.entity, en(fact.value), Object.values(deep(fact.entity)?.name.native ?? {}).map((n) => n.common))
+}
+for (const fact of items<Fact>('facts.landlocked.v1.json')) {
+  check('landlocked', fact.entity, fact.value['id'] === 'landlocked' ? 'true' : 'false', [String(deep(fact.entity)?.landlocked)])
+}
+for (const fact of items<Fact>('facts.area.v1.json')) {
+  check('area', fact.entity, String(fact.value['number']), [String(deep(fact.entity)?.area)])
+}
+for (const fact of items<Fact>('facts.border-count.v1.json')) {
+  const theirs = (deep(fact.entity)?.borders ?? []).map((c) => alpha2Of.get(c) ?? '').filter((c) => entityIds.has(c))
+  check('borderCount', fact.entity, String(fact.value['number']), [String(theirs.length)])
+}
+for (const fact of items<Fact>('facts.borders.v1.json')) {
+  if ((fact as { quizzable?: boolean }).quizzable === false) continue
+  const theirs = (deep(fact.entity)?.borders ?? []).map((c) => alpha2Of.get(c) ?? '')
+  check('borders', `${fact.entity}>${String(fact.value['id'])}`, String(fact.value['id']), theirs)
+}
+
 // ── report ────────────────────────────────────────────────────────────────────
 const fresh = findings.filter((f) => ACCEPTED[f.key] === undefined)
 const stale = Object.keys(ACCEPTED).filter((key) => !findings.some((f) => f.key === key))

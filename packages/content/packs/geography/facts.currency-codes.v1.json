@@ -1,0 +1,4242 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "packId": "geography.facts.currency-codes",
+  "version": "1.0.0",
+  "subject": "geography",
+  "kind": "facts",
+  "locales": [
+    "en",
+    "sv"
+  ],
+  "license": "CC-BY-4.0",
+  "generatedAt": "2026-09-30",
+  "$comment": "ISO 4217. Only where the currency pack is itself quizzable and its name agrees with the code.",
+  "volatilityReviewed": true,
+  "delivery": "server",
+  "items": [
+    {
+      "id": "geo.AD.currency-code",
+      "entity": "AD",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AE.currency-code",
+      "entity": "AE",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-aed",
+        "names": {
+          "en": "AED",
+          "sv": "AED"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AF.currency-code",
+      "entity": "AF",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-afn",
+        "names": {
+          "en": "AFN",
+          "sv": "AFN"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AG.currency-code",
+      "entity": "AG",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xcd",
+        "names": {
+          "en": "XCD",
+          "sv": "XCD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AL.currency-code",
+      "entity": "AL",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-all",
+        "names": {
+          "en": "ALL",
+          "sv": "ALL"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AM.currency-code",
+      "entity": "AM",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-amd",
+        "names": {
+          "en": "AMD",
+          "sv": "AMD"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AO.currency-code",
+      "entity": "AO",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-aoa",
+        "names": {
+          "en": "AOA",
+          "sv": "AOA"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AR.currency-code",
+      "entity": "AR",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-ars",
+        "names": {
+          "en": "ARS",
+          "sv": "ARS"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AT.currency-code",
+      "entity": "AT",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AU.currency-code",
+      "entity": "AU",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-aud",
+        "names": {
+          "en": "AUD",
+          "sv": "AUD"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AZ.currency-code",
+      "entity": "AZ",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-azn",
+        "names": {
+          "en": "AZN",
+          "sv": "AZN"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BA.currency-code",
+      "entity": "BA",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-bam",
+        "names": {
+          "en": "BAM",
+          "sv": "BAM"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BB.currency-code",
+      "entity": "BB",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-bbd",
+        "names": {
+          "en": "BBD",
+          "sv": "BBD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BD.currency-code",
+      "entity": "BD",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-bdt",
+        "names": {
+          "en": "BDT",
+          "sv": "BDT"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BE.currency-code",
+      "entity": "BE",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BF.currency-code",
+      "entity": "BF",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xof",
+        "names": {
+          "en": "XOF",
+          "sv": "XOF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BH.currency-code",
+      "entity": "BH",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-bhd",
+        "names": {
+          "en": "BHD",
+          "sv": "BHD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BI.currency-code",
+      "entity": "BI",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-bif",
+        "names": {
+          "en": "BIF",
+          "sv": "BIF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BJ.currency-code",
+      "entity": "BJ",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xof",
+        "names": {
+          "en": "XOF",
+          "sv": "XOF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BO.currency-code",
+      "entity": "BO",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-bob",
+        "names": {
+          "en": "BOB",
+          "sv": "BOB"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BR.currency-code",
+      "entity": "BR",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-brl",
+        "names": {
+          "en": "BRL",
+          "sv": "BRL"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BW.currency-code",
+      "entity": "BW",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-bwp",
+        "names": {
+          "en": "BWP",
+          "sv": "BWP"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BY.currency-code",
+      "entity": "BY",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-byn",
+        "names": {
+          "en": "BYN",
+          "sv": "BYN"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BZ.currency-code",
+      "entity": "BZ",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-bzd",
+        "names": {
+          "en": "BZD",
+          "sv": "BZD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CA.currency-code",
+      "entity": "CA",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-cad",
+        "names": {
+          "en": "CAD",
+          "sv": "CAD"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CD.currency-code",
+      "entity": "CD",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-cdf",
+        "names": {
+          "en": "CDF",
+          "sv": "CDF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CF.currency-code",
+      "entity": "CF",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xaf",
+        "names": {
+          "en": "XAF",
+          "sv": "XAF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CG.currency-code",
+      "entity": "CG",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xaf",
+        "names": {
+          "en": "XAF",
+          "sv": "XAF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CH.currency-code",
+      "entity": "CH",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-chf",
+        "names": {
+          "en": "CHF",
+          "sv": "CHF"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CI.currency-code",
+      "entity": "CI",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xof",
+        "names": {
+          "en": "XOF",
+          "sv": "XOF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CL.currency-code",
+      "entity": "CL",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-clp",
+        "names": {
+          "en": "CLP",
+          "sv": "CLP"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CM.currency-code",
+      "entity": "CM",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xaf",
+        "names": {
+          "en": "XAF",
+          "sv": "XAF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CN.currency-code",
+      "entity": "CN",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-cny",
+        "names": {
+          "en": "CNY",
+          "sv": "CNY"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CO.currency-code",
+      "entity": "CO",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-cop",
+        "names": {
+          "en": "COP",
+          "sv": "COP"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CR.currency-code",
+      "entity": "CR",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-crc",
+        "names": {
+          "en": "CRC",
+          "sv": "CRC"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CV.currency-code",
+      "entity": "CV",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-cve",
+        "names": {
+          "en": "CVE",
+          "sv": "CVE"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CY.currency-code",
+      "entity": "CY",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CZ.currency-code",
+      "entity": "CZ",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-czk",
+        "names": {
+          "en": "CZK",
+          "sv": "CZK"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DE.currency-code",
+      "entity": "DE",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DJ.currency-code",
+      "entity": "DJ",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-djf",
+        "names": {
+          "en": "DJF",
+          "sv": "DJF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DK.currency-code",
+      "entity": "DK",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-dkk",
+        "names": {
+          "en": "DKK",
+          "sv": "DKK"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DM.currency-code",
+      "entity": "DM",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xcd",
+        "names": {
+          "en": "XCD",
+          "sv": "XCD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DO.currency-code",
+      "entity": "DO",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-dop",
+        "names": {
+          "en": "DOP",
+          "sv": "DOP"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DZ.currency-code",
+      "entity": "DZ",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-dzd",
+        "names": {
+          "en": "DZD",
+          "sv": "DZD"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.EC.currency-code",
+      "entity": "EC",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-usd",
+        "names": {
+          "en": "USD",
+          "sv": "USD"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.EE.currency-code",
+      "entity": "EE",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.EG.currency-code",
+      "entity": "EG",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-egp",
+        "names": {
+          "en": "EGP",
+          "sv": "EGP"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ER.currency-code",
+      "entity": "ER",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-ern",
+        "names": {
+          "en": "ERN",
+          "sv": "ERN"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ES.currency-code",
+      "entity": "ES",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ET.currency-code",
+      "entity": "ET",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-etb",
+        "names": {
+          "en": "ETB",
+          "sv": "ETB"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.FI.currency-code",
+      "entity": "FI",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.FJ.currency-code",
+      "entity": "FJ",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-fjd",
+        "names": {
+          "en": "FJD",
+          "sv": "FJD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.FR.currency-code",
+      "entity": "FR",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GA.currency-code",
+      "entity": "GA",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xaf",
+        "names": {
+          "en": "XAF",
+          "sv": "XAF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GB.currency-code",
+      "entity": "GB",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-gbp",
+        "names": {
+          "en": "GBP",
+          "sv": "GBP"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GD.currency-code",
+      "entity": "GD",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xcd",
+        "names": {
+          "en": "XCD",
+          "sv": "XCD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GE.currency-code",
+      "entity": "GE",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-gel",
+        "names": {
+          "en": "GEL",
+          "sv": "GEL"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GH.currency-code",
+      "entity": "GH",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-ghs",
+        "names": {
+          "en": "GHS",
+          "sv": "GHS"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GM.currency-code",
+      "entity": "GM",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-gmd",
+        "names": {
+          "en": "GMD",
+          "sv": "GMD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GN.currency-code",
+      "entity": "GN",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-gnf",
+        "names": {
+          "en": "GNF",
+          "sv": "GNF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GQ.currency-code",
+      "entity": "GQ",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xaf",
+        "names": {
+          "en": "XAF",
+          "sv": "XAF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GR.currency-code",
+      "entity": "GR",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GT.currency-code",
+      "entity": "GT",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-gtq",
+        "names": {
+          "en": "GTQ",
+          "sv": "GTQ"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GW.currency-code",
+      "entity": "GW",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xof",
+        "names": {
+          "en": "XOF",
+          "sv": "XOF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GY.currency-code",
+      "entity": "GY",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-gyd",
+        "names": {
+          "en": "GYD",
+          "sv": "GYD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.HN.currency-code",
+      "entity": "HN",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-hnl",
+        "names": {
+          "en": "HNL",
+          "sv": "HNL"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.HR.currency-code",
+      "entity": "HR",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.HU.currency-code",
+      "entity": "HU",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-huf",
+        "names": {
+          "en": "HUF",
+          "sv": "HUF"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ID.currency-code",
+      "entity": "ID",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-idr",
+        "names": {
+          "en": "IDR",
+          "sv": "IDR"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.IE.currency-code",
+      "entity": "IE",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.IL.currency-code",
+      "entity": "IL",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-ils",
+        "names": {
+          "en": "ILS",
+          "sv": "ILS"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.IN.currency-code",
+      "entity": "IN",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-inr",
+        "names": {
+          "en": "INR",
+          "sv": "INR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.IQ.currency-code",
+      "entity": "IQ",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-iqd",
+        "names": {
+          "en": "IQD",
+          "sv": "IQD"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.IR.currency-code",
+      "entity": "IR",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-irr",
+        "names": {
+          "en": "IRR",
+          "sv": "IRR"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.IS.currency-code",
+      "entity": "IS",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-isk",
+        "names": {
+          "en": "ISK",
+          "sv": "ISK"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.IT.currency-code",
+      "entity": "IT",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.JM.currency-code",
+      "entity": "JM",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-jmd",
+        "names": {
+          "en": "JMD",
+          "sv": "JMD"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.JO.currency-code",
+      "entity": "JO",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-jod",
+        "names": {
+          "en": "JOD",
+          "sv": "JOD"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.JP.currency-code",
+      "entity": "JP",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-jpy",
+        "names": {
+          "en": "JPY",
+          "sv": "JPY"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KE.currency-code",
+      "entity": "KE",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-kes",
+        "names": {
+          "en": "KES",
+          "sv": "KES"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KG.currency-code",
+      "entity": "KG",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-kgs",
+        "names": {
+          "en": "KGS",
+          "sv": "KGS"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KM.currency-code",
+      "entity": "KM",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-kmf",
+        "names": {
+          "en": "KMF",
+          "sv": "KMF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KN.currency-code",
+      "entity": "KN",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xcd",
+        "names": {
+          "en": "XCD",
+          "sv": "XCD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KP.currency-code",
+      "entity": "KP",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-kpw",
+        "names": {
+          "en": "KPW",
+          "sv": "KPW"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KR.currency-code",
+      "entity": "KR",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-krw",
+        "names": {
+          "en": "KRW",
+          "sv": "KRW"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KW.currency-code",
+      "entity": "KW",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-kwd",
+        "names": {
+          "en": "KWD",
+          "sv": "KWD"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KZ.currency-code",
+      "entity": "KZ",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-kzt",
+        "names": {
+          "en": "KZT",
+          "sv": "KZT"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LA.currency-code",
+      "entity": "LA",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-lak",
+        "names": {
+          "en": "LAK",
+          "sv": "LAK"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LB.currency-code",
+      "entity": "LB",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-lbp",
+        "names": {
+          "en": "LBP",
+          "sv": "LBP"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LC.currency-code",
+      "entity": "LC",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xcd",
+        "names": {
+          "en": "XCD",
+          "sv": "XCD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LI.currency-code",
+      "entity": "LI",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-chf",
+        "names": {
+          "en": "CHF",
+          "sv": "CHF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LK.currency-code",
+      "entity": "LK",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-lkr",
+        "names": {
+          "en": "LKR",
+          "sv": "LKR"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LR.currency-code",
+      "entity": "LR",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-lrd",
+        "names": {
+          "en": "LRD",
+          "sv": "LRD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LT.currency-code",
+      "entity": "LT",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LU.currency-code",
+      "entity": "LU",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LV.currency-code",
+      "entity": "LV",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LY.currency-code",
+      "entity": "LY",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-lyd",
+        "names": {
+          "en": "LYD",
+          "sv": "LYD"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MA.currency-code",
+      "entity": "MA",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-mad",
+        "names": {
+          "en": "MAD",
+          "sv": "MAD"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MC.currency-code",
+      "entity": "MC",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MD.currency-code",
+      "entity": "MD",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-mdl",
+        "names": {
+          "en": "MDL",
+          "sv": "MDL"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ME.currency-code",
+      "entity": "ME",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MG.currency-code",
+      "entity": "MG",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-mga",
+        "names": {
+          "en": "MGA",
+          "sv": "MGA"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MH.currency-code",
+      "entity": "MH",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-usd",
+        "names": {
+          "en": "USD",
+          "sv": "USD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MK.currency-code",
+      "entity": "MK",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-mkd",
+        "names": {
+          "en": "MKD",
+          "sv": "MKD"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ML.currency-code",
+      "entity": "ML",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xof",
+        "names": {
+          "en": "XOF",
+          "sv": "XOF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MM.currency-code",
+      "entity": "MM",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-mmk",
+        "names": {
+          "en": "MMK",
+          "sv": "MMK"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MN.currency-code",
+      "entity": "MN",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-mnt",
+        "names": {
+          "en": "MNT",
+          "sv": "MNT"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MR.currency-code",
+      "entity": "MR",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-mru",
+        "names": {
+          "en": "MRU",
+          "sv": "MRU"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MT.currency-code",
+      "entity": "MT",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MU.currency-code",
+      "entity": "MU",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-mur",
+        "names": {
+          "en": "MUR",
+          "sv": "MUR"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MV.currency-code",
+      "entity": "MV",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-mvr",
+        "names": {
+          "en": "MVR",
+          "sv": "MVR"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MW.currency-code",
+      "entity": "MW",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-mwk",
+        "names": {
+          "en": "MWK",
+          "sv": "MWK"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MX.currency-code",
+      "entity": "MX",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-mxn",
+        "names": {
+          "en": "MXN",
+          "sv": "MXN"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MY.currency-code",
+      "entity": "MY",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-myr",
+        "names": {
+          "en": "MYR",
+          "sv": "MYR"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MZ.currency-code",
+      "entity": "MZ",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-mzn",
+        "names": {
+          "en": "MZN",
+          "sv": "MZN"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NE.currency-code",
+      "entity": "NE",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xof",
+        "names": {
+          "en": "XOF",
+          "sv": "XOF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NG.currency-code",
+      "entity": "NG",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-ngn",
+        "names": {
+          "en": "NGN",
+          "sv": "NGN"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NI.currency-code",
+      "entity": "NI",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-nio",
+        "names": {
+          "en": "NIO",
+          "sv": "NIO"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NL.currency-code",
+      "entity": "NL",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NO.currency-code",
+      "entity": "NO",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-nok",
+        "names": {
+          "en": "NOK",
+          "sv": "NOK"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NP.currency-code",
+      "entity": "NP",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-npr",
+        "names": {
+          "en": "NPR",
+          "sv": "NPR"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NR.currency-code",
+      "entity": "NR",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-aud",
+        "names": {
+          "en": "AUD",
+          "sv": "AUD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NZ.currency-code",
+      "entity": "NZ",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-nzd",
+        "names": {
+          "en": "NZD",
+          "sv": "NZD"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.OM.currency-code",
+      "entity": "OM",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-omr",
+        "names": {
+          "en": "OMR",
+          "sv": "OMR"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PE.currency-code",
+      "entity": "PE",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-pen",
+        "names": {
+          "en": "PEN",
+          "sv": "PEN"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PG.currency-code",
+      "entity": "PG",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-pgk",
+        "names": {
+          "en": "PGK",
+          "sv": "PGK"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PH.currency-code",
+      "entity": "PH",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-php",
+        "names": {
+          "en": "PHP",
+          "sv": "PHP"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PK.currency-code",
+      "entity": "PK",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-pkr",
+        "names": {
+          "en": "PKR",
+          "sv": "PKR"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PL.currency-code",
+      "entity": "PL",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-pln",
+        "names": {
+          "en": "PLN",
+          "sv": "PLN"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PT.currency-code",
+      "entity": "PT",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PW.currency-code",
+      "entity": "PW",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-usd",
+        "names": {
+          "en": "USD",
+          "sv": "USD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PY.currency-code",
+      "entity": "PY",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-pyg",
+        "names": {
+          "en": "PYG",
+          "sv": "PYG"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.QA.currency-code",
+      "entity": "QA",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-qar",
+        "names": {
+          "en": "QAR",
+          "sv": "QAR"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.RO.currency-code",
+      "entity": "RO",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-ron",
+        "names": {
+          "en": "RON",
+          "sv": "RON"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.RS.currency-code",
+      "entity": "RS",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-rsd",
+        "names": {
+          "en": "RSD",
+          "sv": "RSD"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.RU.currency-code",
+      "entity": "RU",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-rub",
+        "names": {
+          "en": "RUB",
+          "sv": "RUB"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.RW.currency-code",
+      "entity": "RW",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-rwf",
+        "names": {
+          "en": "RWF",
+          "sv": "RWF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SA.currency-code",
+      "entity": "SA",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-sar",
+        "names": {
+          "en": "SAR",
+          "sv": "SAR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SB.currency-code",
+      "entity": "SB",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-sbd",
+        "names": {
+          "en": "SBD",
+          "sv": "SBD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SC.currency-code",
+      "entity": "SC",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-scr",
+        "names": {
+          "en": "SCR",
+          "sv": "SCR"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SD.currency-code",
+      "entity": "SD",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-sdg",
+        "names": {
+          "en": "SDG",
+          "sv": "SDG"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SE.currency-code",
+      "entity": "SE",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-sek",
+        "names": {
+          "en": "SEK",
+          "sv": "SEK"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SG.currency-code",
+      "entity": "SG",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-sgd",
+        "names": {
+          "en": "SGD",
+          "sv": "SGD"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SI.currency-code",
+      "entity": "SI",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SK.currency-code",
+      "entity": "SK",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SM.currency-code",
+      "entity": "SM",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SN.currency-code",
+      "entity": "SN",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xof",
+        "names": {
+          "en": "XOF",
+          "sv": "XOF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SO.currency-code",
+      "entity": "SO",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-sos",
+        "names": {
+          "en": "SOS",
+          "sv": "SOS"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SR.currency-code",
+      "entity": "SR",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-srd",
+        "names": {
+          "en": "SRD",
+          "sv": "SRD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SS.currency-code",
+      "entity": "SS",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-ssp",
+        "names": {
+          "en": "SSP",
+          "sv": "SSP"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ST.currency-code",
+      "entity": "ST",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-stn",
+        "names": {
+          "en": "STN",
+          "sv": "STN"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TD.currency-code",
+      "entity": "TD",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xaf",
+        "names": {
+          "en": "XAF",
+          "sv": "XAF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TG.currency-code",
+      "entity": "TG",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xof",
+        "names": {
+          "en": "XOF",
+          "sv": "XOF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TH.currency-code",
+      "entity": "TH",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-thb",
+        "names": {
+          "en": "THB",
+          "sv": "THB"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TJ.currency-code",
+      "entity": "TJ",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-tjs",
+        "names": {
+          "en": "TJS",
+          "sv": "TJS"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TL.currency-code",
+      "entity": "TL",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-usd",
+        "names": {
+          "en": "USD",
+          "sv": "USD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TM.currency-code",
+      "entity": "TM",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-tmt",
+        "names": {
+          "en": "TMT",
+          "sv": "TMT"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TN.currency-code",
+      "entity": "TN",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-tnd",
+        "names": {
+          "en": "TND",
+          "sv": "TND"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TO.currency-code",
+      "entity": "TO",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-top",
+        "names": {
+          "en": "TOP",
+          "sv": "TOP"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TR.currency-code",
+      "entity": "TR",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-try",
+        "names": {
+          "en": "TRY",
+          "sv": "TRY"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TT.currency-code",
+      "entity": "TT",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-ttd",
+        "names": {
+          "en": "TTD",
+          "sv": "TTD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TZ.currency-code",
+      "entity": "TZ",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-tzs",
+        "names": {
+          "en": "TZS",
+          "sv": "TZS"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.UA.currency-code",
+      "entity": "UA",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-uah",
+        "names": {
+          "en": "UAH",
+          "sv": "UAH"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.UG.currency-code",
+      "entity": "UG",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-ugx",
+        "names": {
+          "en": "UGX",
+          "sv": "UGX"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.US.currency-code",
+      "entity": "US",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-usd",
+        "names": {
+          "en": "USD",
+          "sv": "USD"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "currency-code",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.UY.currency-code",
+      "entity": "UY",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-uyu",
+        "names": {
+          "en": "UYU",
+          "sv": "UYU"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.UZ.currency-code",
+      "entity": "UZ",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-uzs",
+        "names": {
+          "en": "UZS",
+          "sv": "UZS"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.VA.currency-code",
+      "entity": "VA",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-eur",
+        "names": {
+          "en": "EUR",
+          "sv": "EUR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.VC.currency-code",
+      "entity": "VC",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-xcd",
+        "names": {
+          "en": "XCD",
+          "sv": "XCD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.VE.currency-code",
+      "entity": "VE",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-ves",
+        "names": {
+          "en": "VES",
+          "sv": "VES"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.VN.currency-code",
+      "entity": "VN",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-vnd",
+        "names": {
+          "en": "VND",
+          "sv": "VND"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.VU.currency-code",
+      "entity": "VU",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-vuv",
+        "names": {
+          "en": "VUV",
+          "sv": "VUV"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.WS.currency-code",
+      "entity": "WS",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-wst",
+        "names": {
+          "en": "WST",
+          "sv": "WST"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.YE.currency-code",
+      "entity": "YE",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-yer",
+        "names": {
+          "en": "YER",
+          "sv": "YER"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ZA.currency-code",
+      "entity": "ZA",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-zar",
+        "names": {
+          "en": "ZAR",
+          "sv": "ZAR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ZM.currency-code",
+      "entity": "ZM",
+      "attribute": "currency-code",
+      "value": {
+        "id": "iso4217-zmw",
+        "names": {
+          "en": "ZMW",
+          "sv": "ZMW"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "currency-code",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 4217 code agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT), and matching the name in this app's currency pack",
+        "url": "https://www.iso.org/iso-4217-currency-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    }
+  ]
+}

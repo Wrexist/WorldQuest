@@ -93,16 +93,35 @@ question made it a recognition task, which is where the modifier now says it sit
 ## The ramp: where a learner starts, and how it widens
 
 `difficultyRamp` (`packages/engines/src/learning/ramp.ts`) turns the onboarding answer
-into two dials and moves them as the learner practises:
+into three dials and moves them as the learner practises **and earns XP**:
 
-| | Band (authored `Fact.difficulty`) | Hardest way of asking to prefer |
-|---|---|---|
-| Just starting (`new`) | 1–3, ceiling rising to 5 | modifier 0 (forward questions), rising to 2 |
-| Some (`some`) | 1–4, ceiling rising to 5 | 1, rising to 2 |
-| Confident (`confident`) | 3–5 | 1, then 2 |
+| | Band (authored `Fact.difficulty`) | Hardest way of asking to prefer | New facts start at |
+|---|---|---|---|
+| Just starting (`new`) | 1–3, ceiling rising to 5 | modifier 0 (forward questions), rising to 2 | 1, rising to 3 |
+| Some (`some`) | 1–4, ceiling rising to 5 | 1, rising to 2 | 1, rising to 3 |
+| Confident (`confident`) | 3–5 | 1, then 2 | 3, rising to 4 |
 
-- **Stages count facts practised** (0, 15, 40, 80, 140), never days. Accuracy over at
-  least 20 reviews moves a learner one stage early (≥ 90 %) or late (≤ 60 %), never more.
+- **Six stages, set by whichever of two counts is further along.** Facts practised
+  (0, 15, 40, 80, 140, 220) and total XP (0, 300, 900, 2,000, 4,500, 9,000) — at about 300 XP
+  a day, stage 1 on day one, stage 3 in a week, stage 5 in a month. XP because it is what the
+  learner sees; facts practised because a hundred answers about the same forty countries is
+  a lot of XP and forty countries. Never days. Accuracy over at least 20 reviews moves a
+  learner one stage early (≥ 90 %) or late (≤ 60 %), never more.
+- **The XP is frozen at the start of a lesson** (`useDifficultyRamp`), so finishing one
+  cannot re-compose the next mid-flight.
+- **`introduceFrom` orders unseen facts.** New facts used to be offered easiest-first for
+  ever, which is right on day one and wrong on day sixty. A learner at a high stage is
+  offered facts at or above this difficulty first; the easier ones follow, **never dropped**.
+- **The hardest ways of asking are preferred at the top.** At a ceiling of 2 the easiest
+  presentation (modifier 0) is ordered behind modifiers 1 and 2, with one step of slack, so a
+  learner with thousands of XP is asked "Nairobi is the capital of which country?" and
+  "about 380,000 km² — which of these countries?" before "What is the capital of Kenya?".
+  Ordered, not filtered, like everything above.
+- **The deep attributes are where the climb goes.** Area, neighbours, ISO codes and endonyms
+  are authored one step harder than the country's own familiarity (`Fact.difficulty` = the
+  median of its capital, flag and currency, +1), and their hard forms
+  (`tpl.area-close.mc4`, `tpl.borders-near.mc4`, `tpl.border-count-close.mc4`) choose wrong
+  answers by closeness — the same fact, asked so that guessing stops working.
 - **Only the ceiling moves.** The band also filters due reviews, and raising the floor
   would stop easy facts a learner has met from ever coming back.
 - **The band applies to free practice**; a course step or a chosen country keeps its own
@@ -114,6 +133,23 @@ into two dials and moves them as the learner practises:
 These are authored thresholds, not measured ones, like the priors above. When
 `review_log` has users, the stage boundaries are the first thing to tune against
 observed accuracy.
+
+## Measured difficulty: the fame packs
+
+Everything above is an authored prior. The fame packs (companies, athletes, musicians, actors,
+scientists, writers, artists, landmarks, football clubs, highest points) are the first
+content whose difficulty is **measured**: within each attribute the facts are ranked by how
+many Wikipedia language editions have an article on them and cut into difficulty 2–5. That
+is still a prior about everyone — not a `p`-value, which needs `review_log` — but it is
+reproducible, it is ordinal in the way the ramp needs, and nobody's horizon wrote it.
+
+A simulated learner (new, empty memory) asked for ten questions sees, by stage:
+
+| | Stage | New facts start at | Hardest-form share | What fills the lesson |
+|---|---|---|---|---|
+| Day one | 0 | 1 | 11 % | capitals, locations, calling codes, flags |
+| A week (900 XP) | 2 | 1 | 0 % | the same, one way of asking wider |
+| A month (9,000 XP) | 5 | 3 | 28 % | neighbours, athletes, clubs, landmarks, companies |
 
 ## Rules that hold regardless
 

@@ -51,10 +51,16 @@ describe('toSubmission', () => {
       answers: [{ slot: 0, chosenOptionId: 'a', elapsedMs: 4000 }, { slot: 1, chosenOptionId: 'a', elapsedMs: 4000 }] })
   })
 
-  it('refuses answers that are not the issued prefix', () => {
+  it('sends answers in the order they were given, each to the slot it was issued in', () => {
+    // The lesson adapts as it goes, so slot 3 can be answered second.
     const lesson = issued('l1', { lessonId: 'l1', locale: 'en', count: 5, screenReader: false })
-    expect(() => toSubmission(lesson, [answer('i1')])).toThrow('prefix')
-    expect(() => toSubmission(lesson, [answer('elsewhere')])).toThrow('prefix')
+    expect(toSubmission(lesson, [answer('i0'), answer('i3'), answer('i1')]).answers.map((x) => x.slot)).toEqual([0, 3, 1])
+  })
+
+  it('refuses an answer to a question the ticket never held, and one answered twice', () => {
+    const lesson = issued('l1', { lessonId: 'l1', locale: 'en', count: 5, screenReader: false })
+    expect(() => toSubmission(lesson, [answer('elsewhere')])).toThrow('issued lesson')
+    expect(() => toSubmission(lesson, [answer('i1'), answer('i1')])).toThrow('issued lesson')
   })
 })
 

@@ -14,5 +14,14 @@
   "country:practice": "Öva på det här landet",
   "country:missing.title": "Det här landet finns inte än",
   "country:missing.body": "Mer av världen kommer med varje innehållsuppdatering.",
-  "country:attribute.callingCode": "Landsnummer"
+  "country:attribute.callingCode": "Landsnummer",
+  "country:attribute.area": "Yta",
+  "country:attribute.borders": "Grannländer",
+  "country:attribute.borderCount": "Landgränser",
+  "country:attribute.landlocked": "Kust",
+  "country:attribute.hemisphere": "Halvklot",
+  "country:attribute.tld": "Webbdomän",
+  "country:attribute.alpha3": "ISO-kod",
+  "country:attribute.currencyCode": "Valutakod",
+  "country:attribute.nativeName": "Eget namn"
 }

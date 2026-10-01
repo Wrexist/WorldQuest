@@ -212,3 +212,37 @@ it('keeps Home focused while retaining access to the whole course', () => {
   fireEvent.click(screen.getByTestId('path-expand'))
   expect(steps(container).length).toBe(COURSE.units[0]!.nodes.length)
 })
+
+describe('the course path — a finished step that is fading', () => {
+  const firstId = COURSE.units[0]!.nodes[0]!.id
+  const fadingPath = () =>
+    toPathView(
+      { status: 'ready', course: COURSE, standing: courseStanding(COURSE, { [firstId]: COURSE.units[0]!.nodes[0]!.lessons }) },
+      new Set([firstId]),
+    )
+  const draw = () => {
+    const handlers = { onStart: vi.fn(), onPractise: vi.fn(), onReview: vi.fn(), onPractiseAnyway: vi.fn() }
+    return render(<CoursePath path={fadingPath()} {...handlers} />)
+  }
+
+  it('wears a small clock and says so in words, without a warning', () => {
+    const { container } = draw()
+    expect(screen.getByTestId('path-fading')).toBeTruthy()
+    const label = steps(container)[0]!
+    expect(label).toMatch(/getting rusty/)
+    expect(label).not.toMatch(/overdue|failing|lost|warning/i)
+  })
+
+  it('offers the refresh on the step\'s card, in the same calm voice', () => {
+    draw()
+    fireEvent.click(screen.getAllByTestId('path-node-done')[0]!)
+    expect(screen.getByTestId('path-fading-note').textContent).toBe('Some of these are fading. A short practice brings them back.')
+    expect(screen.getByTestId('path-practise')).toBeTruthy()
+  })
+
+  it('draws nothing extra for a finished step that is holding', () => {
+    const handlers = { onStart: vi.fn(), onPractise: vi.fn(), onReview: vi.fn(), onPractiseAnyway: vi.fn() }
+    render(<CoursePath path={toPathView({ status: 'ready', course: COURSE, standing: courseStanding(COURSE, { [firstId]: COURSE.units[0]!.nodes[0]!.lessons }) })} {...handlers} />)
+    expect(screen.queryByTestId('path-fading')).toBeNull()
+  })
+})

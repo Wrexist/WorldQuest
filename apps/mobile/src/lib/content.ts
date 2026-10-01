@@ -55,6 +55,13 @@ import locationsPack from '../../../../packages/content/packs/geography/facts.lo
  */
 import languagesPack from '../../../../packages/content/packs/geography/facts.languages.v1.json'
 import callingCodesPack from '../../../../packages/content/packs/geography/facts.calling-codes.v1.json'
+/**
+ * The one deep attribute the app ships: the country's own name for itself (30 KB). The other
+ * eight (size, neighbours, coast, hemisphere, internet domain, ISO codes) are
+ * `delivery: "server"` — the Worker composes them, the bundle never carries them: they were
+ * 0.35 MB of a 5 MB budget. See `scripts/build-deep-facts.cjs` and `content.test.ts`.
+ */
+import nativeNamesPack from '../../../../packages/content/packs/geography/facts.native-names.v1.json'
 import templatesPack from '../../../../packages/content/packs/geography/templates.v1.json'
 
 export type LoadedContent = {
@@ -67,7 +74,7 @@ export type LoadedContent = {
    * path it took before the picker existed rather than running a predicate that always
    * says yes.
    */
-  compose: (opts: { count?: number; focus?: LessonFocus; maxModifier?: number }) => readonly Question[]
+  compose: (opts: { count?: number; focus?: LessonFocus; maxModifier?: number; introduceFrom?: number }) => readonly Question[]
 }
 
 /**
@@ -140,6 +147,7 @@ const FACT_FIELDS: ReadonlyMap<string, { readonly entityId: string; readonly att
         locationsPack,
         languagesPack,
         callingCodesPack,
+        nativeNamesPack,
       ] as unknown as { items: readonly { id: string; entity: string; attribute: string }[] }[]
     ).flatMap((pack) =>
       pack.items.map(
@@ -192,12 +200,13 @@ export function useContent() {
           ...(locationsPack.items as unknown as Fact[]),
           ...(languagesPack.items as unknown as Fact[]),
           ...(callingCodesPack.items as unknown as Fact[]),
+          ...(nativeNamesPack.items as unknown as Fact[]),
         ],
         templates: templatesPack.items as unknown as Template[],
       })
       return {
         index: built,
-        compose: ({ count = 10, focus, maxModifier }) => {
+        compose: ({ count = 10, focus, maxModifier, introduceFrom }) => {
           const topicFilter = focus ? focusFilter(built, focus) : undefined
           return composeLesson({
             index: built,
@@ -212,6 +221,7 @@ export function useContent() {
             locale: currentLocale(),
             count,
             ...(maxModifier !== undefined ? { maxModifier } : {}),
+            ...(introduceFrom !== undefined ? { introduceFrom } : {}),
             modalities: PRESENTABLE,
             // Swaps `tpl.flag-to-country.mc4` for `tpl.flag-describe.mc4` — same fact,
             // same `user_facts` row, same scheduler, described in words instead of

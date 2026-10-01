@@ -168,7 +168,10 @@ for (const item of index.items) {
   //
   // Broader than the engine's check on purpose: this reads the RENDERED prompt, so it
   // also catches a catalogue string that gives the answer away in its own literal text.
-  if (correct !== undefined && namesAnswer(prompt, correct.label)) {
+  // A relation's answer is a DIFFERENT entity, so a prompt that contains its words ("Guinea-Bissau" →
+  // Guinea) is a coincidence of naming and not a leak; the engine exempts it for the same reason.
+  const isRelation = index.templates.get(item.templateId)?.answer.from === 'fact.value.entity'
+  if (!isRelation && correct !== undefined && namesAnswer(prompt, correct.label)) {
     complain('the prompt names the answer')
   }
   if (prompt.includes(question.promptKey)) {

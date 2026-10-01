@@ -45,12 +45,17 @@ const units = (pack: Pack) => pack.items as Unit[]
  */
 const COMPOSES_THE_COURSE = 60_000
 
+// Once, so the check can recognise the same content and answer it from memory.
+const entities = itemsOf('entities') as Entity[]
+const facts = itemsOf('facts') as Fact[]
+const templates = itemsOf('templates') as Template[]
+
 const check = (pack: unknown, overrides: Partial<CourseCheckInput> = {}) =>
   checkCourses({
     courses: [{ file: 'first-week.v1.json', pack }],
-    entities: itemsOf('entities') as Entity[],
-    facts: itemsOf('facts') as Fact[],
-    templates: itemsOf('templates') as Template[],
+    entities,
+    facts,
+    templates,
     strings,
     ...overrides,
   }).map((p) => p.message)
@@ -122,7 +127,15 @@ describe('the course check refuses', { timeout: COMPOSES_THE_COURSE }, () => {
   it('a country whose fact is held back for review — quizzable is false, so it teaches nothing', () => {
     // `facts.sensitive-examples` holds facts deliberately unquizzable until a human signs
     // off. A course step must not route around that by naming the entity.
-    const held = (itemsOf('facts') as Fact[]).find((f) => f.quizzable === false)
+    // The entity AND attribute must have nothing else askable: a relation attribute such as
+    // `borders` holds several facts per country, some of them withdrawn claims, and naming
+    // that country still teaches through the ones that are not.
+    const all = itemsOf('facts') as Fact[]
+    const held = all.find(
+      (f) =>
+        f.quizzable === false &&
+        !all.some((o) => o.entity === f.entity && o.attribute === f.attribute && o.quizzable !== false),
+    )
     expect(held).toBeDefined()
     const pack = firstWeek()
     units(pack)[1]!.nodes[1]!.focus.entities.push(held!.entity)

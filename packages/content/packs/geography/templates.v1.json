@@ -2,7 +2,7 @@
   "$schema": "../../schema/pack.schema.json",
   "$comment": "Templates are ATTRIBUTE-shaped, never geography-shaped. Nothing here says 'country' — they ask about an entity's attribute. That is what lets a wildlife or astronomy pack reuse them unchanged in v3.0, and it is the single most important property in this file.\n\nCLOSED GAP, recorded because the note that replaced it was wrong for longer than the bug was. tpl.location-of.mc4 built for 35 of 65 countries: its distractors were `same-region`, so the wrong answers were other SUBREGIONS of the same region — and North America, South America and Oceania hold exactly one apiece, Asia three. The consequence was the one accessibility.md forbids outright: tpl.country-to-map.mc4 built for all 65 and is what a SIGHTED user gets, so for thirty countries a screen-reader user got no location question at all while a sighted user did. The `other-values` fallback fixed it — the option space for a value-answer question is the set of VALUES, not the set of entities — and this comment went on describing it as open. packages/engines/src/content/thesis.test.ts now asserts the parity from the declared screenReaderSafe/equivalentTemplate pairing, so a future visual template inherits the check by declaring its sibling, and a regression fails rather than being written down.\n\nSAME LESSON, SECOND ATTRIBUTE. tpl.currency.mc4's fallback was `same-region` and is now `other-values`, for the reason above and for a reason that only appeared once the currency values stopped carrying their own country's demonym (see facts.currencies.v1.json). Short names collide by design — Australia, New Zealand and Fiji all answer \"dollar\" — so in Oceania, where the region IS the subregion, the primary pool and the fallback pool are the same four countries and three of them read identically. Nine questions across Oceania and South America were dropped for want of a distractor while sixty usable values sat one strategy away. The option space for a value-answer question is the set of VALUES.",
   "packId": "geography.templates",
-  "version": "1.0.0",
+  "version": "1.3.0",
   "subject": "geography",
   "kind": "templates",
   "locales": [
@@ -328,6 +328,1918 @@
         "strategy": "same-region",
         "fallback": "same-subregion",
         "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.area.mc4",
+      "attribute": "area",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.area_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "spread-values",
+        "fallback": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.area-close.mc4",
+      "attribute": "area",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.area_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "nearest-values",
+        "fallback": "spread-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.area-reverse.mc4",
+      "attribute": "area",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.area_reverse",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.border-count.mc4",
+      "attribute": "border-count",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.border_count_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.border-count-close.mc4",
+      "attribute": "border-count",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.border_count_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "nearest-values",
+        "fallback": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.borders.mc4",
+      "attribute": "borders",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.borders_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.entity"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.borders-near.mc4",
+      "attribute": "borders",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.borders_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.entity"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "near-related",
+        "fallback": "same-subregion",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.landlocked.mc4",
+      "attribute": "landlocked",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.landlocked_which",
+        "params": []
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "when": {
+        "valueId": "landlocked"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true,
+        "differentValueOnly": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.coastal.mc4",
+      "attribute": "landlocked",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.coastal_which",
+        "params": []
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "when": {
+        "valueId": "coastal"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "other-values",
+        "excludeSimilarStrings": true,
+        "differentValueOnly": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.hemisphere.mc4",
+      "attribute": "hemisphere",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.hemisphere_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.tld.mc4",
+      "attribute": "tld",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.tld_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.tld-reverse.mc4",
+      "attribute": "tld",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.tld_reverse",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.alpha3.mc4",
+      "attribute": "alpha3",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.alpha3_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.alpha3-reverse.mc4",
+      "attribute": "alpha3",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.alpha3_reverse",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.currency-code.mc4",
+      "attribute": "currency-code",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.currency_code_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.currency-code-reverse.mc4",
+      "attribute": "currency-code",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.currency_code_reverse",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.native-name.mc4",
+      "attribute": "native-name",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.native_name_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.native-name-reverse.mc4",
+      "attribute": "native-name",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.native_name_reverse",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "same-subregion",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.company-from.mc4",
+      "attribute": "company",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.company_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "same-subregion",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.company-from-close.mc4",
+      "attribute": "company",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.company_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.company-of.mc4",
+      "attribute": "company",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.company_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.company-of-close.mc4",
+      "attribute": "company",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.company_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.athlete-from.mc4",
+      "attribute": "athlete",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.athlete_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "same-subregion",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.athlete-from-close.mc4",
+      "attribute": "athlete",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.athlete_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.athlete-of.mc4",
+      "attribute": "athlete",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.athlete_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.athlete-of-close.mc4",
+      "attribute": "athlete",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.athlete_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.musician-from.mc4",
+      "attribute": "musician",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.musician_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "same-subregion",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.musician-from-close.mc4",
+      "attribute": "musician",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.musician_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.musician-of.mc4",
+      "attribute": "musician",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.musician_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.musician-of-close.mc4",
+      "attribute": "musician",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.musician_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.actor-from.mc4",
+      "attribute": "actor",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.actor_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "same-subregion",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.actor-from-close.mc4",
+      "attribute": "actor",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.actor_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.actor-of.mc4",
+      "attribute": "actor",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.actor_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.actor-of-close.mc4",
+      "attribute": "actor",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.actor_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.scientist-from.mc4",
+      "attribute": "scientist",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.scientist_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "same-subregion",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.scientist-from-close.mc4",
+      "attribute": "scientist",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.scientist_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.scientist-of.mc4",
+      "attribute": "scientist",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.scientist_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.scientist-of-close.mc4",
+      "attribute": "scientist",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.scientist_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.writer-from.mc4",
+      "attribute": "writer",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.writer_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "same-subregion",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.writer-from-close.mc4",
+      "attribute": "writer",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.writer_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.writer-of.mc4",
+      "attribute": "writer",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.writer_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.writer-of-close.mc4",
+      "attribute": "writer",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.writer_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.artist-from.mc4",
+      "attribute": "artist",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.artist_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "same-subregion",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.artist-from-close.mc4",
+      "attribute": "artist",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.artist_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.artist-of.mc4",
+      "attribute": "artist",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.artist_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.artist-of-close.mc4",
+      "attribute": "artist",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.artist_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.landmark-from.mc4",
+      "attribute": "landmark",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.landmark_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "same-subregion",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.landmark-from-close.mc4",
+      "attribute": "landmark",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.landmark_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.landmark-of.mc4",
+      "attribute": "landmark",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.landmark_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.landmark-of-close.mc4",
+      "attribute": "landmark",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.landmark_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.club-from.mc4",
+      "attribute": "club",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.club_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "same-subregion",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.club-from-close.mc4",
+      "attribute": "club",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.club_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.club-of.mc4",
+      "attribute": "club",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.club_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.club-of-close.mc4",
+      "attribute": "club",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.club_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.highest-point-from.mc4",
+      "attribute": "highest-point",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.highest_point_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "same-subregion",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 0
+    },
+    {
+      "id": "tpl.highest-point-from-close.mc4",
+      "attribute": "highest-point",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.highest_point_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.highest-point-of.mc4",
+      "attribute": "highest-point",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.highest_point_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-region",
+        "fallback": "other-values",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 1
+    },
+    {
+      "id": "tpl.highest-point-of-close.mc4",
+      "attribute": "highest-point",
+      "modality": "text",
+      "prompt": {
+        "key": "lesson:prompt.highest_point_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "distractors": {
+        "count": 3,
+        "strategy": "same-subregion",
+        "fallback": "same-region",
+        "excludeSimilarStrings": true
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.capital-typed.type",
+      "attribute": "capital",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.capital_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.currency-typed.type",
+      "attribute": "currency",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.currency_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.language-typed.type",
+      "attribute": "language",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.language_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.calling-code-typed.type",
+      "attribute": "calling-code",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.calling_code_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.tld-typed.type",
+      "attribute": "tld",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.tld_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.alpha3-typed.type",
+      "attribute": "alpha3",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.alpha3_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.currency-code-typed.type",
+      "attribute": "currency-code",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.currency_code_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.native-name-typed.type",
+      "attribute": "native-name",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.native_name_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.highest-point-typed.type",
+      "attribute": "highest-point",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.highest_point_of",
+        "params": [
+          "entityName"
+        ]
+      },
+      "answer": {
+        "from": "fact.value.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.capital-reverse-typed.type",
+      "attribute": "capital",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.capital_reverse",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.tld-reverse-typed.type",
+      "attribute": "tld",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.tld_reverse",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.alpha3-reverse-typed.type",
+      "attribute": "alpha3",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.alpha3_reverse",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.native-name-reverse-typed.type",
+      "attribute": "native-name",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.native_name_reverse",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.company-from-typed.type",
+      "attribute": "company",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.company_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.athlete-from-typed.type",
+      "attribute": "athlete",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.athlete_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.musician-from-typed.type",
+      "attribute": "musician",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.musician_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.actor-from-typed.type",
+      "attribute": "actor",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.actor_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.scientist-from-typed.type",
+      "attribute": "scientist",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.scientist_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.writer-from-typed.type",
+      "attribute": "writer",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.writer_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.artist-from-typed.type",
+      "attribute": "artist",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.artist_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.landmark-from-typed.type",
+      "attribute": "landmark",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.landmark_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.club-from-typed.type",
+      "attribute": "club",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.club_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
+      },
+      "a11y": {
+        "screenReaderSafe": true
+      },
+      "timeLimitMs": null,
+      "difficultyModifier": 2
+    },
+    {
+      "id": "tpl.highest-point-from-typed.type",
+      "attribute": "highest-point",
+      "modality": "text",
+      "input": "typed",
+      "prompt": {
+        "key": "lesson:prompt.highest_point_from",
+        "params": [
+          "valueName"
+        ]
+      },
+      "answer": {
+        "from": "entity.names"
       },
       "a11y": {
         "screenReaderSafe": true

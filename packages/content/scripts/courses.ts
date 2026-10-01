@@ -62,12 +62,36 @@ const SEEDS = [1, 2, 3, 4, 5, 6, 7, 8]
 /** What a device can put on screen — the same list `apps/mobile/src/lib/content.ts` passes. */
 const MODALITIES: readonly Template['modality'][] = ['text', 'image', 'map']
 
+/**
+ * The index and the answers already worked out, for one set of content.
+ *
+ * Asking "how many questions can this step hold" composes 64 lessons (two languages, with
+ * and without a screen reader, two lengths, eight seeds) and a course has thirty-three steps,
+ * over an index that is now every country's every fact. That is minutes of work, and a test
+ * file asks it of the same shipped content a dozen times. Keyed on the arrays themselves:
+ * the same content is answered once, and content that changed is a different array.
+ */
+type Memo = { entities: unknown; templates: unknown; locales: string; index: ReturnType<typeof buildIndex>; answers: Map<string, number> }
+const memos = new WeakMap<object, Memo>()
+
 /** A catalogue over the real content, answered by the real composer. */
 export function catalogueFor(
   input: Pick<CourseCheckInput, 'entities' | 'facts' | 'templates'>,
   locales: readonly string[],
 ): CourseCatalogue {
-  const index = buildIndex({ entities: [...input.entities], facts: [...input.facts], templates: [...input.templates] })
+  const held = memos.get(input.facts)
+  const reuse = held !== undefined && held.entities === input.entities && held.templates === input.templates && held.locales === locales.join()
+  const memo: Memo = reuse
+    ? held
+    : {
+        entities: input.entities,
+        templates: input.templates,
+        locales: locales.join(),
+        index: buildIndex({ entities: [...input.entities], facts: [...input.facts], templates: [...input.templates] }),
+        answers: new Map(),
+      }
+  memos.set(input.facts, memo)
+  const { index } = memo
   const askable = new Set<string>()
   for (const factId of index.itemsByFact.keys()) {
     const fact = index.facts.get(factId)
@@ -75,6 +99,9 @@ export function catalogueFor(
   }
 
   const questionsFor = (focus: CourseFocus): number => {
+    const key = JSON.stringify(focus)
+    const known = memo.answers.get(key)
+    if (known !== undefined) return known
     const topicFilter = focusFilter(index, focus)
     let fewest = Number.POSITIVE_INFINITY
     for (const locale of locales) {
@@ -98,7 +125,9 @@ export function catalogueFor(
         }
       }
     }
-    return Number.isFinite(fewest) ? fewest : 0
+    const answer = Number.isFinite(fewest) ? fewest : 0
+    memo.answers.set(key, answer)
+    return answer
   }
 
   return {

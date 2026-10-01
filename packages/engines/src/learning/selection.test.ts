@@ -33,6 +33,43 @@ const dueCandidates = (): MemoryState[] => {
 
 const newFacts = (n = 20) => Array.from({ length: n }, (_, i) => `geo.N${i}.capital`)
 
+describe('selectItems: what to spend a lesson on', () => {
+  it('reviews the fact closest to being forgotten before the one that is merely most overdue', () => {
+    // A is more overdue by the calendar but very stable; B is a day old and barely holding.
+    const base = review({ factId: 'geo.A.capital', state: null, rating: 3, now: NOW - 10 * MS_PER_DAY })
+    const solid: MemoryState = { ...base, factId: 'geo.A.capital', stability: 60, lastReviewAt: NOW - 10 * MS_PER_DAY, dueAt: NOW - 5 * MS_PER_DAY }
+    const fading: MemoryState = { ...base, factId: 'geo.B.capital', stability: 1, lastReviewAt: NOW - 3 * MS_PER_DAY, dueAt: NOW - 2 * MS_PER_DAY }
+    const picked = selectItems({ candidates: [solid, fading], newFactIds: [], count: 1, now: NOW, rng: seededRng(1) })
+    expect(picked).toEqual(['geo.B.capital'])
+  })
+
+  const freshShare = (recentAccuracy: number | null | undefined) => {
+    const picked = selectItems({
+      candidates: dueCandidates(), newFactIds: newFacts(40), count: 20, now: NOW, rng: seededRng(5),
+      ...(recentAccuracy === undefined ? {} : { recentAccuracy }),
+    })
+    return picked.filter((id) => id.startsWith('geo.N')).length / picked.length
+  }
+
+  it('offers more that is new to a learner who is sailing', () => {
+    expect(freshShare(0.97)).toBeGreaterThan(freshShare(0.8))
+  })
+
+  it('offers more that is already met to a learner who is struggling, but never no new fact at all', () => {
+    expect(freshShare(0.5)).toBeLessThan(freshShare(0.8))
+    expect(freshShare(0.5)).toBeGreaterThan(0)
+  })
+
+  it('leaves the standard mix alone when there is nothing to read', () => {
+    expect(freshShare(null)).toBe(freshShare(undefined))
+    expect(freshShare(0.8)).toBe(freshShare(undefined))
+  })
+
+  it('ignores an accuracy that is not a number', () => {
+    expect(freshShare(Number.NaN)).toBe(freshShare(undefined))
+  })
+})
+
 describe('selectItems', () => {
   it('returns exactly the requested count when supply allows', () => {
     const picked = selectItems({

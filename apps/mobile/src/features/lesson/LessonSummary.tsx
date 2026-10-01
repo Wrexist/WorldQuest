@@ -47,7 +47,7 @@ import {
   useStagger,
 } from '@worldquest/design'
 import { factsStrengthened } from '@worldquest/engines'
-import type { GradeResult } from '@worldquest/engines'
+import type { GradeResult, StartLevel } from '@worldquest/engines'
 import { Art } from '../../components/Art.js'
 import { Flag } from '../../components/Flag.js'
 import { AdventureArt } from '../../components/AdventureArt.js'
@@ -141,6 +141,7 @@ const PRACTISED_FLAG_WIDTH = 44
 
 export function LessonSummary({
   result,
+  placement,
   practised = [],
   dailyGoal,
   timeMs,
@@ -149,6 +150,11 @@ export function LessonSummary({
   onExit,
 }: {
   result: GradeResult | null
+  /**
+   * Present when the lesson was the level check, with the level it placed the learner at, or
+   * null when it was left before it could say. One calm line; never a score or a rank.
+   */
+  placement?: { readonly level: StartLevel | null } | undefined
   dailyGoal?: { readonly done: number; readonly target: number } | undefined
   /**
    * The countries behind the facts just answered.
@@ -258,6 +264,11 @@ export function LessonSummary({
         <Text style={styles.subtitle}>
           {result === null ? t('lesson:summary.none.body') : t(BODY[outcome])}
         </Text>
+        {placement !== undefined && (
+          <Text style={styles.subtitle} testID="summary-placement">
+            {placement.level === null ? t('lesson:placement.none') : t(`lesson:placement.result.${placement.level}`)}
+          </Text>
+        )}
 
         {result !== null && (
           <>

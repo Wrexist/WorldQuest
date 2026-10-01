@@ -103,6 +103,7 @@ function PlatformStop({ node, index, width, total, open, onPress, onPractise, on
     {selected && <Card testID="path-card" style={styles.inspection}>
       <Text style={styles.inspectTitle}>{tContent(node.objectiveKey, { count: node.count })}</Text>
       <Text style={styles.inspectBody}>{t(node.state === 'done' ? 'home:path.done.body' : 'home:path.locked.body')}</Text>
+      {node.fading === true && <Text style={styles.inspectBody} testID="path-fading-note">{t('home:path.fading')}</Text>}
       {node.state === 'done' && <Button label={t('home:path.practise')} variant="secondary" onPress={() => onPractise(node.id)} testID="path-practise" />}
     </Card>}
   </View>

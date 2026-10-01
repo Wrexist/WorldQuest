@@ -1,0 +1,4542 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "packId": "geography.facts.area",
+  "version": "1.0.0",
+  "subject": "geography",
+  "kind": "facts",
+  "locales": [
+    "en",
+    "sv"
+  ],
+  "license": "CC-BY-4.0",
+  "generatedAt": "2026-09-30",
+  "$comment": "Rounded to two significant figures and labelled \"about\": the claim is the order of magnitude, never the last digit. `value.number` keeps the sourced figure so distractors can be chosen by how close they are.",
+  "volatilityReviewed": true,
+  "delivery": "server",
+  "items": [
+    {
+      "id": "geo.AD.area",
+      "entity": "AD",
+      "attribute": "area",
+      "value": {
+        "id": "area-470",
+        "number": 468,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 470 km²",
+          "sv": "cirka 470 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AE.area",
+      "entity": "AE",
+      "attribute": "area",
+      "value": {
+        "id": "area-84000",
+        "number": 83600,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 84,000 km²",
+          "sv": "cirka 84 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AF.area",
+      "entity": "AF",
+      "attribute": "area",
+      "value": {
+        "id": "area-650000",
+        "number": 652230,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 650,000 km²",
+          "sv": "cirka 650 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AG.area",
+      "entity": "AG",
+      "attribute": "area",
+      "value": {
+        "id": "area-440",
+        "number": 442,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 440 km²",
+          "sv": "cirka 440 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AL.area",
+      "entity": "AL",
+      "attribute": "area",
+      "value": {
+        "id": "area-29000",
+        "number": 28748,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 29,000 km²",
+          "sv": "cirka 29 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AM.area",
+      "entity": "AM",
+      "attribute": "area",
+      "value": {
+        "id": "area-30000",
+        "number": 29743,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 30,000 km²",
+          "sv": "cirka 30 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AO.area",
+      "entity": "AO",
+      "attribute": "area",
+      "value": {
+        "id": "area-1200000",
+        "number": 1246700,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 1,200,000 km²",
+          "sv": "cirka 1 200 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AR.area",
+      "entity": "AR",
+      "attribute": "area",
+      "value": {
+        "id": "area-2800000",
+        "number": 2780400,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 2,800,000 km²",
+          "sv": "cirka 2 800 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AT.area",
+      "entity": "AT",
+      "attribute": "area",
+      "value": {
+        "id": "area-84000",
+        "number": 83871,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 84,000 km²",
+          "sv": "cirka 84 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AU.area",
+      "entity": "AU",
+      "attribute": "area",
+      "value": {
+        "id": "area-7700000",
+        "number": 7692024,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 7,700,000 km²",
+          "sv": "cirka 7 700 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AZ.area",
+      "entity": "AZ",
+      "attribute": "area",
+      "value": {
+        "id": "area-87000",
+        "number": 86600,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 87,000 km²",
+          "sv": "cirka 87 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BA.area",
+      "entity": "BA",
+      "attribute": "area",
+      "value": {
+        "id": "area-51000",
+        "number": 51209,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 51,000 km²",
+          "sv": "cirka 51 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BB.area",
+      "entity": "BB",
+      "attribute": "area",
+      "value": {
+        "id": "area-430",
+        "number": 430,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 430 km²",
+          "sv": "cirka 430 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BD.area",
+      "entity": "BD",
+      "attribute": "area",
+      "value": {
+        "id": "area-150000",
+        "number": 147570,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 150,000 km²",
+          "sv": "cirka 150 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BE.area",
+      "entity": "BE",
+      "attribute": "area",
+      "value": {
+        "id": "area-31000",
+        "number": 30528,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 31,000 km²",
+          "sv": "cirka 31 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BF.area",
+      "entity": "BF",
+      "attribute": "area",
+      "value": {
+        "id": "area-270000",
+        "number": 272967,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 270,000 km²",
+          "sv": "cirka 270 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BG.area",
+      "entity": "BG",
+      "attribute": "area",
+      "value": {
+        "id": "area-110000",
+        "number": 110879,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 110,000 km²",
+          "sv": "cirka 110 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BI.area",
+      "entity": "BI",
+      "attribute": "area",
+      "value": {
+        "id": "area-28000",
+        "number": 27834,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 28,000 km²",
+          "sv": "cirka 28 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BJ.area",
+      "entity": "BJ",
+      "attribute": "area",
+      "value": {
+        "id": "area-110000",
+        "number": 112622,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 110,000 km²",
+          "sv": "cirka 110 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BN.area",
+      "entity": "BN",
+      "attribute": "area",
+      "value": {
+        "id": "area-5800",
+        "number": 5765,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 5,800 km²",
+          "sv": "cirka 5 800 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BO.area",
+      "entity": "BO",
+      "attribute": "area",
+      "value": {
+        "id": "area-1100000",
+        "number": 1098581,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 1,100,000 km²",
+          "sv": "cirka 1 100 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BR.area",
+      "entity": "BR",
+      "attribute": "area",
+      "value": {
+        "id": "area-8500000",
+        "number": 8515767,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 8,500,000 km²",
+          "sv": "cirka 8 500 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BS.area",
+      "entity": "BS",
+      "attribute": "area",
+      "value": {
+        "id": "area-14000",
+        "number": 13943,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 14,000 km²",
+          "sv": "cirka 14 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BT.area",
+      "entity": "BT",
+      "attribute": "area",
+      "value": {
+        "id": "area-38000",
+        "number": 38394,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 38,000 km²",
+          "sv": "cirka 38 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BW.area",
+      "entity": "BW",
+      "attribute": "area",
+      "value": {
+        "id": "area-580000",
+        "number": 582000,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 580,000 km²",
+          "sv": "cirka 580 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BY.area",
+      "entity": "BY",
+      "attribute": "area",
+      "value": {
+        "id": "area-210000",
+        "number": 207600,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 210,000 km²",
+          "sv": "cirka 210 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BZ.area",
+      "entity": "BZ",
+      "attribute": "area",
+      "value": {
+        "id": "area-23000",
+        "number": 22966,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 23,000 km²",
+          "sv": "cirka 23 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CA.area",
+      "entity": "CA",
+      "attribute": "area",
+      "value": {
+        "id": "area-10000000",
+        "number": 9984670,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 10,000,000 km²",
+          "sv": "cirka 10 000 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CD.area",
+      "entity": "CD",
+      "attribute": "area",
+      "value": {
+        "id": "area-2300000",
+        "number": 2344858,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 2,300,000 km²",
+          "sv": "cirka 2 300 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CF.area",
+      "entity": "CF",
+      "attribute": "area",
+      "value": {
+        "id": "area-620000",
+        "number": 622984,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 620,000 km²",
+          "sv": "cirka 620 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CG.area",
+      "entity": "CG",
+      "attribute": "area",
+      "value": {
+        "id": "area-340000",
+        "number": 342000,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 340,000 km²",
+          "sv": "cirka 340 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CH.area",
+      "entity": "CH",
+      "attribute": "area",
+      "value": {
+        "id": "area-41000",
+        "number": 41284,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 41,000 km²",
+          "sv": "cirka 41 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CI.area",
+      "entity": "CI",
+      "attribute": "area",
+      "value": {
+        "id": "area-320000",
+        "number": 322463,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 320,000 km²",
+          "sv": "cirka 320 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CL.area",
+      "entity": "CL",
+      "attribute": "area",
+      "value": {
+        "id": "area-760000",
+        "number": 756102,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 760,000 km²",
+          "sv": "cirka 760 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CM.area",
+      "entity": "CM",
+      "attribute": "area",
+      "value": {
+        "id": "area-480000",
+        "number": 475442,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 480,000 km²",
+          "sv": "cirka 480 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CN.area",
+      "entity": "CN",
+      "attribute": "area",
+      "value": {
+        "id": "area-9700000",
+        "number": 9706961,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 9,700,000 km²",
+          "sv": "cirka 9 700 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CO.area",
+      "entity": "CO",
+      "attribute": "area",
+      "value": {
+        "id": "area-1100000",
+        "number": 1141748,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 1,100,000 km²",
+          "sv": "cirka 1 100 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CR.area",
+      "entity": "CR",
+      "attribute": "area",
+      "value": {
+        "id": "area-51000",
+        "number": 51100,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 51,000 km²",
+          "sv": "cirka 51 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CU.area",
+      "entity": "CU",
+      "attribute": "area",
+      "value": {
+        "id": "area-110000",
+        "number": 109884,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 110,000 km²",
+          "sv": "cirka 110 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CV.area",
+      "entity": "CV",
+      "attribute": "area",
+      "value": {
+        "id": "area-4000",
+        "number": 4033,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 4,000 km²",
+          "sv": "cirka 4 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CZ.area",
+      "entity": "CZ",
+      "attribute": "area",
+      "value": {
+        "id": "area-79000",
+        "number": 78865,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 79,000 km²",
+          "sv": "cirka 79 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DE.area",
+      "entity": "DE",
+      "attribute": "area",
+      "value": {
+        "id": "area-360000",
+        "number": 357114,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 360,000 km²",
+          "sv": "cirka 360 000 km²"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DJ.area",
+      "entity": "DJ",
+      "attribute": "area",
+      "value": {
+        "id": "area-23000",
+        "number": 23200,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 23,000 km²",
+          "sv": "cirka 23 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DK.area",
+      "entity": "DK",
+      "attribute": "area",
+      "value": {
+        "id": "area-43000",
+        "number": 43094,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 43,000 km²",
+          "sv": "cirka 43 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DM.area",
+      "entity": "DM",
+      "attribute": "area",
+      "value": {
+        "id": "area-750",
+        "number": 751,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 750 km²",
+          "sv": "cirka 750 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DO.area",
+      "entity": "DO",
+      "attribute": "area",
+      "value": {
+        "id": "area-49000",
+        "number": 48671,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 49,000 km²",
+          "sv": "cirka 49 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DZ.area",
+      "entity": "DZ",
+      "attribute": "area",
+      "value": {
+        "id": "area-2400000",
+        "number": 2381741,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 2,400,000 km²",
+          "sv": "cirka 2 400 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.EC.area",
+      "entity": "EC",
+      "attribute": "area",
+      "value": {
+        "id": "area-280000",
+        "number": 276841,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 280,000 km²",
+          "sv": "cirka 280 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.EE.area",
+      "entity": "EE",
+      "attribute": "area",
+      "value": {
+        "id": "area-45000",
+        "number": 45227,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 45,000 km²",
+          "sv": "cirka 45 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.EG.area",
+      "entity": "EG",
+      "attribute": "area",
+      "value": {
+        "id": "area-1000000",
+        "number": 1002450,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 1,000,000 km²",
+          "sv": "cirka 1 000 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ER.area",
+      "entity": "ER",
+      "attribute": "area",
+      "value": {
+        "id": "area-120000",
+        "number": 117600,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 120,000 km²",
+          "sv": "cirka 120 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ES.area",
+      "entity": "ES",
+      "attribute": "area",
+      "value": {
+        "id": "area-510000",
+        "number": 505992,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 510,000 km²",
+          "sv": "cirka 510 000 km²"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ET.area",
+      "entity": "ET",
+      "attribute": "area",
+      "value": {
+        "id": "area-1100000",
+        "number": 1104300,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 1,100,000 km²",
+          "sv": "cirka 1 100 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.FI.area",
+      "entity": "FI",
+      "attribute": "area",
+      "value": {
+        "id": "area-340000",
+        "number": 338424,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 340,000 km²",
+          "sv": "cirka 340 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.FJ.area",
+      "entity": "FJ",
+      "attribute": "area",
+      "value": {
+        "id": "area-18000",
+        "number": 18272,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 18,000 km²",
+          "sv": "cirka 18 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.FR.area",
+      "entity": "FR",
+      "attribute": "area",
+      "value": {
+        "id": "area-550000",
+        "number": 551695,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 550,000 km²",
+          "sv": "cirka 550 000 km²"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GA.area",
+      "entity": "GA",
+      "attribute": "area",
+      "value": {
+        "id": "area-270000",
+        "number": 267668,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 270,000 km²",
+          "sv": "cirka 270 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GB.area",
+      "entity": "GB",
+      "attribute": "area",
+      "value": {
+        "id": "area-240000",
+        "number": 242900,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 240,000 km²",
+          "sv": "cirka 240 000 km²"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GE.area",
+      "entity": "GE",
+      "attribute": "area",
+      "value": {
+        "id": "area-70000",
+        "number": 69700,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 70,000 km²",
+          "sv": "cirka 70 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GH.area",
+      "entity": "GH",
+      "attribute": "area",
+      "value": {
+        "id": "area-240000",
+        "number": 238533,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 240,000 km²",
+          "sv": "cirka 240 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GM.area",
+      "entity": "GM",
+      "attribute": "area",
+      "value": {
+        "id": "area-11000",
+        "number": 10689,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 11,000 km²",
+          "sv": "cirka 11 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GN.area",
+      "entity": "GN",
+      "attribute": "area",
+      "value": {
+        "id": "area-250000",
+        "number": 245857,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 250,000 km²",
+          "sv": "cirka 250 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GQ.area",
+      "entity": "GQ",
+      "attribute": "area",
+      "value": {
+        "id": "area-28000",
+        "number": 28051,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 28,000 km²",
+          "sv": "cirka 28 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GR.area",
+      "entity": "GR",
+      "attribute": "area",
+      "value": {
+        "id": "area-130000",
+        "number": 131990,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 130,000 km²",
+          "sv": "cirka 130 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GT.area",
+      "entity": "GT",
+      "attribute": "area",
+      "value": {
+        "id": "area-110000",
+        "number": 108889,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 110,000 km²",
+          "sv": "cirka 110 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GW.area",
+      "entity": "GW",
+      "attribute": "area",
+      "value": {
+        "id": "area-36000",
+        "number": 36125,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 36,000 km²",
+          "sv": "cirka 36 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GY.area",
+      "entity": "GY",
+      "attribute": "area",
+      "value": {
+        "id": "area-210000",
+        "number": 214969,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 210,000 km²",
+          "sv": "cirka 210 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.HN.area",
+      "entity": "HN",
+      "attribute": "area",
+      "value": {
+        "id": "area-110000",
+        "number": 112492,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 110,000 km²",
+          "sv": "cirka 110 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.HR.area",
+      "entity": "HR",
+      "attribute": "area",
+      "value": {
+        "id": "area-57000",
+        "number": 56594,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 57,000 km²",
+          "sv": "cirka 57 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.HT.area",
+      "entity": "HT",
+      "attribute": "area",
+      "value": {
+        "id": "area-28000",
+        "number": 27750,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 28,000 km²",
+          "sv": "cirka 28 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.HU.area",
+      "entity": "HU",
+      "attribute": "area",
+      "value": {
+        "id": "area-93000",
+        "number": 93028,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 93,000 km²",
+          "sv": "cirka 93 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ID.area",
+      "entity": "ID",
+      "attribute": "area",
+      "value": {
+        "id": "area-1900000",
+        "number": 1904569,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 1,900,000 km²",
+          "sv": "cirka 1 900 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.IE.area",
+      "entity": "IE",
+      "attribute": "area",
+      "value": {
+        "id": "area-70000",
+        "number": 70273,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 70,000 km²",
+          "sv": "cirka 70 000 km²"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.IL.area",
+      "entity": "IL",
+      "attribute": "area",
+      "value": {
+        "id": "area-21000",
+        "number": 20770,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 21,000 km²",
+          "sv": "cirka 21 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.IN.area",
+      "entity": "IN",
+      "attribute": "area",
+      "value": {
+        "id": "area-3300000",
+        "number": 3287590,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 3,300,000 km²",
+          "sv": "cirka 3 300 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.IQ.area",
+      "entity": "IQ",
+      "attribute": "area",
+      "value": {
+        "id": "area-440000",
+        "number": 438317,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 440,000 km²",
+          "sv": "cirka 440 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.IR.area",
+      "entity": "IR",
+      "attribute": "area",
+      "value": {
+        "id": "area-1600000",
+        "number": 1648195,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 1,600,000 km²",
+          "sv": "cirka 1 600 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.IS.area",
+      "entity": "IS",
+      "attribute": "area",
+      "value": {
+        "id": "area-100000",
+        "number": 103000,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 100,000 km²",
+          "sv": "cirka 100 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.IT.area",
+      "entity": "IT",
+      "attribute": "area",
+      "value": {
+        "id": "area-300000",
+        "number": 301336,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 300,000 km²",
+          "sv": "cirka 300 000 km²"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.JM.area",
+      "entity": "JM",
+      "attribute": "area",
+      "value": {
+        "id": "area-11000",
+        "number": 10991,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 11,000 km²",
+          "sv": "cirka 11 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.JO.area",
+      "entity": "JO",
+      "attribute": "area",
+      "value": {
+        "id": "area-89000",
+        "number": 89342,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 89,000 km²",
+          "sv": "cirka 89 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.JP.area",
+      "entity": "JP",
+      "attribute": "area",
+      "value": {
+        "id": "area-380000",
+        "number": 377930,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 380,000 km²",
+          "sv": "cirka 380 000 km²"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KE.area",
+      "entity": "KE",
+      "attribute": "area",
+      "value": {
+        "id": "area-580000",
+        "number": 580367,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 580,000 km²",
+          "sv": "cirka 580 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KG.area",
+      "entity": "KG",
+      "attribute": "area",
+      "value": {
+        "id": "area-200000",
+        "number": 199951,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 200,000 km²",
+          "sv": "cirka 200 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KH.area",
+      "entity": "KH",
+      "attribute": "area",
+      "value": {
+        "id": "area-180000",
+        "number": 181035,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 180,000 km²",
+          "sv": "cirka 180 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KI.area",
+      "entity": "KI",
+      "attribute": "area",
+      "value": {
+        "id": "area-810",
+        "number": 811,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 810 km²",
+          "sv": "cirka 810 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KN.area",
+      "entity": "KN",
+      "attribute": "area",
+      "value": {
+        "id": "area-260",
+        "number": 261,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 260 km²",
+          "sv": "cirka 260 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KP.area",
+      "entity": "KP",
+      "attribute": "area",
+      "value": {
+        "id": "area-120000",
+        "number": 120538,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 120,000 km²",
+          "sv": "cirka 120 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KR.area",
+      "entity": "KR",
+      "attribute": "area",
+      "value": {
+        "id": "area-100000",
+        "number": 100210,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 100,000 km²",
+          "sv": "cirka 100 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KW.area",
+      "entity": "KW",
+      "attribute": "area",
+      "value": {
+        "id": "area-18000",
+        "number": 17818,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 18,000 km²",
+          "sv": "cirka 18 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KZ.area",
+      "entity": "KZ",
+      "attribute": "area",
+      "value": {
+        "id": "area-2700000",
+        "number": 2724900,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 2,700,000 km²",
+          "sv": "cirka 2 700 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LA.area",
+      "entity": "LA",
+      "attribute": "area",
+      "value": {
+        "id": "area-240000",
+        "number": 236800,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 240,000 km²",
+          "sv": "cirka 240 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LB.area",
+      "entity": "LB",
+      "attribute": "area",
+      "value": {
+        "id": "area-10000",
+        "number": 10452,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 10,000 km²",
+          "sv": "cirka 10 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LC.area",
+      "entity": "LC",
+      "attribute": "area",
+      "value": {
+        "id": "area-620",
+        "number": 616,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 620 km²",
+          "sv": "cirka 620 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LI.area",
+      "entity": "LI",
+      "attribute": "area",
+      "value": {
+        "id": "area-160",
+        "number": 160,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 160 km²",
+          "sv": "cirka 160 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LK.area",
+      "entity": "LK",
+      "attribute": "area",
+      "value": {
+        "id": "area-66000",
+        "number": 65610,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 66,000 km²",
+          "sv": "cirka 66 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LR.area",
+      "entity": "LR",
+      "attribute": "area",
+      "value": {
+        "id": "area-110000",
+        "number": 111369,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 110,000 km²",
+          "sv": "cirka 110 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LS.area",
+      "entity": "LS",
+      "attribute": "area",
+      "value": {
+        "id": "area-30000",
+        "number": 30355,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 30,000 km²",
+          "sv": "cirka 30 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LT.area",
+      "entity": "LT",
+      "attribute": "area",
+      "value": {
+        "id": "area-65000",
+        "number": 65300,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 65,000 km²",
+          "sv": "cirka 65 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LU.area",
+      "entity": "LU",
+      "attribute": "area",
+      "value": {
+        "id": "area-2600",
+        "number": 2586,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 2,600 km²",
+          "sv": "cirka 2 600 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LV.area",
+      "entity": "LV",
+      "attribute": "area",
+      "value": {
+        "id": "area-65000",
+        "number": 64559,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 65,000 km²",
+          "sv": "cirka 65 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LY.area",
+      "entity": "LY",
+      "attribute": "area",
+      "value": {
+        "id": "area-1800000",
+        "number": 1759540,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 1,800,000 km²",
+          "sv": "cirka 1 800 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MD.area",
+      "entity": "MD",
+      "attribute": "area",
+      "value": {
+        "id": "area-34000",
+        "number": 33846,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 34,000 km²",
+          "sv": "cirka 34 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ME.area",
+      "entity": "ME",
+      "attribute": "area",
+      "value": {
+        "id": "area-14000",
+        "number": 13812,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 14,000 km²",
+          "sv": "cirka 14 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MG.area",
+      "entity": "MG",
+      "attribute": "area",
+      "value": {
+        "id": "area-590000",
+        "number": 587041,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 590,000 km²",
+          "sv": "cirka 590 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MK.area",
+      "entity": "MK",
+      "attribute": "area",
+      "value": {
+        "id": "area-26000",
+        "number": 25713,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 26,000 km²",
+          "sv": "cirka 26 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ML.area",
+      "entity": "ML",
+      "attribute": "area",
+      "value": {
+        "id": "area-1200000",
+        "number": 1240192,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 1,200,000 km²",
+          "sv": "cirka 1 200 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MM.area",
+      "entity": "MM",
+      "attribute": "area",
+      "value": {
+        "id": "area-680000",
+        "number": 676578,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 680,000 km²",
+          "sv": "cirka 680 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MN.area",
+      "entity": "MN",
+      "attribute": "area",
+      "value": {
+        "id": "area-1600000",
+        "number": 1564110,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 1,600,000 km²",
+          "sv": "cirka 1 600 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MR.area",
+      "entity": "MR",
+      "attribute": "area",
+      "value": {
+        "id": "area-1000000",
+        "number": 1030700,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 1,000,000 km²",
+          "sv": "cirka 1 000 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MT.area",
+      "entity": "MT",
+      "attribute": "area",
+      "value": {
+        "id": "area-320",
+        "number": 316,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 320 km²",
+          "sv": "cirka 320 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MU.area",
+      "entity": "MU",
+      "attribute": "area",
+      "value": {
+        "id": "area-2000",
+        "number": 2040,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 2,000 km²",
+          "sv": "cirka 2 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MW.area",
+      "entity": "MW",
+      "attribute": "area",
+      "value": {
+        "id": "area-120000",
+        "number": 118484,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 120,000 km²",
+          "sv": "cirka 120 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MX.area",
+      "entity": "MX",
+      "attribute": "area",
+      "value": {
+        "id": "area-2000000",
+        "number": 1964375,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 2,000,000 km²",
+          "sv": "cirka 2 000 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MY.area",
+      "entity": "MY",
+      "attribute": "area",
+      "value": {
+        "id": "area-330000",
+        "number": 330803,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 330,000 km²",
+          "sv": "cirka 330 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MZ.area",
+      "entity": "MZ",
+      "attribute": "area",
+      "value": {
+        "id": "area-800000",
+        "number": 801590,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 800,000 km²",
+          "sv": "cirka 800 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NA.area",
+      "entity": "NA",
+      "attribute": "area",
+      "value": {
+        "id": "area-830000",
+        "number": 825615,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 830,000 km²",
+          "sv": "cirka 830 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NE.area",
+      "entity": "NE",
+      "attribute": "area",
+      "value": {
+        "id": "area-1300000",
+        "number": 1267000,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 1,300,000 km²",
+          "sv": "cirka 1 300 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NG.area",
+      "entity": "NG",
+      "attribute": "area",
+      "value": {
+        "id": "area-920000",
+        "number": 923768,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 920,000 km²",
+          "sv": "cirka 920 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NI.area",
+      "entity": "NI",
+      "attribute": "area",
+      "value": {
+        "id": "area-130000",
+        "number": 130373,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 130,000 km²",
+          "sv": "cirka 130 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NL.area",
+      "entity": "NL",
+      "attribute": "area",
+      "value": {
+        "id": "area-42000",
+        "number": 41850,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 42,000 km²",
+          "sv": "cirka 42 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NP.area",
+      "entity": "NP",
+      "attribute": "area",
+      "value": {
+        "id": "area-150000",
+        "number": 147181,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 150,000 km²",
+          "sv": "cirka 150 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NZ.area",
+      "entity": "NZ",
+      "attribute": "area",
+      "value": {
+        "id": "area-270000",
+        "number": 270467,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 270,000 km²",
+          "sv": "cirka 270 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.OM.area",
+      "entity": "OM",
+      "attribute": "area",
+      "value": {
+        "id": "area-310000",
+        "number": 309500,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 310,000 km²",
+          "sv": "cirka 310 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PA.area",
+      "entity": "PA",
+      "attribute": "area",
+      "value": {
+        "id": "area-75000",
+        "number": 75417,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 75,000 km²",
+          "sv": "cirka 75 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PE.area",
+      "entity": "PE",
+      "attribute": "area",
+      "value": {
+        "id": "area-1300000",
+        "number": 1285216,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 1,300,000 km²",
+          "sv": "cirka 1 300 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PG.area",
+      "entity": "PG",
+      "attribute": "area",
+      "value": {
+        "id": "area-460000",
+        "number": 462840,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 460,000 km²",
+          "sv": "cirka 460 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PK.area",
+      "entity": "PK",
+      "attribute": "area",
+      "value": {
+        "id": "area-880000",
+        "number": 881912,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 880,000 km²",
+          "sv": "cirka 880 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PL.area",
+      "entity": "PL",
+      "attribute": "area",
+      "value": {
+        "id": "area-310000",
+        "number": 312679,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 310,000 km²",
+          "sv": "cirka 310 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PT.area",
+      "entity": "PT",
+      "attribute": "area",
+      "value": {
+        "id": "area-92000",
+        "number": 92090,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 92,000 km²",
+          "sv": "cirka 92 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PY.area",
+      "entity": "PY",
+      "attribute": "area",
+      "value": {
+        "id": "area-410000",
+        "number": 406752,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 410,000 km²",
+          "sv": "cirka 410 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.QA.area",
+      "entity": "QA",
+      "attribute": "area",
+      "value": {
+        "id": "area-12000",
+        "number": 11586,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 12,000 km²",
+          "sv": "cirka 12 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.RO.area",
+      "entity": "RO",
+      "attribute": "area",
+      "value": {
+        "id": "area-240000",
+        "number": 238391,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 240,000 km²",
+          "sv": "cirka 240 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.RS.area",
+      "entity": "RS",
+      "attribute": "area",
+      "value": {
+        "id": "area-88000",
+        "number": 88361,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 88,000 km²",
+          "sv": "cirka 88 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.RU.area",
+      "entity": "RU",
+      "attribute": "area",
+      "value": {
+        "id": "area-17000000",
+        "number": 17098242,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 17,000,000 km²",
+          "sv": "cirka 17 000 000 km²"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.RW.area",
+      "entity": "RW",
+      "attribute": "area",
+      "value": {
+        "id": "area-26000",
+        "number": 26338,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 26,000 km²",
+          "sv": "cirka 26 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SA.area",
+      "entity": "SA",
+      "attribute": "area",
+      "value": {
+        "id": "area-2100000",
+        "number": 2149690,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 2,100,000 km²",
+          "sv": "cirka 2 100 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SB.area",
+      "entity": "SB",
+      "attribute": "area",
+      "value": {
+        "id": "area-29000",
+        "number": 28896,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 29,000 km²",
+          "sv": "cirka 29 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SD.area",
+      "entity": "SD",
+      "attribute": "area",
+      "value": {
+        "id": "area-1900000",
+        "number": 1886068,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 1,900,000 km²",
+          "sv": "cirka 1 900 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SE.area",
+      "entity": "SE",
+      "attribute": "area",
+      "value": {
+        "id": "area-450000",
+        "number": 450295,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 450,000 km²",
+          "sv": "cirka 450 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SI.area",
+      "entity": "SI",
+      "attribute": "area",
+      "value": {
+        "id": "area-20000",
+        "number": 20273,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 20,000 km²",
+          "sv": "cirka 20 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SK.area",
+      "entity": "SK",
+      "attribute": "area",
+      "value": {
+        "id": "area-49000",
+        "number": 49037,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 49,000 km²",
+          "sv": "cirka 49 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SL.area",
+      "entity": "SL",
+      "attribute": "area",
+      "value": {
+        "id": "area-72000",
+        "number": 71740,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 72,000 km²",
+          "sv": "cirka 72 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SM.area",
+      "entity": "SM",
+      "attribute": "area",
+      "value": {
+        "id": "area-61",
+        "number": 61,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 61 km²",
+          "sv": "cirka 61 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SN.area",
+      "entity": "SN",
+      "attribute": "area",
+      "value": {
+        "id": "area-200000",
+        "number": 196722,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 200,000 km²",
+          "sv": "cirka 200 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SR.area",
+      "entity": "SR",
+      "attribute": "area",
+      "value": {
+        "id": "area-160000",
+        "number": 163820,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 160,000 km²",
+          "sv": "cirka 160 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SS.area",
+      "entity": "SS",
+      "attribute": "area",
+      "value": {
+        "id": "area-620000",
+        "number": 619745,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 620,000 km²",
+          "sv": "cirka 620 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ST.area",
+      "entity": "ST",
+      "attribute": "area",
+      "value": {
+        "id": "area-960",
+        "number": 964,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 960 km²",
+          "sv": "cirka 960 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SV.area",
+      "entity": "SV",
+      "attribute": "area",
+      "value": {
+        "id": "area-21000",
+        "number": 21041,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 21,000 km²",
+          "sv": "cirka 21 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SY.area",
+      "entity": "SY",
+      "attribute": "area",
+      "value": {
+        "id": "area-190000",
+        "number": 185180,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 190,000 km²",
+          "sv": "cirka 190 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SZ.area",
+      "entity": "SZ",
+      "attribute": "area",
+      "value": {
+        "id": "area-17000",
+        "number": 17364,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 17,000 km²",
+          "sv": "cirka 17 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TD.area",
+      "entity": "TD",
+      "attribute": "area",
+      "value": {
+        "id": "area-1300000",
+        "number": 1284000,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 1,300,000 km²",
+          "sv": "cirka 1 300 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TG.area",
+      "entity": "TG",
+      "attribute": "area",
+      "value": {
+        "id": "area-57000",
+        "number": 56785,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 57,000 km²",
+          "sv": "cirka 57 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TH.area",
+      "entity": "TH",
+      "attribute": "area",
+      "value": {
+        "id": "area-510000",
+        "number": 513120,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 510,000 km²",
+          "sv": "cirka 510 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TJ.area",
+      "entity": "TJ",
+      "attribute": "area",
+      "value": {
+        "id": "area-140000",
+        "number": 143100,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 140,000 km²",
+          "sv": "cirka 140 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TL.area",
+      "entity": "TL",
+      "attribute": "area",
+      "value": {
+        "id": "area-15000",
+        "number": 14874,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 15,000 km²",
+          "sv": "cirka 15 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TM.area",
+      "entity": "TM",
+      "attribute": "area",
+      "value": {
+        "id": "area-490000",
+        "number": 488100,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 490,000 km²",
+          "sv": "cirka 490 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TN.area",
+      "entity": "TN",
+      "attribute": "area",
+      "value": {
+        "id": "area-160000",
+        "number": 163610,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 160,000 km²",
+          "sv": "cirka 160 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TR.area",
+      "entity": "TR",
+      "attribute": "area",
+      "value": {
+        "id": "area-780000",
+        "number": 783562,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 780,000 km²",
+          "sv": "cirka 780 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TT.area",
+      "entity": "TT",
+      "attribute": "area",
+      "value": {
+        "id": "area-5100",
+        "number": 5130,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 5,100 km²",
+          "sv": "cirka 5 100 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TZ.area",
+      "entity": "TZ",
+      "attribute": "area",
+      "value": {
+        "id": "area-950000",
+        "number": 945087,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 950,000 km²",
+          "sv": "cirka 950 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.UA.area",
+      "entity": "UA",
+      "attribute": "area",
+      "value": {
+        "id": "area-600000",
+        "number": 603500,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 600,000 km²",
+          "sv": "cirka 600 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.UG.area",
+      "entity": "UG",
+      "attribute": "area",
+      "value": {
+        "id": "area-240000",
+        "number": 241550,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 240,000 km²",
+          "sv": "cirka 240 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.US.area",
+      "entity": "US",
+      "attribute": "area",
+      "value": {
+        "id": "area-9400000",
+        "number": 9372610,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 9,400,000 km²",
+          "sv": "cirka 9 400 000 km²"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "area",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.UY.area",
+      "entity": "UY",
+      "attribute": "area",
+      "value": {
+        "id": "area-180000",
+        "number": 181034,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 180,000 km²",
+          "sv": "cirka 180 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.UZ.area",
+      "entity": "UZ",
+      "attribute": "area",
+      "value": {
+        "id": "area-450000",
+        "number": 447400,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 450,000 km²",
+          "sv": "cirka 450 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.VE.area",
+      "entity": "VE",
+      "attribute": "area",
+      "value": {
+        "id": "area-920000",
+        "number": 916445,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 920,000 km²",
+          "sv": "cirka 920 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.VN.area",
+      "entity": "VN",
+      "attribute": "area",
+      "value": {
+        "id": "area-330000",
+        "number": 331212,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 330,000 km²",
+          "sv": "cirka 330 000 km²"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.VU.area",
+      "entity": "VU",
+      "attribute": "area",
+      "value": {
+        "id": "area-12000",
+        "number": 12189,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 12,000 km²",
+          "sv": "cirka 12 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.WS.area",
+      "entity": "WS",
+      "attribute": "area",
+      "value": {
+        "id": "area-2800",
+        "number": 2842,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 2,800 km²",
+          "sv": "cirka 2 800 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.YE.area",
+      "entity": "YE",
+      "attribute": "area",
+      "value": {
+        "id": "area-530000",
+        "number": 527968,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 530,000 km²",
+          "sv": "cirka 530 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ZA.area",
+      "entity": "ZA",
+      "attribute": "area",
+      "value": {
+        "id": "area-1200000",
+        "number": 1221037,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 1,200,000 km²",
+          "sv": "cirka 1 200 000 km²"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ZM.area",
+      "entity": "ZM",
+      "attribute": "area",
+      "value": {
+        "id": "area-750000",
+        "number": 752612,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 750,000 km²",
+          "sv": "cirka 750 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ZW.area",
+      "entity": "ZW",
+      "attribute": "area",
+      "value": {
+        "id": "area-390000",
+        "number": 390757,
+        "asOf": "2026-09-30",
+        "names": {
+          "en": "about 390,000 km²",
+          "sv": "cirka 390 000 km²"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "area",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land and water area, agreeing within 15 % with the area of the Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2)",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    }
+  ]
+}

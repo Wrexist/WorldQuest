@@ -12,7 +12,7 @@
  * See docs/plan/build-order.md and docs/product/roadmap.md.
  */
 
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { seededRng } from '../shared/index.js'
@@ -24,6 +24,11 @@ import {
   itemsForFact,
 } from './index.js'
 import type { Entity, Fact, Template } from './types.js'
+
+// Several tests here walk every item of the shipped content — 26,000 and growing — and a
+// loaded machine takes more than vitest's five seconds to do it. That is what they are for;
+// a bigger pack is not a reason to make them look at less.
+vi.setConfig({ testTimeout: 60_000 })
 
 const packsDir = join(import.meta.dirname, '..', '..', '..', 'content', 'packs', 'geography')
 const read = <T>(file: string): T[] =>
@@ -48,6 +53,25 @@ const facts = [
   ...read<Fact>('facts.locations.v1.json'),
   ...read<Fact>('facts.languages.v1.json'),
   ...read<Fact>('facts.calling-codes.v1.json'),
+  ...read<Fact>('facts.area.v1.json'),
+  ...read<Fact>('facts.border-count.v1.json'),
+  ...read<Fact>('facts.borders.v1.json'),
+  ...read<Fact>('facts.landlocked.v1.json'),
+  ...read<Fact>('facts.hemisphere.v1.json'),
+  ...read<Fact>('facts.tld.v1.json'),
+  ...read<Fact>('facts.alpha3.v1.json'),
+  ...read<Fact>('facts.currency-codes.v1.json'),
+  ...read<Fact>('facts.native-names.v1.json'),
+  ...read<Fact>('facts.companies.v1.json'),
+  ...read<Fact>('facts.athletes.v1.json'),
+  ...read<Fact>('facts.musicians.v1.json'),
+  ...read<Fact>('facts.actors.v1.json'),
+  ...read<Fact>('facts.scientists.v1.json'),
+  ...read<Fact>('facts.writers.v1.json'),
+  ...read<Fact>('facts.artists.v1.json'),
+  ...read<Fact>('facts.landmarks.v1.json'),
+  ...read<Fact>('facts.clubs.v1.json'),
+  ...read<Fact>('facts.highest-points.v1.json'),
 ]
 const templates = read<Template>('templates.v1.json')
 
@@ -200,7 +224,7 @@ describe('question construction', () => {
       if (!q) continue
       expect(q.options.filter((o) => o.isCorrect)).toHaveLength(1)
     }
-  })
+  }, 30_000)
 
   it('does not always place the correct answer in the same slot', () => {
     // Users learn positions faster than they learn facts.
@@ -391,6 +415,9 @@ describe('question construction', () => {
     for (const template of templates) {
       if (template.answer.from !== 'entity.names') continue
       if (template.modality === 'map') continue // the map IS the prompt — see below
+      // Its wrong answers are chosen to hold a different value, so a shared value is what the
+      // question is ABOUT ("which of these has no sea coast?"). Tested on its own below.
+      if (template.distractors?.differentValueOnly === true) continue
       for (const item of index.items.filter((i) => i.templateId === template.id)) {
         const fact = index.facts.get(item.factId)!
         const value = fact.value.names?.['en']
@@ -856,7 +883,8 @@ describe('accessibility parity', () => {
         asked.length,
         `${factId}: ${safe.length} screen-reader item(s), none of which builds a question`,
       ).toBeGreaterThan(0)
-      expect(asked[0]!.options.length).toBeGreaterThanOrEqual(2)
+      // A question to be CHOSEN from has options; one to be TYPED has exactly the right one.
+      expect(asked.some((q) => q.typed === undefined ? q.options.length >= 2 : q.options.length === 1)).toBe(true)
     }
   })
 

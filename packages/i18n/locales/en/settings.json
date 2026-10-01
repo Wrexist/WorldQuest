@@ -120,5 +120,19 @@
   "settings:appearance.light": "Light",
   "settings:appearance.light__note": "Appearance setting. Changes all interface surfaces immediately; system follows device.",
   "settings:appearance.dark": "Dark",
-  "settings:appearance.dark__note": "Appearance setting. Changes all interface surfaces immediately; system follows device."
+  "settings:appearance.dark__note": "Appearance setting. Changes all interface surfaces immediately; system follows device.",
+  "settings:level.label": "Where lessons start",
+  "settings:level.label__note": "Settings row label. The learner's starting level; lessons begin here and widen as they learn. Max 24 characters.",
+  "settings:level.help": "Lessons begin here and widen as you learn.",
+  "settings:level.help__note": "Help line under the starting-level row. States what the setting does and that it is not permanent.",
+  "settings:level.new": "Just starting",
+  "settings:level.new__note": "Value of the starting-level row: the gentlest start. Max 16 characters.",
+  "settings:level.some": "Some",
+  "settings:level.some__note": "Value of the starting-level row: the middle. One word.",
+  "settings:level.confident": "Confident",
+  "settings:level.confident__note": "Value of the starting-level row: the hardest start. One word.",
+  "settings:level.check": "Check my level",
+  "settings:level.check__note": "Settings link row that starts a ten-question level check. Imperative, three words. Max 20 characters.",
+  "settings:level.check.help": "Ten questions to find where to start. It changes where lessons begin, not what you have learned.",
+  "settings:level.check.help__note": "Explains the level check under its row: what it is, how long, and that nothing already learned is affected."
 }

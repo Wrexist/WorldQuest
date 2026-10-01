@@ -1,6 +1,6 @@
 import { BALANCE, COMPLETION_BONUS, SPEED_ROUND_MS, TASK_XP, generateDailyQuest, seededRng,
   type DailyQuest, type MemoryState, type PerformGoal, type QuestTask } from '@worldquest/engines'
-import { learningContent } from './learning-content'
+import { questContent } from './learning-content'
 
 /**
  * The daily quest, decided by the server.
@@ -32,7 +32,7 @@ function seedFor(text: string): number {
 
 export function composeQuest(owner: string, day: string, memory: ReadonlyMap<string, MemoryState>,
   now: number, recentAccuracy: number): DailyQuest {
-  return generateDailyQuest({ userId: owner, date: day, index: learningContent, memory, now,
+  return generateDailyQuest({ userId: owner, date: day, index: questContent, memory, now,
     rng: seededRng(seedFor(`${owner}:${day}`)), recentAccuracy })
 }
 

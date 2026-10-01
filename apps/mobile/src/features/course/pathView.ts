@@ -31,6 +31,12 @@ export type PathNodeView = {
   readonly position: number
   readonly finished: number
   readonly lessons: number
+  /**
+   * A finished step whose facts the learner is, on the whole, losing (`strengthOf`). Offered a
+   * refresh on the step's card and a small clock on the step; never a warning, and absent
+   * (not false) on every step that is not done.
+   */
+  readonly fading?: boolean
 }
 
 export type PathUnitView = {
@@ -72,7 +78,7 @@ export function nodeIcon(node: Pick<CourseNode, 'kind' | 'focus'>): IconName {
   return 'globe'
 }
 
-export function toPathView(path: CoursePath): CoursePathView {
+export function toPathView(path: CoursePath, fading: ReadonlySet<string> = new Set()): CoursePathView {
   if (path.status === 'error') return { status: 'error' }
   const { course, standing } = path
   return {
@@ -99,6 +105,7 @@ export function toPathView(path: CoursePath): CoursePathView {
         position: step.position + 1,
         finished: step.finished,
         lessons: step.node.lessons,
+        ...(step.state === 'done' && fading.has(step.node.id) ? { fading: true } : {}),
       })),
     })),
   }

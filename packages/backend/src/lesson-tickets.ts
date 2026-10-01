@@ -1,4 +1,4 @@
-import { composeLesson, focusFilter, seededRng, type LessonFocus, type MemoryState, type Question } from '@worldquest/engines'
+import { composeLesson, composePlacement, focusFilter, seededRng, TYPED_WRONG, type LessonFocus, type MemoryState, type Question } from '@worldquest/engines'
 import { z } from 'zod'
 import { ApiError } from './contracts'
 import { learningContent } from './learning-content'
@@ -26,7 +26,11 @@ export const prepareLessonSchema = z.object({ lessonId: z.string().regex(/^[a-zA
   locale: z.enum(['en', 'sv']), count: z.number().int().min(5).max(20).default(10),
   screenReader: z.boolean().default(false), focus: focusSchema.optional(), node: courseNodeSchema.optional(),
   /** How hard a way of asking to prefer (the app's `difficultyRamp`). Presentation only: it orders templates, never chooses facts. */
-  maxModifier: z.number().int().min(0).max(2).optional() }).strict()
+  maxModifier: z.number().int().min(0).max(2).optional(),
+  /** Where new facts start (the app's `difficultyRamp`): an ordering of unseen facts, never a filter. */
+  introduceFrom: z.number().int().min(1).max(5).optional(),
+  /** The level check (`composePlacement`): ten questions across the five levels. Ignores focus, count and the ramp. */
+  placement: z.literal(true).optional() }).strict()
 type Input = z.infer<typeof prepareLessonSchema>
 /** Parsed focus, with absent fields absent rather than `undefined` (exact optional types). */
 function lessonFocus(f: z.infer<typeof focusSchema>): LessonFocus {
@@ -34,6 +38,23 @@ function lessonFocus(f: z.infer<typeof focusSchema>): LessonFocus {
   return { ...(f.factIds ? { factIds: f.factIds } : {}), ...(f.attributes ? { attributes: f.attributes } : {}),
     ...(f.entities ? { entities: f.entities } : {}),
     ...(d ? { difficulty: { ...(d.min === undefined ? {} : { min: d.min }), ...(d.max === undefined ? {} : { max: d.max }) } } : {}) }
+}
+/**
+ * What the Worker remembers of each question: which options exist and which is right.
+ *
+ * A TYPED question has one option, the right one — and a learner who typed something else must
+ * still be able to say so. Their answer is sent as an option id like every other (the text never
+ * leaves the device), and "typed something that matched nothing" is `TYPED_WRONG`. It is added
+ * here, for typed questions only, so it can never be chosen on a question that has options to
+ * choose from: a client sending it for a multiple-choice slot is refused as an unknown option.
+ */
+export function slotsFor(questions: readonly Question[]) {
+  return questions.map(q => {
+    const correct = q.options.filter(option => option.isCorrect)
+    if (correct.length !== 1) throw new ApiError('CONTENT_UNAVAILABLE', 503)
+    return { itemId: q.item.id, factId: q.item.factId, templateId: q.item.templateId,
+      options: [...q.options.map(o => o.id), ...(q.typed ? [TYPED_WRONG] : [])], correctOptionId: correct[0]!.id }
+  })
 }
 type Ticket = { request_json: string | null; questions_json: string | null; issued_at: number | null }
 function response(lessonId: string, row: Ticket) {
@@ -68,8 +89,11 @@ export async function prepareLesson(db: D1Database, owner: string, tokenHash: st
     const topicFilter = input.focus ? focusFilter(learningContent, lessonFocus(input.focus)) : undefined
     const base = { index: learningContent, memory, now, locale: input.locale, screenReaderOnly: input.screenReader,
       modalities: ['text', 'image', 'map'] as ('text' | 'image' | 'map')[],
-      ...(input.maxModifier === undefined ? {} : { maxModifier: input.maxModifier }) }
-    let questions = composeLesson({ ...base, rng: seededRng(seed), count: input.count,
+      ...(input.maxModifier === undefined ? {} : { maxModifier: input.maxModifier }),
+      ...(input.introduceFrom === undefined ? {} : { introduceFrom: input.introduceFrom }) }
+    let questions = input.placement
+      ? composePlacement({ index: learningContent, rng: seededRng(seed), locale: input.locale, screenReaderOnly: input.screenReader, modalities: base.modalities })
+      : composeLesson({ ...base, rng: seededRng(seed), count: input.count,
       ...(topicFilter ? { topicFilter } : {}),
       // One entity in focus means the entity is not the question (the app's own rule).
       entityIsGiven: input.focus?.entities?.length === 1 })
@@ -87,12 +111,7 @@ export async function prepareLesson(db: D1Database, owner: string, tokenHash: st
     }
     // A focus narrower than one lesson is the caller's choice, not an outage.
     if (questions.length < 5) throw input.focus && !steering ? new ApiError('FOCUS_TOO_NARROW', 409) : new ApiError('CONTENT_UNAVAILABLE', 503)
-    const slots = questions.map(q => {
-      const correct = q.options.filter(option => option.isCorrect)
-      if (correct.length !== 1) throw new ApiError('CONTENT_UNAVAILABLE', 503)
-      return { itemId: q.item.id, factId: q.item.factId, templateId: q.item.templateId,
-        options: q.options.map(o => o.id), correctOptionId: correct[0]!.id }
-    })
+    const slots = slotsFor(questions)
     const guard = crypto.randomUUID()
     try {
       await db.batch([

@@ -80,6 +80,46 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
     expect(result.status).toBe(200)
     expect(await result.json()).toMatchObject({ correct: 5, reviews: 5 })
   })
+  it('grades answers by the slot they were issued in, in the order they were given', async () => {
+    // A lesson adapts as it goes, so the answers are not a prefix of the ticket: slot 4 can be
+    // answered first. Each is still graded against ITS slot's key.
+    const a = await guest()
+    const input = { lessonId: 'adaptive', locale: 'en', count: 5, screenReader: false }
+    const prepared = await (await call('/v1/lessons/prepare', a.token, input)).json() as { questions: Question[] }
+    const right = prepared.questions.map(q => q.options.find(o => o.isCorrect)!.id)
+    const wrong = (q: Question) => q.options.find(o => !o.isCorrect)?.id ?? null
+    // Backwards, with slot 2 answered wrongly: exactly four right.
+    const backwards = [4, 3, 2, 1, 0].map(slot => ({ slot, chosenOptionId: slot === 2 ? wrong(prepared.questions[2]!) : right[slot]!, elapsedMs: 9000 }))
+    // An option from another slot's key is not an answer to this one.
+    // (Chosen so that it really is absent from slot 0's options: wrong answers are neighbours, so
+    // another question's right answer is sometimes one of them.)
+    const foreign = right.findIndex((id, k) => k > 0 && !prepared.questions[0]!.options.some(o => o.id === id))
+    if (foreign > 0) {
+      const crossed = [{ slot: 0, chosenOptionId: right[foreign]!, elapsedMs: 9000 }]
+      expect((await call('/v1/lessons/submit', a.token, { lessonId: 'adaptive', answers: crossed })).status).toBe(400)
+    }
+    // A slot the ticket does not have.
+    expect((await call('/v1/lessons/submit', a.token, { lessonId: 'adaptive', answers: [{ slot: 5, chosenOptionId: right[0]!, elapsedMs: 9000 }] })).status).toBe(400)
+    const result = await call('/v1/lessons/submit', a.token, { lessonId: 'adaptive', answers: backwards })
+    expect(result.status).toBe(200)
+    expect(await result.json()).toMatchObject({ correct: 4, reviews: 5 })
+  })
+  it('issues a level check: ten questions, easy to hard, one per country', async () => {
+    const a = await guest()
+    const response = await call('/v1/lessons/prepare', a.token, { lessonId: 'placement-1', locale: 'en', count: 10, screenReader: false, placement: true })
+    expect(response.status).toBe(200)
+    const lesson = await response.json() as { questions: Question[]; request: { placement?: boolean } }
+    expect(lesson.request.placement).toBe(true)
+    expect(lesson.questions).toHaveLength(10)
+    const d = lesson.questions.map(q => q.item.difficulty)
+    expect([...d].sort((x, y) => x - y)).toEqual(d)
+    expect(new Set(lesson.questions.map(q => q.item.entityId)).size).toBe(10)
+    // It is a lesson like any other once issued: answered, graded, rewarded by the Worker.
+    const answers = lesson.questions.map((q, slot) => ({ slot, chosenOptionId: q.options.find(o => o.isCorrect)!.id, elapsedMs: 9000 }))
+    expect((await call('/v1/lessons/submit', a.token, { lessonId: 'placement-1', answers })).status).toBe(200)
+    // The flag is a literal `true`: anything else is a request the Worker does not understand.
+    expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'placement-2', locale: 'en', count: 10, placement: false })).status).toBe(400)
+  })
   it('bounds outstanding offline tickets and frees capacity after an acknowledged lesson', async () => {
     const a = await guest()
     let first: { questions: Question[] } | undefined
@@ -188,7 +228,9 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
     expect((await state(a.userId)).ledger).toHaveLength(1)
     const changed = answers.map(a => ({ ...a, elapsedMs: 5000 }))
     expect((await call('/v1/lessons/submit', a.token, { lessonId: 'one', answers: changed })).status).toBe(409)
-    expect(await (await call('/v1/lessons/submit', a.token, { lessonId: 'one', answers: [...answers].reverse() })).json()).toEqual(receipts[0])
+    // The ORDER the answers were given in is part of what was submitted: the hearts replay walks
+    // them that way. The same answers in another order are a different submission, not a retry.
+    expect((await call('/v1/lessons/submit', a.token, { lessonId: 'one', answers: [...answers].reverse() })).status).toBe(answers.length > 1 ? 409 : 200)
   })
   it('preserves concurrent different lessons and pays the daily bonus once', async () => {
     const a = await guest()
@@ -571,12 +613,14 @@ describe('lessons that end before the last question (real workerd and SQLite)', 
     expect((await db.prepare('SELECT lessons_today FROM accounts WHERE id = ?').bind(a.userId).first())?.lessons_today).toBe(2)
   })
 
-  it('refuses more answers than were issued and answers that skip a slot', async () => {
+  it('refuses more answers than were issued and answers to a slot the ticket does not have', async () => {
     const a = await guest()
     await seed(a.userId, ['bounded'], 5)
     expect((await call('/v1/lessons/submit', a.token, { lessonId: 'bounded', answers: answersFor(6, 'a') })).status).toBe(400)
-    const gap = [{ slot: 0, chosenOptionId: 'a', elapsedMs: 9000 }, { slot: 2, chosenOptionId: 'a', elapsedMs: 9000 }]
-    expect((await call('/v1/lessons/submit', a.token, { lessonId: 'bounded', answers: gap })).status).toBe(400)
+    // A lesson adapts as it goes and may be left part-way, so a skipped slot is not an error —
+    // but there is no slot 5 on a ticket of five.
+    const beyond = [{ slot: 0, chosenOptionId: 'a', elapsedMs: 9000 }, { slot: 5, chosenOptionId: 'a', elapsedMs: 9000 }]
+    expect((await call('/v1/lessons/submit', a.token, { lessonId: 'bounded', answers: beyond })).status).toBe(400)
     expect((await state(a.userId)).receipts).toHaveLength(0)
   })
 

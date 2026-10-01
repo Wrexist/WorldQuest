@@ -1,0 +1,1169 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "packId": "geography.facts.native-names",
+  "version": "1.0.0",
+  "subject": "geography",
+  "kind": "facts",
+  "locales": [
+    "en",
+    "sv"
+  ],
+  "license": "CC-BY-4.0",
+  "generatedAt": "2026-09-30",
+  "$comment": "Only countries with exactly one endonym, written differently from the name in both shipped locales.",
+  "volatilityReviewed": true,
+  "items": [
+    {
+      "id": "geo.AL.native-name",
+      "entity": "AL",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-al",
+        "names": {
+          "en": "Shqipëria",
+          "sv": "Shqipëria"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AM.native-name",
+      "entity": "AM",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-am",
+        "names": {
+          "en": "Հայաստան",
+          "sv": "Հայաստան"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.AT.native-name",
+      "entity": "AT",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-at",
+        "names": {
+          "en": "Österreich",
+          "sv": "Österreich"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BG.native-name",
+      "entity": "BG",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-bg",
+        "names": {
+          "en": "България",
+          "sv": "България"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BN.native-name",
+      "entity": "BN",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-bn",
+        "names": {
+          "en": "Negara Brunei Darussalam",
+          "sv": "Negara Brunei Darussalam"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.BR.native-name",
+      "entity": "BR",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-br",
+        "names": {
+          "en": "Brasil",
+          "sv": "Brasil"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "native-name",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CN.native-name",
+      "entity": "CN",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-cn",
+        "names": {
+          "en": "中国",
+          "sv": "中国"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "native-name",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CV.native-name",
+      "entity": "CV",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-cv",
+        "names": {
+          "en": "Cabo Verde",
+          "sv": "Cabo Verde"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.CZ.native-name",
+      "entity": "CZ",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-cz",
+        "names": {
+          "en": "Česko",
+          "sv": "Česko"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DE.native-name",
+      "entity": "DE",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-de",
+        "names": {
+          "en": "Deutschland",
+          "sv": "Deutschland"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DO.native-name",
+      "entity": "DO",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-do",
+        "names": {
+          "en": "República Dominicana",
+          "sv": "República Dominicana"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.DZ.native-name",
+      "entity": "DZ",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-dz",
+        "names": {
+          "en": "الجزائر",
+          "sv": "الجزائر"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.EE.native-name",
+      "entity": "EE",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-ee",
+        "names": {
+          "en": "Eesti",
+          "sv": "Eesti"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ES.native-name",
+      "entity": "ES",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-es",
+        "names": {
+          "en": "España",
+          "sv": "España"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ET.native-name",
+      "entity": "ET",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-et",
+        "names": {
+          "en": "ኢትዮጵያ",
+          "sv": "ኢትዮጵያ"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GE.native-name",
+      "entity": "GE",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-ge",
+        "names": {
+          "en": "საქართველო",
+          "sv": "საქართველო"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GN.native-name",
+      "entity": "GN",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-gn",
+        "names": {
+          "en": "Guinée",
+          "sv": "Guinée"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GR.native-name",
+      "entity": "GR",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-gr",
+        "names": {
+          "en": "Ελλάδα",
+          "sv": "Ελλάδα"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.GW.native-name",
+      "entity": "GW",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-gw",
+        "names": {
+          "en": "Guiné-Bissau",
+          "sv": "Guiné-Bissau"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.HR.native-name",
+      "entity": "HR",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-hr",
+        "names": {
+          "en": "Hrvatska",
+          "sv": "Hrvatska"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.HU.native-name",
+      "entity": "HU",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-hu",
+        "names": {
+          "en": "Magyarország",
+          "sv": "Magyarország"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.IR.native-name",
+      "entity": "IR",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-ir",
+        "names": {
+          "en": "ایران",
+          "sv": "ایران"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.IT.native-name",
+      "entity": "IT",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-it",
+        "names": {
+          "en": "Italia",
+          "sv": "Italia"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.JO.native-name",
+      "entity": "JO",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-jo",
+        "names": {
+          "en": "الأردن",
+          "sv": "الأردن"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.JP.native-name",
+      "entity": "JP",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-jp",
+        "names": {
+          "en": "日本",
+          "sv": "日本"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "native-name",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.KW.native-name",
+      "entity": "KW",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-kw",
+        "names": {
+          "en": "الكويت",
+          "sv": "الكويت"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LA.native-name",
+      "entity": "LA",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-la",
+        "names": {
+          "en": "ສປປລາວ",
+          "sv": "ສປປລາວ"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LT.native-name",
+      "entity": "LT",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-lt",
+        "names": {
+          "en": "Lietuva",
+          "sv": "Lietuva"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.LV.native-name",
+      "entity": "LV",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-lv",
+        "names": {
+          "en": "Latvija",
+          "sv": "Latvija"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ME.native-name",
+      "entity": "ME",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-me",
+        "names": {
+          "en": "Црна Гора",
+          "sv": "Црна Гора"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MM.native-name",
+      "entity": "MM",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-mm",
+        "names": {
+          "en": "မြန်မာ",
+          "sv": "မြန်မာ"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MN.native-name",
+      "entity": "MN",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-mn",
+        "names": {
+          "en": "Монгол улс",
+          "sv": "Монгол улс"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.MR.native-name",
+      "entity": "MR",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-mr",
+        "names": {
+          "en": "موريتانيا",
+          "sv": "موريتانيا"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NL.native-name",
+      "entity": "NL",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-nl",
+        "names": {
+          "en": "Nederland",
+          "sv": "Nederland"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.NP.native-name",
+      "entity": "NP",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-np",
+        "names": {
+          "en": "नेपाल",
+          "sv": "नेपाल"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.OM.native-name",
+      "entity": "OM",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-om",
+        "names": {
+          "en": "عمان",
+          "sv": "عمان"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.PL.native-name",
+      "entity": "PL",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-pl",
+        "names": {
+          "en": "Polska",
+          "sv": "Polska"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.QA.native-name",
+      "entity": "QA",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-qa",
+        "names": {
+          "en": "قطر",
+          "sv": "قطر"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.RS.native-name",
+      "entity": "RS",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-rs",
+        "names": {
+          "en": "Србија",
+          "sv": "Србија"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.RU.native-name",
+      "entity": "RU",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-ru",
+        "names": {
+          "en": "Россия",
+          "sv": "Россия"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SI.native-name",
+      "entity": "SI",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-si",
+        "names": {
+          "en": "Slovenija",
+          "sv": "Slovenija"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SK.native-name",
+      "entity": "SK",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-sk",
+        "names": {
+          "en": "Slovensko",
+          "sv": "Slovensko"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.ST.native-name",
+      "entity": "ST",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-st",
+        "names": {
+          "en": "São Tomé e Príncipe",
+          "sv": "São Tomé e Príncipe"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.SY.native-name",
+      "entity": "SY",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-sy",
+        "names": {
+          "en": "سوريا",
+          "sv": "سوريا"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "native-name",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TH.native-name",
+      "entity": "TH",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-th",
+        "names": {
+          "en": "ประเทศไทย",
+          "sv": "ประเทศไทย"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "native-name",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.TN.native-name",
+      "entity": "TN",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-tn",
+        "names": {
+          "en": "تونس",
+          "sv": "تونس"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "native-name",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.UA.native-name",
+      "entity": "UA",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-ua",
+        "names": {
+          "en": "Україна",
+          "sv": "Україна"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "native-name",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    },
+    {
+      "id": "geo.VN.native-name",
+      "entity": "VN",
+      "attribute": "native-name",
+      "value": {
+        "id": "endonym-vn",
+        "names": {
+          "en": "Việt Nam",
+          "sv": "Việt Nam"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "native-name",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "The country's own name for itself, agreed by world-countries v5.1.0 (ODbL) and countries-list v3.4.1 (MIT)",
+        "url": "https://github.com/annexare/Countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "slow"
+    }
+  ]
+}

@@ -36,7 +36,11 @@ function brokenFields(account: Account, streak: { reset: boolean; extended: bool
 /** Every writer of learning state must hold this account revision guard. */
 export async function submitLesson(db: D1Database, owner: string, tokenHash: string, input: Submission,
   clock: Clock = Date.now): Promise<Receipt> {
-  const ordered = [...input.answers].sort((a, b) => a.slot - b.slot)
+  // In the order they were GIVEN, not the order they were issued. A lesson adapts as it goes
+  // (`rescued` in the lesson machine), so slot 5 may be answered third — and the hearts replay in
+  // `gradeLesson` has to walk the answers the way the learner met them, or its idea of when a
+  // heart ran out would differ from the app's. Each answer still names the slot it belongs to.
+  const ordered = [...input.answers]
   const payload = JSON.stringify(ordered.map(a => [a.slot, a.chosenOptionId, a.elapsedMs]))
   // 13 statements per attempt; three attempts plus authentication stay at 40, under
   // Workers Free's 50 queries per invocation.
@@ -71,8 +75,8 @@ export async function submitLesson(db: D1Database, owner: string, tokenHash: str
     const ticketRow = read[2]?.results[0] as { slots: string } | undefined
     if (!ticketRow) throw new ApiError('INVALID_TICKET', 400)
     const slots = ticketSchema.parse(JSON.parse(ticketRow.slots))
-    // The answers are a prefix of the ticket: a lesson that ended early still sends what
-    // was answered, and those answers still teach the scheduler. Never more than issued.
+    // Some of the ticket, each slot once: a lesson that ended early still sends what was
+    // answered, and those answers still teach the scheduler. Never more than issued.
     if (ordered.length > slots.length) throw new ApiError('INVALID_TICKET', 400)
     const allMemory = new Map<string, MemoryState>()
     for (const row of read[3]?.results ?? []) {
@@ -82,9 +86,9 @@ export async function submitLesson(db: D1Database, owner: string, tokenHash: str
     // Grading sees only this lesson's facts, so it writes only their memories back.
     const ticketFacts = new Set(slots.map(s => s.factId))
     const memory = new Map([...allMemory].filter(([id]) => ticketFacts.has(id)))
-    const answers = ordered.map((answer, i) => {
-      const slot = slots[i]!
-      if (answer.slot !== i || (answer.chosenOptionId !== null && !slot.options.includes(answer.chosenOptionId))) {
+    const answers = ordered.map((answer) => {
+      const slot = slots[answer.slot]
+      if (slot === undefined || (answer.chosenOptionId !== null && !slot.options.includes(answer.chosenOptionId))) {
         throw new ApiError('INVALID_SLOT', 400)
       }
       return { ...answer, itemId: slot.itemId, factId: slot.factId, templateId: slot.templateId,

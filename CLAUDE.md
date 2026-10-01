@@ -128,8 +128,8 @@ second-opinion work — **only when the user has asked for agent/parallel work.*
   is a migration, not a rename.
 - **Migrations are forward-only.** Never edit a landed file in `supabase/migrations/`.
 - **Facts need sources, and now the values are checked too.** Every fact carries `source`
-  and `verifiedAt` — and `pnpm content:crosscheck` (in `pnpm verify`) compares 1,049 values
-  (194 countries since September 2026) against `world-countries@5.1.0`, an independent
+  and `verifiedAt` — and `pnpm content:crosscheck` (in `pnpm verify`) compares 2,809 values
+  (194 countries since September 2026; nine more attributes per country the same month) against `world-countries@5.1.0`, an independent
   dataset. Validation proves provenance; only a second source proves correctness. Every
   recorded difference names its reason — the reference being looser than ITU-T or ISO,
   older than a change (Bulgaria's euro), or a naming choice — never

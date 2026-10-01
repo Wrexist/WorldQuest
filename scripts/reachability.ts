@@ -119,6 +119,48 @@ const ALLOWED: Record<string, string> = {
   LESSONS_BEFORE_ASK: 'the ask threshold is applied inside `shouldAskForReminder`',
   REASK_AFTER_DAYS: 'the ninety-day retry is applied inside `shouldAskForReminder`',
 
+  /**
+   * ── the shape of a lesson, applied inside `composeLesson` ──
+   *
+   * `composeLesson` is what the app and the Worker call, and it shapes its own output
+   * (warm-up, climb, finish on a win — `lesson/shape.ts`). A screen that called
+   * `shapeLesson` itself would be a screen re-ordering a lesson the Worker has already
+   * ordered and issued, which is the drift between client and server the purity contract
+   * exists to prevent. Exported so the engine's own tests can drive them directly.
+   */
+  shapeLesson: 'applied inside `composeLesson`; see the block above',
+  hardnessOf: 'the arithmetic `shapeLesson` orders by; see the block above',
+
+  /**
+   * ── the exercise types, applied where the lesson is composed and graded ──
+   *
+   * Typed answers, matching boards and the level check are all decided in the engine, by the
+   * code the app and the Worker share, so that the two cannot disagree about what a learner
+   * was asked or whether they were right.
+   *
+   * - `matchTyped`, `normaliseTyped` and `TYPED_WRONG` are called by the lesson machine when a
+   *   typed answer is checked, and by the Worker when it builds the answer key for one. A
+   *   screen that judged typed text itself would be a screen with an opinion about spelling.
+   * - `acceptedSpellings` is how `buildQuestion` decides what counts as right.
+   * - `pairUp` and `PAIR_SIZE` are applied inside `composeLesson`: the screen is handed a board.
+   * - `composePlacement` is what the Worker issues for the level check; the app asks for it
+   *   with a flag and never composes one, and `placementLevel` — which it does call — reads it.
+   * - `FADING_BELOW` and `FADING_MIN_KNOWN` are the thresholds `strengthOf` applies; the path
+   *   gets a decision, not the numbers behind it (the same rule as the notification budget).
+   */
+  TYPED_WRONG: 'the typed-answer sentinel; used by the machine and the Worker; see the block above',
+  matchTyped: 'applied by the lesson machine on CHECK; see the block above',
+  normaliseTyped: 'the fold `matchTyped` applies; see the block above',
+  acceptedSpellings: 'applied by `buildQuestion`; see the block above',
+  nearRivals: 'applied by `buildQuestion` to find the answers a typo must not become; see the block above',
+  PAIR_SIZE: 'applied inside `composeLesson`; see the block above',
+  pairUp: 'applied inside `composeLesson`; see the block above',
+  PLACEMENT_LENGTH: 'the length of the level check; the Worker composes it',
+  PLACEMENT_MIN_ANSWERS: 'applied inside `placementLevel`',
+  composePlacement: 'composed by the Worker, not the app; see the block above',
+  FADING_BELOW: 'applied inside `strengthOf`; the path gets a decision, not the number',
+  FADING_MIN_KNOWN: 'applied inside `strengthOf`; the path gets a decision, not the number',
+
   // ── roadmapped, and deliberately not built during v1.0
 
   markBroken:

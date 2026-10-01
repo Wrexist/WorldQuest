@@ -325,3 +325,30 @@ describe('the summary rules, on their own', () => {
     expect(outcomeOf(grade({ accuracy: 0.79 }), false)).toBe('done')
   })
 })
+
+describe('LessonSummary — the level check', () => {
+  const placed = (level: 'new' | 'some' | 'confident' | null) =>
+    render(
+      <LessonSummary result={grade()} timeMs={65_000} wasAbandoned={false} isOffline={false} onExit={() => {}} placement={{ level }} />,
+    )
+
+  it('says where lessons will start, in a sentence about what changes and not a rank', () => {
+    for (const level of ['new', 'some', 'confident'] as const) {
+      const { unmount } = placed(level)
+      const line = screen.getByTestId('summary-placement').textContent ?? ''
+      expect(line.length).toBeGreaterThan(10)
+      expect(line).not.toMatch(/beginner|novice|expert|score|rank|level \d/i)
+      unmount()
+    }
+  })
+
+  it('says nothing was changed when the check was left early', () => {
+    placed(null)
+    expect(screen.getByTestId('summary-placement').textContent).toBe('Your level stays as it was.')
+  })
+
+  it('adds nothing to an ordinary lesson', () => {
+    summary({})
+    expect(screen.queryByTestId('summary-placement')).toBeNull()
+  })
+})

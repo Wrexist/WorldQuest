@@ -555,6 +555,109 @@ describe('composeLesson', () => {
     })
   })
 
+  describe('typed answers are earned', () => {
+    const capital = [...index.itemsByFact.keys()].find((id) => id.endsWith('.capital'))!
+    const known = (reps: number): MemoryState[] => [{ factId: capital, stability: 20, difficulty: 5, reps, lapses: 0, lastReviewAt: T0 - 86_400_000, dueAt: T0 - 1000, suspended: false }]
+    const typedFor = (memory: MemoryState[], maxModifier: number | undefined): number => {
+      let n = 0
+      for (let seed = 1; seed <= 40; seed++) {
+        const qs = composeLesson({ index, memory, now: T0, rng: seededRng(seed), locale: 'en', count: 8, unshaped: true,
+          topicFilter: (id) => id === capital, ...(maxModifier === undefined ? {} : { maxModifier }) })
+        n += qs.filter((q) => q.typed !== undefined).length
+      }
+      return n
+    }
+
+    it('asks a fact the learner has met twice to be typed, once the ramp has reached the top', () => {
+      expect(typedFor(known(3), 2)).toBeGreaterThan(0)
+    })
+
+    it('never types a fact the learner has not met more than once', () => {
+      expect(typedFor(known(1), 2)).toBe(0)
+      expect(typedFor([], 2)).toBe(0)
+    })
+
+    it('never types below the top of the ramp, or with no ramp at all', () => {
+      expect(typedFor(known(5), 1)).toBe(0)
+      expect(typedFor(known(5), 0)).toBe(0)
+      expect(typedFor(known(5), undefined)).toBe(0)
+    })
+
+    it('never types a leech that is resting', () => {
+      expect(typedFor([{ ...known(5)[0]!, suspended: true }], 2)).toBe(0)
+    })
+  })
+
+  describe('depth before breadth', () => {
+    it('offers a country the learner has started before one they have not, at the same difficulty', () => {
+      const ids = [...index.itemsByFact.keys()]
+      // Pick a difficulty-2 capital fact and make its country "started" via a different fact.
+      const target = ids.find((id) => index.facts.get(id)?.difficulty === 2 && id.endsWith('.capital'))!
+      const entity = index.facts.get(target)!.entity
+      const sibling = ids.find((id) => id !== target && index.facts.get(id)?.entity === entity)
+      if (sibling === undefined) return // this index has no second fact for that country
+      const memory: MemoryState[] = [{ factId: sibling, stability: 5, difficulty: 5, reps: 1, lapses: 0, lastReviewAt: T0, dueAt: T0 + 86_400_000 * 30, suspended: false }]
+      let started = 0
+      for (let seed = 1; seed <= 30; seed++) {
+        const qs = composeLesson({ index, memory, now: T0, rng: seededRng(seed), locale: 'en', count: 12, unshaped: true,
+          topicFilter: (id) => index.facts.get(id)?.difficulty === 2 })
+        if (qs.some((q) => index.facts.get(q.item.factId)?.entity === entity)) started++
+      }
+      // Without the preference a single country among dozens at this difficulty would appear in
+      // roughly 12/N of lessons; with it, it leads the new facts every time.
+      expect(started).toBe(30)
+    })
+  })
+
+  describe('the lesson is shaped', () => {
+    it('opens easier than it ends its climb, and finishes on an easier one', () => {
+      let climbs = 0
+      let finishes = 0
+      for (let seed = 1; seed <= 20; seed++) {
+        const d = composeLesson({ index, memory: [], now: T0, rng: seededRng(seed), locale: 'en', count: 10 }).map((q) => q.item.difficulty)
+        if (d.length < 6) continue
+        if (d[0]! <= Math.max(...d.slice(1, -1))) climbs++
+        if (d.at(-1)! <= d.at(-2)!) finishes++
+      }
+      expect(climbs).toBe(20)
+      expect(finishes).toBe(20)
+    })
+
+    it('can be switched off for a caller that needs the order selection chose', () => {
+      const shaped = composeLesson({ index, memory: [], now: T0, rng: seededRng(3), locale: 'en', count: 10 })
+      const raw = composeLesson({ index, memory: [], now: T0, rng: seededRng(3), locale: 'en', count: 10, unshaped: true })
+      expect(new Set(shaped.map((q) => q.item.id))).toEqual(new Set(raw.map((q) => q.item.id)))
+    })
+  })
+
+  describe('an experienced learner meets harder new facts first (introduceFrom)', () => {
+    const lesson = (introduceFrom?: number) =>
+      composeLesson({ index, memory: [], now: T0, rng: seededRng(31), locale: 'en', count: 12,
+        ...(introduceFrom === undefined ? {} : { introduceFrom }) })
+    const meanDifficulty = (questions: readonly Question[]) =>
+      questions.reduce((sum, q) => sum + (index.facts.get(q.item.factId)?.difficulty ?? 3), 0) / questions.length
+
+    it('serves harder unseen facts when the floor is raised', () => {
+      expect(meanDifficulty(lesson(4))).toBeGreaterThan(meanDifficulty(lesson()))
+    })
+
+    it('never serves a fact below the floor before it has run out of facts at or above it', () => {
+      const atOrAbove = [...index.itemsByFact.keys()].filter((id) => (index.facts.get(id)?.difficulty ?? 3) >= 3)
+      expect(atOrAbove.length).toBeGreaterThanOrEqual(12)
+      for (const q of lesson(3)) expect(index.facts.get(q.item.factId)!.difficulty).toBeGreaterThanOrEqual(3)
+    })
+
+    it('is an ordering, not a filter: with nothing harder left, easier facts still come', () => {
+      const easyOnly = buildIndex({
+        entities: [...index.entities.values()],
+        facts: [...index.facts.values()].filter((f) => f.difficulty <= 2),
+        templates: [...index.templates.values()],
+      })
+      const questions = composeLesson({ index: easyOnly, memory: [], now: T0, rng: seededRng(5), locale: 'en', count: 6, introduceFrom: 5 })
+      expect(questions.length).toBeGreaterThan(0)
+    })
+  })
+
   it('returns only screen-reader-safe questions when asked', () => {
     const questions = composeLesson({
       index, memory: [], now: T0, rng: seededRng(3), locale: 'en',

@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { START_LEVELS, difficultyRamp, experienceFrom, type StartLevel } from './ramp.js'
 
 /** The ramp's tuning, restated: stage thresholds in facts practised, and reviews before accuracy counts. */
-const RAMP_STAGES = [0, 15, 40, 80, 140] as const
+const RAMP_STAGES = [0, 15, 40, 80, 140, 220] as const
+const XP_STAGES = [0, 300, 900, 2_000, 4_500, 9_000] as const
 const RAMP_MIN_REVIEWS = 20
 import type { MemoryState } from './types.js'
 
@@ -75,6 +76,15 @@ describe('difficultyRamp', () => {
     })
   })
 
+  it('keeps introduceFrom inside the band, for any input', () => {
+    cases(2000, rnd => {
+      const level = pick(rnd, LEVELS)
+      const { band, introduceFrom } = difficultyRamp(level, { practised: rnd() * 400, xp: rnd() * 20_000, accuracy: rnd() < 0.3 ? null : rnd(), reviews: 500 })
+      expect(introduceFrom).toBeGreaterThanOrEqual(band.min)
+      expect(introduceFrom).toBeLessThanOrEqual(band.max)
+    })
+  })
+
   it('moves one stage early for a learner who gets nearly everything right', () => {
     const steady = difficultyRamp('new', { practised: 20, accuracy: 0.75, reviews: 100 })
     const sharp = difficultyRamp('new', { practised: 20, accuracy: 0.95, reviews: 100 })
@@ -90,6 +100,47 @@ describe('difficultyRamp', () => {
   it('does not read accuracy from a handful of answers', () => {
     const lucky = difficultyRamp('new', { practised: 3, accuracy: 1, reviews: RAMP_MIN_REVIEWS - 1 })
     expect(lucky.stage).toBe(0)
+  })
+})
+
+describe('difficultyRamp and XP', () => {
+  it('a learner with no facts practised still climbs on XP alone', () => {
+    for (const [stage, threshold] of XP_STAGES.entries()) {
+      expect(difficultyRamp('new', { practised: 0, accuracy: null, xp: threshold }).stage).toBe(stage)
+    }
+  })
+
+  it('takes whichever of facts practised and XP is further along', () => {
+    // 100 facts is stage 3; 5,000 XP is stage 4. The XP wins, and neither drags the other down.
+    expect(difficultyRamp('new', { practised: 100, accuracy: null, xp: 5_000 }).stage).toBe(4)
+    expect(difficultyRamp('new', { practised: 150, accuracy: null, xp: 100 }).stage).toBe(4)
+  })
+
+  it('never makes a learner easier for earning more', () => {
+    cases(2000, rnd => {
+      const level = pick(rnd, LEVELS)
+      const practised = Math.floor(rnd() * 300)
+      const a = Math.floor(rnd() * 20_000), b = Math.floor(rnd() * 20_000)
+      const [less, more] = a <= b ? [a, b] : [b, a]
+      const before = difficultyRamp(level, { practised, accuracy: null, xp: less })
+      const after = difficultyRamp(level, { practised, accuracy: null, xp: more })
+      expect(after.stage).toBeGreaterThanOrEqual(before.stage)
+      expect(after.band.max).toBeGreaterThanOrEqual(before.band.max)
+      expect(after.maxModifier).toBeGreaterThanOrEqual(before.maxModifier)
+      expect(after.introduceFrom).toBeGreaterThanOrEqual(before.introduceFrom)
+    })
+  })
+
+  it('serves new facts harder and harder as XP is earned', () => {
+    const at = (xp: number) => difficultyRamp('new', { practised: 0, accuracy: null, xp }).introduceFrom
+    expect(at(0)).toBe(1)
+    expect(at(9_000)).toBeGreaterThan(at(0))
+  })
+
+  it('ignores an XP figure that is not a number', () => {
+    for (const xp of [NaN, Infinity, -Infinity, -50]) {
+      expect(difficultyRamp('new', { practised: 0, accuracy: null, xp }).stage).toBe(0)
+    }
   })
 })
 

@@ -511,11 +511,11 @@
         },
         {
           "tier": "gold",
-          "threshold": 400
+          "threshold": 700
         },
         {
           "tier": "legendary",
-          "threshold": 1033
+          "threshold": 1081
         }
       ],
       "showProgress": true,

@@ -49,3 +49,29 @@ describe('toPathView', () => {
     expect(toPathView({ status: 'error' })).toEqual({ status: 'error' })
   })
 })
+
+describe('toPathView and fading steps', () => {
+  const firstTwoDone = Object.fromEntries(COURSE.units[0]!.nodes.slice(0, 2).map((n) => [n.id, n.lessons]))
+  const stepsOf = (fading: ReadonlySet<string>) => {
+    const view = toPathView({ status: 'ready', course: COURSE, standing: courseStanding(COURSE, firstTwoDone) }, fading)
+    if (view.status !== 'ready') throw new Error('expected a path')
+    return view.units.flatMap((u) => u.nodes)
+  }
+  const [first, second] = COURSE.units[0]!.nodes
+
+  it('marks a finished step that is in the set', () => {
+    const marked = stepsOf(new Set([first!.id])).find((n) => n.id === first!.id)!
+    expect(marked.state).toBe('done')
+    expect(marked.fading).toBe(true)
+  })
+
+  it('leaves every other finished step unmarked, and marks nothing by default', () => {
+    expect(stepsOf(new Set([first!.id])).find((n) => n.id === second!.id)!.fading).toBeUndefined()
+    expect(stepsOf(new Set()).some((n) => n.fading !== undefined)).toBe(false)
+  })
+
+  it('never marks a step that is not finished, whatever it is told', () => {
+    const everything = new Set(COURSE.units.flatMap((u) => u.nodes.map((n) => n.id)))
+    for (const node of stepsOf(everything)) expect(node.fading === true).toBe(node.state === 'done')
+  })
+})

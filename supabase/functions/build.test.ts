@@ -256,8 +256,14 @@ describe('submit-lesson bundle', () => {
     // per-entry assertion above still holds, so nothing became less compact. This is the
     // legacy function (D1 is selected, ADR 0013); the Worker ships the same content and
     // its own tests pass on workerd.
+    //
+    // 260 000 → 420 000 on 30 September 2026, again for no code: nine attributes per country
+    // (size, neighbours, coast, hemisphere, domain, ISO codes, endonym — `scripts/build-deep-facts.cjs`)
+    // took the pack from 1,047 facts to 2,969, and the answer key is per-fact by design. Measured
+    // at 400 KB, so the same ~5 % margin as every raise above. Still the legacy function: the
+    // Worker ships the same content and is not bounded by this.
     const total = files.reduce((sum, f) => sum + f.content.length, 0)
-    expect(total).toBeLessThan(260_000)
+    expect(total).toBeLessThan(420_000)
   })
 
   it('never accepts a client-supplied reward value', () => {
@@ -334,8 +340,11 @@ describe('the answer key the server grades with', () => {
     //
     // So compare them over the real packs rather than by reading both.
     const packs = join(import.meta.dirname, '..', '..', 'packages', 'content', 'packs', 'geography')
+    // Packs marked `delivery: "server"` are composed by the Worker and deliberately absent from
+    // this legacy answer key (see `build.ts`), so they are absent from the comparison too.
     const facts = readdirSync(packs)
       .filter((f) => f.startsWith('facts.') && f.endsWith('.json'))
+      .filter((f) => (JSON.parse(readFileSync(join(packs, f), 'utf8')) as { delivery?: string }).delivery !== 'server')
       .flatMap(
         (f) =>
           (

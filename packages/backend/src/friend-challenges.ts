@@ -3,7 +3,7 @@ import { composeLesson, seededRng, handleFor, type ChallengeQuestion, type Frien
 import { ApiError } from './contracts'
 import { hashToken } from './auth'
 import { authBudget } from './account-policy'
-import { learningContent } from './learning-content'
+import { questContent } from './learning-content'
 
 const id=z.string().uuid(), inviteCode=z.string().regex(/^[a-f0-9]{24}$/)
 export const challengeActionSchema=z.discriminatedUnion('action',[
@@ -89,7 +89,7 @@ export async function challengeAction(db:D1Database,owner:string,session:string,
       if(existing.creator!==owner||existing.locale!==input.locale)throw new ApiError('IDEMPOTENCY_CONFLICT',409)
       challengeId=existing.id
     } else {
-      const composed=composeLesson({index:learningContent,memory:[],now,locale:input.locale,
+      const composed=composeLesson({index:questContent,pairs:false,memory:[],now,locale:input.locale,
         rng:seededRng(crypto.getRandomValues(new Uint32Array(1))[0]!),count:10,screenReaderOnly:true,modalities:['text']})
       if(composed.length!==10)throw new ApiError('CONTENT_UNAVAILABLE',503)
       const correct:string[]=[]

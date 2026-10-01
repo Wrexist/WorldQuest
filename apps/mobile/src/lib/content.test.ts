@@ -105,7 +105,9 @@ describe('the lesson this app composes', () => {
     // user gets instead of the picture (accessibility.md §8), and it must not be
     // crowded out now that its sibling is selectable again — the two share the fact.
     const { result } = renderHook(() => useContent())
-    const questions = result.current.index!.compose({ count: 120 })
+    // 400, not 120: a learner with no memory is offered the easiest facts first, and the pack
+    // now holds three times as many of them, so a fixed 120 samples a thinner slice of flags.
+    const questions = result.current.index!.compose({ count: 400 })
     const flagQuestions = questions.filter((q) => q.item.factId.endsWith('.flag'))
 
     expect(flagQuestions.some((q) => q.item.templateId === 'tpl.flag-describe.mc4')).toBe(true)
@@ -143,8 +145,13 @@ describe('the lesson this app composes', () => {
     //
     // Asserted against the filesystem rather than a list, so a pack added tomorrow is
     // covered by this test on the day it lands rather than on the day someone remembers.
+    const isServerPack = (file: string): boolean =>
+      (JSON.parse(readFileSync(join(PACK_DIR, file), 'utf8')) as { delivery?: string }).delivery === 'server'
+    // A pack that says `delivery: "server"` is composed by the Worker and deliberately not in
+    // this binary (the fame packs: ~2 MB of ranked people, companies and places). Excluded by
+    // what the pack declares rather than by a second list here, so the two cannot disagree.
     const shipped = readdirSync(PACK_DIR).filter(
-      (file) => file.startsWith('facts.') && file.endsWith('.json'),
+      (file) => file.startsWith('facts.') && file.endsWith('.json') && !isServerPack(file),
     )
     const source = readFileSync(join(import.meta.dirname, 'content.ts'), 'utf8')
 

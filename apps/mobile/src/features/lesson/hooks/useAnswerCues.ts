@@ -32,14 +32,21 @@ export function useAnswerCues(state: LessonState, itemMs: number): void {
       announced.current = count
       return
     }
+    // More than one answer can land at once: a matching board is four. Each is an event of its
+    // own — accuracy by question is what the lesson-length measurement reads — but the learner
+    // gets ONE cue for the moment, and it is the gentler true one: a haptic and a sound for a
+    // right answer only if every answer in it was right.
+    const added = count - announced.current
     announced.current = count
 
+    const log = inReview(state) ? state.reviewed : state.answers
+    const fresh = log.slice(Math.max(0, log.length - added))
     const answer = lastAnswerOf(state)
     if (answer === undefined || answer.chosenOptionId === null) return
 
     // `impactMedium` for a wrong answer, never the error pattern — see lib/haptics.ts.
     // Both are no-ops when their Settings toggle is off.
-    if (answer.wasCorrect) {
+    if (fresh.every((f) => f.wasCorrect)) {
       hapticCorrect()
       soundCorrect()
     } else {
@@ -51,14 +58,16 @@ export function useAnswerCues(state: LessonState, itemMs: number): void {
     // accuracy by POSITION is a measurement, not a guess. Not for a review answer: it
     // is the same question again seconds later, and counting it would skew both.
     if (inReview(state)) return
-    track('question_answered', {
-      lesson_id: state.lessonId,
-      template_id: answer.templateId,
-      fact_id: answer.factId,
-      correct: answer.wasCorrect,
-      elapsed_ms: answer.elapsedMs,
-      rating: deriveRating(answer.wasCorrect, answer.elapsedMs, itemMs),
-      position: state.index,
+    fresh.forEach((one, i) => {
+      track('question_answered', {
+        lesson_id: state.lessonId,
+        template_id: one.templateId,
+        fact_id: one.factId,
+        correct: one.wasCorrect,
+        elapsed_ms: one.elapsedMs,
+        rating: deriveRating(one.wasCorrect, one.elapsedMs, itemMs),
+        position: state.index - (fresh.length - 1 - i),
+      })
     })
   }, [state, itemMs])
 }

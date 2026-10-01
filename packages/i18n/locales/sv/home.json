@@ -61,6 +61,8 @@
   "home:path.node.locked": "Steg {position} av {total}, inte öppet än. {objective}",
   "home:path.done.body": "Du har gjort klart det här steget. Öva på det när du vill.",
   "home:path.practise": "Öva",
+  "home:path.fading": "En del av det här håller på att blekna. En kort övning tar tillbaka det.",
+  "home:path.node.fading": "Steg {position} av {total}, klart, börjar rosta. {objective}",
   "home:path.locked.body": "Inte öppet än. Det öppnas när du har gjort klart stegen före.",
   "home:path.complete.title": "Du är klar med {course}.",
   "home:path.complete.body": "Det finns inget nytt på den här stigen. Repetera så sitter det du har lärt dig kvar.",

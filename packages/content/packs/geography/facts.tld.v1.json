@@ -1,0 +1,4674 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "packId": "geography.facts.tld",
+  "version": "1.0.0",
+  "subject": "geography",
+  "kind": "facts",
+  "locales": [
+    "en",
+    "sv"
+  ],
+  "license": "CC-BY-4.0",
+  "generatedAt": "2026-09-30",
+  "$comment": "The ccTLD equals the ISO code for every country that ships here; .uk is the single exception and is checked explicitly.",
+  "volatilityReviewed": true,
+  "delivery": "server",
+  "items": [
+    {
+      "id": "geo.AD.tld",
+      "entity": "AD",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ad",
+        "names": {
+          "en": ".ad",
+          "sv": ".ad"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AE.tld",
+      "entity": "AE",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ae",
+        "names": {
+          "en": ".ae",
+          "sv": ".ae"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AF.tld",
+      "entity": "AF",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-af",
+        "names": {
+          "en": ".af",
+          "sv": ".af"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AG.tld",
+      "entity": "AG",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ag",
+        "names": {
+          "en": ".ag",
+          "sv": ".ag"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AL.tld",
+      "entity": "AL",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-al",
+        "names": {
+          "en": ".al",
+          "sv": ".al"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AM.tld",
+      "entity": "AM",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-am",
+        "names": {
+          "en": ".am",
+          "sv": ".am"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AO.tld",
+      "entity": "AO",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ao",
+        "names": {
+          "en": ".ao",
+          "sv": ".ao"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AR.tld",
+      "entity": "AR",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ar",
+        "names": {
+          "en": ".ar",
+          "sv": ".ar"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AT.tld",
+      "entity": "AT",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-at",
+        "names": {
+          "en": ".at",
+          "sv": ".at"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AU.tld",
+      "entity": "AU",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-au",
+        "names": {
+          "en": ".au",
+          "sv": ".au"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AZ.tld",
+      "entity": "AZ",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-az",
+        "names": {
+          "en": ".az",
+          "sv": ".az"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BA.tld",
+      "entity": "BA",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ba",
+        "names": {
+          "en": ".ba",
+          "sv": ".ba"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BB.tld",
+      "entity": "BB",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-bb",
+        "names": {
+          "en": ".bb",
+          "sv": ".bb"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BD.tld",
+      "entity": "BD",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-bd",
+        "names": {
+          "en": ".bd",
+          "sv": ".bd"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BE.tld",
+      "entity": "BE",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-be",
+        "names": {
+          "en": ".be",
+          "sv": ".be"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BF.tld",
+      "entity": "BF",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-bf",
+        "names": {
+          "en": ".bf",
+          "sv": ".bf"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BG.tld",
+      "entity": "BG",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-bg",
+        "names": {
+          "en": ".bg",
+          "sv": ".bg"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BH.tld",
+      "entity": "BH",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-bh",
+        "names": {
+          "en": ".bh",
+          "sv": ".bh"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BI.tld",
+      "entity": "BI",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-bi",
+        "names": {
+          "en": ".bi",
+          "sv": ".bi"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BJ.tld",
+      "entity": "BJ",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-bj",
+        "names": {
+          "en": ".bj",
+          "sv": ".bj"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BN.tld",
+      "entity": "BN",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-bn",
+        "names": {
+          "en": ".bn",
+          "sv": ".bn"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BO.tld",
+      "entity": "BO",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-bo",
+        "names": {
+          "en": ".bo",
+          "sv": ".bo"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BR.tld",
+      "entity": "BR",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-br",
+        "names": {
+          "en": ".br",
+          "sv": ".br"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "tld",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BS.tld",
+      "entity": "BS",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-bs",
+        "names": {
+          "en": ".bs",
+          "sv": ".bs"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BT.tld",
+      "entity": "BT",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-bt",
+        "names": {
+          "en": ".bt",
+          "sv": ".bt"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BW.tld",
+      "entity": "BW",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-bw",
+        "names": {
+          "en": ".bw",
+          "sv": ".bw"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BY.tld",
+      "entity": "BY",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-by",
+        "names": {
+          "en": ".by",
+          "sv": ".by"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BZ.tld",
+      "entity": "BZ",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-bz",
+        "names": {
+          "en": ".bz",
+          "sv": ".bz"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CA.tld",
+      "entity": "CA",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ca",
+        "names": {
+          "en": ".ca",
+          "sv": ".ca"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CD.tld",
+      "entity": "CD",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-cd",
+        "names": {
+          "en": ".cd",
+          "sv": ".cd"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CF.tld",
+      "entity": "CF",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-cf",
+        "names": {
+          "en": ".cf",
+          "sv": ".cf"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CG.tld",
+      "entity": "CG",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-cg",
+        "names": {
+          "en": ".cg",
+          "sv": ".cg"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CH.tld",
+      "entity": "CH",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ch",
+        "names": {
+          "en": ".ch",
+          "sv": ".ch"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CI.tld",
+      "entity": "CI",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ci",
+        "names": {
+          "en": ".ci",
+          "sv": ".ci"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CL.tld",
+      "entity": "CL",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-cl",
+        "names": {
+          "en": ".cl",
+          "sv": ".cl"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CM.tld",
+      "entity": "CM",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-cm",
+        "names": {
+          "en": ".cm",
+          "sv": ".cm"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CN.tld",
+      "entity": "CN",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-cn",
+        "names": {
+          "en": ".cn",
+          "sv": ".cn"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CO.tld",
+      "entity": "CO",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-co",
+        "names": {
+          "en": ".co",
+          "sv": ".co"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CR.tld",
+      "entity": "CR",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-cr",
+        "names": {
+          "en": ".cr",
+          "sv": ".cr"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CU.tld",
+      "entity": "CU",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-cu",
+        "names": {
+          "en": ".cu",
+          "sv": ".cu"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CV.tld",
+      "entity": "CV",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-cv",
+        "names": {
+          "en": ".cv",
+          "sv": ".cv"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CY.tld",
+      "entity": "CY",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-cy",
+        "names": {
+          "en": ".cy",
+          "sv": ".cy"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CZ.tld",
+      "entity": "CZ",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-cz",
+        "names": {
+          "en": ".cz",
+          "sv": ".cz"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DE.tld",
+      "entity": "DE",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-de",
+        "names": {
+          "en": ".de",
+          "sv": ".de"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DJ.tld",
+      "entity": "DJ",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-dj",
+        "names": {
+          "en": ".dj",
+          "sv": ".dj"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DK.tld",
+      "entity": "DK",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-dk",
+        "names": {
+          "en": ".dk",
+          "sv": ".dk"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DM.tld",
+      "entity": "DM",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-dm",
+        "names": {
+          "en": ".dm",
+          "sv": ".dm"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DO.tld",
+      "entity": "DO",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-do",
+        "names": {
+          "en": ".do",
+          "sv": ".do"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DZ.tld",
+      "entity": "DZ",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-dz",
+        "names": {
+          "en": ".dz",
+          "sv": ".dz"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.EC.tld",
+      "entity": "EC",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ec",
+        "names": {
+          "en": ".ec",
+          "sv": ".ec"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.EE.tld",
+      "entity": "EE",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ee",
+        "names": {
+          "en": ".ee",
+          "sv": ".ee"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.EG.tld",
+      "entity": "EG",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-eg",
+        "names": {
+          "en": ".eg",
+          "sv": ".eg"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ER.tld",
+      "entity": "ER",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-er",
+        "names": {
+          "en": ".er",
+          "sv": ".er"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ES.tld",
+      "entity": "ES",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-es",
+        "names": {
+          "en": ".es",
+          "sv": ".es"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ET.tld",
+      "entity": "ET",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-et",
+        "names": {
+          "en": ".et",
+          "sv": ".et"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FI.tld",
+      "entity": "FI",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-fi",
+        "names": {
+          "en": ".fi",
+          "sv": ".fi"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FJ.tld",
+      "entity": "FJ",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-fj",
+        "names": {
+          "en": ".fj",
+          "sv": ".fj"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FM.tld",
+      "entity": "FM",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-fm",
+        "names": {
+          "en": ".fm",
+          "sv": ".fm"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FR.tld",
+      "entity": "FR",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-fr",
+        "names": {
+          "en": ".fr",
+          "sv": ".fr"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GA.tld",
+      "entity": "GA",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ga",
+        "names": {
+          "en": ".ga",
+          "sv": ".ga"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GB.tld",
+      "entity": "GB",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-gb",
+        "names": {
+          "en": ".uk",
+          "sv": ".uk"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GD.tld",
+      "entity": "GD",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-gd",
+        "names": {
+          "en": ".gd",
+          "sv": ".gd"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GE.tld",
+      "entity": "GE",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ge",
+        "names": {
+          "en": ".ge",
+          "sv": ".ge"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GH.tld",
+      "entity": "GH",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-gh",
+        "names": {
+          "en": ".gh",
+          "sv": ".gh"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GM.tld",
+      "entity": "GM",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-gm",
+        "names": {
+          "en": ".gm",
+          "sv": ".gm"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GN.tld",
+      "entity": "GN",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-gn",
+        "names": {
+          "en": ".gn",
+          "sv": ".gn"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GQ.tld",
+      "entity": "GQ",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-gq",
+        "names": {
+          "en": ".gq",
+          "sv": ".gq"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GR.tld",
+      "entity": "GR",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-gr",
+        "names": {
+          "en": ".gr",
+          "sv": ".gr"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GT.tld",
+      "entity": "GT",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-gt",
+        "names": {
+          "en": ".gt",
+          "sv": ".gt"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GW.tld",
+      "entity": "GW",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-gw",
+        "names": {
+          "en": ".gw",
+          "sv": ".gw"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GY.tld",
+      "entity": "GY",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-gy",
+        "names": {
+          "en": ".gy",
+          "sv": ".gy"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HN.tld",
+      "entity": "HN",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-hn",
+        "names": {
+          "en": ".hn",
+          "sv": ".hn"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HR.tld",
+      "entity": "HR",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-hr",
+        "names": {
+          "en": ".hr",
+          "sv": ".hr"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HT.tld",
+      "entity": "HT",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ht",
+        "names": {
+          "en": ".ht",
+          "sv": ".ht"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HU.tld",
+      "entity": "HU",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-hu",
+        "names": {
+          "en": ".hu",
+          "sv": ".hu"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ID.tld",
+      "entity": "ID",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-id",
+        "names": {
+          "en": ".id",
+          "sv": ".id"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IE.tld",
+      "entity": "IE",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ie",
+        "names": {
+          "en": ".ie",
+          "sv": ".ie"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IL.tld",
+      "entity": "IL",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-il",
+        "names": {
+          "en": ".il",
+          "sv": ".il"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IN.tld",
+      "entity": "IN",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-in",
+        "names": {
+          "en": ".in",
+          "sv": ".in"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IQ.tld",
+      "entity": "IQ",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-iq",
+        "names": {
+          "en": ".iq",
+          "sv": ".iq"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IR.tld",
+      "entity": "IR",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ir",
+        "names": {
+          "en": ".ir",
+          "sv": ".ir"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IS.tld",
+      "entity": "IS",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-is",
+        "names": {
+          "en": ".is",
+          "sv": ".is"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IT.tld",
+      "entity": "IT",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-it",
+        "names": {
+          "en": ".it",
+          "sv": ".it"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JM.tld",
+      "entity": "JM",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-jm",
+        "names": {
+          "en": ".jm",
+          "sv": ".jm"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JO.tld",
+      "entity": "JO",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-jo",
+        "names": {
+          "en": ".jo",
+          "sv": ".jo"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JP.tld",
+      "entity": "JP",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-jp",
+        "names": {
+          "en": ".jp",
+          "sv": ".jp"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KE.tld",
+      "entity": "KE",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ke",
+        "names": {
+          "en": ".ke",
+          "sv": ".ke"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KG.tld",
+      "entity": "KG",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-kg",
+        "names": {
+          "en": ".kg",
+          "sv": ".kg"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KH.tld",
+      "entity": "KH",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-kh",
+        "names": {
+          "en": ".kh",
+          "sv": ".kh"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KI.tld",
+      "entity": "KI",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ki",
+        "names": {
+          "en": ".ki",
+          "sv": ".ki"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KM.tld",
+      "entity": "KM",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-km",
+        "names": {
+          "en": ".km",
+          "sv": ".km"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KN.tld",
+      "entity": "KN",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-kn",
+        "names": {
+          "en": ".kn",
+          "sv": ".kn"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KP.tld",
+      "entity": "KP",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-kp",
+        "names": {
+          "en": ".kp",
+          "sv": ".kp"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KR.tld",
+      "entity": "KR",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-kr",
+        "names": {
+          "en": ".kr",
+          "sv": ".kr"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KW.tld",
+      "entity": "KW",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-kw",
+        "names": {
+          "en": ".kw",
+          "sv": ".kw"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KZ.tld",
+      "entity": "KZ",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-kz",
+        "names": {
+          "en": ".kz",
+          "sv": ".kz"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LA.tld",
+      "entity": "LA",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-la",
+        "names": {
+          "en": ".la",
+          "sv": ".la"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LB.tld",
+      "entity": "LB",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-lb",
+        "names": {
+          "en": ".lb",
+          "sv": ".lb"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LC.tld",
+      "entity": "LC",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-lc",
+        "names": {
+          "en": ".lc",
+          "sv": ".lc"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LI.tld",
+      "entity": "LI",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-li",
+        "names": {
+          "en": ".li",
+          "sv": ".li"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LK.tld",
+      "entity": "LK",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-lk",
+        "names": {
+          "en": ".lk",
+          "sv": ".lk"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LR.tld",
+      "entity": "LR",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-lr",
+        "names": {
+          "en": ".lr",
+          "sv": ".lr"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LS.tld",
+      "entity": "LS",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ls",
+        "names": {
+          "en": ".ls",
+          "sv": ".ls"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LT.tld",
+      "entity": "LT",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-lt",
+        "names": {
+          "en": ".lt",
+          "sv": ".lt"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LU.tld",
+      "entity": "LU",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-lu",
+        "names": {
+          "en": ".lu",
+          "sv": ".lu"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LV.tld",
+      "entity": "LV",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-lv",
+        "names": {
+          "en": ".lv",
+          "sv": ".lv"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LY.tld",
+      "entity": "LY",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ly",
+        "names": {
+          "en": ".ly",
+          "sv": ".ly"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MA.tld",
+      "entity": "MA",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ma",
+        "names": {
+          "en": ".ma",
+          "sv": ".ma"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MC.tld",
+      "entity": "MC",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-mc",
+        "names": {
+          "en": ".mc",
+          "sv": ".mc"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MD.tld",
+      "entity": "MD",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-md",
+        "names": {
+          "en": ".md",
+          "sv": ".md"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ME.tld",
+      "entity": "ME",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-me",
+        "names": {
+          "en": ".me",
+          "sv": ".me"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MG.tld",
+      "entity": "MG",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-mg",
+        "names": {
+          "en": ".mg",
+          "sv": ".mg"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MH.tld",
+      "entity": "MH",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-mh",
+        "names": {
+          "en": ".mh",
+          "sv": ".mh"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MK.tld",
+      "entity": "MK",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-mk",
+        "names": {
+          "en": ".mk",
+          "sv": ".mk"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ML.tld",
+      "entity": "ML",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ml",
+        "names": {
+          "en": ".ml",
+          "sv": ".ml"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MM.tld",
+      "entity": "MM",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-mm",
+        "names": {
+          "en": ".mm",
+          "sv": ".mm"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MN.tld",
+      "entity": "MN",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-mn",
+        "names": {
+          "en": ".mn",
+          "sv": ".mn"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MR.tld",
+      "entity": "MR",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-mr",
+        "names": {
+          "en": ".mr",
+          "sv": ".mr"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MT.tld",
+      "entity": "MT",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-mt",
+        "names": {
+          "en": ".mt",
+          "sv": ".mt"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MU.tld",
+      "entity": "MU",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-mu",
+        "names": {
+          "en": ".mu",
+          "sv": ".mu"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MV.tld",
+      "entity": "MV",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-mv",
+        "names": {
+          "en": ".mv",
+          "sv": ".mv"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MW.tld",
+      "entity": "MW",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-mw",
+        "names": {
+          "en": ".mw",
+          "sv": ".mw"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MX.tld",
+      "entity": "MX",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-mx",
+        "names": {
+          "en": ".mx",
+          "sv": ".mx"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MY.tld",
+      "entity": "MY",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-my",
+        "names": {
+          "en": ".my",
+          "sv": ".my"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MZ.tld",
+      "entity": "MZ",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-mz",
+        "names": {
+          "en": ".mz",
+          "sv": ".mz"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NA.tld",
+      "entity": "NA",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-na",
+        "names": {
+          "en": ".na",
+          "sv": ".na"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NE.tld",
+      "entity": "NE",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ne",
+        "names": {
+          "en": ".ne",
+          "sv": ".ne"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NG.tld",
+      "entity": "NG",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ng",
+        "names": {
+          "en": ".ng",
+          "sv": ".ng"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NI.tld",
+      "entity": "NI",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ni",
+        "names": {
+          "en": ".ni",
+          "sv": ".ni"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NL.tld",
+      "entity": "NL",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-nl",
+        "names": {
+          "en": ".nl",
+          "sv": ".nl"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NO.tld",
+      "entity": "NO",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-no",
+        "names": {
+          "en": ".no",
+          "sv": ".no"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NP.tld",
+      "entity": "NP",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-np",
+        "names": {
+          "en": ".np",
+          "sv": ".np"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NR.tld",
+      "entity": "NR",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-nr",
+        "names": {
+          "en": ".nr",
+          "sv": ".nr"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NZ.tld",
+      "entity": "NZ",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-nz",
+        "names": {
+          "en": ".nz",
+          "sv": ".nz"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.OM.tld",
+      "entity": "OM",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-om",
+        "names": {
+          "en": ".om",
+          "sv": ".om"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PA.tld",
+      "entity": "PA",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-pa",
+        "names": {
+          "en": ".pa",
+          "sv": ".pa"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PE.tld",
+      "entity": "PE",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-pe",
+        "names": {
+          "en": ".pe",
+          "sv": ".pe"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PG.tld",
+      "entity": "PG",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-pg",
+        "names": {
+          "en": ".pg",
+          "sv": ".pg"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PH.tld",
+      "entity": "PH",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ph",
+        "names": {
+          "en": ".ph",
+          "sv": ".ph"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PK.tld",
+      "entity": "PK",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-pk",
+        "names": {
+          "en": ".pk",
+          "sv": ".pk"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PL.tld",
+      "entity": "PL",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-pl",
+        "names": {
+          "en": ".pl",
+          "sv": ".pl"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PT.tld",
+      "entity": "PT",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-pt",
+        "names": {
+          "en": ".pt",
+          "sv": ".pt"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PW.tld",
+      "entity": "PW",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-pw",
+        "names": {
+          "en": ".pw",
+          "sv": ".pw"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PY.tld",
+      "entity": "PY",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-py",
+        "names": {
+          "en": ".py",
+          "sv": ".py"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.QA.tld",
+      "entity": "QA",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-qa",
+        "names": {
+          "en": ".qa",
+          "sv": ".qa"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RO.tld",
+      "entity": "RO",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ro",
+        "names": {
+          "en": ".ro",
+          "sv": ".ro"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RS.tld",
+      "entity": "RS",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-rs",
+        "names": {
+          "en": ".rs",
+          "sv": ".rs"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RU.tld",
+      "entity": "RU",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ru",
+        "names": {
+          "en": ".ru",
+          "sv": ".ru"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RW.tld",
+      "entity": "RW",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-rw",
+        "names": {
+          "en": ".rw",
+          "sv": ".rw"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SA.tld",
+      "entity": "SA",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-sa",
+        "names": {
+          "en": ".sa",
+          "sv": ".sa"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SB.tld",
+      "entity": "SB",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-sb",
+        "names": {
+          "en": ".sb",
+          "sv": ".sb"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SC.tld",
+      "entity": "SC",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-sc",
+        "names": {
+          "en": ".sc",
+          "sv": ".sc"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SD.tld",
+      "entity": "SD",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-sd",
+        "names": {
+          "en": ".sd",
+          "sv": ".sd"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SE.tld",
+      "entity": "SE",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-se",
+        "names": {
+          "en": ".se",
+          "sv": ".se"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SG.tld",
+      "entity": "SG",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-sg",
+        "names": {
+          "en": ".sg",
+          "sv": ".sg"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SI.tld",
+      "entity": "SI",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-si",
+        "names": {
+          "en": ".si",
+          "sv": ".si"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SK.tld",
+      "entity": "SK",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-sk",
+        "names": {
+          "en": ".sk",
+          "sv": ".sk"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SL.tld",
+      "entity": "SL",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-sl",
+        "names": {
+          "en": ".sl",
+          "sv": ".sl"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SM.tld",
+      "entity": "SM",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-sm",
+        "names": {
+          "en": ".sm",
+          "sv": ".sm"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SN.tld",
+      "entity": "SN",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-sn",
+        "names": {
+          "en": ".sn",
+          "sv": ".sn"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SO.tld",
+      "entity": "SO",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-so",
+        "names": {
+          "en": ".so",
+          "sv": ".so"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SR.tld",
+      "entity": "SR",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-sr",
+        "names": {
+          "en": ".sr",
+          "sv": ".sr"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SS.tld",
+      "entity": "SS",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ss",
+        "names": {
+          "en": ".ss",
+          "sv": ".ss"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ST.tld",
+      "entity": "ST",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-st",
+        "names": {
+          "en": ".st",
+          "sv": ".st"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SV.tld",
+      "entity": "SV",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-sv",
+        "names": {
+          "en": ".sv",
+          "sv": ".sv"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SY.tld",
+      "entity": "SY",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-sy",
+        "names": {
+          "en": ".sy",
+          "sv": ".sy"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SZ.tld",
+      "entity": "SZ",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-sz",
+        "names": {
+          "en": ".sz",
+          "sv": ".sz"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TD.tld",
+      "entity": "TD",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-td",
+        "names": {
+          "en": ".td",
+          "sv": ".td"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TG.tld",
+      "entity": "TG",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-tg",
+        "names": {
+          "en": ".tg",
+          "sv": ".tg"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TH.tld",
+      "entity": "TH",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-th",
+        "names": {
+          "en": ".th",
+          "sv": ".th"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TJ.tld",
+      "entity": "TJ",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-tj",
+        "names": {
+          "en": ".tj",
+          "sv": ".tj"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TL.tld",
+      "entity": "TL",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-tl",
+        "names": {
+          "en": ".tl",
+          "sv": ".tl"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TM.tld",
+      "entity": "TM",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-tm",
+        "names": {
+          "en": ".tm",
+          "sv": ".tm"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TN.tld",
+      "entity": "TN",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-tn",
+        "names": {
+          "en": ".tn",
+          "sv": ".tn"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TO.tld",
+      "entity": "TO",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-to",
+        "names": {
+          "en": ".to",
+          "sv": ".to"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TR.tld",
+      "entity": "TR",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-tr",
+        "names": {
+          "en": ".tr",
+          "sv": ".tr"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TT.tld",
+      "entity": "TT",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-tt",
+        "names": {
+          "en": ".tt",
+          "sv": ".tt"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TV.tld",
+      "entity": "TV",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-tv",
+        "names": {
+          "en": ".tv",
+          "sv": ".tv"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TZ.tld",
+      "entity": "TZ",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-tz",
+        "names": {
+          "en": ".tz",
+          "sv": ".tz"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UA.tld",
+      "entity": "UA",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ua",
+        "names": {
+          "en": ".ua",
+          "sv": ".ua"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UG.tld",
+      "entity": "UG",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ug",
+        "names": {
+          "en": ".ug",
+          "sv": ".ug"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.US.tld",
+      "entity": "US",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-us",
+        "names": {
+          "en": ".us",
+          "sv": ".us"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UY.tld",
+      "entity": "UY",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-uy",
+        "names": {
+          "en": ".uy",
+          "sv": ".uy"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UZ.tld",
+      "entity": "UZ",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-uz",
+        "names": {
+          "en": ".uz",
+          "sv": ".uz"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VA.tld",
+      "entity": "VA",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-va",
+        "names": {
+          "en": ".va",
+          "sv": ".va"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "tld",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VC.tld",
+      "entity": "VC",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-vc",
+        "names": {
+          "en": ".vc",
+          "sv": ".vc"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VE.tld",
+      "entity": "VE",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ve",
+        "names": {
+          "en": ".ve",
+          "sv": ".ve"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VN.tld",
+      "entity": "VN",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-vn",
+        "names": {
+          "en": ".vn",
+          "sv": ".vn"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VU.tld",
+      "entity": "VU",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-vu",
+        "names": {
+          "en": ".vu",
+          "sv": ".vu"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.WS.tld",
+      "entity": "WS",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ws",
+        "names": {
+          "en": ".ws",
+          "sv": ".ws"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.YE.tld",
+      "entity": "YE",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-ye",
+        "names": {
+          "en": ".ye",
+          "sv": ".ye"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "tld",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZA.tld",
+      "entity": "ZA",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-za",
+        "names": {
+          "en": ".za",
+          "sv": ".za"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZM.tld",
+      "entity": "ZM",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-zm",
+        "names": {
+          "en": ".zm",
+          "sv": ".zm"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZW.tld",
+      "entity": "ZW",
+      "attribute": "tld",
+      "value": {
+        "id": "tld-zw",
+        "names": {
+          "en": ".zw",
+          "sv": ".zw"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "tld",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "IANA Root Zone Database country-code TLD, from world-countries v5.1.0 (ODbL), equal to the ISO 3166-1 alpha-2 code from i18n-iso-countries 7.14.0 (.uk is the one registered exception)",
+        "url": "https://www.iana.org/domains/root/db",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    }
+  ]
+}

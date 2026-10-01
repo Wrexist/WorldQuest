@@ -99,6 +99,10 @@ export type LessonRequest = {
   readonly node?: string | undefined
   /** How hard a way of asking to prefer (`difficultyRamp`). Presentation only; not part of the focus. */
   readonly maxModifier?: number | undefined
+  /** Where unseen facts start (`difficultyRamp`). An ordering, like the modifier; not part of the focus. */
+  readonly introduceFrom?: number | undefined
+  /** The level check: ten questions across the five levels. Ignores focus, count and the ramp. */
+  readonly placement?: true | undefined
 }
 
 /** The engines' focus, in the wire shape (mutable arrays, absent fields absent). */
@@ -221,6 +225,8 @@ async function take(request: LessonRequest): Promise<TakeResult> {
       ...(wanted ? { focus: wanted } : {}),
       ...(request.node !== undefined ? { node: request.node } : {}),
       ...(request.maxModifier !== undefined ? { maxModifier: request.maxModifier } : {}),
+      ...(request.introduceFrom !== undefined ? { introduceFrom: request.introduceFrom } : {}),
+      ...(request.placement === true ? { placement: true as const } : {}),
     })
     if (!lesson) return offline()
     return { kind: 'ready', lesson }
@@ -253,7 +259,8 @@ async function prefetch(request: Omit<LessonRequest, 'focus'>): Promise<void> {
         && t.request.screenReader === request.screenReader && t.request.focus === undefined)
       if (matching.length >= READY) return
       await queue.prepare({ lessonId: lessonId(), locale: request.locale, count: clampCount(request.count), screenReader: request.screenReader,
-        ...(request.maxModifier !== undefined ? { maxModifier: request.maxModifier } : {}) })
+        ...(request.maxModifier !== undefined ? { maxModifier: request.maxModifier } : {}),
+        ...(request.introduceFrom !== undefined ? { introduceFrom: request.introduceFrom } : {}) })
     }
   } catch {
     // Next time. Nothing the learner did is at stake here.
@@ -299,15 +306,19 @@ async function prefetchFor(request: LessonRequest & { readonly focus: LessonFocu
 }
 
 /**
- * The answers, as the Worker's slots: each answer's position in the ticket.
+ * The answers, as the Worker's slots: each answer's position in the ticket it was ISSUED in.
  *
- * The lesson machine answers in order, so this is a prefix — the only shape the Worker
- * accepts. Anything else is a bug in the caller and is refused rather than sent.
+ * Sent in the order they were given. The lesson adapts as it goes, so slot 5 may be answered
+ * third; what the Worker needs is which question each answer was to and in what order the
+ * learner met them. An answer to a question the ticket never held, or one answered twice, is a
+ * bug in the caller and is refused rather than sent.
  */
 export function toSubmission(lesson: D1PreparedLesson, answers: readonly AnsweredItem[]) {
-  const slots = answers.map((answer, i) => {
+  const seen = new Set<number>()
+  const slots = answers.map((answer) => {
     const slot = lesson.questions.findIndex((q) => q.item.id === answer.itemId)
-    if (slot !== i) throw new Error('Answers are not a prefix of the issued lesson')
+    if (slot < 0 || seen.has(slot)) throw new Error('Answers are not answers to the issued lesson')
+    seen.add(slot)
     return { slot, chosenOptionId: answer.chosenOptionId, elapsedMs: Math.max(0, Math.min(60_000, Math.round(answer.elapsedMs))) }
   })
   return { lessonId: lesson.lessonId, answers: slots }

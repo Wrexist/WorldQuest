@@ -9,7 +9,7 @@
 
 import { shuffle, type Rng } from '../shared/index.js'
 import { LEECH_LAPSE_THRESHOLD, type FactId, type MemoryState } from './types.js'
-import { masteryOf } from './fsrs.js'
+import { masteryOf, retrievability } from './fsrs.js'
 
 export type SelectionInput = {
   /** Existing memory states to draw reviews from. */
@@ -23,10 +23,42 @@ export type SelectionInput = {
   readonly topicFilter?: (id: FactId) => boolean
   /** Opt-in only. Without it, the new-item floor always applies. */
   readonly catchUpMode?: boolean
+  /**
+   * Share of recent answers that were right, 0–1, or null while there is too little to read.
+   * Moves the mix: a learner answering nearly everything is offered more that is new, one
+   * who is struggling is offered more of what they have already met. See `PACING`.
+   */
+  readonly recentAccuracy?: number | null
 }
 
 /** The 60/30/10 split: due reviews · new facts · struggling items. */
 const MIX = { due: 0.6, fresh: 0.3, struggling: 0.1 } as const
+
+/**
+ * The same split, moved by how the learner is actually doing — the pacing a good tutor does
+ * without being asked, and the part of "adaptive" that a fixed 60/30/10 is not.
+ *
+ * - **Sailing** (≥ 92 % right): a learner who knows nearly everything they are asked is being
+ *   under-challenged by reviews of things they know. Fresh material rises to 45 %.
+ * - **Struggling** (≤ 65 % right): piling new facts on top of ones that are not holding is how
+ *   a learner decides they are bad at geography. Reviews rise to 70 % and fresh material falls
+ *   to 20 %, which is also the floor (`MIN_NEW_SHARE`) — never to nothing, because a lesson
+ *   with no new fact in it is a treadmill however kind the reason.
+ *
+ * The thresholds are the ramp's (`RAMP_AHEAD` and `RAMP_BEHIND`), for the same reason: they
+ * are authored, and the first thing to tune against `review_log` once it has users.
+ */
+const PACING = {
+  sailing: { at: 0.92, mix: { due: 0.45, fresh: 0.45, struggling: 0.1 } },
+  struggling: { at: 0.65, mix: { due: 0.7, fresh: 0.2, struggling: 0.1 } },
+} as const
+
+const paced = (accuracy: number | null | undefined): { due: number; fresh: number; struggling: number } => {
+  if (accuracy === null || accuracy === undefined || !Number.isFinite(accuracy)) return { ...MIX }
+  if (accuracy >= PACING.sailing.at) return { ...PACING.sailing.mix }
+  if (accuracy <= PACING.struggling.at) return { ...PACING.struggling.mix }
+  return { ...MIX }
+}
 
 /**
  * Reviews-only sessions feel like a treadmill, and a treadmill is the top reason
@@ -110,15 +142,25 @@ function interleave(ids: readonly FactId[], rng: Rng): FactId[] {
  * new content rather than a short lesson, and we never return an empty queue.
  */
 export function selectItems(input: SelectionInput): FactId[] {
-  const { candidates, newFactIds, count, now, rng, topicFilter, catchUpMode } = input
+  const { candidates, newFactIds, count, now, rng, topicFilter, catchUpMode, recentAccuracy } = input
   const inTopic = (id: FactId) => (topicFilter ? topicFilter(id) : true)
 
   const inScope = candidates.filter((c) => inTopic(c.factId))
   const active = inScope.filter((c) => !c.suspended)
 
+  /**
+   * Due reviews, the ones closest to being FORGOTTEN first.
+   *
+   * This was "most overdue first", which sounds the same and is not. Overdue is a function of
+   * the schedule: a fact with a stability of two weeks that is three days late is MORE overdue
+   * than a fact with a stability of one day that is two days late, and the second is the one
+   * the learner has probably already lost. Retrievability — the probability of recalling it
+   * right now — is what FSRS actually computes, and ordering by it spends a short lesson on
+   * the facts where a review does the most good. Ties fall back to overdue-ness.
+   */
   const due = active
     .filter((c) => c.dueAt <= now)
-    .sort((a, b) => a.dueAt - b.dueAt) // most overdue first
+    .sort((a, b) => retrievability(a, now) - retrievability(b, now) || a.dueAt - b.dueAt)
 
   /**
    * Leeches that have finished resting.
@@ -163,7 +205,7 @@ export function selectItems(input: SelectionInput): FactId[] {
     ? { due: 0, fresh: 0.9, struggling: 0 }
     : due.length > BACKLOG_THRESHOLD && !catchUpMode
       ? { ...BACKLOG_MIX, struggling: 0 }
-      : MIX
+      : paced(recentAccuracy)
 
   let dueTarget = Math.round(count * mix.due)
   let freshTarget = Math.round(count * mix.fresh)

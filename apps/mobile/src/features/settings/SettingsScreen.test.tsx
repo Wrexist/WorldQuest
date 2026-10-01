@@ -559,3 +559,26 @@ describe('Settings — the daily reminder, which was a lie until now', () => {
     expect(screen.getAllByText(/child account/).length).toBeGreaterThan(0)
   })
 })
+
+describe('Settings — where lessons start', () => {
+  it('shows the starting level and lets it be changed', () => {
+    const { onChange } = renderSettings()
+    expect(screen.getByText('Where lessons start')).toBeTruthy()
+    // The current choice is one of the three words.
+    expect(screen.getAllByText(/Just starting|Some|Confident/).length).toBeGreaterThan(0)
+    void onChange
+  })
+
+  it('offers the level check only when the build can issue one', () => {
+    renderSettings()
+    expect(screen.queryByText('Check my level')).toBeNull()
+  })
+
+  it('starts the level check from its row, and says what it does and does not change', () => {
+    const levelCheck = { onStart: vi.fn() }
+    renderSettings({ levelCheck })
+    expect(screen.getByText(/not what you have learned/i)).toBeTruthy()
+    fireEvent.click(screen.getByText('Check my level'))
+    expect(levelCheck.onStart).toHaveBeenCalledOnce()
+  })
+})
