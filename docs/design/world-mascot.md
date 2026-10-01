@@ -64,9 +64,12 @@ and the Expedition props. Atlas is now a real 3D character built in Blender.
   `node scripts/build-globe-mascot-expressions.cjs` lays out the labelled reference
   sheet `expressions.png`. A design reference, not app art: an expression ships when a
   screen needs it, by joining `FACE` and the acting.
-- **Hat fit:** the hat sits high enough that its brim's hole clears the globe, wide
-  enough that no head shows through, and tilted gently (owner review, October 1: the
-  globe showed through the hat and a raised arm went through the brim).
+- **Hat fit:** he wears it — the brim sits at his brow, the crown covers the top
+  third of the globe. The crown is a little roomier than his head and the brim's hole
+  matches the crown, so the tilted hat sits down on him without the globe showing
+  through (owner review, October 1: first the globe poked through, then a fix left the
+  hat perched on top). Raised arms stop at about 60° above level so the hands pass
+  outside the brim; the clash check below holds all of this.
 - **Rig:** each arm is a two-bone armature (upper arm, forearm) under a rounded
   shoulder ball set forward of his side; the limb is one mesh skinned to both bones
   with a computed soft blend across the elbow, so a bend stays one smooth surface.
@@ -86,7 +89,8 @@ and the Expedition props. Atlas is now a real 3D character built in Blender.
   the locked proportions (arms 30–35% of the globe) the front of the face and the
   space in front of him are out of reach, so hand on chin, facepalm, clap, arms crossed
   and hug cannot be posed without longer arms — a design decision for the owner, not a
-  rig limit.
+  rig limit. The owner confirmed on October 1 that the current arm
+  proportions stay locked.
 - **Not built yet from the brief** (follow-ups, in this order): walk and run cycles;
   prop poses (magnifier, map, telescope, heart); LOD tiers.
 - **Faces:** `FACE` in the script sets each of the ten moods' rest look; stills are in
@@ -95,7 +99,7 @@ and the Expedition props. Atlas is now a real 3D character built in Blender.
   (36 frames at 18 fps), every channel starting and ending at rest: welcome waves,
   celebrate crouches and springs, laughing clutches his belly and shakes with tears,
   surprised jolts, proud puts his hands on his hips and winks, sleepy nods off and
-  jerks awake, thinking tilts with a hand to his chin, encouraging nods, resting
+  jerks awake, thinking tilts with a hand beside his face, encouraging nods, resting
   breathes, wink winks.
 - **Render:** Cycles, AgX Punchy, key, fill, rim and top area lights, a shadow catcher,
   transparent film.
@@ -107,6 +111,22 @@ and the Expedition props. Atlas is now a real 3D character built in Blender.
   background and Reduce Motion, and shows the still under Reduce Motion. The Atlas
   beside the current step on Home is a button that laughs when tapped.
 
+Run `--check` in a separate Blender process before rendering.
+
 Rebuild: `blender --background --python scripts/build-globe-mascot.py -- --stills --sheets`
-(about 30 minutes for all ten moods), then `node scripts/build-globe-mascot-art.cjs`.
-A device pass for smoothness remains outstanding.
+then `node scripts/build-globe-mascot-art.cjs`. Add `--optix` after `--` to render on
+a supported NVIDIA GPU; the default remains CPU. Cycles retains scene data between
+frames to avoid rebuilding the static globe and studio, with the same sample counts
+and lighting. The packer feathers the shadow at the image edges and steps WebP quality
+down to keep each sheet at or below 640 KiB.
+The ten-mood still/animation render took about nine minutes on an RTX 3060 with
+`--optix` and retained scene data (October 1).
+
+Worn-hat validation (October 1): `CHECK_DONE 0 clash(es)`; all 360 final raw frames
+have no alpha above 60 in the top two rows. Minimum top clearance is 24 px for
+celebrate, 14 px for surprised, and 27 px for sleepy after lowering the Zzz group.
+All ten packed sheets fit 640 KiB (largest: celebrate, approximately 626 KiB).
+The post-render component run passed 78 tests; `pnpm verify` passed in the original
+working checkout. Browser E2E passed 107 checks, with one skipped because its lesson
+did not select an image question. Browser review covers the shared mascot in normal
+and reduced motion layouts; a native device pass for smoothness remains outstanding.
