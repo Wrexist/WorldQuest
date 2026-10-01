@@ -58,6 +58,15 @@ def act(parts, mood):
         for b in brows.values():
             keys(b['piv'], 'location', 2, pairs, b['piv'].location.z)
 
+    hat = parts['hat']
+    hz, hrx, hry = hat.location.z, hat.rotation_euler.x, hat.rotation_euler.y
+
+    # The hat is not glued on: it follows a couple of frames late, lifts off at the top
+    # of a hop, lands after him and bounces to rest.
+    def hat_lift(pairs): keys(hat, 'location', 2, pairs, hz)
+    def hat_nod(pairs): keys(hat, 'rotation_euler', 0, [(f, d(v)) for f, v in pairs], hrx)
+    def hat_tip(pairs): keys(hat, 'rotation_euler', 1, [(f, d(v)) for f, v in pairs], hry)
+
     def both_lids(pairs):
         lid(lidR, rR, pairs)
         lid(lidL, rL, pairs)
@@ -79,6 +88,7 @@ def act(parts, mood):
         gaze(1, 0, [(1, 0), (10, 6), (26, 6), (36, 0)])
         both_lids(blink(31))
         squash([(1, 0), (4, -.03), (8, .02), (12, 0), (36, 0)])
+        hat_tip([(1, 0), (11, 3), (31, 3), (36, 0)])
     elif mood == 'celebrate':
         # Crouch, spring, arms up, land with a squash, sparkles popping.
         squash([(1, 0), (5, -.09), (9, .07), (16, .02), (21, -.1), (25, .03), (29, 0), (36, 0)])
@@ -87,6 +97,8 @@ def act(parts, mood):
         arm(L, lb, [(1, 0), (6, 20), (12, 150), (22, 140), (30, 30), (36, 0)])
         roll([(1, 0), (12, -4), (18, 4), (26, 0), (36, 0)])
         grow(ex['sparkles'], [(1, 0), (8, .6), (14, -.2), (20, .5), (28, -.1), (36, 0)])
+        hat_lift([(1, 0), (5, -.015), (9, -.01), (16, .11), (20, .06), (23, -.02), (26, .012), (29, 0), (36, 0)])
+        hat_tip([(1, 0), (14, -5), (19, 6), (24, -3), (28, 1.5), (32, 0), (36, 0)])
     elif mood == 'laughing':
         # A belly laugh: head back, arms clutching, shaking, bouncing, tears rolling.
         roll([(1, 0), (4, 6)] + wave(6, 28, -6, 7, every=2) + [(32, 2), (36, 0)])
@@ -96,6 +108,8 @@ def act(parts, mood):
         arm(L, lb, [(1, 0), (5, -35), (30, -35), (36, 0)])
         nod([(1, 0), (5, -6), (30, -6), (36, 0)])
         drift(ex['tears'], [(1, 0), (10, -.04), (24, -.16), (34, -.02), (36, 0)])
+        hat_lift([(1, 0), (8, .025), (11, 0), (16, .025), (19, 0), (24, .02), (27, 0), (36, 0)])
+        hat_tip([(1, 0), (6, 4)] + wave(7, 29, -5, 6, every=2) + [(33, 1), (36, 0)])
     elif mood == 'surprised':
         # A jolt: everything up at once, a double take, then a sheepish settle.
         squash([(1, 0), (3, -.06), (6, .12), (11, .03), (16, 0), (36, 0)])
@@ -105,6 +119,8 @@ def act(parts, mood):
         nod([(1, 0), (6, -9), (20, -6), (32, 0), (36, 0)])
         brow([(1, 0), (6, .05), (22, .04), (32, 0), (36, 0)])
         gaze(1, 0, [(1, 0), (22, 0), (26, -8), (30, 8), (36, 0)])
+        hat_lift([(1, 0), (3, -.01), (9, .13), (13, .05), (16, -.02), (19, .01), (22, 0), (36, 0)])
+        hat_nod([(1, 0), (9, -8), (15, 3), (20, -1), (24, 0), (36, 0)])
     elif mood == 'proud':
         # Chin up, hands on hips, one slow smug wink, sparkles.
         nod([(1, 0), (8, -10), (30, -10), (36, 0)])
@@ -114,6 +130,7 @@ def act(parts, mood):
         lid(lidR, rR, [(1, 0), (14, 0), (18, 90), (23, 90), (27, 0), (36, 0)])
         brow([(1, 0), (14, 0), (18, .03), (27, 0), (36, 0)])
         grow(ex['sparkles'], [(1, 0), (6, .5), (12, -.1), (18, .6), (24, 0), (30, .4), (36, 0)])
+        hat_tip([(1, 0), (10, -5), (30, -5), (36, 0)])
     elif mood == 'sleepy':
         # Nods off, jerks awake with a start, nods off again; the Zzz drift up.
         nod([(1, 0), (6, 3), (12, 16), (15, 17), (17, -3), (20, 0), (26, 12), (32, 14), (36, 0)])
@@ -122,6 +139,8 @@ def act(parts, mood):
         drift(ex['zzz'], [(1, 0), (18, .25), (35, .45), (36, 0)])
         grow(ex['zzz'], [(1, 0), (18, .2), (35, -.5), (36, 0)])
         squash([(1, 0), (10, .02), (20, -.02), (30, .02), (36, 0)])
+        hat_nod([(1, 0), (14, 10), (17, -6), (20, 2), (23, 0), (28, 8), (34, 8), (36, 0)])
+        hat_lift([(1, 0), (16, 0), (18, .05), (21, 0), (36, 0)])
     elif mood == 'thinking':
         # Head tilted, eyes up and away, a hand to the chin, a slow blink.
         roll([(1, 0), (8, -7), (30, -7), (36, 0)])
@@ -129,11 +148,13 @@ def act(parts, mood):
         arm(R, rb, [(1, 0), (8, -60), (30, -60), (36, 0)])
         brow([(1, 0), (8, .03), (30, .03), (36, 0)])
         both_lids(blink(22))
+        hat_tip([(1, 0), (11, -4), (31, -4), (36, 0)])
     elif mood == 'encouraging':
         # Two warm nods and a hand held out.
         nod([(1, 0), (6, 7), (10, -2), (15, 7), (19, 0), (36, 0)])
         arm(R, rb, [(1, 0), (8, -55), (26, -55), (34, 0), (36, 0)])
         squash([(1, 0), (6, -.03), (10, .02), (15, -.03), (19, 0), (36, 0)])
+        hat_nod([(1, 0), (8, 5), (12, -2), (17, 5), (21, 0), (36, 0)])
     elif mood == 'resting':
         # Content breathing.
         squash([(1, 0), (12, .025), (24, -.01), (36, 0)])
@@ -143,3 +164,4 @@ def act(parts, mood):
         roll([(1, 0), (10, -5), (26, -5), (36, 0)])
         arm(R, rb, [(1, 0), (10, -70), (26, -70), (36, 0)])
         brow([(1, 0), (12, .025), (22, .025), (26, 0), (36, 0)])
+        hat_tip([(1, 0), (13, -3), (28, -3), (36, 0)])

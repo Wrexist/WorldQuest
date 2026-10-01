@@ -37,10 +37,11 @@ and the Expedition props. Atlas is now a real 3D character built in Blender.
 - **Canonical design (owner's master character sheet, September 30):** a near-spherical
   Earth, slightly wider than tall, satin ocean blue with raised, simplified green land;
   a face set in the ocean with big dark glossy eyes, navy brows, pink blush and a
-  burgundy mouth with a pink tongue (teeth only for the big laugh); short blue arms with
-  mitten hands; very short blue legs in chunky mustard boots with off-white soles; a
+  burgundy mouth with a pink tongue (teeth only for the big laugh); short blue arms
+  shaped like a person's, with cartoon human hands (palm, four fingers, thumb); very short blue legs in chunky mustard boots with off-white soles; a
   khaki explorer hat with a dark band and a globe badge, tilted; a small tan backpack
-  with a pocket, a rolled mat and straps. No bandana. The design is locked: every
+  with a pocket and a rolled mat. No bandana, and no shoulder straps: on owner review
+  (October 1) the strap read as a thick brown cord stuck to his side. The design is locked: every
   render comes from the one script, so proportions cannot drift between outputs.
 - **Model:** `scripts/build-globe-mascot.py` builds him procedurally. The land is
   Natural Earth 1:110m (public domain), land only and no borders, painted into
@@ -49,12 +50,14 @@ and the Expedition props. Atlas is now a real 3D character built in Blender.
   (`docs/design/asset-prompts.md`). The Atlantic faces the camera, so the face sits at
   sea. Eyes are layered (white, blue-grey iris, navy pupil, two glints) on a gaze
   pivot, with hinged lids; brows, mouths and blush sit on surface pivots; the hat has
-  its own pivot for lag and settle. Parts are named for the brief's rig list
+  its own pivot, and the acting moves it a beat behind him: it lifts off at the top of
+  a hop, lands late and bounces to rest, wobbles through the laugh and tips after his
+  head. Each arm is one seamless tapered limb (narrow at the elbow, a forearm swell, a
+  slim wrist), so it has no joint seams. Parts are named for the brief's rig list
   (`GlobeBody`, `Eye_L`, `Pupil_L`, `Eyelid_L`, `Brow_L`, `Arm_L`, `Hand_L`, `Boot_L`,
   `Hat`, `HatBadge`, `Backpack`). Camera: 65 mm, front three-quarter, slightly above.
   Master: `docs/design/assets/world-mascot-3d/atlas.blend`.
-- **Not built yet from the brief** (follow-ups, in this order): hat secondary motion in
-  the acting; the expression library beyond the ten moods; walk and run cycles;
+- **Not built yet from the brief** (follow-ups, in this order): the expression library beyond the ten moods; walk and run cycles;
   prop poses (magnifier, map, telescope, heart); an armature rig with IK in place of
   the pivot hierarchy; LOD tiers.
 - **Faces:** `FACE` in the script sets each of the ten moods' rest look; stills are in

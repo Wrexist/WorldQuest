@@ -352,8 +352,11 @@ def build():
         d = Vector((x, -1, z)).normalized()
         piv = empty(f'Brow_{side}', d * (BODY_R + .02), body)
         piv.rotation_euler = facing(d)
-        tube(f'BrowStroke_{side}', [bend(-.12, -.015 * flip), bend(0, .03), bend(.12, .015 * flip)], .026, M['ink'], piv, taper=[.55, 1, .75])
-        brows[side] = dict(piv=piv, rest=piv.location.copy())
+        tilt = empty(f'BrowTilt_{side}', (0, 0, 0), piv)
+        tube(f'BrowStroke_{side}', [bend(-.12, -.015 * flip), bend(0, .03), bend(.12, .015 * flip)], .026, M['ink'], tilt, taper=[.55, 1, .75])
+        # +x is the inner end on the left brow, -x on the right; a rotation about local Y
+        # lowers +x, so "inner end up" is a negative angle on the left, positive on the right.
+        brows[side] = dict(piv=piv, rest=piv.location.copy(), tilt=tilt, inner=-1 if side == 'L' else 1)
 
     # Mouths: open shapes are a burgundy cavity with a pink tongue (and teeth only for
     # the laugh); closed ones are a navy line. One shows per mood.
@@ -375,33 +378,55 @@ def build():
     decal('MouthOCavity', mouths['o'], .07, .09, .014, M['mouth'])
     for key, pts, r in [('gentle', [bend(-.13, .02), bend(0, -.05), bend(.13, .02)], .02),
                         ('smirk', [bend(-.13, -.01), bend(0, -.045), bend(.11, .015), bend(.16, .06)], .021),
-                        ('think', [bend(-.07, 0), bend(.07, .012)], .02)]:
+                        ('think', [bend(-.07, 0), bend(.07, .012)], .02),
+                        ('flat', [bend(-.08, 0), bend(0, -.004), bend(.08, 0)], .02),
+                        ('frown', [bend(-.12, -.035), bend(0, .015), bend(.12, -.035)], .021),
+                        ('sad', [bend(-.13, -.06), bend(-.05, .015), bend(.05, .015), bend(.13, -.06)], .022),
+                        ('nervous', [bend(-.13, -.01), bend(-.07, .02), bend(0, -.015), bend(.07, .02), bend(.13, -.01)], .019),
+                        ('firm', [bend(-.12, .015), bend(0, -.008), bend(.12, .015)], .023)]:
         o = tube(f'Mouth_{key}', pts, r, M['ink'], body)
         o.location = surface_point(mouth_dir, .018)[0]
         o.rotation_euler = facing(mouth_dir)
         mouths[key] = o
 
-    for side, x in [('L', -.56), ('R', .56)]:
-        decal(f'Cheek_{side}', pivot_on(f'Blush_{side}', Vector((x, -1, -.02)), body, .05), .12, .075, .008, M['blush'])
+    mouths['bigO'] = pivot_on('MouthBigO', mouth_dir, body, .012)
+    decal('MouthBigOCavity', mouths['bigO'], .1, .13, .014, M['mouth'])
+    decal('MouthBigOTongue', mouths['bigO'], .055, .045, .016, M['tongue'], cz=-.075, front=.006)
+    # "Oops": a wide, shallow grimace, teeth showing edge to edge. Sheepish, not scared.
+    mouths['grimace'] = pivot_on('MouthGrimace', mouth_dir, body, .012)
+    decal('MouthGrimaceCavity', mouths['grimace'], .19, .085, .014, M['mouth'], top=.5, smile=.25)
+    decal('MouthGrimaceTeeth', mouths['grimace'], .16, .05, .012, M['teeth'], cz=.004, top=.6, smile=.25, front=.005)
 
-    # Arms: short, rounded, blue, emerging from the globe's sides, with mitten hands:
-    # a palm, three soft finger forms and a thumb.
+    cheeks = []
+    for side, x in [('L', -.56), ('R', .56)]:
+        blush = pivot_on(f'Blush_{side}', Vector((x, -1, -.02)), body, .05)
+        decal(f'Cheek_{side}', blush, .12, .075, .008, M['blush'])
+        cheeks.append(blush)
+
+    # Arms: short and blue, but shaped like a person's (owner review, October 1): one
+    # seamless limb from inside the ball to the wrist, slimming to the elbow, a slight
+    # forearm swell, a narrow wrist; then a cartoon human hand — a palm, four curled
+    # fingers with rounded tips, and a thumb set forward. Curl and thumb face his body.
     arms, elbows = {}, {}
     for side, x, sign in [('L', -.92, -1), ('R', .92, 1)]:
         shoulder = empty(f'Arm_{side}', (x, -.05, -.12), body)
-        tube(f'UpperArm_{side}', [(-sign * .08, 0, .02), (sign * .1, -.01, -.12), (sign * .18, -.02, -.25)], .115, M['skin'], shoulder, taper=[1, .95, .9])
-        elbow = empty(f'Elbow_{side}', (sign * .18, -.02, -.25), shoulder)
-        sphere(f'ElbowJoint_{side}', (0, 0, 0), (.108, .108, .108), M['skin'], elbow)
-        tube(f'Forearm_{side}', [(0, 0, 0), (sign * .02, -.03, -.12), (sign * .03, -.05, -.22)], .1, M['skin'], elbow, taper=[1, .96, .94])
-        hand = empty(f'Hand_{side}', (sign * .03, -.05, -.25), elbow)
-        sphere(f'Palm_{side}', (0, 0, -.07), (.15, .125, .15), M['skin'], hand)
-        for k, fy in enumerate((-.07, 0, .07)):
-            sphere(f'Finger_{side}{k}', (sign * .025, fy - .012, -.2 + abs(fy) * .4), (.056, .052, .075), M['skin'], hand)
-        sphere(f'Thumb_{side}', (-sign * .09, -.1, -.05), (.056, .056, .08), M['skin'], hand).rotation_euler.y = radians(sign * 30)
+        tube(f'Arm_{side}Limb', [(-sign * .1, 0, .04), (sign * .04, -.01, -.07), (sign * .12, -.025, -.19),
+                                 (sign * .16, -.045, -.31), (sign * .175, -.07, -.42), (sign * .175, -.085, -.5)],
+             .11, M['skin'], shoulder, taper=[1, .92, .76, .8, .72, .64])
+        elbows[side] = empty(f'Elbow_{side}', (sign * .14, -.035, -.25), shoulder)
+        hand = empty(f'Hand_{side}', (sign * .175, -.085, -.5), shoulder)
+        hand.scale = (1.45, 1.45, 1.45)  # cartoon-large, so the fingers still read at 64 px
+        sphere(f'Wrist_{side}', (0, 0, -.005), (.05, .06, .05), M['skin'], hand)  # no seam where arm meets palm
+        rounded_box(f'Palm_{side}', (0, 0, -.068), (.07, .14, .13), M['skin'], hand, bevel=.03)
+        for k, (fy, length, r) in enumerate([(-.048, .1, .022), (-.016, .11, .023), (.016, .1, .021), (.046, .085, .019)]):
+            tip = (-sign * .03, fy * 1.12, -.125 - length)
+            tube(f'Finger_{side}{k}', [(0, fy, -.12), (-sign * .006, fy * 1.08, -.125 - length * .55), tip], r, M['skin'], hand, taper=[1, .92, .82])
+            sphere(f'Fingertip_{side}{k}', tip, (r * .82, r * .82, r * .82), M['skin'], hand, subdiv=1)
+        thumb_tip = (-sign * .045, -.12, -.13)
+        tube(f'Thumb_{side}', [(-sign * .02, -.055, -.04), (-sign * .03, -.105, -.085), thumb_tip], .026, M['skin'], hand, taper=[1, .9, .8])
+        sphere(f'ThumbTip_{side}', thumb_tip, (.021, .021, .021), M['skin'], hand, subdiv=1)
         shoulder.rotation_euler.y = radians(sign * 14)
-        elbow.rotation_euler.x = radians(-15)
         arms[side] = shoulder
-        elbows[side] = elbow
 
     # Legs and boots: very short legs, chunky mustard explorer boots, off-white soles.
     for side, x in [('L', -.3), ('R', .3)]:
@@ -471,9 +496,6 @@ def build():
     mat_roll = bpy.context.object; mat_roll.name = 'BackpackMat'
     link(smooth(mat_roll), pack, M['mat']); mat_roll.location = (0, .1, .46)
     rounded_box('BackpackBuckle', (0, .305, -.02), (.08, .02, .06), M['buckle'], pack, bevel=.01)
-    for side, sx in [('L', -1), ('R', 1)]:
-        loop = [(.5, .75, .35), (.75, .25, .55), (.85, -.3, .35), (.92, -.3, 0), (.85, .1, -.4), (.55, .6, -.5)]
-        tube(f'BackpackStrap_{side}', [Vector((sx * x, y, z)).normalized() * 1.035 for x, y, z in loop], .042, M['strap'], body)
 
     # Extras, hidden unless a mood shows them.
     extras = {}
@@ -500,11 +522,25 @@ def build():
         o.location = (x, -.8, z); o.rotation_euler = (radians(90), 0, radians(-8)); o.scale = (s, s, s)
         link(o, rig, M['zzz']); zs.append(o)
     extras['zzz'] = zs
+    extras['sweat'] = [sphere('Sweat', surface_point(Vector((.72, -.55, .62)), .06)[0], (.05, .04, .075), M['tear'], body)]
+    heart = bpy.data.curves.new('Heart', 'CURVE'); heart.dimensions = '2D'; heart.fill_mode = 'BOTH'
+    heart.extrude = .05; heart.bevel_depth = .02
+    sp = heart.splines.new('BEZIER'); outline = [(0, -.5), (.5, .05), (.27, .4), (0, .22), (-.27, .4), (-.5, .05)]
+    sp.bezier_points.add(len(outline) - 1); sp.use_cyclic_u = True
+    for bp, (hx, hy) in zip(sp.bezier_points, outline):
+        bp.co = (hx, hy, 0); bp.handle_left_type = bp.handle_right_type = 'AUTO'
+    for i in (0, 3):  # the point and the dip stay sharp
+        sp.bezier_points[i].handle_left_type = sp.bezier_points[i].handle_right_type = 'VECTOR'
+    h = bpy.data.objects.new('Heart', heart); bpy.context.collection.objects.link(h)
+    h.location = (-1.25, -.7, 2.55); h.rotation_euler = (radians(90), 0, radians(12)); h.scale = (.42, .42, .42)
+    link(h, rig, principled('Heart', (1.0, .1, .16), rough=.3, coat=.6))
+    extras['heart'] = [h]
 
     # Turned towards camera a little, so the backpack shows past his side.
     rig.rotation_euler.z = radians(12)
     return dict(rig=rig, hips=hips, body=body, eyes=eyes, brows=brows, mouths=mouths, arms=arms, elbows=elbows,
-                extras=extras, lips={}, hat=hat)
+                extras=extras, lips={}, hat=hat, cheeks=cheeks,
+                arm_rest={k: a.rotation_euler.y for k, a in arms.items()})
 
 
 # ── stage ────────────────────────────────────────────────────────────────────
@@ -567,8 +603,16 @@ FACE = {
 }
 
 
+REST = dict(mouth='smile', eyes='open', lids=(-80, -80), brow=0, tilt=0, pupil=1.0, extras=(),
+            gaze=(0, 0), roll=0, nod=0, arms=(0, 0), blush=1.0)
+
+
 def apply_face(parts, mood):
-    f = FACE[mood]
+    pose(parts, FACE[mood])
+
+
+def pose(parts, spec):
+    f = {**REST, **spec}
     for key, o in parts['mouths'].items():
         show = key == f['mouth']
         for x in [o, *o.children_recursive]:
@@ -579,14 +623,63 @@ def apply_face(parts, mood):
         for x in [*eye['parts'], eye['lid'], *eye['lid'].children_recursive]:
             x.hide_render = happy
         eye['lid'].rotation_euler.x = radians(f['lids'][0 if side == 'L' else 1])
+        eye['gaze'].rotation_euler.z = radians(f['gaze'][0])
+        eye['gaze'].rotation_euler.x = radians(f['gaze'][1])
         # The pupil alone, across the face: a shocked eye is a small pupil.
         r = eye['pupil_rest']
         eye['pupil'].scale = (r.x * f['pupil'], r.y, r.z * f['pupil'])
     for side, brow in parts['brows'].items():
-        brow['piv'].location = brow['rest'] + Vector((0, 0, f['brow']))
+        i = 0 if side == 'L' else 1
+        lift = f['brow'][i] if isinstance(f['brow'], tuple) else f['brow']
+        tilt = f['tilt'][i] if isinstance(f['tilt'], tuple) else f['tilt']
+        brow['piv'].location = brow['rest'] + Vector((0, 0, lift))
+        brow['tilt'].rotation_euler.y = radians(tilt * brow['inner'])
+    parts['body'].rotation_euler.x = radians(f['nod'])
+    parts['body'].rotation_euler.y = radians(f['roll'])
+    for i, side in enumerate(('R', 'L')):
+        parts['arms'][side].rotation_euler.y = parts['arm_rest'][side] + radians(f['arms'][i])
+    for c in parts['cheeks']:
+        c.scale = (f['blush'], f['blush'], f['blush'])
     for key, objs in parts['extras'].items():
         for o in objs:
             o.hide_render = key not in f['extras']
+
+
+EXPRESSIONS = [
+    ('neutral',       dict(mouth='flat')),
+    ('gentle-smile',  dict(mouth='gentle', lids=(-70, -70))),
+    ('happy',         dict(mouth='smile')),
+    ('big-laugh',     dict(mouth='laugh', eyes='happy', nod=-6, arms=(25, -25), extras=('tears',))),
+    ('excited',       dict(mouth='laugh', brow=.04, pupil=1.08, arms=(-100, 100))),
+    ('super-excited', dict(mouth='laugh', eyes='happy', brow=.05, arms=(-150, 150), extras=('sparkles',))),
+    ('proud',         dict(mouth='smirk', lids=(-5, -5), brow=-.01, nod=-10, arms=(40, -40), extras=('sparkles',))),
+    ('curious',       dict(mouth='flat', brow=(.05, 0), gaze=(12, 4), roll=-6)),
+    ('thinking',      dict(mouth='think', brow=(.03, 0), gaze=(-10, 10), roll=-7, arms=(-60, 0))),
+    ('confused',      dict(mouth='nervous', tilt=(15, -10), roll=8, gaze=(6, 4), arms=(-35, 35))),
+    ('surprised',     dict(mouth='o', lids=(-95, -95), brow=.07, pupil=.72)),
+    ('amazed',        dict(mouth='smile', lids=(-95, -95), brow=.06, pupil=1.1, extras=('sparkles',))),
+    ('focused',       dict(mouth='flat', lids=(-35, -35), tilt=-12, nod=4)),
+    ('determined',    dict(mouth='firm', lids=(-45, -45), tilt=-18, brow=-.01, arms=(-30, 30))),
+    ('encouraging',   dict(mouth='gentle', brow=.015, tilt=6, nod=5, arms=(-55, 0))),
+    ('celebrating',   dict(mouth='laugh', eyes='happy', arms=(-150, 150), extras=('sparkles',))),
+    ('loving',        dict(mouth='gentle', eyes='happy', blush=1.5, roll=6, extras=('heart',))),
+    ('shy',           dict(mouth='gentle', lids=(-40, -40), gaze=(8, -10), blush=1.6, roll=-8, arms=(20, -20))),
+    ('mischievous',   dict(mouth='smirk', lids=(-20, -5), tilt=-10, brow=(0, .03), gaze=(10, 0))),
+    ('worried',       dict(mouth='nervous', tilt=20, pupil=.9)),
+    ('nervous',       dict(mouth='nervous', tilt=15, gaze=(-10, 0), arms=(20, -20), extras=('sweat',))),
+    ('disappointed',  dict(mouth='frown', lids=(-30, -30), tilt=10, brow=-.02, nod=6, gaze=(0, -8))),
+    ('sad',           dict(mouth='sad', lids=(-45, -45), tilt=22, nod=8, gaze=(0, -12))),
+    ('very-sad',      dict(mouth='sad', lids=(-40, -40), tilt=28, nod=10, gaze=(0, -12), extras=('tears',))),
+    ('frustrated',    dict(mouth='frown', lids=(-40, -40), tilt=-20, extras=('sweat',))),
+    ('tired',         dict(mouth='flat', lids=(0, 0), tilt=6, brow=-.02, nod=6)),
+    ('sleepy',        dict(mouth='gentle', lids=(12, 12), brow=-.02, extras=('zzz',))),
+    ('shocked',       dict(mouth='bigO', lids=(-100, -100), brow=.09, pupil=.6, arms=(-95, 95))),
+    ('oops',          dict(mouth='grimace', tilt=12, gaze=(10, 0), roll=6, arms=(-130, 0), extras=('sweat',))),
+    ('relieved',      dict(mouth='gentle', eyes='happy', tilt=8, nod=4, extras=('sweat',))),
+    ('victory',       dict(mouth='laugh', brow=.03, arms=(-160, 0), extras=('sparkles',))),
+    ('welcoming',     dict(mouth='smile', roll=5, arms=(-112, 0))),
+]
+EXPRESSION_PX = 512
 
 
 if __name__ == '__main__':
@@ -605,6 +698,20 @@ if __name__ == '__main__':
             bpy.ops.render.render(write_still=True)
             arm.rotation_euler.y = rest
             print(f'STILL_READY {mood}', flush=True)
+    if '--expressions' in ARGS:
+        out = MASTER / 'expressions'
+        out.mkdir(exist_ok=True)
+        scene = bpy.context.scene
+        scene.render.resolution_x = scene.render.resolution_y = EXPRESSION_PX
+        for n, (name, spec) in enumerate(EXPRESSIONS, 1):
+            if MOOD_ARG and name not in MOOD_ARG.split(','):
+                continue
+            pose(parts, spec)
+            scene.render.filepath = str(out / f'{n:02d}-{name}.png')
+            bpy.ops.render.render(write_still=True)
+            print(f'EXPRESSION_READY {name}', flush=True)
+        pose(parts, {})
+        scene.render.resolution_x = scene.render.resolution_y = STILL_PX
     if '--sheets' in ARGS:
         sys.path.insert(0, str(Path(__file__).parent))
         from globe_mascot_acting import act

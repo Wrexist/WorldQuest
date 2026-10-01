@@ -43,7 +43,7 @@ async function main() {
     // Busy moods (sparkles, big arm swings) compress worse; step quality down rather
     // than raise the budget, and stop at a floor below which the land edges smear.
     let sheet
-    for (let quality = 82; quality >= 64; quality -= 3) {
+    for (let quality = 82; quality >= 58; quality -= 3) {
       sheet = await sharp(grid).webp({ quality, alphaQuality: 90, effort: 6 }).toBuffer()
       if (sheet.length <= SHEET_BUDGET_KB * 1024) break
     }
