@@ -90,3 +90,6 @@ docs/design/assets/models/*.blend1
 
 # Python bytecode from the Blender build scripts
 __pycache__/
+
+# Blender backup; keep the editable scene, not automatic save copies.
+docs/design/assets/world-mascot-3d/*.blend1
