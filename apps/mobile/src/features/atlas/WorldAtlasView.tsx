@@ -20,6 +20,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
+  Animated,
   AppState,
   PanResponder,
   PixelRatio,
@@ -99,7 +100,9 @@ function themeFor(colors: ReturnType<typeof useTheme>['colors'], mode: 'light' |
     flat: false,
     flatLand: hexToRgb(m.atlasFlatLand),
     flatWater: hexToRgb(m.atlasFlatWater),
-    saturation: mode === 'dark' ? 0.9 : 1.08,
+    saturation: mode === 'dark' ? 1.0 : 1.3,
+    water: hexToRgb(m.atlasWater),
+    shadow: hexToRgb(m.atlasShadow),
   }
 }
 
@@ -450,19 +453,27 @@ export function WorldAtlasView({
           {spec.rings.map((ring) => {
             const p = project(ring, camera, viewport)
             if (!p.visible) return null
-            return <View key={`ring:${ring.countryId}`} pointerEvents="none" style={[styles.ring, { start: p.x - RING / 2, top: p.y - RING / 2 }]} />
+            return (
+              <View key={`ring:${ring.countryId}`} pointerEvents="none" style={[styles.ring, { start: p.x - RING / 2, top: p.y - RING / 2 }]}>
+                <View style={styles.ringInner} />
+              </View>
+            )
           })}
-          {labels.map((label) => (
-            <View
-              key={`label:${label.countryId}`}
-              pointerEvents="none"
-              style={[styles.label, { start: label.x, top: label.y, opacity: label.opacity }]}
-            >
-              <Text style={styles.labelText} numberOfLines={1}>
-                {label.text}
-              </Text>
-            </View>
-          ))}
+          {labels.map((label) => {
+            // The country the scene is about gets the strong pill; neighbours stay quiet.
+            const strong = spec.highlights.some((h) => h.countryId === label.countryId && h.state !== 'context')
+            return (
+              <View
+                key={`label:${label.countryId}`}
+                pointerEvents="none"
+                style={[styles.label, strong && styles.labelStrong, { start: label.x, top: label.y, opacity: label.opacity }]}
+              >
+                <Text style={[styles.labelText, strong && styles.labelTextStrong]} numberOfLines={1}>
+                  {label.text}
+                </Text>
+              </View>
+            )
+          })}
           {spec.markers.map((marker) => {
             const p = project(marker, camera, viewport, 0.002)
             if (!p.visible) return null
@@ -474,17 +485,26 @@ export function WorldAtlasView({
                 style={[styles.pinHit, { start: p.x - PIN_HIT / 2, top: p.y - PIN_HIT }]}
                 hitSlop={space[1]}
               >
-                <View style={styles.pinHead}>
-                  <View style={styles.pinDot} />
-                </View>
-                {marker.label !== null && (
-                  <View style={styles.pinLabel}>
-                    <Text style={styles.pinLabelText} numberOfLines={2}>
-                      {marker.label}
-                    </Text>
-                  </View>
-                )}
+                <Pin />
               </Pressable>
+            )
+          })}
+          {/* Names beside their pins, as siblings with the whole layer to lay out in. Inside
+              the 48-point pin they were squeezed to its width and Android broke "Madrid"
+              across two lines. */}
+          {spec.markers.map((marker) => {
+            const p = project(marker, camera, viewport, 0.002)
+            if (!p.visible || marker.label === null) return null
+            return (
+              <View
+                key={`name:${marker.placeId}`}
+                pointerEvents="none"
+                style={[styles.pinLabel, { start: p.x + PIN_HIT / 2 - space[1], top: p.y - PIN_HIT + space[1] }]}
+              >
+                <Text style={styles.pinLabelText} numberOfLines={1}>
+                  {marker.label}
+                </Text>
+              </View>
             )
           })}
         </View>
@@ -509,6 +529,55 @@ export function WorldAtlasView({
   )
 }
 
+/**
+ * The answer's pin: it drops onto its coordinate with a spring, then a ring pulses out
+ * from the tip a few times — the moment the capital is revealed should feel like one.
+ * Under Reduce Motion it is simply there. Decorative motion only: the pin's position is
+ * set by its parent and never animated, so the tip is on the coordinate from frame one.
+ */
+function Pin() {
+  const { styles } = useThemeValues()
+  const reduceMotion = useReducedMotion()
+  const drop = useRef(new Animated.Value(reduceMotion ? 1 : 0)).current
+  const pulse = useRef(new Animated.Value(0)).current
+  useEffect(() => {
+    if (reduceMotion) return
+    Animated.spring(drop, { toValue: 1, useNativeDriver: true, friction: 5, tension: 120 }).start()
+    const loop = Animated.loop(
+      Animated.timing(pulse, { toValue: 1, duration: motion.celebrate.duration * 1.6, useNativeDriver: true }),
+      { iterations: 3 },
+    )
+    loop.start()
+    return () => loop.stop()
+  }, [drop, pulse, reduceMotion])
+  return (
+    <>
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          styles.pinPulse,
+          {
+            opacity: pulse.interpolate({ inputRange: [0, 1], outputRange: [reduceMotion ? 0 : 0.55, 0] }),
+            transform: [{ scale: pulse.interpolate({ inputRange: [0, 1], outputRange: [0.3, 1.6] }) }],
+          },
+        ]}
+      />
+      <Animated.View
+        style={{
+          transform: [
+            { translateY: drop.interpolate({ inputRange: [0, 1], outputRange: [-space[4], 0] }) },
+            { scale: drop.interpolate({ inputRange: [0, 1], outputRange: [0.6, 1] }) },
+          ],
+        }}
+      >
+        <View style={styles.pinHead}>
+          <View style={styles.pinDot} />
+        </View>
+      </Animated.View>
+    </>
+  )
+}
+
 /** 48-point targets: the gesture-free way to recentre and zoom (WCAG 2.5.1). */
 function ControlButton({ kind, label, onPress }: { kind: 'recenter' | 'in' | 'out'; label: string; onPress: () => void }) {
   const { styles, colors } = useThemeValues()
@@ -528,8 +597,9 @@ function ControlButton({ kind, label, onPress }: { kind: 'recenter' | 'in' | 'ou
   )
 }
 
-const RING = 30
-const PIN = 26
+const RING = 34
+const PIN = 30
+const PULSE = 44
 const PIN_HIT = 48
 
 const useThemeValues = createThemeStyles((colors) => {
@@ -543,19 +613,35 @@ const useThemeValues = createThemeStyles((colors) => {
       width: RING,
       height: RING,
       borderRadius: RING / 2,
-      borderWidth: 2,
+      borderWidth: 3,
       borderColor: colors.map.atlasSubject,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
+    ringInner: { width: RING - 6, height: RING - 6, borderRadius: (RING - 6) / 2, borderWidth: 2, borderColor: colors.map.atlasLabelHalo },
+    // Labels use the app's face/edge idiom — a solid edge under the face, never a blur.
     label: {
       position: 'absolute',
       paddingHorizontal: space[2],
       paddingVertical: 2,
-      borderRadius: radius.sm,
+      borderRadius: radius.md,
       backgroundColor: colors.map.atlasLabelHalo,
-      opacity: 0.92,
+      borderBottomWidth: 2,
+      borderBottomColor: colors.border.subtle,
     },
+    labelStrong: { backgroundColor: colors.map.atlasLabelStrong, borderBottomColor: colors.map.atlasSubject },
     labelText: { ...text('caption', { weight: '700' }), color: colors.map.atlasLabelInk },
+    labelTextStrong: { color: colors.map.atlasLabelStrongInk },
     pinHit: { position: 'absolute', width: PIN_HIT, height: PIN_HIT, alignItems: 'center', justifyContent: 'flex-end', overflow: 'visible' },
+    pinPulse: {
+      position: 'absolute',
+      bottom: -PULSE / 2,
+      width: PULSE,
+      height: PULSE,
+      borderRadius: PULSE / 2,
+      borderWidth: 3,
+      borderColor: colors.map.atlasPin,
+    },
     // A teardrop: a square with three round corners, turned 45° so the sharp one points
     // down. Its tip is PIN/√2 below the square's centre, which is why the head is lifted.
     pinHead: {
@@ -567,7 +653,7 @@ const useThemeValues = createThemeStyles((colors) => {
       borderBottomLeftRadius: PIN / 2,
       borderBottomRightRadius: 0,
       backgroundColor: colors.map.atlasPin,
-      borderWidth: 2,
+      borderWidth: 3,
       borderColor: colors.map.atlasLabelHalo,
       transform: [{ rotate: '45deg' }],
       alignItems: 'center',
@@ -576,15 +662,15 @@ const useThemeValues = createThemeStyles((colors) => {
     pinDot: { width: PIN / 3, height: PIN / 3, borderRadius: PIN / 6, backgroundColor: colors.map.atlasLabelHalo },
     pinLabel: {
       position: 'absolute',
-      start: PIN_HIT - space[1],
-      top: space[1],
-      maxWidth: 160,
-      paddingHorizontal: space[2],
+      maxWidth: 200,
+      paddingHorizontal: space[3],
       paddingVertical: space[1],
-      borderRadius: radius.md,
-      backgroundColor: colors.map.atlasLabelHalo,
+      borderRadius: radius.lg,
+      backgroundColor: colors.map.atlasLabelStrong,
+      borderBottomWidth: 3,
+      borderBottomColor: colors.map.atlasPin,
     },
-    pinLabelText: { ...text('body', { weight: '700' }), color: colors.map.atlasLabelInk },
+    pinLabelText: { ...text('h3'), color: colors.map.atlasLabelStrongInk },
     controls: { position: 'absolute', end: space[2], bottom: space[2], gap: space[2] },
     control: {
       width: 48,

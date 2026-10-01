@@ -25,6 +25,7 @@ describe('the Explore scene', () => {
     expect(spec.highlights).toContainEqual({ countryId: 'BR', state: 'selected' })
     expect(spec.focus).toMatchObject({ kind: 'country', countryId: 'BR' })
     expect(spec.labels[0]!.text).toBe('Brazil')
+    expect(spec.labels.filter((l) => l.countryId === 'BR')).toHaveLength(1)
     expect(spec.markers).toHaveLength(1)
     expect(spec.markers[0]!.label).toBe('Brasília')
     expect(spec.summary).toContain('Brasília')

@@ -51,6 +51,9 @@ uniform float uFlat;
 uniform vec3 uFlatLand;
 uniform vec3 uFlatWater;
 uniform float uSaturation;
+uniform vec3 uWater;
+uniform float uFocus;
+uniform vec3 uShadowColor;
 
 varying vec3 vGeo;
 varying vec3 vView;
@@ -98,40 +101,48 @@ void main() {
   u = vUv.x + (fract(u - vUv.x + 0.5) - 0.5);
   vec2 uv = vec2(u, 0.5 - lat / PI);
 
+  float id = decodeId(uv);
+  float s = stateOf(id);
+  float isLand = step(0.5, id);
+
   vec3 base;
   if (uFlat > 0.5) {
-    float land = step(0.5, decodeId(uv));
-    base = mix(uFlatWater, uFlatLand, land);
+    base = mix(uFlatWater, uFlatLand, isLand);
   } else {
+    // A graded surface rather than a photograph: richer colour, a little contrast, and the
+    // sea pulled toward the app's own ocean blue so the globe sits in the product's palette.
     base = texture2D(uEarth, uv).rgb;
     float grey = dot(base, vec3(0.299, 0.587, 0.114));
     base = mix(vec3(grey), base, uSaturation);
+    base = clamp((base - 0.5) * 1.12 + 0.53, 0.0, 1.0);
+    base = mix(base, uWater * (0.7 + 0.55 * grey), (1.0 - isLand) * 0.55);
   }
+
+  // Focus: when something is the subject, every other land fades back a step, so the eye
+  // goes straight to the country the question is about.
+  float focusFade = uFocus * isLand * (s < 0.5 ? 1.0 : 0.0);
+  float g0 = dot(base, vec3(0.299, 0.587, 0.114));
+  base = mix(base, mix(vec3(g0), base, 0.6) * 0.92 + 0.08, focusFade * 0.45);
 
   // Highlight fill, bilinear over the four nearest ID texels so its edge is smooth.
   vec2 tc = uv * uIdSize - 0.5;
   vec2 f = fract(tc);
   vec2 b = (floor(tc) + 0.5) / uIdSize;
   vec2 o = 1.0 / uIdSize;
-  float i00 = decodeId(b);
-  float i10 = decodeId(b + vec2(o.x, 0.0));
-  float i01 = decodeId(b + vec2(0.0, o.y));
-  float i11 = decodeId(b + o);
-  float s00 = stateOf(i00);
-  float s10 = stateOf(i10);
-  float s01 = stateOf(i01);
-  float s11 = stateOf(i11);
+  float s00 = stateOf(decodeId(b));
+  float s10 = stateOf(decodeId(b + vec2(o.x, 0.0)));
+  float s01 = stateOf(decodeId(b + vec2(0.0, o.y)));
+  float s11 = stateOf(decodeId(b + o));
   vec4 h00 = vec4(stateColor(s00), 1.0) * stateFill(s00);
   vec4 h10 = vec4(stateColor(s10), 1.0) * stateFill(s10);
   vec4 h01 = vec4(stateColor(s01), 1.0) * stateFill(s01);
   vec4 h11 = vec4(stateColor(s11), 1.0) * stateFill(s11);
   vec4 h = mix(mix(h00, h10, f.x), mix(h01, h11, f.x), f.y);
-  vec3 color = base * (1.0 - h.a) + h.rgb;
+  // The fill keeps the relief underneath: tinted, not painted over.
+  vec3 tinted = h.a > 0.001 ? h.rgb / h.a * (0.55 + 0.6 * dot(base, vec3(0.333))) : base;
+  vec3 color = mix(base, tinted, h.a);
 
-  // Country borders: an ID change within a camera-scaled distance. Coasts are left to
-  // the surface texture, which draws them better than a raster edge could.
-  float id = decodeId(uv);
-  float s = stateOf(id);
+  // Country borders: an ID change within a camera-scaled distance.
   float border = 0.0;
   if (id > 0.5) {
     vec2 d = o * uBorderTexels;
@@ -141,32 +152,45 @@ void main() {
     float ss = decodeId(uv - vec2(0.0, d.y));
     if ((e > 0.5 && e != id) || (w > 0.5 && w != id) || (nn > 0.5 && nn != id) || (ss > 0.5 && ss != id)) border = 1.0;
   }
-  color = mix(color, uBorderColor, border * uBorderAlpha);
+  color = mix(color, uBorderColor, border * uBorderAlpha * (1.0 - focusFade * 0.5));
 
-  // Edge and glow for highlighted shapes: a bright inner edge, a soft outer halo.
-  float glow = 0.0;
-  float edge = 0.0;
-  vec3 glowColor = vec3(0.0);
-  vec2 g = o * uGlowTexels;
-  if (uGlowTexels > 0.0) for (int k = 0; k < 8; k++) {
-    float a = float(k) * PI / 4.0;
-    vec2 p = uv + vec2(cos(a) * g.x, sin(a) * g.y);
-    float sk = stateOf(decodeId(p));
-    if (s < 0.5 && sk > 0.5 && sk < 4.5) {
-      glow += 1.0 / 8.0;
-      glowColor = stateColor(sk);
+  // A highlighted country is lifted off the globe: a soft shadow below-right of it, a thick
+  // white rim on its edge and a halo of its own colour around it.
+  if (uGlowTexels > 0.0) {
+    vec2 g = o * uGlowTexels;
+    vec2 r = o * max(1.0, uGlowTexels * 0.3);
+    float glow = 0.0;
+    float rim = 0.0;
+    vec3 glowColor = vec3(0.0);
+    for (int k = 0; k < 8; k++) {
+      float a = float(k) * PI / 4.0;
+      vec2 dir = vec2(cos(a), sin(a));
+      float far = stateOf(decodeId(uv + dir * g));
+      float near = stateOf(decodeId(uv + dir * r));
+      if (s < 0.5 && far > 0.5 && far < 4.5) {
+        glow += 1.0 / 8.0;
+        glowColor = stateColor(far);
+      }
+      if (s > 0.5 && s < 4.5 && abs(near - s) > 0.5) rim = 1.0;
+      if (s < 0.5 && near > 0.5 && near < 4.5) rim = max(rim, 0.6);
     }
-    if (s > 0.5 && s < 4.5 && abs(sk - s) > 0.5) edge = 1.0;
+    // Texture v grows southward and u eastward, so up-left of this fragment is -u, -v.
+    float shadowState = stateOf(decodeId(uv - vec2(0.7, 1.0) * g));
+    float shadow = (s < 0.5 && shadowState > 0.5 && shadowState < 4.5) ? 1.0 : 0.0;
+    color = mix(color, uShadowColor, shadow * 0.32);
+    color = mix(color, glowColor, min(1.0, glow * 1.6) * 0.6);
+    color = mix(color, vec3(1.0), rim * 0.85);
   }
-  color = mix(color, glowColor, min(1.0, glow * 1.4) * 0.55);
-  color = mix(color, mix(stateColor(s), vec3(1.0), 0.55), edge * 0.85);
 
   // Soft daylight: never dark enough to hide a country on the far side of the disc.
   vec3 nv = normalize(vView);
   float diffuse = max(dot(nv, normalize(uLight)), 0.0);
-  color *= 0.78 + 0.32 * diffuse;
-  float rim = pow(1.0 - max(nv.z, 0.0), 3.0);
-  color = mix(color, uRimColor, rim * 0.55);
+  color *= 0.82 + 0.3 * diffuse;
+  // A little specular sheen on the sea, from the same light: it reads as a ball, not a disc.
+  vec3 halfway = normalize(normalize(uLight) + vec3(0.0, 0.0, 1.0));
+  color += (1.0 - isLand) * pow(max(dot(nv, halfway), 0.0), 40.0) * 0.18;
+  float limb = pow(1.0 - max(nv.z, 0.0), 2.5);
+  color = mix(color, uRimColor, limb * 0.6);
   gl_FragColor = vec4(color, 1.0);
 }
 `

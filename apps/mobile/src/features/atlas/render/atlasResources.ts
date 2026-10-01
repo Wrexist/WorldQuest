@@ -13,8 +13,10 @@
 import { parseAtlasGeometry, type AtlasGeometry } from '../geo/geometry.js'
 import { loadBinaryAsset, loadTextureAsset } from './assetSource.js'
 import countriesBin from '../../../../assets/atlas/countries.bin'
-import countriesPng from '../../../../assets/atlas/countries.png'
-import earthJpg from '../../../../assets/atlas/earth.jpg'
+// Images shipped as .bin so Android packs them as raw files expo-gl can read; see
+// scripts/build-atlas.cjs. The bytes are a JPEG and a PNG.
+import countryIds from '../../../../assets/atlas/country-ids.bin'
+import surfaceBin from '../../../../assets/atlas/surface.bin'
 
 let geometry: Promise<AtlasGeometry> | null = null
 let surface: Promise<unknown> | null = null
@@ -43,7 +45,7 @@ export function loadSurfaceTexture(): Promise<unknown> {
   return cached(
     () => surface,
     (p) => (surface = p),
-    () => loadTextureAsset(earthJpg),
+    () => loadTextureAsset(surfaceBin, 'image/jpeg'),
   )
 }
 
@@ -51,7 +53,7 @@ export function loadCountryIdTexture(): Promise<unknown> {
   return cached(
     () => ids,
     (p) => (ids = p),
-    () => loadTextureAsset(countriesPng),
+    () => loadTextureAsset(countryIds, 'image/png'),
   )
 }
 

@@ -47,6 +47,10 @@ export type GlobeTheme = {
   readonly flatLand: Rgb
   readonly flatWater: Rgb
   readonly saturation: number
+  /** The app's ocean, which the sea is graded toward. */
+  readonly water: Rgb
+  /** The lifted subject's shadow. */
+  readonly shadow: Rgb
 }
 
 export type GlobeQuality = 'high' | 'low'
@@ -56,6 +60,18 @@ export type GL = WebGLRenderingContext & { endFrameEXP?: () => void }
 
 /** A texture source: an HTMLImageElement on web, an expo-asset `Asset` on native. */
 export type TextureSource = unknown
+
+/** Per-frame GL error checks: development and `/atlas-lab` builds only. */
+const DEBUG_GL = __DEV__ || process.env.EXPO_PUBLIC_ATLAS_LAB === '1'
+
+/** How strongly each state tints its country. The subject is unmistakable; context is a hint. */
+const FILL: Readonly<Record<HighlightState, number>> = {
+  subject: 0.78,
+  selected: 0.72,
+  correct: 0.78,
+  incorrect: 0.66,
+  context: 0.4,
+}
 
 const STATE_TEX_W = 256
 const STATE_TEX_H = 4
@@ -155,6 +171,7 @@ export class GlobeRenderer {
   private readonly states: WebGLTexture
   private readonly stateData = new Uint8Array(STATE_TEX_W * STATE_TEX_H * 4)
   private outline: { buffer: WebGLBuffer; count: number } | null = null
+  private focus = false
   private surfaceReady = false
   private idsReady = false
   private disposed = false
@@ -219,6 +236,7 @@ export class GlobeRenderer {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR)
     gl.generateMipmap(gl.TEXTURE_2D)
+    this.check('surface texture upload')
     this.surfaceReady = true
   }
 
@@ -239,11 +257,14 @@ export class GlobeRenderer {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+    this.check('country ID texture upload')
     this.idsReady = true
   }
 
   /** Highlight states by raster ID. Replaces everything; unlisted IDs are neutral. */
   setHighlights(byRasterId: ReadonlyMap<number, HighlightState>): void {
+    // Anything but search-match context puts the rest of the land into soft focus.
+    this.focus = [...byRasterId.values()].some((state) => state !== 'context')
     this.stateData.fill(0)
     for (const [id, state] of byRasterId) {
       if (id <= 0 || id >= STATE_TEX_W * STATE_TEX_H) continue
@@ -289,11 +310,14 @@ export class GlobeRenderer {
     gl.disable(gl.DEPTH_TEST)
     gl.useProgram(this.halo)
     this.attribute(this.halo, 'aCorner', this.quad, 2)
-    gl.uniform2f(gl.getUniformLocation(this.halo, 'uViewport'), width, height)
-    gl.uniform1f(gl.getUniformLocation(this.halo, 'uRadius'), discRadius(camera, viewport) * scale)
-    gl.uniform3fv(gl.getUniformLocation(this.halo, 'uHaloColor'), [...this.theme.halo])
-    gl.uniform3fv(gl.getUniformLocation(this.halo, 'uBackground'), [...this.theme.background])
+    gl.uniform2f(this.uniform(this.halo, 'uViewport'), width, height)
+    gl.uniform1f(this.uniform(this.halo, 'uRadius'), discRadius(camera, viewport) * scale)
+    this.vec3(this.uniform(this.halo, 'uHaloColor'), this.theme.halo)
+    this.vec3(this.uniform(this.halo, 'uBackground'), this.theme.background)
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+    // getError stalls the pipeline, so only development and lab builds pay for it — enough to turn
+    // a silently black frame into a named failure while native acceptance is open.
+    if (DEBUG_GL) this.check('halo pass')
 
     if (!this.ready) {
       gl.endFrameEXP?.()
@@ -313,7 +337,7 @@ export class GlobeRenderer {
     this.attribute(this.globe, 'aPos', this.sphere.pos, 3)
     this.attribute(this.globe, 'aUv', this.sphere.uv, 2)
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.sphere.idx)
-    const u = (name: string) => gl.getUniformLocation(this.globe, name)
+    const u = (name: string) => this.uniform(this.globe, name)
     gl.uniformMatrix4fv(u('uMVP'), false, mvp)
     gl.uniformMatrix3fv(u('uRot'), false, rotation)
     gl.activeTexture(gl.TEXTURE0)
@@ -332,32 +356,38 @@ export class GlobeRenderer {
     const radiusPx = discRadius(camera, viewport) * scale
     const texelsPerPixel = this.idSize[1] / (Math.PI * Math.max(1, radiusPx))
     gl.uniform1f(u('uBorderTexels'), Math.max(0.75, texelsPerPixel * 1.1))
-    gl.uniform1f(u('uGlowTexels'), this.quality === 'high' ? Math.max(1.5, texelsPerPixel * 4.5) : 0)
+    gl.uniform1f(u('uGlowTexels'), this.quality === 'high' ? Math.max(2, texelsPerPixel * 7) : 0)
+    // Element by element, with scalar setters — valid on every WebGL implementation. (They
+    // were suspected during the first Android run's black globe and ruled out by bisecting:
+    // the cause was the texture path, see assetSource.ts. They stay because they are the
+    // most portable form, and the locations are cached, so they cost nothing extra.)
     const order: HighlightState[] = ['subject', 'selected', 'correct', 'incorrect', 'context']
-    const colors = new Float32Array(18)
-    const fills = new Float32Array(6)
+    this.vec3(u('uStateColor[0]'), [0, 0, 0])
+    gl.uniform1f(u('uStateFill[0]'), 0)
     order.forEach((state, i) => {
-      colors.set(this.theme.states[state], (i + 1) * 3)
-      fills[i + 1] = state === 'context' ? 0.35 : 0.55
+      this.vec3(u(`uStateColor[${i + 1}]`), this.theme.states[state])
+      gl.uniform1f(u(`uStateFill[${i + 1}]`), FILL[state])
     })
-    gl.uniform3fv(u('uStateColor'), colors)
-    gl.uniform1fv(u('uStateFill'), fills)
-    gl.uniform3fv(u('uBorderColor'), [...this.theme.border])
+    this.vec3(u('uBorderColor'), this.theme.border)
     gl.uniform1f(u('uBorderAlpha'), this.theme.borderAlpha)
-    gl.uniform3fv(u('uRimColor'), [...this.theme.rim])
+    this.vec3(u('uRimColor'), this.theme.rim)
     gl.uniform3f(u('uLight'), -0.45, 0.55, 0.7)
     gl.uniform1f(u('uFlat'), this.theme.flat ? 1 : 0)
-    gl.uniform3fv(u('uFlatLand'), [...this.theme.flatLand])
-    gl.uniform3fv(u('uFlatWater'), [...this.theme.flatWater])
+    this.vec3(u('uFlatLand'), this.theme.flatLand)
+    this.vec3(u('uFlatWater'), this.theme.flatWater)
     gl.uniform1f(u('uSaturation'), this.theme.saturation)
+    this.vec3(u('uWater'), this.theme.water)
+    this.vec3(u('uShadowColor'), this.theme.shadow)
+    gl.uniform1f(u('uFocus'), this.focus ? 1 : 0)
     gl.drawElements(gl.TRIANGLES, this.indexCount, gl.UNSIGNED_SHORT, 0)
+    if (DEBUG_GL) this.check('globe pass')
     gl.disable(gl.CULL_FACE)
 
     if (this.outline !== null) {
       gl.useProgram(this.line)
       this.attribute(this.line, 'aPos', this.outline.buffer, 3)
-      gl.uniformMatrix4fv(gl.getUniformLocation(this.line, 'uMVP'), false, mvp)
-      gl.uniform4f(gl.getUniformLocation(this.line, 'uColor'), 1, 1, 1, 0.95)
+      gl.uniformMatrix4fv(this.uniform(this.line, 'uMVP'), false, mvp)
+      gl.uniform4f(this.uniform(this.line, 'uColor'), 1, 1, 1, 0.95)
       gl.enable(gl.BLEND)
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
       gl.drawArrays(gl.LINES, 0, this.outline.count)
@@ -377,6 +407,36 @@ export class GlobeRenderer {
     gl.deleteProgram(this.globe)
     gl.deleteProgram(this.halo)
     gl.deleteProgram(this.line)
+  }
+
+  /**
+   * Fail loudly on a GL error. An upload that fails silently draws a BLACK globe — which
+   * the first Android run did — and a black globe is a renderer failure the lesson should
+   * replace with the fallback, not a picture to show.
+   */
+  private check(what: string): void {
+    const error = this.gl.getError()
+    if (error !== this.gl.NO_ERROR) throw new Error(`atlas: ${what} failed (GL error 0x${error.toString(16)})`)
+  }
+
+  /**
+   * Uniform locations, looked up once per program. On expo-gl every `getUniformLocation`
+   * is a synchronous call across to the GL thread; ~40 of them per frame was most of the
+   * 21 ms draw time the Android emulator measured.
+   */
+  private readonly locations = new Map<WebGLProgram, Map<string, WebGLUniformLocation | null>>()
+  private uniform(program: WebGLProgram, name: string): WebGLUniformLocation | null {
+    let table = this.locations.get(program)
+    if (table === undefined) {
+      table = new Map()
+      this.locations.set(program, table)
+    }
+    if (!table.has(name)) table.set(name, this.gl.getUniformLocation(program, name))
+    return table.get(name) ?? null
+  }
+
+  private vec3(location: WebGLUniformLocation | null, [r, g, b]: Rgb): void {
+    this.gl.uniform3f(location, r, g, b)
   }
 
   private uploadStates(): void {
@@ -415,13 +475,18 @@ export class GlobeRenderer {
       this.enabled.clear()
       this.boundProgram = program
     }
-    const location = gl.getAttribLocation(program, name)
+    const key = `attribute:${name}`
+    let table = this.attributes.get(program)
+    if (table === undefined) this.attributes.set(program, (table = new Map()))
+    if (!table.has(key)) table.set(key, gl.getAttribLocation(program, name))
+    const location = table.get(key)!
     if (location < 0) return
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
     gl.enableVertexAttribArray(location)
     this.enabled.add(location)
     gl.vertexAttribPointer(location, size, gl.FLOAT, false, 0, 0)
   }
+  private readonly attributes = new Map<WebGLProgram, Map<string, number>>()
   private boundProgram: WebGLProgram | null = null
   private readonly enabled = new Set<number>()
 }

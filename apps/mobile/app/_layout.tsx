@@ -80,6 +80,9 @@ function useOnboardingGate(ready: boolean): void {
     // back here made signing in on a new phone impossible, because onboarding cannot be
     // finished by a person who came to sign in (`pnpm e2e:d1`, the second phone).
     if (pathname.startsWith('/onboarding') || pathname === '/account') return
+    // The atlas renderer proof is developer tooling, opened by deep link on a fresh
+    // device or emulator; it redirects home itself in a production build (ADR 0017).
+    if (pathname === '/atlas-lab') return
     if (readOnboarding().completed) return
     router.replace('/onboarding')
   }, [ready, pathname])

@@ -93,16 +93,23 @@ async function measure(page) {
   const browser = await chromium.launch(launchOptions({ args: ['--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] }))
   const results = []
   for (const viewport of VIEWPORTS) {
-    const context = await browser.newContext({
-      ...browserContext,
-      locale: LOCALE === 'sv' ? 'sv-SE' : 'en-US',
-      viewport,
-      deviceScaleFactor: 2,
-    })
+    const context = await browser.newContext({ ...browserContext, viewport, deviceScaleFactor: 2 })
     const page = await context.newPage()
     await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'networkidle' })
     await sleep(1200)
+    // The walker speaks English, so onboarding is done in English and the language is
+    // then chosen the way a learner chooses it — the stored Settings preference, which
+    // the app reads at startup (src/lib/locale.ts).
     await walkOnboarding(page, () => {})
+    if (LOCALE !== 'en') {
+      const set = await page.evaluate((language) => {
+        const key = Object.keys(localStorage).find((k) => k.includes('preferences.v1'))
+        const value = key === undefined ? {} : JSON.parse(localStorage.getItem(key) ?? '{}')
+        localStorage.setItem(key ?? 'preferences.v1', JSON.stringify({ ...value, language }))
+        return key ?? null
+      }, LOCALE)
+      if (set === null) console.warn('  (no stored preferences found; wrote preferences.v1)')
+    }
     for (const focus of FOCI) {
       const tag = `${focus.name}-${viewport.width}x${viewport.height}${LOCALE === 'sv' ? '-sv' : ''}${SCALE !== 1 ? `-text${SCALE}x` : ''}`
       await page.goto(`http://localhost:${PORT}/lesson?${focus.query}`, { waitUntil: 'networkidle' })

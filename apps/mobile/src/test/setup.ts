@@ -282,6 +282,7 @@ vi.mock('expo-asset', () => ({
 }))
 
 vi.mock('expo-file-system', () => ({
+  Paths: { cache: 'file:///cache' },
   File: class {
     constructor(readonly uri: string) {}
     async bytes(): Promise<Uint8Array> {

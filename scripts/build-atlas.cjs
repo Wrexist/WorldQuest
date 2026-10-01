@@ -10,8 +10,13 @@
  *   - the geography content pack (country IDs, regions, capital facts)
  *
  * Outputs:
- *   apps/mobile/assets/atlas/earth.jpg          the surface, 4096×2048 equirectangular
- *   apps/mobile/assets/atlas/countries.png      country ID raster, 4096×2048, NEAREST only
+ *   apps/mobile/assets/atlas/surface.bin        the surface: a 4096×2048 equirectangular JPEG
+ *   apps/mobile/assets/atlas/country-ids.bin    country ID raster: a 4096×2048 PNG, NEAREST only
+ *
+ *   The two images are named .bin on purpose: Android packs a bundled IMAGE as a drawable
+ *   resource with no file path, which expo-gl cannot read (it decodes from a file:// path
+ *   with stb_image); a .bin is packed raw and expo-asset gives it a real file. stb_image
+ *   and the browser both decode by content, not by name.
  *   apps/mobile/assets/atlas/countries.bin      picking + outline rings, quantised 1e-5°
  *   apps/mobile/src/features/atlas/data/atlas.generated.ts   the registry the app imports
  *   docs/design/world-atlas/atlas-manifest.generated.json    sources, checksums, coverage
@@ -472,7 +477,7 @@ for (let i = 0; i < ids.length; i++) {
 }
 png.data = rgb
 const rasterBytes = PNG.sync.write(png, { colorType: 2, inputHasAlpha: false, deflateLevel: 9 })
-writeFileSync(join(OUT_ASSETS, 'countries.png'), rasterBytes)
+writeFileSync(join(OUT_ASSETS, 'country-ids.bin'), rasterBytes)
 
 // ── picking + outline rings ──────────────────────────────────────────────────
 
@@ -505,7 +510,7 @@ writeFileSync(join(OUT_ASSETS, 'countries.bin'), geometryBytes)
 
 // ── surface texture ──────────────────────────────────────────────────────────
 
-const textureOut = join(OUT_ASSETS, 'earth.jpg')
+const textureOut = join(OUT_ASSETS, 'surface.bin')
 if (!args.has('--no-texture')) {
   const tif = join(CACHE, 'surface', 'NE2_50M_SR_W', 'NE2_50M_SR_W.tif')
   if (!existsSync(tif)) {
@@ -534,7 +539,7 @@ if (!args.has('--no-texture')) {
   )
 }
 if (!existsSync(textureOut)) {
-  console.error('✗ apps/mobile/assets/atlas/earth.jpg does not exist; run without --no-texture once.')
+  console.error('✗ apps/mobile/assets/atlas/surface.bin does not exist; run without --no-texture once.')
   process.exit(1)
 }
 const textureBytes = readFileSync(textureOut)
@@ -679,9 +684,9 @@ const sources = {
   license: 'Public domain (Natural Earth). GeoNames (CC BY 4.0) used for verification only.',
 }
 const checksums = {
-  'countries.png': sha256(rasterBytes),
+  'country-ids.bin': sha256(rasterBytes),
   'countries.bin': sha256(geometryBytes),
-  'earth.jpg': sha256(textureBytes),
+  'surface.bin': sha256(textureBytes),
 }
 
 mkdirSync(join(OUT_TS, '..'), { recursive: true })
@@ -782,7 +787,7 @@ const manifest = {
   raster: { width: RASTER_W, height: RASTER_H, features: features.length },
   geometry: { countries: packFeatures.length, points, quantisation: `1/${QUANT} degree` },
   checksums,
-  bytes: { 'countries.png': rasterBytes.length, 'countries.bin': geometryBytes.length, 'earth.jpg': textureBytes.length },
+  bytes: { 'country-ids.bin': rasterBytes.length, 'countries.bin': geometryBytes.length, 'surface.bin': textureBytes.length },
   coverage: {
     packCountries: packIds.length,
     withGeometry: packFeatures.length,
@@ -845,7 +850,7 @@ writeFileSync(join(OUT_DOCS, 'coverage.generated.md'), md)
 
 console.log(
   `✓ ${packFeatures.length} countries, ${features.length} raster features, ${points} picking points\n` +
-    `  countries.png ${(rasterBytes.length / 1024).toFixed(0)} KB · countries.bin ${(geometryBytes.length / 1024).toFixed(0)} KB · earth.jpg ${(textureBytes.length / 1024).toFixed(0)} KB\n` +
+    `  country-ids.bin ${(rasterBytes.length / 1024).toFixed(0)} KB · countries.bin ${(geometryBytes.length / 1024).toFixed(0)} KB · surface.bin ${(textureBytes.length / 1024).toFixed(0)} KB\n` +
     `  ${places.length} capital pins, ${placeIssues.length} without · ${manifest.coverage.smallTargets.length} small targets\n` +
     `  wrote ${relative(ROOT, OUT_TS)}`,
 )

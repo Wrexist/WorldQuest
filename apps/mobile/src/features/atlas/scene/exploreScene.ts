@@ -56,6 +56,9 @@ export function buildExploreScene(input: ExploreSceneInput): AtlasSceneSpec {
     focus = { kind: 'country', countryId: selected.id, frame: selected.frame }
     const name = input.countryName(selected.id) ?? ''
     // The selected country's own label always competes first.
+    // Replaces its entry in the general list rather than adding a second "Spain".
+    const existing = labels.findIndex((l) => l.countryId === selected.id)
+    if (existing >= 0) labels.splice(existing, 1)
     labels.unshift({ countryId: selected.id, lat: selected.anchor[0], lon: selected.anchor[1], text: name, priority: 100, extent: selected.frame.radius })
     const place = Object.values(ATLAS_PLACES).find((p) => p.countryId === selected.id && p.role === 'capital')
     const capital = place === undefined ? undefined : input.factValueName(place.factId)

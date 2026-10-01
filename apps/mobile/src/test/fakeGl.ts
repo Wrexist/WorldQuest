@@ -24,6 +24,8 @@ export function fakeGl(options: { failCompile?: boolean } = {}): FakeGl {
     FRAGMENT_SHADER: 2,
     COMPILE_STATUS: 3,
     LINK_STATUS: 4,
+    NO_ERROR: 0,
+    getError: () => 0,
     createShader: counted('createShader', () => ({ id: next++ })),
     shaderSource: counted('shaderSource', () => undefined),
     compileShader: counted('compileShader', () => undefined),

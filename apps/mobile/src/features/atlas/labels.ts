@@ -63,9 +63,12 @@ export function layoutLabels(
     const width = label.text.length * CHAR_WIDTH + PADDING
     // A name wider than its country would hide the very shape it names: try beside it.
     const radiusPx = label.extent === undefined ? Infinity : label.extent / degreesPerPoint(camera, viewport)
-    const beside = radiusPx * 0.8 + HEIGHT / 2 + 4
+    const beside = Math.min(radiusPx * 0.55, 70) + HEIGHT / 2 + 4
+    // The subject's own name (priority 10 and up) goes beside it whenever its size is
+    // known: the shape IS the question, and a name on top of it hides the coastline.
+    const subject = label.priority >= 10 && label.extent !== undefined
     const offsets: readonly (readonly [number, number])[] =
-      width / 2 <= radiusPx * 0.85
+      width / 2 <= radiusPx * 0.85 && !subject
         ? OFFSETS
         : [
             [0, beside],

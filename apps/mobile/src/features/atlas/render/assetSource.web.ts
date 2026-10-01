@@ -1,6 +1,7 @@
 /**
- * Web asset loading. expo-gl's web `texImage2D` wraps an `Asset` in an `Image` it never
- * waits for, so the first upload would be an empty texture; this decodes first.
+ * Web asset loading. The atlas's images ship as `.bin` (see assetSource.ts), so they are
+ * fetched as bytes and decoded here — with colour-space conversion off, because the
+ * country-ID raster is data: a browser colour-managing ID 57 into 58 is a wrong country.
  */
 
 import { Asset } from 'expo-asset'
@@ -13,10 +14,10 @@ export async function loadBinaryAsset(module: number | string): Promise<ArrayBuf
   return response.arrayBuffer()
 }
 
-export async function loadTextureAsset(module: number | string): Promise<unknown> {
-  const image = new Image()
-  image.crossOrigin = 'anonymous'
-  image.src = uriOf(module)
-  await image.decode()
-  return image
+export async function loadTextureAsset(module: number | string, mime: string): Promise<unknown> {
+  const bytes = await loadBinaryAsset(module)
+  return createImageBitmap(new Blob([bytes], { type: mime }), {
+    colorSpaceConversion: 'none',
+    premultiplyAlpha: 'none',
+  })
 }

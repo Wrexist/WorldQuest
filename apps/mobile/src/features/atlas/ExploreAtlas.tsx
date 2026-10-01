@@ -154,7 +154,8 @@ const useThemeValues = createThemeStyles((colors) => {
       borderWidth: 1,
       borderColor: colors.border.subtle,
     },
-    chipActive: { backgroundColor: colors.map.atlasSelected, borderColor: colors.map.atlasSelected },
+    // The app's action blue, not the map's gold: white text needs the contrast.
+    chipActive: { backgroundColor: colors.action.secondary, borderColor: colors.action.secondaryEdge },
     chipText: { ...text('body', { weight: '700' }), color: colors.text.primary },
     chipTextActive: { color: colors.text.onAccent },
     card: {
@@ -181,7 +182,7 @@ const useThemeValues = createThemeStyles((colors) => {
       borderWidth: 1,
       borderColor: colors.border.subtle,
     },
-    listItemActive: { borderColor: colors.map.atlasSelected, borderWidth: 2 },
+    listItemActive: { borderColor: colors.action.secondary, borderWidth: 2 },
     listText: { ...text('body'), color: colors.text.primary },
   })
   return { styles, colors }

@@ -44,6 +44,6 @@ Antarctica · American Samoa · Bermuda · Br. Indian Ocean Ter. · British Virg
 
 ## Checksums
 
-- `countries.png` c1f969613c8535abc2951d22fe971664346e57a7e5383d4510a3c1bc5e863518
+- `country-ids.bin` c1f969613c8535abc2951d22fe971664346e57a7e5383d4510a3c1bc5e863518
 - `countries.bin` df04f13c4cc44ff97f51d17455ec088c6784a231a1b1773ac6436053fda4e7af
-- `earth.jpg` beaab1fd2bd083ebe6ba076254e5fe80e3d2089bc676c4f016253aa815b4d197
+- `surface.bin` beaab1fd2bd083ebe6ba076254e5fe80e3d2089bc676c4f016253aa815b4d197

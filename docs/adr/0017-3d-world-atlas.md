@@ -27,7 +27,8 @@ Constraints measured, not assumed:
    (`GlobeRenderer`), no three.js and no React-Three. The scene is one UV sphere, a halo
    quad and an outline line set — a scene graph buys nothing here and costs the budget.
 2. **Surface: Natural Earth II shaded relief, 1:50m** (public domain), downscaled to a
-   4096×2048 equirectangular JPEG. No baked borders, names or labels.
+   4096×2048 equirectangular JPEG, shipped as `surface.bin` (see Consequences). No baked
+   borders, names or labels.
 3. **Countries: one cut geometry, used three times.** Natural Earth 1:10m admin-0
    (via `world-atlas@2.0.2`; the original shapefile for countries under 3°, which
    world-atlas's quantisation collapses) is projected once with d3's equirectangular
@@ -86,10 +87,11 @@ coordinates; a renderer that draws only when something changed.
   1.1 MB, rings 0.9 MB, ID raster 0.15 MB), outside the bytecode budget.
 - **GPU memory (estimated, not measured):** two 4096×2048 RGBA textures ≈ 32 MB each,
   +⅓ for the surface's mipmaps ≈ 75 MB per live context. One context per mounted view.
-- **Native acceptance is open.** No iOS or Android GPU has run this yet; expo-gl's texture
-  upload from an `Asset`, the shader's `highp` fragment path and frame pacing on a
-  mid-tier Android are the risks. The gate stays closed on native until
-  `docs/design/world-atlas/README.md` records device evidence.
+- **Native acceptance is partly open.** The Android emulator renders correctly at ~60 fps
+  (README, Evidence 6) after two native-only fixes this ADR now depends on: images ship as
+  `.bin` because expo-gl decodes only from a `file://` path, and uniform locations are
+  cached because each lookup is a synchronous JSI hop. No physical device and no iOS yet;
+  the gate stays closed on native until they are recorded.
 - Raster borders are as fine as 0.088° per texel; the subject's outline is drawn as
   vector lines on top. Countries under 64 texels (32 of them) get a ring marker.
 

@@ -35,8 +35,9 @@ Turn the globe on in a production-like build: `EXPO_PUBLIC_ATLAS_GLOBE=1`, or th
 - [x] `expo-gl ~16.0.10` (SDK 54's pinned version) + raw WebGL; three.js rejected on bundle size (ADR 0017)
 - [x] In-app proof at `/atlas-lab` (dev builds / `EXPO_PUBLIC_ATLAS_LAB=1`; constant-folded out of production)
 - [x] Sphere, local texture, country overlay, projected marker, resize, remount, cleanup — **web (Chromium) verified**
-- [ ] **iOS device** — not run. Required before the gate opens on iOS.
-- [ ] **Android device/emulator** — not run (see Blockers). Required before the gate opens on Android.
+- [ ] **iOS device** — not run (needs a Mac). Required before the gate opens on iOS.
+- [x] **Android emulator** (Pixel 6 AVD, API 35, x86_64, host-GPU GL) — renders correctly after two native-only fixes (Evidence 6)
+- [ ] **Android physical device** — not run. Required before the gate opens on Android.
 
 ### C. Data + one complete lesson
 - [x] Registry keyed by pack IDs; no names, no second country database (`data/atlas.generated.ts`)
@@ -56,8 +57,10 @@ Turn the globe on in a production-like build: `EXPO_PUBLIC_ATLAS_GLOBE=1`, or th
 - [x] 48-pt recentre/zoom buttons outside the accessible image; pins/labels hidden from the tree
 - [x] Reduce Motion: camera cuts instead of flying; no flight over 70° of arc
 - [x] Render on demand, no loop when still; AppState resume redraws; lost context remounts
-- [ ] Device frame timing and memory — not measured (no device run)
-- [ ] Large-text and Swedish screenshots at all sizes — see Evidence 5 for what was run
+- [x] Frame timing on the Android emulator (Evidence 6); [ ] on a physical device
+- [x] Swedish at 320×568 and 390×844 (Evidence 5)
+- [ ] Large accessibility text — **not tested**: the web harness's 2× root font size does not reach react-native-web's px text, so its numbers equal 1×. Needs a device with Dynamic Type / font scale 200 %
+- [ ] Explore polish: after a search selection the country card lands below the fold on a 390×844 phone; scroll it into view
 
 ## Evidence log
 
@@ -72,24 +75,58 @@ it proves correctness of output, not phone performance.
    coast; every capital fact pinned or listed with a reason; shipped files match checksums;
    disclosure per mode × phase; label occlusion/collision; GL resources reused across
    questions and deleted on unmount (fake context); renderer failure inside a real lesson.
-2. **Renderer proof in Chromium** — `node scripts/atlas-evidence.cjs`. Results recorded in
-   `evidence/report.json` and the PNGs beside it.
-3. **Native bundle** — `pnpm bundle:native`: 5.17 MB iOS / 5.16 MB Android after trimming
-   (5.24 on arrival). Budget 5.1 → 5.2 with attribution in `scripts/bundle-native.cjs`.
-4. **Lesson layout** — `node scripts/atlas-lesson-shots.cjs`: overflow, cut elements and
-   on-screen checks per viewport, before and after answering. Results in
-   `evidence/lesson/report*.json`.
-5. **Locale and text size** — the same script with `WQ_LOCALE=sv` and `WQ_TEXT_SCALE=2`.
+2. **Renderer proof in Chromium** — `node scripts/atlas-evidence.cjs` (headless Chromium,
+   ANGLE → SwiftShader, i.e. a software GPU). First ready 281 ms; draw CPU p50 0.8 ms;
+   frame interval ~98 ms (software rasteriser — not a phone number). 40 question changes
+   and 8 remounts: JS heap 27.6 MB before and after, one canvas left. Resume after a
+   frozen lifecycle: globe still drawn (95.5 % coverage). Resize to landscape: drawn
+   (97.2 %) — this caught a real bug, the canvas was blank after a resize until the redraw
+   loop waited for the drawing buffer. Explore: search "Spa" → Spain → card ("Spain ·
+   Capital · Madrid · Open Spain") → `/country/ES`. **Zero requests left localhost.**
+   Zero console errors. Screenshots: `evidence/*.jpg` (14 countries × question/revealed,
+   identify, Explore, remount, resize).
+3. **Native bundle** — `pnpm bundle:native`: **5.17 MB** iOS and Android (5.24 on arrival,
+   ~5.09 before the atlas). Budget 5.1 → 5.2 with attribution in `scripts/bundle-native.cjs`.
+4. **Lesson layout** — `node scripts/atlas-lesson-shots.cjs` at 320×568, 390×844, 430×932,
+   768×1024, for a capital question (map + pin after grading), a currency question (context
+   map) and a "where in the world" question (reveal-only): **no horizontal overflow, no
+   element past the right edge, prompt and all four options on screen at every size; Check
+   on screen at all but 320×568**, where it follows the options in the scroll by design.
+   The reveal-only question showed **no map before answering** at every size. The clipping
+   in the original native screenshot did not reproduce in Chromium; it needs re-checking
+   on the device it came from. `evidence/lesson/report.json`.
+5. **Swedish** — the same at 320×568 and 390×844 with the language set in Settings:
+   identical results; capitals and options localised (Peking, Ulan Bator).
+   `evidence/lesson/report-sv.json`.
+6. **Android emulator** — Pixel 6 AVD, Android 15 (API 35) x86_64, emulator GPU on host;
+   debug APK with an embedded production JS bundle (`EXPO_PUBLIC_ATLAS_LAB=1`). Two
+   native-only defects found and fixed:
+   - **Black globe, correct outlines.** Bisected with pixel probes: clear and halo were
+     right, the globe pass sampled empty textures with no GL error. expo-gl decodes images
+     only from a `file://` `localUri`; an embedded Android build packs bundled images as
+     drawable resources with no file. Fix: the two images ship as `.bin` (raw resources
+     with real files), and a non-file URI is now a loud error → fallback, never a black
+     globe.
+   - **21 ms of draw CPU per frame.** ~40 `getUniformLocation` calls per frame, each a
+     synchronous JSI hop. Cached per program: **draw CPU p50 1.6 / p95 4.5 ms, frame
+     interval p50 16.7 / p95 22.4 ms (≈60 fps) during a continuous spin**, ready in 600 ms.
+   Also fixed: a pin's name wrapped mid-word ("Mad/rid") because it was laid out inside
+   the 48-pt pin. Screenshots: `evidence/android/*.jpg`. An emulator is not a phone: the
+   gate stays closed on Android until a physical device repeats this.
 
 ## Blockers and open acceptance work
 
-- **No native GPU evidence.** iOS needs a Mac; the Android `Pixel_6` AVD exists on this
-  machine but no device build was produced in this pass. Until one is, the gate stays
-  closed on native (it is open in dev builds). What to verify on device: texture upload
-  from `Asset` (both JPEG and the ID PNG decode with exact bytes), `highp` fragment
-  precision, pan/pinch inside the lesson's ScrollView, background/resume, frame pacing.
-- **Performance budgets are estimates.** GPU memory ≈ 75 MB per live context (two 4096×2048
-  RGBA textures + mipmaps); not measured on a device.
+- **No physical-device evidence.** iOS needs a Mac; Android ran on an emulator only. The
+  gate stays closed on native (open in dev builds, `atlas_globe` flag, or
+  `EXPO_PUBLIC_ATLAS_GLOBE=1`). Still to verify on hardware: pan/pinch inside the lesson's
+  ScrollView, background/resume, 200 % text, frame pacing on a mid-tier Android, iOS's
+  `expo-asset` file path for `.bin` assets.
+- **GPU memory is an estimate:** ≈ 75 MB per live context (two 4096×2048 RGBA textures +
+  mipmaps); not measured.
+- **Toolchain issues met on the way, not caused by the atlas:** `gradlew assembleRelease`
+  fails at `createBundleReleaseJsAndAssets` (entry resolved against the monorepo root on
+  Windows); the dev client crashes with `getDevServer is not a function`. Worked around
+  with `expo export:embed` into a debug APK.
 - **Location-tapping assessment** is not built. `countrySelected` events exist; grading,
   tolerances, mastery and an accessible alternative do not, so no lesson awards anything
   for a tap.
