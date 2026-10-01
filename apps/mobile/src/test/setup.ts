@@ -246,3 +246,47 @@ vi.mock('expo-audio', () => ({
     remove: () => {},
   }),
 }))
+
+/**
+ * The atlas's native modules (ADR 0017). expo-gl ships JSX in its build output, which
+ * Vite will not parse, and none of the three can run in jsdom anyway: there is no GPU
+ * here. So GLView is a plain View, and a test that wants a context — a failing one, to
+ * prove the lesson survives it — sets `globalThis.__wqFakeGl` and gets it handed to
+ * `onContextCreate`. Pixels are proven elsewhere: `scripts/atlas-evidence.cjs` runs the
+ * real renderer in Chromium.
+ */
+vi.mock('expo-gl', async () => {
+  const React = await import('react')
+  const { View } = await import('react-native')
+  function GLView(props: { onContextCreate?: (gl: unknown) => void; style?: unknown }) {
+    React.useEffect(() => {
+      const fake = (globalThis as { __wqFakeGl?: unknown }).__wqFakeGl
+      if (fake !== undefined) props.onContextCreate?.(fake)
+      // Once, as a real context is created once per mount.
+    }, [])
+    return React.createElement(View, { testID: 'gl-view', style: props.style as never })
+  }
+  return { GLView }
+})
+
+vi.mock('expo-asset', () => ({
+  Asset: {
+    fromModule: (module: unknown) => ({
+      uri: String(module),
+      localUri: String(module),
+      downloadAsync: async function (this: unknown) {
+        return { uri: String(module), localUri: String(module) }
+      },
+    }),
+  },
+}))
+
+vi.mock('expo-file-system', () => ({
+  Paths: { cache: 'file:///cache' },
+  File: class {
+    constructor(readonly uri: string) {}
+    async bytes(): Promise<Uint8Array> {
+      throw new Error('expo-file-system is not available in tests')
+    }
+  },
+}))

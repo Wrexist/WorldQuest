@@ -25,6 +25,8 @@ import type { ArtName } from '../../lib/art.generated.js'
 import { Flag } from '../../components/Flag.js'
 import type { CountryRow } from './RegionScreen.js'
 import { Icon } from '../../components/Icon.js'
+import { ExploreAtlas } from '../atlas/ExploreAtlas.js'
+import type { AtlasNames } from '../atlas/useAtlasNames.js'
 
 export const REGIONS = ['EU', 'AS', 'AF', 'NA', 'SA', 'OC', 'AN'] as const
 export type RegionCode = (typeof REGIONS)[number]
@@ -72,6 +74,13 @@ export type ExploreScreenProps = {
   readonly onSelectRegion: (region: RegionCode) => void
 
   readonly coins?: number | undefined
+  /**
+   * The 3D atlas, when this build may show it (features/atlas/atlasAvailability.ts).
+   * Present: the globe sits above the search, and a search result SELECTS its country on
+   * the globe rather than leaving the screen — the card then opens the country page.
+   * Absent: Explore is exactly what it was.
+   */
+  readonly atlas?: { readonly names: AtlasNames } | undefined
   /** The streak, for the flame chip in the top bar, and where tapping it goes. */
   readonly streak?: number | undefined
   readonly onOpenStreak?: (() => void) | undefined
@@ -95,10 +104,13 @@ export function ExploreScreen({
   coins,
   streak,
   onOpenStreak,
+  atlas,
 }: ExploreScreenProps) {
   const { colors, styles } = useThemeValues()
   const t = useT()
   const [query, setQuery] = useState('')
+  const [selected, setSelected] = useState<string | null>(null)
+  const [atlasRegion, setAtlasRegion] = useState<string | null>(null)
   const normalize = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase().trim()
   const needle = normalize(query)
   const matches = countries.filter(country => normalize(country.name).includes(needle) || (REGIONS.includes(country.region as RegionCode) && normalize(t(REGION_NAME[country.region as RegionCode])).includes(needle)))
@@ -137,10 +149,27 @@ export function ExploreScreen({
         placeholder={t('explore:search.label')} placeholderTextColor={colors.text.tertiary}
         value={query} onChangeText={setQuery} autoCorrect={false} returnKeyType="search"
         style={styles.search} testID="explore-search" />
+      {atlas !== undefined && (
+        <ExploreAtlas
+          countries={countries}
+          names={atlas.names}
+          selected={selected}
+          onSelect={setSelected}
+          region={atlasRegion}
+          onRegion={(region) => {
+            setAtlasRegion(region)
+            // A selection outside the new filter would be a card for a country the
+            // globe is no longer showing.
+            if (region !== null && selected !== null && countries.find((c) => c.id === selected)?.region !== region) setSelected(null)
+          }}
+          matches={needle.length > 0 ? matches.map((m) => m.id) : []}
+          onOpenCountry={(id) => onSelectCountry?.(id)}
+        />
+      )}
       {needle.length > 0 && <View style={styles.searchResults}>
         <Text style={styles.subtitle} accessibilityLiveRegion="polite">{t('explore:search.count', { count: matches.length })}</Text>
         {matches.length === 0 && <Text style={styles.subtitle}>{t('explore:search.empty')}</Text>}
-        {matches.map(country => <Card key={country.id} onPress={() => onSelectCountry?.(country.id)} style={styles.searchRow}>
+        {matches.map(country => <Card key={country.id} onPress={() => (atlas !== undefined ? setSelected(country.id) : onSelectCountry?.(country.id))} style={styles.searchRow}>
           {country.flagPath && <Flag path={country.flagPath} width={36} label="" />}
           <View style={styles.headerText}>
             <Text style={styles.collectionName}>{country.name}</Text>

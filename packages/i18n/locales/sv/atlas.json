@@ -1,0 +1,21 @@
+{
+  "atlas:summary.identify": "Karta med ett land markerat. Namnet visas när du har svarat.",
+  "atlas:summary.identifyRevealed": "Karta som visar {country}, markerat.",
+  "atlas:summary.identifyWrong": "Karta som visar {country}, markerat, och {chosen}, landet du valde.",
+  "atlas:summary.country": "Karta över {country}, markerat.",
+  "atlas:summary.capitalHidden": "Karta över {country}, markerat. Huvudstaden visas när du har svarat.",
+  "atlas:summary.capitalPinned": "Karta över {country}, med huvudstaden {capital} utmärkt.",
+  "atlas:summary.capitalUnpinned": "{capital} är huvudstad i {country}.",
+  "atlas:summary.world": "Jordglob.",
+  "atlas:summary.exploreSelected": "Jordglob som visar {country}, med huvudstaden {capital} utmärkt.",
+  "atlas:control.recenter": "Centrera kartan",
+  "atlas:control.zoomIn": "Zooma in",
+  "atlas:control.zoomOut": "Zooma ut",
+  "atlas:state.loading": "Kartan laddas…",
+  "atlas:fallback.capital": "Huvudstad: {capital}",
+  "atlas:explore.capital": "Huvudstad",
+  "atlas:explore.open": "Öppna {country}",
+  "atlas:explore.close": "Rensa val",
+  "atlas:explore.all": "Alla",
+  "atlas:explore.listLabel": "Länder på kartan"
+}

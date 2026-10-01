@@ -17,7 +17,7 @@ export type D1Focus = { factIds?: string[]; attributes?: string[]; entities?: st
  * Worker counts finished lessons per step from it, which a focus alone cannot do when two
  * steps share one. Last in the object, as in the Worker's schema: the echo is compared as JSON.
  */
-export type D1PrepareInput = { lessonId: string; locale: 'en' | 'sv'; count: number; screenReader: boolean; focus?: D1Focus; node?: string }
+export type D1PrepareInput = { lessonId: string; locale: 'en' | 'sv'; count: number; screenReader: boolean; focus?: D1Focus; node?: string; maxModifier?: number; introduceFrom?: number; placement?: true }
 export type D1PreparedLesson = { lessonId: string; issuedAt: number; questions: ReturnType<typeof parseD1Question>[]; request: D1PrepareInput }
 const object = (v: unknown): v is Record<string, unknown> => v !== null && typeof v === 'object' && !Array.isArray(v)
 const integer = (v: unknown): v is number => typeof v === 'number' && Number.isSafeInteger(v) && v >= 0
@@ -29,7 +29,8 @@ function submission(value: unknown): D1Submission {
     if (!object(a) || !integer(a.slot) || a.slot > 19 || !(a.chosenOptionId === null || (typeof a.chosenOptionId === 'string' && a.chosenOptionId.length <= 160))
       || typeof a.elapsedMs !== 'number' || !Number.isFinite(a.elapsedMs) || a.elapsedMs < 0 || a.elapsedMs > 60000) throw new D1AuthError('INVALID_SUBMISSION')
     return { slot: a.slot, chosenOptionId: a.chosenOptionId, elapsedMs: a.elapsedMs }
-  }).sort((a, b) => a.slot - b.slot)
+  })
+  // In the order given: the Worker replays hearts in that order, and a lesson may adapt its own.
   if (new Set(answers.map(a => a.slot)).size !== answers.length) throw new D1AuthError('INVALID_SUBMISSION')
   return { lessonId: value.lessonId, answers }
 }

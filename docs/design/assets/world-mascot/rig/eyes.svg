@@ -1,1 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 300 300"><ellipse cx="115" cy="133" rx="24" ry="33" fill="#FFFFFF" transform="rotate(13 115 133)"/><ellipse cx="175" cy="117" rx="22" ry="31" fill="#FFFFFF" transform="rotate(-8 175 117)"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 300 300"><defs><linearGradient id="white" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#EEF4FB"/></linearGradient><filter id="lid" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.5"/></filter>
+      <clipPath id="l"><ellipse cx="115" cy="133" rx="24" ry="33" transform="rotate(13 115 133)"/></clipPath>
+      <clipPath id="r"><ellipse cx="175" cy="117" rx="22" ry="31" transform="rotate(-8 175 117)"/></clipPath></defs>
+    <ellipse cx="115" cy="133" rx="24" ry="33" fill="url(#white)" transform="rotate(13 115 133)"/>
+    <ellipse cx="175" cy="117" rx="22" ry="31" fill="url(#white)" transform="rotate(-8 175 117)"/>
+    <g clip-path="url(#l)"><ellipse cx="113" cy="100" rx="30" ry="12" fill="#1D4F8F" opacity=".12" filter="url(#lid)"/></g>
+    <g clip-path="url(#r)"><ellipse cx="175" cy="84" rx="28" ry="12" fill="#1D4F8F" opacity=".12" filter="url(#lid)"/></g>
+    <ellipse cx="115" cy="133" rx="24" ry="33" fill="none" stroke="#062957" stroke-opacity=".28" stroke-width="1.6" transform="rotate(13 115 133)"/>
+    <ellipse cx="175" cy="117" rx="22" ry="31" fill="none" stroke="#062957" stroke-opacity=".28" stroke-width="1.6" transform="rotate(-8 175 117)"/></svg>

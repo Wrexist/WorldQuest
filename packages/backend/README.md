@@ -67,8 +67,12 @@ Progress is derived from the distinct quest facts answered correctly that day
 plus slot five's goal; task XP, the all-five bonus and its coins are paid in the
 lesson's own ledger row, once.
 
-Lessons that end early: a submission may answer any prefix of its ticket (at
-least one slot, never more than issued), and those answers are graded into
+Lessons that end early: a submission may answer any SUBSET of its ticket's slots
+(each slot at most once, at least one answer, never more than issued), in the order
+the learner gave them — a lesson adapts as it goes (`rescued` in the lesson machine),
+so slot 4 may be answered third, and the hearts replay walks the answers in that
+order. The order is part of the submission: the same answers in another order are a
+different submission, not an idempotent retry. Those answers are graded into
 memory with their per-answer XP. Only a FINISHED lesson — every slot answered,
 or hearts emptied in the grader's own replay (`heartsDepleted`; new facts never
 cost a heart) — is the day's activity: it extends the streak, takes the

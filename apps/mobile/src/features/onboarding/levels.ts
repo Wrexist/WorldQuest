@@ -7,9 +7,10 @@
  * at 3 would make the middle option a different app from the easy one rather than a
  * wider version of it.
  *
- * The band applies to the FIRST lessons only. FSRS infers a per-learner difficulty from
- * real answers within a session or two and that number is better than any self-report,
- * which is what `onboarding:level.body` promises out loud.
+ * The band is where free practice STARTS: `useDifficultyRamp` raises its ceiling as the
+ * learner practises (see `difficultyRamp` in the engines), and FSRS infers a per-learner
+ * difficulty from real answers within a session or two, which is better than any
+ * self-report — what `onboarding:level.body` promises out loud.
  *
  * ## Why this is not in `OnboardingScreen.tsx`
  *
@@ -23,10 +24,14 @@
  * The general shape is worth keeping in mind: anything a route needs from a feature
  * belongs beside the screen, not inside it.
  */
-export const LEVELS = {
-  new: { min: 1, max: 3 },
-  some: { min: 1, max: 4 },
-  confident: { min: 3, max: 5 },
-} as const
+import { START_LEVELS, type StartLevel } from '@worldquest/engines'
 
-export type LevelChoice = keyof typeof LEVELS
+/**
+ * Since September 2026 the bands live in the engines (`START_LEVELS`), beside the
+ * `difficultyRamp` that widens them as a learner practises: the starting band is where a
+ * learner begins, no longer where they stay. Re-exported under the old names so the
+ * onboarding and settings code that reads them did not have to move.
+ */
+export const LEVELS = START_LEVELS
+
+export type LevelChoice = StartLevel

@@ -1,0 +1,4368 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "packId": "geography.facts.border-count",
+  "version": "1.0.0",
+  "subject": "geography",
+  "kind": "facts",
+  "locales": [
+    "en",
+    "sv"
+  ],
+  "license": "CC-BY-4.0",
+  "generatedAt": "2026-09-30",
+  "$comment": "Only where both sources list exactly the same neighbours among the countries the app has. Anything touching a disputed boundary is absent — see scripts/build-deep-facts.cjs.",
+  "volatilityReviewed": true,
+  "delivery": "server",
+  "items": [
+    {
+      "id": "geo.AD.border-count",
+      "entity": "AD",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AE.border-count",
+      "entity": "AE",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AF.border-count",
+      "entity": "AF",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-6",
+        "number": 6,
+        "names": {
+          "en": "6",
+          "sv": "6"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AG.border-count",
+      "entity": "AG",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AM.border-count",
+      "entity": "AM",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AO.border-count",
+      "entity": "AO",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AR.border-count",
+      "entity": "AR",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AT.border-count",
+      "entity": "AT",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-8",
+        "number": 8,
+        "names": {
+          "en": "8",
+          "sv": "8"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AU.border-count",
+      "entity": "AU",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AZ.border-count",
+      "entity": "AZ",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BA.border-count",
+      "entity": "BA",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BB.border-count",
+      "entity": "BB",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BD.border-count",
+      "entity": "BD",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BE.border-count",
+      "entity": "BE",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BF.border-count",
+      "entity": "BF",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-6",
+        "number": 6,
+        "names": {
+          "en": "6",
+          "sv": "6"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BG.border-count",
+      "entity": "BG",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BH.border-count",
+      "entity": "BH",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BI.border-count",
+      "entity": "BI",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BJ.border-count",
+      "entity": "BJ",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BN.border-count",
+      "entity": "BN",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-1",
+        "number": 1,
+        "names": {
+          "en": "1",
+          "sv": "1"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BO.border-count",
+      "entity": "BO",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BS.border-count",
+      "entity": "BS",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BT.border-count",
+      "entity": "BT",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BY.border-count",
+      "entity": "BY",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BZ.border-count",
+      "entity": "BZ",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CA.border-count",
+      "entity": "CA",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-1",
+        "number": 1,
+        "names": {
+          "en": "1",
+          "sv": "1"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CD.border-count",
+      "entity": "CD",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-9",
+        "number": 9,
+        "names": {
+          "en": "9",
+          "sv": "9"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CF.border-count",
+      "entity": "CF",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-6",
+        "number": 6,
+        "names": {
+          "en": "6",
+          "sv": "6"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CG.border-count",
+      "entity": "CG",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CH.border-count",
+      "entity": "CH",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CI.border-count",
+      "entity": "CI",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CL.border-count",
+      "entity": "CL",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CM.border-count",
+      "entity": "CM",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-6",
+        "number": 6,
+        "names": {
+          "en": "6",
+          "sv": "6"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CO.border-count",
+      "entity": "CO",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CR.border-count",
+      "entity": "CR",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CU.border-count",
+      "entity": "CU",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CV.border-count",
+      "entity": "CV",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CZ.border-count",
+      "entity": "CZ",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DE.border-count",
+      "entity": "DE",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-9",
+        "number": 9,
+        "names": {
+          "en": "9",
+          "sv": "9"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DK.border-count",
+      "entity": "DK",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-1",
+        "number": 1,
+        "names": {
+          "en": "1",
+          "sv": "1"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DM.border-count",
+      "entity": "DM",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DO.border-count",
+      "entity": "DO",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-1",
+        "number": 1,
+        "names": {
+          "en": "1",
+          "sv": "1"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DZ.border-count",
+      "entity": "DZ",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-6",
+        "number": 6,
+        "names": {
+          "en": "6",
+          "sv": "6"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.EC.border-count",
+      "entity": "EC",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.EE.border-count",
+      "entity": "EE",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.EG.border-count",
+      "entity": "EG",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ER.border-count",
+      "entity": "ER",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FI.border-count",
+      "entity": "FI",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FJ.border-count",
+      "entity": "FJ",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FM.border-count",
+      "entity": "FM",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GA.border-count",
+      "entity": "GA",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GB.border-count",
+      "entity": "GB",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-1",
+        "number": 1,
+        "names": {
+          "en": "1",
+          "sv": "1"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GD.border-count",
+      "entity": "GD",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GE.border-count",
+      "entity": "GE",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GH.border-count",
+      "entity": "GH",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GM.border-count",
+      "entity": "GM",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-1",
+        "number": 1,
+        "names": {
+          "en": "1",
+          "sv": "1"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GN.border-count",
+      "entity": "GN",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-6",
+        "number": 6,
+        "names": {
+          "en": "6",
+          "sv": "6"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GQ.border-count",
+      "entity": "GQ",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GR.border-count",
+      "entity": "GR",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GT.border-count",
+      "entity": "GT",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GW.border-count",
+      "entity": "GW",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GY.border-count",
+      "entity": "GY",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HN.border-count",
+      "entity": "HN",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HR.border-count",
+      "entity": "HR",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HT.border-count",
+      "entity": "HT",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-1",
+        "number": 1,
+        "names": {
+          "en": "1",
+          "sv": "1"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HU.border-count",
+      "entity": "HU",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-7",
+        "number": 7,
+        "names": {
+          "en": "7",
+          "sv": "7"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ID.border-count",
+      "entity": "ID",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IE.border-count",
+      "entity": "IE",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-1",
+        "number": 1,
+        "names": {
+          "en": "1",
+          "sv": "1"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IL.border-count",
+      "entity": "IL",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IQ.border-count",
+      "entity": "IQ",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-6",
+        "number": 6,
+        "names": {
+          "en": "6",
+          "sv": "6"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IR.border-count",
+      "entity": "IR",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-7",
+        "number": 7,
+        "names": {
+          "en": "7",
+          "sv": "7"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IS.border-count",
+      "entity": "IS",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IT.border-count",
+      "entity": "IT",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-6",
+        "number": 6,
+        "names": {
+          "en": "6",
+          "sv": "6"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JM.border-count",
+      "entity": "JM",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JO.border-count",
+      "entity": "JO",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JP.border-count",
+      "entity": "JP",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KE.border-count",
+      "entity": "KE",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KG.border-count",
+      "entity": "KG",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KH.border-count",
+      "entity": "KH",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KI.border-count",
+      "entity": "KI",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KM.border-count",
+      "entity": "KM",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KN.border-count",
+      "entity": "KN",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KP.border-count",
+      "entity": "KP",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KR.border-count",
+      "entity": "KR",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-1",
+        "number": 1,
+        "names": {
+          "en": "1",
+          "sv": "1"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KW.border-count",
+      "entity": "KW",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KZ.border-count",
+      "entity": "KZ",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LA.border-count",
+      "entity": "LA",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LB.border-count",
+      "entity": "LB",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LC.border-count",
+      "entity": "LC",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LI.border-count",
+      "entity": "LI",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LR.border-count",
+      "entity": "LR",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LS.border-count",
+      "entity": "LS",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-1",
+        "number": 1,
+        "names": {
+          "en": "1",
+          "sv": "1"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LT.border-count",
+      "entity": "LT",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LU.border-count",
+      "entity": "LU",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LV.border-count",
+      "entity": "LV",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LY.border-count",
+      "entity": "LY",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-6",
+        "number": 6,
+        "names": {
+          "en": "6",
+          "sv": "6"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MC.border-count",
+      "entity": "MC",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-1",
+        "number": 1,
+        "names": {
+          "en": "1",
+          "sv": "1"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MD.border-count",
+      "entity": "MD",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MG.border-count",
+      "entity": "MG",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MH.border-count",
+      "entity": "MH",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ML.border-count",
+      "entity": "ML",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-7",
+        "number": 7,
+        "names": {
+          "en": "7",
+          "sv": "7"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MM.border-count",
+      "entity": "MM",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MN.border-count",
+      "entity": "MN",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MR.border-count",
+      "entity": "MR",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MT.border-count",
+      "entity": "MT",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MU.border-count",
+      "entity": "MU",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MV.border-count",
+      "entity": "MV",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MW.border-count",
+      "entity": "MW",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MX.border-count",
+      "entity": "MX",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MY.border-count",
+      "entity": "MY",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MZ.border-count",
+      "entity": "MZ",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-6",
+        "number": 6,
+        "names": {
+          "en": "6",
+          "sv": "6"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NA.border-count",
+      "entity": "NA",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NE.border-count",
+      "entity": "NE",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-7",
+        "number": 7,
+        "names": {
+          "en": "7",
+          "sv": "7"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NG.border-count",
+      "entity": "NG",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NI.border-count",
+      "entity": "NI",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NL.border-count",
+      "entity": "NL",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NO.border-count",
+      "entity": "NO",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NP.border-count",
+      "entity": "NP",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NR.border-count",
+      "entity": "NR",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NZ.border-count",
+      "entity": "NZ",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.OM.border-count",
+      "entity": "OM",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PA.border-count",
+      "entity": "PA",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PE.border-count",
+      "entity": "PE",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PG.border-count",
+      "entity": "PG",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-1",
+        "number": 1,
+        "names": {
+          "en": "1",
+          "sv": "1"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PH.border-count",
+      "entity": "PH",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PL.border-count",
+      "entity": "PL",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-7",
+        "number": 7,
+        "names": {
+          "en": "7",
+          "sv": "7"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PT.border-count",
+      "entity": "PT",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-1",
+        "number": 1,
+        "names": {
+          "en": "1",
+          "sv": "1"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PW.border-count",
+      "entity": "PW",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PY.border-count",
+      "entity": "PY",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.QA.border-count",
+      "entity": "QA",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-1",
+        "number": 1,
+        "names": {
+          "en": "1",
+          "sv": "1"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RO.border-count",
+      "entity": "RO",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RU.border-count",
+      "entity": "RU",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-14",
+        "number": 14,
+        "names": {
+          "en": "14",
+          "sv": "14"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RW.border-count",
+      "entity": "RW",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SA.border-count",
+      "entity": "SA",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-7",
+        "number": 7,
+        "names": {
+          "en": "7",
+          "sv": "7"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SB.border-count",
+      "entity": "SB",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SC.border-count",
+      "entity": "SC",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SD.border-count",
+      "entity": "SD",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-7",
+        "number": 7,
+        "names": {
+          "en": "7",
+          "sv": "7"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SE.border-count",
+      "entity": "SE",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SG.border-count",
+      "entity": "SG",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SI.border-count",
+      "entity": "SI",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SK.border-count",
+      "entity": "SK",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SL.border-count",
+      "entity": "SL",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SM.border-count",
+      "entity": "SM",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-1",
+        "number": 1,
+        "names": {
+          "en": "1",
+          "sv": "1"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SN.border-count",
+      "entity": "SN",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SS.border-count",
+      "entity": "SS",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-6",
+        "number": 6,
+        "names": {
+          "en": "6",
+          "sv": "6"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ST.border-count",
+      "entity": "ST",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SV.border-count",
+      "entity": "SV",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SY.border-count",
+      "entity": "SY",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SZ.border-count",
+      "entity": "SZ",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TD.border-count",
+      "entity": "TD",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-6",
+        "number": 6,
+        "names": {
+          "en": "6",
+          "sv": "6"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TG.border-count",
+      "entity": "TG",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TH.border-count",
+      "entity": "TH",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TJ.border-count",
+      "entity": "TJ",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TL.border-count",
+      "entity": "TL",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-1",
+        "number": 1,
+        "names": {
+          "en": "1",
+          "sv": "1"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TM.border-count",
+      "entity": "TM",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TN.border-count",
+      "entity": "TN",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TO.border-count",
+      "entity": "TO",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TR.border-count",
+      "entity": "TR",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-8",
+        "number": 8,
+        "names": {
+          "en": "8",
+          "sv": "8"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TT.border-count",
+      "entity": "TT",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TZ.border-count",
+      "entity": "TZ",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-8",
+        "number": 8,
+        "names": {
+          "en": "8",
+          "sv": "8"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UA.border-count",
+      "entity": "UA",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-7",
+        "number": 7,
+        "names": {
+          "en": "7",
+          "sv": "7"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UG.border-count",
+      "entity": "UG",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.US.border-count",
+      "entity": "US",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UY.border-count",
+      "entity": "UY",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UZ.border-count",
+      "entity": "UZ",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-5",
+        "number": 5,
+        "names": {
+          "en": "5",
+          "sv": "5"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VA.border-count",
+      "entity": "VA",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-1",
+        "number": 1,
+        "names": {
+          "en": "1",
+          "sv": "1"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VC.border-count",
+      "entity": "VC",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VE.border-count",
+      "entity": "VE",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VN.border-count",
+      "entity": "VN",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-3",
+        "number": 3,
+        "names": {
+          "en": "3",
+          "sv": "3"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VU.border-count",
+      "entity": "VU",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.WS.border-count",
+      "entity": "WS",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-0",
+        "number": 0,
+        "names": {
+          "en": "0",
+          "sv": "0"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.YE.border-count",
+      "entity": "YE",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-2",
+        "number": 2,
+        "names": {
+          "en": "2",
+          "sv": "2"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZA.border-count",
+      "entity": "ZA",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-6",
+        "number": 6,
+        "names": {
+          "en": "6",
+          "sv": "6"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZW.border-count",
+      "entity": "ZW",
+      "attribute": "border-count",
+      "value": {
+        "id": "borders-4",
+        "number": 4,
+        "names": {
+          "en": "4",
+          "sv": "4"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "border-count",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) land borders, agreeing with the boundaries Natural Earth 1:50m (public domain, via world-atlas 2.0.2) draws between the two countries",
+        "url": "https://github.com/mledoze/countries",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    }
+  ]
+}

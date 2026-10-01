@@ -528,7 +528,7 @@ nothing was deployed, and no hosted, native-device or store evidence is claimed.
   and write negative ledger rows. Achievements use the shipped catalogue and
   `evaluateAll`; tier rewards land in the lesson's ledger row. Every proof re-checks
   that the ledger sums to the balances.
-- **Lessons that end early.** Submissions may answer a prefix of the ticket; only a
+- **Lessons that end early.** Submissions may answer any subset of the ticket's slots, in the order given; only a
   finished lesson (every slot, or hearts emptied in the grader's own replay) counts
   for the day. Issued lessons accept the engines' `LessonFocus`.
 - **The app on D1 (B07/L01 code part).** `EXPO_PUBLIC_BACKEND=d1` selects the Worker:

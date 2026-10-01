@@ -31,6 +31,12 @@ export type PathNodeView = {
   readonly position: number
   readonly finished: number
   readonly lessons: number
+  /**
+   * A finished step whose facts the learner is, on the whole, losing (`strengthOf`). Offered a
+   * refresh on the step's card and a small clock on the step; never a warning, and absent
+   * (not false) on every step that is not done.
+   */
+  readonly fading?: boolean
 }
 
 export type PathUnitView = {
@@ -39,6 +45,8 @@ export type PathUnitView = {
   readonly number: number
   readonly titleKey: string
   readonly objectiveKey: string
+  /** The pack's decorative scenery name, when the unit has one. */
+  readonly scenery?: string
   readonly state: NodeState
   readonly done: number
   readonly nodes: readonly PathNodeView[]
@@ -70,7 +78,7 @@ export function nodeIcon(node: Pick<CourseNode, 'kind' | 'focus'>): IconName {
   return 'globe'
 }
 
-export function toPathView(path: CoursePath): CoursePathView {
+export function toPathView(path: CoursePath, fading: ReadonlySet<string> = new Set()): CoursePathView {
   if (path.status === 'error') return { status: 'error' }
   const { course, standing } = path
   return {
@@ -84,6 +92,7 @@ export function toPathView(path: CoursePath): CoursePathView {
       number: unit.position + 1,
       titleKey: unit.unit.titleKey,
       objectiveKey: unit.unit.objectiveKey,
+      ...(unit.unit.scenery === undefined ? {} : { scenery: unit.unit.scenery }),
       state: unit.state,
       done: unit.done,
       nodes: unit.nodes.map((step) => ({
@@ -96,6 +105,7 @@ export function toPathView(path: CoursePath): CoursePathView {
         position: step.position + 1,
         finished: step.finished,
         lessons: step.node.lessons,
+        ...(step.state === 'done' && fading.has(step.node.id) ? { fading: true } : {}),
       })),
     })),
   }

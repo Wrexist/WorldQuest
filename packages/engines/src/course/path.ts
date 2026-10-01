@@ -77,6 +77,11 @@ export type CourseUnit = {
   readonly titleKey: string
   /** i18n key: what the unit as a whole is for, as one whole sentence. */
   readonly objectiveKey: string
+  /**
+   * Decorative scenery the host draws above the unit, by name. Imaginary art, never a
+   * map: the host owns which names exist, and an unknown one draws nothing.
+   */
+  readonly scenery?: string
   readonly nodes: readonly CourseNode[]
 }
 
@@ -178,13 +183,16 @@ export function parseCourse(raw: unknown): Result<Course, AppError> {
   const units: CourseUnit[] = []
   for (const [u, rawUnit] of items.entries()) {
     if (!isRecord(rawUnit)) return problem(`unit ${u} is not an object`)
-    const { id, titleKey: unitTitle, objectiveKey: unitObjective, nodes: rawNodes } = rawUnit
+    const { id, titleKey: unitTitle, objectiveKey: unitObjective, scenery, nodes: rawNodes } = rawUnit
     if (!isText(id)) return problem(`unit ${u} has no id`)
     if (seen.has(id)) return problem(`id "${id}" is used twice`)
     seen.add(id)
     if (!isText(unitTitle)) return problem(`${id} has no titleKey`)
     if (!isText(unitObjective)) return problem(`${id} has no objectiveKey`)
     if (!Array.isArray(rawNodes) || rawNodes.length === 0) return problem(`${id} has no nodes`)
+    if (scenery !== undefined && (typeof scenery !== 'string' || !/^[a-z]+(-[a-z]+)*$/.test(scenery))) {
+      return problem(`${id} has a scenery that is not a lowercase name`)
+    }
 
     const nodes: CourseNode[] = []
     for (const [n, rawNode] of rawNodes.entries()) {
@@ -214,7 +222,7 @@ export function parseCourse(raw: unknown): Result<Course, AppError> {
         lessons,
       })
     }
-    units.push({ id, titleKey: unitTitle, objectiveKey: unitObjective, nodes })
+    units.push({ id, titleKey: unitTitle, objectiveKey: unitObjective, ...(scenery === undefined ? {} : { scenery }), nodes })
   }
 
   return ok({ id: packId, version, titleKey, units })

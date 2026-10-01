@@ -43,6 +43,10 @@ declare const process: {
     readonly EXPO_PUBLIC_TERMS_URL?: string
     readonly EXPO_PUBLIC_LICENCES_URL?: string
     readonly EXPO_PUBLIC_SUPPORT_URL?: string
+    /** `1` turns the 3D atlas on regardless of platform verification (harnesses, QA builds). ADR 0017. */
+    readonly EXPO_PUBLIC_ATLAS_GLOBE?: string
+    /** `1` makes the dev-only `/atlas-lab` renderer proof reachable in a production export. */
+    readonly EXPO_PUBLIC_ATLAS_LAB?: string
     readonly NODE_ENV?: 'development' | 'production' | 'test'
   }
 }

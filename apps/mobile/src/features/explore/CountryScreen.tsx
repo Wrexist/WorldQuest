@@ -57,6 +57,18 @@ const ATTRIBUTE_LABEL: Record<string, TranslationKey> = {
   // reasonable last resort for an id nobody has met, and it looks exactly like a
   // deliberate label to anyone who is not reading the packs.
   'calling-code': 'country:attribute.callingCode',
+  // The nine from `scripts/build-deep-facts.cjs`. Listed here in the same change as the packs
+  // for the reason the two notes above record: a missing entry falls through to the raw
+  // attribute id, which looks deliberate to anyone who is not reading the packs.
+  area: 'country:attribute.area',
+  borders: 'country:attribute.borders',
+  'border-count': 'country:attribute.borderCount',
+  landlocked: 'country:attribute.landlocked',
+  hemisphere: 'country:attribute.hemisphere',
+  tld: 'country:attribute.tld',
+  alpha3: 'country:attribute.alpha3',
+  'currency-code': 'country:attribute.currencyCode',
+  'native-name': 'country:attribute.nativeName',
 }
 
 /*

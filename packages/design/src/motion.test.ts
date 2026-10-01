@@ -11,6 +11,9 @@ const stripComments = (code: string): string =>
 
 const read = (path: string): string => stripComments(readFileSync(path, 'utf8'))
 
+/** Looped decoration nothing waits on (`useDrift`). */
+const AMBIENT = new Set(['drift'])
+
 describe('motion tokens', () => {
   it('orders the scale from instant to celebrate', () => {
     // A "quick" that is slower than "base" is the kind of thing nobody notices in
@@ -24,9 +27,19 @@ describe('motion tokens', () => {
   it('keeps every duration inside what a user will wait for', () => {
     // Past a second, an animation stops being feedback and becomes a delay.
     for (const [name, step] of Object.entries(motion)) {
-      if (!('duration' in step)) continue
+      if (!('duration' in step) || AMBIENT.has(name)) continue
       expect(step.duration, name).toBeGreaterThan(0)
       expect(step.duration, name).toBeLessThanOrEqual(1000)
+    }
+  })
+
+  it('keeps ambient loops slow enough to read as weather', () => {
+    // `drift` floats scenery forever and nothing waits on it, so the one-second rule
+    // above does not apply. The opposite one does: quick enough to catch the eye and it
+    // reads as a control asking to be tapped.
+    for (const name of AMBIENT) {
+      expect(motion[name as keyof typeof motion], name).toHaveProperty('duration')
+      expect((motion[name as keyof typeof motion] as { duration: number }).duration, name).toBeGreaterThanOrEqual(3000)
     }
   })
 })

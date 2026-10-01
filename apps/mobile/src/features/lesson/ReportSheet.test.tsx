@@ -22,7 +22,10 @@ describe('ReportSheet', () => {
     expect(container.querySelector('input, textarea')).toBeNull()
   })
 
-  it('says plainly when sending failed and keeps the choice for a retry', async () => {
+  // The test's own limit has to cover the two 5 s waits inside it. With vitest's default
+  // 5 s, a slow CI runner killed the test at 5.01 s before its first wait could finish —
+  // the waits were widened for exactly that runner and the test around them never was.
+  it('says plainly when sending failed and keeps the choice for a retry', { timeout: 15_000 }, async () => {
     const onSend = vi.fn().mockRejectedValueOnce(new Error('offline')).mockResolvedValueOnce(undefined)
     render(<ReportSheet onSend={onSend} onClose={() => {}} />)
     fireEvent.click(screen.getByLabelText('It\'s out of date'))

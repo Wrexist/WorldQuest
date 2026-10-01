@@ -1,0 +1,4578 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "packId": "geography.facts.landlocked",
+  "version": "1.0.0",
+  "subject": "geography",
+  "kind": "facts",
+  "locales": [
+    "en",
+    "sv"
+  ],
+  "license": "CC-BY-4.0",
+  "generatedAt": "2026-09-30",
+  "$comment": "Worded to finish the sentence the wrong-answer hint builds (\"Armenia is a landlocked country.\"). Both values are facts: a coastal country is what makes \"which of these has no sea coast?\" have three wrong answers. See the template `when` clauses.",
+  "volatilityReviewed": true,
+  "delivery": "server",
+  "items": [
+    {
+      "id": "geo.AD.landlocked",
+      "entity": "AD",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AE.landlocked",
+      "entity": "AE",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AF.landlocked",
+      "entity": "AF",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AG.landlocked",
+      "entity": "AG",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AL.landlocked",
+      "entity": "AL",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AM.landlocked",
+      "entity": "AM",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AO.landlocked",
+      "entity": "AO",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AR.landlocked",
+      "entity": "AR",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AT.landlocked",
+      "entity": "AT",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AU.landlocked",
+      "entity": "AU",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BA.landlocked",
+      "entity": "BA",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BB.landlocked",
+      "entity": "BB",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BD.landlocked",
+      "entity": "BD",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BE.landlocked",
+      "entity": "BE",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BF.landlocked",
+      "entity": "BF",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BG.landlocked",
+      "entity": "BG",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BH.landlocked",
+      "entity": "BH",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BI.landlocked",
+      "entity": "BI",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BJ.landlocked",
+      "entity": "BJ",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BN.landlocked",
+      "entity": "BN",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BO.landlocked",
+      "entity": "BO",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BR.landlocked",
+      "entity": "BR",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BS.landlocked",
+      "entity": "BS",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BT.landlocked",
+      "entity": "BT",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BW.landlocked",
+      "entity": "BW",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BY.landlocked",
+      "entity": "BY",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BZ.landlocked",
+      "entity": "BZ",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CA.landlocked",
+      "entity": "CA",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CD.landlocked",
+      "entity": "CD",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CF.landlocked",
+      "entity": "CF",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CG.landlocked",
+      "entity": "CG",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CH.landlocked",
+      "entity": "CH",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CI.landlocked",
+      "entity": "CI",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CL.landlocked",
+      "entity": "CL",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CM.landlocked",
+      "entity": "CM",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CN.landlocked",
+      "entity": "CN",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CO.landlocked",
+      "entity": "CO",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CR.landlocked",
+      "entity": "CR",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CU.landlocked",
+      "entity": "CU",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CV.landlocked",
+      "entity": "CV",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CY.landlocked",
+      "entity": "CY",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CZ.landlocked",
+      "entity": "CZ",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DE.landlocked",
+      "entity": "DE",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DJ.landlocked",
+      "entity": "DJ",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DK.landlocked",
+      "entity": "DK",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DM.landlocked",
+      "entity": "DM",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DO.landlocked",
+      "entity": "DO",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DZ.landlocked",
+      "entity": "DZ",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.EC.landlocked",
+      "entity": "EC",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.EE.landlocked",
+      "entity": "EE",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.EG.landlocked",
+      "entity": "EG",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ER.landlocked",
+      "entity": "ER",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ES.landlocked",
+      "entity": "ES",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ET.landlocked",
+      "entity": "ET",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FI.landlocked",
+      "entity": "FI",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FJ.landlocked",
+      "entity": "FJ",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FM.landlocked",
+      "entity": "FM",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FR.landlocked",
+      "entity": "FR",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GA.landlocked",
+      "entity": "GA",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GB.landlocked",
+      "entity": "GB",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GD.landlocked",
+      "entity": "GD",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GE.landlocked",
+      "entity": "GE",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GH.landlocked",
+      "entity": "GH",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GM.landlocked",
+      "entity": "GM",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GN.landlocked",
+      "entity": "GN",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GQ.landlocked",
+      "entity": "GQ",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GR.landlocked",
+      "entity": "GR",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GT.landlocked",
+      "entity": "GT",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GW.landlocked",
+      "entity": "GW",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GY.landlocked",
+      "entity": "GY",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HN.landlocked",
+      "entity": "HN",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HR.landlocked",
+      "entity": "HR",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HT.landlocked",
+      "entity": "HT",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HU.landlocked",
+      "entity": "HU",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ID.landlocked",
+      "entity": "ID",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IE.landlocked",
+      "entity": "IE",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IL.landlocked",
+      "entity": "IL",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IN.landlocked",
+      "entity": "IN",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IQ.landlocked",
+      "entity": "IQ",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IR.landlocked",
+      "entity": "IR",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IS.landlocked",
+      "entity": "IS",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IT.landlocked",
+      "entity": "IT",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JM.landlocked",
+      "entity": "JM",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JO.landlocked",
+      "entity": "JO",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JP.landlocked",
+      "entity": "JP",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KE.landlocked",
+      "entity": "KE",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KG.landlocked",
+      "entity": "KG",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KH.landlocked",
+      "entity": "KH",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KI.landlocked",
+      "entity": "KI",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KM.landlocked",
+      "entity": "KM",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KN.landlocked",
+      "entity": "KN",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KP.landlocked",
+      "entity": "KP",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KR.landlocked",
+      "entity": "KR",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KW.landlocked",
+      "entity": "KW",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LA.landlocked",
+      "entity": "LA",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LB.landlocked",
+      "entity": "LB",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LC.landlocked",
+      "entity": "LC",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LI.landlocked",
+      "entity": "LI",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LK.landlocked",
+      "entity": "LK",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LR.landlocked",
+      "entity": "LR",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LS.landlocked",
+      "entity": "LS",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LT.landlocked",
+      "entity": "LT",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LU.landlocked",
+      "entity": "LU",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LV.landlocked",
+      "entity": "LV",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LY.landlocked",
+      "entity": "LY",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MA.landlocked",
+      "entity": "MA",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MC.landlocked",
+      "entity": "MC",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MD.landlocked",
+      "entity": "MD",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ME.landlocked",
+      "entity": "ME",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MG.landlocked",
+      "entity": "MG",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MH.landlocked",
+      "entity": "MH",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MK.landlocked",
+      "entity": "MK",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ML.landlocked",
+      "entity": "ML",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MM.landlocked",
+      "entity": "MM",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MN.landlocked",
+      "entity": "MN",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MR.landlocked",
+      "entity": "MR",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MT.landlocked",
+      "entity": "MT",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MU.landlocked",
+      "entity": "MU",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MV.landlocked",
+      "entity": "MV",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MW.landlocked",
+      "entity": "MW",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MX.landlocked",
+      "entity": "MX",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MY.landlocked",
+      "entity": "MY",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MZ.landlocked",
+      "entity": "MZ",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NA.landlocked",
+      "entity": "NA",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NE.landlocked",
+      "entity": "NE",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NG.landlocked",
+      "entity": "NG",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NI.landlocked",
+      "entity": "NI",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NL.landlocked",
+      "entity": "NL",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NO.landlocked",
+      "entity": "NO",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NP.landlocked",
+      "entity": "NP",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NR.landlocked",
+      "entity": "NR",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NZ.landlocked",
+      "entity": "NZ",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.OM.landlocked",
+      "entity": "OM",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PA.landlocked",
+      "entity": "PA",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PE.landlocked",
+      "entity": "PE",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PG.landlocked",
+      "entity": "PG",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PH.landlocked",
+      "entity": "PH",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PK.landlocked",
+      "entity": "PK",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PL.landlocked",
+      "entity": "PL",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PT.landlocked",
+      "entity": "PT",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PW.landlocked",
+      "entity": "PW",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PY.landlocked",
+      "entity": "PY",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.QA.landlocked",
+      "entity": "QA",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RO.landlocked",
+      "entity": "RO",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RS.landlocked",
+      "entity": "RS",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RU.landlocked",
+      "entity": "RU",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RW.landlocked",
+      "entity": "RW",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SA.landlocked",
+      "entity": "SA",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SB.landlocked",
+      "entity": "SB",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SC.landlocked",
+      "entity": "SC",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SD.landlocked",
+      "entity": "SD",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SE.landlocked",
+      "entity": "SE",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SG.landlocked",
+      "entity": "SG",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SI.landlocked",
+      "entity": "SI",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SK.landlocked",
+      "entity": "SK",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SL.landlocked",
+      "entity": "SL",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SM.landlocked",
+      "entity": "SM",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SN.landlocked",
+      "entity": "SN",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SO.landlocked",
+      "entity": "SO",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SR.landlocked",
+      "entity": "SR",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SS.landlocked",
+      "entity": "SS",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ST.landlocked",
+      "entity": "ST",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SV.landlocked",
+      "entity": "SV",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SY.landlocked",
+      "entity": "SY",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SZ.landlocked",
+      "entity": "SZ",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TD.landlocked",
+      "entity": "TD",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TG.landlocked",
+      "entity": "TG",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TH.landlocked",
+      "entity": "TH",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TJ.landlocked",
+      "entity": "TJ",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TL.landlocked",
+      "entity": "TL",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TN.landlocked",
+      "entity": "TN",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TO.landlocked",
+      "entity": "TO",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TR.landlocked",
+      "entity": "TR",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TT.landlocked",
+      "entity": "TT",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TZ.landlocked",
+      "entity": "TZ",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UA.landlocked",
+      "entity": "UA",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UG.landlocked",
+      "entity": "UG",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.US.landlocked",
+      "entity": "US",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UY.landlocked",
+      "entity": "UY",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UZ.landlocked",
+      "entity": "UZ",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VA.landlocked",
+      "entity": "VA",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VC.landlocked",
+      "entity": "VC",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VE.landlocked",
+      "entity": "VE",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VN.landlocked",
+      "entity": "VN",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VU.landlocked",
+      "entity": "VU",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "landlocked",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.WS.landlocked",
+      "entity": "WS",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.YE.landlocked",
+      "entity": "YE",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZA.landlocked",
+      "entity": "ZA",
+      "attribute": "landlocked",
+      "value": {
+        "id": "coastal",
+        "names": {
+          "en": "a country with a sea coast",
+          "sv": "ett land med kust"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZM.landlocked",
+      "entity": "ZM",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZW.landlocked",
+      "entity": "ZW",
+      "attribute": "landlocked",
+      "value": {
+        "id": "landlocked",
+        "names": {
+          "en": "a landlocked country",
+          "sv": "ett land utan kust"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "landlocked",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "world-countries v5.1.0 (ODbL) landlocked flag, agreeing with Natural Earth 1:50m (public domain, via world-atlas 2.0.2): a landlocked country has no boundary with open ground",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    }
+  ]
+}

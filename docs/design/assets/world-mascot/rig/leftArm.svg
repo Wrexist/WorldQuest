@@ -1,1 +1,3 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 300 300"><path fill="#006ADA" d="M58 162q-29 11-36 41q-10 28 4 31q13 3 19-19q6 9 12 0l12-34z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 300 300"><defs><radialGradient id="armL" cx="40%" cy="20%" r="95%"><stop offset="0" stop-color="#4FA8FF"/><stop offset=".45" stop-color="#0A6FE0"/><stop offset="1" stop-color="#0046A8"/></radialGradient></defs>
+    <path fill="url(#armL)" d="M58 162q-29 11-36 41q-10 28 4 31q13 3 19-19q6 9 12 0l12-34z"/>
+    <path d="M32 200q6-18 20-28" fill="none" stroke="#4FA8FF" stroke-width="3" stroke-linecap="round" opacity=".55"/></svg>

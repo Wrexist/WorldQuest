@@ -20,6 +20,7 @@
 
 import { BALANCE } from '../xp/balance.js'
 import type { Question } from '../content/types.js'
+import { MAX_TYPED_LENGTH, TYPED_WRONG, matchTyped, type TypedMatch } from '../content/typed.js'
 
 export type LessonPhase =
   | 'idle'
@@ -39,6 +40,14 @@ export type AnsweredItem = {
   readonly wasCorrect: boolean
   readonly elapsedMs: number
   readonly answeredAt: number
+  /**
+   * What was typed, for the feedback sheet, when the question was typed. Device-only: the
+   * submission carries `chosenOptionId`, which for a typed answer is the right option's id or
+   * `TYPED_WRONG` — never this.
+   */
+  readonly typedText?: string
+  /** How the typed text was judged: `near` is right with a typo, shown the real spelling. */
+  readonly typedMatch?: TypedMatch
 }
 
 export type LessonState = {
@@ -87,6 +96,12 @@ export type LessonState = {
    */
   readonly selectedOptionId: string | null
   /**
+   * What the learner has typed into the current typed question, or ''. Like
+   * `selectedOptionId` it is only ever about the question on screen, and nothing is graded
+   * until CHECK.
+   */
+  readonly typedText: string
+  /**
    * Where the mistake-review round begins in `questions`, or null before it (and in a
    * lesson that has none).
    *
@@ -111,7 +126,15 @@ export type LessonEvent =
   | { type: 'ANSWER'; optionId: string; now: number }
   /** Pick an option without committing to it. Repeatable, to change the choice. */
   | { type: 'SELECT'; optionId: string; now: number }
-  /** Grade the selected option. Ignored while nothing is selected. */
+  /**
+   * Answer a whole "match the pairs" board at once: for each of its questions, the first thing
+   * the learner tried to match it with. Only meaningful while the board's FIRST question is
+   * showing; ignored otherwise.
+   */
+  | { type: 'ANSWER_GROUP'; choices: Readonly<Record<string, string>>; now: number }
+  /** Replace what has been typed into a typed question. Ignored for any other kind. */
+  | { type: 'TYPE'; text: string; now: number }
+  /** Grade the selected option, or the typed text. Ignored while nothing is selected or typed. */
   | { type: 'CHECK'; now: number }
   | { type: 'CONTINUE'; now: number }
   | { type: 'PAUSE'; now: number }
@@ -141,6 +164,7 @@ export function initialState(
     outOfHearts: false,
     timeLimitMs: options.timeLimitMs ?? null,
     selectedOptionId: null,
+    typedText: '',
     reviewFrom: null,
     reviewed: [],
   }
@@ -194,7 +218,9 @@ function reviewRound(s: LessonState): readonly Question[] | null {
   const again = s.questions
     .filter((q) => missed.has(q.item.id))
     .filter((q, i, all) => all.findIndex((other) => other.item.id === q.item.id) === i)
-    .map((q) => ({ ...q, options: q.options.length > 1 ? [...q.options.slice(1), q.options[0]!] : q.options }))
+    // A board's members come back as the plain questions they are: re-asking one pair of four
+    // as a board of one would be a board with nothing to match.
+    .map(({ group: _group, ...q }) => ({ ...q, options: q.options.length > 1 ? [...q.options.slice(1), q.options[0]!] : q.options }))
   return again.length > 0 ? again : null
 }
 
@@ -266,20 +292,49 @@ export function transition(state: LessonState, event: LessonEvent): LessonState 
       // Only answerable while presenting. This single guard is what makes
       // double-taps and taps during the feedback animation harmless.
       if (state.phase !== 'presenting') return state
+      // A typed question's only option is the right one; answering it by id would be answering
+      // without typing. The screen never sends this for one, and the machine does not trust that.
+      if (currentQuestion(state)?.typed !== undefined) return state
       return grade(state, event.optionId, event.now)
+
+    case 'ANSWER_GROUP': {
+      if (state.phase !== 'presenting' || inReview(state)) return state
+      const first = currentQuestion(state)
+      const group = first?.group
+      if (!first || !group || group.position !== 0) return state
+      const members = state.questions.slice(state.index, state.index + group.size)
+      const whole =
+        members.length === group.size &&
+        members.every((q, i) => q.group?.id === group.id && q.group.position === i && event.choices[q.item.id] !== undefined &&
+          q.options.some((o) => o.id === event.choices[q.item.id]))
+      if (!whole) return state
+      return gradeGroup(state, members, event.choices, event.now)
+    }
 
     case 'SELECT': {
       if (state.phase !== 'presenting') return state
       // An id from another question — a stray tap landing after the index moved — is
       // ignored rather than remembered, so a later CHECK can never grade it.
       const question = currentQuestion(state)
+      if (question?.typed !== undefined) return state
       if (!question?.options.some((o) => o.id === event.optionId)) return state
       if (state.selectedOptionId === event.optionId) return state
       return { ...state, selectedOptionId: event.optionId }
     }
 
+    case 'TYPE': {
+      if (state.phase !== 'presenting') return state
+      if (currentQuestion(state)?.typed === undefined) return state
+      const text = event.text.slice(0, MAX_TYPED_LENGTH)
+      return text === state.typedText ? state : { ...state, typedText: text }
+    }
+
     case 'CHECK':
       if (state.phase !== 'presenting') return state
+      if (currentQuestion(state)?.typed !== undefined) {
+        // Same rule as a selection: the clock stops here, not at the first keystroke.
+        return state.typedText.trim() === '' ? state : gradeTyped(state, state.typedText, event.now)
+      }
       if (state.selectedOptionId === null) return state
       // The clock stops HERE, not at selection: `grade` measures from `shownAt` to this
       // event's `now`. Time spent changing your mind is thinking time, and scoring it as
@@ -308,7 +363,11 @@ export function transition(state: LessonState, event: LessonEvent): LessonState 
        *
        * Nothing selected is the miss it always was, below.
        */
-      if (state.selectedOptionId !== null) {
+      if (timedOut.typed !== undefined && state.typedText.trim() !== '') {
+        const deadline = (state.shownAt ?? event.now) + state.timeLimitMs
+        return gradeTyped(state, state.typedText, Math.min(event.now, deadline))
+      }
+      if (timedOut.typed === undefined && state.selectedOptionId !== null) {
         const deadline = (state.shownAt ?? event.now) + state.timeLimitMs
         return grade(state, state.selectedOptionId, Math.min(event.now, deadline))
       }
@@ -339,6 +398,7 @@ export function transition(state: LessonState, event: LessonEvent): LessonState 
         phase: 'answered',
         answers: [...state.answers, missed],
         correctRun: 0,
+        typedText: '',
       }
     }
 
@@ -361,9 +421,10 @@ export function transition(state: LessonState, event: LessonEvent): LessonState 
           index: next,
           shownAt: event.now,
           selectedOptionId: null,
+          typedText: '',
         }
       }
-      return { ...state, phase: 'presenting', index: next, shownAt: event.now }
+      return { ...state, phase: 'presenting', index: next, shownAt: event.now, typedText: '' }
     }
 
     case 'REVIVE': {
@@ -386,6 +447,7 @@ export function transition(state: LessonState, event: LessonEvent): LessonState 
         phase: 'presenting',
         index: state.index + 1,
         shownAt: event.now,
+        typedText: '',
       }
     }
 
@@ -403,11 +465,11 @@ export function transition(state: LessonState, event: LessonEvent): LessonState 
       if (isFinished(state)) return state
       // Leaving the review round is not leaving the lesson: every graded question was
       // answered, so it ends as the finished lesson it is, streak and all.
-      if (inReview(state)) return { ...state, phase: 'summary', selectedOptionId: null }
+      if (inReview(state)) return { ...state, phase: 'summary', selectedOptionId: null, typedText: '' }
       // Answers so far are kept and still submitted — leaving a lesson must never
       // cost someone the work they already did. An unchecked selection is not an
       // answer, so it is not kept.
-      return { ...state, phase: 'abandoned', selectedOptionId: null }
+      return { ...state, phase: 'abandoned', selectedOptionId: null, typedText: '' }
   }
 }
 
@@ -424,27 +486,102 @@ function grade(state: LessonState, optionId: string, now: number): LessonState {
   const chosen = question.options.find((o) => o.id === optionId)
   if (!chosen) return state
 
+  return record(state, question, optionId, chosen.isCorrect, now, {})
+}
+
+/**
+ * Grade a board: each member as the fact it is, in order, as if answered one after another.
+ *
+ * Two things differ from four separate questions. The time is shared out evenly — the board
+ * was one sitting, and charging the last pair for the minutes spent on the first would hand the
+ * scheduler a hesitation that was never there. And a board costs AT MOST ONE heart: four misses
+ * on a board are one difficult exercise, and four hearts for it would end a lesson in a single
+ * screen on the very exercise that exists to be forgiving. Every miss is still recorded as a
+ * miss, for the scheduler and for the mistake-review round.
+ */
+function gradeGroup(
+  state: LessonState,
+  members: readonly Question[],
+  choices: Readonly<Record<string, string>>,
+  now: number,
+): LessonState {
+  const start = state.index
+  const each = state.shownAt === null ? 0 : Math.max(0, now - state.shownAt) / members.length
+  let s: LessonState = state
+  let paidHeart = false
+  members.forEach((q, i) => {
+    const chosen = q.options.find((o) => o.id === choices[q.item.id])
+    if (!chosen) return
+    const before = s.hearts
+    s = record(
+      { ...s, index: start + i, phase: 'presenting', shownAt: now - each },
+      q,
+      chosen.id,
+      chosen.isCorrect,
+      now,
+      {},
+      paidHeart,
+    )
+    if (s.hearts < before) paidHeart = true
+  })
+  // Left on the board's last question, in the same phase a single answer leaves it in, so
+  // CONTINUE, REVIVE and the out-of-hearts fork all behave as they always have.
+  return { ...s, index: start + members.length - 1, phase: 'answered' }
+}
+
+/**
+ * Judge typed text against the question's accepted spellings, then record it exactly as a
+ * tapped answer would be.
+ *
+ * What goes down as `chosenOptionId` is the right option's id when the text was right (or one
+ * typo off) and `TYPED_WRONG` when it was not — never the text. The text stays in
+ * `typedText` for the sheet to show and is gone with the question.
+ */
+function gradeTyped(state: LessonState, text: string, now: number): LessonState {
+  const question = currentQuestion(state)
+  if (!question?.typed) return state
+  const right = question.options.find((o) => o.isCorrect)
+  if (!right) return state
+  const match = matchTyped(text, question.typed.accepts, question.typed.rivals)
+  return record(state, question, match === 'wrong' ? TYPED_WRONG : right.id, match !== 'wrong', now, {
+    typedText: text.slice(0, MAX_TYPED_LENGTH),
+    typedMatch: match,
+  })
+}
+
+/** The shared tail of grading: log the answer, move the hearts, settle the phase. */
+function record(
+  state: LessonState,
+  question: Question,
+  chosenOptionId: string,
+  wasCorrect: boolean,
+  now: number,
+  extra: { readonly typedText?: string; readonly typedMatch?: TypedMatch },
+  /** Do not charge a heart for this answer: the board has already charged one. */
+  freeOfHearts = false,
+): LessonState {
   const elapsedMs = state.shownAt === null ? 0 : Math.max(0, now - state.shownAt)
   const answer: AnsweredItem = {
     itemId: question.item.id,
     factId: question.item.factId,
     templateId: question.item.templateId,
-    chosenOptionId: optionId,
-    wasCorrect: chosen.isCorrect,
+    chosenOptionId,
+    wasCorrect,
     elapsedMs,
     answeredAt: now,
+    ...extra,
   }
 
   // Practice, not evidence: kept apart from the graded answers, and it moves no heart.
   if (inReview(state)) {
-    return { ...state, phase: 'answered', reviewed: [...state.reviewed, answer], selectedOptionId: null }
+    return { ...state, phase: 'answered', reviewed: [...state.reviewed, answer], selectedOptionId: null, typedText: '' }
   }
 
   let hearts = state.hearts
   let heartsLost = state.heartsLost
   let correctRun = state.correctRun
 
-  if (chosen.isCorrect) {
+  if (wasCorrect) {
     correctRun += 1
     // A run of correct answers earns a heart back — rewards recovery and
     // breaks the death spiral. See docs/systems/xp-economy.md §3.
@@ -456,13 +593,13 @@ function grade(state: LessonState, optionId: string, now: number): LessonState {
     // New items never cost a heart: you cannot lose a life for not knowing
     // something you have never been taught.
     const isReview = !question.isNew
-    if (state.heartsEnabled && (isReview || BALANCE.hearts.newItemsCostHearts)) {
+    if (!freeOfHearts && state.heartsEnabled && (isReview || BALANCE.hearts.newItemsCostHearts)) {
       if (hearts > 0) heartsLost += 1
       hearts = Math.max(0, hearts - 1)
     }
   }
 
-  return {
+  const settled: LessonState = {
     ...state,
     phase: 'answered',
     answers: [...state.answers, answer],
@@ -471,5 +608,51 @@ function grade(state: LessonState, optionId: string, now: number): LessonState {
     correctRun,
     outOfHearts: state.heartsEnabled && hearts === 0,
     selectedOptionId: null,
+    // Kept through `answered` so the sheet can show what was typed; `CONTINUE` clears it.
+    typedText: extra.typedText ?? '',
   }
+  return { ...settled, questions: rescued(settled) }
+}
+
+/**
+ * After two misses in a row, the next question is an easier one.
+ *
+ * A lesson that goes wrong goes wrong in a run: a hard fact, then another, and by the third the
+ * learner is guessing at things they half know. A fixed order hands them more of the same. The
+ * adaptive answer — Duolingo's, and any decent tutor's — is to put something they can get right
+ * next, so the lesson ends on knowing something rather than on a streak of not.
+ *
+ * What it does: when the last TWO graded answers were wrong, the easiest question still to come
+ * (by authored difficulty, ties to the earliest) swaps places with the next one if it is
+ * strictly easier. Nothing is added, dropped or repeated — the same questions, in a kinder
+ * order — so the lesson's length, its facts and its scheduling are untouched.
+ *
+ * What it will not do: touch a matching board or a typed question (a board is one sitting; a
+ * typed question is the hardest way of being asked and is not a "rescue" either way), reorder
+ * the review round, act in a timed lesson, or act once hearts have run out. The Worker grades
+ * each answer by the slot it was ISSUED in, so the answers go up in the order they were given
+ * and no longer need to be a prefix of the issued order.
+ */
+function rescued(state: LessonState): readonly Question[] {
+  if (state.timeLimitMs !== null || state.outOfHearts || inReview(state)) return state.questions
+  const [previous, latest] = state.answers.slice(-2)
+  if (previous === undefined || latest === undefined || previous.wasCorrect || latest.wasCorrect) return state.questions
+
+  const next = state.index + 1
+  const upcoming = state.questions[next]
+  if (upcoming === undefined || upcoming.group !== undefined || upcoming.typed !== undefined) return state.questions
+  const end = state.reviewFrom ?? state.questions.length
+
+  let easiest = -1
+  for (let i = next + 1; i < end; i++) {
+    const candidate = state.questions[i]!
+    if (candidate.group !== undefined || candidate.typed !== undefined) continue
+    if (easiest === -1 || candidate.item.difficulty < state.questions[easiest]!.item.difficulty) easiest = i
+  }
+  if (easiest === -1 || state.questions[easiest]!.item.difficulty >= upcoming.item.difficulty) return state.questions
+
+  const out = [...state.questions]
+  out[next] = state.questions[easiest]!
+  out[easiest] = upcoming
+  return out
 }

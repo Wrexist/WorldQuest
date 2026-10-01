@@ -102,7 +102,7 @@ export function PathNode({ node, total, swing, column, expanded, onPress, onLayo
   const label = current
     ? t('home:path.node.current', { ...place, lesson, lessons: node.lessons })
     : node.state === 'done'
-      ? t('home:path.node.done', place)
+      ? t(node.fading === true ? 'home:path.node.fading' : 'home:path.node.done', place)
       : t('home:path.node.locked', place)
 
   // The swing is applied to whatever owns the touch: the circle inside the current step's
@@ -150,6 +150,14 @@ export function PathNode({ node, total, swing, column, expanded, onPress, onLayo
       {node.state === 'locked' && (
         <View style={styles.badge}>
           <Icon name="lock" size={BADGE_GLYPH} color={colors.text.secondary} />
+        </View>
+      )}
+      {/* A finished step that is slipping: a small clock, the same size and place as the
+          lock. Neutral, not red and not a warning — it says time has passed, and the step's
+          card says what to do about it. The step's name (above) says it too, in words. */}
+      {node.state === 'done' && node.fading === true && (
+        <View style={styles.badge} testID="path-fading" aria-hidden>
+          <Icon name="clock" size={BADGE_GLYPH} color={colors.text.secondary} />
         </View>
       )}
     </Animated.View>

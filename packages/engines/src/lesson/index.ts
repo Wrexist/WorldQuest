@@ -1,3 +1,5 @@
 export * from './machine.js'
 export * from './compose.js'
+export * from './placement.js'
+export * from './strength.js'
 export * from './focus.js'

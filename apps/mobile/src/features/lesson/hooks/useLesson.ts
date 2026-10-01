@@ -101,6 +101,16 @@ export function useLesson({
     dispatch({ type: 'SELECT', optionId, now: now() })
   }, [])
 
+  /** Answer a whole matching board: item id → the first partner tried for it. */
+  const answerGroup = useCallback((choices: Readonly<Record<string, string>>) => {
+    dispatch({ type: 'ANSWER_GROUP', choices, now: now() })
+  }, [])
+
+  /** Replace what has been typed into a typed question. Nothing is graded until `check`. */
+  const type = useCallback((text: string) => {
+    dispatch({ type: 'TYPE', text, now: now() })
+  }, [])
+
   /** Grade the selection. This is the moment the answer timer stops. */
   const check = useCallback(() => {
     dispatch({ type: 'CHECK', now: now() })
@@ -249,6 +259,8 @@ export function useLesson({
     start,
     answer,
     select,
+    answerGroup,
+    type,
     check,
     advance,
     abandon,

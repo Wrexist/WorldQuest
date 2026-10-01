@@ -10,52 +10,141 @@
  * token rather than treating them as artwork with a colour of their own.
  */
 
+import country_AD from '../../assets/geo/countries/AD.png'
+import country_AE from '../../assets/geo/countries/AE.png'
+import country_AF from '../../assets/geo/countries/AF.png'
+import country_AG from '../../assets/geo/countries/AG.png'
+import country_AL from '../../assets/geo/countries/AL.png'
+import country_AM from '../../assets/geo/countries/AM.png'
+import country_AO from '../../assets/geo/countries/AO.png'
 import country_AR from '../../assets/geo/countries/AR.png'
 import country_AT from '../../assets/geo/countries/AT.png'
 import country_AU from '../../assets/geo/countries/AU.png'
+import country_AZ from '../../assets/geo/countries/AZ.png'
+import country_BA from '../../assets/geo/countries/BA.png'
+import country_BB from '../../assets/geo/countries/BB.png'
 import country_BD from '../../assets/geo/countries/BD.png'
 import country_BE from '../../assets/geo/countries/BE.png'
+import country_BF from '../../assets/geo/countries/BF.png'
+import country_BG from '../../assets/geo/countries/BG.png'
+import country_BH from '../../assets/geo/countries/BH.png'
+import country_BI from '../../assets/geo/countries/BI.png'
+import country_BJ from '../../assets/geo/countries/BJ.png'
+import country_BN from '../../assets/geo/countries/BN.png'
+import country_BO from '../../assets/geo/countries/BO.png'
 import country_BR from '../../assets/geo/countries/BR.png'
+import country_BS from '../../assets/geo/countries/BS.png'
+import country_BT from '../../assets/geo/countries/BT.png'
 import country_BW from '../../assets/geo/countries/BW.png'
+import country_BY from '../../assets/geo/countries/BY.png'
+import country_BZ from '../../assets/geo/countries/BZ.png'
 import country_CA from '../../assets/geo/countries/CA.png'
+import country_CD from '../../assets/geo/countries/CD.png'
+import country_CF from '../../assets/geo/countries/CF.png'
+import country_CG from '../../assets/geo/countries/CG.png'
 import country_CH from '../../assets/geo/countries/CH.png'
+import country_CI from '../../assets/geo/countries/CI.png'
 import country_CL from '../../assets/geo/countries/CL.png'
+import country_CM from '../../assets/geo/countries/CM.png'
 import country_CN from '../../assets/geo/countries/CN.png'
 import country_CO from '../../assets/geo/countries/CO.png'
 import country_CR from '../../assets/geo/countries/CR.png'
 import country_CU from '../../assets/geo/countries/CU.png'
+import country_CV from '../../assets/geo/countries/CV.png'
+import country_CY from '../../assets/geo/countries/CY.png'
 import country_CZ from '../../assets/geo/countries/CZ.png'
 import country_DE from '../../assets/geo/countries/DE.png'
+import country_DJ from '../../assets/geo/countries/DJ.png'
 import country_DK from '../../assets/geo/countries/DK.png'
+import country_DM from '../../assets/geo/countries/DM.png'
+import country_DO from '../../assets/geo/countries/DO.png'
 import country_DZ from '../../assets/geo/countries/DZ.png'
+import country_EC from '../../assets/geo/countries/EC.png'
+import country_EE from '../../assets/geo/countries/EE.png'
 import country_EG from '../../assets/geo/countries/EG.png'
+import country_ER from '../../assets/geo/countries/ER.png'
 import country_ES from '../../assets/geo/countries/ES.png'
 import country_ET from '../../assets/geo/countries/ET.png'
 import country_FI from '../../assets/geo/countries/FI.png'
 import country_FJ from '../../assets/geo/countries/FJ.png'
+import country_FM from '../../assets/geo/countries/FM.png'
 import country_FR from '../../assets/geo/countries/FR.png'
+import country_GA from '../../assets/geo/countries/GA.png'
+import country_GB from '../../assets/geo/countries/GB.png'
+import country_GD from '../../assets/geo/countries/GD.png'
+import country_GE from '../../assets/geo/countries/GE.png'
 import country_GH from '../../assets/geo/countries/GH.png'
+import country_GM from '../../assets/geo/countries/GM.png'
+import country_GN from '../../assets/geo/countries/GN.png'
+import country_GQ from '../../assets/geo/countries/GQ.png'
 import country_GR from '../../assets/geo/countries/GR.png'
 import country_GT from '../../assets/geo/countries/GT.png'
+import country_GW from '../../assets/geo/countries/GW.png'
+import country_GY from '../../assets/geo/countries/GY.png'
+import country_HN from '../../assets/geo/countries/HN.png'
+import country_HR from '../../assets/geo/countries/HR.png'
+import country_HT from '../../assets/geo/countries/HT.png'
 import country_HU from '../../assets/geo/countries/HU.png'
 import country_ID from '../../assets/geo/countries/ID.png'
+import country_IE from '../../assets/geo/countries/IE.png'
+import country_IL from '../../assets/geo/countries/IL.png'
 import country_IN from '../../assets/geo/countries/IN.png'
+import country_IQ from '../../assets/geo/countries/IQ.png'
+import country_IR from '../../assets/geo/countries/IR.png'
+import country_IS from '../../assets/geo/countries/IS.png'
 import country_IT from '../../assets/geo/countries/IT.png'
+import country_JM from '../../assets/geo/countries/JM.png'
+import country_JO from '../../assets/geo/countries/JO.png'
 import country_JP from '../../assets/geo/countries/JP.png'
 import country_KE from '../../assets/geo/countries/KE.png'
+import country_KG from '../../assets/geo/countries/KG.png'
+import country_KH from '../../assets/geo/countries/KH.png'
+import country_KI from '../../assets/geo/countries/KI.png'
+import country_KM from '../../assets/geo/countries/KM.png'
+import country_KN from '../../assets/geo/countries/KN.png'
 import country_KP from '../../assets/geo/countries/KP.png'
 import country_KR from '../../assets/geo/countries/KR.png'
+import country_KW from '../../assets/geo/countries/KW.png'
+import country_KZ from '../../assets/geo/countries/KZ.png'
+import country_LA from '../../assets/geo/countries/LA.png'
+import country_LB from '../../assets/geo/countries/LB.png'
+import country_LC from '../../assets/geo/countries/LC.png'
+import country_LI from '../../assets/geo/countries/LI.png'
+import country_LK from '../../assets/geo/countries/LK.png'
+import country_LR from '../../assets/geo/countries/LR.png'
+import country_LS from '../../assets/geo/countries/LS.png'
+import country_LT from '../../assets/geo/countries/LT.png'
+import country_LU from '../../assets/geo/countries/LU.png'
+import country_LV from '../../assets/geo/countries/LV.png'
+import country_LY from '../../assets/geo/countries/LY.png'
 import country_MA from '../../assets/geo/countries/MA.png'
+import country_MC from '../../assets/geo/countries/MC.png'
+import country_MD from '../../assets/geo/countries/MD.png'
+import country_ME from '../../assets/geo/countries/ME.png'
+import country_MG from '../../assets/geo/countries/MG.png'
+import country_MH from '../../assets/geo/countries/MH.png'
+import country_MK from '../../assets/geo/countries/MK.png'
 import country_ML from '../../assets/geo/countries/ML.png'
+import country_MM from '../../assets/geo/countries/MM.png'
 import country_MN from '../../assets/geo/countries/MN.png'
+import country_MR from '../../assets/geo/countries/MR.png'
+import country_MT from '../../assets/geo/countries/MT.png'
+import country_MU from '../../assets/geo/countries/MU.png'
+import country_MV from '../../assets/geo/countries/MV.png'
+import country_MW from '../../assets/geo/countries/MW.png'
 import country_MX from '../../assets/geo/countries/MX.png'
 import country_MY from '../../assets/geo/countries/MY.png'
+import country_MZ from '../../assets/geo/countries/MZ.png'
 import country_NA from '../../assets/geo/countries/NA.png'
+import country_NE from '../../assets/geo/countries/NE.png'
 import country_NG from '../../assets/geo/countries/NG.png'
+import country_NI from '../../assets/geo/countries/NI.png'
 import country_NL from '../../assets/geo/countries/NL.png'
 import country_NO from '../../assets/geo/countries/NO.png'
 import country_NP from '../../assets/geo/countries/NP.png'
+import country_NR from '../../assets/geo/countries/NR.png'
 import country_NZ from '../../assets/geo/countries/NZ.png'
+import country_OM from '../../assets/geo/countries/OM.png'
 import country_PA from '../../assets/geo/countries/PA.png'
 import country_PE from '../../assets/geo/countries/PE.png'
 import country_PG from '../../assets/geo/countries/PG.png'
@@ -63,64 +152,192 @@ import country_PH from '../../assets/geo/countries/PH.png'
 import country_PK from '../../assets/geo/countries/PK.png'
 import country_PL from '../../assets/geo/countries/PL.png'
 import country_PT from '../../assets/geo/countries/PT.png'
+import country_PW from '../../assets/geo/countries/PW.png'
+import country_PY from '../../assets/geo/countries/PY.png'
+import country_QA from '../../assets/geo/countries/QA.png'
 import country_RO from '../../assets/geo/countries/RO.png'
+import country_RS from '../../assets/geo/countries/RS.png'
+import country_RU from '../../assets/geo/countries/RU.png'
+import country_RW from '../../assets/geo/countries/RW.png'
+import country_SA from '../../assets/geo/countries/SA.png'
+import country_SB from '../../assets/geo/countries/SB.png'
+import country_SC from '../../assets/geo/countries/SC.png'
+import country_SD from '../../assets/geo/countries/SD.png'
 import country_SE from '../../assets/geo/countries/SE.png'
+import country_SG from '../../assets/geo/countries/SG.png'
+import country_SI from '../../assets/geo/countries/SI.png'
+import country_SK from '../../assets/geo/countries/SK.png'
+import country_SL from '../../assets/geo/countries/SL.png'
+import country_SM from '../../assets/geo/countries/SM.png'
 import country_SN from '../../assets/geo/countries/SN.png'
+import country_SO from '../../assets/geo/countries/SO.png'
+import country_SR from '../../assets/geo/countries/SR.png'
+import country_SS from '../../assets/geo/countries/SS.png'
+import country_ST from '../../assets/geo/countries/ST.png'
+import country_SV from '../../assets/geo/countries/SV.png'
+import country_SY from '../../assets/geo/countries/SY.png'
+import country_SZ from '../../assets/geo/countries/SZ.png'
+import country_TD from '../../assets/geo/countries/TD.png'
+import country_TG from '../../assets/geo/countries/TG.png'
 import country_TH from '../../assets/geo/countries/TH.png'
+import country_TJ from '../../assets/geo/countries/TJ.png'
+import country_TL from '../../assets/geo/countries/TL.png'
+import country_TM from '../../assets/geo/countries/TM.png'
 import country_TN from '../../assets/geo/countries/TN.png'
+import country_TO from '../../assets/geo/countries/TO.png'
+import country_TR from '../../assets/geo/countries/TR.png'
+import country_TT from '../../assets/geo/countries/TT.png'
 import country_TZ from '../../assets/geo/countries/TZ.png'
 import country_UA from '../../assets/geo/countries/UA.png'
 import country_UG from '../../assets/geo/countries/UG.png'
 import country_US from '../../assets/geo/countries/US.png'
+import country_UY from '../../assets/geo/countries/UY.png'
+import country_UZ from '../../assets/geo/countries/UZ.png'
+import country_VA from '../../assets/geo/countries/VA.png'
+import country_VC from '../../assets/geo/countries/VC.png'
+import country_VE from '../../assets/geo/countries/VE.png'
 import country_VN from '../../assets/geo/countries/VN.png'
+import country_VU from '../../assets/geo/countries/VU.png'
+import country_WS from '../../assets/geo/countries/WS.png'
+import country_YE from '../../assets/geo/countries/YE.png'
 import country_ZA from '../../assets/geo/countries/ZA.png'
+import country_ZM from '../../assets/geo/countries/ZM.png'
 import country_ZW from '../../assets/geo/countries/ZW.png'
+import context_AD from '../../assets/geo/context/AD.png'
+import context_AE from '../../assets/geo/context/AE.png'
+import context_AF from '../../assets/geo/context/AF.png'
+import context_AG from '../../assets/geo/context/AG.png'
+import context_AL from '../../assets/geo/context/AL.png'
+import context_AM from '../../assets/geo/context/AM.png'
+import context_AO from '../../assets/geo/context/AO.png'
 import context_AR from '../../assets/geo/context/AR.png'
 import context_AT from '../../assets/geo/context/AT.png'
 import context_AU from '../../assets/geo/context/AU.png'
+import context_AZ from '../../assets/geo/context/AZ.png'
+import context_BA from '../../assets/geo/context/BA.png'
+import context_BB from '../../assets/geo/context/BB.png'
 import context_BD from '../../assets/geo/context/BD.png'
 import context_BE from '../../assets/geo/context/BE.png'
+import context_BF from '../../assets/geo/context/BF.png'
+import context_BG from '../../assets/geo/context/BG.png'
+import context_BH from '../../assets/geo/context/BH.png'
+import context_BI from '../../assets/geo/context/BI.png'
+import context_BJ from '../../assets/geo/context/BJ.png'
+import context_BN from '../../assets/geo/context/BN.png'
+import context_BO from '../../assets/geo/context/BO.png'
 import context_BR from '../../assets/geo/context/BR.png'
+import context_BS from '../../assets/geo/context/BS.png'
+import context_BT from '../../assets/geo/context/BT.png'
 import context_BW from '../../assets/geo/context/BW.png'
+import context_BY from '../../assets/geo/context/BY.png'
+import context_BZ from '../../assets/geo/context/BZ.png'
 import context_CA from '../../assets/geo/context/CA.png'
+import context_CD from '../../assets/geo/context/CD.png'
+import context_CF from '../../assets/geo/context/CF.png'
+import context_CG from '../../assets/geo/context/CG.png'
 import context_CH from '../../assets/geo/context/CH.png'
+import context_CI from '../../assets/geo/context/CI.png'
 import context_CL from '../../assets/geo/context/CL.png'
+import context_CM from '../../assets/geo/context/CM.png'
 import context_CN from '../../assets/geo/context/CN.png'
 import context_CO from '../../assets/geo/context/CO.png'
 import context_CR from '../../assets/geo/context/CR.png'
 import context_CU from '../../assets/geo/context/CU.png'
+import context_CV from '../../assets/geo/context/CV.png'
+import context_CY from '../../assets/geo/context/CY.png'
 import context_CZ from '../../assets/geo/context/CZ.png'
 import context_DE from '../../assets/geo/context/DE.png'
+import context_DJ from '../../assets/geo/context/DJ.png'
 import context_DK from '../../assets/geo/context/DK.png'
+import context_DM from '../../assets/geo/context/DM.png'
+import context_DO from '../../assets/geo/context/DO.png'
 import context_DZ from '../../assets/geo/context/DZ.png'
+import context_EC from '../../assets/geo/context/EC.png'
+import context_EE from '../../assets/geo/context/EE.png'
 import context_EG from '../../assets/geo/context/EG.png'
+import context_ER from '../../assets/geo/context/ER.png'
 import context_ES from '../../assets/geo/context/ES.png'
 import context_ET from '../../assets/geo/context/ET.png'
 import context_FI from '../../assets/geo/context/FI.png'
 import context_FJ from '../../assets/geo/context/FJ.png'
+import context_FM from '../../assets/geo/context/FM.png'
 import context_FR from '../../assets/geo/context/FR.png'
+import context_GA from '../../assets/geo/context/GA.png'
+import context_GB from '../../assets/geo/context/GB.png'
+import context_GD from '../../assets/geo/context/GD.png'
+import context_GE from '../../assets/geo/context/GE.png'
 import context_GH from '../../assets/geo/context/GH.png'
+import context_GM from '../../assets/geo/context/GM.png'
+import context_GN from '../../assets/geo/context/GN.png'
+import context_GQ from '../../assets/geo/context/GQ.png'
 import context_GR from '../../assets/geo/context/GR.png'
 import context_GT from '../../assets/geo/context/GT.png'
+import context_GW from '../../assets/geo/context/GW.png'
+import context_GY from '../../assets/geo/context/GY.png'
+import context_HN from '../../assets/geo/context/HN.png'
+import context_HR from '../../assets/geo/context/HR.png'
+import context_HT from '../../assets/geo/context/HT.png'
 import context_HU from '../../assets/geo/context/HU.png'
 import context_ID from '../../assets/geo/context/ID.png'
+import context_IE from '../../assets/geo/context/IE.png'
+import context_IL from '../../assets/geo/context/IL.png'
 import context_IN from '../../assets/geo/context/IN.png'
+import context_IQ from '../../assets/geo/context/IQ.png'
+import context_IR from '../../assets/geo/context/IR.png'
+import context_IS from '../../assets/geo/context/IS.png'
 import context_IT from '../../assets/geo/context/IT.png'
+import context_JM from '../../assets/geo/context/JM.png'
+import context_JO from '../../assets/geo/context/JO.png'
 import context_JP from '../../assets/geo/context/JP.png'
 import context_KE from '../../assets/geo/context/KE.png'
+import context_KG from '../../assets/geo/context/KG.png'
+import context_KH from '../../assets/geo/context/KH.png'
+import context_KI from '../../assets/geo/context/KI.png'
+import context_KM from '../../assets/geo/context/KM.png'
+import context_KN from '../../assets/geo/context/KN.png'
 import context_KP from '../../assets/geo/context/KP.png'
 import context_KR from '../../assets/geo/context/KR.png'
+import context_KW from '../../assets/geo/context/KW.png'
+import context_KZ from '../../assets/geo/context/KZ.png'
+import context_LA from '../../assets/geo/context/LA.png'
+import context_LB from '../../assets/geo/context/LB.png'
+import context_LC from '../../assets/geo/context/LC.png'
+import context_LI from '../../assets/geo/context/LI.png'
+import context_LK from '../../assets/geo/context/LK.png'
+import context_LR from '../../assets/geo/context/LR.png'
+import context_LS from '../../assets/geo/context/LS.png'
+import context_LT from '../../assets/geo/context/LT.png'
+import context_LU from '../../assets/geo/context/LU.png'
+import context_LV from '../../assets/geo/context/LV.png'
+import context_LY from '../../assets/geo/context/LY.png'
 import context_MA from '../../assets/geo/context/MA.png'
+import context_MC from '../../assets/geo/context/MC.png'
+import context_MD from '../../assets/geo/context/MD.png'
+import context_ME from '../../assets/geo/context/ME.png'
+import context_MG from '../../assets/geo/context/MG.png'
+import context_MH from '../../assets/geo/context/MH.png'
+import context_MK from '../../assets/geo/context/MK.png'
 import context_ML from '../../assets/geo/context/ML.png'
+import context_MM from '../../assets/geo/context/MM.png'
 import context_MN from '../../assets/geo/context/MN.png'
+import context_MR from '../../assets/geo/context/MR.png'
+import context_MT from '../../assets/geo/context/MT.png'
+import context_MU from '../../assets/geo/context/MU.png'
+import context_MV from '../../assets/geo/context/MV.png'
+import context_MW from '../../assets/geo/context/MW.png'
 import context_MX from '../../assets/geo/context/MX.png'
 import context_MY from '../../assets/geo/context/MY.png'
+import context_MZ from '../../assets/geo/context/MZ.png'
 import context_NA from '../../assets/geo/context/NA.png'
+import context_NE from '../../assets/geo/context/NE.png'
 import context_NG from '../../assets/geo/context/NG.png'
+import context_NI from '../../assets/geo/context/NI.png'
 import context_NL from '../../assets/geo/context/NL.png'
 import context_NO from '../../assets/geo/context/NO.png'
 import context_NP from '../../assets/geo/context/NP.png'
+import context_NR from '../../assets/geo/context/NR.png'
 import context_NZ from '../../assets/geo/context/NZ.png'
+import context_OM from '../../assets/geo/context/OM.png'
 import context_PA from '../../assets/geo/context/PA.png'
 import context_PE from '../../assets/geo/context/PE.png'
 import context_PG from '../../assets/geo/context/PG.png'
@@ -128,69 +345,197 @@ import context_PH from '../../assets/geo/context/PH.png'
 import context_PK from '../../assets/geo/context/PK.png'
 import context_PL from '../../assets/geo/context/PL.png'
 import context_PT from '../../assets/geo/context/PT.png'
+import context_PW from '../../assets/geo/context/PW.png'
+import context_PY from '../../assets/geo/context/PY.png'
+import context_QA from '../../assets/geo/context/QA.png'
 import context_RO from '../../assets/geo/context/RO.png'
+import context_RS from '../../assets/geo/context/RS.png'
+import context_RU from '../../assets/geo/context/RU.png'
+import context_RW from '../../assets/geo/context/RW.png'
+import context_SA from '../../assets/geo/context/SA.png'
+import context_SB from '../../assets/geo/context/SB.png'
+import context_SC from '../../assets/geo/context/SC.png'
+import context_SD from '../../assets/geo/context/SD.png'
 import context_SE from '../../assets/geo/context/SE.png'
+import context_SG from '../../assets/geo/context/SG.png'
+import context_SI from '../../assets/geo/context/SI.png'
+import context_SK from '../../assets/geo/context/SK.png'
+import context_SL from '../../assets/geo/context/SL.png'
+import context_SM from '../../assets/geo/context/SM.png'
 import context_SN from '../../assets/geo/context/SN.png'
+import context_SO from '../../assets/geo/context/SO.png'
+import context_SR from '../../assets/geo/context/SR.png'
+import context_SS from '../../assets/geo/context/SS.png'
+import context_ST from '../../assets/geo/context/ST.png'
+import context_SV from '../../assets/geo/context/SV.png'
+import context_SY from '../../assets/geo/context/SY.png'
+import context_SZ from '../../assets/geo/context/SZ.png'
+import context_TD from '../../assets/geo/context/TD.png'
+import context_TG from '../../assets/geo/context/TG.png'
 import context_TH from '../../assets/geo/context/TH.png'
+import context_TJ from '../../assets/geo/context/TJ.png'
+import context_TL from '../../assets/geo/context/TL.png'
+import context_TM from '../../assets/geo/context/TM.png'
 import context_TN from '../../assets/geo/context/TN.png'
+import context_TO from '../../assets/geo/context/TO.png'
+import context_TR from '../../assets/geo/context/TR.png'
+import context_TT from '../../assets/geo/context/TT.png'
 import context_TZ from '../../assets/geo/context/TZ.png'
 import context_UA from '../../assets/geo/context/UA.png'
 import context_UG from '../../assets/geo/context/UG.png'
 import context_US from '../../assets/geo/context/US.png'
+import context_UY from '../../assets/geo/context/UY.png'
+import context_UZ from '../../assets/geo/context/UZ.png'
+import context_VA from '../../assets/geo/context/VA.png'
+import context_VC from '../../assets/geo/context/VC.png'
+import context_VE from '../../assets/geo/context/VE.png'
 import context_VN from '../../assets/geo/context/VN.png'
+import context_VU from '../../assets/geo/context/VU.png'
+import context_WS from '../../assets/geo/context/WS.png'
+import context_YE from '../../assets/geo/context/YE.png'
 import context_ZA from '../../assets/geo/context/ZA.png'
+import context_ZM from '../../assets/geo/context/ZM.png'
 import context_ZW from '../../assets/geo/context/ZW.png'
 
 import type { AssetModule } from './flags.generated.js'
 
 /** Content-pack asset path → the bundled image. */
 export const MAP_BY_PATH: Readonly<Record<string, AssetModule>> = {
+  'geo/countries/AD.png': country_AD,
+  'geo/countries/AE.png': country_AE,
+  'geo/countries/AF.png': country_AF,
+  'geo/countries/AG.png': country_AG,
+  'geo/countries/AL.png': country_AL,
+  'geo/countries/AM.png': country_AM,
+  'geo/countries/AO.png': country_AO,
   'geo/countries/AR.png': country_AR,
   'geo/countries/AT.png': country_AT,
   'geo/countries/AU.png': country_AU,
+  'geo/countries/AZ.png': country_AZ,
+  'geo/countries/BA.png': country_BA,
+  'geo/countries/BB.png': country_BB,
   'geo/countries/BD.png': country_BD,
   'geo/countries/BE.png': country_BE,
+  'geo/countries/BF.png': country_BF,
+  'geo/countries/BG.png': country_BG,
+  'geo/countries/BH.png': country_BH,
+  'geo/countries/BI.png': country_BI,
+  'geo/countries/BJ.png': country_BJ,
+  'geo/countries/BN.png': country_BN,
+  'geo/countries/BO.png': country_BO,
   'geo/countries/BR.png': country_BR,
+  'geo/countries/BS.png': country_BS,
+  'geo/countries/BT.png': country_BT,
   'geo/countries/BW.png': country_BW,
+  'geo/countries/BY.png': country_BY,
+  'geo/countries/BZ.png': country_BZ,
   'geo/countries/CA.png': country_CA,
+  'geo/countries/CD.png': country_CD,
+  'geo/countries/CF.png': country_CF,
+  'geo/countries/CG.png': country_CG,
   'geo/countries/CH.png': country_CH,
+  'geo/countries/CI.png': country_CI,
   'geo/countries/CL.png': country_CL,
+  'geo/countries/CM.png': country_CM,
   'geo/countries/CN.png': country_CN,
   'geo/countries/CO.png': country_CO,
   'geo/countries/CR.png': country_CR,
   'geo/countries/CU.png': country_CU,
+  'geo/countries/CV.png': country_CV,
+  'geo/countries/CY.png': country_CY,
   'geo/countries/CZ.png': country_CZ,
   'geo/countries/DE.png': country_DE,
+  'geo/countries/DJ.png': country_DJ,
   'geo/countries/DK.png': country_DK,
+  'geo/countries/DM.png': country_DM,
+  'geo/countries/DO.png': country_DO,
   'geo/countries/DZ.png': country_DZ,
+  'geo/countries/EC.png': country_EC,
+  'geo/countries/EE.png': country_EE,
   'geo/countries/EG.png': country_EG,
+  'geo/countries/ER.png': country_ER,
   'geo/countries/ES.png': country_ES,
   'geo/countries/ET.png': country_ET,
   'geo/countries/FI.png': country_FI,
   'geo/countries/FJ.png': country_FJ,
+  'geo/countries/FM.png': country_FM,
   'geo/countries/FR.png': country_FR,
+  'geo/countries/GA.png': country_GA,
+  'geo/countries/GB.png': country_GB,
+  'geo/countries/GD.png': country_GD,
+  'geo/countries/GE.png': country_GE,
   'geo/countries/GH.png': country_GH,
+  'geo/countries/GM.png': country_GM,
+  'geo/countries/GN.png': country_GN,
+  'geo/countries/GQ.png': country_GQ,
   'geo/countries/GR.png': country_GR,
   'geo/countries/GT.png': country_GT,
+  'geo/countries/GW.png': country_GW,
+  'geo/countries/GY.png': country_GY,
+  'geo/countries/HN.png': country_HN,
+  'geo/countries/HR.png': country_HR,
+  'geo/countries/HT.png': country_HT,
   'geo/countries/HU.png': country_HU,
   'geo/countries/ID.png': country_ID,
+  'geo/countries/IE.png': country_IE,
+  'geo/countries/IL.png': country_IL,
   'geo/countries/IN.png': country_IN,
+  'geo/countries/IQ.png': country_IQ,
+  'geo/countries/IR.png': country_IR,
+  'geo/countries/IS.png': country_IS,
   'geo/countries/IT.png': country_IT,
+  'geo/countries/JM.png': country_JM,
+  'geo/countries/JO.png': country_JO,
   'geo/countries/JP.png': country_JP,
   'geo/countries/KE.png': country_KE,
+  'geo/countries/KG.png': country_KG,
+  'geo/countries/KH.png': country_KH,
+  'geo/countries/KI.png': country_KI,
+  'geo/countries/KM.png': country_KM,
+  'geo/countries/KN.png': country_KN,
   'geo/countries/KP.png': country_KP,
   'geo/countries/KR.png': country_KR,
+  'geo/countries/KW.png': country_KW,
+  'geo/countries/KZ.png': country_KZ,
+  'geo/countries/LA.png': country_LA,
+  'geo/countries/LB.png': country_LB,
+  'geo/countries/LC.png': country_LC,
+  'geo/countries/LI.png': country_LI,
+  'geo/countries/LK.png': country_LK,
+  'geo/countries/LR.png': country_LR,
+  'geo/countries/LS.png': country_LS,
+  'geo/countries/LT.png': country_LT,
+  'geo/countries/LU.png': country_LU,
+  'geo/countries/LV.png': country_LV,
+  'geo/countries/LY.png': country_LY,
   'geo/countries/MA.png': country_MA,
+  'geo/countries/MC.png': country_MC,
+  'geo/countries/MD.png': country_MD,
+  'geo/countries/ME.png': country_ME,
+  'geo/countries/MG.png': country_MG,
+  'geo/countries/MH.png': country_MH,
+  'geo/countries/MK.png': country_MK,
   'geo/countries/ML.png': country_ML,
+  'geo/countries/MM.png': country_MM,
   'geo/countries/MN.png': country_MN,
+  'geo/countries/MR.png': country_MR,
+  'geo/countries/MT.png': country_MT,
+  'geo/countries/MU.png': country_MU,
+  'geo/countries/MV.png': country_MV,
+  'geo/countries/MW.png': country_MW,
   'geo/countries/MX.png': country_MX,
   'geo/countries/MY.png': country_MY,
+  'geo/countries/MZ.png': country_MZ,
   'geo/countries/NA.png': country_NA,
+  'geo/countries/NE.png': country_NE,
   'geo/countries/NG.png': country_NG,
+  'geo/countries/NI.png': country_NI,
   'geo/countries/NL.png': country_NL,
   'geo/countries/NO.png': country_NO,
   'geo/countries/NP.png': country_NP,
+  'geo/countries/NR.png': country_NR,
   'geo/countries/NZ.png': country_NZ,
+  'geo/countries/OM.png': country_OM,
   'geo/countries/PA.png': country_PA,
   'geo/countries/PE.png': country_PE,
   'geo/countries/PG.png': country_PG,
@@ -198,64 +543,192 @@ export const MAP_BY_PATH: Readonly<Record<string, AssetModule>> = {
   'geo/countries/PK.png': country_PK,
   'geo/countries/PL.png': country_PL,
   'geo/countries/PT.png': country_PT,
+  'geo/countries/PW.png': country_PW,
+  'geo/countries/PY.png': country_PY,
+  'geo/countries/QA.png': country_QA,
   'geo/countries/RO.png': country_RO,
+  'geo/countries/RS.png': country_RS,
+  'geo/countries/RU.png': country_RU,
+  'geo/countries/RW.png': country_RW,
+  'geo/countries/SA.png': country_SA,
+  'geo/countries/SB.png': country_SB,
+  'geo/countries/SC.png': country_SC,
+  'geo/countries/SD.png': country_SD,
   'geo/countries/SE.png': country_SE,
+  'geo/countries/SG.png': country_SG,
+  'geo/countries/SI.png': country_SI,
+  'geo/countries/SK.png': country_SK,
+  'geo/countries/SL.png': country_SL,
+  'geo/countries/SM.png': country_SM,
   'geo/countries/SN.png': country_SN,
+  'geo/countries/SO.png': country_SO,
+  'geo/countries/SR.png': country_SR,
+  'geo/countries/SS.png': country_SS,
+  'geo/countries/ST.png': country_ST,
+  'geo/countries/SV.png': country_SV,
+  'geo/countries/SY.png': country_SY,
+  'geo/countries/SZ.png': country_SZ,
+  'geo/countries/TD.png': country_TD,
+  'geo/countries/TG.png': country_TG,
   'geo/countries/TH.png': country_TH,
+  'geo/countries/TJ.png': country_TJ,
+  'geo/countries/TL.png': country_TL,
+  'geo/countries/TM.png': country_TM,
   'geo/countries/TN.png': country_TN,
+  'geo/countries/TO.png': country_TO,
+  'geo/countries/TR.png': country_TR,
+  'geo/countries/TT.png': country_TT,
   'geo/countries/TZ.png': country_TZ,
   'geo/countries/UA.png': country_UA,
   'geo/countries/UG.png': country_UG,
   'geo/countries/US.png': country_US,
+  'geo/countries/UY.png': country_UY,
+  'geo/countries/UZ.png': country_UZ,
+  'geo/countries/VA.png': country_VA,
+  'geo/countries/VC.png': country_VC,
+  'geo/countries/VE.png': country_VE,
   'geo/countries/VN.png': country_VN,
+  'geo/countries/VU.png': country_VU,
+  'geo/countries/WS.png': country_WS,
+  'geo/countries/YE.png': country_YE,
   'geo/countries/ZA.png': country_ZA,
+  'geo/countries/ZM.png': country_ZM,
   'geo/countries/ZW.png': country_ZW,
+  'geo/context/AD.png': context_AD,
+  'geo/context/AE.png': context_AE,
+  'geo/context/AF.png': context_AF,
+  'geo/context/AG.png': context_AG,
+  'geo/context/AL.png': context_AL,
+  'geo/context/AM.png': context_AM,
+  'geo/context/AO.png': context_AO,
   'geo/context/AR.png': context_AR,
   'geo/context/AT.png': context_AT,
   'geo/context/AU.png': context_AU,
+  'geo/context/AZ.png': context_AZ,
+  'geo/context/BA.png': context_BA,
+  'geo/context/BB.png': context_BB,
   'geo/context/BD.png': context_BD,
   'geo/context/BE.png': context_BE,
+  'geo/context/BF.png': context_BF,
+  'geo/context/BG.png': context_BG,
+  'geo/context/BH.png': context_BH,
+  'geo/context/BI.png': context_BI,
+  'geo/context/BJ.png': context_BJ,
+  'geo/context/BN.png': context_BN,
+  'geo/context/BO.png': context_BO,
   'geo/context/BR.png': context_BR,
+  'geo/context/BS.png': context_BS,
+  'geo/context/BT.png': context_BT,
   'geo/context/BW.png': context_BW,
+  'geo/context/BY.png': context_BY,
+  'geo/context/BZ.png': context_BZ,
   'geo/context/CA.png': context_CA,
+  'geo/context/CD.png': context_CD,
+  'geo/context/CF.png': context_CF,
+  'geo/context/CG.png': context_CG,
   'geo/context/CH.png': context_CH,
+  'geo/context/CI.png': context_CI,
   'geo/context/CL.png': context_CL,
+  'geo/context/CM.png': context_CM,
   'geo/context/CN.png': context_CN,
   'geo/context/CO.png': context_CO,
   'geo/context/CR.png': context_CR,
   'geo/context/CU.png': context_CU,
+  'geo/context/CV.png': context_CV,
+  'geo/context/CY.png': context_CY,
   'geo/context/CZ.png': context_CZ,
   'geo/context/DE.png': context_DE,
+  'geo/context/DJ.png': context_DJ,
   'geo/context/DK.png': context_DK,
+  'geo/context/DM.png': context_DM,
+  'geo/context/DO.png': context_DO,
   'geo/context/DZ.png': context_DZ,
+  'geo/context/EC.png': context_EC,
+  'geo/context/EE.png': context_EE,
   'geo/context/EG.png': context_EG,
+  'geo/context/ER.png': context_ER,
   'geo/context/ES.png': context_ES,
   'geo/context/ET.png': context_ET,
   'geo/context/FI.png': context_FI,
   'geo/context/FJ.png': context_FJ,
+  'geo/context/FM.png': context_FM,
   'geo/context/FR.png': context_FR,
+  'geo/context/GA.png': context_GA,
+  'geo/context/GB.png': context_GB,
+  'geo/context/GD.png': context_GD,
+  'geo/context/GE.png': context_GE,
   'geo/context/GH.png': context_GH,
+  'geo/context/GM.png': context_GM,
+  'geo/context/GN.png': context_GN,
+  'geo/context/GQ.png': context_GQ,
   'geo/context/GR.png': context_GR,
   'geo/context/GT.png': context_GT,
+  'geo/context/GW.png': context_GW,
+  'geo/context/GY.png': context_GY,
+  'geo/context/HN.png': context_HN,
+  'geo/context/HR.png': context_HR,
+  'geo/context/HT.png': context_HT,
   'geo/context/HU.png': context_HU,
   'geo/context/ID.png': context_ID,
+  'geo/context/IE.png': context_IE,
+  'geo/context/IL.png': context_IL,
   'geo/context/IN.png': context_IN,
+  'geo/context/IQ.png': context_IQ,
+  'geo/context/IR.png': context_IR,
+  'geo/context/IS.png': context_IS,
   'geo/context/IT.png': context_IT,
+  'geo/context/JM.png': context_JM,
+  'geo/context/JO.png': context_JO,
   'geo/context/JP.png': context_JP,
   'geo/context/KE.png': context_KE,
+  'geo/context/KG.png': context_KG,
+  'geo/context/KH.png': context_KH,
+  'geo/context/KI.png': context_KI,
+  'geo/context/KM.png': context_KM,
+  'geo/context/KN.png': context_KN,
   'geo/context/KP.png': context_KP,
   'geo/context/KR.png': context_KR,
+  'geo/context/KW.png': context_KW,
+  'geo/context/KZ.png': context_KZ,
+  'geo/context/LA.png': context_LA,
+  'geo/context/LB.png': context_LB,
+  'geo/context/LC.png': context_LC,
+  'geo/context/LI.png': context_LI,
+  'geo/context/LK.png': context_LK,
+  'geo/context/LR.png': context_LR,
+  'geo/context/LS.png': context_LS,
+  'geo/context/LT.png': context_LT,
+  'geo/context/LU.png': context_LU,
+  'geo/context/LV.png': context_LV,
+  'geo/context/LY.png': context_LY,
   'geo/context/MA.png': context_MA,
+  'geo/context/MC.png': context_MC,
+  'geo/context/MD.png': context_MD,
+  'geo/context/ME.png': context_ME,
+  'geo/context/MG.png': context_MG,
+  'geo/context/MH.png': context_MH,
+  'geo/context/MK.png': context_MK,
   'geo/context/ML.png': context_ML,
+  'geo/context/MM.png': context_MM,
   'geo/context/MN.png': context_MN,
+  'geo/context/MR.png': context_MR,
+  'geo/context/MT.png': context_MT,
+  'geo/context/MU.png': context_MU,
+  'geo/context/MV.png': context_MV,
+  'geo/context/MW.png': context_MW,
   'geo/context/MX.png': context_MX,
   'geo/context/MY.png': context_MY,
+  'geo/context/MZ.png': context_MZ,
   'geo/context/NA.png': context_NA,
+  'geo/context/NE.png': context_NE,
   'geo/context/NG.png': context_NG,
+  'geo/context/NI.png': context_NI,
   'geo/context/NL.png': context_NL,
   'geo/context/NO.png': context_NO,
   'geo/context/NP.png': context_NP,
+  'geo/context/NR.png': context_NR,
   'geo/context/NZ.png': context_NZ,
+  'geo/context/OM.png': context_OM,
   'geo/context/PA.png': context_PA,
   'geo/context/PE.png': context_PE,
   'geo/context/PG.png': context_PG,
@@ -263,16 +736,55 @@ export const MAP_BY_PATH: Readonly<Record<string, AssetModule>> = {
   'geo/context/PK.png': context_PK,
   'geo/context/PL.png': context_PL,
   'geo/context/PT.png': context_PT,
+  'geo/context/PW.png': context_PW,
+  'geo/context/PY.png': context_PY,
+  'geo/context/QA.png': context_QA,
   'geo/context/RO.png': context_RO,
+  'geo/context/RS.png': context_RS,
+  'geo/context/RU.png': context_RU,
+  'geo/context/RW.png': context_RW,
+  'geo/context/SA.png': context_SA,
+  'geo/context/SB.png': context_SB,
+  'geo/context/SC.png': context_SC,
+  'geo/context/SD.png': context_SD,
   'geo/context/SE.png': context_SE,
+  'geo/context/SG.png': context_SG,
+  'geo/context/SI.png': context_SI,
+  'geo/context/SK.png': context_SK,
+  'geo/context/SL.png': context_SL,
+  'geo/context/SM.png': context_SM,
   'geo/context/SN.png': context_SN,
+  'geo/context/SO.png': context_SO,
+  'geo/context/SR.png': context_SR,
+  'geo/context/SS.png': context_SS,
+  'geo/context/ST.png': context_ST,
+  'geo/context/SV.png': context_SV,
+  'geo/context/SY.png': context_SY,
+  'geo/context/SZ.png': context_SZ,
+  'geo/context/TD.png': context_TD,
+  'geo/context/TG.png': context_TG,
   'geo/context/TH.png': context_TH,
+  'geo/context/TJ.png': context_TJ,
+  'geo/context/TL.png': context_TL,
+  'geo/context/TM.png': context_TM,
   'geo/context/TN.png': context_TN,
+  'geo/context/TO.png': context_TO,
+  'geo/context/TR.png': context_TR,
+  'geo/context/TT.png': context_TT,
   'geo/context/TZ.png': context_TZ,
   'geo/context/UA.png': context_UA,
   'geo/context/UG.png': context_UG,
   'geo/context/US.png': context_US,
+  'geo/context/UY.png': context_UY,
+  'geo/context/UZ.png': context_UZ,
+  'geo/context/VA.png': context_VA,
+  'geo/context/VC.png': context_VC,
+  'geo/context/VE.png': context_VE,
   'geo/context/VN.png': context_VN,
+  'geo/context/VU.png': context_VU,
+  'geo/context/WS.png': context_WS,
+  'geo/context/YE.png': context_YE,
   'geo/context/ZA.png': context_ZA,
+  'geo/context/ZM.png': context_ZM,
   'geo/context/ZW.png': context_ZW,
 }

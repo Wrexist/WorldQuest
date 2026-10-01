@@ -1,0 +1,3642 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "packId": "geography.facts.hemisphere",
+  "version": "1.0.0",
+  "subject": "geography",
+  "kind": "facts",
+  "locales": [
+    "en",
+    "sv"
+  ],
+  "license": "CC-BY-4.0",
+  "generatedAt": "2026-09-30",
+  "$comment": "Only countries lying entirely inside one quadrant of the equator and the prime meridian. A country that crosses either is absent rather than half right.",
+  "volatilityReviewed": true,
+  "delivery": "server",
+  "items": [
+    {
+      "id": "geo.AD.hemisphere",
+      "entity": "AD",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AE.hemisphere",
+      "entity": "AE",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AF.hemisphere",
+      "entity": "AF",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AG.hemisphere",
+      "entity": "AG",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AL.hemisphere",
+      "entity": "AL",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AM.hemisphere",
+      "entity": "AM",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AO.hemisphere",
+      "entity": "AO",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AR.hemisphere",
+      "entity": "AR",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SW",
+        "names": {
+          "en": "Southern and Western",
+          "sv": "Södra och västra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AT.hemisphere",
+      "entity": "AT",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AU.hemisphere",
+      "entity": "AU",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AZ.hemisphere",
+      "entity": "AZ",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BA.hemisphere",
+      "entity": "BA",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BB.hemisphere",
+      "entity": "BB",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BD.hemisphere",
+      "entity": "BD",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BE.hemisphere",
+      "entity": "BE",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BG.hemisphere",
+      "entity": "BG",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BI.hemisphere",
+      "entity": "BI",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BJ.hemisphere",
+      "entity": "BJ",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BN.hemisphere",
+      "entity": "BN",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BO.hemisphere",
+      "entity": "BO",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SW",
+        "names": {
+          "en": "Southern and Western",
+          "sv": "Södra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BS.hemisphere",
+      "entity": "BS",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BT.hemisphere",
+      "entity": "BT",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BW.hemisphere",
+      "entity": "BW",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BY.hemisphere",
+      "entity": "BY",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BZ.hemisphere",
+      "entity": "BZ",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CA.hemisphere",
+      "entity": "CA",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CF.hemisphere",
+      "entity": "CF",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CH.hemisphere",
+      "entity": "CH",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CI.hemisphere",
+      "entity": "CI",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CL.hemisphere",
+      "entity": "CL",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SW",
+        "names": {
+          "en": "Southern and Western",
+          "sv": "Södra och västra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CM.hemisphere",
+      "entity": "CM",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CN.hemisphere",
+      "entity": "CN",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CR.hemisphere",
+      "entity": "CR",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CU.hemisphere",
+      "entity": "CU",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CV.hemisphere",
+      "entity": "CV",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CZ.hemisphere",
+      "entity": "CZ",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DE.hemisphere",
+      "entity": "DE",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DJ.hemisphere",
+      "entity": "DJ",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DK.hemisphere",
+      "entity": "DK",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DM.hemisphere",
+      "entity": "DM",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DO.hemisphere",
+      "entity": "DO",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.EE.hemisphere",
+      "entity": "EE",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.EG.hemisphere",
+      "entity": "EG",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ER.hemisphere",
+      "entity": "ER",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ET.hemisphere",
+      "entity": "ET",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FI.hemisphere",
+      "entity": "FI",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GE.hemisphere",
+      "entity": "GE",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GM.hemisphere",
+      "entity": "GM",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GN.hemisphere",
+      "entity": "GN",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GQ.hemisphere",
+      "entity": "GQ",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GR.hemisphere",
+      "entity": "GR",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GT.hemisphere",
+      "entity": "GT",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GW.hemisphere",
+      "entity": "GW",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GY.hemisphere",
+      "entity": "GY",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HN.hemisphere",
+      "entity": "HN",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HR.hemisphere",
+      "entity": "HR",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HT.hemisphere",
+      "entity": "HT",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HU.hemisphere",
+      "entity": "HU",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IE.hemisphere",
+      "entity": "IE",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IL.hemisphere",
+      "entity": "IL",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IN.hemisphere",
+      "entity": "IN",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IQ.hemisphere",
+      "entity": "IQ",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IR.hemisphere",
+      "entity": "IR",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IS.hemisphere",
+      "entity": "IS",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IT.hemisphere",
+      "entity": "IT",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JM.hemisphere",
+      "entity": "JM",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JO.hemisphere",
+      "entity": "JO",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JP.hemisphere",
+      "entity": "JP",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KG.hemisphere",
+      "entity": "KG",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KH.hemisphere",
+      "entity": "KH",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KN.hemisphere",
+      "entity": "KN",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KP.hemisphere",
+      "entity": "KP",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KR.hemisphere",
+      "entity": "KR",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KW.hemisphere",
+      "entity": "KW",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KZ.hemisphere",
+      "entity": "KZ",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LA.hemisphere",
+      "entity": "LA",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LB.hemisphere",
+      "entity": "LB",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LC.hemisphere",
+      "entity": "LC",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LI.hemisphere",
+      "entity": "LI",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LK.hemisphere",
+      "entity": "LK",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LR.hemisphere",
+      "entity": "LR",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LS.hemisphere",
+      "entity": "LS",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LT.hemisphere",
+      "entity": "LT",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LU.hemisphere",
+      "entity": "LU",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LV.hemisphere",
+      "entity": "LV",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LY.hemisphere",
+      "entity": "LY",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MD.hemisphere",
+      "entity": "MD",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ME.hemisphere",
+      "entity": "ME",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MG.hemisphere",
+      "entity": "MG",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MK.hemisphere",
+      "entity": "MK",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MM.hemisphere",
+      "entity": "MM",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MN.hemisphere",
+      "entity": "MN",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MR.hemisphere",
+      "entity": "MR",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MT.hemisphere",
+      "entity": "MT",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MU.hemisphere",
+      "entity": "MU",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MW.hemisphere",
+      "entity": "MW",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MX.hemisphere",
+      "entity": "MX",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MY.hemisphere",
+      "entity": "MY",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MZ.hemisphere",
+      "entity": "MZ",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NA.hemisphere",
+      "entity": "NA",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NE.hemisphere",
+      "entity": "NE",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NG.hemisphere",
+      "entity": "NG",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NI.hemisphere",
+      "entity": "NI",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NP.hemisphere",
+      "entity": "NP",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.OM.hemisphere",
+      "entity": "OM",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PA.hemisphere",
+      "entity": "PA",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PE.hemisphere",
+      "entity": "PE",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SW",
+        "names": {
+          "en": "Southern and Western",
+          "sv": "Södra och västra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PG.hemisphere",
+      "entity": "PG",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PK.hemisphere",
+      "entity": "PK",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PL.hemisphere",
+      "entity": "PL",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PT.hemisphere",
+      "entity": "PT",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PY.hemisphere",
+      "entity": "PY",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SW",
+        "names": {
+          "en": "Southern and Western",
+          "sv": "Södra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.QA.hemisphere",
+      "entity": "QA",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RO.hemisphere",
+      "entity": "RO",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RS.hemisphere",
+      "entity": "RS",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RW.hemisphere",
+      "entity": "RW",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SA.hemisphere",
+      "entity": "SA",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SB.hemisphere",
+      "entity": "SB",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "hemisphere",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SD.hemisphere",
+      "entity": "SD",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SE.hemisphere",
+      "entity": "SE",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SI.hemisphere",
+      "entity": "SI",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SK.hemisphere",
+      "entity": "SK",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SL.hemisphere",
+      "entity": "SL",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SM.hemisphere",
+      "entity": "SM",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SN.hemisphere",
+      "entity": "SN",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SR.hemisphere",
+      "entity": "SR",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SS.hemisphere",
+      "entity": "SS",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ST.hemisphere",
+      "entity": "ST",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SV.hemisphere",
+      "entity": "SV",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SY.hemisphere",
+      "entity": "SY",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SZ.hemisphere",
+      "entity": "SZ",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TD.hemisphere",
+      "entity": "TD",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TH.hemisphere",
+      "entity": "TH",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TJ.hemisphere",
+      "entity": "TJ",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TL.hemisphere",
+      "entity": "TL",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TM.hemisphere",
+      "entity": "TM",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TN.hemisphere",
+      "entity": "TN",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TR.hemisphere",
+      "entity": "TR",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TT.hemisphere",
+      "entity": "TT",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TZ.hemisphere",
+      "entity": "TZ",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UA.hemisphere",
+      "entity": "UA",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UY.hemisphere",
+      "entity": "UY",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SW",
+        "names": {
+          "en": "Southern and Western",
+          "sv": "Södra och västra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UZ.hemisphere",
+      "entity": "UZ",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VE.hemisphere",
+      "entity": "VE",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NW",
+        "names": {
+          "en": "Northern and Western",
+          "sv": "Norra och västra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VN.hemisphere",
+      "entity": "VN",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VU.hemisphere",
+      "entity": "VU",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "hemisphere",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.WS.hemisphere",
+      "entity": "WS",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SW",
+        "names": {
+          "en": "Southern and Western",
+          "sv": "Södra och västra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.YE.hemisphere",
+      "entity": "YE",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-NE",
+        "names": {
+          "en": "Northern and Eastern",
+          "sv": "Norra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZA.hemisphere",
+      "entity": "ZA",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZM.hemisphere",
+      "entity": "ZM",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZW.hemisphere",
+      "entity": "ZW",
+      "attribute": "hemisphere",
+      "value": {
+        "id": "hemisphere-SE",
+        "names": {
+          "en": "Southern and Eastern",
+          "sv": "Södra och östra"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "hemisphere",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "Natural Earth 1:50m outline (public domain, via world-atlas 2.0.2), entirely inside one quadrant of the equator and the prime meridian, agreeing with the point in world-countries v5.1.0",
+        "url": "https://www.naturalearthdata.com/",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    }
+  ]
+}

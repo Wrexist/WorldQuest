@@ -19,6 +19,9 @@ import { LessonScreen } from './LessonScreen.js'
 // rules are unit-tested in the engines; here it only has to not explode.
 vi.mock('../../lib/sync.js', () => ({ enqueueLesson: vi.fn(), flush: vi.fn() }))
 vi.mock('../../lib/analytics.js', () => ({ track: vi.fn() }))
+// The difficulty ramp reads the account's XP through TanStack Query, and these tests mount the
+// screen without a provider. A learner with no progress yet is what they have always assumed.
+vi.mock('../home/useOptimisticProgress.js', () => ({ useOptimisticProgress: () => ({ shown: null }) }))
 
 /** Every button except the footer's Continue. */
 const answerButtons = (): HTMLElement[] => screen.getAllByTestId('answer-option')
@@ -183,7 +186,11 @@ describe('Lesson', () => {
     expect(options.length).toBeGreaterThanOrEqual(4)
     for (const option of options) {
       const visible = (option.textContent ?? '').replace(/^[ABCD]/, '')
-      expect(option.getAttribute('aria-label')).toBe(visible)
+      // A PICTURE option (the flag questions) has no visible words: its accessible name is the
+      // written description of the picture, and is exactly what a screen reader should get. The
+      // lesson now opens with whichever question suits the learner, not always a capital, so
+      // this meets those too.
+      if (visible !== '') expect(option.getAttribute('aria-label')).toBe(visible)
       expect(option.getAttribute('aria-label')).toBeTruthy()
       // And the badge really is decorative — a reader must not receive the letter.
       expect(option.getAttribute('aria-label')).not.toMatch(/^[ABCD][A-Z]/)

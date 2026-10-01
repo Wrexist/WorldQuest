@@ -9,6 +9,7 @@
 
 import { shuffle, type Rng } from '../shared/index.js'
 import type { FactId } from '../learning/types.js'
+import { acceptedSpellings, nearRivals } from './typed.js'
 import type {
   AnswerOption,
   ContentIndex,
@@ -22,6 +23,7 @@ import type {
 } from './types.js'
 
 export * from './types.js'
+export * from './typed.js'
 
 /**
  * A fact is quizzable unless it says otherwise. Sensitive and volatile facts opt out.
@@ -67,6 +69,20 @@ export function buildIndex(input: {
   const items: Item[] = []
   const itemsByFact = new Map<FactId, Item[]>()
 
+  // Distractor search asks "what does this entity say about this attribute?" for every
+  // candidate of every question. Answered by scanning the whole pack, that was 194 scans
+  // per question at a thousand facts and is unaffordable at three thousand.
+  const factsByEntity = new Map<EntityId, Fact[]>()
+  const factsByAttribute = new Map<string, Fact[]>()
+  for (const fact of input.facts) {
+    const byEntity = factsByEntity.get(fact.entity)
+    if (byEntity) byEntity.push(fact)
+    else factsByEntity.set(fact.entity, [fact])
+    const byAttribute = factsByAttribute.get(fact.attribute)
+    if (byAttribute) byAttribute.push(fact)
+    else factsByAttribute.set(fact.attribute, [fact])
+  }
+
   for (const fact of input.facts) {
     if (!isQuizzable(fact)) continue
     // An orphaned fact is a content bug, not a crash. It is caught by
@@ -75,6 +91,9 @@ export function buildIndex(input: {
 
     for (const template of input.templates) {
       if (template.attribute !== fact.attribute) continue
+      // A template that is only true of one value — "has no sea coast" — is not a way of
+      // asking about the others.
+      if (template.when !== undefined && template.when.valueId !== fact.value.id) continue
 
       const item: Item = {
         id: `${fact.id}@${template.id}`,
@@ -92,7 +111,7 @@ export function buildIndex(input: {
     }
   }
 
-  return { entities, facts, templates, items, itemsByFact }
+  return { entities, facts, templates, items, itemsByFact, factsByEntity, factsByAttribute }
 }
 
 const clampDifficulty = (n: number): number => Math.min(5, Math.max(1, n))
@@ -145,6 +164,13 @@ export function itemsForFact(
      * revealing template is still there, last, and is used only when nothing else can be.
      */
     deprioritizeEntityAnswers?: boolean
+    /**
+     * Prefer presentations whose template is at most this much harder than the fact
+     * (`Template.difficultyModifier`), from `difficultyRamp`. Ordered, not filtered, for
+     * the same reason as above: a fact whose only way of being asked is harder is still
+     * asked, after the easier ones, rather than silently dropped.
+     */
+    preferModifierAtMost?: number
   } = {},
 ): Item[] {
   const candidates = index.itemsByFact.get(factId) ?? []
@@ -155,18 +181,52 @@ export function itemsForFact(
     return modality !== undefined && options.modalities.includes(modality)
   })
   const shuffled = shuffle(usable, rng)
-  if (!options.deprioritizeEntityAnswers) return shuffled
+  const cap = options.preferModifierAtMost
+  if (!options.deprioritizeEntityAnswers && cap === undefined) return shuffled
 
-  // A stable partition rather than a sort: within each half the shuffle's order stands,
-  // so which forward template gets asked is still random.
-  const asksSomething: Item[] = []
-  const namesTheEntity: Item[] = []
-  for (const item of shuffled) {
+  // A stable sort on two penalties rather than a reshuffle: within each group the
+  // shuffle's order stands, so which acceptable template gets asked is still random.
+  // Naming the entity outranks being too hard: a question whose answer is the lesson's
+  // own subject is not a question at all, a hard one still is.
+  const penalty = (item: Item): number => {
     const template = index.templates.get(item.templateId)
-    ;(template?.answer.from === 'entity.names' ? namesTheEntity : asksSomething).push(item)
+    const reveals = options.deprioritizeEntityAnswers === true && template?.answer.from === 'entity.names' ? 2 : 0
+    const modifier = template?.difficultyModifier ?? 0
+    const tooHard = cap !== undefined && modifier > cap ? 1 : 0
+    // The other half of the ramp. A learner whose ceiling is the hardest way of asking has
+    // outgrown the easiest: asking a long-practised learner "what is the capital of Kenya?"
+    // when the same fact can be asked backwards is a question they no longer need. One step
+    // of slack — a ceiling of 2 still takes modifier 1 — so a template is never skipped for
+    // being merely a little easy, and ordered rather than filtered like everything here.
+    const tooEasy = cap !== undefined && cap >= 2 && modifier < cap - 1 ? 1 : 0
+    return reveals + tooHard + tooEasy
   }
-  return [...asksSomething, ...namesTheEntity]
+  return shuffled.map((item, i) => ({ item, i, p: penalty(item) }))
+    .sort((a, b) => a.p - b.p || a.i - b.i)
+    .map(({ item }) => item)
 }
+
+/**
+ * The entities this entity is related to by `attribute` — every fact, quizzable or not.
+ *
+ * Non-quizzable ones count, and that is the point: a relation one source claims and the
+ * other does not is a fact nobody will ask, and also a country nobody may offer as a WRONG
+ * answer, because it might be right.
+ */
+function relatedIds(index: ContentIndex, entityId: EntityId, attribute: string): Set<EntityId> {
+  const ids = new Set<EntityId>()
+  for (const f of index.factsByEntity.get(entityId) ?? []) {
+    if (f.attribute === attribute && f.value.id !== undefined) ids.add(f.value.id)
+  }
+  return ids
+}
+
+/** The quizzable facts an entity holds for an attribute. */
+const quizzableFactsOf = (index: ContentIndex, entityId: EntityId, attribute: string): Fact[] =>
+  (index.factsByEntity.get(entityId) ?? []).filter((f) => f.attribute === attribute && isQuizzable(f))
+
+/** How far apart two counts or sizes are, on the scale a person judges them by. */
+const logDistance = (a: number, b: number): number => Math.abs(Math.log((a + 1) / (b + 1)))
 
 /** Distractor pools, in the order the strategy prefers them. */
 function candidatePool(
@@ -204,9 +264,7 @@ function candidatePool(
       const tags = new Set((fact.tags ?? []).filter((t) => t.startsWith('like:')))
       if (tags.size === 0) return []
       return all.filter((e) => {
-        const theirFact = [...index.facts.values()].find(
-          (f) => f.entity === e.id && f.attribute === fact.attribute,
-        )
+        const theirFact = (index.factsByEntity.get(e.id) ?? []).find((f) => f.attribute === fact.attribute)
         return theirFact?.tags?.some((t) => tags.has(t)) ?? false
       })
     }
@@ -233,11 +291,44 @@ function candidatePool(
        * for the attribute cannot supply an option, and including it would produce a
        * blank one.
        */
-      return all.filter((e) =>
-        [...index.facts.values()].some(
-          (f) => f.entity === e.id && f.attribute === fact.attribute && isQuizzable(f),
-        ),
-      )
+      return all.filter((e) => quizzableFactsOf(index, e.id, fact.attribute).length > 0)
+    case 'nearest-values':
+    case 'spread-values': {
+      /**
+       * Numbers, not names: what matters is how far apart the candidates' figures are.
+       *
+       * `nearest` takes the six DISTINCT figures closest to this one, not the six closest
+       * entities — forty countries share "4 land borders", and six of them would be one
+       * option, three times over, after the labels are de-duplicated. `spread` takes
+       * everything a factor of four or more away, so the learner is being asked for the
+       * order of magnitude and nothing finer.
+       */
+      const mine = fact.value.number
+      if (mine === undefined) return []
+      const figures = new Map<number, Entity[]>()
+      for (const e of all) {
+        for (const f of quizzableFactsOf(index, e.id, fact.attribute)) {
+          const n = f.value.number
+          if (n === undefined || n === mine) continue
+          figures.set(n, [...(figures.get(n) ?? []), e])
+        }
+      }
+      if (strategy === 'spread-values') {
+        return [...figures].filter(([n]) => logDistance(n, mine) >= Math.log(4)).flatMap(([, es]) => es)
+      }
+      return [...figures]
+        .sort(([a], [b]) => logDistance(a, mine) - logDistance(b, mine))
+        .slice(0, 6)
+        .flatMap(([, es]) => es)
+    }
+    case 'near-related': {
+      /** The neighbours of the neighbours — never the neighbours themselves, never the subject. */
+      const mine = relatedIds(index, correct.id, fact.attribute)
+      const ring = new Set<EntityId>()
+      for (const id of mine) for (const far of relatedIds(index, id, fact.attribute)) ring.add(far)
+      for (const id of mine) ring.delete(id)
+      return all.filter((e) => ring.has(e.id))
+    }
     case 'random-global':
       // Rejected by content validation for shipped packs; kept for test fixtures.
       return all
@@ -425,7 +516,9 @@ function resolveShallow(
   const correctLabel =
     template.answer.from === 'entity.names'
       ? nameOf(entity.names)
-      : displayValue(fact.value, locale)
+      : template.answer.from === 'fact.value.entity'
+        ? nameOf(index.entities.get(fact.value.id ?? '')?.names)
+        : displayValue(fact.value, locale)
   if (correctLabel === undefined) return null
 
   const promptParams: Record<string, string> = {}
@@ -465,6 +558,9 @@ function resolveShallow(
 export function isSelfAnswering(index: ContentIndex, item: Item, locale: string): boolean {
   const resolved = resolveShallow(index, item, locale)
   if (resolved === null) return false
+  // "Which country borders Guinea-Bissau?" → Guinea. The answer is a word of the prompt and
+  // not a leak: it is a different country, and the relation is the thing being asked.
+  if (resolved.template.answer.from === 'fact.value.entity') return false
   const params = Object.values(resolved.promptParams)
   if (params.some((value) => namesAnswer(value, resolved.correctLabel))) return true
 
@@ -566,6 +662,9 @@ export function isAmbiguous(index: ContentIndex, item: Item, locale: string): bo
 
   const { fact, template } = resolved
   if (template.answer.from !== 'entity.names') return false
+  // The wrong answers are chosen to hold a different value, so the value only has to be
+  // unique among the options on screen, and they are built that way. See `differentValueOnly`.
+  if (template.distractors?.differentValueOnly === true) return false
 
   /**
    * A `map` prompt shows the entity's OWN geometry, not the fact value.
@@ -592,17 +691,90 @@ export function isAmbiguous(index: ContentIndex, item: Item, locale: string): bo
   const value = displayValue(fact.value, locale)
   if (value === undefined) return false
 
-  for (const other of index.facts.values()) {
-    if (other.id === fact.id) continue
-    if (other.attribute !== fact.attribute) continue
-    if (other.entity === fact.entity) continue
-    // Only entities that actually exist in this index can be offered as options, so
-    // a value shared with an orphaned fact is not ambiguity the user can observe.
-    if (!index.entities.has(other.entity)) continue
-    if (normalise(displayValue(other.value, locale) ?? '') === normalise(value)) return true
-  }
+  // Which entities say this value? Asked once per item, it scanned every fact of the attribute
+  // and normalised each — 5 s across the shipped packs once one attribute held a thousand
+  // facts. The answer only depends on the index, the locale and the attribute, so it is
+  // computed once per index and looked up.
+  const holders = entitiesByValue(index, fact.attribute, locale).get(normalise(value))
+  if (holders === undefined) return false
+  // Only entities that actually exist in this index can be offered as options, so a value
+  // shared with an orphaned fact is not ambiguity the user can observe — `entitiesByValue`
+  // has already left those out. The subject's own entity never counts against it.
+  for (const holder of holders) if (holder !== fact.entity) return true
   return false
 }
+
+const valueHolders = new WeakMap<ContentIndex, Map<string, Map<string, Set<EntityId>>>>()
+
+/** attribute × locale → normalised displayed value → the entities whose facts carry it. */
+function entitiesByValue(index: ContentIndex, attribute: string, locale: string): Map<string, Set<EntityId>> {
+  let perIndex = valueHolders.get(index)
+  if (perIndex === undefined) {
+    perIndex = new Map()
+    valueHolders.set(index, perIndex)
+  }
+  const key = `${attribute}\u0000${locale}`
+  let map = perIndex.get(key)
+  if (map === undefined) {
+    map = new Map()
+    for (const other of index.factsByAttribute.get(attribute) ?? []) {
+      if (!index.entities.has(other.entity)) continue
+      const label = normalise(displayValue(other.value, locale) ?? '')
+      const holders = map.get(label)
+      if (holders) holders.add(other.entity)
+      else map.set(label, new Set([other.entity]))
+    }
+    perIndex.set(key, map)
+  }
+  return map
+}
+
+/**
+ * What counts as right for a typed question, and which other real answers must not.
+ *
+ * The accepted spellings are the answer's own labels in every shipped locale. The rivals are
+ * the OTHER answers of the same kind — the other values of this attribute, or the other
+ * entities' names — that are within two edits of one, so that forgiving a typo can never make
+ * "krona" right for Denmark or "Austria" right for Australia.
+ */
+function typedSpec(
+  index: ContentIndex,
+  template: Template,
+  fact: Fact,
+  entity: Entity,
+): { accepts: string[]; rivals?: string[] } {
+  const byValue = template.answer.from === 'fact.value.names'
+  // The same answer is asked by more than one template and over many lessons, and finding its
+  // rivals compares it with every other answer of its kind. An ENTITY's names do not depend on
+  // the fact being asked, so one computation serves all of its facts; a value's depend on the
+  // fact. Cached per index, which is built once and never changes.
+  let cache = typedSpecs.get(index)
+  if (cache === undefined) {
+    cache = new Map()
+    typedSpecs.set(index, cache)
+  }
+  const key = byValue ? `v ${fact.id}` : `e ${entity.id}`
+  const cached = cache.get(key)
+  if (cached !== undefined) return cached
+  const accepts = acceptedSpellings(
+    byValue
+      ? [...Object.values(fact.value.names ?? {}), ...Object.values(fact.value.shortNames ?? {})]
+      : [...Object.values(entity.names), ...Object.values(entity.namesInSentence ?? {}), ...(entity.aliases ?? [])],
+  )
+  const others: string[] = byValue
+    ? (index.factsByAttribute.get(fact.attribute) ?? [])
+        .filter((f) => f.entity !== fact.entity && isQuizzable(f))
+        .flatMap((f) => [...Object.values(f.value.names ?? {}), ...Object.values(f.value.shortNames ?? {})])
+    : [...index.entities.values()]
+        .filter((e) => e.id !== entity.id)
+        .flatMap((e) => [...Object.values(e.names), ...(e.aliases ?? [])])
+  const rivals = nearRivals(accepts, others)
+  const spec = rivals.length > 0 ? { accepts, rivals } : { accepts }
+  cache.set(key, spec)
+  return spec
+}
+
+const typedSpecs = new WeakMap<ContentIndex, Map<string, { accepts: string[]; rivals?: string[] }>>()
 
 export function buildQuestion(
   index: ContentIndex,
@@ -638,17 +810,28 @@ export function buildQuestion(
       ? index.entities.get(entityId)?.assets?.[template.attribute]?.path
       : undefined
 
+  const isRelation = template.answer.from === 'fact.value.entity'
+  /**
+   * For a relation, the entities that may NOT appear as wrong answers: the subject, and
+   * everything it is related to — including the relations only one source claimed.
+   */
+  const excluded = isRelation
+    ? new Set<EntityId>([entity.id, ...relatedIds(index, entity.id, fact.attribute)])
+    : undefined
   const correctAsset = assetFor(item.entityId)
   const options: AnswerOption[] = [
     {
-      id: item.entityId,
+      id: isRelation ? (fact.value.id ?? item.entityId) : item.entityId,
       label: correctLabel,
       isCorrect: true,
       ...(correctAsset !== undefined ? { asset: correctAsset } : {}),
     },
   ]
 
-  if (spec) {
+  // A typed answer has no wrong options to build: the only option is the right one, kept so
+  // the answer can still be SENT as an option id (see `TYPED_WRONG`).
+  const typed = template.input === 'typed'
+  if (spec && !typed) {
     /**
      * What this candidate would READ as, which is not always its own name.
      *
@@ -657,24 +840,42 @@ export function buildQuestion(
      * have offered "rupee" against "Nepalese rupee" and "Bangladeshi taka" — three
      * options in two registers, and the odd one out is the answer.
      */
+    /**
+     * Which of the candidate's facts stands in as a wrong answer.
+     *
+     * One fact per entity until the fame packs: a country has one capital. A country has
+     * twenty-five athletes, and "the first one listed" would put the same Norwegian beside
+     * every Swedish question for ever. So when there is a choice, the wrong answer is the
+     * candidate's fact NEAREST IN DIFFICULTY to the right one — a superstar's question is
+     * answered among other superstars, an obscure name among obscure names — with ties broken
+     * by the seeded rng. That is the difference between four names and a question about
+     * knowing one: wrong answers picked for being easy to rule out teach nothing.
+     *
+     * A fact the pack has withdrawn is not an option. `geo.ZW.currency` is `quizzable: false`
+     * because Zimbabwe has changed currency twice in five years, and it still turned up under
+     * "What money do people use in Belgium?" as "Zimbabwe Gold (ZiG)" — printed to a child by
+     * the one path that never asked. Withdrawing a fact has to withdraw it from both sides of
+     * the question. The rng is only touched when there is a tie to break, so an attribute
+     * with one fact per entity draws exactly what it drew before.
+     */
+    const factFor = (candidate: Entity): Fact | undefined => {
+      const facts = quizzableFactsOf(index, candidate.id, fact.attribute)
+      if (facts.length <= 1) return facts[0]
+      let nearest = Infinity
+      let ties: Fact[] = []
+      for (const f of facts) {
+        const gap = Math.abs(f.difficulty - fact.difficulty)
+        if (gap < nearest) {
+          nearest = gap
+          ties = [f]
+        } else if (gap === nearest) ties.push(f)
+      }
+      return ties.length === 1 ? ties[0] : ties[Math.floor(rng.next() * ties.length)]
+    }
     const labelOf = (candidate: Entity): string | undefined =>
-      template.answer.from === 'entity.names'
+      template.answer.from === 'entity.names' || isRelation
         ? nameOf(candidate.names)
-        : valueLabelOf(
-            [...index.facts.values()].find(
-              (f) =>
-                f.entity === candidate.id &&
-                f.attribute === fact.attribute &&
-                // A fact the pack has withdrawn is not an option. `geo.ZW.currency` is
-                // `quizzable: false` because Zimbabwe has changed currency twice in five
-                // years, and it still turned up under "What money do people use in
-                // Belgium?" as "Zimbabwe Gold (ZiG)" — printed to a child by the one
-                // path that never asked. Withdrawing a fact has to withdraw it from
-                // both sides of the question.
-                isQuizzable(f),
-            ),
-            locale,
-          )
+        : valueLabelOf(factFor(candidate), locale)
 
     const pick = (pool: readonly Entity[]): AnswerOption[] => {
       const taken = new Set([normalise(correctLabel)])
@@ -691,6 +892,13 @@ export function buildQuestion(
 
       for (const candidate of shuffle([...pool], rng)) {
         if (chosen.length >= spec.count) break
+        if (excluded?.has(candidate.id)) continue
+        if (
+          spec.differentValueOnly === true &&
+          !quizzableFactsOf(index, candidate.id, fact.attribute).some((f) => f.value.id !== fact.value.id)
+        ) {
+          continue
+        }
 
         const label = labelOf(candidate)
         if (label === undefined) continue
@@ -847,6 +1055,7 @@ export function buildQuestion(
     modality: template.modality,
     timeLimitMs: template.timeLimitMs ?? null,
     isNew: opts.isNew ?? false,
+    ...(typed ? { typed: typedSpec(index, template, fact, entity) } : {}),
     // A hint only when it ADDS something — see `hintFor`. Omitted rather than set to
     // undefined, because `exactOptionalPropertyTypes` distinguishes the two.
     ...(hint !== undefined ? { hint } : {}),

@@ -1,0 +1,4674 @@
+{
+  "$schema": "../../schema/pack.schema.json",
+  "packId": "geography.facts.alpha3",
+  "version": "1.0.0",
+  "subject": "geography",
+  "kind": "facts",
+  "locales": [
+    "en",
+    "sv"
+  ],
+  "license": "CC-BY-4.0",
+  "generatedAt": "2026-09-30",
+  "$comment": "ISO 3166-1 alpha-3.",
+  "volatilityReviewed": true,
+  "delivery": "server",
+  "items": [
+    {
+      "id": "geo.AD.alpha3",
+      "entity": "AD",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-and",
+        "names": {
+          "en": "AND",
+          "sv": "AND"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AE.alpha3",
+      "entity": "AE",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-are",
+        "names": {
+          "en": "ARE",
+          "sv": "ARE"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AF.alpha3",
+      "entity": "AF",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-afg",
+        "names": {
+          "en": "AFG",
+          "sv": "AFG"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AG.alpha3",
+      "entity": "AG",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-atg",
+        "names": {
+          "en": "ATG",
+          "sv": "ATG"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AL.alpha3",
+      "entity": "AL",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-alb",
+        "names": {
+          "en": "ALB",
+          "sv": "ALB"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AM.alpha3",
+      "entity": "AM",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-arm",
+        "names": {
+          "en": "ARM",
+          "sv": "ARM"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AO.alpha3",
+      "entity": "AO",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-ago",
+        "names": {
+          "en": "AGO",
+          "sv": "AGO"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AR.alpha3",
+      "entity": "AR",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-arg",
+        "names": {
+          "en": "ARG",
+          "sv": "ARG"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AT.alpha3",
+      "entity": "AT",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-aut",
+        "names": {
+          "en": "AUT",
+          "sv": "AUT"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AU.alpha3",
+      "entity": "AU",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-aus",
+        "names": {
+          "en": "AUS",
+          "sv": "AUS"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.AZ.alpha3",
+      "entity": "AZ",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-aze",
+        "names": {
+          "en": "AZE",
+          "sv": "AZE"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BA.alpha3",
+      "entity": "BA",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-bih",
+        "names": {
+          "en": "BIH",
+          "sv": "BIH"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BB.alpha3",
+      "entity": "BB",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-brb",
+        "names": {
+          "en": "BRB",
+          "sv": "BRB"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BD.alpha3",
+      "entity": "BD",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-bgd",
+        "names": {
+          "en": "BGD",
+          "sv": "BGD"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BE.alpha3",
+      "entity": "BE",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-bel",
+        "names": {
+          "en": "BEL",
+          "sv": "BEL"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BF.alpha3",
+      "entity": "BF",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-bfa",
+        "names": {
+          "en": "BFA",
+          "sv": "BFA"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BG.alpha3",
+      "entity": "BG",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-bgr",
+        "names": {
+          "en": "BGR",
+          "sv": "BGR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BH.alpha3",
+      "entity": "BH",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-bhr",
+        "names": {
+          "en": "BHR",
+          "sv": "BHR"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BI.alpha3",
+      "entity": "BI",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-bdi",
+        "names": {
+          "en": "BDI",
+          "sv": "BDI"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BJ.alpha3",
+      "entity": "BJ",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-ben",
+        "names": {
+          "en": "BEN",
+          "sv": "BEN"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BN.alpha3",
+      "entity": "BN",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-brn",
+        "names": {
+          "en": "BRN",
+          "sv": "BRN"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BO.alpha3",
+      "entity": "BO",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-bol",
+        "names": {
+          "en": "BOL",
+          "sv": "BOL"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BR.alpha3",
+      "entity": "BR",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-bra",
+        "names": {
+          "en": "BRA",
+          "sv": "BRA"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BS.alpha3",
+      "entity": "BS",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-bhs",
+        "names": {
+          "en": "BHS",
+          "sv": "BHS"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BT.alpha3",
+      "entity": "BT",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-btn",
+        "names": {
+          "en": "BTN",
+          "sv": "BTN"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BW.alpha3",
+      "entity": "BW",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-bwa",
+        "names": {
+          "en": "BWA",
+          "sv": "BWA"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BY.alpha3",
+      "entity": "BY",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-blr",
+        "names": {
+          "en": "BLR",
+          "sv": "BLR"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.BZ.alpha3",
+      "entity": "BZ",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-blz",
+        "names": {
+          "en": "BLZ",
+          "sv": "BLZ"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CA.alpha3",
+      "entity": "CA",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-can",
+        "names": {
+          "en": "CAN",
+          "sv": "CAN"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CD.alpha3",
+      "entity": "CD",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-cod",
+        "names": {
+          "en": "COD",
+          "sv": "COD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CF.alpha3",
+      "entity": "CF",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-caf",
+        "names": {
+          "en": "CAF",
+          "sv": "CAF"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CG.alpha3",
+      "entity": "CG",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-cog",
+        "names": {
+          "en": "COG",
+          "sv": "COG"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CH.alpha3",
+      "entity": "CH",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-che",
+        "names": {
+          "en": "CHE",
+          "sv": "CHE"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CI.alpha3",
+      "entity": "CI",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-civ",
+        "names": {
+          "en": "CIV",
+          "sv": "CIV"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CL.alpha3",
+      "entity": "CL",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-chl",
+        "names": {
+          "en": "CHL",
+          "sv": "CHL"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CM.alpha3",
+      "entity": "CM",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-cmr",
+        "names": {
+          "en": "CMR",
+          "sv": "CMR"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CN.alpha3",
+      "entity": "CN",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-chn",
+        "names": {
+          "en": "CHN",
+          "sv": "CHN"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CO.alpha3",
+      "entity": "CO",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-col",
+        "names": {
+          "en": "COL",
+          "sv": "COL"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CR.alpha3",
+      "entity": "CR",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-cri",
+        "names": {
+          "en": "CRI",
+          "sv": "CRI"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CU.alpha3",
+      "entity": "CU",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-cub",
+        "names": {
+          "en": "CUB",
+          "sv": "CUB"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CV.alpha3",
+      "entity": "CV",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-cpv",
+        "names": {
+          "en": "CPV",
+          "sv": "CPV"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CY.alpha3",
+      "entity": "CY",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-cyp",
+        "names": {
+          "en": "CYP",
+          "sv": "CYP"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.CZ.alpha3",
+      "entity": "CZ",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-cze",
+        "names": {
+          "en": "CZE",
+          "sv": "CZE"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DE.alpha3",
+      "entity": "DE",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-deu",
+        "names": {
+          "en": "DEU",
+          "sv": "DEU"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DJ.alpha3",
+      "entity": "DJ",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-dji",
+        "names": {
+          "en": "DJI",
+          "sv": "DJI"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DK.alpha3",
+      "entity": "DK",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-dnk",
+        "names": {
+          "en": "DNK",
+          "sv": "DNK"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DM.alpha3",
+      "entity": "DM",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-dma",
+        "names": {
+          "en": "DMA",
+          "sv": "DMA"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DO.alpha3",
+      "entity": "DO",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-dom",
+        "names": {
+          "en": "DOM",
+          "sv": "DOM"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.DZ.alpha3",
+      "entity": "DZ",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-dza",
+        "names": {
+          "en": "DZA",
+          "sv": "DZA"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.EC.alpha3",
+      "entity": "EC",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-ecu",
+        "names": {
+          "en": "ECU",
+          "sv": "ECU"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.EE.alpha3",
+      "entity": "EE",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-est",
+        "names": {
+          "en": "EST",
+          "sv": "EST"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.EG.alpha3",
+      "entity": "EG",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-egy",
+        "names": {
+          "en": "EGY",
+          "sv": "EGY"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ER.alpha3",
+      "entity": "ER",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-eri",
+        "names": {
+          "en": "ERI",
+          "sv": "ERI"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ES.alpha3",
+      "entity": "ES",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-esp",
+        "names": {
+          "en": "ESP",
+          "sv": "ESP"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ET.alpha3",
+      "entity": "ET",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-eth",
+        "names": {
+          "en": "ETH",
+          "sv": "ETH"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FI.alpha3",
+      "entity": "FI",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-fin",
+        "names": {
+          "en": "FIN",
+          "sv": "FIN"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FJ.alpha3",
+      "entity": "FJ",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-fji",
+        "names": {
+          "en": "FJI",
+          "sv": "FJI"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FM.alpha3",
+      "entity": "FM",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-fsm",
+        "names": {
+          "en": "FSM",
+          "sv": "FSM"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.FR.alpha3",
+      "entity": "FR",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-fra",
+        "names": {
+          "en": "FRA",
+          "sv": "FRA"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GA.alpha3",
+      "entity": "GA",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-gab",
+        "names": {
+          "en": "GAB",
+          "sv": "GAB"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GB.alpha3",
+      "entity": "GB",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-gbr",
+        "names": {
+          "en": "GBR",
+          "sv": "GBR"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GD.alpha3",
+      "entity": "GD",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-grd",
+        "names": {
+          "en": "GRD",
+          "sv": "GRD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GE.alpha3",
+      "entity": "GE",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-geo",
+        "names": {
+          "en": "GEO",
+          "sv": "GEO"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GH.alpha3",
+      "entity": "GH",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-gha",
+        "names": {
+          "en": "GHA",
+          "sv": "GHA"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GM.alpha3",
+      "entity": "GM",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-gmb",
+        "names": {
+          "en": "GMB",
+          "sv": "GMB"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GN.alpha3",
+      "entity": "GN",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-gin",
+        "names": {
+          "en": "GIN",
+          "sv": "GIN"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GQ.alpha3",
+      "entity": "GQ",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-gnq",
+        "names": {
+          "en": "GNQ",
+          "sv": "GNQ"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GR.alpha3",
+      "entity": "GR",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-grc",
+        "names": {
+          "en": "GRC",
+          "sv": "GRC"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GT.alpha3",
+      "entity": "GT",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-gtm",
+        "names": {
+          "en": "GTM",
+          "sv": "GTM"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GW.alpha3",
+      "entity": "GW",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-gnb",
+        "names": {
+          "en": "GNB",
+          "sv": "GNB"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.GY.alpha3",
+      "entity": "GY",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-guy",
+        "names": {
+          "en": "GUY",
+          "sv": "GUY"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HN.alpha3",
+      "entity": "HN",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-hnd",
+        "names": {
+          "en": "HND",
+          "sv": "HND"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HR.alpha3",
+      "entity": "HR",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-hrv",
+        "names": {
+          "en": "HRV",
+          "sv": "HRV"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HT.alpha3",
+      "entity": "HT",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-hti",
+        "names": {
+          "en": "HTI",
+          "sv": "HTI"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.HU.alpha3",
+      "entity": "HU",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-hun",
+        "names": {
+          "en": "HUN",
+          "sv": "HUN"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ID.alpha3",
+      "entity": "ID",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-idn",
+        "names": {
+          "en": "IDN",
+          "sv": "IDN"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IE.alpha3",
+      "entity": "IE",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-irl",
+        "names": {
+          "en": "IRL",
+          "sv": "IRL"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IL.alpha3",
+      "entity": "IL",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-isr",
+        "names": {
+          "en": "ISR",
+          "sv": "ISR"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IN.alpha3",
+      "entity": "IN",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-ind",
+        "names": {
+          "en": "IND",
+          "sv": "IND"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IQ.alpha3",
+      "entity": "IQ",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-irq",
+        "names": {
+          "en": "IRQ",
+          "sv": "IRQ"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IR.alpha3",
+      "entity": "IR",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-irn",
+        "names": {
+          "en": "IRN",
+          "sv": "IRN"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IS.alpha3",
+      "entity": "IS",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-isl",
+        "names": {
+          "en": "ISL",
+          "sv": "ISL"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.IT.alpha3",
+      "entity": "IT",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-ita",
+        "names": {
+          "en": "ITA",
+          "sv": "ITA"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JM.alpha3",
+      "entity": "JM",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-jam",
+        "names": {
+          "en": "JAM",
+          "sv": "JAM"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JO.alpha3",
+      "entity": "JO",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-jor",
+        "names": {
+          "en": "JOR",
+          "sv": "JOR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.JP.alpha3",
+      "entity": "JP",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-jpn",
+        "names": {
+          "en": "JPN",
+          "sv": "JPN"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KE.alpha3",
+      "entity": "KE",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-ken",
+        "names": {
+          "en": "KEN",
+          "sv": "KEN"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KG.alpha3",
+      "entity": "KG",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-kgz",
+        "names": {
+          "en": "KGZ",
+          "sv": "KGZ"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KH.alpha3",
+      "entity": "KH",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-khm",
+        "names": {
+          "en": "KHM",
+          "sv": "KHM"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KI.alpha3",
+      "entity": "KI",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-kir",
+        "names": {
+          "en": "KIR",
+          "sv": "KIR"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KM.alpha3",
+      "entity": "KM",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-com",
+        "names": {
+          "en": "COM",
+          "sv": "COM"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KN.alpha3",
+      "entity": "KN",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-kna",
+        "names": {
+          "en": "KNA",
+          "sv": "KNA"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KP.alpha3",
+      "entity": "KP",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-prk",
+        "names": {
+          "en": "PRK",
+          "sv": "PRK"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KR.alpha3",
+      "entity": "KR",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-kor",
+        "names": {
+          "en": "KOR",
+          "sv": "KOR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KW.alpha3",
+      "entity": "KW",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-kwt",
+        "names": {
+          "en": "KWT",
+          "sv": "KWT"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.KZ.alpha3",
+      "entity": "KZ",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-kaz",
+        "names": {
+          "en": "KAZ",
+          "sv": "KAZ"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LA.alpha3",
+      "entity": "LA",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-lao",
+        "names": {
+          "en": "LAO",
+          "sv": "LAO"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LB.alpha3",
+      "entity": "LB",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-lbn",
+        "names": {
+          "en": "LBN",
+          "sv": "LBN"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LC.alpha3",
+      "entity": "LC",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-lca",
+        "names": {
+          "en": "LCA",
+          "sv": "LCA"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LI.alpha3",
+      "entity": "LI",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-lie",
+        "names": {
+          "en": "LIE",
+          "sv": "LIE"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LK.alpha3",
+      "entity": "LK",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-lka",
+        "names": {
+          "en": "LKA",
+          "sv": "LKA"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LR.alpha3",
+      "entity": "LR",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-lbr",
+        "names": {
+          "en": "LBR",
+          "sv": "LBR"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LS.alpha3",
+      "entity": "LS",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-lso",
+        "names": {
+          "en": "LSO",
+          "sv": "LSO"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LT.alpha3",
+      "entity": "LT",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-ltu",
+        "names": {
+          "en": "LTU",
+          "sv": "LTU"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LU.alpha3",
+      "entity": "LU",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-lux",
+        "names": {
+          "en": "LUX",
+          "sv": "LUX"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LV.alpha3",
+      "entity": "LV",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-lva",
+        "names": {
+          "en": "LVA",
+          "sv": "LVA"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.LY.alpha3",
+      "entity": "LY",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-lby",
+        "names": {
+          "en": "LBY",
+          "sv": "LBY"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MA.alpha3",
+      "entity": "MA",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-mar",
+        "names": {
+          "en": "MAR",
+          "sv": "MAR"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MC.alpha3",
+      "entity": "MC",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-mco",
+        "names": {
+          "en": "MCO",
+          "sv": "MCO"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MD.alpha3",
+      "entity": "MD",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-mda",
+        "names": {
+          "en": "MDA",
+          "sv": "MDA"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ME.alpha3",
+      "entity": "ME",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-mne",
+        "names": {
+          "en": "MNE",
+          "sv": "MNE"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MG.alpha3",
+      "entity": "MG",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-mdg",
+        "names": {
+          "en": "MDG",
+          "sv": "MDG"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MH.alpha3",
+      "entity": "MH",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-mhl",
+        "names": {
+          "en": "MHL",
+          "sv": "MHL"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MK.alpha3",
+      "entity": "MK",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-mkd",
+        "names": {
+          "en": "MKD",
+          "sv": "MKD"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ML.alpha3",
+      "entity": "ML",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-mli",
+        "names": {
+          "en": "MLI",
+          "sv": "MLI"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MM.alpha3",
+      "entity": "MM",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-mmr",
+        "names": {
+          "en": "MMR",
+          "sv": "MMR"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MN.alpha3",
+      "entity": "MN",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-mng",
+        "names": {
+          "en": "MNG",
+          "sv": "MNG"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MR.alpha3",
+      "entity": "MR",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-mrt",
+        "names": {
+          "en": "MRT",
+          "sv": "MRT"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MT.alpha3",
+      "entity": "MT",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-mlt",
+        "names": {
+          "en": "MLT",
+          "sv": "MLT"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MU.alpha3",
+      "entity": "MU",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-mus",
+        "names": {
+          "en": "MUS",
+          "sv": "MUS"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MV.alpha3",
+      "entity": "MV",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-mdv",
+        "names": {
+          "en": "MDV",
+          "sv": "MDV"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MW.alpha3",
+      "entity": "MW",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-mwi",
+        "names": {
+          "en": "MWI",
+          "sv": "MWI"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MX.alpha3",
+      "entity": "MX",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-mex",
+        "names": {
+          "en": "MEX",
+          "sv": "MEX"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MY.alpha3",
+      "entity": "MY",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-mys",
+        "names": {
+          "en": "MYS",
+          "sv": "MYS"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.MZ.alpha3",
+      "entity": "MZ",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-moz",
+        "names": {
+          "en": "MOZ",
+          "sv": "MOZ"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NA.alpha3",
+      "entity": "NA",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-nam",
+        "names": {
+          "en": "NAM",
+          "sv": "NAM"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NE.alpha3",
+      "entity": "NE",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-ner",
+        "names": {
+          "en": "NER",
+          "sv": "NER"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NG.alpha3",
+      "entity": "NG",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-nga",
+        "names": {
+          "en": "NGA",
+          "sv": "NGA"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NI.alpha3",
+      "entity": "NI",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-nic",
+        "names": {
+          "en": "NIC",
+          "sv": "NIC"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NL.alpha3",
+      "entity": "NL",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-nld",
+        "names": {
+          "en": "NLD",
+          "sv": "NLD"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NO.alpha3",
+      "entity": "NO",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-nor",
+        "names": {
+          "en": "NOR",
+          "sv": "NOR"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NP.alpha3",
+      "entity": "NP",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-npl",
+        "names": {
+          "en": "NPL",
+          "sv": "NPL"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NR.alpha3",
+      "entity": "NR",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-nru",
+        "names": {
+          "en": "NRU",
+          "sv": "NRU"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.NZ.alpha3",
+      "entity": "NZ",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-nzl",
+        "names": {
+          "en": "NZL",
+          "sv": "NZL"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.OM.alpha3",
+      "entity": "OM",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-omn",
+        "names": {
+          "en": "OMN",
+          "sv": "OMN"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PA.alpha3",
+      "entity": "PA",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-pan",
+        "names": {
+          "en": "PAN",
+          "sv": "PAN"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PE.alpha3",
+      "entity": "PE",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-per",
+        "names": {
+          "en": "PER",
+          "sv": "PER"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PG.alpha3",
+      "entity": "PG",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-png",
+        "names": {
+          "en": "PNG",
+          "sv": "PNG"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PH.alpha3",
+      "entity": "PH",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-phl",
+        "names": {
+          "en": "PHL",
+          "sv": "PHL"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PK.alpha3",
+      "entity": "PK",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-pak",
+        "names": {
+          "en": "PAK",
+          "sv": "PAK"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PL.alpha3",
+      "entity": "PL",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-pol",
+        "names": {
+          "en": "POL",
+          "sv": "POL"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PT.alpha3",
+      "entity": "PT",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-prt",
+        "names": {
+          "en": "PRT",
+          "sv": "PRT"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PW.alpha3",
+      "entity": "PW",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-plw",
+        "names": {
+          "en": "PLW",
+          "sv": "PLW"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.PY.alpha3",
+      "entity": "PY",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-pry",
+        "names": {
+          "en": "PRY",
+          "sv": "PRY"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.QA.alpha3",
+      "entity": "QA",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-qat",
+        "names": {
+          "en": "QAT",
+          "sv": "QAT"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RO.alpha3",
+      "entity": "RO",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-rou",
+        "names": {
+          "en": "ROU",
+          "sv": "ROU"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RS.alpha3",
+      "entity": "RS",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-srb",
+        "names": {
+          "en": "SRB",
+          "sv": "SRB"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RU.alpha3",
+      "entity": "RU",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-rus",
+        "names": {
+          "en": "RUS",
+          "sv": "RUS"
+        }
+      },
+      "difficulty": 1,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.RW.alpha3",
+      "entity": "RW",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-rwa",
+        "names": {
+          "en": "RWA",
+          "sv": "RWA"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SA.alpha3",
+      "entity": "SA",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-sau",
+        "names": {
+          "en": "SAU",
+          "sv": "SAU"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SB.alpha3",
+      "entity": "SB",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-slb",
+        "names": {
+          "en": "SLB",
+          "sv": "SLB"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SC.alpha3",
+      "entity": "SC",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-syc",
+        "names": {
+          "en": "SYC",
+          "sv": "SYC"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SD.alpha3",
+      "entity": "SD",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-sdn",
+        "names": {
+          "en": "SDN",
+          "sv": "SDN"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SE.alpha3",
+      "entity": "SE",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-swe",
+        "names": {
+          "en": "SWE",
+          "sv": "SWE"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SG.alpha3",
+      "entity": "SG",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-sgp",
+        "names": {
+          "en": "SGP",
+          "sv": "SGP"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SI.alpha3",
+      "entity": "SI",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-svn",
+        "names": {
+          "en": "SVN",
+          "sv": "SVN"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SK.alpha3",
+      "entity": "SK",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-svk",
+        "names": {
+          "en": "SVK",
+          "sv": "SVK"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SL.alpha3",
+      "entity": "SL",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-sle",
+        "names": {
+          "en": "SLE",
+          "sv": "SLE"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SM.alpha3",
+      "entity": "SM",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-smr",
+        "names": {
+          "en": "SMR",
+          "sv": "SMR"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SN.alpha3",
+      "entity": "SN",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-sen",
+        "names": {
+          "en": "SEN",
+          "sv": "SEN"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SO.alpha3",
+      "entity": "SO",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-som",
+        "names": {
+          "en": "SOM",
+          "sv": "SOM"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SR.alpha3",
+      "entity": "SR",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-sur",
+        "names": {
+          "en": "SUR",
+          "sv": "SUR"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SS.alpha3",
+      "entity": "SS",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-ssd",
+        "names": {
+          "en": "SSD",
+          "sv": "SSD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ST.alpha3",
+      "entity": "ST",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-stp",
+        "names": {
+          "en": "STP",
+          "sv": "STP"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SV.alpha3",
+      "entity": "SV",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-slv",
+        "names": {
+          "en": "SLV",
+          "sv": "SLV"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SY.alpha3",
+      "entity": "SY",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-syr",
+        "names": {
+          "en": "SYR",
+          "sv": "SYR"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.SZ.alpha3",
+      "entity": "SZ",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-swz",
+        "names": {
+          "en": "SWZ",
+          "sv": "SWZ"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TD.alpha3",
+      "entity": "TD",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-tcd",
+        "names": {
+          "en": "TCD",
+          "sv": "TCD"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TG.alpha3",
+      "entity": "TG",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-tgo",
+        "names": {
+          "en": "TGO",
+          "sv": "TGO"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TH.alpha3",
+      "entity": "TH",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-tha",
+        "names": {
+          "en": "THA",
+          "sv": "THA"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TJ.alpha3",
+      "entity": "TJ",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-tjk",
+        "names": {
+          "en": "TJK",
+          "sv": "TJK"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TL.alpha3",
+      "entity": "TL",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-tls",
+        "names": {
+          "en": "TLS",
+          "sv": "TLS"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TM.alpha3",
+      "entity": "TM",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-tkm",
+        "names": {
+          "en": "TKM",
+          "sv": "TKM"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TN.alpha3",
+      "entity": "TN",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-tun",
+        "names": {
+          "en": "TUN",
+          "sv": "TUN"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TO.alpha3",
+      "entity": "TO",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-ton",
+        "names": {
+          "en": "TON",
+          "sv": "TON"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TR.alpha3",
+      "entity": "TR",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-tur",
+        "names": {
+          "en": "TUR",
+          "sv": "TUR"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TT.alpha3",
+      "entity": "TT",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-tto",
+        "names": {
+          "en": "TTO",
+          "sv": "TTO"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TV.alpha3",
+      "entity": "TV",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-tuv",
+        "names": {
+          "en": "TUV",
+          "sv": "TUV"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.TZ.alpha3",
+      "entity": "TZ",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-tza",
+        "names": {
+          "en": "TZA",
+          "sv": "TZA"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UA.alpha3",
+      "entity": "UA",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-ukr",
+        "names": {
+          "en": "UKR",
+          "sv": "UKR"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UG.alpha3",
+      "entity": "UG",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-uga",
+        "names": {
+          "en": "UGA",
+          "sv": "UGA"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.US.alpha3",
+      "entity": "US",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-usa",
+        "names": {
+          "en": "USA",
+          "sv": "USA"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UY.alpha3",
+      "entity": "UY",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-ury",
+        "names": {
+          "en": "URY",
+          "sv": "URY"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.UZ.alpha3",
+      "entity": "UZ",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-uzb",
+        "names": {
+          "en": "UZB",
+          "sv": "UZB"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VA.alpha3",
+      "entity": "VA",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-vat",
+        "names": {
+          "en": "VAT",
+          "sv": "VAT"
+        }
+      },
+      "difficulty": 2,
+      "tags": [
+        "alpha3",
+        "EU",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VC.alpha3",
+      "entity": "VC",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-vct",
+        "names": {
+          "en": "VCT",
+          "sv": "VCT"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "NA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VE.alpha3",
+      "entity": "VE",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-ven",
+        "names": {
+          "en": "VEN",
+          "sv": "VEN"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "SA",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VN.alpha3",
+      "entity": "VN",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-vnm",
+        "names": {
+          "en": "VNM",
+          "sv": "VNM"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.VU.alpha3",
+      "entity": "VU",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-vut",
+        "names": {
+          "en": "VUT",
+          "sv": "VUT"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.WS.alpha3",
+      "entity": "WS",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-wsm",
+        "names": {
+          "en": "WSM",
+          "sv": "WSM"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "OC",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.YE.alpha3",
+      "entity": "YE",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-yem",
+        "names": {
+          "en": "YEM",
+          "sv": "YEM"
+        }
+      },
+      "difficulty": 4,
+      "tags": [
+        "alpha3",
+        "AS",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZA.alpha3",
+      "entity": "ZA",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-zaf",
+        "names": {
+          "en": "ZAF",
+          "sv": "ZAF"
+        }
+      },
+      "difficulty": 3,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZM.alpha3",
+      "entity": "ZM",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-zmb",
+        "names": {
+          "en": "ZMB",
+          "sv": "ZMB"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    },
+    {
+      "id": "geo.ZW.alpha3",
+      "entity": "ZW",
+      "attribute": "alpha3",
+      "value": {
+        "id": "alpha3-zwe",
+        "names": {
+          "en": "ZWE",
+          "sv": "ZWE"
+        }
+      },
+      "difficulty": 5,
+      "tags": [
+        "alpha3",
+        "AF",
+        "deep"
+      ],
+      "source": {
+        "name": "ISO 3166-1 alpha-3, agreed by world-countries v5.1.0 (ODbL) and i18n-iso-countries 7.14.0 (MIT)",
+        "url": "https://www.iso.org/iso-3166-country-codes.html",
+        "verifiedAt": "2026-09-30"
+      },
+      "volatility": "stable"
+    }
+  ]
+}

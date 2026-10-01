@@ -1,1 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 300 300"><path d="M128 169q20 10 42-4q4 27-17 29q-19 0-25-25" fill="#062957"/><path d="M139 187q11-11 25-3q-11 16-25 3" fill="#FF754C"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 300 300"><defs><linearGradient id="mouth" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B3572"/><stop offset="1" stop-color="#062957"/></linearGradient><linearGradient id="tongue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFA27F"/><stop offset="1" stop-color="#FF7A52"/></linearGradient>
+      <clipPath id="m"><path d="M128 169q20 10 42-4q4 27-17 29q-19 0-25-25"/></clipPath></defs>
+    <path d="M128 169q20 10 42-4q4 27-17 29q-19 0-25-25" fill="url(#mouth)"/>
+    <g clip-path="url(#m)"><path d="M130 170q20 9 40-4l-1 6q-19 11-38 3z" fill="#FFFFFF" opacity=".95"/>
+    <path d="M139 187q11-11 25-3q-11 16-25 3" fill="url(#tongue)"/><path d="M146 186q5-3 10-1" fill="none" stroke="#E0552F" stroke-width="1.4" stroke-linecap="round"/></g>
+    <path d="M129 170q20 9 40-5" fill="none" stroke="#062957" stroke-width="2" stroke-linecap="round"/></svg>

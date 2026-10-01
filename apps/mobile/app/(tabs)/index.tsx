@@ -30,6 +30,7 @@ import { useStreakNotice } from '../../src/features/streak/useStreakNotice.js'
 import { nodeStanding } from '@worldquest/engines'
 import { useCoursePath } from '../../src/features/course/useCoursePath.js'
 import { toPathView } from '../../src/features/course/pathView.js'
+import { useFadingSteps } from '../../src/features/course/useFadingSteps.js'
 import { nodeLessonHref, reviewLessonHref } from '../../src/features/course/courseLesson.js'
 import { usePrefetchStep } from '../../src/features/course/usePrefetchStep.js'
 
@@ -135,7 +136,8 @@ export default function HomeRoute() {
    * the step, and the lesson route credits it when it finishes (`courseLesson.ts`).
    */
   const coursePath = useCoursePath()
-  const pathView = useMemo(() => toPathView(coursePath), [coursePath])
+  const fadingSteps = useFadingSteps(coursePath)
+  const pathView = useMemo(() => toPathView(coursePath, fadingSteps), [coursePath, fadingSteps])
   // The step the path recommends, standing — what a D1 build keeps a ticket ready for, so
   // Start works on a plane (`usePrefetchStep`).
   const currentStep =

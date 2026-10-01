@@ -92,6 +92,42 @@ const ACCEPTED: Readonly<Record<string, string>> = {
     'Austria\'s official language is German. The reference labels it "Austro-Bavarian ' +
     'German", which is a dialect grouping rather than the official language, and the pack ' +
     'cites ISO 639-1.',
+  // ── added with the 129-country expansion, 29 September 2026 ──────────────────────
+  'capital:IS': "Diacritic. The pack writes \"Reykjavík\" as Wikipedia and Iceland do; the reference drops the accent.",
+  'capital:LU': "The city, not the country: \"Luxembourg City\" is its Wikipedia title and stops the question naming its own answer.",
+  'capital:YE': "Transliteration. \"Sanaa\" is the Wikipedia title; the reference writes \"Sana'a\". Same city.",
+  'capital:TO': "Transliteration. The pack keeps the ʻokina of \"Nukuʻalofa\" as Tonga writes it; the reference uses an apostrophe.",
+  'capital:LK': "Contested and not quizzed (review-required): the pack gives the legislative capital, the reference the executive one. Both defensible; see the fact's $comment.",
+  'capital:SZ': "Contested and not quizzed (review-required): Mbabane is the executive capital, the reference gives the royal and legislative Lobamba. See the fact's $comment.",
+  'currency:BG': "The reference predates Bulgaria's adoption of the euro on 1 January 2026 (Council decision of July 2025). The pack is current.",
+  'currency:MK': "Naming. \"Macedonian denar\" and \"denar\" are the same currency, MKD.",
+  'currency:GE': "Naming. \"Georgian lari\" and \"lari\" are the same currency, GEL.",
+  'currency:GM': "Naming. \"Gambian dalasi\" and \"dalasi\" are the same currency, GMD.",
+  'currency:GB': "Naming. \"Pound sterling\" is the currency's formal name and Wikipedia title; \"British pound\" is the reference's. Same currency, GBP.",
+  'currency:KG': "Naming. \"Kyrgyz som\" and \"Kyrgyzstani som\" are the same currency, KGS.",
+  'currency:MM': "Naming. \"Myanmar kyat\" and \"Burmese kyat\" are the same currency, MMK.",
+  'currency:AE': "Naming. \"UAE dirham\" is the short form of \"United Arab Emirates dirham\", AED.",
+  'currency:UZ': "Transliteration. \"sum\" and \"soʻm\" are the same currency, UZS.",
+  'currency:VE': "Naming. The bolívar soberano (VES) is the bolívar; the pack uses the name a learner would recognise.",
+  'currency:EC': "Same as currency:US: the pack's shared readable name for the US dollar, used identically on every country that uses it.",
+  'currency:SV': "Same as currency:US: the pack's shared readable name for the US dollar, used identically on every country that uses it.",
+  'currency:TL': "Same as currency:US: the pack's shared readable name for the US dollar, used identically on every country that uses it.",
+  'currency:MH': "Same as currency:US: the pack's shared readable name for the US dollar, used identically on every country that uses it.",
+  'currency:PW': "Same as currency:US: the pack's shared readable name for the US dollar, used identically on every country that uses it.",
+  'currency:FM': "Same as currency:US: the pack's shared readable name for the US dollar, used identically on every country that uses it. The reference lists no currency for Micronesia at all; the US dollar is its official currency.",
+  'currency:AG': "Naming. The pack says \"East Caribbean dollar\", the currency's usual English name (ECCB); the reference says \"Eastern Caribbean dollar\". Same currency, XCD.",
+  'currency:DM': "Naming. The pack says \"East Caribbean dollar\", the currency's usual English name (ECCB); the reference says \"Eastern Caribbean dollar\". Same currency, XCD.",
+  'currency:GD': "Naming. The pack says \"East Caribbean dollar\", the currency's usual English name (ECCB); the reference says \"Eastern Caribbean dollar\". Same currency, XCD.",
+  'currency:KN': "Naming. The pack says \"East Caribbean dollar\", the currency's usual English name (ECCB); the reference says \"Eastern Caribbean dollar\". Same currency, XCD.",
+  'currency:LC': "Naming. The pack says \"East Caribbean dollar\", the currency's usual English name (ECCB); the reference says \"Eastern Caribbean dollar\". Same currency, XCD.",
+  'currency:VC': "Naming. The pack says \"East Caribbean dollar\", the currency's usual English name (ECCB); the reference says \"Eastern Caribbean dollar\". Same currency, XCD.",
+  'callingCode:RU': "Same as US: +7 is the E.164 country code shared by Russia and Kazakhstan; the reference lists area prefixes.",
+  'callingCode:KZ': "Same as callingCode:RU.",
+  'language:IR': "Naming. \"Persian\" and \"Persian (Farsi)\" are the same language, ISO 639-1 fa.",
+  'language:MV': "Naming. \"Divehi\" is the ISO 639-1 name (dv); \"Maldivian\" is the reference's.",
+  'language:MD': "The reference is out of date: Moldova's parliament replaced \"Moldovan\" with \"Romanian\" in all legislation in March 2023. The pack cites ISO 639-1 (ro).",
+  'name:CD': "Naming. The pack uses the full short form \"Democratic Republic of the Congo\"; \"DR Congo\" is an abbreviation of it.",
+  'name:CI': "Naming. \"Côte d'Ivoire\" is the name the country asks to be used in every language; \"Ivory Coast\" is the reference's English exonym.",
 }
 
 type Fact = {
@@ -190,6 +226,56 @@ for (const entity of items<Entity>('entities.countries.v1.json')) {
   if (expected !== undefined) check('region', entity.id, expected, [ref.region ?? ''])
   const ours = entity.names?.['en']
   if (ours !== undefined) check('name', entity.id, ours, [ref.name.common])
+}
+
+/**
+ * The nine attributes from `scripts/build-deep-facts.cjs`, asked the same questions again.
+ *
+ * The generator already refuses any value two sources do not both state, so these agree with
+ * the reference by construction on the day they are written. This is for the day after: a
+ * hand edit, a regenerated pack from a newer reference, or a fact copied between countries
+ * would otherwise be a wrong value wearing a correct citation. Geometry-based facts (hemisphere,
+ * and the Natural Earth half of area, borders and coast) are checked by the generator only —
+ * there is no geometry here to compare against.
+ */
+type DeepRef = RefCountry & {
+  readonly cca3?: string
+  readonly tld?: readonly string[]
+  readonly landlocked?: boolean
+  readonly borders?: readonly string[]
+  readonly area?: number
+  readonly name: { readonly common: string; readonly native?: Readonly<Record<string, { readonly common: string }>> }
+}
+const deep = (code: string): DeepRef | undefined => byCode.get(code) as DeepRef | undefined
+const entityIds = new Set(items<Entity>('entities.countries.v1.json').map((e) => e.id))
+const alpha2Of = new Map((countries as unknown as readonly DeepRef[]).map((c) => [c.cca3, c.cca2] as const))
+
+for (const fact of items<Fact>('facts.alpha3.v1.json')) {
+  check('alpha3', fact.entity, en(fact.value), [deep(fact.entity)?.cca3 ?? ''])
+}
+for (const fact of items<Fact>('facts.tld.v1.json')) {
+  check('tld', fact.entity, en(fact.value), deep(fact.entity)?.tld ?? [])
+}
+for (const fact of items<Fact>('facts.currency-codes.v1.json')) {
+  check('currencyCode', fact.entity, en(fact.value), Object.keys(deep(fact.entity)?.currencies ?? {}))
+}
+for (const fact of items<Fact>('facts.native-names.v1.json')) {
+  check('nativeName', fact.entity, en(fact.value), Object.values(deep(fact.entity)?.name.native ?? {}).map((n) => n.common))
+}
+for (const fact of items<Fact>('facts.landlocked.v1.json')) {
+  check('landlocked', fact.entity, fact.value['id'] === 'landlocked' ? 'true' : 'false', [String(deep(fact.entity)?.landlocked)])
+}
+for (const fact of items<Fact>('facts.area.v1.json')) {
+  check('area', fact.entity, String(fact.value['number']), [String(deep(fact.entity)?.area)])
+}
+for (const fact of items<Fact>('facts.border-count.v1.json')) {
+  const theirs = (deep(fact.entity)?.borders ?? []).map((c) => alpha2Of.get(c) ?? '').filter((c) => entityIds.has(c))
+  check('borderCount', fact.entity, String(fact.value['number']), [String(theirs.length)])
+}
+for (const fact of items<Fact>('facts.borders.v1.json')) {
+  if ((fact as { quizzable?: boolean }).quizzable === false) continue
+  const theirs = (deep(fact.entity)?.borders ?? []).map((c) => alpha2Of.get(c) ?? '')
+  check('borders', `${fact.entity}>${String(fact.value['id'])}`, String(fact.value['id']), theirs)
 }
 
 // ── report ────────────────────────────────────────────────────────────────────

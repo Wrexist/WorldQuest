@@ -2,7 +2,7 @@
   "$schema": "../../schema/pack.schema.json",
   "$comment": "Every country the app knows. The Phase 1 exit criterion — adding a country means editing THIS FILE (plus its facts) and nothing else, no engine change, no screen change — has now been exercised fifty-five times rather than argued about. packages/engines/src/content/thesis.test.ts still asserts it. Author by SUBREGION: a subregion with fewer than four members cannot fill a four-option question, so a country added alone teaches nobody until its neighbours land. `pnpm content:stats` says which are thin.",
   "packId": "geography.entities",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "subject": "geography",
   "kind": "entities",
   "locales": [
@@ -53,7 +53,12 @@
           "path": "geo/context/US.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "United States of America",
+        "US",
+        "Amerikas förenta stater"
+      ]
     },
     {
       "id": "CA",
@@ -77,7 +82,11 @@
           "path": "geo/context/CA.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "CA",
+        "CAN"
+      ]
     },
     {
       "id": "MX",
@@ -101,7 +110,15 @@
           "path": "geo/context/MX.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "United Mexican States",
+        "MX",
+        "MEX",
+        "Mexicanos",
+        "Estados Unidos Mexicanos",
+        "Mexikos förenta stater"
+      ]
     },
     {
       "id": "CU",
@@ -125,7 +142,14 @@
           "path": "geo/context/CU.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Cuba",
+        "CU",
+        "CUB",
+        "República de Cuba",
+        "Republiken Kuba"
+      ]
     },
     {
       "id": "GT",
@@ -149,7 +173,13 @@
           "path": "geo/context/GT.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Guatemala",
+        "GT",
+        "GTM",
+        "Republiken Guatemala"
+      ]
     },
     {
       "id": "CR",
@@ -173,7 +203,14 @@
           "path": "geo/context/CR.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Costa Rica",
+        "CR",
+        "CRI",
+        "República de Costa Rica",
+        "Republiken Costa Rica"
+      ]
     },
     {
       "id": "PA",
@@ -197,7 +234,14 @@
           "path": "geo/context/PA.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Panama",
+        "PA",
+        "PAN",
+        "República de Panamá",
+        "Republiken Panama"
+      ]
     },
     {
       "id": "ID",
@@ -221,7 +265,14 @@
           "path": "geo/context/ID.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Indonesia",
+        "ID",
+        "IDN",
+        "Republik Indonesia",
+        "Republiken Indonesien"
+      ]
     },
     {
       "id": "TH",
@@ -245,7 +296,15 @@
           "path": "geo/context/TH.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Kingdom of Thailand",
+        "TH",
+        "THA",
+        "Prathet",
+        "Thai",
+        "ราชอาณาจักรไทย"
+      ]
     },
     {
       "id": "VN",
@@ -269,7 +328,15 @@
           "path": "geo/context/VN.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Socialist Republic of Vietnam",
+        "VN",
+        "VNM",
+        "Cộng hòa Xã hội chủ nghĩa Việt Nam",
+        "Viet Nam",
+        "Socialistiska republiken Vietnam"
+      ]
     },
     {
       "id": "PH",
@@ -297,7 +364,14 @@
           "path": "geo/context/PH.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of the Philippines",
+        "PH",
+        "PHL",
+        "Repúblika ng Pilipinas",
+        "Republiken Filippinerna"
+      ]
     },
     {
       "id": "MY",
@@ -321,7 +395,11 @@
           "path": "geo/context/MY.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "MY",
+        "MYS"
+      ]
     },
     {
       "id": "AU",
@@ -345,7 +423,13 @@
           "path": "geo/context/AU.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Commonwealth of Australia",
+        "AU",
+        "AUS",
+        "Australiska statsförbundet"
+      ]
     },
     {
       "id": "NZ",
@@ -369,7 +453,12 @@
           "path": "geo/context/NZ.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "NZ",
+        "NZL",
+        "Aotearoa"
+      ]
     },
     {
       "id": "FJ",
@@ -393,7 +482,15 @@
           "path": "geo/context/FJ.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Fiji",
+        "FJ",
+        "FJI",
+        "Viti",
+        "Matanitu ko Viti",
+        "Fijī Gaṇarājya"
+      ]
     },
     {
       "id": "PG",
@@ -417,7 +514,14 @@
           "path": "geo/context/PG.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Independent State of Papua New Guinea",
+        "PG",
+        "PNG",
+        "Independen Stet bilong Papua Niugini",
+        "Den oberoende staten Papua Nya Guinea"
+      ]
     },
     {
       "id": "PL",
@@ -441,7 +545,14 @@
           "path": "geo/context/PL.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Poland",
+        "PL",
+        "POL",
+        "Rzeczpospolita Polska",
+        "Republiken Polen"
+      ]
     },
     {
       "id": "UA",
@@ -465,7 +576,12 @@
           "path": "geo/context/UA.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "UA",
+        "UKR",
+        "Ukrayina"
+      ]
     },
     {
       "id": "CZ",
@@ -489,7 +605,15 @@
           "path": "geo/context/CZ.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Czech Republic",
+        "CZ",
+        "CZE",
+        "Česká republika",
+        "Česko",
+        "Republiken Tjeckien"
+      ]
     },
     {
       "id": "HU",
@@ -513,7 +637,11 @@
           "path": "geo/context/HU.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "HU",
+        "HUN"
+      ]
     },
     {
       "id": "RO",
@@ -537,7 +665,13 @@
           "path": "geo/context/RO.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "RO",
+        "ROU",
+        "Rumania",
+        "Roumania"
+      ]
     },
     {
       "id": "IN",
@@ -561,7 +695,15 @@
           "path": "geo/context/IN.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of India",
+        "IN",
+        "IND",
+        "Bhārat",
+        "Bharat Ganrajya",
+        "இந்தியா"
+      ]
     },
     {
       "id": "PK",
@@ -585,7 +727,14 @@
           "path": "geo/context/PK.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Islamic Republic of Pakistan",
+        "PK",
+        "PAK",
+        "Islāmī Jumhūriya'eh Pākistān",
+        "Islamiska republiken Pakistan"
+      ]
     },
     {
       "id": "BD",
@@ -609,7 +758,14 @@
           "path": "geo/context/BD.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "People's Republic of Bangladesh",
+        "BD",
+        "BGD",
+        "Gônôprôjatôntri Bangladesh",
+        "Folkrepubliken Bangladesh"
+      ]
     },
     {
       "id": "NP",
@@ -633,7 +789,14 @@
           "path": "geo/context/NP.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Federal Democratic Republic of Nepal",
+        "NP",
+        "NPL",
+        "Loktāntrik Ganatantra Nepāl",
+        "Demokratiska förbundsrepubliken Nepal"
+      ]
     },
     {
       "id": "EG",
@@ -657,7 +820,13 @@
           "path": "geo/context/EG.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Arab Republic of Egypt",
+        "EG",
+        "EGY",
+        "Arabrepubliken Egypten"
+      ]
     },
     {
       "id": "MA",
@@ -681,7 +850,14 @@
           "path": "geo/context/MA.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Kingdom of Morocco",
+        "MA",
+        "MAR",
+        "Al-Mamlakah al-Maġribiyah",
+        "Konungariket Marocko"
+      ]
     },
     {
       "id": "DZ",
@@ -705,7 +881,15 @@
           "path": "geo/context/DZ.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "People's Democratic Republic of Algeria",
+        "DZ",
+        "DZA",
+        "Dzayer",
+        "Algérie",
+        "Demokratiska folkrepubliken Algeriet"
+      ]
     },
     {
       "id": "TN",
@@ -729,7 +913,15 @@
           "path": "geo/context/TN.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Tunisian Republic",
+        "TN",
+        "TUN",
+        "Republic of Tunisia",
+        "al-Jumhūriyyah at-Tūnisiyyah",
+        "Republiken Tunisien"
+      ]
     },
     {
       "id": "NG",
@@ -753,7 +945,15 @@
           "path": "geo/context/NG.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Federal Republic of Nigeria",
+        "NG",
+        "NGA",
+        "Nijeriya",
+        "Naíjíríà",
+        "Förbundsrepubliken Nigeria"
+      ]
     },
     {
       "id": "GH",
@@ -777,7 +977,13 @@
           "path": "geo/context/GH.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Ghana",
+        "GH",
+        "GHA",
+        "Republiken Ghana"
+      ]
     },
     {
       "id": "SN",
@@ -801,7 +1007,14 @@
           "path": "geo/context/SN.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Senegal",
+        "SN",
+        "SEN",
+        "République du Sénégal",
+        "Republiken Senegal"
+      ]
     },
     {
       "id": "ML",
@@ -825,7 +1038,14 @@
           "path": "geo/context/ML.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Mali",
+        "ML",
+        "MLI",
+        "République du Mali",
+        "Republiken Mali"
+      ]
     },
     {
       "id": "KE",
@@ -849,7 +1069,14 @@
           "path": "geo/context/KE.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Kenya",
+        "KE",
+        "KEN",
+        "Jamhuri ya Kenya",
+        "Republiken Kenya"
+      ]
     },
     {
       "id": "ET",
@@ -873,7 +1100,15 @@
           "path": "geo/context/ET.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Federal Democratic Republic of Ethiopia",
+        "ET",
+        "ETH",
+        "ʾĪtyōṗṗyā",
+        "የኢትዮጵያ ፌዴራላዊ ዲሞክራሲያዊ ሪፐብሊክ",
+        "Demokratiska förbundsrepubliken Etiopien"
+      ]
     },
     {
       "id": "ZA",
@@ -898,7 +1133,15 @@
           "path": "geo/context/ZA.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of South Africa",
+        "ZA",
+        "ZAF",
+        "RSA",
+        "Suid-Afrika",
+        "Republiken Sydafrika"
+      ]
     },
     {
       "id": "UG",
@@ -922,7 +1165,14 @@
           "path": "geo/context/UG.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Uganda",
+        "UG",
+        "UGA",
+        "Jamhuri ya Uganda",
+        "Republiken Uganda"
+      ]
     },
     {
       "id": "TZ",
@@ -946,7 +1196,15 @@
           "path": "geo/context/TZ.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "United Republic of Tanzania",
+        "TZ",
+        "TZA",
+        "Tanzania, United Republic of",
+        "Jamhuri ya Muungano wa Tanzania",
+        "Förenade republiken Tanzania"
+      ]
     },
     {
       "id": "NA",
@@ -970,7 +1228,14 @@
           "path": "geo/context/NA.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Namibia",
+        "NA",
+        "NAM",
+        "Namibië",
+        "Republiken Namibia"
+      ]
     },
     {
       "id": "BW",
@@ -994,7 +1259,14 @@
           "path": "geo/context/BW.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Botswana",
+        "BW",
+        "BWA",
+        "Lefatshe la Botswana",
+        "Republiken Botswana"
+      ]
     },
     {
       "id": "ZW",
@@ -1018,7 +1290,13 @@
           "path": "geo/context/ZW.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Zimbabwe",
+        "ZW",
+        "ZWE",
+        "Republiken Zimbabwe"
+      ]
     },
     {
       "id": "JP",
@@ -1042,7 +1320,13 @@
           "path": "geo/context/JP.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "JP",
+        "JPN",
+        "Nippon",
+        "Nihon"
+      ]
     },
     {
       "id": "CN",
@@ -1066,7 +1350,15 @@
           "path": "geo/context/CN.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "People's Republic of China",
+        "CN",
+        "CHN",
+        "Zhōngguó",
+        "Zhonghua",
+        "中华人民共和国"
+      ]
     },
     {
       "id": "KR",
@@ -1090,7 +1382,15 @@
           "path": "geo/context/KR.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Korea",
+        "KR",
+        "KOR",
+        "Korea, Republic of",
+        "남한",
+        "남조선"
+      ]
     },
     {
       "id": "KP",
@@ -1114,7 +1414,15 @@
           "path": "geo/context/KP.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Democratic People's Republic of Korea",
+        "KP",
+        "PRK",
+        "DPRK",
+        "조선민주주의인민공화국",
+        "Chosŏn Minjujuŭi Inmin Konghwaguk"
+      ]
     },
     {
       "id": "MN",
@@ -1138,7 +1446,11 @@
           "path": "geo/context/MN.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "MN",
+        "MNG"
+      ]
     },
     {
       "id": "BR",
@@ -1162,7 +1474,15 @@
           "path": "geo/context/BR.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Federative Republic of Brazil",
+        "BR",
+        "BRA",
+        "Brasil",
+        "República Federativa do Brasil",
+        "Förbundsrepubliken Brasilien"
+      ]
     },
     {
       "id": "AR",
@@ -1186,7 +1506,14 @@
           "path": "geo/context/AR.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Argentine Republic",
+        "AR",
+        "ARG",
+        "República Argentina",
+        "Republiken Argentina"
+      ]
     },
     {
       "id": "CL",
@@ -1210,7 +1537,14 @@
           "path": "geo/context/CL.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Chile",
+        "CL",
+        "CHL",
+        "República de Chile",
+        "Republiken Chile"
+      ]
     },
     {
       "id": "PE",
@@ -1234,7 +1568,14 @@
           "path": "geo/context/PE.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Peru",
+        "PE",
+        "PER",
+        "República del Perú",
+        "Republiken Peru"
+      ]
     },
     {
       "id": "CO",
@@ -1258,7 +1599,14 @@
           "path": "geo/context/CO.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Colombia",
+        "CO",
+        "COL",
+        "República de Colombia",
+        "Republiken Colombia"
+      ]
     },
     {
       "id": "IT",
@@ -1282,7 +1630,14 @@
           "path": "geo/context/IT.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Italian Republic",
+        "IT",
+        "ITA",
+        "Repubblica italiana",
+        "Republiken Italien"
+      ]
     },
     {
       "id": "ES",
@@ -1306,7 +1661,14 @@
           "path": "geo/context/ES.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Kingdom of Spain",
+        "ES",
+        "ESP",
+        "Reino de España",
+        "Konungariket Spanien"
+      ]
     },
     {
       "id": "PT",
@@ -1330,7 +1692,15 @@
           "path": "geo/context/PT.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Portuguese Republic",
+        "PT",
+        "PRT",
+        "Portuguesa",
+        "República Portuguesa",
+        "Republiken Portugal"
+      ]
     },
     {
       "id": "GR",
@@ -1354,7 +1724,15 @@
           "path": "geo/context/GR.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Hellenic Republic",
+        "GR",
+        "GRC",
+        "Elláda",
+        "Ελληνική Δημοκρατία",
+        "Republiken Grekland"
+      ]
     },
     {
       "id": "FR",
@@ -1378,7 +1756,14 @@
           "path": "geo/context/FR.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "French Republic",
+        "FR",
+        "FRA",
+        "République française",
+        "Republiken Frankrike"
+      ]
     },
     {
       "id": "DE",
@@ -1402,7 +1787,14 @@
           "path": "geo/context/DE.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Federal Republic of Germany",
+        "DE",
+        "DEU",
+        "Bundesrepublik Deutschland",
+        "Förbundsrepubliken Tyskland"
+      ]
     },
     {
       "id": "BE",
@@ -1426,7 +1818,15 @@
           "path": "geo/context/BE.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Kingdom of Belgium",
+        "BE",
+        "BEL",
+        "België",
+        "Belgique",
+        "Koninkrijk België"
+      ]
     },
     {
       "id": "NL",
@@ -1454,7 +1854,14 @@
           "path": "geo/context/NL.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Kingdom of the Netherlands",
+        "NL",
+        "NLD",
+        "Holland",
+        "Nederland"
+      ]
     },
     {
       "id": "AT",
@@ -1478,7 +1885,15 @@
           "path": "geo/context/AT.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Austria",
+        "AT",
+        "AUT",
+        "Osterreich",
+        "Oesterreich",
+        "Republiken Österrike"
+      ]
     },
     {
       "id": "CH",
@@ -1502,7 +1917,15 @@
           "path": "geo/context/CH.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Swiss Confederation",
+        "CH",
+        "CHE",
+        "Suisse",
+        "Svizzera",
+        "Svizra"
+      ]
     },
     {
       "id": "SE",
@@ -1526,7 +1949,13 @@
           "path": "geo/context/SE.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Kingdom of Sweden",
+        "SE",
+        "SWE",
+        "Konungariket Sverige"
+      ]
     },
     {
       "id": "NO",
@@ -1550,7 +1979,15 @@
           "path": "geo/context/NO.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Kingdom of Norway",
+        "NO",
+        "NOR",
+        "Noreg",
+        "Kongeriket Norge",
+        "Kongeriket Noreg"
+      ]
     },
     {
       "id": "DK",
@@ -1574,7 +2011,14 @@
           "path": "geo/context/DK.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Kingdom of Denmark",
+        "DK",
+        "DNK",
+        "Kongeriget Danmark",
+        "Konungariket Danmark"
+      ]
     },
     {
       "id": "FI",
@@ -1598,7 +2042,4036 @@
           "path": "geo/context/FI.png",
           "licenseRef": "natural-earth-region"
         }
-      }
+      },
+      "aliases": [
+        "Republic of Finland",
+        "FI",
+        "FIN",
+        "Suomi",
+        "Suomen tasavalta",
+        "Republiken Finland"
+      ]
+    },
+    {
+      "id": "AL",
+      "type": "country",
+      "names": {
+        "en": "Albania",
+        "sv": "Albanien"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/AL.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/AL.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/AL.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Albania",
+        "AL",
+        "ALB",
+        "Shqipëri",
+        "Shqipëria",
+        "Shqipnia"
+      ]
+    },
+    {
+      "id": "AD",
+      "type": "country",
+      "names": {
+        "en": "Andorra",
+        "sv": "Andorra"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/AD.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/AD.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/AD.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Principality of Andorra",
+        "AD",
+        "AND",
+        "Principat d'Andorra",
+        "Furstendömet Andorra"
+      ]
+    },
+    {
+      "id": "BY",
+      "type": "country",
+      "names": {
+        "en": "Belarus",
+        "sv": "Belarus"
+      },
+      "region": "EU",
+      "subregion": "eastern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/BY.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BY.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BY.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Belarus",
+        "BY",
+        "BLR",
+        "Bielaruś",
+        "Белоруссия",
+        "Республика Белоруссия"
+      ]
+    },
+    {
+      "id": "BA",
+      "type": "country",
+      "names": {
+        "en": "Bosnia and Herzegovina",
+        "sv": "Bosnien och Hercegovina"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/BA.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BA.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BA.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "BA",
+        "BIH",
+        "Bosnia-Herzegovina",
+        "Босна и Херцеговина"
+      ]
+    },
+    {
+      "id": "BG",
+      "type": "country",
+      "names": {
+        "en": "Bulgaria",
+        "sv": "Bulgarien"
+      },
+      "region": "EU",
+      "subregion": "eastern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/BG.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BG.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BG.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Bulgaria",
+        "BG",
+        "BGR",
+        "Република България",
+        "Republiken Bulgarien"
+      ]
+    },
+    {
+      "id": "HR",
+      "type": "country",
+      "names": {
+        "en": "Croatia",
+        "sv": "Kroatien"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/HR.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/HR.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/HR.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Croatia",
+        "HR",
+        "HRV",
+        "Hrvatska",
+        "Republika Hrvatska",
+        "Republiken Kroatien"
+      ]
+    },
+    {
+      "id": "CY",
+      "type": "country",
+      "names": {
+        "en": "Cyprus",
+        "sv": "Cypern"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/CY.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/CY.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/CY.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Cyprus",
+        "CY",
+        "CYP",
+        "Kýpros",
+        "Kıbrıs",
+        "Κυπριακή Δημοκρατία"
+      ]
+    },
+    {
+      "id": "EE",
+      "type": "country",
+      "names": {
+        "en": "Estonia",
+        "sv": "Estland"
+      },
+      "region": "EU",
+      "subregion": "northern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/EE.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/EE.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/EE.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Estonia",
+        "EE",
+        "EST",
+        "Eesti",
+        "Eesti Vabariik",
+        "Republiken Estland"
+      ]
+    },
+    {
+      "id": "IS",
+      "type": "country",
+      "names": {
+        "en": "Iceland",
+        "sv": "Island"
+      },
+      "region": "EU",
+      "subregion": "northern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/IS.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/IS.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/IS.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "IS",
+        "ISL",
+        "Republic of Iceland",
+        "Lýðveldið Ísland"
+      ]
+    },
+    {
+      "id": "IE",
+      "type": "country",
+      "names": {
+        "en": "Ireland",
+        "sv": "Irland"
+      },
+      "region": "EU",
+      "subregion": "northern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/IE.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/IE.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/IE.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Ireland",
+        "IE",
+        "IRL",
+        "Éire",
+        "Poblacht na hÉireann"
+      ]
+    },
+    {
+      "id": "LV",
+      "type": "country",
+      "names": {
+        "en": "Latvia",
+        "sv": "Lettland"
+      },
+      "region": "EU",
+      "subregion": "northern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/LV.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LV.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LV.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Latvia",
+        "LV",
+        "LVA",
+        "Latvijas Republika",
+        "Republiken Lettland"
+      ]
+    },
+    {
+      "id": "LI",
+      "type": "country",
+      "names": {
+        "en": "Liechtenstein",
+        "sv": "Liechtenstein"
+      },
+      "region": "EU",
+      "subregion": "western-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/LI.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LI.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LI.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Principality of Liechtenstein",
+        "LI",
+        "LIE",
+        "Fürstentum Liechtenstein",
+        "Furstendömet Liechtenstein"
+      ]
+    },
+    {
+      "id": "LT",
+      "type": "country",
+      "names": {
+        "en": "Lithuania",
+        "sv": "Litauen"
+      },
+      "region": "EU",
+      "subregion": "northern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/LT.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LT.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LT.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Lithuania",
+        "LT",
+        "LTU",
+        "Lietuvos Respublika",
+        "Republiken Litauen"
+      ]
+    },
+    {
+      "id": "LU",
+      "type": "country",
+      "names": {
+        "en": "Luxembourg",
+        "sv": "Luxemburg"
+      },
+      "region": "EU",
+      "subregion": "western-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/LU.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LU.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LU.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Grand Duchy of Luxembourg",
+        "LU",
+        "LUX",
+        "Grand-Duché de Luxembourg",
+        "Großherzogtum Luxemburg",
+        "Groussherzogtum Lëtzebuerg"
+      ]
+    },
+    {
+      "id": "MT",
+      "type": "country",
+      "names": {
+        "en": "Malta",
+        "sv": "Malta"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/MT.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MT.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MT.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Malta",
+        "MT",
+        "MLT",
+        "Repubblika ta' Malta",
+        "Republiken Malta"
+      ]
+    },
+    {
+      "id": "MD",
+      "type": "country",
+      "names": {
+        "en": "Moldova",
+        "sv": "Moldavien"
+      },
+      "region": "EU",
+      "subregion": "eastern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/MD.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MD.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MD.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Moldova",
+        "MD",
+        "MDA",
+        "Moldova, Republic of",
+        "Republica Moldova",
+        "Republiken Moldavien"
+      ]
+    },
+    {
+      "id": "MC",
+      "type": "country",
+      "names": {
+        "en": "Monaco",
+        "sv": "Monaco"
+      },
+      "region": "EU",
+      "subregion": "western-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/MC.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MC.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MC.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Principality of Monaco",
+        "MC",
+        "MCO",
+        "Principauté de Monaco",
+        "Furstendömet Monaco"
+      ]
+    },
+    {
+      "id": "ME",
+      "type": "country",
+      "names": {
+        "en": "Montenegro",
+        "sv": "Montenegro"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/ME.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/ME.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/ME.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "ME",
+        "MNE",
+        "Crna Gora"
+      ]
+    },
+    {
+      "id": "MK",
+      "type": "country",
+      "names": {
+        "en": "North Macedonia",
+        "sv": "Nordmakedonien"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/MK.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MK.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MK.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of North Macedonia",
+        "MK",
+        "MKD",
+        "The former Yugoslav Republic of Macedonia",
+        "Macedonia, The Former Yugoslav Republic of",
+        "Република Северна Македонија"
+      ]
+    },
+    {
+      "id": "RU",
+      "type": "country",
+      "names": {
+        "en": "Russia",
+        "sv": "Ryssland"
+      },
+      "region": "EU",
+      "subregion": "eastern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/RU.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/RU.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/RU.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Russian Federation",
+        "RU",
+        "RUS",
+        "Российская Федерация",
+        "Ryska federationen"
+      ]
+    },
+    {
+      "id": "SM",
+      "type": "country",
+      "names": {
+        "en": "San Marino",
+        "sv": "San Marino"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/SM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Most Serene Republic of San Marino",
+        "SM",
+        "SMR",
+        "Republic of San Marino",
+        "Repubblica di San Marino",
+        "Republiken San Marino"
+      ]
+    },
+    {
+      "id": "RS",
+      "type": "country",
+      "names": {
+        "en": "Serbia",
+        "sv": "Serbien"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/RS.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/RS.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/RS.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Serbia",
+        "RS",
+        "SRB",
+        "Srbija",
+        "Republika Srbija",
+        "Србија"
+      ]
+    },
+    {
+      "id": "SK",
+      "type": "country",
+      "names": {
+        "en": "Slovakia",
+        "sv": "Slovakien"
+      },
+      "region": "EU",
+      "subregion": "eastern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/SK.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SK.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SK.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Slovak Republic",
+        "SK",
+        "SVK",
+        "Slovenská republika",
+        "Republiken Slovakien"
+      ]
+    },
+    {
+      "id": "SI",
+      "type": "country",
+      "names": {
+        "en": "Slovenia",
+        "sv": "Slovenien"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/SI.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SI.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SI.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Slovenia",
+        "SI",
+        "SVN",
+        "Republika Slovenija",
+        "Republiken Slovenien"
+      ]
+    },
+    {
+      "id": "GB",
+      "type": "country",
+      "names": {
+        "en": "United Kingdom",
+        "sv": "Storbritannien"
+      },
+      "namesInSentence": {
+        "en": "the United Kingdom"
+      },
+      "region": "EU",
+      "subregion": "northern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/GB.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/GB.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/GB.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "United Kingdom of Great Britain and Northern Ireland",
+        "GB",
+        "GBR",
+        "UK",
+        "Great Britain",
+        "Förenade konungariket Storbritannien och Nordirland"
+      ]
+    },
+    {
+      "id": "VA",
+      "type": "country",
+      "names": {
+        "en": "Vatican City",
+        "sv": "Vatikanstaten"
+      },
+      "region": "EU",
+      "subregion": "southern-europe",
+      "assets": {
+        "flag": {
+          "path": "flags/VA.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/VA.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/VA.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Vatican City State",
+        "VA",
+        "VAT",
+        "Holy See (Vatican City State)",
+        "Vatican",
+        "Stato della Città del Vaticano"
+      ]
+    },
+    {
+      "id": "AF",
+      "type": "country",
+      "names": {
+        "en": "Afghanistan",
+        "sv": "Afghanistan"
+      },
+      "region": "AS",
+      "subregion": "south-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/AF.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/AF.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/AF.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Islamic Republic of Afghanistan",
+        "AF",
+        "AFG",
+        "Afġānistān",
+        "Islamiska republiken Afghanistan"
+      ]
+    },
+    {
+      "id": "AM",
+      "type": "country",
+      "names": {
+        "en": "Armenia",
+        "sv": "Armenien"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/AM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/AM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/AM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Armenia",
+        "AM",
+        "ARM",
+        "Hayastan",
+        "Հայաստանի Հանրապետություն",
+        "Republiken Armenien"
+      ]
+    },
+    {
+      "id": "AZ",
+      "type": "country",
+      "names": {
+        "en": "Azerbaijan",
+        "sv": "Azerbajdzjan"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/AZ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/AZ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/AZ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Azerbaijan",
+        "AZ",
+        "AZE",
+        "Azərbaycan Respublikası",
+        "Republiken Azerbajdzjan"
+      ]
+    },
+    {
+      "id": "BH",
+      "type": "country",
+      "names": {
+        "en": "Bahrain",
+        "sv": "Bahrain"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/BH.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BH.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BH.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Kingdom of Bahrain",
+        "BH",
+        "BHR",
+        "Mamlakat al-Baḥrayn",
+        "Konungariket Bahrain"
+      ]
+    },
+    {
+      "id": "BT",
+      "type": "country",
+      "names": {
+        "en": "Bhutan",
+        "sv": "Bhutan"
+      },
+      "region": "AS",
+      "subregion": "south-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/BT.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BT.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BT.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Kingdom of Bhutan",
+        "BT",
+        "BTN",
+        "Konungariket Bhutan"
+      ]
+    },
+    {
+      "id": "BN",
+      "type": "country",
+      "names": {
+        "en": "Brunei",
+        "sv": "Brunei"
+      },
+      "region": "AS",
+      "subregion": "south-east-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/BN.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BN.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BN.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Nation of Brunei, Abode of Peace",
+        "BN",
+        "BRN",
+        "Brunei Darussalam",
+        "Nation of Brunei",
+        "the Abode of Peace"
+      ]
+    },
+    {
+      "id": "KH",
+      "type": "country",
+      "names": {
+        "en": "Cambodia",
+        "sv": "Kambodja"
+      },
+      "region": "AS",
+      "subregion": "south-east-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/KH.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/KH.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/KH.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Kingdom of Cambodia",
+        "KH",
+        "KHM",
+        "Konungariket Kambodja"
+      ]
+    },
+    {
+      "id": "GE",
+      "type": "country",
+      "names": {
+        "en": "Georgia",
+        "sv": "Georgien"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/GE.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/GE.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/GE.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "GE",
+        "GEO",
+        "Sakartvelo"
+      ]
+    },
+    {
+      "id": "IR",
+      "type": "country",
+      "names": {
+        "en": "Iran",
+        "sv": "Iran"
+      },
+      "region": "AS",
+      "subregion": "south-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/IR.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/IR.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/IR.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Islamic Republic of Iran",
+        "IR",
+        "IRN",
+        "Iran, Islamic Republic of",
+        "Jomhuri-ye Eslāmi-ye Irān",
+        "Islamiska republiken Iran"
+      ]
+    },
+    {
+      "id": "IQ",
+      "type": "country",
+      "names": {
+        "en": "Iraq",
+        "sv": "Irak"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/IQ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/IQ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/IQ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Iraq",
+        "IQ",
+        "IRQ",
+        "Jumhūriyyat al-‘Irāq",
+        "Republiken Irak"
+      ]
+    },
+    {
+      "id": "IL",
+      "type": "country",
+      "names": {
+        "en": "Israel",
+        "sv": "Israel"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/IL.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/IL.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/IL.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "State of Israel",
+        "IL",
+        "ISR",
+        "Medīnat Yisrā'el",
+        "Staten Israel"
+      ]
+    },
+    {
+      "id": "JO",
+      "type": "country",
+      "names": {
+        "en": "Jordan",
+        "sv": "Jordanien"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/JO.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/JO.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/JO.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Hashemite Kingdom of Jordan",
+        "JO",
+        "JOR",
+        "al-Mamlakah al-Urdunīyah al-Hāshimīyah",
+        "Hashimitiska kungadömet Jordanien"
+      ]
+    },
+    {
+      "id": "KZ",
+      "type": "country",
+      "names": {
+        "en": "Kazakhstan",
+        "sv": "Kazakstan"
+      },
+      "region": "AS",
+      "subregion": "central-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/KZ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/KZ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/KZ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Kazakhstan",
+        "KZ",
+        "KAZ",
+        "Qazaqstan",
+        "Казахстан",
+        "Қазақстан Республикасы"
+      ]
+    },
+    {
+      "id": "KW",
+      "type": "country",
+      "names": {
+        "en": "Kuwait",
+        "sv": "Kuwait"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/KW.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/KW.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/KW.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "State of Kuwait",
+        "KW",
+        "KWT",
+        "Dawlat al-Kuwait",
+        "Staten Kuwait"
+      ]
+    },
+    {
+      "id": "KG",
+      "type": "country",
+      "names": {
+        "en": "Kyrgyzstan",
+        "sv": "Kirgizistan"
+      },
+      "region": "AS",
+      "subregion": "central-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/KG.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/KG.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/KG.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Kyrgyz Republic",
+        "KG",
+        "KGZ",
+        "Киргизия",
+        "Кыргыз Республикасы",
+        "Kyrgyz Respublikasy"
+      ]
+    },
+    {
+      "id": "LA",
+      "type": "country",
+      "names": {
+        "en": "Laos",
+        "sv": "Laos"
+      },
+      "region": "AS",
+      "subregion": "south-east-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/LA.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LA.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LA.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Lao People's Democratic Republic",
+        "LA",
+        "LAO",
+        "Sathalanalat Paxathipatai Paxaxon Lao",
+        "Demokratiska folkrepubliken Laos"
+      ]
+    },
+    {
+      "id": "LB",
+      "type": "country",
+      "names": {
+        "en": "Lebanon",
+        "sv": "Libanon"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/LB.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LB.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LB.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Lebanese Republic",
+        "LB",
+        "LBN",
+        "Al-Jumhūrīyah Al-Libnānīyah",
+        "Republiken Libanon"
+      ]
+    },
+    {
+      "id": "MV",
+      "type": "country",
+      "names": {
+        "en": "Maldives",
+        "sv": "Maldiverna"
+      },
+      "region": "AS",
+      "subregion": "south-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/MV.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MV.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MV.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of the Maldives",
+        "MV",
+        "MDV",
+        "Maldive Islands",
+        "Dhivehi Raajjeyge Jumhooriyya",
+        "Republiken Maldiverna"
+      ]
+    },
+    {
+      "id": "MM",
+      "type": "country",
+      "names": {
+        "en": "Myanmar",
+        "sv": "Myanmar"
+      },
+      "region": "AS",
+      "subregion": "south-east-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/MM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of the Union of Myanmar",
+        "MM",
+        "MMR",
+        "Burma",
+        "Pyidaunzu Thanmăda Myăma Nainngandaw",
+        "Republiken Unionen Myanmar"
+      ]
+    },
+    {
+      "id": "OM",
+      "type": "country",
+      "names": {
+        "en": "Oman",
+        "sv": "Oman"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/OM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/OM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/OM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Sultanate of Oman",
+        "OM",
+        "OMN",
+        "Salṭanat ʻUmān",
+        "Sultanatet Oman"
+      ]
+    },
+    {
+      "id": "QA",
+      "type": "country",
+      "names": {
+        "en": "Qatar",
+        "sv": "Qatar"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/QA.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/QA.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/QA.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "State of Qatar",
+        "QA",
+        "QAT",
+        "Dawlat Qaṭar",
+        "Staten Qatar"
+      ]
+    },
+    {
+      "id": "SA",
+      "type": "country",
+      "names": {
+        "en": "Saudi Arabia",
+        "sv": "Saudiarabien"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/SA.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SA.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SA.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Kingdom of Saudi Arabia",
+        "SA",
+        "SAU",
+        "Saudi",
+        "Al-Mamlakah al-‘Arabiyyah as-Su‘ūdiyyah",
+        "Kungadömet Saudiarabien"
+      ]
+    },
+    {
+      "id": "SG",
+      "type": "country",
+      "names": {
+        "en": "Singapore",
+        "sv": "Singapore"
+      },
+      "region": "AS",
+      "subregion": "south-east-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/SG.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SG.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SG.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Singapore",
+        "SG",
+        "SGP",
+        "Singapura",
+        "Republik Singapura",
+        "新加坡共和国"
+      ]
+    },
+    {
+      "id": "LK",
+      "type": "country",
+      "names": {
+        "en": "Sri Lanka",
+        "sv": "Sri Lanka"
+      },
+      "region": "AS",
+      "subregion": "south-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/LK.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LK.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LK.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Democratic Socialist Republic of Sri Lanka",
+        "LK",
+        "LKA",
+        "ilaṅkai",
+        "Demokratiska socialistiska republiken Sri Lanka"
+      ]
+    },
+    {
+      "id": "SY",
+      "type": "country",
+      "names": {
+        "en": "Syria",
+        "sv": "Syrien"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/SY.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SY.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SY.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Syrian Arab Republic",
+        "SY",
+        "SYR",
+        "Al-Jumhūrīyah Al-ʻArabīyah As-Sūrīyah",
+        "Syriska arabiska republiken"
+      ]
+    },
+    {
+      "id": "TJ",
+      "type": "country",
+      "names": {
+        "en": "Tajikistan",
+        "sv": "Tadzjikistan"
+      },
+      "region": "AS",
+      "subregion": "central-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/TJ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/TJ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/TJ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Tajikistan",
+        "TJ",
+        "TJK",
+        "Toçikiston",
+        "Ҷумҳурии Тоҷикистон",
+        "Çumhuriyi Toçikiston"
+      ]
+    },
+    {
+      "id": "TL",
+      "type": "country",
+      "names": {
+        "en": "Timor-Leste",
+        "sv": "Östtimor"
+      },
+      "region": "AS",
+      "subregion": "south-east-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/TL.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/TL.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/TL.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Democratic Republic of Timor-Leste",
+        "TL",
+        "TLS",
+        "East Timor",
+        "Timor",
+        "República Democrática de Timor-Leste"
+      ]
+    },
+    {
+      "id": "TR",
+      "type": "country",
+      "names": {
+        "en": "Türkiye",
+        "sv": "Turkiet"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/TR.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/TR.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/TR.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Türkiye",
+        "TR",
+        "TUR",
+        "Republic of Turkey",
+        "Türkiye Cumhuriyeti",
+        "Republiken Turkiet"
+      ]
+    },
+    {
+      "id": "TM",
+      "type": "country",
+      "names": {
+        "en": "Turkmenistan",
+        "sv": "Turkmenistan"
+      },
+      "region": "AS",
+      "subregion": "central-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/TM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/TM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/TM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "TM",
+        "TKM"
+      ]
+    },
+    {
+      "id": "AE",
+      "type": "country",
+      "names": {
+        "en": "United Arab Emirates",
+        "sv": "Förenade Arabemiraten"
+      },
+      "namesInSentence": {
+        "en": "the United Arab Emirates"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/AE.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/AE.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/AE.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "AE",
+        "ARE",
+        "UAE",
+        "Emirates"
+      ]
+    },
+    {
+      "id": "UZ",
+      "type": "country",
+      "names": {
+        "en": "Uzbekistan",
+        "sv": "Uzbekistan"
+      },
+      "region": "AS",
+      "subregion": "central-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/UZ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/UZ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/UZ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Uzbekistan",
+        "UZ",
+        "UZB",
+        "O‘zbekiston Respublikasi",
+        "Ўзбекистон Республикаси",
+        "Republiken Uzbekistan"
+      ]
+    },
+    {
+      "id": "YE",
+      "type": "country",
+      "names": {
+        "en": "Yemen",
+        "sv": "Jemen"
+      },
+      "region": "AS",
+      "subregion": "western-asia",
+      "assets": {
+        "flag": {
+          "path": "flags/YE.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/YE.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/YE.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Yemen",
+        "YE",
+        "YEM",
+        "Yemeni Republic",
+        "al-Jumhūriyyah al-Yamaniyyah",
+        "Republiken Jemen"
+      ]
+    },
+    {
+      "id": "AO",
+      "type": "country",
+      "names": {
+        "en": "Angola",
+        "sv": "Angola"
+      },
+      "region": "AF",
+      "subregion": "middle-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/AO.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/AO.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/AO.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Angola",
+        "AO",
+        "AGO",
+        "República de Angola",
+        "ʁɛpublika de an'ɡɔla",
+        "Republiken Angola"
+      ]
+    },
+    {
+      "id": "BJ",
+      "type": "country",
+      "names": {
+        "en": "Benin",
+        "sv": "Benin"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/BJ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BJ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BJ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Benin",
+        "BJ",
+        "BEN",
+        "République du Bénin",
+        "Republiken Benin"
+      ]
+    },
+    {
+      "id": "BF",
+      "type": "country",
+      "names": {
+        "en": "Burkina Faso",
+        "sv": "Burkina Faso"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/BF.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BF.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BF.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "BF",
+        "BFA"
+      ]
+    },
+    {
+      "id": "BI",
+      "type": "country",
+      "names": {
+        "en": "Burundi",
+        "sv": "Burundi"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/BI.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BI.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BI.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Burundi",
+        "BI",
+        "BDI",
+        "Republika y'Uburundi",
+        "République du Burundi",
+        "Republiken Burundi"
+      ]
+    },
+    {
+      "id": "CV",
+      "type": "country",
+      "names": {
+        "en": "Cape Verde",
+        "sv": "Kap Verde"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/CV.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/CV.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/CV.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Cabo Verde",
+        "CV",
+        "CPV",
+        "República de Cabo Verde",
+        "Republiken Kap Verde"
+      ]
+    },
+    {
+      "id": "CM",
+      "type": "country",
+      "names": {
+        "en": "Cameroon",
+        "sv": "Kamerun"
+      },
+      "region": "AF",
+      "subregion": "middle-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/CM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/CM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/CM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Cameroon",
+        "CM",
+        "CMR",
+        "République du Cameroun",
+        "Republiken Kamerun"
+      ]
+    },
+    {
+      "id": "CF",
+      "type": "country",
+      "names": {
+        "en": "Central African Republic",
+        "sv": "Centralafrikanska republiken"
+      },
+      "namesInSentence": {
+        "en": "the Central African Republic"
+      },
+      "region": "AF",
+      "subregion": "middle-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/CF.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/CF.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/CF.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "CF",
+        "CAF",
+        "République centrafricaine"
+      ]
+    },
+    {
+      "id": "TD",
+      "type": "country",
+      "names": {
+        "en": "Chad",
+        "sv": "Tchad"
+      },
+      "region": "AF",
+      "subregion": "middle-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/TD.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/TD.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/TD.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Chad",
+        "TD",
+        "TCD",
+        "République du Tchad",
+        "Republiken Tchad"
+      ]
+    },
+    {
+      "id": "KM",
+      "type": "country",
+      "names": {
+        "en": "Comoros",
+        "sv": "Komorerna"
+      },
+      "namesInSentence": {
+        "en": "the Comoros"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/KM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/KM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/KM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Union of the Comoros",
+        "KM",
+        "COM",
+        "Union des Comores",
+        "Udzima wa Komori",
+        "al-Ittiḥād al-Qumurī"
+      ]
+    },
+    {
+      "id": "CG",
+      "type": "country",
+      "names": {
+        "en": "Republic of the Congo",
+        "sv": "Kongo-Brazzaville"
+      },
+      "namesInSentence": {
+        "en": "the Republic of the Congo"
+      },
+      "region": "AF",
+      "subregion": "middle-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/CG.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/CG.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/CG.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "CG",
+        "COG",
+        "Congo",
+        "Congo-Brazzaville",
+        "Republiken Kongo"
+      ]
+    },
+    {
+      "id": "CD",
+      "type": "country",
+      "names": {
+        "en": "Democratic Republic of the Congo",
+        "sv": "Kongo-Kinshasa"
+      },
+      "namesInSentence": {
+        "en": "the Democratic Republic of the Congo"
+      },
+      "region": "AF",
+      "subregion": "middle-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/CD.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/CD.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/CD.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "DR Congo",
+        "CD",
+        "COD",
+        "Congo-Kinshasa",
+        "Congo, the Democratic Republic of the",
+        "Democratic Republic of Congo"
+      ]
+    },
+    {
+      "id": "CI",
+      "type": "country",
+      "names": {
+        "en": "Côte d'Ivoire",
+        "sv": "Elfenbenskusten"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/CI.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/CI.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/CI.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Ivory Coast",
+        "Republic of Côte d'Ivoire",
+        "CI",
+        "CIV",
+        "République de Côte d'Ivoire",
+        "Republiken Elfenbenskusten"
+      ]
+    },
+    {
+      "id": "DJ",
+      "type": "country",
+      "names": {
+        "en": "Djibouti",
+        "sv": "Djibouti"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/DJ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/DJ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/DJ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Djibouti",
+        "DJ",
+        "DJI",
+        "Jabuuti",
+        "Gabuuti",
+        "République de Djibouti"
+      ]
+    },
+    {
+      "id": "GQ",
+      "type": "country",
+      "names": {
+        "en": "Equatorial Guinea",
+        "sv": "Ekvatorialguinea"
+      },
+      "region": "AF",
+      "subregion": "middle-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/GQ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/GQ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/GQ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Equatorial Guinea",
+        "GQ",
+        "GNQ",
+        "República de Guinea Ecuatorial",
+        "République de Guinée équatoriale",
+        "República da Guiné Equatorial"
+      ]
+    },
+    {
+      "id": "ER",
+      "type": "country",
+      "names": {
+        "en": "Eritrea",
+        "sv": "Eritrea"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/ER.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/ER.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/ER.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "State of Eritrea",
+        "ER",
+        "ERI",
+        "ሃገረ ኤርትራ",
+        "Dawlat Iritriyá",
+        "ʾErtrā"
+      ]
+    },
+    {
+      "id": "SZ",
+      "type": "country",
+      "names": {
+        "en": "Eswatini",
+        "sv": "Eswatini"
+      },
+      "region": "AF",
+      "subregion": "southern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/SZ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SZ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SZ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Kingdom of Eswatini",
+        "SZ",
+        "SWZ",
+        "Swaziland",
+        "weSwatini",
+        "Swatini"
+      ]
+    },
+    {
+      "id": "GA",
+      "type": "country",
+      "names": {
+        "en": "Gabon",
+        "sv": "Gabon"
+      },
+      "region": "AF",
+      "subregion": "middle-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/GA.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/GA.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/GA.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Gabonese Republic",
+        "GA",
+        "GAB",
+        "République Gabonaise",
+        "Republiken Gabon"
+      ]
+    },
+    {
+      "id": "GM",
+      "type": "country",
+      "names": {
+        "en": "Gambia",
+        "sv": "Gambia"
+      },
+      "namesInSentence": {
+        "en": "the Gambia"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/GM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/GM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/GM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of the Gambia",
+        "GM",
+        "GMB",
+        "Republiken Gambia"
+      ]
+    },
+    {
+      "id": "GN",
+      "type": "country",
+      "names": {
+        "en": "Guinea",
+        "sv": "Guinea"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/GN.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/GN.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/GN.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Guinea",
+        "GN",
+        "GIN",
+        "République de Guinée",
+        "Republiken Guinea"
+      ]
+    },
+    {
+      "id": "GW",
+      "type": "country",
+      "names": {
+        "en": "Guinea-Bissau",
+        "sv": "Guinea-Bissau"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/GW.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/GW.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/GW.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Guinea-Bissau",
+        "GW",
+        "GNB",
+        "República da Guiné-Bissau",
+        "Republiken Guinea-Bissau"
+      ]
+    },
+    {
+      "id": "LS",
+      "type": "country",
+      "names": {
+        "en": "Lesotho",
+        "sv": "Lesotho"
+      },
+      "region": "AF",
+      "subregion": "southern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/LS.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LS.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LS.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Kingdom of Lesotho",
+        "LS",
+        "LSO",
+        "Muso oa Lesotho",
+        "Konungariket Lesotho"
+      ]
+    },
+    {
+      "id": "LR",
+      "type": "country",
+      "names": {
+        "en": "Liberia",
+        "sv": "Liberia"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/LR.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LR.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LR.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Liberia",
+        "LR",
+        "LBR",
+        "Republiken Liberia"
+      ]
+    },
+    {
+      "id": "LY",
+      "type": "country",
+      "names": {
+        "en": "Libya",
+        "sv": "Libyen"
+      },
+      "region": "AF",
+      "subregion": "northern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/LY.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LY.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LY.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "State of Libya",
+        "LY",
+        "LBY",
+        "Dawlat Libya",
+        "Staten Libyen"
+      ]
+    },
+    {
+      "id": "MG",
+      "type": "country",
+      "names": {
+        "en": "Madagascar",
+        "sv": "Madagaskar"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/MG.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MG.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MG.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Madagascar",
+        "MG",
+        "MDG",
+        "Repoblikan'i Madagasikara",
+        "République de Madagascar",
+        "Republiken Madagaskar"
+      ]
+    },
+    {
+      "id": "MW",
+      "type": "country",
+      "names": {
+        "en": "Malawi",
+        "sv": "Malawi"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/MW.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MW.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MW.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Malawi",
+        "MW",
+        "MWI",
+        "Republiken Malawi"
+      ]
+    },
+    {
+      "id": "MR",
+      "type": "country",
+      "names": {
+        "en": "Mauritania",
+        "sv": "Mauretanien"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/MR.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MR.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MR.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Islamic Republic of Mauritania",
+        "MR",
+        "MRT",
+        "al-Jumhūriyyah al-ʾIslāmiyyah al-Mūrītāniyyah",
+        "Islamiska republiken Mauretanien"
+      ]
+    },
+    {
+      "id": "MU",
+      "type": "country",
+      "names": {
+        "en": "Mauritius",
+        "sv": "Mauritius"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/MU.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MU.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MU.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Mauritius",
+        "MU",
+        "MUS",
+        "République de Maurice",
+        "Republiken Mauritius"
+      ]
+    },
+    {
+      "id": "MZ",
+      "type": "country",
+      "names": {
+        "en": "Mozambique",
+        "sv": "Moçambique"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/MZ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MZ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MZ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Mozambique",
+        "MZ",
+        "MOZ",
+        "República de Moçambique",
+        "Republiken Moçambique"
+      ]
+    },
+    {
+      "id": "NE",
+      "type": "country",
+      "names": {
+        "en": "Niger",
+        "sv": "Niger"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/NE.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/NE.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/NE.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Niger",
+        "NE",
+        "NER",
+        "Nijar",
+        "Republiken Niger"
+      ]
+    },
+    {
+      "id": "RW",
+      "type": "country",
+      "names": {
+        "en": "Rwanda",
+        "sv": "Rwanda"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/RW.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/RW.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/RW.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Rwanda",
+        "RW",
+        "RWA",
+        "Repubulika y'u Rwanda",
+        "République du Rwanda",
+        "Republiken Rwanda"
+      ]
+    },
+    {
+      "id": "ST",
+      "type": "country",
+      "names": {
+        "en": "São Tomé and Príncipe",
+        "sv": "São Tomé och Príncipe"
+      },
+      "region": "AF",
+      "subregion": "middle-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/ST.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/ST.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/ST.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Democratic Republic of São Tomé and Príncipe",
+        "ST",
+        "STP",
+        "República Democrática de São Tomé e Príncipe",
+        "Demokratiska republiken São Tomé och Príncipe"
+      ]
+    },
+    {
+      "id": "SC",
+      "type": "country",
+      "names": {
+        "en": "Seychelles",
+        "sv": "Seychellerna"
+      },
+      "namesInSentence": {
+        "en": "the Seychelles"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/SC.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SC.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SC.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Seychelles",
+        "SC",
+        "SYC",
+        "Repiblik Sesel",
+        "République des Seychelles",
+        "Republiken Seychellerna"
+      ]
+    },
+    {
+      "id": "SL",
+      "type": "country",
+      "names": {
+        "en": "Sierra Leone",
+        "sv": "Sierra Leone"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/SL.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SL.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SL.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Sierra Leone",
+        "SL",
+        "SLE",
+        "Republiken Sierra Leone"
+      ]
+    },
+    {
+      "id": "SO",
+      "type": "country",
+      "names": {
+        "en": "Somalia",
+        "sv": "Somalia"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/SO.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SO.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SO.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Federal Republic of Somalia",
+        "SO",
+        "SOM",
+        "aṣ-Ṣūmāl",
+        "Jamhuuriyadda Federaalka Soomaaliya",
+        "Jumhūriyyat aṣ-Ṣūmāl al-Fiderāliyya"
+      ]
+    },
+    {
+      "id": "SS",
+      "type": "country",
+      "names": {
+        "en": "South Sudan",
+        "sv": "Sydsudan"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/SS.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SS.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SS.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of South Sudan",
+        "SS",
+        "SSD",
+        "Republiken Sydsudan"
+      ]
+    },
+    {
+      "id": "SD",
+      "type": "country",
+      "names": {
+        "en": "Sudan",
+        "sv": "Sudan"
+      },
+      "region": "AF",
+      "subregion": "northern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/SD.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SD.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SD.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of the Sudan",
+        "SD",
+        "SDN",
+        "Jumhūrīyat as-Sūdān",
+        "Republiken Sudan"
+      ]
+    },
+    {
+      "id": "TG",
+      "type": "country",
+      "names": {
+        "en": "Togo",
+        "sv": "Togo"
+      },
+      "region": "AF",
+      "subregion": "western-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/TG.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/TG.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/TG.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Togolese Republic",
+        "TG",
+        "TGO",
+        "Togolese",
+        "République Togolaise",
+        "Republiken Togo"
+      ]
+    },
+    {
+      "id": "ZM",
+      "type": "country",
+      "names": {
+        "en": "Zambia",
+        "sv": "Zambia"
+      },
+      "region": "AF",
+      "subregion": "eastern-africa",
+      "assets": {
+        "flag": {
+          "path": "flags/ZM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/ZM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/ZM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Zambia",
+        "ZM",
+        "ZMB",
+        "Republiken Zambia"
+      ]
+    },
+    {
+      "id": "AG",
+      "type": "country",
+      "names": {
+        "en": "Antigua and Barbuda",
+        "sv": "Antigua och Barbuda"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/AG.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/AG.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/AG.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "AG",
+        "ATG"
+      ]
+    },
+    {
+      "id": "BS",
+      "type": "country",
+      "names": {
+        "en": "Bahamas",
+        "sv": "Bahamas"
+      },
+      "namesInSentence": {
+        "en": "the Bahamas"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/BS.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BS.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BS.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Commonwealth of the Bahamas",
+        "BS",
+        "BHS",
+        "Samväldet Bahamas"
+      ]
+    },
+    {
+      "id": "BB",
+      "type": "country",
+      "names": {
+        "en": "Barbados",
+        "sv": "Barbados"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/BB.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BB.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BB.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "BB",
+        "BRB"
+      ]
+    },
+    {
+      "id": "BZ",
+      "type": "country",
+      "names": {
+        "en": "Belize",
+        "sv": "Belize"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/BZ.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BZ.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BZ.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "BZ",
+        "BLZ"
+      ]
+    },
+    {
+      "id": "DM",
+      "type": "country",
+      "names": {
+        "en": "Dominica",
+        "sv": "Dominica"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/DM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/DM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/DM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Commonwealth of Dominica",
+        "DM",
+        "DMA",
+        "Dominique",
+        "Wai‘tu kubuli",
+        "Samväldet Dominica"
+      ]
+    },
+    {
+      "id": "DO",
+      "type": "country",
+      "names": {
+        "en": "Dominican Republic",
+        "sv": "Dominikanska republiken"
+      },
+      "namesInSentence": {
+        "en": "the Dominican Republic"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/DO.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/DO.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/DO.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "DO",
+        "DOM"
+      ]
+    },
+    {
+      "id": "SV",
+      "type": "country",
+      "names": {
+        "en": "El Salvador",
+        "sv": "El Salvador"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/SV.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SV.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SV.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of El Salvador",
+        "SV",
+        "SLV",
+        "República de El Salvador",
+        "Republiken El Salvador"
+      ]
+    },
+    {
+      "id": "GD",
+      "type": "country",
+      "names": {
+        "en": "Grenada",
+        "sv": "Grenada"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/GD.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/GD.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/GD.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "GD",
+        "GRD"
+      ]
+    },
+    {
+      "id": "HT",
+      "type": "country",
+      "names": {
+        "en": "Haiti",
+        "sv": "Haiti"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/HT.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/HT.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/HT.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Haiti",
+        "HT",
+        "HTI",
+        "République d'Haïti",
+        "Repiblik Ayiti",
+        "Republiken Haiti"
+      ]
+    },
+    {
+      "id": "HN",
+      "type": "country",
+      "names": {
+        "en": "Honduras",
+        "sv": "Honduras"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/HN.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/HN.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/HN.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Honduras",
+        "HN",
+        "HND",
+        "República de Honduras",
+        "Republiken Honduras"
+      ]
+    },
+    {
+      "id": "JM",
+      "type": "country",
+      "names": {
+        "en": "Jamaica",
+        "sv": "Jamaica"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/JM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/JM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/JM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "JM",
+        "JAM"
+      ]
+    },
+    {
+      "id": "NI",
+      "type": "country",
+      "names": {
+        "en": "Nicaragua",
+        "sv": "Nicaragua"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/NI.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/NI.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/NI.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Nicaragua",
+        "NI",
+        "NIC",
+        "República de Nicaragua",
+        "Republiken Nicaragua"
+      ]
+    },
+    {
+      "id": "KN",
+      "type": "country",
+      "names": {
+        "en": "Saint Kitts and Nevis",
+        "sv": "S:t Kitts och Nevis"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/KN.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/KN.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/KN.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Federation of Saint Christopher and Nevis",
+        "KN",
+        "KNA",
+        "Saint Kitts och Nevis",
+        "Federationen Saint Kitts och Nevis"
+      ]
+    },
+    {
+      "id": "LC",
+      "type": "country",
+      "names": {
+        "en": "Saint Lucia",
+        "sv": "S:t Lucia"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/LC.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/LC.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/LC.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "LC",
+        "LCA"
+      ]
+    },
+    {
+      "id": "VC",
+      "type": "country",
+      "names": {
+        "en": "Saint Vincent and the Grenadines",
+        "sv": "S:t Vincent och Grenadinerna"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/VC.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/VC.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/VC.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "VC",
+        "VCT",
+        "Saint Vincent och Grenadinerna"
+      ]
+    },
+    {
+      "id": "TT",
+      "type": "country",
+      "names": {
+        "en": "Trinidad and Tobago",
+        "sv": "Trinidad och Tobago"
+      },
+      "region": "NA",
+      "subregion": "north-america",
+      "assets": {
+        "flag": {
+          "path": "flags/TT.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/TT.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/TT.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Trinidad and Tobago",
+        "TT",
+        "TTO",
+        "Republiken Trinidad och Tobago"
+      ]
+    },
+    {
+      "id": "BO",
+      "type": "country",
+      "names": {
+        "en": "Bolivia",
+        "sv": "Bolivia"
+      },
+      "region": "SA",
+      "subregion": "south-america",
+      "assets": {
+        "flag": {
+          "path": "flags/BO.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/BO.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/BO.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Plurinational State of Bolivia",
+        "BO",
+        "BOL",
+        "Buliwya",
+        "Wuliwya",
+        "Bolivia, Plurinational State of"
+      ]
+    },
+    {
+      "id": "EC",
+      "type": "country",
+      "names": {
+        "en": "Ecuador",
+        "sv": "Ecuador"
+      },
+      "region": "SA",
+      "subregion": "south-america",
+      "assets": {
+        "flag": {
+          "path": "flags/EC.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/EC.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/EC.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Ecuador",
+        "EC",
+        "ECU",
+        "República del Ecuador",
+        "Republiken Ecuador"
+      ]
+    },
+    {
+      "id": "GY",
+      "type": "country",
+      "names": {
+        "en": "Guyana",
+        "sv": "Guyana"
+      },
+      "region": "SA",
+      "subregion": "south-america",
+      "assets": {
+        "flag": {
+          "path": "flags/GY.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/GY.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/GY.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Co-operative Republic of Guyana",
+        "GY",
+        "GUY",
+        "Kooperativa republiken Guyana"
+      ]
+    },
+    {
+      "id": "PY",
+      "type": "country",
+      "names": {
+        "en": "Paraguay",
+        "sv": "Paraguay"
+      },
+      "region": "SA",
+      "subregion": "south-america",
+      "assets": {
+        "flag": {
+          "path": "flags/PY.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/PY.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/PY.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Paraguay",
+        "PY",
+        "PRY",
+        "República del Paraguay",
+        "Tetã Paraguái",
+        "Republiken Paraguay"
+      ]
+    },
+    {
+      "id": "SR",
+      "type": "country",
+      "names": {
+        "en": "Suriname",
+        "sv": "Surinam"
+      },
+      "region": "SA",
+      "subregion": "south-america",
+      "assets": {
+        "flag": {
+          "path": "flags/SR.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SR.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SR.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Suriname",
+        "SR",
+        "SUR",
+        "Sarnam",
+        "Sranangron",
+        "Republiek Suriname"
+      ]
+    },
+    {
+      "id": "UY",
+      "type": "country",
+      "names": {
+        "en": "Uruguay",
+        "sv": "Uruguay"
+      },
+      "region": "SA",
+      "subregion": "south-america",
+      "assets": {
+        "flag": {
+          "path": "flags/UY.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/UY.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/UY.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Oriental Republic of Uruguay",
+        "UY",
+        "URY",
+        "República Oriental del Uruguay",
+        "Republiken Uruguay"
+      ]
+    },
+    {
+      "id": "VE",
+      "type": "country",
+      "names": {
+        "en": "Venezuela",
+        "sv": "Venezuela"
+      },
+      "region": "SA",
+      "subregion": "south-america",
+      "assets": {
+        "flag": {
+          "path": "flags/VE.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/VE.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/VE.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Bolivarian Republic of Venezuela",
+        "VE",
+        "VEN",
+        "Venezuela, Bolivarian Republic of",
+        "República Bolivariana de Venezuela",
+        "Bolivarianska republiken Venezuela"
+      ]
+    },
+    {
+      "id": "KI",
+      "type": "country",
+      "names": {
+        "en": "Kiribati",
+        "sv": "Kiribati"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/KI.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/KI.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/KI.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Independent and Sovereign Republic of Kiribati",
+        "KI",
+        "KIR",
+        "Republic of Kiribati",
+        "Ribaberiki Kiribati",
+        "Republiken Kiribati"
+      ]
+    },
+    {
+      "id": "MH",
+      "type": "country",
+      "names": {
+        "en": "Marshall Islands",
+        "sv": "Marshallöarna"
+      },
+      "namesInSentence": {
+        "en": "the Marshall Islands"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/MH.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/MH.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/MH.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of the Marshall Islands",
+        "MH",
+        "MHL",
+        "Aolepān Aorōkin M̧ajeļ",
+        "Republiken Marshallöarna"
+      ]
+    },
+    {
+      "id": "FM",
+      "type": "country",
+      "names": {
+        "en": "Micronesia",
+        "sv": "Mikronesien"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/FM.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/FM.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/FM.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Federated States of Micronesia",
+        "FM",
+        "FSM",
+        "Micronesia, Federated States of",
+        "Mikronesiska federationen"
+      ]
+    },
+    {
+      "id": "NR",
+      "type": "country",
+      "names": {
+        "en": "Nauru",
+        "sv": "Nauru"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/NR.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/NR.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/NR.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Nauru",
+        "NR",
+        "NRU",
+        "Naoero",
+        "Pleasant Island",
+        "Ripublik Naoero"
+      ]
+    },
+    {
+      "id": "PW",
+      "type": "country",
+      "names": {
+        "en": "Palau",
+        "sv": "Palau"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/PW.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/PW.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/PW.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Palau",
+        "PW",
+        "PLW",
+        "Beluu er a Belau",
+        "Republiken Palau"
+      ]
+    },
+    {
+      "id": "WS",
+      "type": "country",
+      "names": {
+        "en": "Samoa",
+        "sv": "Samoa"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/WS.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/WS.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/WS.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Independent State of Samoa",
+        "WS",
+        "WSM",
+        "Malo Saʻoloto Tutoʻatasi o Sāmoa",
+        "Självständiga staten Samoa"
+      ]
+    },
+    {
+      "id": "SB",
+      "type": "country",
+      "names": {
+        "en": "Solomon Islands",
+        "sv": "Salomonöarna"
+      },
+      "namesInSentence": {
+        "en": "the Solomon Islands"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/SB.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/SB.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/SB.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "SB",
+        "SLB"
+      ]
+    },
+    {
+      "id": "TO",
+      "type": "country",
+      "names": {
+        "en": "Tonga",
+        "sv": "Tonga"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/TO.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/TO.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/TO.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Kingdom of Tonga",
+        "TO",
+        "TON",
+        "Konungariket Tonga"
+      ]
+    },
+    {
+      "$comment": "No map: Natural Earth 1:50m has no outline for Tuvalu, whose atolls are below that scale. Never draw one (docs/design/asset-prompts.md); map questions skip an entity without a map asset.",
+      "id": "TV",
+      "type": "country",
+      "names": {
+        "en": "Tuvalu",
+        "sv": "Tuvalu"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/TV.png",
+          "licenseRef": "flag-icons"
+        }
+      },
+      "aliases": [
+        "TV",
+        "TUV"
+      ]
+    },
+    {
+      "id": "VU",
+      "type": "country",
+      "names": {
+        "en": "Vanuatu",
+        "sv": "Vanuatu"
+      },
+      "region": "OC",
+      "subregion": "oceania",
+      "assets": {
+        "flag": {
+          "path": "flags/VU.png",
+          "licenseRef": "flag-icons"
+        },
+        "map": {
+          "path": "geo/countries/VU.png",
+          "licenseRef": "natural-earth-country"
+        },
+        "mapContext": {
+          "path": "geo/context/VU.png",
+          "licenseRef": "natural-earth-region"
+        }
+      },
+      "aliases": [
+        "Republic of Vanuatu",
+        "VU",
+        "VUT",
+        "Ripablik blong Vanuatu",
+        "République de Vanuatu",
+        "Republiken Vanuatu"
+      ]
     }
   ]
 }

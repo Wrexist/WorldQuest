@@ -163,6 +163,12 @@ export type SettingsScreenProps = {
    */
   readonly premium?: PremiumStatus | undefined
   /**
+   * The ten-question level check, when this build can issue one (the Worker composes it). Absent
+   * draws the starting-level row alone: a row that opens a lesson the build cannot make is a
+   * dead end.
+   */
+  readonly levelCheck?: { readonly onStart: () => void } | undefined
+  /**
    * Required, not optional.
    *
    * An optional reminder would mean a fallback branch that draws the switch straight
@@ -216,6 +222,7 @@ export function SettingsScreen({
   onChange: set,
   sync,
   premium,
+  levelCheck,
   reminder,
   account,
   league,
@@ -264,6 +271,26 @@ export function SettingsScreen({
           }))}
           onChange={(value) => set('dailyGoalMinutes', Number(value) as DailyGoal)}
         />
+        {/* Where lessons START. Onboarding asked once, and a person's idea of how much they
+            know is the least reliable thing in the app; this is the way to change it later,
+            and the level check below is the way to ask the app instead of guessing. */}
+        <ChoiceRow<Preferences['startLevel']>
+          label={t('settings:level.label')}
+          help={t('settings:level.help')}
+          value={preferences.startLevel}
+          choices={[
+            { value: 'new', label: t('settings:level.new') },
+            { value: 'some', label: t('settings:level.some') },
+            { value: 'confident', label: t('settings:level.confident') },
+          ]}
+          onChange={(value) => set('startLevel', value)}
+        />
+        {levelCheck !== undefined && (
+          <>
+            <Note body={t('settings:level.check.help')} />
+            <LinkRow label={t('settings:level.check')} onPress={levelCheck.onStart} />
+          </>
+        )}
         <SwitchRow
           label={t('settings:reminder.label')}
           help={t('settings:reminder.help')}

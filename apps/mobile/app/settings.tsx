@@ -118,6 +118,8 @@ export default function SettingsRoute() {
       onChange={set}
       sync={sync}
       premium={premium}
+      // The Worker composes the check, so only a D1 build can offer it.
+      {...(isD1() ? { levelCheck: { onStart: () => router.push('/lesson?placement=1') } } : {})}
       // Absent on a child account. Same rule as `premium` above and a stronger reason:
       // we must not collect an email address from an under-13, so there is no flow to
       // show. Settings draws a plain note in its place.

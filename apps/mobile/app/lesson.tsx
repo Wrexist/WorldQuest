@@ -46,8 +46,10 @@ export default function LessonRoute() {
   const { colors } = useThemeValues()
   // `/lesson?mode=speed`. A query param rather than a second route: it is the same
   // runner, the same items and the same scoring — only the clock differs.
-  const { mode, taster, facts, attr, entity, region, min, max, len, node, review } = useLocalSearchParams<{
+  const { mode, taster, facts, attr, entity, region, min, max, len, node, review, placement } = useLocalSearchParams<{
     mode?: string
+    /** `1` for the level check (Settings → Check my level). */
+    placement?: string
     taster?: string
     facts?: string
     attr?: string
@@ -151,6 +153,7 @@ export default function LessonRoute() {
       // being inferred later from "first lesson_completed", which is wrong for anyone
       // who reinstalls.
       isTaster={taster === '1'}
+      placement={placement === '1'}
       coins={data?.coins ?? 0}
       // Out of a lesson that never started (offline with nothing saved, a failure, an
       // empty focus). Nothing was answered, so there is nothing to record or celebrate.

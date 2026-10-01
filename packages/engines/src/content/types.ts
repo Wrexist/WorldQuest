@@ -33,6 +33,14 @@ export type Entity = {
    * boolean cannot express that.
    */
   readonly namesInSentence?: LocalizedText
+  /**
+   * Other things a person might type for this entity: "USA" for the United States, the
+   * official name, the ISO code. Used ONLY to judge a typed answer (`Template.input`), never
+   * shown, so an alias that is a little informal costs nothing. An alias that is also another
+   * entity's name or alias is never carried here — "Guinea" must not be a right answer for
+   * Equatorial Guinea — and `scripts/build-aliases.cjs` is what guarantees that.
+   */
+  readonly aliases?: readonly string[]
   readonly region?: string
   readonly subregion?: string
   readonly assets?: Readonly<Record<string, { path: string; license: string }>>
@@ -55,6 +63,14 @@ export type Fact = {
     readonly id?: string
     readonly names?: LocalizedText
     readonly shortNames?: LocalizedText
+    /**
+     * The figure behind a numeric value, unrounded — "about 380,000 km²" is what a learner
+     * reads and 377,930 is what was sourced. Distractor strategies that care how CLOSE two
+     * answers are (`nearest-values`) compare these, never the labels.
+     */
+    readonly number?: number
+    /** ISO date the figure is as of; population and area drift. */
+    readonly asOf?: string
   }
   /** Authored prior, 1–5. The engine learns the real per-user difficulty. */
   readonly difficulty: number
@@ -98,6 +114,26 @@ export type DistractorStrategy =
    * when `answer.from` is `fact.value.names`, and content validation says so.
    */
   | 'other-values'
+  /**
+   * For a NUMERIC fact (`value.number`): the entities whose number is nearest on a log
+   * scale — "about 380,000 km²" offered beside 350,000 and 410,000. Closeness is what makes
+   * a magnitude question hard rather than a lottery, so this is the way of asking that a
+   * long-practised learner is steered towards (see `Template.difficultyModifier`).
+   */
+  | 'nearest-values'
+  /**
+   * The same numbers, at least a factor of four apart: the forgiving version of the above,
+   * where "about 380,000 km²" sits beside 2,000 and 9,000,000. Only the order of magnitude
+   * is being asked.
+   */
+  | 'spread-values'
+  /**
+   * For a RELATION fact (`answer.from: "fact.value.entity"`): entities related to the ones
+   * this entity is related to — the neighbours of its neighbours. A wrong answer a learner
+   * could plausibly believe, and never a right one, because the entity's own relations are
+   * always excluded.
+   */
+  | 'near-related'
   | 'random-global'
 
 export type Template = {
@@ -106,13 +142,45 @@ export type Template = {
   readonly attribute: string
   readonly modality: 'text' | 'image' | 'map' | 'audio'
   readonly prompt: { readonly key: string; readonly params?: readonly string[] }
-  /** Where the correct answer is read from. */
-  readonly answer: { readonly from: 'fact.value.names' | 'entity.names' }
+  /**
+   * Where the correct answer is read from.
+   *
+   * `fact.value.entity` is for RELATIONS: the fact says "this entity is related to that
+   * one" (a neighbour, a river's country), `value.id` names the other entity, and the
+   * answer is that entity. An entity may hold several such facts for one attribute — every
+   * one of them is a correct answer, so every one of them is excluded from the wrong ones.
+   */
+  readonly answer: { readonly from: 'fact.value.names' | 'entity.names' | 'fact.value.entity' }
+  /**
+   * How the learner answers. Absent means by choosing an option; `typed` means by typing it.
+   *
+   * A typed question has no wrong options to build, so `distractors` is ignored and the
+   * question carries exactly one option — the right one, which is what the answer is sent as
+   * (see `TYPED_WRONG`). It is asked only of a fact the learner has already met more than
+   * once: nobody can type what they were never shown, and a heart lost to that is the
+   * "punishing a beginner for not knowing" that the hearts rule exists to prevent.
+   */
+  readonly input?: 'typed'
+  /**
+   * Only ask this about facts whose `value.id` is this. Lets one attribute carry two
+   * questions that cannot share a prompt: "which of these has no sea coast?" is true of a
+   * landlocked country and false of a coastal one.
+   */
+  readonly when?: { readonly valueId: string }
   readonly distractors?: {
     readonly count: number
     readonly strategy: DistractorStrategy
     readonly fallback?: DistractorStrategy
     readonly excludeSimilarStrings?: boolean
+    /**
+     * Keep only candidates whose own fact for this attribute has a DIFFERENT `value.id`.
+     *
+     * For an entity-answer question whose value is shared by many entities — "which of
+     * these is landlocked?" — where `isAmbiguous` would refuse it outright, because the
+     * value is not unique. It is not ambiguous here: the wrong answers are chosen to be
+     * coastal, so exactly one option is landlocked.
+     */
+    readonly differentValueOnly?: boolean
   }
   readonly a11y: {
     readonly screenReaderSafe: boolean
@@ -259,6 +327,19 @@ export type Question = {
    */
   readonly revealAsset?: string
   readonly timeLimitMs: number | null
+  /**
+   * Present when the answer is TYPED. The spellings that count as right; the judging (case,
+   * accents, a typo) is `matchTyped`, shared by the app and the Worker's reading of what the
+   * app reports. `options` then holds the one correct option and nothing else.
+   */
+  readonly typed?: { readonly accepts: readonly string[]; readonly rivals?: readonly string[] }
+  /**
+   * Set when this question is one of the four that make up a "match the pairs" board
+   * (`lesson/pairs.ts`). The four are consecutive, share one option list, and are each graded
+   * as the fact they are about — a client that does not draw boards plays each as the ordinary
+   * multiple-choice question it also is. `position` is 0 on the first.
+   */
+  readonly group?: { readonly id: string; readonly size: number; readonly position: number }
   /** For the wrong-answer explanation: "Japan is a red circle on white." */
   readonly hint?: string
   /**
@@ -278,4 +359,8 @@ export type ContentIndex = {
   readonly items: readonly Item[]
   /** factId → items generated from it. */
   readonly itemsByFact: ReadonlyMap<FactId, readonly Item[]>
+  /** entityId → every fact about it, quizzable or not. Distractor search reads these, not the whole pack. */
+  readonly factsByEntity: ReadonlyMap<EntityId, readonly Fact[]>
+  /** attribute → every fact carrying it. */
+  readonly factsByAttribute: ReadonlyMap<string, readonly Fact[]>
 }

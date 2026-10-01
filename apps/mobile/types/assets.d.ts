@@ -34,3 +34,24 @@ declare module '*.webp' {
   const asset: number | string
   export default asset
 }
+
+/**
+ * The atlas's surface texture (ADR 0017): photographic relief, which JPEG stores at a
+ * fifth of PNG's size. Loaded through expo-asset rather than `Image`, so the GL context
+ * can upload it.
+ */
+declare module '*.jpg' {
+  const asset: number | string
+  export default asset
+}
+
+/**
+ * Binary data shipped as an asset rather than bundled: the atlas's country rings
+ * (`countries.bin`, ~0.9 MB) would cost Hermes parse time on every cold start as a JS
+ * module, and are only needed once a globe is on screen. Metro learns the extension in
+ * metro.config.js; vitest in vitest.config.ts.
+ */
+declare module '*.bin' {
+  const asset: number | string
+  export default asset
+}

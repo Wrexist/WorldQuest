@@ -8,13 +8,14 @@
 
 import { useEffect, useMemo } from 'react'
 import { router, useLocalSearchParams } from 'expo-router'
-import { entityProgress, masteryOf, type Mastery } from '@worldquest/engines'
+import { entityProgress, isQuizzable, masteryOf, type Mastery } from '@worldquest/engines'
 import type { RegionCode } from '../../src/features/explore/ExploreScreen.js'
 import { REGIONS } from '../../src/features/explore/ExploreScreen.js'
 import {
   CountryScreen,
   type CountryFact,
 } from '../../src/features/explore/CountryScreen.js'
+import { collapseRelations } from '../../src/features/explore/collapseRelations.js'
 import { ContentGate } from '../../src/components/ContentGate.js'
 import { useContent } from '../../src/lib/content.js'
 import { useFavourites } from '../../src/features/favourites/useFavourites.js'
@@ -46,7 +47,7 @@ export default function CountryRoute() {
     const locale = currentLocale()
     const now = Date.now()
 
-    const facts: CountryFact[] = [...index.index.facts.values()]
+    const facts: CountryFact[] = collapseRelations([...index.index.facts.values()]
       .filter((fact) => fact.entity === entity.id)
       .map((fact) => {
         const state = memory.get(fact.id)
@@ -58,9 +59,10 @@ export default function CountryRoute() {
           value: fact.value.names?.[locale] ?? fact.value.names?.['en'] ?? '',
           mastery: (state ? masteryOf(state, now) : 'unseen') as Mastery,
           due: state !== undefined && state.dueAt <= now,
+          quizzable: isQuizzable(fact),
           ...(fact.source ? { source: fact.source } : {}),
         }
-      })
+      }))
 
     return {
       name: entity.names[locale] ?? entity.names['en'] ?? entity.id,

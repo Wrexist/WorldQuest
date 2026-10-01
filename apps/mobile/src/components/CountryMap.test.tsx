@@ -74,8 +74,18 @@ describe('the map registry', () => {
     const pack = require('@worldquest/content/packs/geography/entities.countries.v1.json') as {
       items: { id: string; assets?: Record<string, { path: string }> }[]
     }
-    const missing = pack.items.filter((i) => mapSource(i.assets?.['map']?.path) === undefined)
+    // Only what it names: a country Natural Earth cannot draw (Tuvalu) declares no map
+    // rather than an invented one — see the test below and build-maps.cjs.
+    const missing = pack.items.filter((i) => i.assets?.['map'] !== undefined && mapSource(i.assets['map'].path) === undefined)
     expect(missing.map((m) => m.id)).toEqual([])
+  })
+
+  it('says why, wherever a country has no map', () => {
+    const pack = require('@worldquest/content/packs/geography/entities.countries.v1.json') as {
+      items: { id: string; $comment?: string; assets?: Record<string, { path: string }> }[]
+    }
+    const unexplained = pack.items.filter((i) => i.assets?.['map'] === undefined && !/no map/i.test(i.$comment ?? ''))
+    expect(unexplained.map((m) => m.id)).toEqual([])
   })
 
   it('ships a context layer for every country, in that country\'s own frame', () => {
@@ -84,7 +94,7 @@ describe('the map registry', () => {
     const pack = require('@worldquest/content/packs/geography/entities.countries.v1.json') as {
       items: { id: string; assets?: Record<string, { path: string }> }[]
     }
-    const missing = pack.items.filter((i) => mapSource(i.assets?.['mapContext']?.path) === undefined)
+    const missing = pack.items.filter((i) => i.assets?.['mapContext'] !== undefined && mapSource(i.assets['mapContext'].path) === undefined)
     expect(missing.map((m) => m.id)).toEqual([])
   })
 

@@ -103,6 +103,8 @@ describe('parseCourse', () => {
     ['a unit with no title', { ...PACK, items: [{ ...PACK.items[0], titleKey: undefined }] }],
     ['a unit with no objective', { ...PACK, items: [{ ...PACK.items[0], objectiveKey: undefined }] }],
     ['a unit with no nodes', { ...PACK, items: [{ ...PACK.items[0], nodes: [] }] }],
+    ['a scenery that is not a name', { ...PACK, items: [{ ...PACK.items[0], scenery: 'Europe!' }] }],
+    ['a scenery that is not text', { ...PACK, items: [{ ...PACK.items[0], scenery: 4 }] }],
     ['a node that is not an object', { ...PACK, items: [{ ...PACK.items[0], nodes: ['x'] }] }],
     ['a node with no id', { ...PACK, items: [{ ...PACK.items[0], nodes: [{ ...PACK.items[0]!.nodes[0], id: 7 }] }] }],
     ['an unknown kind', { ...PACK, items: [{ ...PACK.items[0], nodes: [{ ...PACK.items[0]!.nodes[0], kind: 'boss' }] }] }],
@@ -124,6 +126,12 @@ describe('parseCourse', () => {
     ],
     ['a unit id used twice', { ...PACK, items: [PACK.items[0], PACK.items[0]] }],
   ]
+  it("keeps a unit's scenery name, and leaves it out when absent", () => {
+    const withScenery = parseCourse({ ...PACK, items: [{ ...PACK.items[0], scenery: 'north-america' }, ...PACK.items.slice(1)] })
+    expect(withScenery.ok && withScenery.value.units[0]!.scenery).toBe('north-america')
+    const without = parseCourse(PACK)
+    expect(without.ok && 'scenery' in without.value.units[0]!).toBe(false)
+  })
   for (const [name, raw] of broken) {
     it(`refuses ${name}`, () => {
       const result = parseCourse(raw)

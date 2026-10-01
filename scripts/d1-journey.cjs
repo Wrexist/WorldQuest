@@ -51,8 +51,21 @@ const { chromium } = require('playwright')
 const COURSE_STEPS = JSON.parse(
   fs.readFileSync(path.join(__dirname, '..', 'packages', 'content', 'packs', 'courses', 'first-week.v1.json'), 'utf8'),
 ).items.reduce((n, unit) => n + unit.nodes.length, 0)
+const FIRST_UNIT_STEPS = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '..', 'packages', 'content', 'packs', 'courses', 'first-week.v1.json'), 'utf8'),
+).items[0].nodes.length
 const { launchOptions } = require('./chromium.cjs')
 const { browserContext } = require('./lib/browser-harness.cjs')
+const { answerCurrent, questionShown } = require('./lib/lesson-walk.cjs')
+/**
+ * A lesson, up and showing a question: past the "Meet your next discoveries" step that opens a
+ * lesson of new facts, which is a real screen with its own button and not part of the lesson.
+ */
+const lessonUp = async (on) => {
+  const begin = on.getByTestId('lesson-begin')
+  if (await begin.isVisible().catch(() => false)) await begin.click()
+  return questionShown(on)
+}
 
 // Miniflare and esbuild are the backend package's own dependencies.
 const backendRequire = createRequire(path.resolve(__dirname, '../packages/backend/package.json'))
@@ -238,7 +251,7 @@ async function waitFor(check, ms) {
     await onboard(page, 30)
 
     // ── the first lesson: issued by the Worker ────────────────────────────────
-    const issued = await waitFor(async () => (await page.getByTestId('answer-option').count()) > 0, 20000)
+    const issued = await waitFor(async () => await lessonUp(page), 20000)
     const guest = await one('SELECT id FROM accounts')
     const ticket = guest && await one('SELECT count(*) AS n FROM tickets WHERE account_id = ?', guest.id)
     step('the taster lesson is one the Worker issued', issued && ticket?.n >= 1, `${ticket?.n ?? 0} ticket(s) for one guest`)
@@ -248,12 +261,10 @@ async function waitFor(check, ms) {
     const playLesson = async (report = false, on = page) => {
       // Up to 45: twenty questions at most, then the review round re-asks each miss.
       for (let i = 0; i < 45; i++) {
-        const options = await on.getByTestId('answer-option').all()
-        if (options.length === 0) break
+        if (!(await questionShown(on))) break
         await on.waitForTimeout(600) // credible think time; faster answers are discarded
-        await options[0].click()
-        await on.waitForTimeout(200)
-        await on.getByRole('button', { name: 'Check' }).first().click()
+        // A tapped option, a matching board or a typed answer, whichever is showing.
+        await answerCurrent(on)
         await on.waitForTimeout(300)
         // "Report a problem" from the answer sheet, once, on the first question.
         if (report && i === 0) {
@@ -278,8 +289,18 @@ async function waitFor(check, ms) {
     }
     // Whatever beats a lesson earned, walked until the tab bar: the streak beat, badge
     // cards, a finished quest. Each is left by its own visible onward button.
+    // The "next discovery" screen after a lesson is a route over the tabs, which stay mounted
+    // beneath it: the tab bar being there does not mean Home is showing.
+    const leaveJourney = async (on) => {
+      const back = on.getByRole('button', { name: 'Back to my journey' })
+      if ((await on.getByTestId('journey-ready').count()) > 0 && (await back.count()) > 0) {
+        await back.first().click()
+        await on.waitForTimeout(800)
+      }
+    }
     const walkHome = async (on) => {
       for (let i = 0; i < 8; i++) {
+        await leaveJourney(on)
         if ((await on.getByRole('tab', { name: 'Home' }).count()) > 0) return true
         for (const onward of await on.getByRole('button', { name: /^(Continue|Nice)$/ }).all()) {
           if (await onward.isVisible()) { await onward.click(); break }
@@ -330,8 +351,10 @@ async function waitFor(check, ms) {
       .map((el) => ({ state: (el.getAttribute('data-testid') ?? '').slice('path-node-'.length), label: el.getAttribute('aria-label') ?? '' })))
     await waitFor(async () => (await pathSteps()).length > 0, 5000)
     const firstPath = await pathSteps()
+    // A long course shows the current unit and a button for the rest (CoursePath's `condensed`).
+    const condensed = (await page.getByTestId('path-expand').count()) > 0
     step('Home shows the course path with one current step, the first',
-      firstPath.length === COURSE_STEPS && firstPath.filter((s) => s.state === 'current').length === 1 && firstPath[0]?.state === 'current',
+      firstPath.length === (condensed ? FIRST_UNIT_STEPS : COURSE_STEPS) && firstPath.filter((s) => s.state === 'current').length === 1 && firstPath[0]?.state === 'current',
       firstPath.map((s) => s.state[0]).join(''))
     await shot('home-path')
 
@@ -359,7 +382,7 @@ async function waitFor(check, ms) {
     const questRow = await one('SELECT quest, credited, perform_done FROM quest_days WHERE account_id = ?', guest.id)
     // Read from the quest's own bar: the tabs stay mounted, so the page's text also holds
     // Home's path, whose five-step unit reads "0 of 5 done" too.
-    const shown = (((await page.getByTestId('quest-progress').first().textContent().catch(() => '')) ?? '').match(/(\d) of 5 done/) ?? [])[1]
+    const shown = (((await page.getByTestId('quest-progress').first().getAttribute('aria-label').catch(() => '')) ?? '').match(/(\d) of 5 done/) ?? [])[1]
     const expected = questRow ? questDone(questRow) : -1
     step('the Quests tab shows the quest the server pays', questRow !== null && shown !== undefined && Number(shown) === expected,
       `screen ${shown ?? '?'} of 5, server ${expected} of 5`)
@@ -380,7 +403,7 @@ async function waitFor(check, ms) {
     await page.waitForTimeout(1500)
     // Home's one primary action — the course path's current step — on a plane.
     await page.getByTestId('path-node-current').first().click()
-    const offlineStart = await waitFor(async () => (await page.getByTestId('answer-option').count()) > 0, 10000)
+    const offlineStart = await waitFor(async () => await lessonUp(page), 10000)
     step('a lesson starts offline from a saved ticket', offlineStart, new URL(page.url()).pathname + new URL(page.url()).search.slice(0, 40))
     await shot('lesson-offline')
     step('the offline lesson reaches its summary', offlineStart && await playLesson())
@@ -388,6 +411,7 @@ async function waitFor(check, ms) {
     step('nothing reached the Worker while offline', stillOne)
     await page.getByTestId('summary-continue').click()
     await page.waitForTimeout(2500)
+    await leaveJourney(page)
     // A finished lesson counts towards the step it was started from, offline too: the step
     // needs two, so it stays current, one lesson on.
     const afterOffline = await pathSteps()
@@ -398,10 +422,10 @@ async function waitFor(check, ms) {
     // Its saved ticket is spent, and two unfocused ones are still saved. The step must NOT
     // quietly play one of those under its own name: it says it needs a connection, and
     // offers the way back.
-    await page.getByTestId('path-node-current').first().click()
+    await page.locator('[data-testid="path-node-current"]:visible').first().click()
     const refused = await waitFor(async () => (await page.getByTestId('lesson-offline-start').count()) > 0, 10000)
     step('with its own lesson spent, the step says it needs a connection rather than playing another',
-      refused && (await page.getByTestId('answer-option').count()) === 0)
+      refused && !(await questionShown(page)))
     await shot('lesson-offline-start')
     if (refused) await page.getByTestId('lesson-leave').click()
     await page.waitForTimeout(1200)
@@ -565,8 +589,8 @@ async function waitFor(check, ms) {
     await phone.getByRole('tab', { name: /Home/ }).first().click()
     await phone.waitForTimeout(1500)
     // Home's primary action is the course path's current step.
-    await phone.getByTestId('path-node-current').first().click()
-    const phoneStarted = await waitFor(async () => (await phone.getByTestId('answer-option').count()) > 0, 20000)
+    await phone.locator('[data-testid="path-node-current"]:visible').first().click()
+    const phoneStarted = await waitFor(async () => await lessonUp(phone), 20000)
     if (phoneStarted && await playLesson(false, phone)) await phone.getByTestId('summary-continue').click()
     await walkHome(phone)
     const phoneLanded = await waitFor(async () => (await receiptsNow()) === before + 1, 20000)
@@ -575,8 +599,8 @@ async function waitFor(check, ms) {
     await page.bringToFront()
     await page.getByRole('tab', { name: /Home/ }).first().click()
     await page.waitForTimeout(1500)
-    await page.getByTestId('path-node-current').first().click()
-    const firstStarted = await waitFor(async () => (await page.getByTestId('answer-option').count()) > 0, 20000)
+    await page.locator('[data-testid="path-node-current"]:visible').first().click()
+    const firstStarted = await waitFor(async () => await lessonUp(page), 20000)
     if (firstStarted && await playLesson(false, page)) await page.getByTestId('summary-continue').click()
     await walkHome(page)
     const bothLanded = await waitFor(async () => (await receiptsNow()) === before + 2, 20000)
@@ -658,7 +682,7 @@ async function waitFor(check, ms) {
     const kid = await kidContext.newPage()
     kid.on('pageerror', (e) => errors.push('child phone: ' + String(e)))
     await onboard(kid, 10)
-    const kidStarted = await waitFor(async () => (await kid.getByTestId('answer-option').count()) > 0, 20000)
+    const kidStarted = await waitFor(async () => await lessonUp(kid), 20000)
     const kidBand = await waitFor(async () => {
       const rows = (await db.prepare('SELECT id, audience FROM accounts WHERE deleted_at IS NULL').all()).results
       const mine = rows.filter((r) => !known.has(r.id))
@@ -708,7 +732,7 @@ async function waitFor(check, ms) {
 
     step('no uncaught errors in the page', errors.length === 0, errors.slice(0, 3).join(' | '))
   } catch (error) {
-    step('the journey ran to the end', false, String(error).split('\n')[0])
+    step('the journey ran to the end', false, String(error).split('\n').slice(0, process.argv.includes('--debug') ? 14 : 1).join(' | '))
     await shot('failure').catch(() => {})
   } finally {
     await browser.close()

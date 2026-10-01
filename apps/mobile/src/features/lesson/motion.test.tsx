@@ -26,6 +26,9 @@ import { LessonSummary } from './LessonSummary.js'
 
 vi.mock('../../lib/sync.js', () => ({ enqueueLesson: vi.fn(), flush: vi.fn() }))
 vi.mock('../../lib/analytics.js', () => ({ track: vi.fn() }))
+// The difficulty ramp reads the account's XP through TanStack Query, and these tests mount the
+// screen without a provider. A learner with no progress yet is what they have always assumed.
+vi.mock('../home/useOptimisticProgress.js', () => ({ useOptimisticProgress: () => ({ shown: null }) }))
 
 describe('the animated branch mounts', () => {
   it('is genuinely a different branch — the default is still reduced motion', () => {

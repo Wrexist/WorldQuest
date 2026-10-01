@@ -1,65 +1,55 @@
-/** Articulated globe: independent limbs, pupils, eyelids and anticipation/settle. */
+/**
+ * Atlas, the globe, as rendered 3D film: a real Blender character (scripts/build-globe-mascot.py)
+ * whose every mood is 36 rendered frames packed into one sheet (build-globe-mascot-art.cjs).
+ *
+ * The runtime only slides a picture, like the treasure chest: no 3D engine, no video.
+ * Decorative and hidden from assistive technology unless a screen gives him a `label`,
+ * or opts into booping with `onBoopLabel`, which makes him a named button that laughs.
+ */
 import { useState } from 'react'
-import { Animated, Image, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native'
+import { Animated, Image, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native'
+import { ATLAS_GLOBE, ATLAS_SEQUENCE, type AtlasGlobeMood } from '../lib/atlasGlobe.generated.js'
 import { useMascotMotion } from './useMascotMotion.js'
-import { FRAME_TIMES, PERFORMANCES, RIG, type MascotMood } from './mascotPerformance.js'
-import body from '../../assets/art/world-mascot/rig/body.png'
-import feet from '../../assets/art/world-mascot/rig/feet.png'
-import leftArm from '../../assets/art/world-mascot/rig/leftArm.png'
-import rightArm from '../../assets/art/world-mascot/rig/rightArm.png'
-import eyes from '../../assets/art/world-mascot/rig/eyes.png'
-import pupils from '../../assets/art/world-mascot/rig/pupils.png'
-import brows from '../../assets/art/world-mascot/rig/brows.png'
-import scarf from '../../assets/art/world-mascot/rig/scarf.png'
-import smile from '../../assets/art/world-mascot/rig/smile.png'
-import thinking from '../../assets/art/world-mascot/rig/thinking.png'
-import gentle from '../../assets/art/world-mascot/rig/gentle.png'
-import happyEyes from '../../assets/art/world-mascot/rig/happyEyes.png'
 
-export type AtlasMood = MascotMood
+export type AtlasMood = AtlasGlobeMood
 const hidden = { 'aria-hidden': true, accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' as const }
+const frames = Array.from({ length: ATLAS_SEQUENCE.frames }, (_, i) => i)
+const toSource = (asset: unknown) => (typeof asset === 'string' ? { uri: asset } : asset) as number
 
-export function WorldMascot({ mood = 'welcome', style, label }: {
+export function WorldMascot({ mood = 'welcome', style, label, onBoopLabel }: {
   mood?: AtlasMood | undefined; style?: StyleProp<ViewStyle> | undefined; label?: string | undefined
+  /** Opt in to tapping him: the accessible name of that button. */
+  onBoopLabel?: string | undefined
 }) {
   const dimensions = StyleSheet.flatten(style)
   const [side, setSide] = useState(typeof dimensions?.width === 'number' && typeof dimensions?.height === 'number' ? Math.min(dimensions.width, dimensions.height) : 0)
-  const { clock, blink } = useMascotMotion(mood, side)
-  const unit = side / RIG.size
-  const tracks = PERFORMANCES[mood]
-  const track = (key: keyof typeof tracks[number], scale = 1) => clock.interpolate({ inputRange: FRAME_TIMES, outputRange: tracks.map(frame => frame[key] * scale) })
-  const angle = (key: keyof typeof tracks[number]) => clock.interpolate({ inputRange: FRAME_TIMES, outputRange: tracks.map(frame => `${frame[key]}deg`) })
-  const layer = (asset: typeof body, id: string) => <Image testID={id} source={typeof asset === 'string' ? { uri: asset } : asset} alt="" {...hidden} style={[StyleSheet.absoluteFill, { width: side, height: side }]} resizeMode="contain" />
-  const pivot = (x: number, y: number, angle: Animated.AnimatedInterpolation<string>) => [
-    { translateX: (x - 150) * unit }, { translateY: (y - 150) * unit }, { rotate: angle },
-    { translateX: -(x - 150) * unit }, { translateY: -(y - 150) * unit },
-  ]
+  const [decoded, setDecoded] = useState<Record<string, boolean>>({})
+  const { frame, playing, boopNow, still } = useMascotMotion(mood, side, decoded)
+  const art = ATLAS_GLOBE[playing]
+  const { columns, rows } = ATLAS_SEQUENCE
+
+  const film = <View testID={`mascot-pose-${playing}`} style={{ width: side, height: side, overflow: 'hidden', direction: 'ltr' }}>
+    {still || side === 0
+      ? <Image testID="mascot-still" source={toSource(art.still)} alt="" {...hidden} resizeMode="contain" style={{ width: side, height: side }} />
+      : <Animated.Image testID="mascot-film" source={toSource(art.sheet)} alt="" {...hidden} resizeMode="stretch"
+          onLoad={() => setDecoded(previous => previous[playing] ? previous : { ...previous, [playing]: true })}
+          style={{ width: side * columns, height: side * rows, transform: [
+            { translateX: frame.interpolate({ inputRange: frames, outputRange: frames.map(i => -(i % columns) * side) }) },
+            { translateY: frame.interpolate({ inputRange: frames, outputRange: frames.map(i => -Math.floor(i / columns) * side) }) },
+          ] }} />}
+  </View>
+
+  const onLayout = (event: { nativeEvent: { layout: { width: number; height: number } } }) => {
+    const { width, height } = event.nativeEvent.layout
+    const next = Math.round(Math.min(width, height))
+    if (next > 0) setSide(previous => previous === next ? previous : next)
+  }
+  if (onBoopLabel !== undefined) {
+    return <Pressable testID="world-mascot" onPress={boopNow} onLayout={onLayout} role="button" aria-label={onBoopLabel}
+      style={[{ alignItems: 'center', justifyContent: 'center' }, style]}>{film}</Pressable>
+  }
   return <View testID="world-mascot" pointerEvents="none" {...(label === undefined ? hidden : { accessible: true, accessibilityRole: 'image' as const, accessibilityLabel: label })}
-    onLayout={event => { const { width, height } = event.nativeEvent.layout; const next = Math.round(Math.min(width, height)); if (next > 0) setSide(previous => previous === next ? previous : next) }}
-    style={[{ alignItems: 'center', justifyContent: 'center' }, style]}>
-    <Animated.View testID={`mascot-pose-${mood}`} style={{ width: side, height: side, transform: [{ translateY: track('jump', unit) }] }}>
-      {layer(feet, 'mascot-feet')}
-      <Animated.View testID="mascot-torso" style={[StyleSheet.absoluteFill, { transform: [
-        { translateY: track('bodyY', unit) },
-        ...pivot(RIG.hips.x, RIG.hips.y, angle('bodyTilt')),
-        { translateY: (RIG.hips.y - 150) * unit },
-        { scaleY: clock.interpolate({ inputRange: FRAME_TIMES, outputRange: tracks.map(frame => 1 + frame.squash) }) },
-        { scaleX: clock.interpolate({ inputRange: FRAME_TIMES, outputRange: tracks.map(frame => 1 - frame.squash * .5) }) },
-        { translateY: -(RIG.hips.y - 150) * unit },
-      ] }]}>
-      <Animated.View style={[StyleSheet.absoluteFill, { transform: pivot(RIG.leftShoulder.x, RIG.leftShoulder.y, angle('leftArm')) }]}>{layer(leftArm, 'mascot-left-arm')}</Animated.View>
-      <Animated.View style={[StyleSheet.absoluteFill, { transform: pivot(RIG.rightShoulder.x, RIG.rightShoulder.y, angle('rightArm')) }]}>{layer(rightArm, 'mascot-right-arm')}</Animated.View>
-      {layer(body, 'mascot-body')}
-      <Animated.View style={[StyleSheet.absoluteFill, { transform: pivot(117, 201, angle('scarf')) }]}>{layer(scarf, 'mascot-scarf')}</Animated.View>
-      {layer(brows, 'mascot-brows')}
-      {mood === 'resting' || mood === 'celebrate' ? layer(happyEyes, 'mascot-happy-eyes') : <Animated.View style={[StyleSheet.absoluteFill, { transform: [{ translateY: -24 * unit }, { scaleY: blink }, { translateY: 24 * unit }] }]}>
-        {layer(eyes, 'mascot-eyes')}
-        <Animated.View style={[StyleSheet.absoluteFill, { transform: [{ translateX: track('gazeX', unit) }, { translateY: track('gazeY', unit) }] }]}>{layer(pupils, 'mascot-pupils')}</Animated.View>
-      </Animated.View>}
-      {layer(mood === 'thinking' ? thinking : mood === 'resting' || mood === 'encouraging' ? gentle : smile, 'mascot-mouth')}
-      </Animated.View>
-    </Animated.View>
+    onLayout={onLayout} style={[{ alignItems: 'center', justifyContent: 'center' }, style]}>
+    {film}
   </View>
 }
-
-

@@ -1,44 +1,74 @@
-﻿import { useContext, useEffect, useRef } from 'react'
-import { Animated, AppState, Easing } from 'react-native'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { Animated, AppState } from 'react-native'
 import { NavigationContext } from '@react-navigation/native'
-import { motion, useReducedMotion } from '@worldquest/design'
-import type { MascotMood } from './mascotPerformance.js'
+import { useReducedMotion } from '@worldquest/design'
+import { ATLAS_SEQUENCE, type AtlasGlobeMood } from '../lib/atlasGlobe.generated.js'
 
-/** One owner for playback. Focus resumes quiet eye movement, never replays an earned celebration. */
-export function useMascotMotion(mood: MascotMood, visibleSize: number) {
+const LAST = ATLAS_SEQUENCE.frames - 1
+const FILM_MS = (ATLAS_SEQUENCE.frames / ATLAS_SEQUENCE.fps) * 1000
+
+/**
+ * How long Atlas rests between performances. He plays his mood once when he appears,
+ * then again every so often while he is on screen — enough to feel alive, never so
+ * often that a lesson summary becomes a cartoon you have to wait for. Sleepy dozes
+ * continuously, because nodding off IS the resting state.
+ */
+const REST_MS: Record<AtlasGlobeMood, number> = {
+  welcome: 7000, celebrate: 9000, thinking: 8000, resting: 6000, encouraging: 8000,
+  laughing: 8000, surprised: 10000, proud: 9000, sleepy: 600, wink: 9000,
+}
+
+/**
+ * One owner for playback of the rendered film. Stepped, not tweened: each frame is a
+ * Blender render, so the value moves in whole frames at the film's own 18 fps.
+ *
+ * Stops at rest (frame 0, which is also the last frame's pose) when the app backgrounds,
+ * the screen blurs, the character is too small to read, or Reduce Motion is on — where
+ * the caller draws the still instead.
+ */
+export function useMascotMotion(mood: AtlasGlobeMood, visibleSize: number, decodedSheets: Readonly<Record<string, boolean>>) {
   const reduced = useReducedMotion()
   const navigation = useContext(NavigationContext)
-  const clock = useRef(new Animated.Value(1)).current
-  const blink = useRef(new Animated.Value(1)).current
-  const lastPlayed = useRef<MascotMood | null>(null)
-  const largeEnough = visibleSize >= 64
+  const frame = useRef(new Animated.Value(0)).current
+  const [booping, setBooping] = useState(false)
+  const playing = booping ? 'laughing' : mood
+  const largeEnough = visibleSize >= 48
+  // A cold image decode must not swallow the performance before anyone can see it.
+  const decoded = decodedSheets[playing] === true
+
   useEffect(() => {
-    let animation: Animated.CompositeAnimation | undefined
-    let active = true
-    const settle = () => { animation?.stop(); clock.setValue(1); blink.setValue(1) }
+    let alive = true
+    let film: Animated.CompositeAnimation | undefined
+    let rest: ReturnType<typeof setTimeout> | undefined
+    const stop = () => { film?.stop(); if (rest) clearTimeout(rest); frame.setValue(0) }
     const play = () => {
-      settle()
-      if (!active || reduced || !largeEnough || AppState.currentState !== 'active' || navigation?.isFocused() === false) return
-      const timing = (value: Animated.Value, toValue: number, duration: number, easing = Easing.inOut(Easing.cubic)) => Animated.timing(value, { toValue, duration, easing, useNativeDriver: true, isInteraction: false })
-      const beat = motion.celebrate.duration
-      const firstPerformance = lastPlayed.current !== mood
-      lastPlayed.current = mood
-      if (firstPerformance) clock.setValue(0)
-      animation = Animated.parallel([
-        // Linear clock + smooth authored curves: no global easing that bunches up keyframes.
-        ...(firstPerformance ? [timing(clock, 1, beat * (mood === 'thinking' ? 4.6 : 3.8), Easing.linear)] : []),
-        Animated.sequence([
-          Animated.delay(beat * 4.2), timing(blink, .04, beat * .16, Easing.in(Easing.quad)), timing(blink, 1, beat * .3, Easing.out(Easing.cubic)),
-          Animated.delay(beat * 7.3), timing(blink, .04, beat * .16, Easing.in(Easing.quad)), timing(blink, 1, beat * .3, Easing.out(Easing.cubic)),
-        ]),
-      ])
-      animation.start()
+      if (!alive || reduced || !largeEnough || !decoded) return
+      if (AppState.currentState !== 'active' || navigation?.isFocused() === false) return
+      frame.setValue(0)
+      // Stepped: whole frames only, or the sheet would slide between cells.
+      film = Animated.timing(frame, { toValue: LAST, duration: FILM_MS, easing: value => Math.floor(value * LAST) / LAST, useNativeDriver: true, isInteraction: false })
+      film.start(({ finished }) => {
+        if (!alive || !finished) return
+        frame.setValue(0)
+        if (booping) { setBooping(false); return }
+        rest = setTimeout(play, REST_MS[playing])
+      })
     }
     play()
-    const state = AppState.addEventListener('change', value => { if (value === 'active') play(); else settle() })
+    const state = AppState.addEventListener('change', value => { if (value === 'active') play(); else stop() })
     const focus = navigation?.addListener('focus', play)
-    const blur = navigation?.addListener('blur', settle)
-    return () => { active = false; settle(); state.remove(); focus?.(); blur?.() }
-  }, [mood, reduced, navigation, largeEnough, clock, blink])
-  return { clock, blink }
+    const blur = navigation?.addListener('blur', stop)
+    return () => { alive = false; stop(); state.remove(); focus?.(); blur?.() }
+  }, [playing, booping, reduced, largeEnough, decoded, navigation, frame])
+
+  /** Tap: he laughs, whatever he was doing, then goes back to it. */
+  const boopNow = useCallback(() => setBooping(true), [])
+  // Under Reduce Motion the laughing still is shown for a moment instead of the film.
+  useEffect(() => {
+    if (!booping || !reduced) return
+    const timer = setTimeout(() => setBooping(false), 2000)
+    return () => clearTimeout(timer)
+  }, [booping, reduced])
+
+  return { frame, playing, booping, boopNow, still: reduced || !largeEnough }
 }

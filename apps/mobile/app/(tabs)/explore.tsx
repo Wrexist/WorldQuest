@@ -15,6 +15,8 @@ import { ContentGate } from '../../src/components/ContentGate.js'
 import { currentLocale } from '../../src/lib/i18n.js'
 import { useContent } from '../../src/lib/content.js'
 import { useOptimisticProgress } from '../../src/features/home/useOptimisticProgress.js'
+import { useAtlasEnabled } from '../../src/features/atlas/atlasAvailability.js'
+import { useAtlasNames } from '../../src/features/atlas/useAtlasNames.js'
 
 export default function ExploreRoute() {
   const router = useRouter()
@@ -25,6 +27,8 @@ export default function ExploreRoute() {
   // offered, and it keeps the spendable balance (`OptimisticProgress.coins`). Zero before
   // anything has loaded, as on Home (`COLD_START`), so no tab's bar differs from another's.
   const { shown } = useOptimisticProgress()
+  const atlasOn = useAtlasEnabled()
+  const names = useAtlasNames(index?.index)
 
   const world = useMemo(
     () => (index === null ? null : worldProgress(index.index, memory, Date.now())),
@@ -54,6 +58,7 @@ export default function ExploreRoute() {
         coins={shown?.coinsIncludingPending ?? 0}
         streak={shown?.streak ?? 0}
         onOpenStreak={() => router.push('/streak')}
+        atlas={atlasOn ? { names } : undefined}
       />
     </ContentGate>
   )

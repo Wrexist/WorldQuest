@@ -70,5 +70,12 @@
   "settings:appearance.light": "Ljust",
   "settings:appearance.light__note": "Appearance setting. Changes all interface surfaces immediately; system follows device.",
   "settings:appearance.dark": "Mörkt",
-  "settings:appearance.dark__note": "Appearance setting. Changes all interface surfaces immediately; system follows device."
+  "settings:appearance.dark__note": "Appearance setting. Changes all interface surfaces immediately; system follows device.",
+  "settings:level.label": "Där lektionerna börjar",
+  "settings:level.help": "Lektionerna börjar här och breddas allt eftersom du lär dig.",
+  "settings:level.new": "Precis börjat",
+  "settings:level.some": "Lite",
+  "settings:level.confident": "Säker",
+  "settings:level.check": "Testa min nivå",
+  "settings:level.check.help": "Tio frågor för att hitta var du ska börja. Det ändrar var lektionerna börjar, inte vad du redan har lärt dig."
 }

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 300 300"><defs><linearGradient id="mouthL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B3572"/><stop offset="1" stop-color="#062957"/></linearGradient><linearGradient id="tongueL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFA27F"/><stop offset="1" stop-color="#FF7A52"/></linearGradient>
+      <clipPath id="ml"><path d="M122 164q27 14 55 -6q6 34 -27 40q-26 1 -28 -34"/></clipPath></defs>
+    <path d="M122 164q27 14 55 -6q6 34 -27 40q-26 1 -28 -34" fill="url(#mouthL)"/>
+    <g clip-path="url(#ml)"><path d="M123 164q27 13 54 -6l-1 8q-26 17 -52 5z" fill="#FFFFFF"/>
+      <ellipse cx="150" cy="196" rx="19" ry="11" fill="url(#tongueL)"/></g>
+    <path d="M122 164q27 14 55 -6" fill="none" stroke="#062957" stroke-width="2.4" stroke-linecap="round"/></svg>

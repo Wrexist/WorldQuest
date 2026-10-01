@@ -322,7 +322,9 @@ for (const file of packFiles) {
     const usesOtherValues =
       item.distractors?.strategy === 'other-values' ||
       item.distractors?.fallback === 'other-values'
-    if (usesOtherValues && item.answer?.from === 'entity.names') {
+    // `differentValueOnly` is what makes it safe: the pool is cut to entities whose own value
+    // differs, so "any country on earth" shrinks to "any country that is not landlocked".
+    if (usesOtherValues && item.answer?.from === 'entity.names' && item.distractors?.differentValueOnly !== true) {
       errors.push({
         file: rel,
         message:
@@ -380,7 +382,7 @@ for (const file of packFiles) {
     rule?: Rule
     tiers?: { tier: string; threshold: number }[]
   }
-  type LoadedPack = { kind?: string; items?: PackItem[] }
+  type LoadedPack = { kind?: string; delivery?: string; items?: PackItem[] }
 
   // The ENGINE's rule, not a third copy of it. The ceiling an achievement is measured
   // against has to be counted with the same predicate that decides which questions a
@@ -401,7 +403,12 @@ for (const file of packFiles) {
     rel: relative(repoRoot, file),
     pack: stripComments(JSON.parse(readFileSync(file, 'utf8'))) as LoadedPack,
   }))
-  const facts = allItems.flatMap((p) => (p.pack.items ?? []).filter((i) => i.attribute && i.entity))
+  // Facts the APP can put in front of a learner. A `delivery: "server"` pack is composed by the
+  // Worker and never loaded by the app, so the app never reports mastering one — counting it
+  // in an achievement's ceiling would put "collect them all" out of reach by thousands.
+  const facts = allItems
+    .filter((p) => p.pack.delivery !== 'server')
+    .flatMap((p) => (p.pack.items ?? []).filter((i) => i.attribute && i.entity))
   const entities = allItems.flatMap((p) => (p.pack.items ?? []).filter((i) => i.type === 'country'))
 
   const ceilingOf = (spec: NonNullable<PackItem['ceiling']>): number | null => {

@@ -147,7 +147,9 @@ export function Art(props: ArtProps) {
   if ((name.startsWith('atlas/') || name.startsWith('onboarding/') ||
     ['states/empty-profile', 'states/empty-caught-up', 'states/offline', 'states/error-generic'].includes(name))) {
     const mood: AtlasMood = /celebrate|conquer|caught-up/.test(name) ? 'celebrate'
-      : /thinking|learn|broken|offline|error/.test(name) ? 'thinking'
+      // Offline: dozing until the signal comes back, rather than puzzling over it.
+      : /offline/.test(name) ? 'sleepy'
+      : /thinking|learn|broken|error/.test(name) ? 'thinking'
       : /resting|empty-profile/.test(name) ? 'resting'
       : /encouraging/.test(name) ? 'encouraging' : 'welcome'
     return <AtlasCharacter size={size} height={height} mood={mood} label={label} />

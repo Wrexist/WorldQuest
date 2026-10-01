@@ -333,6 +333,7 @@ function buildAnswerKey(): string {
   for (const file of readdirSync(packsDir)) {
     if (!file.startsWith('facts.') || !file.endsWith('.json')) continue
     const pack = JSON.parse(readFileSync(join(packsDir, file), 'utf8')) as {
+      delivery?: string
       items?: {
         id: string
         entity: string
@@ -342,6 +343,8 @@ function buildAnswerKey(): string {
         sensitivity?: string
       }[]
     }
+    // Composed by the Worker, never shipped in the app this function grades for.
+    if (pack.delivery === 'server') continue
     for (const fact of pack.items ?? []) {
       if (typeof fact.id !== 'string' || typeof fact.entity !== 'string') continue
       key[fact.id] = fact.entity

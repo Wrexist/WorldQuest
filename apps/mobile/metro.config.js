@@ -23,6 +23,9 @@ const workspaceRoot = path.resolve(projectRoot, '../..')
 const config = getDefaultConfig(projectRoot)
 
 config.watchFolders = [workspaceRoot]
+// The atlas's country rings ship as a binary ASSET, loaded once a globe is on screen,
+// rather than as a JS module every cold start parses (ADR 0017).
+config.resolver.assetExts = [...config.resolver.assetExts, 'bin']
 // Agent checkouts are separate projects, not app source. Crawling their transient
 // node_modules trees causes ENOENT races and can discover duplicate React copies.
 const inheritedBlockList = config.resolver.blockList
