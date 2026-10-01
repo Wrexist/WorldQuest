@@ -64,9 +64,19 @@ and the Expedition props. Atlas is now a real 3D character built in Blender.
   `node scripts/build-globe-mascot-expressions.cjs` lays out the labelled reference
   sheet `expressions.png`. A design reference, not app art: an expression ships when a
   screen needs it, by joining `FACE` and the acting.
-- **Not built yet from the brief** (follow-ups, in this order): finger poses (thumbs-up, point, clap); walk and run cycles;
-  prop poses (magnifier, map, telescope, heart); an armature rig with IK in place of
-  the pivot hierarchy; LOD tiers.
+- **Hands and poses:** shoulders are rounded balls set forward of his sides, so a raised
+  arm grows out of him (owner review, October 1: the celebration arm looked detached).
+  Fingers have a knuckle and a middle joint and the thumb its own joint; `HAND_POSES`
+  holds relaxed, open, fist, point and thumbs-up. `POSES` is the hand-led part of the
+  brief's pose library (standing, waving, thumbs-up, double thumbs-up, pointing four
+  ways, cheering, victory, inviting, shrug); `--poses` renders it and
+  `node scripts/build-globe-mascot-expressions.cjs poses` lays out `poses.png`. Not
+  possible with these proportions and pivots: an elbow bend (hands on hips, hand on
+  chin), hands meeting in front of the globe (clap, arms crossed, hug) and body poses (sit, walk, run, sneak) — both need the
+  armature rig.
+- **Not built yet from the brief** (follow-ups, in this order): an armature rig with IK
+  (unlocks hands on hips, hand on chin, clap, hug, sit); walk and run cycles;
+  prop poses (magnifier, map, telescope, heart); LOD tiers.
 - **Faces:** `FACE` in the script sets each of the ten moods' rest look; stills are in
   `docs/design/assets/world-mascot-3d/stills/`.
 - **Acting:** `scripts/globe_mascot_acting.py` keys one two-second performance per mood

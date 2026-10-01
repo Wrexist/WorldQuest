@@ -407,26 +407,43 @@ def build():
     # seamless limb from inside the ball to the wrist, slimming to the elbow, a slight
     # forearm swell, a narrow wrist; then a cartoon human hand — a palm, four curled
     # fingers with rounded tips, and a thumb set forward. Curl and thumb face his body.
-    arms, elbows = {}, {}
-    for side, x, sign in [('L', -.92, -1), ('R', .92, 1)]:
-        shoulder = empty(f'Arm_{side}', (x, -.05, -.12), body)
-        tube(f'Arm_{side}Limb', [(-sign * .1, 0, .04), (sign * .04, -.01, -.07), (sign * .12, -.025, -.19),
+    # The shoulder sits a little forward of his side and is a rounded ball half sunk in
+    # the globe, so a raised arm grows out of him instead of hanging off a thin neck at
+    # the silhouette (owner review, October 1: "detached" in the celebration).
+    # Fingers are two jointed segments and the thumb has its own joint, so the hand can
+    # make a fist, point and give a thumbs-up (HAND_POSES).
+    arms, elbows, hands = {}, {}, {}
+    for side, x, sign in [('L', -.84, -1), ('R', .84, 1)]:
+        shoulder = empty(f'Arm_{side}', (x, -.34, -.12), body)
+        sphere(f'Shoulder_{side}', (0, 0, 0), (.14, .14, .14), M['skin'], shoulder)
+        tube(f'Arm_{side}Limb', [(-sign * .12, .02, .05), (sign * .04, -.01, -.07), (sign * .12, -.025, -.19),
                                  (sign * .16, -.045, -.31), (sign * .175, -.07, -.42), (sign * .175, -.085, -.5)],
-             .11, M['skin'], shoulder, taper=[1, .92, .76, .8, .72, .64])
+             .12, M['skin'], shoulder, taper=[1, .96, .78, .78, .7, .6])
         elbows[side] = empty(f'Elbow_{side}', (sign * .14, -.035, -.25), shoulder)
         hand = empty(f'Hand_{side}', (sign * .175, -.085, -.5), shoulder)
         hand.scale = (1.45, 1.45, 1.45)  # cartoon-large, so the fingers still read at 64 px
         sphere(f'Wrist_{side}', (0, 0, -.005), (.05, .06, .05), M['skin'], hand)  # no seam where arm meets palm
         rounded_box(f'Palm_{side}', (0, 0, -.068), (.07, .14, .13), M['skin'], hand, bevel=.03)
+        joints = []
         for k, (fy, length, r) in enumerate([(-.048, .1, .022), (-.016, .11, .023), (.016, .1, .021), (.046, .085, .019)]):
-            tip = (-sign * .03, fy * 1.12, -.125 - length)
-            tube(f'Finger_{side}{k}', [(0, fy, -.12), (-sign * .006, fy * 1.08, -.125 - length * .55), tip], r, M['skin'], hand, taper=[1, .92, .82])
-            sphere(f'Fingertip_{side}{k}', tip, (r * .82, r * .82, r * .82), M['skin'], hand, subdiv=1)
-        thumb_tip = (-sign * .045, -.12, -.13)
-        tube(f'Thumb_{side}', [(-sign * .02, -.055, -.04), (-sign * .03, -.105, -.085), thumb_tip], .026, M['skin'], hand, taper=[1, .9, .8])
-        sphere(f'ThumbTip_{side}', thumb_tip, (.021, .021, .021), M['skin'], hand, subdiv=1)
+            # A knuckle and a middle joint; a curl turns both about the hand's Y axis,
+            # towards the palm (his body side).
+            knuckle = empty(f'Knuckle_{side}{k}', (0, fy, -.12), hand)
+            half = (-sign * .003, fy * .04, -length * .5)
+            tube(f'Finger_{side}{k}', [(0, 0, 0), half], r, M['skin'], knuckle, taper=[1, .95])
+            mid = empty(f'FingerJoint_{side}{k}', half, knuckle)
+            sphere(f'FingerJointBall_{side}{k}', (0, 0, 0), (r * .96, r * .96, r * .96), M['skin'], mid, subdiv=1)
+            tip = (-sign * .008, fy * .04, -length * .5)
+            tube(f'FingerTip_{side}{k}', [(0, 0, 0), tip], r * .95, M['skin'], mid, taper=[1, .86])
+            sphere(f'Fingertip_{side}{k}', tip, (r * .82, r * .82, r * .82), M['skin'], mid, subdiv=1)
+            joints.append((knuckle, mid))
+        thumb = empty(f'Thumb_{side}', (-sign * .02, -.055, -.04), hand)
+        thumb_tip = (-sign * .025, -.065, -.09)
+        tube(f'ThumbBone_{side}', [(0, 0, 0), (-sign * .01, -.05, -.045), thumb_tip], .026, M['skin'], thumb, taper=[1, .9, .8])
+        sphere(f'ThumbTip_{side}', thumb_tip, (.021, .021, .021), M['skin'], thumb, subdiv=1)
         shoulder.rotation_euler.y = radians(sign * 14)
         arms[side] = shoulder
+        hands[side] = dict(hand=hand, fingers=joints, thumb=thumb, sign=sign)
 
     # Legs and boots: very short legs, chunky mustard explorer boots, off-white soles.
     for side, x in [('L', -.3), ('R', .3)]:
@@ -539,7 +556,7 @@ def build():
     # Turned towards camera a little, so the backpack shows past his side.
     rig.rotation_euler.z = radians(12)
     return dict(rig=rig, hips=hips, body=body, eyes=eyes, brows=brows, mouths=mouths, arms=arms, elbows=elbows,
-                extras=extras, lips={}, hat=hat, cheeks=cheeks,
+                extras=extras, lips={}, hat=hat, cheeks=cheeks, hands=hands,
                 arm_rest={k: a.rotation_euler.y for k, a in arms.items()})
 
 
@@ -603,8 +620,29 @@ FACE = {
 }
 
 
+FIST = (95, 100)
+HAND_POSES = {
+    'relaxed': dict(curl=[(10, 20)] * 4, thumb=(0, 0, 0), turn=0),
+    'open':    dict(curl=[(0, 4)] * 4, thumb=(0, 0, 0), turn=0),
+    'fist':    dict(curl=[FIST] * 4, thumb=(0, 60, 0), turn=0),
+    'point':   dict(curl=[(0, 0), FIST, FIST, FIST], thumb=(0, 60, 0), turn=0),
+    'thumb':   dict(curl=[FIST] * 4, thumb=(-55, 0, 0), turn=90),
+}
+
+
+def pose_hand(h, name):
+    shape = HAND_POSES[name]
+    s = h['sign']
+    for (knuckle, mid), (k, m) in zip(h['fingers'], shape['curl']):
+        knuckle.rotation_euler.y = s * radians(k)
+        mid.rotation_euler.y = s * radians(m)
+    rx, ry, rz = shape['thumb']
+    h['thumb'].rotation_euler = (radians(rx), s * radians(ry), s * radians(rz))
+    h['hand'].rotation_euler.z = s * radians(shape['turn'])
+
+
 REST = dict(mouth='smile', eyes='open', lids=(-80, -80), brow=0, tilt=0, pupil=1.0, extras=(),
-            gaze=(0, 0), roll=0, nod=0, arms=(0, 0), blush=1.0)
+            gaze=(0, 0), roll=0, nod=0, arms=(0, 0), blush=1.0, hands=('relaxed', 'relaxed'))
 
 
 def apply_face(parts, mood):
@@ -640,6 +678,8 @@ def pose(parts, spec):
         parts['arms'][side].rotation_euler.y = parts['arm_rest'][side] + radians(f['arms'][i])
     for c in parts['cheeks']:
         c.scale = (f['blush'], f['blush'], f['blush'])
+    pose_hand(parts['hands']['R'], f['hands'][0])
+    pose_hand(parts['hands']['L'], f['hands'][1])
     for key, objs in parts['extras'].items():
         for o in objs:
             o.hide_render = key not in f['extras']
@@ -651,17 +691,17 @@ EXPRESSIONS = [
     ('happy',         dict(mouth='smile')),
     ('big-laugh',     dict(mouth='laugh', eyes='happy', nod=-6, arms=(25, -25), extras=('tears',))),
     ('excited',       dict(mouth='laugh', brow=.04, pupil=1.08, arms=(-100, 100))),
-    ('super-excited', dict(mouth='laugh', eyes='happy', brow=.05, arms=(-150, 150), extras=('sparkles',))),
-    ('proud',         dict(mouth='smirk', lids=(-5, -5), brow=-.01, nod=-10, arms=(40, -40), extras=('sparkles',))),
+    ('super-excited', dict(mouth='laugh', eyes='happy', brow=.05, arms=(-150, 150), hands=('fist', 'fist'), extras=('sparkles',))),
+    ('proud',         dict(mouth='smirk', lids=(-5, -5), brow=-.01, nod=-10, arms=(40, -40), hands=('fist', 'fist'), extras=('sparkles',))),
     ('curious',       dict(mouth='flat', brow=(.05, 0), gaze=(12, 4), roll=-6)),
     ('thinking',      dict(mouth='think', brow=(.03, 0), gaze=(-10, 10), roll=-7, arms=(-60, 0))),
     ('confused',      dict(mouth='nervous', tilt=(15, -10), roll=8, gaze=(6, 4), arms=(-35, 35))),
     ('surprised',     dict(mouth='o', lids=(-95, -95), brow=.07, pupil=.72)),
     ('amazed',        dict(mouth='smile', lids=(-95, -95), brow=.06, pupil=1.1, extras=('sparkles',))),
     ('focused',       dict(mouth='flat', lids=(-35, -35), tilt=-12, nod=4)),
-    ('determined',    dict(mouth='firm', lids=(-45, -45), tilt=-18, brow=-.01, arms=(-30, 30))),
+    ('determined',    dict(mouth='firm', lids=(-45, -45), tilt=-18, brow=-.01, arms=(-30, 30), hands=('fist', 'fist'))),
     ('encouraging',   dict(mouth='gentle', brow=.015, tilt=6, nod=5, arms=(-55, 0))),
-    ('celebrating',   dict(mouth='laugh', eyes='happy', arms=(-150, 150), extras=('sparkles',))),
+    ('celebrating',   dict(mouth='laugh', eyes='happy', arms=(-150, 150), hands=('open', 'open'), extras=('sparkles',))),
     ('loving',        dict(mouth='gentle', eyes='happy', blush=1.5, roll=6, extras=('heart',))),
     ('shy',           dict(mouth='gentle', lids=(-40, -40), gaze=(8, -10), blush=1.6, roll=-8, arms=(20, -20))),
     ('mischievous',   dict(mouth='smirk', lids=(-20, -5), tilt=-10, brow=(0, .03), gaze=(10, 0))),
@@ -676,8 +716,29 @@ EXPRESSIONS = [
     ('shocked',       dict(mouth='bigO', lids=(-100, -100), brow=.09, pupil=.6, arms=(-95, 95))),
     ('oops',          dict(mouth='grimace', tilt=12, gaze=(10, 0), roll=6, arms=(-130, 0), extras=('sweat',))),
     ('relieved',      dict(mouth='gentle', eyes='happy', tilt=8, nod=4, extras=('sweat',))),
-    ('victory',       dict(mouth='laugh', brow=.03, arms=(-160, 0), extras=('sparkles',))),
-    ('welcoming',     dict(mouth='smile', roll=5, arms=(-112, 0))),
+    ('victory',       dict(mouth='laugh', brow=.03, arms=(-160, 0), hands=('fist', 'relaxed'), extras=('sparkles',))),
+    ('welcoming',     dict(mouth='smile', roll=5, arms=(-112, 0), hands=('open', 'relaxed'))),
+]
+
+# The pose library (section 11 of the master character sheet): the hand-led poses this
+# rig can hold. arms = (right, left) as in EXPRESSIONS; his right arm is on the viewer's
+# right. Poses needing an elbow bend (hands on hips, hand on chin), hands meeting in
+# front of him (clap, arms crossed, hug) or a changed body (sit, walk, run, sneak) need
+# the armature rig and are not here yet: a straight arm swung from the shoulder only
+# hides behind the globe in those.
+POSES = [
+    ('standing',        dict(mouth='gentle')),
+    ('waving',          dict(mouth='smile', roll=5, arms=(-112, 0), hands=('open', 'relaxed'))),
+    ('thumbs-up',       dict(mouth='smile', lids=(-70, -70), arms=(-80, 0), hands=('thumb', 'relaxed'))),
+    ('double-thumbs',   dict(mouth='laugh', eyes='happy', arms=(-80, 80), hands=('thumb', 'thumb'))),
+    ('point-right',     dict(mouth='smile', gaze=(14, 0), roll=4, arms=(-82, 0), hands=('point', 'relaxed'))),
+    ('point-left',      dict(mouth='smile', gaze=(-14, 0), roll=-4, arms=(0, 82), hands=('relaxed', 'point'))),
+    ('point-up',        dict(mouth='o', brow=.05, gaze=(8, 14), arms=(-138, 0), hands=('point', 'relaxed'))),  # out past the brim
+    ('point-down',      dict(mouth='gentle', gaze=(0, -12), nod=6, arms=(-18, 0), hands=('point', 'relaxed'))),
+    ('cheering',        dict(mouth='laugh', eyes='happy', arms=(-155, 155), hands=('fist', 'fist'), extras=('sparkles',))),
+    ('victory',         dict(mouth='laugh', brow=.03, arms=(-165, 0), hands=('fist', 'relaxed'), extras=('sparkles',))),
+    ('inviting',        dict(mouth='smile', tilt=4, roll=3, arms=(-45, 45), hands=('open', 'open'))),
+    ('shrug',           dict(mouth='nervous', tilt=(14, -8), roll=6, arms=(-55, 55), hands=('open', 'open'))),
 ]
 EXPRESSION_PX = 512
 
@@ -710,6 +771,20 @@ if __name__ == '__main__':
             scene.render.filepath = str(out / f'{n:02d}-{name}.png')
             bpy.ops.render.render(write_still=True)
             print(f'EXPRESSION_READY {name}', flush=True)
+        pose(parts, {})
+        scene.render.resolution_x = scene.render.resolution_y = STILL_PX
+    if '--poses' in ARGS:
+        out = MASTER / 'poses'
+        out.mkdir(exist_ok=True)
+        scene = bpy.context.scene
+        scene.render.resolution_x = scene.render.resolution_y = EXPRESSION_PX
+        for n, (name, spec) in enumerate(POSES, 1):
+            if MOOD_ARG and name not in MOOD_ARG.split(','):
+                continue
+            pose(parts, spec)
+            scene.render.filepath = str(out / f'{n:02d}-{name}.png')
+            bpy.ops.render.render(write_still=True)
+            print(f'POSE_READY {name}', flush=True)
         pose(parts, {})
         scene.render.resolution_x = scene.render.resolution_y = STILL_PX
     if '--sheets' in ARGS:

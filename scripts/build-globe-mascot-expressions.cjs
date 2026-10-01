@@ -1,29 +1,33 @@
 /**
- * Lay Atlas's 32-expression library out as one labelled reference sheet.
+ * Lay Atlas's expression library (32) or pose library out as one labelled reference sheet.
  *
- * Input:  docs/design/assets/world-mascot-3d/expressions/NN-<name>.png
- *         (blender --background --python scripts/build-globe-mascot.py -- --expressions)
- * Output: docs/design/assets/world-mascot-3d/expressions.png
+ * Input:  docs/design/assets/world-mascot-3d/<library>/NN-<name>.png
+ *         (blender --background --python scripts/build-globe-mascot.py -- --expressions | --poses)
+ * Output: docs/design/assets/world-mascot-3d/<library>.png
  *
  * A design reference, not app art: the app ships the ten animated moods
  * (atlasGlobe.generated.ts). An expression earns a place in the app when a screen
  * needs it, by joining FACE and the acting in build-globe-mascot.py.
  *
- * Run: node scripts/build-globe-mascot-expressions.cjs
+ * Run: node scripts/build-globe-mascot-expressions.cjs [expressions|poses]
  */
 const fs = require('node:fs')
 const path = require('node:path')
 const sharp = require('sharp')
 
 const ROOT = path.resolve(__dirname, '..')
-const DIR = path.join(ROOT, 'docs/design/assets/world-mascot-3d/expressions')
-const OUT = path.join(ROOT, 'docs/design/assets/world-mascot-3d/expressions.png')
+const LIBRARY = process.argv[2] ?? 'expressions'
+const DIR = path.join(ROOT, 'docs/design/assets/world-mascot-3d', LIBRARY)
+const OUT = path.join(ROOT, 'docs/design/assets/world-mascot-3d', `${LIBRARY}.png`)
+/** The brief fixes the expression count; poses grow as the rig can hold more. */
+const EXPECTED = { expressions: 32 }
 const CELL = 300, LABEL = 40, COLUMNS = 8
 const BACKGROUND = '#e8eef8'
 
 async function main() {
   const files = fs.readdirSync(DIR).filter((f) => /^\d\d-.+\.png$/.test(f)).sort()
-  if (files.length !== 32) throw new Error(`expected 32 expressions, found ${files.length}`)
+  const expected = EXPECTED[LIBRARY]
+  if (files.length === 0 || (expected && files.length !== expected)) throw new Error(`${LIBRARY}: expected ${expected ?? 'some'} images, found ${files.length}`)
   const rows = Math.ceil(files.length / COLUMNS)
   const tiles = await Promise.all(files.map(async (file, i) => {
     const [, number, name] = file.match(/^(\d\d)-(.+)\.png$/)
@@ -37,7 +41,7 @@ async function main() {
     .composite(tiles.flat())
     .png()
     .toFile(OUT)
-  console.log(`✓ ${files.length} expressions → ${path.relative(ROOT, OUT)}`)
+  console.log(`✓ ${files.length} ${LIBRARY} → ${path.relative(ROOT, OUT)}`)
 }
 
 main().catch((error) => { console.error(`✗ ${error.message}`); process.exit(1) })
