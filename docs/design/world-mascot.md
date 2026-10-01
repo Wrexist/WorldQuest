@@ -57,7 +57,14 @@ and the Expedition props. Atlas is now a real 3D character built in Blender.
   (`GlobeBody`, `Eye_L`, `Pupil_L`, `Eyelid_L`, `Brow_L`, `Arm_L`, `Hand_L`, `Boot_L`,
   `Hat`, `HatBadge`, `Backpack`). Camera: 65 mm, front three-quarter, slightly above.
   Master: `docs/design/assets/world-mascot-3d/atlas.blend`.
-- **Not built yet from the brief** (follow-ups, in this order): the expression library beyond the ten moods; walk and run cycles;
+- **Expression library:** the brief's 32 core expressions (01 neutral … 32 welcoming)
+  are data in `EXPRESSIONS` in the build script: face, brow tilt, body tilt and arms
+  only; the globe never distorts. `--expressions` renders them to
+  `docs/design/assets/world-mascot-3d/expressions/`, and
+  `node scripts/build-globe-mascot-expressions.cjs` lays out the labelled reference
+  sheet `expressions.png`. A design reference, not app art: an expression ships when a
+  screen needs it, by joining `FACE` and the acting.
+- **Not built yet from the brief** (follow-ups, in this order): finger poses (thumbs-up, point, clap) beyond the ten moods; walk and run cycles;
   prop poses (magnifier, map, telescope, heart); an armature rig with IK in place of
   the pivot hierarchy; LOD tiers.
 - **Faces:** `FACE` in the script sets each of the ten moods' rest look; stills are in

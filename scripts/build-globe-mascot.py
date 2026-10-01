@@ -532,7 +532,7 @@ def build():
     for i in (0, 3):  # the point and the dip stay sharp
         sp.bezier_points[i].handle_left_type = sp.bezier_points[i].handle_right_type = 'VECTOR'
     h = bpy.data.objects.new('Heart', heart); bpy.context.collection.objects.link(h)
-    h.location = (-1.25, -.7, 2.55); h.rotation_euler = (radians(90), 0, radians(12)); h.scale = (.42, .42, .42)
+    h.location = (-.98, -.7, 2.42); h.rotation_euler = (radians(90), 0, radians(12)); h.scale = (.42, .42, .42)
     link(h, rig, principled('Heart', (1.0, .1, .16), rough=.3, coat=.6))
     extras['heart'] = [h]
 
