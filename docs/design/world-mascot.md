@@ -64,7 +64,7 @@ and the Expedition props. Atlas is now a real 3D character built in Blender.
   `node scripts/build-globe-mascot-expressions.cjs` lays out the labelled reference
   sheet `expressions.png`. A design reference, not app art: an expression ships when a
   screen needs it, by joining `FACE` and the acting.
-- **Not built yet from the brief** (follow-ups, in this order): finger poses (thumbs-up, point, clap) beyond the ten moods; walk and run cycles;
+- **Not built yet from the brief** (follow-ups, in this order): finger poses (thumbs-up, point, clap); walk and run cycles;
   prop poses (magnifier, map, telescope, heart); an armature rig with IK in place of
   the pivot hierarchy; LOD tiers.
 - **Faces:** `FACE` in the script sets each of the ten moods' rest look; stills are in
