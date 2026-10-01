@@ -321,6 +321,9 @@ const TYPES = {
   '.woff2': 'font/woff2',
   '.png': 'image/png',
   '.svg': 'image/svg+xml',
+  // The atlas's surface texture and country rings (ADR 0017).
+  '.jpg': 'image/jpeg',
+  '.bin': 'application/octet-stream',
 }
 
 const server = http.createServer((req, res) => {

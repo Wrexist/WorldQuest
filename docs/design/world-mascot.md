@@ -64,18 +64,30 @@ and the Expedition props. Atlas is now a real 3D character built in Blender.
   `node scripts/build-globe-mascot-expressions.cjs` lays out the labelled reference
   sheet `expressions.png`. A design reference, not app art: an expression ships when a
   screen needs it, by joining `FACE` and the acting.
-- **Hands and poses:** shoulders are rounded balls set forward of his sides, so a raised
-  arm grows out of him (owner review, October 1: the celebration arm looked detached).
-  Fingers have a knuckle and a middle joint and the thumb its own joint; `HAND_POSES`
-  holds relaxed, open, fist, point and thumbs-up. `POSES` is the hand-led part of the
-  brief's pose library (standing, waving, thumbs-up, double thumbs-up, pointing four
-  ways, cheering, victory, inviting, shrug); `--poses` renders it and
-  `node scripts/build-globe-mascot-expressions.cjs poses` lays out `poses.png`. Not
-  possible with these proportions and pivots: an elbow bend (hands on hips, hand on
-  chin), hands meeting in front of the globe (clap, arms crossed, hug) and body poses (sit, walk, run, sneak) — both need the
-  armature rig.
-- **Not built yet from the brief** (follow-ups, in this order): an armature rig with IK
-  (unlocks hands on hips, hand on chin, clap, hug, sit); walk and run cycles;
+- **Hat fit:** the hat sits high enough that its brim's hole clears the globe, wide
+  enough that no head shows through, and tilted gently (owner review, October 1: the
+  globe showed through the hat and a raised arm went through the brim).
+- **Rig:** each arm is a two-bone armature (upper arm, forearm) under a rounded
+  shoulder ball set forward of his side; the limb is one mesh skinned to both bones
+  with a computed soft blend across the elbow, so a bend stays one smooth surface.
+  The hand rides the forearm bone. Fingers have a knuckle and a middle joint, the thumb
+  its own joint (`HAND_POSES`: relaxed, open, fist, point, thumbs-up). Arms pose two
+  ways: forward kinematics (`arms`, `swing`, `elbow`, `elbow_in`) or IK (`reach`: where
+  the wrist goes, `pole`: where the elbow points; pole angle measured at build). The
+  hat, eyes, lids, brows, mouths and body keep their pivot hierarchy.
+- **Clash check:** `--check` tests every mood's performance (every other frame), every
+  expression and every pose for the globe poking through the hat or an arm through the
+  hat, and exits non-zero on any. Run it after any change to proportions or poses.
+- **Poses:** `POSES` (`--poses`, sheet via
+  `node scripts/build-globe-mascot-expressions.cjs poses`): standing, waving,
+  thumbs-up, double thumbs-up, pointing four ways, cheering, victory, inviting, shrug,
+  hands on hips, thinking (fist on cheek), listening (hand at the ear). IK targets were
+  found by searching for the palm nearest each goal with no arm inside the globe. With
+  the locked proportions (arms 30–35% of the globe) the front of the face and the
+  space in front of him are out of reach, so hand on chin, facepalm, clap, arms crossed
+  and hug cannot be posed without longer arms — a design decision for the owner, not a
+  rig limit.
+- **Not built yet from the brief** (follow-ups, in this order): walk and run cycles;
   prop poses (magnifier, map, telescope, heart); LOD tiers.
 - **Faces:** `FACE` in the script sets each of the ten moods' rest look; stills are in
   `docs/design/assets/world-mascot-3d/stills/`.

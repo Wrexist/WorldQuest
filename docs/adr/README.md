@@ -16,10 +16,11 @@ drifting is not.
 | [0005](0005-content-as-data.md) | Content as validated data packs | Accepted |
 | [0006](0006-server-authoritative-progress.md) | Server-authoritative rewards | Accepted |
 | [0007](0007-state-management.md) | Zustand + TanStack Query + MMKV | Accepted |
-| [0008](0008-vector-maps.md) | Vector SVG maps, not tiles | Accepted |
+| [0008](0008-vector-maps.md) | Vector SVG maps, not tiles | Accepted; interactive half superseded by 0017 |
 | [0009](0009-localization.md) | i18next + ICU from commit one | Accepted |
 | [0010](0010-analytics-and-privacy.md) | PostHog EU, no third-party analytics for children | Accepted |
 | [0011](0011-xp-and-coins-split.md) | XP is not spendable; coins are | Accepted |
+| [0017](0017-3d-world-atlas.md) | One 3D atlas: raw WebGL on expo-gl, ID-raster countries, typed disclosure policy | Accepted (native rollout gated) |
 
 ## Template
 

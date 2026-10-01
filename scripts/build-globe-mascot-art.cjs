@@ -15,6 +15,7 @@
 const fs = require('node:fs')
 const path = require('node:path')
 const sharp = require('sharp')
+const { featherImage } = require('./lib/feather-alpha.cjs')
 
 const ROOT = path.resolve(__dirname, '..')
 const FRAMES = path.join(ROOT, 'node_modules/.cache/globe-mascot')
@@ -35,7 +36,7 @@ async function main() {
     const files = Array.from({ length: COUNT }, (_, i) => path.join(dir, `${String(i).padStart(3, '0')}.png`))
     const missing = files.filter((f) => !fs.existsSync(f))
     if (missing.length > 0) throw new Error(`${mood}: ${missing.length} frame(s) not rendered — run build-globe-mascot.py --sheets`)
-    const cells = await Promise.all(files.map((f) => sharp(f).resize(CELL, CELL).png().toBuffer()))
+    const cells = await Promise.all(files.map(async (f) => featherImage(await sharp(f).resize(CELL, CELL).png().toBuffer())))
     const grid = await sharp({ create: { width: CELL * COLUMNS, height: CELL * ROWS, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
       .composite(cells.map((input, i) => ({ input, left: (i % COLUMNS) * CELL, top: Math.floor(i / COLUMNS) * CELL })))
       .png()
@@ -49,7 +50,7 @@ async function main() {
     }
     if (sheet.length > SHEET_BUDGET_KB * 1024) throw new Error(`${mood}: sheet is ${Math.round(sheet.length / 1024)} KB, over ${SHEET_BUDGET_KB} KB`)
     fs.writeFileSync(path.join(OUT, `${mood}-sheet.webp`), sheet)
-    const still = await sharp(path.join(STILLS, `${mood}.png`)).resize(STILL, STILL).webp({ quality: 88, alphaQuality: 95, effort: 6 }).toBuffer()
+    const still = await sharp(await featherImage(await sharp(path.join(STILLS, `${mood}.png`)).resize(STILL, STILL).png().toBuffer())).webp({ quality: 88, alphaQuality: 95, effort: 6 }).toBuffer()
     fs.writeFileSync(path.join(OUT, `${mood}.webp`), still)
     total += sheet.length + still.length
     lines.push(mood)

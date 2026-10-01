@@ -43,12 +43,14 @@ import {
   inReview,
   lastAnswerOf,
   lessonLength,
+  MAX_TYPED_LENGTH,
+  placementLevel,
 } from '@worldquest/engines'
 import type { LessonFocus } from '@worldquest/engines'
 import type { ContentIndex, GradeResult, LessonState, Question } from '@worldquest/engines'
 import { Art } from '../../components/Art.js'
 import { Flag } from '../../components/Flag.js'
-import { CountryMap } from '../../components/CountryMap.js'
+import { LessonAtlas, lessonShowsAtlas } from '../atlas/LessonAtlas.js'
 import { useLesson } from './hooks/useLesson.js'
 import { useAnswerCues } from './hooks/useAnswerCues.js'
 import { LessonSummary, type PractisedCountry } from './LessonSummary.js'
@@ -78,8 +80,11 @@ import { isD1 } from '../../lib/backendConfig.js'
 import { prefetchLessons, submitLesson as submitD1Lesson } from '../../lib/d1-lessons.js'
 import { useScreenReaderStatus } from '../../lib/screenReader.js'
 import { useDifficultyRamp } from './useDifficultyRamp.js'
+import { usePreferences } from '../settings/usePreferences.js'
 import { useD1Lesson } from './hooks/useD1Lesson.js'
 import { ReportSheet } from './ReportSheet.js'
+import { TypedAnswer } from './TypedAnswer.js'
+import { PairsBoard } from './PairsBoard.js'
 import { withAccount } from '../../lib/backend.js'
 import { Icon } from '../../components/Icon.js'
 import { Stat } from '../../components/Stat.js'
@@ -148,55 +153,28 @@ const OPTION_FLAG_WIDTH = 64
 const FLAG_PROMPT_WIDTH = 200
 
 /**
- * How wide the celebrating mascot is, as a fraction of the sheet.
+ * How wide the mascot is, as a fraction of the sheet.
  *
- * MEASURED off the reference — 320 of an 852-point screen — and kept as the RATIO rather
- * than the 146 points it works out to at 390. A constant was tried and 320pt is what
- * exposed it: 150 points is 38 % of a 390 screen and 47 % of a 320 one, so the small
- * phone got a mascot half the width of the sheet, the reward chips stacked into two rows
- * to fit beside it, and the sheet grew a third taller on the device with least room.
+ * A ratio rather than a constant: 150 points is 38 % of a 390 screen and 47 % of a 320
+ * one, and the small phone got a mascot half the width of the sheet. Against the SHEET's
+ * width, not the window's: above `maxContentWidth` the sheet stops growing, and a mascot
+ * that kept scaling with a tablet's screen would burst out of it.
  *
- * Against the SHEET's width, not the window's: above `maxContentWidth` the sheet stops
- * growing, and a mascot that kept scaling with a tablet's screen would burst out of it.
- *
- * This replaces `celebration/burst-wide`, which was built for the frame this one deletes:
- * a confetti ribbon straddling the top edge of a card that is no longer a card in the
- * scroll flow. `atlas/celebrate` carries its own burst, which is the reference's mechanic
- * anyway — the confetti belongs to the character, not to the furniture. The ribbon master
- * stays; nothing draws it today.
- *
- * ## And what happens when even that ratio does not fit
- *
- * At 390 it does. At 320 it does not: measured off the render, the XP and coin chips
- * wrap into two rows and the lower one lands at `176–195 × 692–716`, inside the
- * mascot's `−18–190 × 661–800`. The coin reward is printed behind Atlas's arm, and a
- * picture of the sheet at 390 shows none of it — which is the argument for
- * photographing 320 first.
- *
- * No breakpoint, because a breakpoint would be wrong in the cases that matter most: a
- * locale with longer chip labels, or the 200 % text setting the Definition of Done
- * requires, both cram the row at widths where a "320" threshold says there is room.
- * The sheet asks the row whether it wrapped and believes the answer — see `WRAPPED_AT`.
- *
- * When it did, the mascot swaps sides at the SAME size: the text gives up its indent
- * and takes the sheet's full width, and he moves to the end edge, where a start-aligned
- * column of text and chips is not. Same bottom anchor, same occlusion by the button;
- * only the side changes, because the side was the only thing in the way. Shrinking him
- * instead was the first attempt and looked worse than the bug — he has to stand taller
- * than the button plus its offset to be seen at all, so a mascot small enough to clear
- * the chips was a hat peeking out from behind a button.
+ * He stands beside the words, in the layout. He used to be pinned behind the Continue
+ * button, to lean out from behind it as the reference does, and the button covered his lower
+ * half: on a miss, a head and shoulders over a bar. That needed a latch that swapped his
+ * side when the reward chips wrapped into his column; in flow there is nothing to collide
+ * with, so the latch is gone and the chips just wrap inside their own column.
  */
-const MASCOT_OF_SHEET = 0.375
+const MASCOT_OF_SHEET = 0.3
 
 /**
- * How much taller than one chip the reward row has to be before we call it wrapped.
- *
- * Compared against a CHIP's own measured height rather than a constant, so it holds at
- * any text scale — the thing being detected is "two rows of chips", and two rows are
- * always about twice one chip whatever a chip currently is. Half a chip of slack
- * absorbs the row's own line-height rounding without reaching a second row.
+ * Smaller on a phone as short as an SE: the sheet is as tall as its mascot, and at 0.3 the
+ * sheet took the fourth option's row at 320 x 568. Measured, not chosen — the 0.22 that
+ * leaves all four options above the sheet is the largest that does.
  */
-const WRAPPED_AT = 1.5
+const MASCOT_OF_SHORT_SHEET = 0.22
+const VERY_SHORT_SCREEN = 640
 
 /**
  * A phone short enough that the question does not fit at its comfortable size.
@@ -222,7 +200,7 @@ const SHORT_SCREEN = 900
  * the fourth option went under it by 65pt on a locator question, 101 on a map question
  * and 116 under a flag prompt — where before Check existed it fitted, overflowed by 11
  * and by 26. Shrinking the pictures to win that back would put the map and the flag
- * below the floors `MAP_PROMPT_WIDTH_SHORT` and `FLAG_PROMPT_WIDTH` exist to defend.
+ * below the floors `atlasHeight` and `FLAG_PROMPT_WIDTH` exist to defend.
  *
  * So on the smallest phone the question keeps the whole screen, exactly as before, and
  * Check follows the options in the scroll. Selecting scrolls it into view, so it is never
@@ -230,63 +208,11 @@ const SHORT_SCREEN = 900
  */
 const PINNED_CHECK_MIN_HEIGHT = 600
 
-/**
- * The locator map beside a question.
- *
- * The same 200pt as the flag prompt, because it is now the same kind of object: the
- * map is framed on the country rather than on its continent, so it carries real
- * information at a glance instead of being a decorative smudge that had to be kept
- * small to avoid wasting space.
- *
- * 132 on a short screen. The map is CONTEXT — the prompt already names the country in
- * words — and the options are the interaction, so when there is not room for both at
- * full size it is the picture that gives way. Never zero: "where in the world is this"
- * is half of what the screen teaches.
+/*
+ * The locator's size used to be four width constants (208/132/240/180) for a fixed 4:3
+ * picture. The atlas spans the column instead and takes its HEIGHT from the screen —
+ * see `atlasHeight` below, which keeps the same budget those constants defended.
  */
-/**
- * 280, up from 200, on a tall screen.
- *
- * The reference draws the locator nearly the full content width and it is the single
- * biggest reason its question screen reads as a modern product rather than a form: the
- * map stops being a stamp beside the prompt and becomes the thing you look at while you
- * think. At 200 on a 390-wide phone it was 51 % of the content column with a third of
- * the screen empty above it.
- *
- * The SHORT variant does not move. The 320×568 budget has not changed — prompt, map and
- * four options need about 690pt there — and this is exactly the number that measurement
- * exists to protect.
- */
-const LOCATOR_WIDTH = 208
-const LOCATOR_WIDTH_SHORT = 132
-
-/**
- * The short-screen locator when the answers are a 2x2 grid of pictures.
- *
- * 132 is the number that protects the 320x568 budget — prompt, map and four FULL-WIDTH
- * option rows need about 690pt there, so the map is what gives way. A picture-answer
- * question does not spend its screen that way: two rows of cells instead of four rows of
- * cards gives back the better part of two hundred points, and handing all of it to
- * empty space while the map stays a stamp would be keeping the tax after repealing it.
- *
- * Still short of the 280 a tall screen gets. The grid recovers most of the height, not
- * all of it, and the map is context here rather than the question.
- */
-const LOCATOR_WIDTH_SHORT_GRID = 208
-
-/**
- * A map question's map — the prompt itself rather than context beside one.
- *
- * 240 rather than the locator's 200: this is the only thing on screen carrying the
- * question, and the country is drawn at 46 % of the frame, so the shape a user has to
- * recognise is smaller than the picture.
- *
- * Shrinks less than the locator on a short screen, and that asymmetry is the point: this
- * map IS the question. 180 is the floor at which telling Norway from Sweden is still a
- * question about a coastline rather than about eyesight.
- */
-// A map question's map IS the prompt, so it stays the larger of the two.
-const MAP_PROMPT_WIDTH = 240
-const MAP_PROMPT_WIDTH_SHORT = 180
 
 /**
  * What the lesson tells whoever mounted it on the way out.
@@ -330,6 +256,7 @@ export function LessonScreen({
   focusIsExplicit = false,
   courseNode,
   length,
+  placement,
 }: {
   showIntroduction?: boolean
   onExit: (summary: LessonExit) => void
@@ -392,8 +319,16 @@ export function LessonScreen({
    * us something the pace estimate cannot know.
    */
   length?: number | undefined
+  /**
+   * This lesson is the level check: ten questions across the five levels, issued by the Worker,
+   * played with no hearts (a check that costs hearts measures nerve), and on finishing it sets
+   * where lessons start. It is otherwise a lesson like any other — graded, scheduled and
+   * rewarded by the same code — so what the learner answers still counts.
+   */
+  placement?: boolean | undefined
 }) {
   const { colors, styles } = useThemeValues()
+  const { set: setPreference } = usePreferences()
   const t = useT()
   const dailyGoal = useDailyGoal()
   const { index, memory, status, reload, isOffline } = useContent()
@@ -417,14 +352,9 @@ export function LessonScreen({
    */
   const compact = height < SHORT_SCREEN
   const inlineCheck = height < PINNED_CHECK_MIN_HEIGHT
-
-  // Latched, never unlatched. Moving the mascot is what gives the row room to unwrap,
-  // so a flag that followed the measurement would flip back the moment it took effect
-  // and oscillate forever. Once the chips have told us they do not fit beside him, that
-  // is a fact about this screen at this width and stays true until it remounts.
-  const [rewardsWrapped, setRewardsWrapped] = useState(false)
-  const chipHeight = useRef(0)
-  const rowHeight = useRef(0)
+  // The atlas spans the content column, as the reference draws it, and stops widening
+  // where the rest of the lesson does.
+  const atlasWidth = Math.min(width - space[4] * 2, layout.maxContentWidth)
 
   /**
    * Bringing the answer back into view when the feedback sheet arrives.
@@ -456,16 +386,7 @@ export function LessonScreen({
   const optionsBottom = useRef(0)
   /** The scroll view's own height: it shrinks when the feedback sheet mounts below it. */
   const viewport = useRef(0)
-  // Called from BOTH `onLayout`s rather than only the row's, because their order is not
-  // guaranteed — on web these come from a ResizeObserver, and a row that measured before
-  // its chip would compare against a height of zero and conclude, permanently, that
-  // nothing wrapped. Whichever arrives second is the one that decides.
-  const measureRewards = useCallback(() => {
-    if (chipHeight.current > 0 && rowHeight.current > chipHeight.current * WRAPPED_AT) {
-      setRewardsWrapped(true)
-    }
-  }, [])
-  const mascot = Math.round(sheetWidth * MASCOT_OF_SHEET)
+  const mascot = Math.round(sheetWidth * (height < VERY_SHORT_SCREEN ? MASCOT_OF_SHORT_SHEET : MASCOT_OF_SHEET))
 
 
   // Sized from the user's own pace, not a hardcoded ten. `lessonLength` aims at a
@@ -485,25 +406,35 @@ export function LessonScreen({
   const screenReaderStatus = useScreenReaderStatus()
   const screenReaderOn = screenReaderStatus === true
   // The plain way of asking first for someone just starting, harder shapes as they go.
-  const { maxModifier } = useDifficultyRamp()
+  const { maxModifier, introduceFrom } = useDifficultyRamp()
   const remote = useD1Lesson(remoteLessons && screenReaderStatus !== null, {
     count: length ?? lessonLength(itemMs),
     locale: currentLocale() === 'sv' ? 'sv' : 'en',
     screenReader: screenReaderOn,
     maxModifier,
+    introduceFrom,
     focus,
     explicitFocus: focusIsExplicit,
     node: courseNode,
+    ...(placement === true && remoteLessons ? { placement: true as const } : {}),
   })
-  const questions = useMemo<readonly Question[]>(() => {
+  const issued = useMemo<readonly Question[]>(() => {
     if (remoteLessons) return remote.lesson?.questions ?? []
     if (status !== 'ready' || !index) return []
     return index.compose({
       count: length ?? lessonLength(itemMs),
       maxModifier,
+      introduceFrom,
       ...(focus ? { focus } : {}),
     })
-  }, [remoteLessons, remote.lesson, status, index, itemMs, focus, length, maxModifier])
+  }, [remoteLessons, remote.lesson, status, index, itemMs, focus, length, maxModifier, introduceFrom])
+  // A speed round is a race against a clock per question, and a board is one sitting over four.
+  // Each of a board's questions is also a plain four-option question with the same answer key, so
+  // the round simply plays them as that: nothing about grading or the ticket changes.
+  const questions = useMemo<readonly Question[]>(
+    () => (mode === 'speed' ? issued.map(({ group: _group, ...q }) => q) : issued),
+    [issued, mode],
+  )
 
   const handleComplete = useCallback((state: LessonState, optimistic: GradeResult) => {
     /**
@@ -521,6 +452,14 @@ export function LessonScreen({
     const quest =
       index === null ? null : todaysQuest(index.index, memory, Date.now(), recentAccuracy())
 
+    // The level check: where lessons start follows what was answered, set once, and only if
+    // enough was answered to say (leaving early changes nothing). Written here, with the other
+    // things that happen exactly once when a lesson ends.
+    if (placement === true && state.phase === 'summary') {
+      const level = placementLevel(state.answers, state.questions)
+      if (level !== null) setPreference('startLevel', level)
+    }
+
     if (remoteLessons) {
       // The Worker grades what it issued: the answers go to the D1 queue under the
       // ticket's id — durably before this returns, never waiting on the network — and a
@@ -528,7 +467,7 @@ export function LessonScreen({
       // the answered prefix; the server decides whether it was a finished lesson.
       if (remote.lesson) {
         void submitD1Lesson(remote.lesson, state.answers).then(() =>
-          prefetchLessons({ count: remote.lesson!.request.count, locale: remote.lesson!.request.locale, screenReader: screenReaderOn, maxModifier }),
+          prefetchLessons({ count: remote.lesson!.request.count, locale: remote.lesson!.request.locale, screenReader: screenReaderOn, maxModifier, introduceFrom }),
         )
       }
     } else {
@@ -698,7 +637,13 @@ export function LessonScreen({
   }, [isOffline, index, memory, isTaster, remoteLessons, remote.lesson, screenReaderOn])
 
   const timeLimitMs = mode === 'speed' ? SPEED_SECONDS * 1000 : null
-  const lesson = useLesson({ questions, memory, timeLimitMs, onComplete: handleComplete })
+  const lesson = useLesson({
+    questions,
+    memory,
+    timeLimitMs,
+    onComplete: handleComplete,
+    ...(placement === true ? { heartsEnabled: false } : {}),
+  })
   // Haptic, sound and `question_answered`, from the GRADED answer — whether Check graded
   // it or the speed round's clock did. See the hook for why not from a tap.
   useAnswerCues(lesson.state, itemMs)
@@ -719,6 +664,24 @@ export function LessonScreen({
    */
   const verdict = useRef<Text>(null)
   const answeredCount = lesson.state.answers.length
+  /**
+   * A matching board is answered whole and then simply left behind.
+   *
+   * `ANSWER_GROUP` parks the machine on the board's last question in `answered`, the phase every
+   * answer leaves it in so that CONTINUE, REVIVE and the out-of-hearts fork keep working
+   * unchanged. Four answers at once have no verdict to read out that the board did not just show
+   * (the tick on every pair), so unless the learner has run out of hearts — which is the fork,
+   * and must be shown — it moves on by itself. Above the early returns: a hook after one is a
+   * different number of hooks on the loading render and the question render.
+   */
+  const boardAnswered =
+    lesson.state.phase === 'answered' &&
+    lesson.state.questions[lesson.state.index]?.group !== undefined &&
+    !lesson.state.outOfHearts
+  const advanceBoard = lesson.advance
+  useEffect(() => {
+    if (boardAnswered) advanceBoard()
+  }, [boardAnswered, advanceBoard, lesson.state.index])
   useEffect(() => {
     if (lesson.state.phase !== 'answered' || Platform.OS === 'web') return
     if (verdict.current !== null) AccessibilityInfo.sendAccessibilityEvent(verdict.current, 'focus')
@@ -828,6 +791,9 @@ export function LessonScreen({
     const practised = practisedCountries(index?.index, lesson.state.answers)
     return (
       <LessonSummary
+        {...(placement === true
+          ? { placement: { level: placementLevel(lesson.state.answers, lesson.state.questions) } }
+          : {})}
         result={lesson.optimistic}
         practised={practised}
         dailyGoal={dailyGoal}
@@ -943,7 +909,30 @@ export function LessonScreen({
    * pressed Check is already on the way onward. Where it sits on the smallest phones is
    * `PINNED_CHECK_MIN_HEIGHT`'s business.
    */
-  const noSelection = lesson.state.selectedOptionId === null
+  /**
+   * A typed question is answered with a keyboard, which changes two things about this screen.
+   * Check is enabled by having typed something rather than by having picked something, and it
+   * sits INSIDE the scroll view under the field: a footer pinned to the screen's bottom edge is
+   * under the keyboard on iOS, and the one button the learner needs would be the one they
+   * cannot see. The scroll view lifts itself above the keyboard (`automaticallyAdjustKeyboardInsets`).
+   */
+  const typedQuestion = question.typed !== undefined
+  /**
+   * A matching board, while it is being played: shown when the board's FIRST question is up and
+   * nothing has been answered. Its four questions are answered together by `ANSWER_GROUP`, which
+   * leaves the machine on the board's last one — and unless that ran the learner out of hearts
+   * there is nothing to say about it that the board has not already shown, so the screen moves
+   * straight on (below) rather than raising a sheet for four answers at once.
+   */
+  const boardMembers =
+    question.group?.position === 0 ? lesson.state.questions.slice(lesson.state.index, lesson.state.index + question.group.size) : null
+  const showBoard = boardMembers !== null && !answered
+  const boardSettled = question.group !== undefined && answered && !lesson.state.outOfHearts
+  const typedValue = answered ? (lastAnswer?.typedText ?? lesson.state.typedText) : lesson.state.typedText
+  const checkInScroll = inlineCheck || typedQuestion || showBoard
+  const noSelection = typedQuestion
+    ? lesson.state.typedText.trim() === ''
+    : lesson.state.selectedOptionId === null
   const checkButton = (
     <Button
       label={t('lesson:check.label')}
@@ -952,7 +941,9 @@ export function LessonScreen({
       disabled={noSelection}
       // Why it is dimmed, read after "Check, dimmed" — a disabled control with no
       // reason is a dead end to a screen-reader user.
-      {...(noSelection ? { accessibilityHint: t('lesson:check.needsAnswer') } : {})}
+      {...(noSelection
+        ? { accessibilityHint: typedQuestion ? t('lesson:check.needsTyping') : t('lesson:check.needsAnswer') }
+        : {})}
       testID="lesson-check"
     />
   )
@@ -1008,6 +999,10 @@ export function LessonScreen({
       <ScrollView
         ref={scroller}
         testID="lesson-scroll"
+        // A tap on Check (or anywhere else) while the keyboard is up is a tap, not "dismiss the
+        // keyboard first" — and the view lifts itself clear of the keyboard on iOS.
+        keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets={typedQuestion}
         contentContainerStyle={[styles.body, compact && styles.bodyShort, inlineCheck && styles.bodyTiny]}
         onLayout={(event) => {
           viewport.current = event.nativeEvent.layout.height
@@ -1025,17 +1020,22 @@ export function LessonScreen({
           // Duolingo's "previous mistake" tag: this one came back because it was missed.
           <Text style={styles.reviewTag}>{t('lesson:review.tag')}</Text>
         )}
-        {!reviewing && question.isNew && (
+        {!reviewing && (boardMembers !== null ? boardMembers.some((member) => member.isNew) : question.isNew) && (
           // And its "new word": this is the first time, so not knowing it is expected —
           // which is also why a new fact never costs a heart.
           <Text style={[styles.reviewTag, styles.newTag]}>{t('lesson:new.tag')}</Text>
         )}
+        {!showBoard && !boardSettled && (
         <Text style={styles.prompt} role="heading">
           {/* The prompt key and its params come from the question template in the
               content pack, so they are validated by `pnpm content:validate` rather
               than by the compiler. */}
           {tContent(question.promptKey, question.promptParams)}
         </Text>
+        )}
+        {showBoard && boardMembers !== null && (
+          <PairsBoard key={boardMembers[0]!.item.id} members={boardMembers} onDone={lesson.answerGroup} />
+        )}
 
         {/* The picture the prompt is asking about — "Which country's flag is this?".
             Present only for image-modality templates, which the composer only selects
@@ -1068,40 +1068,36 @@ export function LessonScreen({
             words — "What is the capital of Japan?" — so a reader announcing the map
             would repeat it, and a reader user is not being shown anything a sighted
             user is not also told. */}
-        {question.locator !== undefined && (
+        {question.locator !== undefined && lessonShowsAtlas(question, index?.index, answered) && (
           <View
             style={styles.promptArt}
             testID={question.modality === 'map' ? 'prompt-map' : 'prompt-locator'}
           >
-            <CountryMap
-              path={question.locator.path}
-              contextPath={question.locator.contextPath}
-              // A map question's map is the prompt, so it gets the same width as the
-              // flag prompt does — big enough that telling Norway from Sweden is a
-              // question about the coastline rather than about eyesight.
-              width={
-                question.modality === 'map'
-                  ? inlineCheck ? 160 : compact
-                    ? MAP_PROMPT_WIDTH_SHORT
-                    : MAP_PROMPT_WIDTH
-                  : compact
-                    ? pictureOptions
-                      ? LOCATOR_WIDTH_SHORT_GRID
-                      : LOCATOR_WIDTH_SHORT
-                    : LOCATOR_WIDTH
-              }
-              // Labelled ONLY when it is the question. Beside a capital-city question
-              // the prompt already names the country in words, so a reader announcing
-              // the map would repeat it. Here nothing else says what is on screen —
-              // though a reader user should never reach this branch at all, because
-              // `screenReaderOnly` swaps in tpl.location-of.mc4 before composing.
-              {...(question.modality === 'map'
-                ? { label: tContent(question.promptKey, question.promptParams) }
-                : {})}
+            {/* The atlas, or its flat fallback, under ONE disclosure policy
+                (features/atlas/scene/lessonScene.ts): a capital question shows the
+                country and pins the capital only once graded; "which country is this?"
+                names nothing until graded; a question the map would answer by itself
+                (continent, coast, neighbours) gets no map until graded. Answers are
+                still given with the options below — the map selects nothing. */}
+            <LessonAtlas
+              question={question}
+              sceneKey={`${lesson.state.lessonId}:${lesson.state.index}`}
+              index={index?.index}
+              selected={lesson.state.selectedOptionId !== null}
+              answered={answered}
+              chosenOptionId={lastAnswer?.chosenOptionId ?? null}
+              width={atlasWidth}
+              height={atlasHeight(height, {
+                inlineCheck,
+                compact,
+                isPrompt: question.modality === 'map',
+                pictureOptions,
+              })}
             />
           </View>
         )}
 
+        {!showBoard && !boardSettled && (
         <View
           /**
            * A 2x2 grid when the answers are pictures, a column when they are words.
@@ -1132,7 +1128,21 @@ export function LessonScreen({
             if (answered) revealOptions()
           }}
         >
-          {question.options.map((option, index) => {
+          {typedQuestion && (
+            <TypedAnswer
+              // Remounted per question, so a field left readonly by the last verdict is a
+              // fresh, editable one for the next.
+              key={question.item.id}
+              value={typedValue}
+              onChange={lesson.type}
+              onSubmit={() => {
+                if (!noSelection) lesson.check()
+              }}
+              state={!answered ? 'idle' : lastAnswer?.wasCorrect ? 'correct' : 'wrong'}
+              maxLength={MAX_TYPED_LENGTH}
+            />
+          )}
+          {!typedQuestion && question.options.map((option, index) => {
             const state = optionState(
               option.isCorrect,
               option.id,
@@ -1214,14 +1224,15 @@ export function LessonScreen({
             )
           })}
         </View>
+        )}
 
-        {inlineCheck && !answered && checkButton}
+        {checkInScroll && !answered && !showBoard && checkButton}
 
         <Spacer />
       </ScrollView>
 
-      {!answered ? (
-        !inlineCheck && <View style={styles.footer}>{checkButton}</View>
+      {boardSettled ? null : !answered ? (
+        !checkInScroll && <View style={styles.footer}>{checkButton}</View>
       ) : (
         <RiseIn key={answeredCount} style={styles.footer}>
           {/* Out of hearts is a fork, not a wall. The engine has held the flag since
@@ -1308,21 +1319,7 @@ export function LessonScreen({
                   app: here the picture is the answer being taught, so a reader that
                   skipped it would be skipping the lesson. */}
               {question.revealAsset !== undefined && (
-                // Cleared of the mascot exactly like `sheetText` below, and for a
-                // sharper reason. The mascot is bottom-anchored and painted after this
-                // block, so on a correct answer he stands on the START edge — the same
-                // edge `styles.reveal` aligns the flag to — and on a short sheet he
-                // covers it. The one picture in this app that is not decorative, hidden
-                // by the one that is.
-                <View
-                  style={[
-                    styles.reveal,
-                    lastAnswer?.wasCorrect === true && !rewardsWrapped
-                      ? { paddingStart: mascot }
-                      : { paddingEnd: mascot },
-                  ]}
-                  testID="reveal-asset"
-                >
+                <View style={styles.reveal} testID="reveal-asset">
                   <Flag
                     path={question.revealAsset}
                     width={REVEAL_WIDTH}
@@ -1331,48 +1328,34 @@ export function LessonScreen({
                 </View>
               )}
 
-              {/* Behind the button because it is drawn BEFORE it and positioned to
-                  overlap — later siblings paint on top, so the occlusion is the layout
-                  rather than a mask. Decorative: the sheet already says what happened
-                  and reads out the reward, and a screen reader announcing the mascot
-                  after every answer is the definition of noise.
+              {/* The mascot stands BESIDE the words, in the layout, and the button sits
+                  below the pair. It used to be absolutely positioned behind the button, so
+                  the Continue button covered his lower half and on a wrong answer he
+                  showed as a head and shoulders over a bar. Nothing paints over him now.
+                  Decorative: the sheet already says what happened and reads out the
+                  reward, and a screen reader announcing the mascot after every answer is
+                  the definition of noise.
 
-                  He appears on BOTH verdicts, which he did not before. Correct got
-                  Atlas cheering and wrong got two lines of text and a button, so the
-                  character turned up only when you were already pleased — and the
-                  screen where "gentle settle, we don't punish" is the actual rule was
-                  the coldest surface in the app. `encouraging` and not `celebrate`:
-                  the register changes, the presence does not.
+                  He appears on BOTH verdicts. `encouraging` and not `celebrate` on a
+                  miss: the register changes, the presence does not.
 
-                  On the end side when wrong, because that copy is a full sentence
-                  naming the right answer rather than one word of praise, and a sentence
-                  reads better against the start edge than indented past a mascot. */}
-              <View
-                style={[
-                  lastAnswer?.wasCorrect === true && !rewardsWrapped
-                    ? styles.sheetMascot
-                    : styles.sheetMascotEnd,
-                  { width: mascot },
-                ]}
-                pointerEvents="none"
-              >
+                  Start side on a correct answer, end side on a miss — that copy is a full
+                  sentence naming the right answer, and a sentence reads better against
+                  the start edge. When the reward chips wrap into two rows he swaps to the
+                  end side, which hands the chips the full start edge. */}
+              <View style={[styles.sheetRow, lastAnswer?.wasCorrect === true ? styles.sheetRowStart : styles.sheetRowEnd]}>
+              <View style={{ width: mascot }} pointerEvents="none">
                 <AdventureArt
                   name="explorer"
                   mood={lastAnswer?.wasCorrect === true ? 'celebrate' : 'encouraging'}
                   style={{ width: mascot, height: mascot }}
                 />
               </View>
-              <View
-                style={
-                  lastAnswer?.wasCorrect === true && !rewardsWrapped
-                    ? [styles.sheetText, { paddingStart: mascot }]
-                    : [styles.sheetText, { paddingEnd: mascot }]
-                }
-              >
+              <View style={styles.sheetText}>
                 {lastAnswer?.wasCorrect ? (
             <>
               <Text ref={verdict} style={styles.feedbackTitleOk}>
-                {t('lesson:feedback.correct.title')}
+                {lastAnswer.typedMatch === 'near' ? t('lesson:typed.near.title') : t('lesson:feedback.correct.title')}
               </Text>
               {/* One warm line under the headline, and it tells the truth.
 
@@ -1390,29 +1373,17 @@ export function LessonScreen({
                   actually a roll. Below three in a row, the honest sentence names what
                   the user just learned instead, which is the better praise anyway. */}
               <Text style={styles.feedbackBody}>
-                {correctRun >= STREAK_PRAISE
-                  ? t('lesson:feedback.correct.streak')
-                  : t('lesson:feedback.correct.discovery')}
+                {lastAnswer.typedMatch === 'near'
+                  ? t('lesson:typed.near.body', { correct: question.options.find((o) => o.isCorrect)?.label ?? '' })
+                  : correctRun >= STREAK_PRAISE
+                    ? t('lesson:feedback.correct.streak')
+                    : t('lesson:feedback.correct.discovery')}
               </Text>
-              <View
-                style={styles.rewards}
-                onLayout={(e) => {
-                  rowHeight.current = e.nativeEvent.layout.height
-                  measureRewards()
-                }}
-              >
-                {/* One chip measures itself so the row above knows what one row is. */}
-                <View
-                  onLayout={(e) => {
-                    chipHeight.current = e.nativeEvent.layout.height
-                    measureRewards()
-                  }}
-                >
-                  <EarnedReward
-                    kind="xp"
-                    amount={lastAward?.xp ?? 0}
-                  />
-                </View>
+              <View style={styles.rewards}>
+                <EarnedReward
+                  kind="xp"
+                  amount={lastAward?.xp ?? 0}
+                />
                 <EarnedReward
                   kind="coin"
                   amount={lastAward?.coins ?? 0}
@@ -1428,9 +1399,11 @@ export function LessonScreen({
                     user choosing wrongly — it deserves its own neutral sentence. */}
                 {lastAnswer?.chosenOptionId == null
                   ? t('lesson:speed.timeUp')
-                  : t('lesson:feedback.wrong.title', {
-                      chosen: chosenLabel(question, lastAnswer.chosenOptionId),
-                    })}
+                  : lastAnswer.typedText !== undefined
+                    ? t('lesson:typed.wrong.title', { typed: lastAnswer.typedText })
+                    : t('lesson:feedback.wrong.title', {
+                        chosen: chosenLabel(question, lastAnswer.chosenOptionId),
+                      })}
               </Text>
               <Text style={styles.feedbackBody}>
                 {question.hint
@@ -1445,6 +1418,7 @@ export function LessonScreen({
             </>
           )}
               </View>
+              </View>
               <Button variant="discovery" label={t('common:continue')} onPress={lesson.advance} />
               {remoteLessons && (
                 <Button label={t('lesson:report.cta')} variant="ghost" size="sm" onPress={() => setReporting(true)} />
@@ -1456,6 +1430,29 @@ export function LessonScreen({
 
     </View>
   )
+}
+
+/**
+ * How tall the atlas is, from the space the question actually has.
+ *
+ * MEASURED against the budget the constants above defend: at 390×844 the prompt, the
+ * atlas, four options and the pinned Check fit with the atlas at a quarter of the
+ * height; at 320×568 Check already follows the options in the scroll, and the atlas
+ * gives way first because it is context and the options are the interaction. A map
+ * question's map IS the prompt, so it keeps more; a 2×2 grid of flag answers frees
+ * nearly two option rows, and the atlas takes some of that back.
+ *
+ * Never so small the country is a speck — the floor is where a coastline still reads.
+ */
+export function atlasHeight(
+  screenHeight: number,
+  { inlineCheck, compact, isPrompt, pictureOptions }: { inlineCheck: boolean; compact: boolean; isPrompt: boolean; pictureOptions: boolean },
+): number {
+  const share = inlineCheck ? 0.25 : compact ? 0.26 : 0.3
+  const floor = inlineCheck ? 132 : 150
+  const ceiling = compact ? 240 : 340
+  const boost = (isPrompt ? 1.15 : 1) * (pictureOptions ? 1.15 : 1)
+  return Math.round(Math.min(ceiling * boost, Math.max(floor, screenHeight * share * boost)))
 }
 
 /**
@@ -1753,26 +1750,14 @@ const useThemeValues = createThemeStyles((colors) => {
   },
   sheetWrong: { backgroundColor: colors.feedback.wrong, borderColor: colors.feedback.wrongEdge },
   sheetNeutral: { backgroundColor: colors.feedback.neutral, borderColor: colors.border.subtle },
-  // Anchored so the feet land INSIDE the button's band rather than on the sheet's floor.
-  // The button is a later sibling in normal flow, so it paints over — that overlap is the
-  // whole mechanic, and a mascot that stops neatly above the button is a sticker. At
-  // `bottom: 0` the feet cleared the button's underside and reappeared in the sheet's
-  // bottom padding as a smudge; 24 puts them safely behind it.
-  //
-  // Inset from the sheet's edge rather than flush to it, because the mascot's glow is
-  // part of the art and `overflow: hidden` was slicing it off. 12 against the sheet's own
-  // 16 of screen inset puts the mascot ~7 % in from the screen edge, which is where the
-  // reference has it.
-  sheetMascot: { position: 'absolute', insetInlineStart: space[3], bottom: space[5] },
-  // The other side, for when the chips need the start edge. `insetInlineEnd` and not
-  // `right`: this mirrors in RTL, and it has to — the text it is getting out of the way
-  // of mirrors too, so a mascot pinned to a physical edge would be standing on the copy
-  // in Arabic and nowhere near it in English.
-  sheetMascotEnd: { position: 'absolute', insetInlineEnd: space[3], bottom: space[5] },
-  // Clear of the mascot. The reference lets its text start 32px inside the mascot's
-  // bounding box, because a mascot's box is wider than its shoulders — so this leans on
-  // the same slack rather than adding the full width.
-  sheetText: { gap: space[2] },
+  // The mascot and the words side by side, in flow. `row-reverse` puts him on the end side
+  // and mirrors with the writing direction, which a physical edge would not.
+  sheetRow: { alignItems: 'center', gap: space[3] },
+  sheetRowStart: { flexDirection: 'row' },
+  sheetRowEnd: { flexDirection: 'row-reverse' },
+  // `flex: 1` and `minWidth: 0` so a long answer wraps inside its column rather than
+  // pushing the mascot off the sheet.
+  sheetText: { flex: 1, minWidth: 0, gap: space[2] },
   // Start-aligned with the sheet's text column rather than centred: the mascot owns one
   // side of this sheet, and a centred picture would sit under him.
   reveal: { alignItems: 'flex-start' },

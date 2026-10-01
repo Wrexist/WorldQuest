@@ -254,6 +254,94 @@ def decal(name, parent, w, h, depth, mat, cx=0.0, cz=0.0, top=None, smile=0.0, f
     return o
 
 
+def skin_arm(side, shoulder, limb, hand, elbow_at, wrist_at):
+    """Give an arm a real elbow: an upper and a forearm bone under the shoulder pivot,
+    the limb converted to a mesh and skinned to them with a soft blend across the elbow
+    (so a bend stays one smooth surface, never two tubes), and the hand riding the
+    forearm bone. Weights are computed, not bone-heat guessed, so every build is the same."""
+    data = bpy.data.armatures.new(f'ArmBones_{side}')
+    rig = bpy.data.objects.new(f'ArmRig_{side}', data)
+    bpy.context.collection.objects.link(rig)
+    rig.parent = shoulder
+    for o in bpy.context.view_layer.objects:
+        o.select_set(False)
+    bpy.context.view_layer.objects.active = rig
+    bpy.ops.object.mode_set(mode='EDIT')
+    upper = data.edit_bones.new('upper'); upper.head = (0, 0, 0); upper.tail = elbow_at
+    fore = data.edit_bones.new('fore'); fore.head = elbow_at; fore.tail = wrist_at
+    fore.parent = upper; fore.use_connect = True
+    bpy.ops.object.mode_set(mode='OBJECT')
+
+    bpy.context.view_layer.objects.active = limb
+    limb.select_set(True)
+    bpy.ops.object.convert(target='MESH')
+    limb.select_set(False)
+    limb.parent = rig
+    head, elbow, wrist = Vector((0, 0, 0)), Vector(elbow_at), Vector(wrist_at)
+    normal = ((elbow - head).normalized() + (wrist - elbow).normalized()).normalized()
+    g_upper, g_fore = limb.vertex_groups.new(name='upper'), limb.vertex_groups.new(name='fore')
+    for v in limb.data.vertices:
+        w = min(1.0, max(0.0, .5 + (v.co - elbow).dot(normal) / .14))
+        g_fore.add([v.index], w, 'REPLACE')
+        g_upper.add([v.index], 1 - w, 'REPLACE')
+    mod = limb.modifiers.new('Arm', 'ARMATURE'); mod.object = rig
+
+    bpy.context.view_layer.update()
+    keep = hand.matrix_world.copy()
+    hand.parent = rig; hand.parent_type = 'BONE'; hand.parent_bone = 'fore'
+    bpy.context.view_layer.update()
+    hand.matrix_world = keep
+    bone = rig.pose.bones['fore']
+    bone.rotation_mode = 'XYZ'
+    rig.pose.bones['upper'].rotation_mode = 'XYZ'
+    return rig
+
+
+def calibrate_elbow(rig, body, sign):
+    """Which forearm-bone axis, and which way, moves the wrist forward (towards the
+    camera, -Y) and which brings it in towards his body (-sign X). Measured once, so a
+    pose can ask for "forward 90" without knowing how the bone happens to be rolled."""
+    bone = rig.pose.bones['fore']
+
+    def wrist():
+        bpy.context.view_layer.update()
+        return body.matrix_world.inverted() @ (rig.matrix_world @ bone.tail)
+    rest = wrist()
+    best = {}
+    for axis in (0, 2):
+        bone.rotation_euler = (0, 0, 0)
+        e = [0, 0, 0]; e[axis] = radians(30); bone.rotation_euler = e
+        d = wrist() - rest
+        best[axis] = (-d.y, -sign * d.x)
+    bone.rotation_euler = (0, 0, 0)
+    fwd = max(best, key=lambda a: abs(best[a][0]))
+    side_axis = 2 if fwd == 0 else 0
+    return dict(forward=(fwd, 1 if best[fwd][0] > 0 else -1),
+                inward=(side_axis, 1 if best[side_axis][1] > 0 else -1))
+
+
+def add_reach(side, rig, body, sign):
+    """IK for an arm: a target the wrist reaches for and a pole the elbow points at, both
+    in the body's space, so a pose says "hand on the chin, elbow out" and the two bones
+    solve it. Off (influence 0) unless a pose reaches. The pole angle that really
+    points the elbow at the pole depends on bone roll, so it is measured, not assumed."""
+    target = empty(f'Reach_{side}', (sign * 1.0, -.3, -.4), body)
+    pole = empty(f'ReachPole_{side}', (sign * 1.8, .3, .2), body)
+    ik = rig.pose.bones['fore'].constraints.new('IK')
+    ik.target, ik.pole_target, ik.chain_count = target, pole, 2
+    best = None
+    for angle in (-180, -90, 0, 90):
+        ik.pole_angle = radians(angle)
+        bpy.context.view_layer.update()
+        elbow = rig.matrix_world @ rig.pose.bones['fore'].head
+        d = (elbow - pole.matrix_world.translation).length
+        if best is None or d < best[0]:
+            best = (d, angle)
+    ik.pole_angle = radians(best[1])
+    ik.influence = 0
+    return dict(ik=ik, target=target, pole=pole)
+
+
 def cut_below(o, z):
     """Keep the top of a primitive: eyelid shells, the hat crown."""
     bm = bmesh.new(); bm.from_mesh(o.data)
@@ -441,9 +529,13 @@ def build():
         thumb_tip = (-sign * .025, -.065, -.09)
         tube(f'ThumbBone_{side}', [(0, 0, 0), (-sign * .01, -.05, -.045), thumb_tip], .026, M['skin'], thumb, taper=[1, .9, .8])
         sphere(f'ThumbTip_{side}', thumb_tip, (.021, .021, .021), M['skin'], thumb, subdiv=1)
+        arm_rig = skin_arm(side, shoulder, bpy.data.objects[f'Arm_{side}Limb'], hand,
+                           (sign * .14, -.035, -.25), (sign * .175, -.085, -.5))
+        elbow_axes = calibrate_elbow(arm_rig, body, sign)
+        reach = add_reach(side, arm_rig, body, sign)
         shoulder.rotation_euler.y = radians(sign * 14)
         arms[side] = shoulder
-        hands[side] = dict(hand=hand, fingers=joints, thumb=thumb, sign=sign)
+        hands[side] = dict(hand=hand, fingers=joints, thumb=thumb, sign=sign, rig=arm_rig, elbow=elbow_axes, reach=reach)
 
     # Legs and boots: very short legs, chunky mustard explorer boots, off-white soles.
     for side, x in [('L', -.3), ('R', .3)]:
@@ -459,9 +551,9 @@ def build():
 
     # Hat: rounded crown, soft brim, dark band, a globe badge; tilted with personality.
     # Its own pivot, so the acting can lag and settle it after a hop.
-    hat = empty('Hat', (0, 0, .66), body)
-    hat.scale = (1.1, 1.1, 1.1)
-    hat.rotation_euler = (radians(-10), radians(10), 0)
+    hat = empty('Hat', (0, 0, .9), body)  # the brim's hole must clear the globe where it sits
+    hat.scale = (1.18, 1.18, 1.18)
+    hat.rotation_euler = (radians(-5), radians(8), 0)
     bpy.ops.mesh.primitive_uv_sphere_add(segments=64, ring_count=32, radius=1, location=(0, 0, 0))
     crown = bpy.context.object; crown.name = 'HatCrown'
     cut_below(crown, -.05)
@@ -471,7 +563,7 @@ def build():
             z = .6 + (z - .6) * .45
         z -= .09 * max(0.0, z - .45) / .2 * (2.718 ** (-(x / .28) ** 2))
         v.co.z = z
-    crown.scale = (.68, .64, .56)
+    crown.scale = (.72, .68, .58)
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     so = crown.modifiers.new('Felt', 'SOLIDIFY'); so.thickness = .03
     s2 = crown.modifiers.new('Soft', 'SUBSURF'); s2.levels = 1; s2.render_levels = 2
@@ -487,12 +579,12 @@ def build():
     bv = brim.modifiers.new('Felt', 'SOLIDIFY'); bv.thickness = .035
     s3 = brim.modifiers.new('Soft', 'SUBSURF'); s3.levels = 1; s3.render_levels = 2
     link(smooth(brim), hat, M['hat']); brim.location = (0, 0, -.11)
-    bpy.ops.mesh.primitive_cylinder_add(vertices=96, radius=.69, depth=.13, location=(0, 0, 0))
+    bpy.ops.mesh.primitive_cylinder_add(vertices=96, radius=.73, depth=.13, location=(0, 0, 0))
     band = bpy.context.object; band.name = 'HatBand'
     band.scale = (1, .94, 1)
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     link(smooth(band), hat, M['band']); band.location = (0, 0, .08)
-    badge = empty('HatBadge', (0, -.6, .22), hat)
+    badge = empty('HatBadge', (0, -.665, .2), hat)  # proud of the crown's surface, not sunk in it
     badge.rotation_euler.x = radians(-22)
     bpy.ops.mesh.primitive_cylinder_add(vertices=48, radius=.14, depth=.03, location=(0, 0, 0), rotation=(radians(90), 0, 0))
     rim = bpy.context.object; rim.name = 'HatBadgeRim'
@@ -572,8 +664,8 @@ def stage(px):
     # A 65 mm lens, front three-quarter, slightly above: the brief's hero camera.
     cam_data = bpy.data.cameras.new('Camera'); cam_data.lens = 65; cam_data.sensor_width = 36
     cam = bpy.data.objects.new('Camera', cam_data); scene.collection.objects.link(cam)
-    look = Vector((0, 0, 1.5))
-    cam.location = look + Vector((0, -6.6, 1.3))
+    look = Vector((0, 0, 1.58))
+    cam.location = look + Vector((0, -7.1, 1.3))  # room above the hat for the celebrate jump
     cam.rotation_euler = (look - cam.location).to_track_quat('-Z', 'Y').to_euler()
     scene.camera = cam
     for name, pos, power, size, color in [
@@ -642,7 +734,8 @@ def pose_hand(h, name):
 
 
 REST = dict(mouth='smile', eyes='open', lids=(-80, -80), brow=0, tilt=0, pupil=1.0, extras=(),
-            gaze=(0, 0), roll=0, nod=0, arms=(0, 0), blush=1.0, hands=('relaxed', 'relaxed'))
+            gaze=(0, 0), roll=0, nod=0, arms=(0, 0), blush=1.0, hands=('relaxed', 'relaxed'),
+            swing=(0, 0), elbow=(0, 0), elbow_in=(0, 0), reach=(None, None), pole=(None, None))
 
 
 def apply_face(parts, mood):
@@ -676,6 +769,21 @@ def pose(parts, spec):
     parts['body'].rotation_euler.y = radians(f['roll'])
     for i, side in enumerate(('R', 'L')):
         parts['arms'][side].rotation_euler.y = parts['arm_rest'][side] + radians(f['arms'][i])
+        parts['arms'][side].rotation_euler.x = -radians(f['swing'][i])
+        h = parts['hands'][side]
+        e = [0.0, 0.0, 0.0]
+        (fa, fs), (ia, isg) = h['elbow']['forward'], h['elbow']['inward']
+        e[fa] += fs * radians(f['elbow'][i])
+        e[ia] += isg * radians(f['elbow_in'][i])
+        h['rig'].pose.bones['fore'].rotation_euler = e
+        target = f['reach'][i]
+        h['reach']['ik'].influence = 1.0 if target else 0.0
+        if target:
+            # Reach targets are written for his right hand; the left mirrors them.
+            s = h['sign']
+            h['reach']['target'].location = (s * target[0], target[1], target[2])
+            px, py, pz = f['pole'][i] or (1.8, .3, 0)
+            h['reach']['pole'].location = (s * px, py, pz)
     for c in parts['cheeks']:
         c.scale = (f['blush'], f['blush'], f['blush'])
     pose_hand(parts['hands']['R'], f['hands'][0])
@@ -738,9 +846,54 @@ POSES = [
     ('cheering',        dict(mouth='laugh', eyes='happy', arms=(-155, 155), hands=('fist', 'fist'), extras=('sparkles',))),
     ('victory',         dict(mouth='laugh', brow=.03, arms=(-165, 0), hands=('fist', 'relaxed'), extras=('sparkles',))),
     ('inviting',        dict(mouth='smile', tilt=4, roll=3, arms=(-45, 45), hands=('open', 'open'))),
+    # With the elbow rig:
+    # Targets and poles were found by searching for the palm nearest each goal with no
+    # arm inside the globe. With arms 30-35% of the globe (the locked proportions) the
+    # front of the face is out of reach: the thinking fist rests on his cheek, and a hand
+    # at the side of the head reads as listening, not as a facepalm (which stays undone).
+    ('hands-on-hips',   dict(mouth='smirk', nod=-6, hands=('fist', 'fist'),
+                             reach=((1.0, -.15, -.45), (1.0, -.15, -.45)), pole=((1.4, -1.4, -.4), (1.4, -1.4, -.4)))),
+    ('thinking',        dict(mouth='think', brow=(.03, 0), gaze=(-10, 10), roll=-7, hands=('fist', 'relaxed'),
+                             reach=((.81, -.72, -.35), None), pole=((1.8, -.6, .6), None))),
+    ('listening',       dict(mouth='o', brow=(.02, .05), gaze=(14, 2), roll=8, hands=('open', 'relaxed'),
+                             reach=((.87, -.72, .05), None), pole=((1.8, -.6, .6), None))),
     ('shrug',           dict(mouth='nervous', tilt=(14, -8), roll=6, arms=(-55, 55), hands=('open', 'open'))),
 ]
 EXPRESSION_PX = 512
+
+
+def world_tree(objs):
+    """One BVH tree, in world space, of every visible mesh or curve among `objs`."""
+    from mathutils.bvhtree import BVHTree
+    dg = bpy.context.evaluated_depsgraph_get()
+    verts, polys = [], []
+    for o in objs:
+        if o.type not in ('MESH', 'CURVE') or o.hide_render:
+            continue
+        ev = o.evaluated_get(dg)
+        me = ev.to_mesh()
+        base = len(verts)
+        verts += [ev.matrix_world @ v.co for v in me.vertices]
+        polys += [[base + i for i in p.vertices] for p in me.polygons]
+        ev.to_mesh_clear()
+    return BVHTree.FromPolygons(verts, polys) if polys else None
+
+
+def clashes(parts):
+    """Pairs of parts passing through each other: the globe poking out of the hat, or an
+    arm through the hat. Parts meant to sit inside another (an arm's root in the globe,
+    the band's hidden caps) are not tested."""
+    hat = [o for o in parts['hat'].children_recursive if o.name in ('HatCrown', 'HatBrim')]
+    trees = {'hat': world_tree(hat), 'globe': world_tree([BODY])}
+    for side, arm in parts['arms'].items():
+        trees[f'arm {side}'] = world_tree([arm, *arm.children_recursive])
+    found = []
+    for a, b in [('globe', 'hat'), ('arm R', 'hat'), ('arm L', 'hat')]:
+        if trees[a] and trees[b]:
+            n = len(trees[a].overlap(trees[b]))
+            if n:
+                found.append(f'{a} through {b} ({n})')
+    return found
 
 
 if __name__ == '__main__':
@@ -787,6 +940,39 @@ if __name__ == '__main__':
             print(f'POSE_READY {name}', flush=True)
         pose(parts, {})
         scene.render.resolution_x = scene.render.resolution_y = STILL_PX
+    if '--check' in ARGS:
+        # Every mood's performance (every other frame), every expression and every pose,
+        # tested for parts passing through each other. Exits non-zero on any clash.
+        sys.path.insert(0, str(Path(__file__).parent))
+        from globe_mascot_acting import act
+        scene = bpy.context.scene
+        bad = []
+        only = set(MOOD_ARG.split(',')) if MOOD_ARG else None
+        for mood in MOODS:
+            if only and mood not in only:
+                continue
+            for o in bpy.data.objects:
+                o.animation_data_clear()
+            apply_face(parts, mood)
+            act(parts, mood)
+            for frame in range(1, FRAME_COUNT + 1, 2):
+                scene.frame_set(frame)
+                bad += [f'{mood} frame {frame}: {c}' for c in clashes(parts)]
+        for o in bpy.data.objects:
+            o.animation_data_clear()
+        scene.frame_set(1)
+        for kind, library in [('expression', EXPRESSIONS), ('pose', POSES)]:
+            for name, spec in library:
+                if only and name not in only:
+                    continue
+                pose(parts, spec)
+                bad += [f'{kind} {name}: {c}' for c in clashes(parts)]
+        pose(parts, {})
+        for line in bad:
+            print(f'CLASH {line}', flush=True)
+        print(f'CHECK_DONE {len(bad)} clash(es)', flush=True)
+        if bad:
+            sys.exit(1)
     if '--sheets' in ARGS:
         sys.path.insert(0, str(Path(__file__).parent))
         from globe_mascot_acting import act

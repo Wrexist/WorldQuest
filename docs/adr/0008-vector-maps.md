@@ -1,6 +1,9 @@
 # ADR 0008 — Vector SVG maps, not raster tiles
 
-**Status:** Accepted **Date:** 2026-07-31
+**Status:** Accepted; interactive half superseded by [ADR 0017](0017-3d-world-atlas.md) **Date:** 2026-07-31
+
+> 2026-10-01: the tappable globe is a WebGL atlas on expo-gl (ADR 0017), not SVG. The
+> static locator PNGs this pipeline produces remain, as the atlas's fallback.
 
 ## Context
 

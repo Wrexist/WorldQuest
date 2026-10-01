@@ -1,0 +1,129 @@
+{
+  "gl": {
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+    "maxTexture": 8192,
+    "canvas": {
+      "width": 716,
+      "height": 840
+    }
+  },
+  "fixtures": [
+    {
+      "name": "capital-ES-question",
+      "summary": "Map of Spain, highlighted. Its capital is shown after you answer."
+    },
+    {
+      "name": "capital-ES-revealed",
+      "summary": "Map of Spain, with its capital, Madrid, pinned."
+    },
+    {
+      "name": "capital-SE-question",
+      "summary": "Map of Sweden, highlighted. Its capital is shown after you answer."
+    },
+    {
+      "name": "capital-SE-revealed",
+      "summary": "Map of Sweden, with its capital, Stockholm, pinned."
+    },
+    {
+      "name": "capital-JP-question",
+      "summary": "Map of Japan, highlighted. Its capital is shown after you answer."
+    },
+    {
+      "name": "capital-JP-revealed",
+      "summary": "Map of Japan, with its capital, Tokyo, pinned."
+    },
+    {
+      "name": "capital-FJ-question",
+      "summary": "Map of Fiji, highlighted. Its capital is shown after you answer."
+    },
+    {
+      "name": "capital-FJ-revealed",
+      "summary": "Map of Fiji, with its capital, Suva, pinned."
+    },
+    {
+      "name": "capital-SG-question",
+      "summary": "Map of Singapore, highlighted. Its capital is shown after you answer."
+    },
+    {
+      "name": "capital-SG-revealed",
+      "summary": "Map of Singapore, with its capital, Singapore, pinned."
+    },
+    {
+      "name": "capital-ID-question",
+      "summary": "Map of Indonesia, highlighted. Its capital is shown after you answer."
+    },
+    {
+      "name": "capital-ID-revealed",
+      "summary": "Map of Indonesia, with its capital, Jakarta, pinned."
+    },
+    {
+      "name": "capital-RU-question",
+      "summary": "Map of Russia, highlighted. Its capital is shown after you answer."
+    },
+    {
+      "name": "capital-RU-revealed",
+      "summary": "Map of Russia, with its capital, Moscow, pinned."
+    },
+    {
+      "name": "capital-NZ-question",
+      "summary": "Map of New Zealand, highlighted. Its capital is shown after you answer."
+    },
+    {
+      "name": "capital-NZ-revealed",
+      "summary": "Map of New Zealand, with its capital, Wellington, pinned."
+    },
+    {
+      "name": "capital-VA-question",
+      "summary": "Map of Vatican City, highlighted. Its capital is shown after you answer."
+    },
+    {
+      "name": "capital-VA-revealed",
+      "summary": "Map of Vatican City, with its capital, Vatican City, pinned."
+    },
+    {
+      "name": "capital-KI-question",
+      "summary": "Map of Kiribati, highlighted. Its capital is shown after you answer."
+    },
+    {
+      "name": "capital-KI-revealed",
+      "summary": "Map of Kiribati, with its capital, South Tarawa, pinned."
+    },
+    {
+      "name": "identify-JP-question",
+      "summary": "Map with one country highlighted. Its name is hidden until you answer."
+    },
+    {
+      "name": "identify-JP-revealed",
+      "summary": "Map showing Japan, highlighted."
+    },
+    {
+      "name": "explore-BR",
+      "summary": "Globe showing Brazil, with its capital, Brasília, pinned."
+    },
+    {
+      "name": "after-remounts",
+      "summary": "Globe showing Kiribati, with its capital, South Tarawa, pinned."
+    }
+  ],
+  "spin": "frames 51 · interval p50 76.2 p95 87.8 ms · draw cpu p50 0.2 p95 0.3 ms · ready 473 ms",
+  "remounts": {
+    "questionChanges": 40,
+    "remounts": 8,
+    "heapBefore": 27600000,
+    "heapAfter": 27600000,
+    "canvases": 1
+  },
+  "errors": [],
+  "firstReadyMs": 255,
+  "resume": {
+    "coverageAfterResume": 0.955
+  },
+  "resize": {
+    "landscapeCoverage": 0.008
+  },
+  "explore": {
+    "card": "Spain\nCapital\nMadrid\nOpen Spain",
+    "landedOn": "/country/ES"
+  }
+}
