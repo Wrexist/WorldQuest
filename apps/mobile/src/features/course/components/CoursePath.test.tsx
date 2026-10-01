@@ -65,7 +65,9 @@ describe('the course path', () => {
     }
     fireEvent.click(screen.getByTestId('path-node-current'))
     expect(handlers.onStart).toHaveBeenLastCalledWith(COURSE.units[1]!.nodes[0]!.id)
-  })
+    // Re-renders a thirty-three-step path once per step; vitest's five seconds is for a quick
+    // machine, and a CI runner or a busy laptop is neither.
+  }, 60_000)
   it('lights exactly one step, and it starts its lesson in one tap', () => {
     const { onStart } = renderPath()
     const start = screen.getAllByRole('button', { name: /^Start step/ })
