@@ -20,16 +20,30 @@ export type PlacedLabel = {
   readonly opacity: number
 }
 
-/** Caption size × average glyph width, plus the pill's padding. Errs wide on purpose. */
-const CHAR_WIDTH = 7.6
+/**
+ * How far map labels grow with the system text size — 1.3×, then they stop.
+ *
+ * A map label's position IS its meaning: "Algeria" twice the size covers Mali and Niger
+ * and stops saying where Algeria is. The words themselves reach a screen reader through
+ * the atlas's summary at full size, and these pills are hidden from it. Same reasoning,
+ * and the same mechanism, as the tab labels' 1.2× in packages/design AppChrome.
+ */
+export const LABEL_MAX_SCALE = 1.3
+
+/**
+ * Caption size × average glyph width, plus the pill's padding, at the LARGEST size the
+ * label may reach — so a layout made at 1× still holds when the text has grown to 1.3×.
+ */
+const CHAR_WIDTH = 7.6 * LABEL_MAX_SCALE
 const PADDING = 18
-const HEIGHT = 22
+const HEIGHT = 22 * LABEL_MAX_SCALE
 
 /** The box a pin and its name occupy, tip at (x, y). Matches WorldAtlasView's styles. */
 export function markerBox(x: number, y: number, label: string | null): Box {
   const head: Box = { x0: x - 16, y0: y - 44, x1: x + 16, y1: y + 2 }
   if (label === null) return head
-  return { ...head, x1: x + 44 + Math.min(160, label.length * 9.5 + 18) }
+  // The pin's name is an h3 pill: ~10.5 pt per glyph at the capped scale.
+  return { ...head, y0: y - 52, x1: x + 44 + Math.min(220, label.length * 10.5 * LABEL_MAX_SCALE + 26) }
 }
 const MAX_LABELS = 10
 /** Labels near the limb are foreshortened smears; they fade out and then go. */

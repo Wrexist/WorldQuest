@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { layoutLabels, markerBox } from './labels.js'
+import { LABEL_MAX_SCALE, layoutLabels, markerBox } from './labels.js'
 import type { AtlasLabel } from './scene/types.js'
+
+/** Half a label's laid-out height, at the capped text scale. */
+const HALF = (22 * LABEL_MAX_SCALE) / 2
 
 const VIEW = { width: 358, height: 260 }
 const EUROPE = { lat: 45, lon: 5, distance: 2.4 }
@@ -30,8 +33,9 @@ describe('label layout', () => {
       for (let j = i + 1; j < placed.length; j++) {
         const a = placed[i]!
         const b = placed[j]!
-        const overlapX = a.x < b.x + b.text.length * 7.6 + 18 && b.x < a.x + a.text.length * 7.6 + 18
-        const overlapY = Math.abs(a.y - b.y) < 22
+        const w = (t: string) => t.length * 7.6 * LABEL_MAX_SCALE + 18
+        const overlapX = a.x < b.x + w(b.text) && b.x < a.x + w(a.text)
+        const overlapY = Math.abs(a.y - b.y) < 22 * LABEL_MAX_SCALE
         expect(overlapX && overlapY).toBe(false)
       }
   })
@@ -41,15 +45,15 @@ describe('label layout', () => {
     const pinned = layoutLabels([label('FR', 45, 5, 'France', 10)], EUROPE, VIEW, [markerBox(at.x, at.y, 'Paris')])
     for (const p of pinned) {
       const box = markerBox(at.x, at.y, 'Paris')
-      const inside = p.x < box.x1 && p.x + 60 > box.x0 && p.y < box.y1 && p.y + 22 > box.y0
+      const inside = p.x < box.x1 && p.x + 60 > box.x0 && p.y < box.y1 && p.y + 22 * LABEL_MAX_SCALE > box.y0
       expect(inside).toBe(false)
     }
   })
 
   it('puts the name beside a country smaller than its name, not over it', () => {
     const centred = layoutLabels([label('LU', 45, 5, 'Luxembourg', 1, 0.4)], EUROPE, VIEW)[0]!
-    expect(centred.y + 11).not.toBeCloseTo(VIEW.height / 2, 0)
+    expect(centred.y + HALF).not.toBeCloseTo(VIEW.height / 2, 0)
     const big = layoutLabels([label('FR', 45, 5, 'France', 1, 12)], EUROPE, VIEW)[0]!
-    expect(big.y + 11).toBeCloseTo(VIEW.height / 2, 0)
+    expect(big.y + HALF).toBeCloseTo(VIEW.height / 2, 0)
   })
 })

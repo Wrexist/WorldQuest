@@ -54,7 +54,7 @@ import { ATLAS_COUNTRIES, ATLAS_RASTER } from './data/atlas.generated.js'
 import { GlobeRenderer, hexToRgb, type GL, type GlobeQuality, type GlobeTheme } from './render/GlobeRenderer.js'
 import { loadAtlasGeometry, loadCountryIdTexture, loadSurfaceTexture } from './render/atlasResources.js'
 import type { AtlasEvent, AtlasSceneSpec, HighlightState } from './scene/types.js'
-import { layoutLabels, markerBox } from './labels.js'
+import { LABEL_MAX_SCALE, layoutLabels, markerBox } from './labels.js'
 
 export type AtlasStatus = 'loading' | 'ready' | 'error'
 
@@ -468,7 +468,7 @@ export function WorldAtlasView({
                 pointerEvents="none"
                 style={[styles.label, strong && styles.labelStrong, { start: label.x, top: label.y, opacity: label.opacity }]}
               >
-                <Text style={[styles.labelText, strong && styles.labelTextStrong]} numberOfLines={1}>
+                <Text style={[styles.labelText, strong && styles.labelTextStrong]} numberOfLines={1} {...LABEL_SCALE}>
                   {label.text}
                 </Text>
               </View>
@@ -501,7 +501,7 @@ export function WorldAtlasView({
                 pointerEvents="none"
                 style={[styles.pinLabel, { start: p.x + PIN_HIT / 2 - space[1], top: p.y - PIN_HIT + space[1] }]}
               >
-                <Text style={styles.pinLabelText} numberOfLines={1}>
+                <Text style={styles.pinLabelText} numberOfLines={1} {...LABEL_SCALE}>
                   {marker.label}
                 </Text>
               </View>
@@ -597,6 +597,16 @@ function ControlButton({ kind, label, onPress }: { kind: 'recenter' | 'in' | 'ou
   )
 }
 
+/**
+ * Map labels grow with the text size up to LABEL_MAX_SCALE (see labels.ts). `dataSet`
+ * mirrors the cap into the DOM as `data-max-scale`, which the 200 % check in
+ * e2e/flow.cjs honours — the pattern the tab labels use.
+ */
+const LABEL_SCALE = {
+  maxFontSizeMultiplier: LABEL_MAX_SCALE,
+  dataSet: { maxScale: String(LABEL_MAX_SCALE) },
+} as const
+
 const RING = 34
 const PIN = 30
 const PULSE = 44
@@ -662,7 +672,7 @@ const useThemeValues = createThemeStyles((colors) => {
     pinDot: { width: PIN / 3, height: PIN / 3, borderRadius: PIN / 6, backgroundColor: colors.map.atlasLabelHalo },
     pinLabel: {
       position: 'absolute',
-      maxWidth: 200,
+      maxWidth: 240,
       paddingHorizontal: space[3],
       paddingVertical: space[1],
       borderRadius: radius.lg,
