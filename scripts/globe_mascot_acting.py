@@ -74,7 +74,7 @@ def act(parts, mood):
 
     if mood == 'welcome':
         # A big friendly wave, leaning into it, a glance and a blink.
-        arm(R, rb, [(1, 0), (6, -150)] + wave(8, 24, -132, -168) + [(28, -150), (36, 0)])
+        arm(R, rb, [(1, 0), (6, -112)] + wave(8, 24, -96, -128) + [(28, -112), (36, 0)])
         roll([(1, 0), (8, 5), (28, 5), (36, 0)])
         gaze(1, 0, [(1, 0), (10, 6), (26, 6), (36, 0)])
         both_lids(blink(31))

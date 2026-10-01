@@ -22,9 +22,9 @@ const STILLS = path.join(ROOT, 'docs/design/assets/world-mascot-3d/stills')
 const OUT = path.join(ROOT, 'apps/mobile/assets/art/atlas-globe')
 const TS = path.join(ROOT, 'apps/mobile/src/lib/atlasGlobe.generated.ts')
 const MOODS = ['welcome', 'celebrate', 'thinking', 'resting', 'encouraging', 'laughing', 'surprised', 'proud', 'sleepy', 'wink']
-const COUNT = 36, COLUMNS = 6, ROWS = 6, CELL = 256, FPS = 18, STILL = 480
+const COUNT = 36, COLUMNS = 6, ROWS = 6, CELL = 320, FPS = 18, STILL = 640
 /** Per sheet. A mood is on screen alone, so this is what one appearance costs to decode. */
-const SHEET_BUDGET_KB = 420
+const SHEET_BUDGET_KB = 640
 
 async function main() {
   fs.mkdirSync(OUT, { recursive: true })
@@ -36,10 +36,17 @@ async function main() {
     const missing = files.filter((f) => !fs.existsSync(f))
     if (missing.length > 0) throw new Error(`${mood}: ${missing.length} frame(s) not rendered — run build-globe-mascot.py --sheets`)
     const cells = await Promise.all(files.map((f) => sharp(f).resize(CELL, CELL).png().toBuffer()))
-    const sheet = await sharp({ create: { width: CELL * COLUMNS, height: CELL * ROWS, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+    const grid = await sharp({ create: { width: CELL * COLUMNS, height: CELL * ROWS, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
       .composite(cells.map((input, i) => ({ input, left: (i % COLUMNS) * CELL, top: Math.floor(i / COLUMNS) * CELL })))
-      .webp({ quality: 82, alphaQuality: 90, effort: 6 })
+      .png()
       .toBuffer()
+    // Busy moods (sparkles, big arm swings) compress worse; step quality down rather
+    // than raise the budget, and stop at a floor below which the land edges smear.
+    let sheet
+    for (let quality = 82; quality >= 64; quality -= 3) {
+      sheet = await sharp(grid).webp({ quality, alphaQuality: 90, effort: 6 }).toBuffer()
+      if (sheet.length <= SHEET_BUDGET_KB * 1024) break
+    }
     if (sheet.length > SHEET_BUDGET_KB * 1024) throw new Error(`${mood}: sheet is ${Math.round(sheet.length / 1024)} KB, over ${SHEET_BUDGET_KB} KB`)
     fs.writeFileSync(path.join(OUT, `${mood}-sheet.webp`), sheet)
     const still = await sharp(path.join(STILLS, `${mood}.png`)).resize(STILL, STILL).webp({ quality: 88, alphaQuality: 95, effort: 6 }).toBuffer()

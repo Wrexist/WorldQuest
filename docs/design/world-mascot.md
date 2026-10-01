@@ -34,14 +34,29 @@ The layered 2D rig (September 27–29, including its shaded re-render and emotio
 was retired on owner review: layered flat art could not reach the finish of the island
 and the Expedition props. Atlas is now a real 3D character built in Blender.
 
-- **Model:** `scripts/build-globe-mascot.py` builds him procedurally (no downloaded mesh
-  or texture): an icosphere with raised, imaginary continents baked in as geometry and
-  vertex colour (deep water, shallows, sand, land, hills) and kept off the face; glossy
-  eyeballs with iris, pupil and two glints on a gaze pivot; hinged eyelids with lash
-  lines; brows on pivots; mouths bent onto the sphere (smile, laugh with teeth and
-  tongue, O, smirk, gentle, thinking); blush; a coral bandana with knot and tails; mitten
-  arms on shoulder pivots; boots with soles and laces; tears, sparkles and Zzz. Master:
-  `docs/design/assets/world-mascot-3d/atlas.blend`.
+- **Canonical design (owner's master character sheet, September 30):** a near-spherical
+  Earth, slightly wider than tall, satin ocean blue with raised, simplified green land;
+  a face set in the ocean with big dark glossy eyes, navy brows, pink blush and a
+  burgundy mouth with a pink tongue (teeth only for the big laugh); short blue arms with
+  mitten hands; very short blue legs in chunky mustard boots with off-white soles; a
+  khaki explorer hat with a dark band and a globe badge, tilted; a small tan backpack
+  with a pocket, a rolled mat and straps. No bandana. The design is locked: every
+  render comes from the one script, so proportions cannot drift between outputs.
+- **Model:** `scripts/build-globe-mascot.py` builds him procedurally. The land is
+  Natural Earth 1:110m (public domain), land only and no borders, painted into
+  `land.png` / `land-soft.png` by `scripts/build-globe-mascot-land.cjs`: the crisp mask
+  colours it, the soft one raises it. Real coastlines, never invented ones
+  (`docs/design/asset-prompts.md`). The Atlantic faces the camera, so the face sits at
+  sea. Eyes are layered (white, blue-grey iris, navy pupil, two glints) on a gaze
+  pivot, with hinged lids; brows, mouths and blush sit on surface pivots; the hat has
+  its own pivot for lag and settle. Parts are named for the brief's rig list
+  (`GlobeBody`, `Eye_L`, `Pupil_L`, `Eyelid_L`, `Brow_L`, `Arm_L`, `Hand_L`, `Boot_L`,
+  `Hat`, `HatBadge`, `Backpack`). Camera: 65 mm, front three-quarter, slightly above.
+  Master: `docs/design/assets/world-mascot-3d/atlas.blend`.
+- **Not built yet from the brief** (follow-ups, in this order): hat secondary motion in
+  the acting; the expression library beyond the ten moods; walk and run cycles;
+  prop poses (magnifier, map, telescope, heart); an armature rig with IK in place of
+  the pivot hierarchy; LOD tiers.
 - **Faces:** `FACE` in the script sets each of the ten moods' rest look; stills are in
   `docs/design/assets/world-mascot-3d/stills/`.
 - **Acting:** `scripts/globe_mascot_acting.py` keys one two-second performance per mood
@@ -53,7 +68,7 @@ and the Expedition props. Atlas is now a real 3D character built in Blender.
 - **Render:** Cycles, AgX Punchy, key, fill, rim and top area lights, a shadow catcher,
   transparent film.
 - **Runtime:** `scripts/build-globe-mascot-art.cjs` packs each mood into a 6×6 sheet of
-  256 px cells plus a 480 px still (`apps/mobile/assets/art/atlas-globe`,
+  320 px cells (rendered at 400) plus a 640 px still (`apps/mobile/assets/art/atlas-globe`,
   `src/lib/atlasGlobe.generated.ts`). `WorldMascot` steps through the sheet like the
   treasure chest: no 3D engine, no video. He plays his mood when he appears and again
   every few seconds while visible (sleepy dozes continuously), stops at rest on blur,

@@ -1,26 +1,33 @@
-"""Atlas, the WorldQuest globe, as a real 3D character.
+"""Atlas, the WorldQuest globe explorer, as a production 3D character.
 
-Run:  blender --background --python scripts/build-globe-mascot.py -- [--stills] [--sheets] [--moods a,b]
+Run:  blender --background --python scripts/build-globe-mascot.py -- [--stills] [--sheets] [--moods=a,b]
 
-Procedural, like build-daylight-models.py and build-expedition-assets.py: no downloaded
-mesh, texture or character. Meters, Z up, the character faces -Y.
+Built to the canonical design in docs/design/world-mascot.md (the owner's master
+character sheet, September 30): a near-spherical Earth body with raised continents, a
+face set into the ocean, short blue arms with mitten hands, very short legs in chunky
+mustard boots, a sand explorer hat with a globe badge, and a small tan backpack.
 
-The continents are IMAGINARY: smooth noise blobs pushed up out of the sphere, kept off
-the face. This is a character, never a map (docs/design/asset-prompts.md): no real
-coastline, border or country appears on him.
+Procedural, like build-daylight-models.py: no downloaded mesh or character. The land is
+Natural Earth 1:110m (public domain, via world-atlas), painted by
+build-globe-mascot-land.cjs — the only allowed source of continent shapes
+(docs/design/asset-prompts.md). Land only, no borders.
+
+Meters, Z up, the character faces -Y. Named parts follow the brief's rig list
+(GlobeBody, Eye_L, Pupil_L, Eyelid_L, Brow_L, Mouth, Arm_L, Hand_L, Boot_L, Hat,
+HatBadge, Backpack …) so a later rig pass can pick them up by name.
 
 Outputs
 - docs/design/assets/world-mascot-3d/atlas.blend           editable master
-- docs/design/assets/world-mascot-3d/stills/<mood>.png     640 px transparent stills
+- docs/design/assets/world-mascot-3d/stills/<mood>.png     transparent stills
 - node_modules/.cache/globe-mascot/<mood>/NNN.png          animation frames (packed by
                                                             scripts/build-globe-mascot-art.cjs)
 """
 import sys
-from math import radians, sin, cos, pi
+from math import radians, cos, sin, pi
 from pathlib import Path
 import bpy
 import bmesh
-from mathutils import Vector, noise, Matrix
+from mathutils import Vector
 
 ROOT = Path(__file__).resolve().parents[1]
 MASTER = ROOT / 'docs/design/assets/world-mascot-3d'
@@ -30,19 +37,18 @@ MASTER.mkdir(parents=True, exist_ok=True)
 ARGS = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
 MOOD_ARG = next((a.split('=', 1)[1] for a in ARGS if a.startswith('--moods=')), None)
 FRAME_COUNT = 36          # per mood, played at 18 fps: two seconds
-FRAME_PX = 320            # one sheet cell
-EYE_SCALE = 1.18          # eyes a touch big: cuter, and they read at 64 px
-MOUTH_SCALE = 1.35
-STILL_PX = 640
+FRAME_PX = 400            # rendered, then downsampled to the sheet cell
+STILL_PX = 1024
 
 BODY_R = 1.0
-BODY_Z = 1.38             # body centre height; boots stand on z = 0
-FRONT = Vector((0, -1, 0))
+BODY_Z = 1.46             # globe centre height; boots stand on z = 0
+FACE_LON = -28.0          # the meridian that faces the camera: mid-Atlantic, so the face sits at sea
+BODY = None
 
 
 # ── materials ────────────────────────────────────────────────────────────────
 
-def principled(name, color, rough=.42, coat=0.0, coat_rough=.25, sss=0.0, emission=None, alpha=1.0, spec=.5):
+def principled(name, color, rough=.45, coat=0.0, coat_rough=.25, sss=0.0, emission=None, sheen=0.0):
     m = bpy.data.materials.new(name)
     m.use_nodes = True  # still required in 5.2
     b = m.node_tree.nodes['Principled BSDF']
@@ -50,52 +56,61 @@ def principled(name, color, rough=.42, coat=0.0, coat_rough=.25, sss=0.0, emissi
     b.inputs['Roughness'].default_value = rough
     b.inputs['Coat Weight'].default_value = coat
     b.inputs['Coat Roughness'].default_value = coat_rough
-    b.inputs['Specular IOR Level'].default_value = spec
+    b.inputs['Sheen Weight'].default_value = sheen
     if sss:
         b.inputs['Subsurface Weight'].default_value = sss
-        b.inputs['Subsurface Radius'].default_value = (.4, .6, 1.0)
-        b.inputs['Subsurface Scale'].default_value = .05
+        b.inputs['Subsurface Radius'].default_value = (.5, .6, 1.0)
+        b.inputs['Subsurface Scale'].default_value = .04
     if emission:
         b.inputs['Emission Color'].default_value = (*emission, 1)
         b.inputs['Emission Strength'].default_value = 2.5 if name == 'Sparkle' else 1.0
-    if alpha < 1:
-        b.inputs['Alpha'].default_value = alpha
-        m.blend_method = 'BLEND' if hasattr(m, 'blend_method') else None
     m.diffuse_color = (*color, 1)
     return m
 
 
 def globe_material():
-    """Ocean and land from the vertex colours the mesh bakes in, with a toy-like coat."""
-    m = bpy.data.materials.new('Globe')
+    """Satin ocean, fresh green land, shallows where the soft mask rises towards a coast."""
+    m = bpy.data.materials.new('Earth')
     m.use_nodes = True  # still required in 5.2
     nt = m.node_tree
     b = nt.nodes['Principled BSDF']
-    attr = nt.nodes.new('ShaderNodeVertexColor'); attr.layer_name = 'Col'
-    nt.links.new(attr.outputs['Color'], b.inputs['Base Color'])
-    rough = nt.nodes.new('ShaderNodeVertexColor'); rough.layer_name = 'Rough'
-    sep = nt.nodes.new('ShaderNodeSeparateColor')
-    nt.links.new(rough.outputs['Color'], sep.inputs['Color'])
-    nt.links.new(sep.outputs['Red'], b.inputs['Roughness'])
-    b.inputs['Coat Weight'].default_value = .35
-    b.inputs['Coat Roughness'].default_value = .22
-    b.inputs['Subsurface Weight'].default_value = .08
-    b.inputs['Subsurface Radius'].default_value = (.3, .5, 1.0)
-    b.inputs['Subsurface Scale'].default_value = .06
+    uv = nt.nodes.new('ShaderNodeTexCoord')
+    crisp = nt.nodes.new('ShaderNodeTexImage'); crisp.image = bpy.data.images.load(str(MASTER / 'land.png'))
+    soft = nt.nodes.new('ShaderNodeTexImage'); soft.image = bpy.data.images.load(str(MASTER / 'land-soft.png'))
+    for t in (crisp, soft):
+        t.image.colorspace_settings.name = 'Non-Color'
+        nt.links.new(uv.outputs['UV'], t.inputs['Vector'])
+    ocean = nt.nodes.new('ShaderNodeValToRGB')           # deep → shallow by the soft mask
+    ocean.color_ramp.elements[0].color = (.006, .19, .78, 1)
+    ocean.color_ramp.elements[1].position = .5
+    ocean.color_ramp.elements[1].color = (.03, .40, .98, 1)
+    nt.links.new(soft.outputs['Color'], ocean.inputs['Fac'])
+    land = nt.nodes.new('ShaderNodeValToRGB')            # coast → interior a touch lighter
+    land.color_ramp.elements[0].color = (.12, .52, .07, 1)
+    land.color_ramp.elements[1].color = (.28, .70, .12, 1)
+    nt.links.new(soft.outputs['Color'], land.inputs['Fac'])
+    mix = nt.nodes.new('ShaderNodeMix'); mix.data_type = 'RGBA'
+    nt.links.new(crisp.outputs['Color'], mix.inputs['Factor'])
+    nt.links.new(ocean.outputs['Color'], mix.inputs['A'])
+    nt.links.new(land.outputs['Color'], mix.inputs['B'])
+    nt.links.new(mix.outputs['Result'], b.inputs['Base Color'])
+    rough = nt.nodes.new('ShaderNodeMapRange')           # ocean glossier than land
+    rough.inputs['To Min'].default_value = .26
+    rough.inputs['To Max'].default_value = .5
+    nt.links.new(crisp.outputs['Color'], rough.inputs['Value'])
+    nt.links.new(rough.outputs['Result'], b.inputs['Roughness'])
+    b.inputs['Coat Weight'].default_value = .4
+    b.inputs['Coat Roughness'].default_value = .2
+    b.inputs['Subsurface Weight'].default_value = .05
     return m
-
-
-C = {
-    'deep': Vector((.002, .06, .42)), 'ocean': Vector((.004, .16, .78)), 'shallow': Vector((.02, .42, .95)),
-    'sand': Vector((.95, .78, .36)), 'land': Vector((.10, .55, .03)), 'hill': Vector((.30, .74, .06)),
-}
 
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 
 def smooth(o):
-    for p in o.data.polygons:
-        p.use_smooth = True
+    if o.type == 'MESH':
+        for p in o.data.polygons:
+            p.use_smooth = True
     return o
 
 
@@ -117,25 +132,38 @@ def empty(name, loc=(0, 0, 0), parent=None):
     return o
 
 
-def sphere(name, loc, scale, mat, parent=None, seg=48, rings=24, subdiv=1):
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=seg, ring_count=rings, radius=1, location=(0, 0, 0))
+def sphere(name, loc, scale, mat, parent=None, subdiv=2):
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=48, ring_count=24, radius=1, location=(0, 0, 0))
     o = bpy.context.object
     o.name = name
     o.scale = scale
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     if subdiv:
-        s = o.modifiers.new('Smooth', 'SUBSURF'); s.levels = subdiv; s.render_levels = subdiv
+        s = o.modifiers.new('Smooth', 'SUBSURF'); s.levels = 1; s.render_levels = subdiv
+    link(smooth(o), parent, mat)
+    o.location = loc
+    return o
+
+
+def rounded_box(name, loc, size, mat, parent=None, bevel=.08):
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(0, 0, 0))
+    o = bpy.context.object
+    o.name = name
+    o.scale = size
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+    b = o.modifiers.new('Soft edges', 'BEVEL'); b.width = bevel; b.segments = 6
+    s = o.modifiers.new('Smooth', 'SUBSURF'); s.levels = 1; s.render_levels = 2
     link(smooth(o), parent, mat)
     o.location = loc
     return o
 
 
 def tube(name, points, radius, mat, parent=None, taper=None):
-    """A soft rounded stroke (brows, arcs, lash lines) along a bezier through `points`."""
+    """A soft rounded stroke along a bezier: brows, lash lines, closed mouths, straps."""
     cu = bpy.data.curves.new(name, 'CURVE')
     cu.dimensions = '3D'
     cu.bevel_depth = radius
-    cu.bevel_resolution = 6
+    cu.bevel_resolution = 8
     cu.use_fill_caps = True
     sp = cu.splines.new('BEZIER')
     sp.bezier_points.add(len(points) - 1)
@@ -152,25 +180,35 @@ def tube(name, points, radius, mat, parent=None, taper=None):
 
 
 def surface_point(direction, lift=0.0):
-    """A point on the body, in body space, along a direction from its centre."""
     d = Vector(direction).normalized()
     return d * (BODY_R + lift), d
 
 
 def facing(direction):
-    """Rotation that turns local -Y (a part's front) to face along `direction`."""
+    """Rotation that turns a part's local -Y to face along `direction`."""
     return Vector(direction).normalized().to_track_quat('-Y', 'Z').to_euler()
 
 
-def flat_shape(name, outline, mat, parent, direction, lift, thickness=.02, scale=1.0):
+def bend(x, z):
+    """A point on a feature's local plane, pushed back onto the sphere (about r²/2)."""
+    return (x, (x * x + z * z) / 2 / BODY_R, z)
+
+
+def arc(a0, a1, rx, rz, n=24, cx=0.0, cz=0.0):
+    return [(cx + rx * cos(radians(a)), cz + rz * sin(radians(a))) for a in [a0 + (a1 - a0) * i / (n - 1) for i in range(n)]]
+
+
+def flat_shape(name, outline, mat, parent, direction, lift, thickness=.02):
     """A flat 2D shape (x right, z up), bent onto the sphere at `direction`, with depth."""
     mesh = bpy.data.meshes.new(name)
     bm = bmesh.new()
-    verts = [bm.verts.new((x * scale, 0, z * scale)) for x, z in outline]
-    bm.faces.new(verts)
+    verts = [bm.verts.new((x, 0, z)) for x, z in outline]
+    face = bm.faces.new(verts)
+    face.normal_update()
+    if face.normal.y > 0:
+        face.normal_flip()
     bmesh.ops.triangulate(bm, faces=bm.faces[:])
-    # Many small faces so the shrinkwrap can bend it round the ball. Done on this mesh
-    # alone: an edit-mode subdivide once caught the whole selected globe (45 GB).
+    # Subdivided on this mesh alone, so the shrinkwrap can bend it round the ball.
     bmesh.ops.subdivide_edges(bm, edges=bm.edges[:], cuts=3, use_grid_fill=True)
     bm.to_mesh(mesh); bm.free()
     o = bpy.data.objects.new(name, mesh)
@@ -189,249 +227,317 @@ def flat_shape(name, outline, mat, parent, direction, lift, thickness=.02, scale
     return o
 
 
-def arc(a0, a1, rx, rz, n=24, cx=0.0, cz=0.0):
-    return [(cx + rx * cos(radians(a)), cz + rz * sin(radians(a))) for a in [a0 + (a1 - a0) * i / (n - 1) for i in range(n)]]
+def pivot_on(name, direction, parent, lift=0.0):
+    """An empty on the ball's surface whose local -Y points out along `direction`."""
+    p, d = surface_point(direction, lift)
+    o = empty(name, p, parent)
+    o.rotation_euler = facing(d)
+    return o
+
+
+def decal(name, parent, w, h, depth, mat, cx=0.0, cz=0.0, top=None, smile=0.0, front=0.0):
+    """A soft lozenge on a surface pivot: mouths, tongues, teeth, blush."""
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=64, ring_count=32, radius=1, location=(0, 0, 0))
+    o = bpy.context.object
+    o.name = name
+    bm = bmesh.new(); bm.from_mesh(o.data)
+    for v in bm.verts:
+        x, y, z = v.co
+        if top is not None:
+            z = min(z, top)
+        z += smile * x * x
+        x, z = cx + x * w, cz + z * h
+        v.co = (x, y * depth - front + (x * x + z * z) / 2 / BODY_R, z)
+    bm.to_mesh(o.data); bm.free()
+    sub = o.modifiers.new('Soft', 'SUBSURF'); sub.levels = 1; sub.render_levels = 2
+    link(smooth(o), parent, mat)
+    return o
+
+
+def cut_below(o, z):
+    """Keep the top of a primitive: eyelid shells, the hat crown."""
+    bm = bmesh.new(); bm.from_mesh(o.data)
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z < z], context='VERTS')
+    bm.to_mesh(o.data); bm.free()
 
 
 # ── build ────────────────────────────────────────────────────────────────────
 
-def clear():
-    bpy.ops.wm.read_factory_settings(use_empty=True)
-
-
 def build():
     global BODY
-    clear()
+    bpy.ops.wm.read_factory_settings(use_empty=True)
     M = {
-        'globe': globe_material(),
-        'eye': principled('Eye white', (.97, .98, 1.0), rough=.12, coat=1.0, coat_rough=.05),
-        'iris': principled('Iris', (.06, .36, .95), rough=.2, coat=1.0, coat_rough=.03),
-        'pupil': principled('Pupil', (.004, .012, .05), rough=.15, coat=1.0, coat_rough=.02),
+        'earth': globe_material(),
+        'skin': principled('Arm blue', (.02, .25, .88), rough=.34, coat=.4, coat_rough=.2, sss=.06),
+        'eye': principled('Eye white', (1, 1, 1), rough=.12, coat=1, coat_rough=.04, sss=.2),
+        'iris': principled('Iris', (.16, .26, .42), rough=.2, coat=1, coat_rough=.03),
+        'pupil': principled('Pupil', (.006, .012, .045), rough=.12, coat=1, coat_rough=.02),
         'glint': principled('Glint', (1, 1, 1), emission=(1, 1, 1), rough=.1),
-        'ink': principled('Ink', (.012, .03, .11), rough=.45),
-        'mouth': principled('Mouth', (.10, .012, .03), rough=.55),
-        'tongue': principled('Tongue', (.98, .30, .30), rough=.35, sss=.2),
+        'ink': principled('Brow navy', (.008, .02, .085), rough=.45),
+        'mouth': principled('Mouth', (.26, .018, .05), rough=.5),
+        'tongue': principled('Tongue', (1.0, .36, .40), rough=.35, sss=.25),
         'teeth': principled('Teeth', (.98, .97, .95), rough=.25, coat=.4),
-        'blush': principled('Blush', (1.0, .38, .5), rough=.6, alpha=.55),
-        'scarf': principled('Scarf', (1.0, .16, .05), rough=.58, sss=.1),
-        'scarfDark': principled('Scarf shade', (.78, .16, .08), rough=.66),
-        'skin': principled('Arm', (.006, .17, .80), rough=.35, coat=.35, coat_rough=.22, sss=.08),
-        'boot': principled('Boot', (1.0, .52, .01), rough=.32, coat=.5, coat_rough=.15),
-        'sole': principled('Sole', (.62, .30, .02), rough=.6),
-        'lace': principled('Lace', (.98, .92, .8), rough=.5),
-        'tear': principled('Tear', (.55, .85, 1.0), rough=.02, coat=1.0, coat_rough=.0, alpha=.85),
+        'blush': principled('Blush', (1.0, .42, .52), rough=.6),
+        'hat': principled('Hat felt', (.5, .36, .18), rough=.78, sheen=.6),
+        'band': principled('Hat band', (.20, .10, .045), rough=.55),
+        'gold': principled('Badge rim', (1.0, .72, .22), rough=.25, coat=.6),
+        'green': principled('Badge land', (.2, .72, .12), rough=.35, coat=.4),
+        'badge': principled('Badge sea', (.03, .38, .98), rough=.25, coat=.6),
+        'boot': principled('Boot', (.86, .43, .0), rough=.42, coat=.35, coat_rough=.2),
+        'sole': principled('Sole', (.97, .93, .84), rough=.55),
+        'lace': principled('Lace', (.55, .34, .12), rough=.5),
+        'pack': principled('Backpack', (.52, .33, .16), rough=.6, sheen=.3),
+        'packLight': principled('Backpack flap', (.68, .47, .26), rough=.6, sheen=.3),
+        'strap': principled('Strap', (.32, .19, .08), rough=.5),
+        'mat': principled('Rolled mat', (.86, .74, .55), rough=.7, sheen=.4),
+        'buckle': principled('Buckle', (.8, .62, .3), rough=.3, coat=.5),
+        'tear': principled('Tear', (.55, .85, 1.0), rough=.02, coat=1),
         'spark': principled('Sparkle', (1.0, .78, .12), emission=(1.0, .7, .1), rough=.2),
         'zzz': principled('Zzz', (.16, .36, .74), rough=.4, coat=.6),
     }
 
-    rig = empty('Atlas')                                   # root: position, squash, lean
-    rig.location = (0, 0, 0)
-    hips = empty('Hips', (0, 0, .55), rig)                 # squash and stretch pivot
-    body = empty('Body', (0, 0, BODY_Z - .55), hips)       # tilt and nod about the centre
+    rig = empty('Atlas')
+    hips = empty('Hips', (0, 0, .42), rig)                 # squash-and-stretch pivot, at the legs
+    body = empty('Body', (0, 0, BODY_Z - .42), hips)       # tilt and nod about the globe's centre
 
-    # The globe: an icosphere with raised imaginary continents baked in as geometry and
-    # vertex colours, so the land has real relief that the key light can catch.
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=7, radius=BODY_R, location=(0, 0, 0))
-    g = bpy.context.object
-    g.name = 'Globe'
+    # GlobeBody: a UV sphere so the equirectangular land mask maps straight onto it,
+    # continents raised by the soft mask into rounded banks the key light rolls over.
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=256, ring_count=128, radius=BODY_R, location=(0, 0, 0))
+    g = bpy.context.object; g.name = 'GlobeBody'
     g.parent = body
-    me = g.data
-    col = me.color_attributes.new('Col', 'FLOAT_COLOR', 'POINT')
-    rough = me.color_attributes.new('Rough', 'FLOAT_COLOR', 'POINT')
-    face_dir = Vector((0, -1, .12)).normalized()
-    seed = Vector((3.1, 7.7, 1.9))
-    for v in me.vertices:
-        d = v.co.normalized()
-        n = noise.fractal(d * 1.35 + seed, 1.0, 2.1, 4, noise_basis='PERLIN_ORIGINAL')
-        n += .35 * noise.noise(d * 3.2 + seed * 2)
-        facing_camera = max(0.0, d.dot(face_dir))
-        n -= 1.2 * max(0.0, min(1.0, (facing_camera - .45) / .35)) ** 2      # keep the face at sea
-        n += .18 * max(0.0, abs(d.z) - .6)                                      # a little land near the poles
-        n += .22 * max(0.0, -d.x) * max(0.0, d.z + .2)                          # and up on his left, where the key light lands
-        t = .12
-        land = max(0.0, min(1.0, (n - t) / .07))
-        hill = max(0.0, min(1.0, (n - t - .18) / .2))
-        v.co = d * (BODY_R + .045 * land + .02 * hill)
-        if n < t - .12:
-            c = C['deep'].lerp(C['ocean'], max(0.0, min(1.0, (n - (t - .5)) / .38)))
-        elif n < t - .015:
-            c = C['ocean'].lerp(C['shallow'], (n - (t - .12)) / .105)
-        elif n < t + .012:
-            c = C['sand']
-        else:
-            c = C['land'].lerp(C['hill'], hill)
-        col.data[v.index].color = (*c, 1)
-        r = .38 if land < .5 else .6
-        rough.data[v.index].color = (r, r, r, 1)
-    me.update()
-    smooth(g)
-    g.data.materials.append(M['globe'])
-    g.scale = (1.0, .96, 1.02)
+    tex = bpy.data.textures.new('Land relief', 'IMAGE')
+    tex.image = bpy.data.images.load(str(MASTER / 'land-soft.png'))
+    tex.image.colorspace_settings.name = 'Non-Color'
+    disp = g.modifiers.new('LandMass relief', 'DISPLACE')
+    disp.texture = tex; disp.texture_coords = 'UV'; disp.strength = .04; disp.mid_level = 0
+    sub = g.modifiers.new('Soft', 'SUBSURF'); sub.levels = 1; sub.render_levels = 2
+    link(smooth(g), None, M['earth'])
+    # Slightly wider than tall, as the brief asks, and the Atlantic turned to face us.
+    g.scale = (1.03, 1.0, .97)
+    g.rotation_euler.z = radians(-90 - FACE_LON)
     BODY = g
 
-    # Eyes: glossy eyeballs set into the ocean face, iris and pupil on a gaze pivot,
-    # two glints, and real lids that close over them.
+    # Eyes: white, with a big deep-navy pupil, a hint of blue-grey iris, two glints,
+    # set a touch into the sphere so the eyelids can close over them.
     eyes = {}
-    for side, x, z, tilt in [('L', -.34, .18, 9), ('R', .30, .23, -6)]:
+    for side, x, z, tilt in [('L', -.33, .2, 6), ('R', .33, .2, -6)]:
         d = Vector((x, -1, z)).normalized()
-        centre = d * (BODY_R * .9)
-        socket = empty(f'Eye{side}', centre, body)
+        socket = empty(f'Eye_{side}', d * (BODY_R * .92), body)
         socket.rotation_euler = facing(d)
         socket.rotation_euler.y += radians(tilt)
-        socket.scale = (EYE_SCALE,) * 3
-        ball = sphere(f'Eyeball{side}', (0, 0, 0), (.22, .17, .29), M['eye'], socket, subdiv=2)
-        gaze = empty(f'Gaze{side}', (0, 0, 0), socket)
-        iris = sphere(f'Iris{side}', (0, -.12, -.02), (.125, .06, .165), M['iris'], gaze, subdiv=2)
-        pupil = sphere(f'Pupil{side}', (0, -.162, -.02), (.072, .03, .1), M['pupil'], gaze, subdiv=2)
-        g1 = sphere(f'Glint{side}', (.045, -.19, .06), (.034, .012, .042), M['glint'], gaze, subdiv=1)
-        g2 = sphere(f'GlintSmall{side}', (-.035, -.186, -.075), (.016, .008, .016), M['glint'], gaze, subdiv=1)
-        # Lid: the upper half of a shell slightly larger than the eye, hinged at its centre.
-        lid = empty(f'Lid{side}', (0, 0, 0), socket)
+        ball = sphere(f'EyeWhite_{side}', (0, 0, 0), (.19, .14, .25), M['eye'], socket)
+        gaze = empty(f'Gaze_{side}', (0, 0, 0), socket)
+        iris = sphere(f'Iris_{side}', (0, -.108, -.015), (.15, .05, .195), M['iris'], gaze)
+        pupil = sphere(f'Pupil_{side}', (0, -.126, -.015), (.132, .045, .176), M['pupil'], gaze)
+        g1 = sphere(f'Glint_{side}', (.045, -.168, .075), (.05, .012, .06), M['glint'], gaze)
+        g2 = sphere(f'GlintSmall_{side}', (-.05, -.164, -.08), (.022, .008, .022), M['glint'], gaze, subdiv=1)
+        lid = empty(f'Eyelid_{side}', (0, 0, 0), socket)
         bpy.ops.mesh.primitive_uv_sphere_add(segments=48, ring_count=24, radius=1, location=(0, 0, 0))
-        shell = bpy.context.object
-        shell.name = f'LidShell{side}'
-        bm = bmesh.new(); bm.from_mesh(shell.data)
-        bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z < -.02], context='VERTS')
-        bm.to_mesh(shell.data); bm.free()
-        shell.scale = (.245, .205, .315)
+        shell = bpy.context.object; shell.name = f'EyelidShell_{side}'
+        cut_below(shell, -.02)
+        shell.scale = (.203, .155, .263)
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-        so = shell.modifiers.new('Lid thickness', 'SOLIDIFY'); so.thickness = .018
-        sub = shell.modifiers.new('Soft', 'SUBSURF'); sub.levels = 1; sub.render_levels = 2
+        so = shell.modifiers.new('Lid thickness', 'SOLIDIFY'); so.thickness = .014
+        s2 = shell.modifiers.new('Soft', 'SUBSURF'); s2.levels = 1; s2.render_levels = 2
         link(smooth(shell), lid, M['skin'])
-        lash = tube(f'Lash{side}', [(-.24, 0, 0), (-.14, -.17, 0), (0, -.21, 0), (.14, -.17, 0), (.24, 0, 0)], .016, M['ink'], lid)
-        lid.rotation_euler.x = radians(-80)              # open: tucked up behind the brow
-        # Happy eye: a closed, smiling arc, shown instead of the eyeball when delighted.
-        happy = tube(f'HappyEye{side}', [(-.2, -.2, -.06), (-.1, -.25, .08), (0, -.27, .12), (.1, -.25, .08), (.2, -.2, -.06)], .03, M['ink'], socket)
+        tube(f'Lash_{side}', [(-.2, 0, 0), (-.12, -.13, 0), (0, -.16, 0), (.12, -.13, 0), (.2, 0, 0)], .014, M['ink'], lid)
+        lid.rotation_euler.x = radians(-80)
+        happy = tube(f'HappyEye_{side}', [(-.17, -.14, -.06), (-.08, -.19, .07), (0, -.2, .1), (.08, -.19, .07), (.17, -.14, -.06)], .03, M['ink'], socket)
         happy.hide_render = True
-        eyes[side] = dict(socket=socket, gaze=gaze, lid=lid, parts=[ball, iris, pupil, g1, g2], happy=happy)
+        eyes[side] = dict(socket=socket, gaze=gaze, lid=lid, parts=[ball, iris, pupil, g1, g2], happy=happy,
+                          pupil=pupil, pupil_rest=pupil.scale.copy())
 
-    # Brows, on their own pivots so they can rise in surprise.
     brows = {}
-    for side, x, z, flip in [('L', -.36, .56, 1), ('R', .31, .60, -1)]:
+    for side, x, z, flip in [('L', -.33, .54, 1), ('R', .33, .54, -1)]:
         d = Vector((x, -1, z)).normalized()
-        piv = empty(f'Brow{side}', d * (BODY_R + .025), body)
+        piv = empty(f'Brow_{side}', d * (BODY_R + .02), body)
         piv.rotation_euler = facing(d)
-        brow = tube(f'BrowStroke{side}', [(-.15, 0, -.02 * flip), (0, 0, .045), (.15, 0, .02 * flip)], .03, M['ink'], piv, taper=[.6, 1.0, .7])
+        tube(f'BrowStroke_{side}', [bend(-.12, -.015 * flip), bend(0, .03), bend(.12, .015 * flip)], .026, M['ink'], piv, taper=[.55, 1, .75])
         brows[side] = dict(piv=piv, rest=piv.location.copy())
 
-    # Mouths: one of each shape, bent onto the face; a mood shows exactly one.
-    mouth_dir = Vector((-.02, -1, -.33))
+    # Mouths: open shapes are a burgundy cavity with a pink tongue (and teeth only for
+    # the laugh); closed ones are a navy line. One shows per mood.
+    mouth_dir = Vector((0, -1, -.24))
     mouths = {}
-    smile = flat_shape('MouthSmile', arc(200, 340, .25, .2, cz=.1) + arc(330, 210, .2, .12, cz=.08), M['mouth'], body, mouth_dir, .012, scale=MOUTH_SCALE)
-    flat_shape('SmileTongue', arc(210, 330, .12, .07, cz=-.04) + [(.1, -.02), (-.1, -.02)], M['tongue'], smile, mouth_dir + Vector((0, 0, -.04)), .02, thickness=.01, scale=MOUTH_SCALE)
-    mouths['smile'] = smile
-    laugh_outline = [(-.3, .05), (.3, .05)] + arc(355, 185, .3, .3, cz=.05)
-    laugh = flat_shape('MouthLaugh', laugh_outline, M['mouth'], body, mouth_dir, .012, scale=MOUTH_SCALE)
-    flat_shape('LaughTeeth', [(-.27, .05), (.27, .05), (.25, -.02), (-.25, -.02)], M['teeth'], laugh, mouth_dir + Vector((0, 0, .07)), .026, thickness=.012, scale=MOUTH_SCALE)
-    flat_shape('LaughTongue', arc(200, 340, .16, .1, cz=-.13), M['tongue'], laugh, mouth_dir + Vector((0, 0, -.16)), .024, thickness=.012, scale=MOUTH_SCALE)
-    mouths['laugh'] = laugh
-    mouths['o'] = flat_shape('MouthO', arc(0, 359, .09, .12, n=32), M['mouth'], body, mouth_dir, .012, scale=MOUTH_SCALE)
-    mouths['gentle'] = tube('MouthGentle', [(-.16, 0, .02), (0, 0, -.06), (.16, 0, .02)], .022, M['ink'], None)
-    mouths['smirk'] = tube('MouthSmirk', [(-.17, 0, -.01), (0, 0, -.05), (.14, 0, .02), (.2, 0, .08)], .024, M['ink'], None)
-    mouths['think'] = tube('MouthThink', [(-.08, 0, 0), (.08, 0, .015)], .022, M['ink'], None)
-    for key in ('gentle', 'smirk', 'think'):
-        o = mouths[key]
-        p, d = surface_point(mouth_dir, .02)
-        o.parent = body; o.location = p; o.rotation_euler = facing(d); o.scale = (MOUTH_SCALE,) * 3
 
-    # Cheeks: a soft blush on the ocean.
-    for side, x in [('L', -.55), ('R', .5)]:
-        flat_shape(f'Cheek{side}', arc(0, 359, .13, .075, n=24), M['blush'], body, Vector((x, -1, -.08)), .006, thickness=.002)
+    def open_mouth(name, w, h, smile, teeth=False):
+        # A D-shaped burgundy cavity, flat along the top and curved up at the corners, a
+        # pink tongue resting in the bottom, and a band of teeth only for the big laugh.
+        m = pivot_on(name, mouth_dir, body, .012)
+        decal(name + 'Cavity', m, w, h, .014, M['mouth'], top=.15, smile=smile)
+        decal(name + 'Tongue', m, w * .52, h * .36, .016, M['tongue'], cz=-h * .58, smile=smile * .6, front=.006)
+        if teeth:
+            decal(name + 'Teeth', m, w * .66, h * .2, .012, M['teeth'], cz=h * .15, top=0, smile=smile * .5, front=.005)
+        return m
+    mouths['smile'] = open_mouth('Mouth', .25, .21, .5)
+    mouths['laugh'] = open_mouth('MouthLaugh', .29, .3, .35, teeth=True)
+    mouths['o'] = pivot_on('MouthO', mouth_dir, body, .012)
+    decal('MouthOCavity', mouths['o'], .07, .09, .014, M['mouth'])
+    for key, pts, r in [('gentle', [bend(-.13, .02), bend(0, -.05), bend(.13, .02)], .02),
+                        ('smirk', [bend(-.13, -.01), bend(0, -.045), bend(.11, .015), bend(.16, .06)], .021),
+                        ('think', [bend(-.07, 0), bend(.07, .012)], .02)]:
+        o = tube(f'Mouth_{key}', pts, r, M['ink'], body)
+        o.location = surface_point(mouth_dir, .018)[0]
+        o.rotation_euler = facing(mouth_dir)
+        mouths[key] = o
 
-    # Bandana: a folded triangle across the lower front, a knot, two tails.
-    band = flat_shape('Bandana', [(-.72, .06), (.62, .16), (.56, .02), (.12, -.52), (-.66, -.08)], M['scarf'], body, Vector((0, -1, -.72)), .03, thickness=.035)
-    flat_shape('BandanaFold', [(-.62, .02), (.56, .1), (.5, .06), (-.6, -.02)], M['scarfDark'], body, Vector((0, -1, -.66)), .07, thickness=.012)
-    knot = sphere('Knot', surface_point(Vector((-.62, -1, -.6)), .05)[0], (.1, .08, .09), M['scarf'], body, subdiv=2)
-    for i, (dx, dz) in enumerate([(-.14, -.1), (-.02, -.2)]):
-        tail = sphere(f'Tail{i}', knot.location + Vector((dx, -.02, dz)), (.07, .04, .14), M['scarf'], body, subdiv=2)
-        tail.rotation_euler.y = radians(35 if i == 0 else -15)
+    for side, x in [('L', -.56), ('R', .56)]:
+        decal(f'Cheek_{side}', pivot_on(f'Blush_{side}', Vector((x, -1, -.02)), body, .05), .12, .075, .008, M['blush'])
 
-    # Arms: a short sleeve into a round mitten, on shoulder pivots.
-    arms = {}
-    for side, x, sign in [('L', -.93, -1), ('R', .93, 1)]:
-        shoulder = empty(f'Shoulder{side}', (x, -.05, -.18), body)
-        sphere(f'Upper{side}', (sign * .12, 0, -.1), (.13, .12, .2), M['skin'], shoulder, subdiv=2).rotation_euler.y = radians(sign * -35)
-        hand = sphere(f'Mitten{side}', (sign * .3, -.02, -.34), (.17, .15, .19), M['skin'], shoulder, subdiv=2)
-        sphere(f'Thumb{side}', (sign * .22, -.12, -.26), (.07, .06, .09), M['skin'], shoulder, subdiv=2)
-        shoulder.rotation_euler.y = radians(sign * 15)
+    # Arms: short, rounded, blue, emerging from the globe's sides, with mitten hands:
+    # a palm, three soft finger forms and a thumb.
+    arms, elbows = {}, {}
+    for side, x, sign in [('L', -.92, -1), ('R', .92, 1)]:
+        shoulder = empty(f'Arm_{side}', (x, -.05, -.12), body)
+        tube(f'UpperArm_{side}', [(-sign * .08, 0, .02), (sign * .1, -.01, -.12), (sign * .18, -.02, -.25)], .115, M['skin'], shoulder, taper=[1, .95, .9])
+        elbow = empty(f'Elbow_{side}', (sign * .18, -.02, -.25), shoulder)
+        sphere(f'ElbowJoint_{side}', (0, 0, 0), (.108, .108, .108), M['skin'], elbow)
+        tube(f'Forearm_{side}', [(0, 0, 0), (sign * .02, -.03, -.12), (sign * .03, -.05, -.22)], .1, M['skin'], elbow, taper=[1, .96, .94])
+        hand = empty(f'Hand_{side}', (sign * .03, -.05, -.25), elbow)
+        sphere(f'Palm_{side}', (0, 0, -.07), (.15, .125, .15), M['skin'], hand)
+        for k, fy in enumerate((-.07, 0, .07)):
+            sphere(f'Finger_{side}{k}', (sign * .025, fy - .012, -.2 + abs(fy) * .4), (.056, .052, .075), M['skin'], hand)
+        sphere(f'Thumb_{side}', (-sign * .09, -.1, -.05), (.056, .056, .08), M['skin'], hand).rotation_euler.y = radians(sign * 30)
+        shoulder.rotation_euler.y = radians(sign * 14)
+        elbow.rotation_euler.x = radians(-15)
         arms[side] = shoulder
+        elbows[side] = elbow
 
-    # Legs and boots: short and sturdy, planted.
+    # Legs and boots: very short legs, chunky mustard explorer boots, off-white soles.
     for side, x in [('L', -.3), ('R', .3)]:
-        bpy.ops.mesh.primitive_cylinder_add(radius=.1, depth=.34, location=(x, 0, .3))
-        leg = bpy.context.object; leg.name = f'Leg{side}'
-        link(smooth(leg), hips, M['skin']); leg.location = (x, 0, -.25)
-        boot = sphere(f'Boot{side}', (x, -.08, .12), (.21, .3, .15), M['boot'], rig, subdiv=2)
-        sole = sphere(f'Sole{side}', (x, -.08, .05), (.22, .31, .06), M['sole'], rig, subdiv=2)
-        sphere(f'BootCuff{side}', (x, 0, .24), (.13, .13, .06), M['boot'], rig, subdiv=2)
-        for i in range(2):
-            sphere(f'Lace{side}{i}', (x + (-.05 if i else .05), -.27, .2), (.025, .02, .025), M['lace'], rig, subdiv=1)
+        bpy.ops.mesh.primitive_cylinder_add(radius=.1, depth=.42, location=(0, 0, 0))
+        leg = bpy.context.object; leg.name = f'Leg_{side}'
+        link(smooth(leg), hips, M['skin']); leg.location = (x, 0, -.1)
+        boot = empty(f'Boot_{side}', (x, -.02, 0), rig)
+        sphere(f'BootBody_{side}', (0, -.08, .17), (.23, .31, .17), M['boot'], boot)
+        sphere(f'BootCollar_{side}', (0, .01, .3), (.16, .16, .1), M['boot'], boot)
+        sphere(f'BootSole_{side}', (0, -.08, .055), (.245, .325, .06), M['sole'], boot)
+        for k in range(3):
+            tube(f'Lace_{side}{k}', [(-.07, -.3 + k * .07, .29 - k * .025), (.07, -.3 + k * .07, .29 - k * .025)], .013, M['lace'], boot)
+
+    # Hat: rounded crown, soft brim, dark band, a globe badge; tilted with personality.
+    # Its own pivot, so the acting can lag and settle it after a hop.
+    hat = empty('Hat', (0, 0, .66), body)
+    hat.scale = (1.1, 1.1, 1.1)
+    hat.rotation_euler = (radians(-10), radians(10), 0)
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=64, ring_count=32, radius=1, location=(0, 0, 0))
+    crown = bpy.context.object; crown.name = 'HatCrown'
+    cut_below(crown, -.05)
+    for v in crown.data.vertices:
+        x, y, z = v.co
+        if z > .6:
+            z = .6 + (z - .6) * .45
+        z -= .09 * max(0.0, z - .45) / .2 * (2.718 ** (-(x / .28) ** 2))
+        v.co.z = z
+    crown.scale = (.68, .64, .56)
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+    so = crown.modifiers.new('Felt', 'SOLIDIFY'); so.thickness = .03
+    s2 = crown.modifiers.new('Soft', 'SUBSURF'); s2.levels = 1; s2.render_levels = 2
+    link(smooth(crown), hat, M['hat']); crown.location = (0, 0, .02)
+    # The brim is a band of a flattened sphere: an annulus that curves softly down.
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=96, ring_count=48, radius=1, location=(0, 0, 0))
+    brim = bpy.context.object; brim.name = 'HatBrim'
+    bm = bmesh.new(); bm.from_mesh(brim.data)
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z < .2 or v.co.z > .84], context='VERTS')
+    bm.to_mesh(brim.data); bm.free()
+    brim.scale = (1.2, 1.12, .16)
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+    bv = brim.modifiers.new('Felt', 'SOLIDIFY'); bv.thickness = .035
+    s3 = brim.modifiers.new('Soft', 'SUBSURF'); s3.levels = 1; s3.render_levels = 2
+    link(smooth(brim), hat, M['hat']); brim.location = (0, 0, -.11)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=96, radius=.69, depth=.13, location=(0, 0, 0))
+    band = bpy.context.object; band.name = 'HatBand'
+    band.scale = (1, .94, 1)
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+    link(smooth(band), hat, M['band']); band.location = (0, 0, .08)
+    badge = empty('HatBadge', (0, -.6, .22), hat)
+    badge.rotation_euler.x = radians(-22)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=48, radius=.14, depth=.03, location=(0, 0, 0), rotation=(radians(90), 0, 0))
+    rim = bpy.context.object; rim.name = 'HatBadgeRim'
+    rb = rim.modifiers.new('Soft', 'BEVEL'); rb.width = .012; rb.segments = 4
+    link(smooth(rim), badge, M['gold'])
+    sphere('HatBadgeGlobe', (0, -.02, 0), (.11, .03, .11), M['badge'], badge)
+    for k, (bx, bz, s) in enumerate([(-.04, .03, .045), (.04, -.025, .04), (.045, .045, .024)]):
+        sphere(f'HatBadgeLand{k}', (bx, -.045, bz), (s, .01, s * .8), M['green'], badge)
+
+    # Backpack: small, rounded, tan; one pocket, a rolled mat, a buckle, straps over the
+    # shoulders. Sits on his back; visible past the silhouette, never dominant.
+    pack = empty('Backpack', (-.8, .52, -.1), body)
+    pack.rotation_euler.z = radians(57)
+    rounded_box('BackpackBody', (0, .08, 0), (.72, .36, .74), M['pack'], pack, bevel=.14)
+    rounded_box('BackpackPocket', (0, .25, -.12), (.42, .1, .28), M['packLight'], pack, bevel=.05)
+    rounded_box('BackpackFlap', (0, .16, .2), (.56, .2, .16), M['packLight'], pack, bevel=.06)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=48, radius=.1, depth=.86, location=(0, 0, 0), rotation=(0, radians(90), 0))
+    mat_roll = bpy.context.object; mat_roll.name = 'BackpackMat'
+    link(smooth(mat_roll), pack, M['mat']); mat_roll.location = (0, .1, .46)
+    rounded_box('BackpackBuckle', (0, .305, -.02), (.08, .02, .06), M['buckle'], pack, bevel=.01)
+    for side, sx in [('L', -1), ('R', 1)]:
+        loop = [(.5, .75, .35), (.75, .25, .55), (.85, -.3, .35), (.92, -.3, 0), (.85, .1, -.4), (.55, .6, -.5)]
+        tube(f'BackpackStrap_{side}', [Vector((sx * x, y, z)).normalized() * 1.035 for x, y, z in loop], .042, M['strap'], body)
 
     # Extras, hidden unless a mood shows them.
     extras = {}
-    tears = []
-    for side, x, z in [('L', -.62, .12), ('R', .58, .18)]:
-        t = sphere(f'Tear{side}', surface_point(Vector((x, -1, z)), .06)[0], (.05, .04, .075), M['tear'], body, subdiv=2)
-        tears.append(t)
-    extras['tears'] = tears
+    extras['tears'] = [sphere(f'Tear_{s}', surface_point(Vector((x, -1, z)), .05)[0], (.04, .035, .06), M['tear'], body)
+                       for s, x, z in [('L', -.52, .12), ('R', .52, .12)]]
     sparks = []
-    for i, (x, z, s) in enumerate([(-1.25, 2.6, .16), (1.2, 2.75, .12), (1.35, 2.05, .09), (-1.35, 1.75, .08)]):
+    for i, (x, z, s) in enumerate([(-1.3, 2.7, .16), (1.3, 2.8, .12), (1.45, 2.1, .09), (-1.45, 1.8, .08)]):
         verts, faces = [], []
         for k in range(8):
             a = pi / 2 + k * pi / 4
             r = s if k % 2 == 0 else s * .3
             verts.append((cos(a) * r, 0, sin(a) * r))
-        verts.append((0, -s * .25, 0)); verts.append((0, s * .25, 0))
+        verts += [(0, -s * .25, 0), (0, s * .25, 0)]
         for k in range(8):
-            faces.append((k, (k + 1) % 8, 8)); faces.append(((k + 1) % 8, k, 9))
+            faces += [(k, (k + 1) % 8, 8), ((k + 1) % 8, k, 9)]
         mesh = bpy.data.meshes.new(f'Spark{i}'); mesh.from_pydata(verts, [], faces); mesh.update()
         o = bpy.data.objects.new(f'Spark{i}', mesh); bpy.context.collection.objects.link(o)
-        o.location = (x, -.6, z); link(o, rig, M['spark'])
-        sparks.append(o)
+        o.location = (x, -.6, z); link(o, rig, M['spark']); sparks.append(o)
     extras['sparkles'] = sparks
     zs = []
-    for i, (x, z, s) in enumerate([(.95, 2.55, .32), (1.3, 2.95, .24), (1.55, 3.25, .18)]):
+    for i, (x, z, s) in enumerate([(1.0, 2.75, .3), (1.35, 3.1, .22), (1.6, 3.38, .16)]):
         cu = bpy.data.curves.new(f'Z{i}', 'FONT'); cu.body = 'Z'; cu.extrude = .04; cu.bevel_depth = .015; cu.align_x = 'CENTER'
         o = bpy.data.objects.new(f'Z{i}', cu); bpy.context.collection.objects.link(o)
         o.location = (x, -.8, z); o.rotation_euler = (radians(90), 0, radians(-8)); o.scale = (s, s, s)
         link(o, rig, M['zzz']); zs.append(o)
     extras['zzz'] = zs
 
-    rig.rotation_euler.z = radians(-14)     # a three-quarter turn, so he reads as round
-    return dict(rig=rig, hips=hips, body=body, eyes=eyes, brows=brows, mouths=mouths, arms=arms, extras=extras)
+    # Turned towards camera a little, so the backpack shows past his side.
+    rig.rotation_euler.z = radians(12)
+    return dict(rig=rig, hips=hips, body=body, eyes=eyes, brows=brows, mouths=mouths, arms=arms, elbows=elbows,
+                extras=extras, lips={}, hat=hat)
 
 
 # ── stage ────────────────────────────────────────────────────────────────────
 
 def stage(px):
     scene = bpy.context.scene
-    world = bpy.data.worlds.new('Soft sky'); scene.world = world
-    world.use_nodes = True
+    world = bpy.data.worlds.new('Soft studio'); scene.world = world
+    world.use_nodes = True  # still required in 5.2
     bg = world.node_tree.nodes['Background']
-    bg.inputs['Color'].default_value = (.62, .78, 1.0, 1)
-    bg.inputs['Strength'].default_value = .32
-    cam_data = bpy.data.cameras.new('Camera'); cam_data.type = 'ORTHO'; cam_data.ortho_scale = 3.7
+    bg.inputs['Color'].default_value = (.78, .86, 1.0, 1)
+    bg.inputs['Strength'].default_value = .45
+    # A 65 mm lens, front three-quarter, slightly above: the brief's hero camera.
+    cam_data = bpy.data.cameras.new('Camera'); cam_data.lens = 65; cam_data.sensor_width = 36
     cam = bpy.data.objects.new('Camera', cam_data); scene.collection.objects.link(cam)
-    cam.location = (.9, -9, 2.9)
-    look = Vector((0, 0, 1.45))
+    look = Vector((0, 0, 1.5))
+    cam.location = look + Vector((0, -6.6, 1.3))
     cam.rotation_euler = (look - cam.location).to_track_quat('-Z', 'Y').to_euler()
     scene.camera = cam
     for name, pos, power, size, color in [
-        ('Key', (-4, -5, 6.5), 900, 4.5, (1.0, .96, .9)),
-        ('Fill', (5, -6, 2.5), 260, 6, (.85, .92, 1.0)),
-        ('Rim', (3.5, 5, 4.5), 700, 3, (.7, .85, 1.0)),
-        ('Top', (0, 0, 8), 220, 5, (1, 1, 1)),
+        ('Key', (-5, -6, 7), 1400, 6, (1.0, .97, .92)),
+        ('Fill', (6, -6, 3), 420, 7, (.86, .92, 1.0)),
+        ('Rim', (3, 6, 5), 900, 4, (.75, .88, 1.0)),
+        ('Top', (0, -1, 9), 300, 6, (1, 1, 1)),
     ]:
         ld = bpy.data.lights.new(name, 'AREA'); ld.energy = power; ld.shape = 'DISK'; ld.size = size; ld.color = color
         lo = bpy.data.objects.new(name, ld); scene.collection.objects.link(lo); lo.location = pos
         lo.rotation_euler = (look - lo.location).to_track_quat('-Z', 'Y').to_euler()
-    # A shadow catcher under the boots, so he stands on something.
-    bpy.ops.mesh.primitive_circle_add(vertices=64, radius=1.1, fill_type='NGON', location=(0, -.05, 0))
-    floor = bpy.context.object; floor.name = 'Shadow'; floor.is_shadow_catcher = True
+    bpy.ops.mesh.primitive_circle_add(vertices=64, radius=1.3, fill_type='NGON', location=(0, -.05, 0))
+    # Wide enough that the soft shadow of the hat and body fades out before any edge.
+    floor = bpy.context.object; floor.name = 'Shadow'; floor.scale = (5, 5, 1); floor.is_shadow_catcher = True
     scene.render.engine = 'CYCLES'
-    scene.cycles.samples = 64
+    scene.cycles.samples = 96
     scene.cycles.use_denoising = True
-    scene.cycles.device = 'GPU' if bpy.context.preferences.addons.get('cycles') else 'CPU'
     scene.render.film_transparent = True
     scene.render.resolution_x = px; scene.render.resolution_y = px
     scene.render.image_settings.file_format = 'PNG'; scene.render.image_settings.color_mode = 'RGBA'
@@ -445,16 +551,16 @@ def stage(px):
 
 MOODS = ['welcome', 'celebrate', 'thinking', 'resting', 'encouraging', 'laughing', 'surprised', 'proud', 'sleepy', 'wink']
 
-# What each mood looks like at rest: the still under Reduce Motion, and the pose every
-# animation starts and ends on. lids: degrees (-80 open, 0 half, 85 shut).
+# The rest look of each mood: the still under Reduce Motion, and the pose each animation
+# starts and ends on. lids: degrees (-80 open, 0 half, 85 shut).
 FACE = {
     'welcome':     dict(mouth='smile',  eyes='open',  lids=(-80, -80), brow=0,    pupil=1.0, extras=()),
     'celebrate':   dict(mouth='laugh',  eyes='happy', lids=(-80, -80), brow=.02,  pupil=1.0, extras=('sparkles',)),
     'thinking':    dict(mouth='think',  eyes='open',  lids=(-80, -80), brow=.03,  pupil=.95, extras=()),
     'resting':     dict(mouth='gentle', eyes='happy', lids=(-80, -80), brow=0,    pupil=1.0, extras=()),
-    'encouraging': dict(mouth='gentle', eyes='open',  lids=(-80, -80), brow=.015, pupil=1.05, extras=()),
+    'encouraging': dict(mouth='gentle', eyes='open',  lids=(-80, -80), brow=.015, pupil=1.0, extras=()),
     'laughing':    dict(mouth='laugh',  eyes='happy', lids=(-80, -80), brow=.03,  pupil=1.0, extras=('tears',)),
-    'surprised':   dict(mouth='o',      eyes='open',  lids=(-95, -95), brow=.09,  pupil=.78, extras=()),
+    'surprised':   dict(mouth='o',      eyes='open',  lids=(-95, -95), brow=.07,  pupil=.72, extras=()),
     'proud':       dict(mouth='smirk',  eyes='open',  lids=(-5, -5),   brow=-.01, pupil=1.0, extras=('sparkles',)),
     'sleepy':      dict(mouth='gentle', eyes='open',  lids=(12, 12),   brow=-.02, pupil=1.0, extras=('zzz',)),
     'wink':        dict(mouth='smile',  eyes='open',  lids=(-80, -80), brow=0,    pupil=1.0, extras=()),
@@ -473,8 +579,9 @@ def apply_face(parts, mood):
         for x in [*eye['parts'], eye['lid'], *eye['lid'].children_recursive]:
             x.hide_render = happy
         eye['lid'].rotation_euler.x = radians(f['lids'][0 if side == 'L' else 1])
-        # Across the face only: shrinking in depth too would sink the pupil into the eyeball.
-        eye['gaze'].scale = (f['pupil'], 1, f['pupil'])
+        # The pupil alone, across the face: a shocked eye is a small pupil.
+        r = eye['pupil_rest']
+        eye['pupil'].scale = (r.x * f['pupil'], r.y, r.z * f['pupil'])
     for side, brow in parts['brows'].items():
         brow['piv'].location = brow['rest'] + Vector((0, 0, f['brow']))
     for key, objs in parts['extras'].items():
@@ -491,15 +598,19 @@ if __name__ == '__main__':
         (MASTER / 'stills').mkdir(exist_ok=True)
         for mood in moods:
             apply_face(parts, mood)
+            arm = parts['arms']['R']; rest = arm.rotation_euler.y
+            if mood == 'welcome':
+                arm.rotation_euler.y = rest + radians(-112)
             bpy.context.scene.render.filepath = str(MASTER / 'stills' / f'{mood}.png')
             bpy.ops.render.render(write_still=True)
+            arm.rotation_euler.y = rest
             print(f'STILL_READY {mood}', flush=True)
     if '--sheets' in ARGS:
         sys.path.insert(0, str(Path(__file__).parent))
         from globe_mascot_acting import act
         scene = bpy.context.scene
         scene.render.resolution_x = scene.render.resolution_y = FRAME_PX
-        scene.cycles.samples = 40
+        scene.cycles.samples = 48
         for mood in moods:
             for o in bpy.data.objects:
                 o.animation_data_clear()
