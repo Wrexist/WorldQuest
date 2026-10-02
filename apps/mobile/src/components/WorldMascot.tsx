@@ -16,15 +16,17 @@ const hidden = { 'aria-hidden': true, accessibilityElementsHidden: true, importa
 const frames = Array.from({ length: ATLAS_SEQUENCE.frames }, (_, i) => i)
 const toSource = (asset: unknown) => (typeof asset === 'string' ? { uri: asset } : asset) as number
 
-export function WorldMascot({ mood = 'welcome', style, label, onBoopLabel }: {
+export function WorldMascot({ mood = 'welcome', style, label, onBoopLabel, playback = 'ambient' }: {
   mood?: AtlasMood | undefined; style?: StyleProp<ViewStyle> | undefined; label?: string | undefined
   /** Opt in to tapping him: the accessible name of that button. */
   onBoopLabel?: string | undefined
+  /** Continuous reference-led acting for the optional adult paywall. */
+  playback?: 'ambient' | 'paywall'
 }) {
   const dimensions = StyleSheet.flatten(style)
   const [side, setSide] = useState(typeof dimensions?.width === 'number' && typeof dimensions?.height === 'number' ? Math.min(dimensions.width, dimensions.height) : 0)
   const [decoded, setDecoded] = useState<Record<string, boolean>>({})
-  const { frame, playing, boopNow, still } = useMascotMotion(mood, side, decoded)
+  const { frame, playing, boopNow, still } = useMascotMotion(mood, side, decoded, playback)
   const art = ATLAS_GLOBE[playing]
   const { columns, rows } = ATLAS_SEQUENCE
 

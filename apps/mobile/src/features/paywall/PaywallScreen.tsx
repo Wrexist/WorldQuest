@@ -1,704 +1,198 @@
-import { createThemeStyles } from '@worldquest/design'
-/** Optional Premium presentation. Current runtime has no products.
- * Priced layouts are preparatory; Phase 5 must verify every benefit before enablement.
- * Dismiss remains available on every page. Child accounts use the parental gate.
- * Spec: docs/systems/monetization.md; current claims: docs/product/launch-brief.md.
- */
-
-import { useEffect, useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import {
-  AbsentContent,
-  Button,
-  Card,
-  Spacer,
-  radius,
-  space,
-  text,
-  type AbsentState,
-} from '@worldquest/design'
-import { Flag } from '../../components/Flag.js'
+/** Reference-led Premium presentation; real store products are still unavailable. */
+import { LinearGradient } from 'expo-linear-gradient'
+import { useEffect, useRef, useState } from 'react'
+import { Animated, Linking, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
+import { AbsentContent, Button, Card, Spacer, createThemeStyles, radius, space, text, type AbsentState } from '@worldquest/design'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { track } from '../../lib/analytics.js'
+import { hapticSelect } from '../../lib/haptics.js'
+import { PRIVACY_URL, TERMS_URL } from '../../lib/links.js'
 import { yearlySavingPercent, type Plan, type PurchaseResult } from './purchases.js'
 import { Icon } from '../../components/Icon.js'
 import { Art } from '../../components/Art.js'
+import { Flag } from '../../components/Flag.js'
+import { Reveal, TrialTimeline, usePlanSpring, PaywallMascot, DriftingCloud, Sheen, SelectionSparkle } from './PaywallMotion.js'
 
-/** One country the taster covered, resolved from the pack by the route. */
-export type PaywallCountry = {
-  readonly id: string
-  /** A name from the content pack, never a translated string. */
-  readonly name: string
-  /** `assets.flag.path`, or undefined where we ship no artwork. */
-  readonly flagPath: string | undefined
-}
-
+export type PaywallCountry = { readonly id: string; readonly name: string; readonly flagPath: string | undefined }
 export type PaywallScreenProps = {
-  /**
-   * Under-13, from the age gate. Swaps the whole screen for the parental gate —
-   * checked here rather than at the call site so a new entry point cannot forget it.
-   */
   readonly isChild: boolean
-  /** Priced by the store for this user. Empty means the store had nothing to sell. */
   readonly plans: readonly Plan[]
-  /** The store has been asked for prices and has not answered yet. */
   readonly plansLoading?: boolean
-  /**
-   * The store could not be reached at all. Separate from an empty list because the
-   * user can do something about this one, and nothing about the other.
-   */
   readonly plansFailed?: boolean
-  /**
-   * No connection. Prices come from the store, so there is nothing to show and
-   * nothing to retry until this changes — said plainly rather than as a failure,
-   * because being on a train is not an error.
-   */
   readonly isOffline?: boolean
   readonly onRetryPlans?: (() => void) | undefined
-  /**
-   * Whether OUR record says this user still has a trial to spend.
-   *
-   * For the impression event only, and it exists because that event fires on mount —
-   * before the store has answered, so `plan.trialEligible` is not knowable yet. Without
-   * it the funnel cannot tell a trial offer from a straight purchase offer, and those
-   * two convert nothing like each other.
-   *
-   * The store is the authority at the till. If the two disagree, the prices page shows
-   * the store's answer and this was only ever a label on a chart.
-   */
   readonly trialOnRecord?: boolean
-  /**
-   * The countries the taster lesson just covered. Page 1 is about them, by name and
-   * by flag — the count is `countries.length` rather than a second prop that could
-   * disagree with the row it sits above.
-   */
   readonly countries: readonly PaywallCountry[]
   readonly onPurchase: (planId: Plan['id']) => Promise<PurchaseResult>
   readonly onRestore: () => Promise<PurchaseResult>
   readonly onDismiss: () => void
-  /** Where the paywall was opened from. Analytics only — never changes what is shown. */
   readonly source: 'onboarding' | 'hearts' | 'settings' | 'stats'
 }
-
-type Page = 0 | 1 | 2
-const PAGES: readonly Page[] = [0, 1, 2]
-
-/**
- * The illustration on the two states where page 3 has no prices to show.
- *
- * 72, and it is the one place in the app that does not use the 140 every other error and
- * empty state draws at. MEASURED, not chosen, twice over.
- *
- * It was 140 and the 200 %-text E2E check failed here — the added height pushed "Every
- * lesson stays free. Always." underneath the footer, which is the last line before the
- * call to action and the one sentence on this screen that has to survive. 88 passed.
- *
- * Then the art moved inside `AbsentContent`, whose frame costs a border and its own
- * padding, and 88 failed the same check for the same reason: "Offline packs" drawn under
- * "Not now". 72 buys that back. The frame also does some of the work the size was doing
- * — a picture inside a bordered box that is plainly the shape of the missing prices does
- * not have to be large to say something belongs there.
- *
- * This screen carries more copy than any other empty state — a headline, a paragraph,
- * four distinct explanations of why there are no prices, a retry, and the free-forever
- * line — so it has the least room left for a picture, and doubling every string spends
- * what remains. `flex: 1` on the scroll area was tried first and did not fix it; neither
- * did keying the art off `fontScale`, which react-native-web reports as 1 regardless, so
- * the guard would have been dead code on the only harness that can see the bug.
- *
- * Smaller than the convention, and that is the right trade: a user who has doubled their
- * text has said which of the two they came for.
- */
-const STATE_ART = 72
-
-/**
- * The height the two plan cards occupy, which the stand-in holds when they are absent.
- *
- * Added up from the tokens rather than eyeballed, because the point of the number is
- * that the page does not move when the prices arrive:
- *
- * ```
- * annual   16 pad + 26 badge row + 4 + 30 price + 4 + 18 total + 16 pad = 114
- * monthly  16 pad + 24 label     + 4 + 30 price          + 16 pad      =  90
- * gap between them                                                     =  16
- *                                                                        ---
- *                                                                        220
- * ```
- *
- * (The badge row is 26 rather than 24: the pill is `caption`'s 18 plus 4 above and
- * below, and it is the taller of the two things on that line.)
- *
- * ONE stand-in rather than two. Drawing two boxes would claim we know the store would
- * have returned two plans, and the whole reason this state exists is that we could not
- * ask it. It is a `minHeight`, so at 200 % text the message inside grows the box rather
- * than being clipped by it.
- */
-const PLANS_FOOTPRINT = 220
-
-/**
- * The four ways page 3 can have no prices on it, each said differently.
- *
- * Collapsing them into one "something went wrong" would tell a user on a train to retry
- * forever, and tell a user with a real failure nothing.
- */
 const ABSENT_MESSAGE: Record<AbsentState, TranslationKey> = {
-  loading: 'paywall:plans.loading',
-  offline: 'paywall:plans.offline',
-  error: 'paywall:plans.failed',
-  unavailable: 'paywall:plans.none',
+  loading: 'paywall:plans.loading', offline: 'paywall:plans.offline', error: 'paywall:plans.failed', unavailable: 'paywall:plans.none',
 }
+const PERKS = [['heart', 'paywall:perk.hearts'], ['offline', 'paywall:perk.offline'], ['star', 'paywall:perk.stats'], ['gem', 'paywall:perk.cosmetics']] as const
 
-
-/** Same as the lesson summary's, so the two screens read as one moment. */
-const FLAG_WIDTH = 56
-
-/**
- * Atlas on the parental gate.
- *
- * `voice-and-tone.md` keeps him out of paywalls, and the gate is not one: there is no
- * price on it, nothing to buy and nothing being asked for. It is a child being told that
- * what they already have is theirs, which is the encouraging register he exists for.
- * Without him the screen was three centred paragraphs of system text — which is what a
- * refusal looks like, and the screen is not a refusal.
- */
-const GATE_ART = 148
-
-/**
- * What Premium includes, listed on the page that has the price on it.
- *
- * The same four strings page 2 shows. One list rather than two, so the pages cannot come
- * to disagree about what somebody is buying.
- */
-/**
- * The perk tick, at the size the `body` glyph it replaces occupied.
- *
- * Fixed rather than font-scaled, per `Icon`'s own rule: the LABEL beside it carries the
- * text setting, and an icon that grew with it would push the row apart.
- */
-const INCLUDES_TICK = 18
-
-const PERKS = [
-  'paywall:perk.hearts',
-  'paywall:perk.offline',
-  'paywall:perk.stats',
-  'paywall:perk.cosmetics',
-] as const
-
-export function PaywallScreen({
-  isChild,
-  plans,
-  plansLoading = false,
-  plansFailed = false,
-  isOffline = false,
-  onRetryPlans,
-  trialOnRecord = false,
-  countries,
-  onPurchase,
-  onRestore,
-  onDismiss,
-  source,
-}: PaywallScreenProps) {
-  const { colors, styles } = useThemeValues()
+export function PaywallScreen(props: PaywallScreenProps) {
+  const { isChild, source, trialOnRecord = false } = props
+  useEffect(() => {
+    // Preserve the existing analytics contract; the layout is now a single page.
+    track('paywall_shown', { source, variant: isChild ? 'parental_gate' : trialOnRecord ? '3page_trial' : '3page_purchase' })
+  }, [isChild, source, trialOnRecord])
+  return isChild ? <ParentalGate onContinue={props.onDismiss} /> : <Offer {...props} />
+}
+function Offer({ plans, plansLoading = false, plansFailed = false, isOffline = false, onRetryPlans,
+  countries, onPurchase, onRestore, onDismiss, source }: PaywallScreenProps) {
+  const { styles, colors } = useStyles()
   const t = useT()
-  /**
-   * The three-page tour is for the one moment it was written for: straight off the
-   * taster lesson, where page 1 can say what the user just did and show the flags.
-   *
-   * Everywhere else it is skipped, and the screen opens on the prices. Two reasons,
-   * and both are the same reason:
-   *
-   * - From Settings they tapped "See Premium". They have decided to look. Page 1 would
-   *   greet them with "You just learned 4 countries" about a lesson they did
-   *   yesterday, which reads as an app that is not paying attention.
-   * - With no countries to name, page 1 has nothing to say and its headline degrades
-   *   to "You just learned 0 countries" — the worst sentence on the screen.
-   */
-  const tour = source === 'onboarding' && countries.length > 0
-  const [page, setPage] = useState<Page>(tour ? 0 : 2)
+  const { width, height, fontScale } = useWindowDimensions()
   const [selected, setSelected] = useState<Plan['id']>('annual')
+  const [footerHeight, setFooterHeight] = useState(0)
+  const inlineFooter = fontScale > 1.3 || footerHeight > height * 0.35
   const [busy, setBusy] = useState(false)
   const [failed, setFailed] = useState(false)
-
-  /**
-   * Which of the four no-price states we are in, decided once.
-   *
-   * Offline first: a device with no connection cannot have reached the store, so
-   * `plansFailed` will also be true and reporting a failure to somebody on a train is
-   * both wrong and unactionable.
-   */
-  const absent: AbsentState = isOffline
-    ? 'offline'
-    : plansLoading
-      ? 'loading'
-      : plansFailed
-        ? 'error'
-        : 'unavailable'
-
-  useEffect(() => {
-    // Fired for the child branch too, as `blocked` — otherwise the funnel silently
-    // under-counts and the parental gate looks like it converts at zero.
-    track('paywall_shown', {
-      source,
-      variant: isChild
-        ? 'parental_gate'
-        : trialOnRecord
-          ? '3page_trial'
-          : '3page_purchase',
-    })
-  }, [source, isChild, trialOnRecord])
-
-  if (isChild) return <ParentalGate onContinue={onDismiss} />
-
-  const annual = plans.find((p) => p.id === 'annual')
-  const monthly = plans.find((p) => p.id === 'monthly')
-  const chosen = plans.find((p) => p.id === selected)
+  const inFlight = useRef(false)
+  // A store may return only one product or withdraw the selected product.
+  const chosen = plans.find(p => p.id === selected) ?? plans.find(p => p.id === 'annual') ?? plans[0]
+  const trial = chosen?.trialEligible === true && chosen.trialDays > 0
   const saving = yearlySavingPercent(plans)
-  const trial = chosen?.trialEligible === true
-
-  const buy = async (): Promise<void> => {
-    if (chosen === undefined || busy) return
-    setBusy(true)
-    setFailed(false)
-    track('plan_selected', { plan: chosen.id, with_trial: trial })
-    const result = await onPurchase(chosen.id)
-    setBusy(false)
-    if (result.kind === 'purchased' || result.kind === 'already-owned') {
-      // NOT granted here. The server validates the receipt and writes the entitlement;
-      // this only closes the screen. A client that granted its own Premium would be a
-      // free subscription for anyone with a proxy.
-      onDismiss()
-      return
-    }
-    // A cancel is a decision, not a fault — no error, no nagging, no second attempt.
-    if (result.kind === 'cancelled') return
-    track('purchase_failed', { reason: result.reason })
-    setFailed(true)
+  const absent: AbsentState = isOffline ? 'offline' : plansLoading ? 'loading' : plansFailed ? 'error' : 'unavailable'
+  const cycle = chosen ? t(chosen.id === 'annual' ? 'paywall:renewal.year' : 'paywall:renewal.month', { price: chosen.price }) : ''
+  const transact = async (restore = false) => {
+    if (inFlight.current || (!restore && !chosen)) return
+    inFlight.current = true; setBusy(true); setFailed(false)
+    if (!restore && chosen) track('plan_selected', { plan: chosen.id, with_trial: trial })
+    try {
+      const result = restore ? await onRestore() : await onPurchase(chosen!.id)
+      if (result.kind === 'purchased' || result.kind === 'already-owned') onDismiss()
+      else if (result.kind === 'failed') { track('purchase_failed', { reason: result.reason }); setFailed(true) }
+    } catch { setFailed(true) }
+    finally { inFlight.current = false; setBusy(false) }
   }
-
-  return (
-    <View style={styles.screen}>
-      {/* `style={styles.scroll}` — `flex: 1`, and it is the fix for a real overlap
-          rather than a tidy-up. Without a bound, a ScrollView in a flex column sizes to
-          its CONTENT, so at 200 % text this one grew past the bottom of the screen and
-          the footer drew on top of "Every lesson stays free. Always." — the last line
-          before the button, and the one sentence on the screen that has to survive.
-          Caught by the 200 %-text E2E check, which is exactly what it is for.
-
-          Bounding it means the content scrolls instead, which is what a ScrollView is
-          for and what every other screen here already does. */}
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.body}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Centred by spacers rather than `justifyContent` — see `Spacer`. The comment
-            above is about bounding the art so the content scrolls instead; centring the
-            container undid half of that, because a scroll view centred on content taller
-            than itself puts the leading overflow above scroll position zero on native.
-            The paywall is the screen where losing the top means losing the title and the
-            promise that learning stays free. */}
-        <Spacer />
-        {page === 0 && (
-          <>
-            <Text style={styles.title} role="heading" aria-level={1}>
-              {t('paywall:title.value', { count: countries.length })}
-            </Text>
-            <Text style={styles.paragraph}>{t('paywall:body.value')}</Text>
-            {countries.length > 0 && (
-              // The most persuasive thing on this screen, and it is not a claim: these
-              // are the flags of the countries the user placed thirty seconds ago. The
-              // page was two lines of text in a void before, which is a lot of empty
-              // room to spend on the one moment they are most convinced.
-              <View style={styles.flags}>
-                {countries.map((country) => (
-                  <Flag
-                    key={country.id}
-                    path={country.flagPath}
-                    width={FLAG_WIDTH}
-                    // Labelled, not decorative: here the picture is the only thing
-                    // naming the country, and a reader that skipped it would hear a
-                    // headline followed by silence.
-                    label={country.name}
-                  />
-                ))}
-              </View>
-            )}
-          </>
-        )}
-
-        {page === 1 && (
-          <>
-            <Text style={styles.title} role="heading" aria-level={1}>
-              {t(plans.length > 0 ? 'paywall:title.more' : 'paywall:title.unavailable')}
-            </Text>
-            <View style={styles.perks}>
-              {plans.length > 0 && PERKS.map((key) => (
-                <View key={key} style={styles.perk}>
-                  {/* Decorative — the row already reads as its own text, and a
-                      reader saying "check mark" four times is noise. */}
-                  <Icon name="check" size={20} color={colors.status.progress} />
-                  <Text style={styles.perkLabel}>{t(key)}</Text>
-                </View>
-              ))}
-            </View>
-            {/* The most important line on the screen, and it appears on both pages that
-                mention money. Premium sells depth, never access. */}
-            <Text style={styles.free}>{t('paywall:body.free')}</Text>
-          </>
-        )}
-
-        {page === 2 && (
-          <>
-            {/* Leads with the trial only when there is one. With the trial spent — or
-                with no prices at all — "Try it free for a week" is a promise sitting
-                above a button that says "Get Premium", which is the kind of small lie
-                that costs a refund and a review. */}
-            <Text style={styles.title} role="heading" aria-level={1}>
-              {plans.length === 0 ? t('paywall:title.unavailable') : trial ? t('paywall:title.plans') : t('paywall:title.buy')}
-            </Text>
-
-            {/* The four ways page 3 can have no prices on it, each said differently.
-                Collapsing them into one "something went wrong" would tell a user on a
-                train to retry forever, and tell a user with a real failure nothing. */}
-            {/* The plan region KEEPS ITS SHAPE when there are no prices in it.
-                It used to vanish — two cards simply absent, everything below sliding up
-                to meet the headline — so the one screen where a person decides whether
-                to pay looked, at the exact moment of deciding, like a page that had
-                failed to render. Two hundred points of nothing where the prices go.
-
-                A missing price is not a missing layout. `AbsentContent` holds the
-                footprint the cards occupy and puts the explanation, and the retry, in
-                the place the decision would have been made.
-
-                The two states that PERSIST get the picture the rest of the app gives
-                them — the same `states/offline` and `states/error-generic` that
-                `ContentGate` draws, so a store that cannot be reached looks like every
-                other thing that cannot be reached. Loading does not get one: it is a
-                moment, and an illustration that appears and vanishes is a flicker.
-                "No plans configured" does not either — that is our own misconfiguration,
-                not the user's world, and dressing it up as a weather event would be a
-                lie told in pictures.
-
-                The region carries the sentence as its accessible name and the `Text`
-                inside is `aria-hidden`, which is the idiom `PlanCard` below already
-                uses. Labelling the box AND reading its contents announces the same
-                sentence twice. */}
-            {plans.length === 0 && (
-              <AbsentContent
-                state={absent}
-                minHeight={PLANS_FOOTPRINT}
-                // The cards' own radius, so the stand-in is the same shape as the thing
-                // it stands in for.
-                borderRadius={radius.xl}
-                label={t(ABSENT_MESSAGE[absent])}
-              >
-                {(absent === 'offline' || absent === 'error') && (
-                  <Art
-                    name={absent === 'offline' ? 'states/offline' : 'states/error-generic'}
-                    size={STATE_ART}
-                  />
-                )}
-                <Text style={styles.terms} aria-hidden>
-                  {t(ABSENT_MESSAGE[absent])}
-                </Text>
-                {absent === 'error' && onRetryPlans !== undefined && (
-                  /* A real control, not a text link. When the store is unreachable this
-                     is the ONLY thing on the page that can change the outcome — every
-                     other control is disabled for want of a price — and it was rendering
-                     as secondary-coloured body text with no ring and no depth. The target
-                     was already 44pt; what was missing was any sign it could be pressed.
-
-                     `tertiary`, so it reads as pressable without competing with the
-                     primary purchase button sitting disabled below it. */
-                  <Button
-                    label={t('common:retry')}
-                    onPress={onRetryPlans}
-                    variant="tertiary"
-                    size="sm"
-                    fullWidth={false}
-                  />
-                )}
-              </AbsentContent>
-            )}
-
-            {annual !== undefined && (
-              <PlanCard
-                label={t('paywall:plan.annual')}
-                perMonth={t('paywall:plan.perMonth', { price: annual.pricePerMonth })}
-                total={t('paywall:plan.billedYearly', { price: annual.price })}
-                // Two badges, and both are FACTS rather than persuasion. The saving is
-                // computed from the store's own `amountMicros`; "Best value" is true of
-                // whichever plan costs less per month. Deliberately not "Most popular" —
-                // this app has no purchase data and inventing some is the line between
-                // a sell and a lie.
-                // ONE badge, and the concrete one. A "Best value" ribbon was tried above
-                // the card and was clipped by its own corner radius — and it was saying a
-                // vaguer version of what the saving already says. "Save 46%" is computed
-                // from the store's `amountMicros`; it is a fact, and it is the fact that
-                // moves somebody to the yearly plan.
-                badge={saving === null ? undefined : t('paywall:plan.save', { percent: saving })}
-                selected={selected === 'annual'}
-                onSelect={() => setSelected('annual')}
-              />
-            )}
-            {monthly !== undefined && (
-              <PlanCard
-                label={t('paywall:plan.monthly')}
-                perMonth={t('paywall:plan.perMonth', { price: monthly.pricePerMonth })}
-                selected={selected === 'monthly'}
-                onSelect={() => setSelected('monthly')}
-              />
-            )}
-
-            {/* What the price BUYS, next to the price.
-                The four perks lived on page 2 and the plans page was pure typography, so
-                the one screen where a person decides had the number and none of the
-                value on it. Nothing new is claimed: the same `paywall:perk.*` strings,
-                moved to where the decision happens. */}
-            {plans.length > 0 && <Text style={styles.includesTitle}>{t('paywall:plans.includes')}</Text>}
-            <View style={styles.includes}>
-              {plans.length > 0 && PERKS.map((perk) => (
-                <View key={perk} style={styles.includesRow}>
-                  {/* An icon, not a `✓`. A literal character renders in whatever typeface
-                      the device has for it — the defect `pnpm build:icons` was written
-                      for, after the tab bar shipped five of them as text and four came
-                      out as colour emoji. This is the screen that asks for money, which
-                      is the worst one to render inconsistently. */}
-                  <Icon name="check" size={INCLUDES_TICK} color={colors.status.progress} />
-                  <Text style={styles.includesText}>{t(perk)}</Text>
-                </View>
-              ))}
-            </View>
-
-            {/* Terms above the button, in words, not behind a link. Both stores require
-                the price and the renewal to be legible before the tap; so does anyone
-                who does not want a refund request. */}
-            {trial && chosen !== undefined && (
-              <Text style={styles.terms}>
-                {t('paywall:terms.trial', { price: chosen.price })}
-              </Text>
-            )}
-            <Text style={styles.free}>{t('paywall:body.free')}</Text>
-            {failed && (
-              <Text style={styles.error} role="alert">
-                {t('paywall:error.failed')}
-              </Text>
-            )}
-          </>
-        )}
-        <Spacer />
-      </ScrollView>
-
-      <View style={styles.footer}>
-        {/* Only while there is a tour to be partway through. Three dots above a screen
-            you entered on the last one is a progress bar that lies. */}
-        {tour && (
-          <View style={styles.dots} aria-hidden>
-            {PAGES.map((p) => (
-              <View key={p} style={[styles.dot, p === page && styles.dotOn]} />
-            ))}
-          </View>
-        )}
-
-        {page < 2 ? (
-          <Button
-            label={t('common:continue')}
-            onPress={() => setPage((page + 1) as Page)}
-            fullWidth
-            size="lg"
-          />
-        ) : (
-          /* Absent when there is nothing to buy, not disabled.
-
-             With no plans this drew a full-width `GET PREMIUM` in the disabled skin, and
-             at 768 it sat three hundred points below the sentence explaining that the
-             store could not be reached — a dead primary action, physically distant from
-             the error it cannot act on, while `TRY AGAIN` (the only control that can
-             change anything) was a small outline button in the middle of the page. The
-             hierarchy said the opposite of the truth.
-
-             This codebase already has the rule, twice over: "absent hides the control
-             rather than drawing a dead one", on Profile's shop row and on the streak
-             badge. A purchase button with no price behind it is the same thing, and
-             removing it leaves `TRY AGAIN` as the only action on the page — which is
-             what it already was. */
-          chosen !== undefined && (
-            <Button
-              label={trial ? t('paywall:cta.trial') : t('paywall:cta.buy')}
-              onPress={() => void buy()}
-              loading={busy}
-              fullWidth
-              size="lg"
-              testID="paywall-buy"
-            />
-          )
-        )}
-
-        {/* Full size, always visible, from the first frame. A paywall you cannot leave
-            is a one-star review, and on a child-facing app it is a review-team problem. */}
-        <Pressable onPress={onDismiss} hitSlop={space[2]} style={styles.dismiss} role="button">
-          <Text style={styles.dismissLabel}>{t('paywall:dismiss')}</Text>
-        </Pressable>
-
-        {page === 2 && (
-          <Pressable
-            onPress={() => void onRestore()}
-            hitSlop={space[2]}
-            style={styles.dismiss}
-            role="button"
-          >
-            <Text style={styles.restore}>{t('paywall:restore')}</Text>
-          </Pressable>
-        )}
+  const footer = <View onLayout={event => setFooterHeight(previous => Math.max(previous, event.nativeEvent.layout.height))} style={[styles.footer, inlineFooter && styles.footerInline]}>
+      {chosen && <Reveal order={4}>
+        <Button label={trial ? t('paywall:cta.days', { days: chosen.trialDays }) : t('paywall:cta.buy')} onPress={() => void transact()} loading={busy} testID="paywall-buy" fullWidth size="lg" />
+        <Reveal key={`${chosen.id}-${trial}`} order={0}><Text style={styles.terms}>
+          {trial ? t('paywall:terms.offer', { days: chosen.trialDays, cycle }) : t('paywall:terms.renewal', { cycle })}
+        </Text></Reveal>
+      </Reveal>}
+      <View style={styles.links}>
+        {TERMS_URL && <Pressable role="link" onPress={() => void Linking.openURL(TERMS_URL!)} style={styles.link}><Text style={styles.linkText}>{t('settings:privacy.terms')}</Text></Pressable>}
+        {PRIVACY_URL && <Pressable role="link" onPress={() => void Linking.openURL(PRIVACY_URL!)} style={styles.link}><Text style={styles.linkText}>{t('settings:privacy.policy')}</Text></Pressable>}
+        {plans.length > 0 && <Pressable role="button" disabled={busy} aria-disabled={busy} onPress={() => void transact(true)} style={styles.link}><Text style={styles.linkText}>{t('paywall:restore')}</Text></Pressable>}
       </View>
     </View>
-  )
-}
-
-/**
- * What an under-13 account sees instead.
- *
- * Addressed TO THE CHILD, in their words, explaining rather than refusing — and it
- * never implies they are missing out on something. The point is that they lose nothing
- * by pressing the button: every lesson is free, so the honest message and the required
- * one are the same message.
- */
-function ParentalGate({ onContinue }: { onContinue: () => void }) {
-  const { styles } = useThemeValues()
-  const t = useT()
-
-  return (
-    <View style={[styles.screen, styles.centred]}>
-      {/* Atlas, on the one paywall page he is allowed on.
-          `voice-and-tone.md` keeps him out of paywalls, and this is not one: there is no
-          price on it, nothing to buy, and nothing being asked for. It is a child being
-          told that what they already have is theirs — which is exactly the encouraging
-          register he exists for. Without him this was three centred paragraphs of system
-          text, which is what a refusal looks like. */}
-      <Art name="atlas/encouraging" size={GATE_ART} />
-      <Text style={styles.title} role="heading" aria-level={1}>
-        {t('paywall:adult.title')}
-      </Text>
-      <Text style={styles.paragraph}>{t('paywall:adult.body')}</Text>
-      <Button label={t('paywall:adult.continue')} onPress={onContinue} fullWidth size="lg" />
+  return <View style={styles.screen}>
+    <View style={styles.topbar}>
+      <Text style={styles.brand}>{t('paywall:brand')}</Text>
+      <Pressable role="button" accessibilityLabel={t('paywall:dismiss')} onPress={onDismiss} style={styles.dismiss}>
+        <Text style={styles.dismissText}>{t('paywall:dismiss')}</Text><Icon name="close" size={space[4]} color={colors.text.secondary} />
+      </Pressable>
     </View>
-  )
-}
-
-function PlanCard({
-  label,
-  perMonth,
-  total,
-  badge,
-  selected,
-  onSelect,
-}: {
-  label: string
-  perMonth: string
-  total?: string | undefined
-  badge?: string | undefined
-  /** Marks the cheaper-per-month plan. A fact about the prices, not a popularity claim. */
-  selected: boolean
-  onSelect: () => void
-}) {
-  const { styles } = useThemeValues()
-  return (
-    <Card
-      level={selected ? 2 : 1}
-      onPress={onSelect}
-      // `radio`, and `aria-checked` rather than `accessibilityState` — react-native-web
-      // drops the latter, so a reader would announce no selection at all.
-      role="radio"
-      aria-checked={selected}
-      accessibilityLabel={`${label}. ${perMonth}${total === undefined ? '' : `. ${total}`}`}
-      style={[styles.plan, selected && styles.planOn]}
-    >
-      <View style={styles.planTop}>
-        <Text style={styles.planLabel} aria-hidden>
-          {label}
-        </Text>
-        {badge !== undefined && (
-          <Text style={styles.badge} aria-hidden>
-            {badge}
-          </Text>
-        )}
+    <ScrollView style={styles.scroll} contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+      <View style={styles.hero}>
+        <LinearGradient pointerEvents="none" colors={[colors.journey.sky, colors.bg.canvas]} style={StyleSheet.absoluteFill} />
+        <DriftingCloud style={[styles.cloud, styles.cloudStart]}><View style={styles.cloudLobe} /><View style={styles.cloudLobeSmall} /></DriftingCloud>
+        <DriftingCloud reverse style={[styles.cloud, styles.cloudEnd]}><View style={styles.cloudLobe} /><View style={styles.cloudLobeSmall} /></DriftingCloud>
+        <Reveal order={0} hero><PaywallMascot /></Reveal>
       </View>
-      <Text style={styles.planPrice} aria-hidden>
-        {perMonth}
-      </Text>
-      {total !== undefined && (
-        <Text style={styles.planTotal} aria-hidden>
-          {total}
+      <Reveal order={1}>
+        <Text style={styles.title} role="heading" aria-level={1}>
+          {plans.length === 0 ? t('paywall:title.unavailable') : t('paywall:hero.title')}
+          {trial && <Text style={styles.accent}>{'\n'}{t('paywall:hero.trial', { days: chosen.trialDays })}</Text>}
         </Text>
-      )}
+        <View style={styles.subtitleRow}><Text style={styles.subtitle}>{t('paywall:hero.subtitle')}</Text>
+          {trial && <Sheen style={{ borderRadius: radius.sm }}><Text style={styles.noCharge}>{t('paywall:trial.noCharge')}</Text></Sheen>}
+        </View>
+        {source === 'onboarding' && countries.length > 0 && <View style={styles.practice}>
+          <Text style={styles.caption}>{t('paywall:title.value', { count: countries.length })}</Text>
+          <View style={styles.flags}>{countries.map(country => <Flag key={country.id} path={country.flagPath} width={space[5]} label={country.name} />)}</View>
+        </View>}
+      </Reveal>
+      <Reveal order={2}>
+        {plans.length > 0 ? <Card style={styles.details}>
+          {trial ? <TrialTimeline days={chosen.trialDays} cycle={cycle} /> : <Text style={styles.detailsTitle}>{t('paywall:plans.includes')}</Text>}
+          <View style={styles.perks}>{PERKS.map(([icon, key]) => <View key={key} style={styles.perk}>
+            <Icon name={icon} size={space[4]} color={colors.action.secondary} /><Text style={styles.perkText}>{t(key)}</Text>
+          </View>)}</View>
+        </Card> : <AbsentContent state={absent} minHeight={space[9] * 3} borderRadius={radius.xl} label={t(ABSENT_MESSAGE[absent])}>
+          {(absent === 'offline' || absent === 'error') && <Art name={absent === 'offline' ? 'states/offline' : 'states/error-generic'} size={space[9]} />}
+          <Text style={styles.subtitle} aria-hidden>{t(ABSENT_MESSAGE[absent])}</Text>
+          {absent === 'error' && onRetryPlans && <Button label={t('common:retry')} onPress={onRetryPlans} fullWidth={false} />}
+        </AbsentContent>}
+      </Reveal>
+      {plans.length > 0 && <Reveal order={3}><View style={[styles.plans, (width < 350 || fontScale > 1.3) && styles.plansStack]} role="radiogroup" aria-label={t('paywall:plans.choose')}>
+        {(['monthly', 'annual'] as const).flatMap(id => {
+          const plan = plans.find(p => p.id === id)
+          return plan ? [<PlanOption key={id} plan={plan} selected={chosen?.id === id} disabled={busy} saving={id === 'annual' ? saving : null}
+            onSelect={() => { hapticSelect(); setSelected(id) }} />] : []
+        })}
+      </View></Reveal>}
+      <Reveal order={3}><Text style={styles.free}>{t('paywall:body.free')}</Text></Reveal>
+      {failed && <Text style={styles.error} role="alert">{t('paywall:error.failed')}</Text>}
+      {inlineFooter && footer}
+    </ScrollView>
+    {!inlineFooter && footer}
+  </View>
+}
+function PlanOption({ plan, selected, saving, disabled, onSelect }: { plan: Plan; selected: boolean; saving: number | null; disabled: boolean; onSelect: () => void }) {
+  const t = useT(); const { styles, colors } = useStyles(); const scale = usePlanSpring(selected)
+  const label = t(plan.id === 'annual' ? 'paywall:plan.annual' : 'paywall:plan.monthly')
+  const cycle = t(plan.id === 'annual' ? 'paywall:renewal.year' : 'paywall:renewal.month', { price: plan.price })
+  const trial = plan.trialEligible && plan.trialDays > 0
+  const offer = trial ? t('paywall:plan.trial', { days: plan.trialDays }) : cycle
+  return <Animated.View style={[styles.planWrap, { transform: [{ scale }] }]}>
+    <Card role="radio" aria-checked={selected} aria-disabled={disabled} onPress={onSelect}
+      accessibilityLabel={t('paywall:plan.accessible', { label, offer, cycle })} style={[styles.plan, selected && styles.planSelected]}>
+      {saving !== null && <Sheen style={styles.badge}><Text style={styles.badgeText}>{t('paywall:plan.save', { percent: saving })}</Text></Sheen>}
+      <SelectionSparkle selected={selected} /><View style={styles.planTop} aria-hidden><View style={[styles.radio, selected && styles.radioSelected]}>{selected && <Icon name="check" size={space[3]} color={colors.text.onAccent} />}</View><Text style={styles.planLabel}>{label}</Text></View>
+      <Text aria-hidden style={styles.planOffer}>{offer}</Text>
+      {trial && <Text aria-hidden style={styles.caption}>{t('paywall:plan.after', { cycle })}</Text>}
+      {plan.id === 'annual' && <Text aria-hidden style={styles.caption}>{t('paywall:plan.perMonth', { price: plan.pricePerMonth })}</Text>}
     </Card>
-  )
+  </Animated.View>
 }
-
-
-
-const useThemeValues = createThemeStyles((colors) => {
-  const styles = StyleSheet.create({
-  screen: { flex: 1, padding: space[4], gap: space[4] },
-  includesTitle: { ...text('overline'), color: colors.text.tertiary, textAlign: 'center' },
-  includes: { alignSelf: 'center', gap: space[2] },
-  includesRow: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
-  includesText: { ...text('body'), color: colors.text.secondary },
-
-  centred: { alignItems: 'center', justifyContent: 'center' },
-  scroll: { flex: 1 },
-  body: { flexGrow: 1, gap: space[4] },
-
-  title: { ...text('h1'), color: colors.text.primary, textAlign: 'center' },
-  // A real text token, not the ScrollView's layout style. This paragraph spent one
-  // build rendering as near-black on navy because `styles.body` was applied to both —
-  // invisible, and invisible to `pnpm design:contrast`, which checks token PAIRS and
-  // cannot see a colour that was never set. The screenshot caught it; nothing else did.
-  paragraph: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
-  flags: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: space[2],
-    justifyContent: 'center',
-  },
-  perks: { gap: space[3], alignSelf: 'stretch' },
-  perk: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
-  perkLabel: { ...text('bodyStrong'), color: colors.text.primary },
-  free: { ...text('bodyStrong'), color: colors.status.progress, textAlign: 'center' },
-  terms: { ...text('caption'), color: colors.text.secondary, textAlign: 'center' },
-  error: { ...text('caption'), color: colors.text.primary, textAlign: 'center' },
-
-  plan: { alignSelf: 'stretch', gap: space[1] },
-  planOn: { borderColor: colors.action.primary },
-  planTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  planLabel: { ...text('bodyStrong'), color: colors.text.primary },
-  /**
-   * A filled pill, not green text.
-   *
-   * The saving is the single most persuasive thing on this screen and it was rendering
-   * as one more line of coloured type among four. A pill gives it a shape the eye finds
-   * before it reads anything, which is the whole job of a badge — and it is the only
-   * emphasis on the page that is not also a claim.
-   */
-  badge: {
-    ...text('caption', { weight: '700' }),
-    color: colors.text.onStatus,
-    backgroundColor: colors.action.primary,
-    paddingHorizontal: space[2],
-    paddingVertical: space[1],
-    borderRadius: radius.full,
-    overflow: 'hidden',
-  },
-  planPrice: { ...text('h2', { numeric: true }), color: colors.text.primary },
-  planTotal: { ...text('caption'), color: colors.text.secondary },
-
-  footer: { gap: space[3] },
-  dots: { flexDirection: 'row', gap: space[2], justifyContent: 'center' },
-  dot: { width: 8, height: 8, borderRadius: radius.full, backgroundColor: colors.bg.surfaceRaised },
-  dotOn: { backgroundColor: colors.action.primary },
-  dismiss: { minHeight: 44, alignItems: 'center', justifyContent: 'center' },
-  dismissLabel: { ...text('bodyStrong'), color: colors.text.secondary },
-  restore: { ...text('caption'), color: colors.text.secondary },
-})
-  return { colors, styles }
-})
+function ParentalGate({ onContinue }: { onContinue: () => void }) {
+  const t = useT(); const { styles } = useStyles()
+  return <ScrollView style={styles.screen} contentContainerStyle={styles.parent}><Spacer /><Art name="atlas/encouraging" size={space[9] * 2} />
+    <Text style={styles.title} role="heading" aria-level={1}>{t('paywall:adult.title')}</Text>
+    <Text style={styles.subtitle}>{t('paywall:adult.body')}</Text><Button label={t('paywall:adult.continue')} onPress={onContinue} fullWidth /><Spacer />
+  </ScrollView>
+}
+const useStyles = createThemeStyles(colors => ({ colors, styles: StyleSheet.create({
+  screen: { flex: 1, backgroundColor: colors.bg.canvas },
+  topbar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space[4] },
+  brand: { flexShrink: 1, ...text('overline'), color: colors.text.secondary },
+  dismiss: { minHeight: space[8], flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  dismissText: { ...text('caption'), color: colors.text.secondary }, scroll: { flex: 1 },
+  body: { paddingHorizontal: space[4], paddingBottom: space[4], gap: space[2], width: '100%', maxWidth: space[9] * 9, alignSelf: 'center' },
+  hero: { alignItems: 'center', justifyContent: 'center', height: space[9] + space[8], borderRadius: radius.xl, overflow: 'hidden' },
+  cloud: { position: 'absolute', width: space[9] + space[5], height: space[5], borderRadius: radius.full, backgroundColor: colors.bg.surface },
+  cloudLobe: { position: 'absolute', width: space[8], height: space[8], borderRadius: radius.full, backgroundColor: colors.bg.surface, bottom: 0, start: space[4] },
+  cloudLobeSmall: { position: 'absolute', width: space[6], height: space[6], borderRadius: radius.full, backgroundColor: colors.bg.surface, bottom: 0, end: space[2] },
+  cloudStart: { start: 0, bottom: space[4], transform: [{ rotate: '-8deg' }] }, cloudEnd: { end: 0, bottom: space[2], transform: [{ rotate: '8deg' }] },
+  title: { ...text('h2'), textAlign: 'center', color: colors.text.primary }, accent: { color: colors.action.secondary },
+  subtitleRow: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: space[2], marginTop: space[2] },
+  subtitle: { ...text('caption'), textAlign: 'center', color: colors.text.secondary },
+  noCharge: { ...text('caption', { weight: '700' }), color: colors.text.primary, backgroundColor: colors.option.correct, borderRadius: radius.sm, paddingHorizontal: space[2], paddingVertical: space[1] },
+  practice: { alignItems: 'center', gap: space[1], marginTop: space[2] }, flags: { flexDirection: 'row', flexWrap: 'wrap', gap: space[1], justifyContent: 'center' },
+  details: { padding: space[2], gap: space[3] }, detailsTitle: { ...text('overline'), textAlign: 'center', color: colors.text.secondary },
+  perks: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] }, perk: { flexDirection: 'row', alignItems: 'center', gap: space[1], flexBasis: '46%', flexGrow: 1 },
+  perkText: { ...text('caption'), color: colors.text.secondary, flexShrink: 1 },
+  plans: { flexDirection: 'row', gap: space[3], paddingTop: space[2] }, plansStack: { flexDirection: 'column' }, planWrap: { flex: 1 },
+  plan: { flexGrow: 1, gap: space[1], padding: space[3], borderWidth: 2 }, planSelected: { borderColor: colors.action.secondary, backgroundColor: colors.bg.surfaceRaised },
+  planTop: { flexDirection: 'row', alignItems: 'center', gap: space[2], paddingBottom: space[2] },
+  radio: { width: space[4], height: space[4], borderWidth: 2, borderRadius: radius.full, borderColor: colors.border.strong, alignItems: 'center', justifyContent: 'center' },
+  radioSelected: { backgroundColor: colors.action.secondary, borderColor: colors.action.secondary },
+  planLabel: { ...text('caption', { weight: '700' }), color: colors.text.secondary, flexShrink: 1 }, planOffer: { ...text('bodyStrong'), color: colors.text.primary },
+  caption: { ...text('caption'), color: colors.text.secondary },
+  badge: { position: 'absolute', top: -space[3], end: space[2], backgroundColor: colors.league.gold.start, borderRadius: radius.sm, paddingHorizontal: space[2], paddingVertical: space[1], borderWidth: 1, borderColor: colors.league.gold.edge },
+  badgeText: { ...text('caption', { weight: '700' }), color: colors.league.gold.ink },
+  free: { ...text('caption', { weight: '700' }), color: colors.status.progress, textAlign: 'center' }, error: { ...text('caption'), color: colors.text.primary, textAlign: 'center' },
+  footer: { paddingHorizontal: space[4], paddingTop: space[2], backgroundColor: colors.bg.canvas, width: '100%', maxWidth: space[9] * 9, alignSelf: 'center' },
+  footerInline: { paddingHorizontal: 0 },
+  terms: { ...text('caption'), color: colors.text.secondary, textAlign: 'center', marginTop: space[2] },
+  links: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: space[2] }, link: { minHeight: space[8], justifyContent: 'center', paddingHorizontal: space[2] },
+  linkText: { ...text('caption'), color: colors.text.secondary, textDecorationLine: 'underline' },
+  parent: { flexGrow: 1, alignItems: 'center', gap: space[5], padding: space[5] },
+}) }))

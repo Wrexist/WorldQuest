@@ -149,3 +149,12 @@ in notifications about failure · in a paywall.
 **Atlas never says:** "I'm sad", "you disappointed me", "where have you been?" His
 emotional range is *excited* → *interested* → *encouraging*. He has no guilt setting,
 because guilt is not something we do to users.
+
+
+### Premium presentation exception, October 1, 2026
+
+The owner requested a mascot-led paywall based on Breeje Anadkat's motion reference.
+Atlas may welcome adults on this optional Premium screen, using the current globe
+mascot and its existing welcome performance. He never reacts sadly to dismissal or
+pressures a purchase. Child accounts still receive only the parental gate.
+This supersedes the older blanket exclusion of Atlas from paywalls above.

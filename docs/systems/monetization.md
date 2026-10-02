@@ -1,5 +1,21 @@
 # Monetization
 
+## Current presentation - October 1, 2026
+
+The single-page offer supersedes the older three-page tour described below. It uses
+an animated Atlas hero, a three-step trial explanation, monthly/yearly radio cards,
+a persistent purchase footer, and an immediate top-right Not now exit. Onboarding
+can include the countries just practiced without adding intermediate pages.
+
+Trial days, eligibility and renewal prices follow the selected store product. The
+middle timeline step explains cancellation; it does not promise an unimplemented
+reminder. Sample products exist only in tests and the local presentation harness.
+RUNTIME_PURCHASES remains UNAVAILABLE; normal entry points stay hidden until the
+billing integration and benefit verification are complete. Children see no offer.
+
+Reference, measurements and evidence: [paywall review](../design/reviews/paywall-2026-10-01/README.md).
+
+
 How WorldQuest makes money, what the numbers say, and the two rules that decide every
 call in here.
 
