@@ -12,9 +12,10 @@ existing WorldQuest account. DigitalPlat delegation is saved as
 `dahlia.ns.cloudflare.com` and `rodrigo.ns.cloudflare.com`; both were confirmed
 through the public resolver `1.1.1.1`. The zone is active. GitHub Pages now claims
 the domain, with the four GitHub apex A records and a DNS-only `www` CNAME to
-`wrexist.github.io`. Public DNS and GitHub's Pages health check pass; HTTP serves
-the privacy page. GitHub's HTTPS certificate is still pending, so this website
-transition is not complete and production legal URLs have not been changed.
+`wrexist.github.io`. Public DNS and GitHub's Pages health check pass. GitHub issued
+the certificate for both apex and `www`; HTTPS enforcement is enabled. The homepage
+and privacy page both returned HTTPS 200. Production app legal URLs have not yet
+been changed.
 
 Resend verified `worldquest.dpdns.org` in Ireland (`eu-west-1`) on 2 October at
 11:42 Stockholm time. Domain ID: `2aeb998d-bfdc-4d82-8858-2244eb6bd551`.
@@ -83,8 +84,9 @@ pnpm --filter @worldquest/backend exec wrangler secret put RESEND_API_KEY --conf
 The production `MAIL_FROM` value is already deployed. The Resend form was prepared
 for `WorldQuest production sign-in`, **Sending access** scoped only to
 `worldquest.dpdns.org`. The owner completed the credential entry and deployment;
-the Worker now lists `RESEND_API_KEY` as an encrypted secret. Its validity still
-needs a real send. Never put the credential into chat or source control.
+the Worker now lists `RESEND_API_KEY` as an encrypted secret. Both authorized
+delivery tests were accepted by Resend, confirming the credential and sender work.
+Never put the credential into chat or source control.
 Do not enable the closed development API as a substitute for production setup.
 
 ## Production backend staged on 2 October
@@ -103,10 +105,34 @@ Do not enable the closed development API as a substitute for production setup.
 - Six real-D1 budget tests cover concurrency, daily/monthly exhaustion, UTC reset,
   provider failure and missing schema. These and the 26 identity tests pass; the
   other 60 backend tests passed in the preceding full run. Typecheck and production
-  packaging pass. Native journeys and real email delivery remain untested.
+  packaging pass. Native journeys remain untested; real email delivery is partial,
+  as recorded below.
 - Code deployment: `91e65f5a-f865-4bb3-8840-324f1b7b45b1`, followed by the owner's
   secret-only deployment. The bundle includes the
   earlier local launch-preparation changes; it is not yet a clean-checkout release.
+
+## Owner-authorized delivery test, 2 October at 12:12 Stockholm time
+
+Two sign-in-format messages were sent through the existing Resend adapter and
+persistent D1 mail budget. A temporary Wrangler remote development session used
+the installed secrets without exposing their values; its local listener was bound
+to loopback and the session was stopped afterward. The production API stayed closed.
+The test entry and generated configuration are ignored local artifacts, not
+production routes or committed application code.
+
+- English: Resend accepted the API request (HTTP 200), then Gmail rejected the
+  message with SMTP `550-5.7.1`, classifying it as likely unsolicited mail.
+  Resend ID: `01a0fc19-bf22-7d1a-8cfd-0097c05798d8`.
+- Swedish: Resend accepted the request (HTTP 200) and reports **Delivered**.
+  Resend ID: `01a0fc19-faf6-7b7e-8f9c-5ed63ce94082`.
+
+Both messages were labelled `[Delivery test]`, with an explicit notice that the
+codes cannot sign anyone in. This verifies transport and localized rendering,
+not the end-to-end OTP/account flow. Delivered means recipient-server acceptance,
+not confirmed inbox placement. No automatic retry was sent after the English
+rejection. Do not infer that language itself caused the rejection; investigate
+authentication, sender reputation and recipient filtering before acceptance.
+Public email sign-in is not launch-ready until delivery and native recovery pass.
 
 After registration:
 
