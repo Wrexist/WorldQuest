@@ -36,7 +36,7 @@ import {
   type AchievementProgress,
 } from '@worldquest/engines'
 import { tContent, useT, type TranslationKey } from '../../lib/i18n.js'
-import { DaylightIllustration } from '../../components/DaylightIllustration.js'
+import { AtlasCompanion } from '../../components/AtlasCompanion.js'
 import { Art } from '../../components/Art.js'
 import { AchievementMedal } from './AchievementMedal.js'
 import { achievementDescKey, achievementNameKey } from './useAchievements.js'
@@ -168,7 +168,6 @@ export function AchievementsScreen({ rows, onStartLesson, onBack }: Achievements
         <ScreenHeader title={t('achievements:title')} onBack={onBack} />
       )}
       <View style={styles.header}>
-        <DaylightIllustration name="star-trophy" size={64} active={false} />
         {/* The title moves into the header row when there is one, so it is not said
             twice. Without a router — the screenshot renderer — it stays here rather
             than vanishing. */}
@@ -181,6 +180,12 @@ export function AchievementsScreen({ rows, onStartLesson, onBack }: Achievements
           {t('achievements:progress', { unlocked, total: rows.length })}
         </Tally>
       </View>
+
+      <AtlasCompanion compact mood={unlocked > 0 ? 'proud' : 'encouraging'}
+        message={t(unlocked > 0 ? 'achievements:guide.earned' : 'achievements:guide.start')} />
+      {unlocked === 0 && onStartLesson !== undefined && (
+        <Button label={t('achievements:empty.action')} onPress={onStartLesson} />
+      )}
 
       {/* Section headings over the sort that was already there.
           The list has been earned → closest → rest since it was written, and nothing on

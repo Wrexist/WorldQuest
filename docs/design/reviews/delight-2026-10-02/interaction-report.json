@@ -1,0 +1,327 @@
+{
+  "generatedAt": "2026-10-02T15:31:57.891Z",
+  "export": "node_modules/.cache/wq-delight-web",
+  "coverage": "Real exported React Native Web bundle. Fresh adult guest reached by onboarding. Native gestures, haptics and device frame rates are not covered.",
+  "results": [
+    {
+      "name": "Atlas boop uses laughing still: /explore 375x667",
+      "pass": true,
+      "still": 1,
+      "film": 0
+    },
+    {
+      "name": "Controls reachable and no page sideways overflow: /explore 375x667",
+      "pass": true,
+      "reachable": [
+        "Your streak: no days yet",
+        "Countries",
+        "Europe, 0% complete"
+      ],
+      "viewportWidth": 375,
+      "documentWidth": 375,
+      "bodyWidth": 375,
+      "horizontalScrollers": [
+        {
+          "width": 343,
+          "scrollWidth": 716,
+          "role": null,
+          "content": "All\nEurope\nAsia\nAfrica\nNorth America\nSouth America\nOceania",
+          "isFilterRail": true
+        }
+      ]
+    },
+    {
+      "name": "Atlas boop uses laughing still: /quests 375x667",
+      "pass": true,
+      "still": 1,
+      "film": 0
+    },
+    {
+      "name": "Controls reachable and no page sideways overflow: /quests 375x667",
+      "pass": true,
+      "reachable": [
+        "Your streak: no days yet",
+        "Start speed round",
+        "Continue quest →"
+      ],
+      "viewportWidth": 375,
+      "documentWidth": 375,
+      "bodyWidth": 375,
+      "horizontalScrollers": []
+    },
+    {
+      "name": "Atlas boop uses laughing still: /profile 375x667",
+      "pass": true,
+      "still": 1,
+      "film": 0
+    },
+    {
+      "name": "Controls reachable and no page sideways overflow: /profile 375x667",
+      "pass": true,
+      "reachable": [
+        "More",
+        "Start a lesson",
+        "Start a lesson"
+      ],
+      "viewportWidth": 375,
+      "documentWidth": 375,
+      "bodyWidth": 375,
+      "horizontalScrollers": []
+    },
+    {
+      "name": "Atlas boop uses laughing still: /collection/flags 375x667",
+      "pass": true,
+      "still": 1,
+      "film": 0
+    },
+    {
+      "name": "Controls reachable and no page sideways overflow: /collection/flags 375x667",
+      "pass": true,
+      "reachable": [
+        "Back",
+        "Zimbabwe, seven stripes in green, gold, red and black, with a white triangle holding a bird and a red star, Not collected yet"
+      ],
+      "viewportWidth": 375,
+      "documentWidth": 375,
+      "bodyWidth": 375,
+      "horizontalScrollers": [
+        {
+          "width": 343,
+          "scrollWidth": 358,
+          "role": null,
+          "content": "All\nCollected\nStill to find\nStarred",
+          "isFilterRail": true
+        }
+      ]
+    },
+    {
+      "name": "Atlas boop uses laughing still: /achievements 375x667",
+      "pass": true,
+      "still": 1,
+      "film": 0
+    },
+    {
+      "name": "Controls reachable and no page sideways overflow: /achievements 375x667",
+      "pass": true,
+      "reachable": [
+        "Back",
+        "Start a lesson",
+        "Start a lesson"
+      ],
+      "viewportWidth": 375,
+      "documentWidth": 375,
+      "bodyWidth": 375,
+      "horizontalScrollers": []
+    },
+    {
+      "name": "Atlas boop uses laughing still: /streak 375x667",
+      "pass": true,
+      "still": 1,
+      "film": 0
+    },
+    {
+      "name": "Controls reachable and no page sideways overflow: /streak 375x667",
+      "pass": true,
+      "reachable": [
+        "Back",
+        "Atlas, your guide. Tap for a giggle."
+      ],
+      "viewportWidth": 375,
+      "documentWidth": 375,
+      "bodyWidth": 375,
+      "horizontalScrollers": []
+    },
+    {
+      "name": "Atlas boop uses laughing still: /region/EU 375x667",
+      "pass": true,
+      "still": 1,
+      "film": 0
+    },
+    {
+      "name": "Controls reachable and no page sideways overflow: /region/EU 375x667",
+      "pass": true,
+      "reachable": [
+        "Back",
+        "Start",
+        "Albania, Not started, 0 of 6 learned"
+      ],
+      "viewportWidth": 375,
+      "documentWidth": 375,
+      "bodyWidth": 375,
+      "horizontalScrollers": []
+    },
+    {
+      "name": "Atlas boop uses laughing still: /explore 844x390",
+      "pass": true,
+      "still": 1,
+      "film": 0
+    },
+    {
+      "name": "Controls reachable and no page sideways overflow: /explore 844x390",
+      "pass": true,
+      "reachable": [
+        "Your streak: no days yet",
+        "Countries",
+        "Europe, 0% complete"
+      ],
+      "viewportWidth": 844,
+      "documentWidth": 844,
+      "bodyWidth": 844,
+      "horizontalScrollers": [
+        {
+          "width": 568,
+          "scrollWidth": 716,
+          "role": null,
+          "content": "All\nEurope\nAsia\nAfrica\nNorth America\nSouth America\nOceania",
+          "isFilterRail": true
+        }
+      ]
+    },
+    {
+      "name": "Atlas boop uses laughing still: /quests 844x390",
+      "pass": true,
+      "still": 1,
+      "film": 0
+    },
+    {
+      "name": "Controls reachable and no page sideways overflow: /quests 844x390",
+      "pass": true,
+      "reachable": [
+        "Your streak: no days yet",
+        "Start speed round",
+        "Continue quest →"
+      ],
+      "viewportWidth": 844,
+      "documentWidth": 844,
+      "bodyWidth": 844,
+      "horizontalScrollers": []
+    },
+    {
+      "name": "Atlas boop uses laughing still: /profile 844x390",
+      "pass": true,
+      "still": 1,
+      "film": 0
+    },
+    {
+      "name": "Controls reachable and no page sideways overflow: /profile 844x390",
+      "pass": true,
+      "reachable": [
+        "More",
+        "Start a lesson",
+        "Start a lesson"
+      ],
+      "viewportWidth": 844,
+      "documentWidth": 844,
+      "bodyWidth": 844,
+      "horizontalScrollers": []
+    },
+    {
+      "name": "Atlas boop uses laughing still: /collection/flags 844x390",
+      "pass": true,
+      "still": 1,
+      "film": 0
+    },
+    {
+      "name": "Controls reachable and no page sideways overflow: /collection/flags 844x390",
+      "pass": true,
+      "reachable": [
+        "Back",
+        "Zimbabwe, seven stripes in green, gold, red and black, with a white triangle holding a bird and a red star, Not collected yet"
+      ],
+      "viewportWidth": 844,
+      "documentWidth": 844,
+      "bodyWidth": 844,
+      "horizontalScrollers": []
+    },
+    {
+      "name": "Atlas boop uses laughing still: /achievements 844x390",
+      "pass": true,
+      "still": 1,
+      "film": 0
+    },
+    {
+      "name": "Controls reachable and no page sideways overflow: /achievements 844x390",
+      "pass": true,
+      "reachable": [
+        "Back",
+        "Start a lesson",
+        "Start a lesson"
+      ],
+      "viewportWidth": 844,
+      "documentWidth": 844,
+      "bodyWidth": 844,
+      "horizontalScrollers": []
+    },
+    {
+      "name": "Atlas boop uses laughing still: /streak 844x390",
+      "pass": true,
+      "still": 1,
+      "film": 0
+    },
+    {
+      "name": "Controls reachable and no page sideways overflow: /streak 844x390",
+      "pass": true,
+      "reachable": [
+        "Back",
+        "Atlas, your guide. Tap for a giggle."
+      ],
+      "viewportWidth": 844,
+      "documentWidth": 844,
+      "bodyWidth": 844,
+      "horizontalScrollers": []
+    },
+    {
+      "name": "Atlas boop uses laughing still: /region/EU 844x390",
+      "pass": true,
+      "still": 1,
+      "film": 0
+    },
+    {
+      "name": "Controls reachable and no page sideways overflow: /region/EU 844x390",
+      "pass": true,
+      "reachable": [
+        "Back",
+        "Start",
+        "Albania, Not started, 0 of 6 learned"
+      ],
+      "viewportWidth": 844,
+      "documentWidth": 844,
+      "bodyWidth": 844,
+      "horizontalScrollers": []
+    },
+    {
+      "name": "Explore empty search recovers to continent grid",
+      "pass": true
+    },
+    {
+      "name": "Collection no-results mascot responds",
+      "pass": true
+    },
+    {
+      "name": "Collection empty search recovers to countries",
+      "pass": true
+    },
+    {
+      "name": "Normal motion advances mascot sprite frames",
+      "pass": true,
+      "transforms": [
+        "matrix(1, 0, 0, 1, 0, 0)",
+        "matrix(1, 0, 0, 1, -80, 0)",
+        "matrix(1, 0, 0, 1, -320, 0)",
+        "matrix(1, 0, 0, 1, 0, -80)",
+        "matrix(1, 0, 0, 1, -240, -80)",
+        "matrix(1, 0, 0, 1, -400, -80)"
+      ]
+    },
+    {
+      "name": "Live reduced-motion switch replaces film with still",
+      "pass": true
+    },
+    {
+      "name": "No uncaught browser exceptions",
+      "pass": true,
+      "errors": []
+    }
+  ],
+  "failures": 0
+}

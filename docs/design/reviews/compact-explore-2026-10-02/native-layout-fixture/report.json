@@ -1,0 +1,46 @@
+{
+  "fixture": true,
+  "description": "Actual ExploreAtlas. Native fontScale=2 simulated before mount; glyphs doubled separately because RNW does not apply native text scaling. Real pack names. Globe placeholder; no account or reward persistence.",
+  "cases": [
+    {
+      "width": 320,
+      "nativeFontScale": 2,
+      "glyphScale": 2,
+      "metrics": {
+        "width": 288,
+        "height": 236,
+        "scrollWidth": 286,
+        "cardText": "StorbritannienHuvudstad: London",
+        "transform": "matrix(1, 0, 0, 1, 0, 0)"
+      },
+      "openWorks": true
+    },
+    {
+      "width": 390,
+      "nativeFontScale": 2,
+      "glyphScale": 2,
+      "metrics": {
+        "width": 358,
+        "height": 152,
+        "scrollWidth": 356,
+        "cardText": "StorbritannienHuvudstad: London",
+        "transform": "matrix(1, 0, 0, 1, 0, 0)"
+      },
+      "openWorks": true
+    },
+    {
+      "width": 768,
+      "nativeFontScale": 2,
+      "glyphScale": 2,
+      "metrics": {
+        "width": 736,
+        "height": 152,
+        "scrollWidth": 734,
+        "cardText": "StorbritannienHuvudstad: London",
+        "transform": "matrix(1, 0, 0, 1, 0, 0)"
+      },
+      "openWorks": true
+    }
+  ],
+  "errors": []
+}

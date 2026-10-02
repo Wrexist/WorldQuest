@@ -22,5 +22,7 @@
   "common:loading": "Loading",
   "common:loading__note": "Accessibility label for a loading screen.",
   "common:appName": "WorldQuest",
-  "common:appName__note": "Product wordmark in the persistent header. Brand name; do not translate."
+  "common:appName__note": "Product wordmark in the persistent header. Brand name; do not translate.",
+  "common:atlas.boop": "Atlas, your guide. Tap for a giggle.",
+  "common:atlas.boop__note": "Accessible button name for Atlas across the app. Tapping makes him laugh; it never navigates or gives a reward."
 }

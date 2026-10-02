@@ -1,0 +1,334 @@
+{
+  "fixture": true,
+  "description": "Actual ProfileScreen/ShopScreen/QuestScreen with explicitly synthetic props. Native fontScale=2 simulated before mount and glyphs doubled separately (RNW does not apply native scaling). Swedish dark reduced motion. Reserved navigation block is a placeholder. No account persistence, economy or server proof.",
+  "cases": [
+    {
+      "width": 320,
+      "screen": "quests",
+      "nativeFontScale": 2,
+      "glyphScale": 2,
+      "measure": {
+        "pageOverflow": 0,
+        "textOutsideViewport": [],
+        "undersizedControls": [],
+        "blocks": [
+          {
+            "id": "quest-treasure-card",
+            "height": 594,
+            "width": 288
+          }
+        ]
+      },
+      "elements": [
+        {
+          "name": "treasure",
+          "width": 288,
+          "height": 594,
+          "textOutsideElement": []
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "screen": "shop",
+      "nativeFontScale": 2,
+      "glyphScale": 2,
+      "measure": {
+        "pageOverflow": 0,
+        "textOutsideViewport": [],
+        "undersizedControls": [],
+        "blocks": [
+          {
+            "id": "coin-wallet",
+            "height": 374,
+            "width": 288
+          }
+        ]
+      },
+      "elements": [
+        {
+          "name": "freeze",
+          "width": 288,
+          "height": 320,
+          "textOutsideElement": []
+        },
+        {
+          "name": "wallet",
+          "width": 288,
+          "height": 374,
+          "textOutsideElement": []
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "screen": "profile-guest",
+      "nativeFontScale": 2,
+      "glyphScale": 2,
+      "measure": {
+        "pageOverflow": 0,
+        "textOutsideViewport": [],
+        "undersizedControls": [],
+        "blocks": []
+      },
+      "elements": []
+    },
+    {
+      "width": 320,
+      "screen": "profile",
+      "nativeFontScale": 2,
+      "glyphScale": 2,
+      "measure": {
+        "pageOverflow": 0,
+        "textOutsideViewport": [],
+        "undersizedControls": [],
+        "blocks": [
+          {
+            "id": "profile-passport",
+            "height": 438,
+            "width": 288
+          }
+        ]
+      },
+      "elements": [
+        {
+          "name": "passport",
+          "width": 288,
+          "height": 438,
+          "textOutsideElement": []
+        },
+        {
+          "name": "companion",
+          "width": 254,
+          "height": 410,
+          "textOutsideElement": []
+        },
+        {
+          "name": "stats",
+          "width": 288,
+          "height": 500,
+          "textOutsideElement": []
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "screen": "quests",
+      "nativeFontScale": 2,
+      "glyphScale": 2,
+      "measure": {
+        "pageOverflow": 0,
+        "textOutsideViewport": [],
+        "undersizedControls": [],
+        "blocks": [
+          {
+            "id": "quest-treasure-card",
+            "height": 594,
+            "width": 358
+          }
+        ]
+      },
+      "elements": [
+        {
+          "name": "treasure",
+          "width": 358,
+          "height": 594,
+          "textOutsideElement": []
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "screen": "shop",
+      "nativeFontScale": 2,
+      "glyphScale": 2,
+      "measure": {
+        "pageOverflow": 0,
+        "textOutsideViewport": [],
+        "undersizedControls": [],
+        "blocks": [
+          {
+            "id": "coin-wallet",
+            "height": 374,
+            "width": 358
+          }
+        ]
+      },
+      "elements": [
+        {
+          "name": "freeze",
+          "width": 358,
+          "height": 284,
+          "textOutsideElement": []
+        },
+        {
+          "name": "wallet",
+          "width": 358,
+          "height": 374,
+          "textOutsideElement": []
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "screen": "profile-guest",
+      "nativeFontScale": 2,
+      "glyphScale": 2,
+      "measure": {
+        "pageOverflow": 0,
+        "textOutsideViewport": [],
+        "undersizedControls": [],
+        "blocks": []
+      },
+      "elements": []
+    },
+    {
+      "width": 390,
+      "screen": "profile",
+      "nativeFontScale": 2,
+      "glyphScale": 2,
+      "measure": {
+        "pageOverflow": 0,
+        "textOutsideViewport": [],
+        "undersizedControls": [],
+        "blocks": [
+          {
+            "id": "profile-passport",
+            "height": 386,
+            "width": 358
+          }
+        ]
+      },
+      "elements": [
+        {
+          "name": "passport",
+          "width": 358,
+          "height": 386,
+          "textOutsideElement": []
+        },
+        {
+          "name": "companion",
+          "width": 324,
+          "height": 314,
+          "textOutsideElement": []
+        },
+        {
+          "name": "stats",
+          "width": 358,
+          "height": 500,
+          "textOutsideElement": []
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "screen": "quests",
+      "nativeFontScale": 2,
+      "glyphScale": 2,
+      "measure": {
+        "pageOverflow": 0,
+        "textOutsideViewport": [],
+        "undersizedControls": [],
+        "blocks": [
+          {
+            "id": "quest-treasure-card",
+            "height": 386,
+            "width": 736
+          }
+        ]
+      },
+      "elements": [
+        {
+          "name": "treasure",
+          "width": 736,
+          "height": 386,
+          "textOutsideElement": []
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "screen": "shop",
+      "nativeFontScale": 2,
+      "glyphScale": 2,
+      "measure": {
+        "pageOverflow": 0,
+        "textOutsideViewport": [],
+        "undersizedControls": [],
+        "blocks": [
+          {
+            "id": "coin-wallet",
+            "height": 326,
+            "width": 736
+          }
+        ]
+      },
+      "elements": [
+        {
+          "name": "freeze",
+          "width": 736,
+          "height": 212,
+          "textOutsideElement": []
+        },
+        {
+          "name": "wallet",
+          "width": 736,
+          "height": 326,
+          "textOutsideElement": []
+        }
+      ]
+    },
+    {
+      "width": 768,
+      "screen": "profile-guest",
+      "nativeFontScale": 2,
+      "glyphScale": 2,
+      "measure": {
+        "pageOverflow": 0,
+        "textOutsideViewport": [],
+        "undersizedControls": [],
+        "blocks": []
+      },
+      "elements": []
+    },
+    {
+      "width": 768,
+      "screen": "profile",
+      "nativeFontScale": 2,
+      "glyphScale": 2,
+      "measure": {
+        "pageOverflow": 0,
+        "textOutsideViewport": [],
+        "undersizedControls": [],
+        "blocks": [
+          {
+            "id": "profile-passport",
+            "height": 342,
+            "width": 736
+          }
+        ]
+      },
+      "elements": [
+        {
+          "name": "passport",
+          "width": 736,
+          "height": 342,
+          "textOutsideElement": []
+        },
+        {
+          "name": "companion",
+          "width": 702,
+          "height": 130,
+          "textOutsideElement": []
+        },
+        {
+          "name": "stats",
+          "width": 736,
+          "height": 500,
+          "textOutsideElement": []
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

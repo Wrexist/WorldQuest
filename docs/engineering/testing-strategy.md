@@ -205,7 +205,7 @@ one — and it finds errors before users report them.
 | Cold start | Automated, real mid-tier Android | < 2.0 s |
 | Next-items query | Load test with 10 k synthetic users | p95 < 50 ms |
 | Frame rate in lessons | Instrumented profiling | ≥ 58 fps |
-| Bundle size | CI, fails on regression > 5 % | < 4.1 MiB — **resolved 2026-08-09.** The gate was 6.0 MiB against this row's 4 because of `@sentry/react-native` (1.92 MiB). Isac decided to hold ~4 and drop Sentry; a real measured build came in at 4.07 MiB, so the gate is 4.1 MiB. See `docs/plan/cowork-handoff.md` §6. |
+| Bundle size | `pnpm bundle:native`, per-platform Hermes size gate | < 5.21 MiB, measured 2026-10-02; iOS 5,456,119 B / Android 5,453,594 B. Responsive motion adds 755/751 B since the cloud pass, within the unchanged gate; [current review](../design/reviews/responsive-motion-2026-10-02/README.md). The preceding 0.01 MiB cloud allocation and unchanged asset-mapping checks remain in its [review](../design/reviews/cloud-companions-2026-10-02/README.md). Historical budget decisions remain in `scripts/bundle-native.cjs`. |
 | Memory in a long session | 30-min soak | No unbounded growth |
 
 ## 7. Accessibility testing

@@ -26,7 +26,7 @@
 
 import { useState } from 'react'
 import { StyleSheet, TextInput, View } from 'react-native'
-import { createThemeStyles } from '@worldquest/design'
+import { ClaySurface, clayShadow, createThemeStyles } from '@worldquest/design'
 import { radius, space, text } from '@worldquest/design'
 import { useT } from '../../lib/i18n.js'
 
@@ -55,7 +55,8 @@ export function TypedAnswer({
   const [focused, setFocused] = useState(false)
 
   return (
-    <View style={styles.wrap}>
+    <View style={[styles.wrap, state === 'correct' && styles.correctSurface, state === 'wrong' && styles.wrongSurface]}>
+      <ClaySurface tone={state === 'correct' ? 'lime' : 'ice'} transparent />
       <TextInput
         value={value}
         onChangeText={onChange}
@@ -97,14 +98,16 @@ export function TypedAnswer({
 
 const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
-    wrap: { alignSelf: 'stretch' },
+    wrap: { alignSelf: 'stretch', borderRadius: radius.xl, backgroundColor: colors.option.idle, ...clayShadow(colors) },
+    correctSurface: { backgroundColor: colors.option.correct },
+    wrongSurface: { backgroundColor: colors.option.wrong },
     field: {
       // Positioned, so it paints above any gradient behind it on the web, where an input is static.
       position: 'relative',
       ...text('h2'),
       color: colors.text.primary,
-      backgroundColor: colors.option.idle,
-      borderRadius: radius.md,
+      backgroundColor: colors.clay.clear,
+      borderRadius: radius.xl,
       borderWidth: 2,
       borderColor: colors.option.idleEdge,
       paddingVertical: space[4],
@@ -112,8 +115,8 @@ const useThemeValues = createThemeStyles((colors) => {
       textAlign: 'center',
     },
     focused: { borderColor: colors.option.selectedEdge },
-    correct: { backgroundColor: colors.option.correct, borderColor: colors.option.correctEdge },
-    wrong: { backgroundColor: colors.option.wrong, borderColor: colors.option.wrongEdge },
+    correct: { borderColor: colors.option.correctEdge },
+    wrong: { borderColor: colors.option.wrongEdge },
   })
   return { colors, styles }
 })

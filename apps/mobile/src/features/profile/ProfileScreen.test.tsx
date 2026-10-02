@@ -43,6 +43,14 @@ const world: WorldProgress = {
 }
 
 describe('Profile — the five states', () => {
+  it.each([['first visit', null], ['with progress', stats]] as const)(
+    'makes Atlas reachable as a playful button %s', (_state, currentStats) => {
+      render(<ProfileScreen stats={currentStats} world={world} loading={false} />)
+      fireEvent.click(screen.getByRole('button', { name: 'Atlas, your guide. Tap for a giggle.' }))
+      expect(screen.getByTestId('mascot-pose-laughing')).toBeTruthy()
+    },
+  )
+
   it('renders real numbers', () => {
     render(<ProfileScreen stats={stats} world={world} loading={false} />)
     // Three tiles, not six. Lifetime XP and the coin balance moved to the two places
@@ -121,6 +129,18 @@ describe('Profile — the only way to Settings', () => {
 })
 
 describe('Profile — the level curve', () => {
+  it('keeps the worn title, rename action and earned progress together in the passport', () => {
+    const onRename = vi.fn()
+    render(<ProfileScreen stats={stats} world={world} loading={false}
+      wornTitleKey="profile:anonymous" onRename={onRename} />)
+    const passport = screen.getByTestId('profile-passport')
+    expect(passport.textContent).toContain('Explorer')
+    expect(passport.textContent).toContain('Level 11')
+    expect(passport.querySelector('[role="progressbar"]')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Change your name' }))
+    expect(onRename).toHaveBeenCalledOnce()
+  })
+
   it('shows the distance to the next level from the real curve', () => {
     // The redesign shows `1,250 / 2,000 XP`, which corresponds to no coherent
     // progression. This uses `50·n^1.9`, so the fraction is the position INSIDE the

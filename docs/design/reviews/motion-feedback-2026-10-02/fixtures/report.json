@@ -1,0 +1,425 @@
+{
+  "fixture": true,
+  "description": "Actual TabBar, AnswerOption, ProgressBar, QuestTreasureCard and PairsBoard. Explicit local presentation values, no account state or reward storage. Hardware haptics stubbed. Accessible cases combine native fontScale=2 and measured doubled glyphs with the production tab label scaling cap.",
+  "layouts": [
+    {
+      "width": 320,
+      "accessible": false,
+      "overflow": {
+        "text": [],
+        "page": false
+      },
+      "tab": {
+        "before": "matrix(1, 0, 0, 1, 0, 0)",
+        "during": "matrix(1.06932, 0, 0, 1.06932, 0, 0)",
+        "after": "matrix(1, 0, 0, 1, 0, 0)"
+      },
+      "answer": {
+        "before": "matrix(1, 0, 0, 1, 0, 0)",
+        "during": "matrix(0.98, 0, 0, 0.98, 0, 0)",
+        "stationaryTarget": true,
+        "selectedImmediately": true
+      },
+      "progress": {
+        "before": "matrix(0.2, 0, 0, 1, 0, 0)",
+        "during": "matrix(0.282954, 0, 0, 1, 0, 0)",
+        "after": "matrix(0.7, 0, 0, 1, 0, 0)",
+        "accessibleValueImmediately": 7
+      },
+      "checkpoint": {
+        "before": "matrix(1, 0, 0, 1, 0, 0)",
+        "during": "matrix(1.06224, 0, 0, 1.06224, 0, 0)",
+        "after": "matrix(1, 0, 0, 1, 0, 0)",
+        "accessibleValueImmediately": 1
+      }
+    },
+    {
+      "width": 320,
+      "accessible": true,
+      "overflow": {
+        "text": [],
+        "page": false
+      },
+      "tab": {
+        "before": "matrix(1, 0, 0, 1, 0, 0)",
+        "during": "matrix(1, 0, 0, 1, 0, 0)",
+        "after": "matrix(1, 0, 0, 1, 0, 0)"
+      },
+      "answer": {
+        "before": "matrix(1, 0, 0, 1, 0, 0)",
+        "during": "matrix(1, 0, 0, 1, 0, 0)",
+        "stationaryTarget": true,
+        "selectedImmediately": true
+      },
+      "progress": {
+        "before": "matrix(0.2, 0, 0, 1, 0, 0)",
+        "during": "matrix(0.7, 0, 0, 1, 0, 0)",
+        "after": "matrix(0.7, 0, 0, 1, 0, 0)",
+        "accessibleValueImmediately": 7
+      },
+      "checkpoint": {
+        "before": "matrix(1, 0, 0, 1, 0, 0)",
+        "during": "matrix(1, 0, 0, 1, 0, 0)",
+        "after": "matrix(1, 0, 0, 1, 0, 0)",
+        "accessibleValueImmediately": 1
+      }
+    },
+    {
+      "width": 390,
+      "accessible": false,
+      "overflow": {
+        "text": [],
+        "page": false
+      },
+      "tab": {
+        "before": "matrix(1, 0, 0, 1, 0, 0)",
+        "during": "matrix(1.07, 0, 0, 1.07, 0, 0)",
+        "after": "matrix(1, 0, 0, 1, 0, 0)"
+      },
+      "answer": {
+        "before": "matrix(1, 0, 0, 1, 0, 0)",
+        "during": "matrix(0.98, 0, 0, 0.98, 0, 0)",
+        "stationaryTarget": true,
+        "selectedImmediately": true
+      },
+      "progress": {
+        "before": "matrix(0.2, 0, 0, 1, 0, 0)",
+        "during": "matrix(0.260473, 0, 0, 1, 0, 0)",
+        "after": "matrix(0.7, 0, 0, 1, 0, 0)",
+        "accessibleValueImmediately": 7
+      },
+      "checkpoint": {
+        "before": "matrix(1, 0, 0, 1, 0, 0)",
+        "during": "matrix(1.07127, 0, 0, 1.07127, 0, 0)",
+        "after": "matrix(1, 0, 0, 1, 0, 0)",
+        "accessibleValueImmediately": 1
+      }
+    },
+    {
+      "width": 390,
+      "accessible": true,
+      "overflow": {
+        "text": [],
+        "page": false
+      },
+      "tab": {
+        "before": "matrix(1, 0, 0, 1, 0, 0)",
+        "during": "matrix(1, 0, 0, 1, 0, 0)",
+        "after": "matrix(1, 0, 0, 1, 0, 0)"
+      },
+      "answer": {
+        "before": "matrix(1, 0, 0, 1, 0, 0)",
+        "during": "matrix(1, 0, 0, 1, 0, 0)",
+        "stationaryTarget": true,
+        "selectedImmediately": true
+      },
+      "progress": {
+        "before": "matrix(0.2, 0, 0, 1, 0, 0)",
+        "during": "matrix(0.7, 0, 0, 1, 0, 0)",
+        "after": "matrix(0.7, 0, 0, 1, 0, 0)",
+        "accessibleValueImmediately": 7
+      },
+      "checkpoint": {
+        "before": "matrix(1, 0, 0, 1, 0, 0)",
+        "during": "matrix(1, 0, 0, 1, 0, 0)",
+        "after": "matrix(1, 0, 0, 1, 0, 0)",
+        "accessibleValueImmediately": 1
+      }
+    },
+    {
+      "width": 768,
+      "accessible": false,
+      "overflow": {
+        "text": [],
+        "page": false
+      },
+      "tab": {
+        "before": "matrix(1, 0, 0, 1, 0, 0)",
+        "during": "matrix(1.06932, 0, 0, 1.06932, 0, 0)",
+        "after": "matrix(1, 0, 0, 1, 0, 0)"
+      },
+      "answer": {
+        "before": "matrix(1, 0, 0, 1, 0, 0)",
+        "during": "matrix(0.98, 0, 0, 0.98, 0, 0)",
+        "stationaryTarget": true,
+        "selectedImmediately": true
+      },
+      "progress": {
+        "before": "matrix(0.2, 0, 0, 1, 0, 0)",
+        "during": "matrix(0.265065, 0, 0, 1, 0, 0)",
+        "after": "matrix(0.7, 0, 0, 1, 0, 0)",
+        "accessibleValueImmediately": 7
+      },
+      "checkpoint": {
+        "before": "matrix(1, 0, 0, 1, 0, 0)",
+        "during": "matrix(1.07127, 0, 0, 1.07127, 0, 0)",
+        "after": "matrix(1, 0, 0, 1, 0, 0)",
+        "accessibleValueImmediately": 1
+      }
+    },
+    {
+      "width": 768,
+      "accessible": true,
+      "overflow": {
+        "text": [],
+        "page": false
+      },
+      "tab": {
+        "before": "matrix(1, 0, 0, 1, 0, 0)",
+        "during": "matrix(1, 0, 0, 1, 0, 0)",
+        "after": "matrix(1, 0, 0, 1, 0, 0)"
+      },
+      "answer": {
+        "before": "matrix(1, 0, 0, 1, 0, 0)",
+        "during": "matrix(1, 0, 0, 1, 0, 0)",
+        "stationaryTarget": true,
+        "selectedImmediately": true
+      },
+      "progress": {
+        "before": "matrix(0.2, 0, 0, 1, 0, 0)",
+        "during": "matrix(0.7, 0, 0, 1, 0, 0)",
+        "after": "matrix(0.7, 0, 0, 1, 0, 0)",
+        "accessibleValueImmediately": 7
+      },
+      "checkpoint": {
+        "before": "matrix(1, 0, 0, 1, 0, 0)",
+        "during": "matrix(1, 0, 0, 1, 0, 0)",
+        "after": "matrix(1, 0, 0, 1, 0, 0)",
+        "accessibleValueImmediately": 1
+      }
+    }
+  ],
+  "interactions": [
+    {
+      "name": "picture layout at 320",
+      "accessible": false,
+      "overflow": {
+        "text": [],
+        "page": false
+      },
+      "bounds": []
+    },
+    {
+      "name": "picture layout at 320",
+      "accessible": true,
+      "overflow": {
+        "text": [],
+        "page": false
+      },
+      "bounds": []
+    },
+    {
+      "name": "pairs layout at 320",
+      "accessible": false,
+      "overflow": {
+        "text": [],
+        "page": false
+      },
+      "bounds": [
+        {
+          "text": "Stockholm",
+          "target": {
+            "x": 166,
+            "width": 138,
+            "height": 56,
+            "minWidth": "0px",
+            "flex": "0 0 auto"
+          },
+          "face": {
+            "x": 166,
+            "width": 138,
+            "height": 56,
+            "minWidth": "0px",
+            "flex": "1 0 auto"
+          },
+          "label": {
+            "x": 184,
+            "width": 102,
+            "height": 24,
+            "minWidth": "0px",
+            "flex": "1 1 0%"
+          }
+        },
+        {
+          "text": "Oslo",
+          "target": {
+            "x": 166,
+            "width": 138,
+            "height": 56,
+            "minWidth": "0px",
+            "flex": "0 0 auto"
+          },
+          "face": {
+            "x": 166,
+            "width": 138,
+            "height": 56,
+            "minWidth": "0px",
+            "flex": "1 0 auto"
+          },
+          "label": {
+            "x": 184,
+            "width": 102,
+            "height": 24,
+            "minWidth": "0px",
+            "flex": "1 1 0%"
+          }
+        },
+        {
+          "text": "Copenhagen",
+          "target": {
+            "x": 166,
+            "width": 138,
+            "height": 56,
+            "minWidth": "0px",
+            "flex": "0 0 auto"
+          },
+          "face": {
+            "x": 166,
+            "width": 138,
+            "height": 56,
+            "minWidth": "0px",
+            "flex": "1 0 auto"
+          },
+          "label": {
+            "x": 184,
+            "width": 102,
+            "height": 24,
+            "minWidth": "0px",
+            "flex": "1 1 0%"
+          }
+        },
+        {
+          "text": "Helsinki",
+          "target": {
+            "x": 166,
+            "width": 138,
+            "height": 56,
+            "minWidth": "0px",
+            "flex": "0 0 auto"
+          },
+          "face": {
+            "x": 166,
+            "width": 138,
+            "height": 56,
+            "minWidth": "0px",
+            "flex": "1 0 auto"
+          },
+          "label": {
+            "x": 184,
+            "width": 102,
+            "height": 24,
+            "minWidth": "0px",
+            "flex": "1 1 0%"
+          }
+        }
+      ]
+    },
+    {
+      "name": "pairs layout at 320",
+      "accessible": true,
+      "overflow": {
+        "text": [],
+        "page": false
+      },
+      "bounds": [
+        {
+          "text": "Stockholm",
+          "target": {
+            "x": 166,
+            "width": 138,
+            "height": 124,
+            "minWidth": "0px",
+            "flex": "0 0 auto"
+          },
+          "face": {
+            "x": 166,
+            "width": 138,
+            "height": 124,
+            "minWidth": "0px",
+            "flex": "1 0 auto"
+          },
+          "label": {
+            "x": 184,
+            "width": 102,
+            "height": 96,
+            "minWidth": "0px",
+            "flex": "1 1 0%"
+          }
+        },
+        {
+          "text": "Oslo",
+          "target": {
+            "x": 166,
+            "width": 138,
+            "height": 76,
+            "minWidth": "0px",
+            "flex": "0 0 auto"
+          },
+          "face": {
+            "x": 166,
+            "width": 138,
+            "height": 76,
+            "minWidth": "0px",
+            "flex": "1 0 auto"
+          },
+          "label": {
+            "x": 184,
+            "width": 102,
+            "height": 48,
+            "minWidth": "0px",
+            "flex": "1 1 0%"
+          }
+        },
+        {
+          "text": "Köpenhamn",
+          "target": {
+            "x": 166,
+            "width": 138,
+            "height": 124,
+            "minWidth": "0px",
+            "flex": "0 0 auto"
+          },
+          "face": {
+            "x": 166,
+            "width": 138,
+            "height": 124,
+            "minWidth": "0px",
+            "flex": "1 0 auto"
+          },
+          "label": {
+            "x": 184,
+            "width": 102,
+            "height": 96,
+            "minWidth": "0px",
+            "flex": "1 1 0%"
+          }
+        },
+        {
+          "text": "Helsingfors",
+          "target": {
+            "x": 166,
+            "width": 138,
+            "height": 124,
+            "minWidth": "0px",
+            "flex": "0 0 auto"
+          },
+          "face": {
+            "x": 166,
+            "width": 138,
+            "height": 124,
+            "minWidth": "0px",
+            "flex": "1 0 auto"
+          },
+          "label": {
+            "x": 184,
+            "width": 102,
+            "height": 96,
+            "minWidth": "0px",
+            "flex": "1 1 0%"
+          }
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

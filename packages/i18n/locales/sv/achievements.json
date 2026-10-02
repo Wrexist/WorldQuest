@@ -75,5 +75,9 @@
   "achievements:set.westerneurope.name": "Västeuropa",
   "achievements:set.westerneurope.desc": "Lär dig allt om alla 6 länder i Västeuropa.",
   "achievements:unlocked.label": "Ny utmärkelse",
-  "achievements:unlocked.more": "{count, plural, one {Och # utmärkelse till – du hittar den under Utmärkelser} other {Och # utmärkelser till – du hittar dem under Utmärkelser}}"
+  "achievements:unlocked.more": "{count, plural, one {Och # utmärkelse till – du hittar den under Utmärkelser} other {Och # utmärkelser till – du hittar dem under Utmärkelser}}",
+  "achievements:guide.start": "Ditt första äventyr börjar här. Nu hittar vi ditt första märke!",
+  "achievements:guide.start__note": "Atlas speech on the normal achievements list when none are unlocked. Encourages a first lesson without promising an immediate award.",
+  "achievements:guide.earned": "Varje märke har en historia. Se vad du har upptäckt!",
+  "achievements:guide.earned__note": "Atlas speech when at least one achievement is unlocked. Celebrates progress without adding pressure."
 }

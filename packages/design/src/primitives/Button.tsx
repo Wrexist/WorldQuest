@@ -26,6 +26,7 @@ import { depth, radius, space } from '../tokens.js'
 import { squircle } from '../shape.js'
 import { text } from '../typography.js'
 import { press3d, useFacePress } from './press3d.js'
+import { ClaySurface, clayShadow, type ClayTone } from './ClaySurface.js'
 
 export type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'destructive' | 'ghost' | 'discovery' | 'adventure'
 export type ButtonSize = 'sm' | 'md' | 'lg'
@@ -56,7 +57,7 @@ type Skin = {
   label: string
   outlined?: boolean
   /** A soft bloom behind the button. Primary only — see the note at the render. */
-  glow?: string
+  tone?: ClayTone
 }
 
 
@@ -74,7 +75,7 @@ export function Button({
   style,
   testID,
 }: ButtonProps) {
-  const { colors, SKINS } = useThemeValues()
+  const { colors, SKINS, lift } = useThemeValues()
   const isInert = disabled || loading
   const flat = variant === 'ghost'
   const edgeDepth = flat ? 0 : depth.button
@@ -86,7 +87,7 @@ export function Button({
 
   const faceColor = isInert && !flat ? colors.action.disabled : skin.face
   const edgeColor = isInert && !flat ? colors.action.disabledEdge : skin.edge
-  const labelColor = disabled ? colors.text.tertiary : skin.label
+  const labelColor = isInert ? colors.text.tertiary : skin.label
 
   return (
     <Pressable
@@ -96,8 +97,6 @@ export function Button({
       accessibilityHint={accessibilityHint}
       aria-disabled={isInert}
       aria-busy={loading}
-      // Reach the 44pt minimum target without growing the visual.
-      hitSlop={Math.max(0, (44 - socketHeight) / 2)}
       disabled={isInert}
       onPress={onPress}
       onPressIn={onPressIn}
@@ -109,17 +108,6 @@ export function Button({
       // rule is the blunt version: never fix a height to an English string.
       style={[press3d.socket, { minHeight: socketHeight }, fullWidth && styles.fullWidth, style]}
     >
-      {/* The glow under the one button that carries the screen.
-          `action.primaryGlow` was a third token with no readers, alongside
-          `bg.canvasGradient` and `motion.stagger`. It is worth wiring because it is the
-          house style stated in `asset-prompts.md` — "soft matte surfaces with gentle
-          subsurface glow" — and every delivered illustration has it while the interface
-          under them had none. A flat green rectangle beside a mascot lit from within
-          reads as two products.
-
-          Only the primary, and only when it is live. A glow under every button is not a
-          glow, it is a haze; and a glow under a disabled one promises a tap that does
-          nothing. */}
       {!flat && (
         <View
           style={[press3d.edge, styles.edge, { top: edgeDepth, backgroundColor: edgeColor }]}
@@ -135,55 +123,18 @@ export function Button({
             backgroundColor: faceColor,
             transform: [{ translateY }],
           },
-          // The bloom under the one button that carries the screen.
-          //
-          // `action.primaryGlow` was a token with no readers, alongside
-          // `bg.canvasGradient` and `motion.stagger`. It is worth wiring because it is
-          // the house style stated in asset-prompts.md — "soft matte surfaces with
-          // gentle subsurface glow" — and every delivered illustration has it while the
-          // interface under them had none.
-          //
-          // A REAL shadow, not a tinted rectangle behind the button. That was tried
-          // first and rendered as a hard-edged third slab in the 3D stack: a flat shape
-          // at low opacity has an edge, and an edge is the one thing a glow does not
-          // have. Same mistake as trying to fake confetti with a solid band.
-          //
-          // Paired with `elevation`, because `tokens.test.ts` requires it and the rule
-          // is right: an iOS-only shadow is a component that looks flat to half our
-          // users. Android cannot colour an elevation, so it gets a neutral raise
-          // rather than a green bloom — which is not a downgrade so much as the
-          // platform's own idiom for the same idea, a primary action sitting above the
-          // surface.
-          //
-          // TURNED DOWN in the iOS pass, not turned off. At 0.55 over `space[3]` this
-          // was a visible green halo on a navy screen — read back from a device it is
-          // the second-loudest non-native object on the onboarding slides, after the
-          // uppercase label (docs/design/ios-native-audit.md, N11). Removing it outright
-          // would have put `action.primaryGlow` back in the state this comment was
-          // written to get it out of: a token nothing reads. At 0.22 over `space[2]` it
-          // is an ambient lift rather than a bloom — the primary still sits above the
-          // canvas, and you have to look for the colour to find it.
-          skin.glow !== undefined && !isInert && {
-            shadowColor: skin.glow,
-            shadowOpacity: 0.22,
-            shadowRadius: space[2],
-            shadowOffset: { width: 0, height: space[1] },
-            elevation: space[1],
-          },
+          !flat && !isInert && lift,
           // The outlined variant draws the edge colour as a ring too, so the shape is
           // closed on all four sides rather than just underneath.
           skin.outlined === true && !isInert && { borderWidth: 2, borderColor: edgeColor },
         ]}
       >
+        {!flat && !isInert && variant !== 'destructive' && <ClaySurface tone={skin.tone ?? 'ice'} radius={radius.full} transparent={skin.tone === undefined} />}
         {/* The label stays mounted while loading so the button does not change width. */}
         {loading ? (
           <ActivityIndicator color={labelColor} />
         ) : (
           <Text
-            // Two lines, so a long label at a large text size wraps instead of being
-            // cut. Three would mean the button has swallowed a sentence, which is a
-            // copy problem rather than a layout one.
-            numberOfLines={2}
             style={[
               styles.label,
               size === 'sm' && styles.labelSm,
@@ -201,9 +152,9 @@ export function Button({
 
 const styles = StyleSheet.create({
   fullWidth: { alignSelf: 'stretch' },
-  edge: { borderRadius: radius.lg, ...squircle },
+  edge: { borderRadius: radius.full, ...squircle },
   face: {
-    borderRadius: radius.lg,
+    borderRadius: radius.full,
     ...squircle,
     paddingVertical: space[2],
     alignItems: 'center',
@@ -216,7 +167,7 @@ const styles = StyleSheet.create({
   // It used to be uppercase with +0.6 tracking, which is the reference product's shape
   // and is the loudest non-native thing an iOS user meets in this app. See the note on
   // the step itself in tokens.json.
-  label: { ...text('button'), textAlign: 'center' },
+  label: { ...text('button', { weight: '800' }), textAlign: 'center', flexShrink: 1, minWidth: 0 },
   /**
    * A whole step down, not just a smaller size — dropping fontSize alone leaves the
    * line height of the larger step behind.
@@ -254,16 +205,19 @@ const useThemeValues = createThemeStyles((colors) => {
     face: colors.course.face,
     edge: colors.course.bannerEdge,
     label: colors.course.ink,
+    tone: 'lime',
   },
   primary: {
     face: colors.action.primaryFace,
     edge: colors.action.primaryEdge,
     label: colors.text.onPrimary,
+    tone: 'lime',
   },
   secondary: {
     face: colors.action.secondaryFace,
     edge: colors.action.secondaryEdge,
-    label: colors.text.onSecondary,
+    label: colors.clay.sky.ink,
+    tone: 'sky',
   },
   destructive: {
     face: colors.action.destructive,
@@ -278,11 +232,12 @@ const useThemeValues = createThemeStyles((colors) => {
     edge: colors.action.tertiaryEdge,
     label: colors.text.primary,
     outlined: true,
+    tone: 'ice',
   },
   // Genuinely flat. For "skip", "not now", "log out" — the actions we must offer
   // without inviting.
   ghost: { face: 'transparent', edge: 'transparent', label: colors.text.secondary },
-  adventure: { face: colors.leagueAdventure.button, edge: colors.leagueAdventure.buttonEdge, label: colors.leagueAdventure.buttonText },
+  adventure: { face: colors.leagueAdventure.button, edge: colors.leagueAdventure.buttonEdge, label: colors.leagueAdventure.buttonText, tone: 'navy' },
 }
-  return { colors, SKINS }
+  return { colors, SKINS, lift: clayShadow(colors) }
 })

@@ -36,7 +36,7 @@
     "verify": "pnpm generate && pnpm status:check && pnpm typecheck && pnpm check:backend-boundaries && pnpm test && pnpm content:validate && pnpm content:crosscheck && pnpm content:preview --quiet && pnpm i18n:check && pnpm design:contrast && pnpm lint:a11y && pnpm escape-hatches && pnpm reachability && pnpm check:sql && pnpm five-states && pnpm scrollable && pnpm engines:simulate && pnpm check:eas && pnpm check:workflows",
     "typecheck": "pnpm -r --filter \"./packages/*\" --filter \"./apps/*\" --fail-if-no-match typecheck && pnpm typecheck:edge",
     "typecheck:edge": "tsc --noEmit -p supabase/tsconfig.json",
-    "test": "node --test scripts/lib/browser-harness.test.cjs scripts/security-regressions.test.cjs && pnpm -r --filter \"./packages/*\" --filter \"./apps/*\" --fail-if-no-match test && vitest run --config vitest.edge.config.ts",
+    "test": "node --test scripts/lib/browser-harness.test.cjs scripts/security-regressions.test.cjs scripts/metro-content-transformer.test.cjs && pnpm -r --filter \"./packages/*\" --filter \"./apps/*\" --fail-if-no-match test && vitest run --config vitest.edge.config.ts",
     "e2e": "pnpm --filter @worldquest/mobile exec expo export --platform web --output-dir ../../node_modules/.cache/wq-web && node apps/mobile/e2e/flow.cjs node_modules/.cache/wq-web node_modules/.cache/wq-e2e-shots",
     "e2e:d1": "node scripts/d1-journey.cjs",
     "design:shots": "pnpm --filter @worldquest/mobile exec expo export --platform web --output-dir ../../node_modules/.cache/wq-web && node scripts/design-shots.cjs",

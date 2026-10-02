@@ -33,7 +33,7 @@ import { createThemeStyles } from '@worldquest/design'
  */
 
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import { layout, space, text } from '@worldquest/design'
+import { ClaySurface, layout, radius, space, text } from '@worldquest/design'
 import { t } from '../lib/i18n.js'
 import { Icon } from './Icon.js'
 
@@ -65,6 +65,7 @@ export function ScreenHeader({ title, onBack, trailing }: ScreenHeaderProps) {
         hitSlop={space[2]}
         style={styles.back}
       >
+        <ClaySurface radius={radius.full} />
         {/* Decorative: the button already announces its purpose. Without this the
             reader says "Back, left arrow" — the icon read out after the action.
             The icon also MIRRORS for RTL, which the `←` character never did. */}
@@ -101,6 +102,7 @@ const useThemeValues = createThemeStyles((colors) => {
     paddingVertical: space[3],
   },
   back: {
+    borderRadius: radius.full,
     minWidth: layout.minTouchTarget,
     minHeight: layout.minTouchTarget,
     alignItems: 'center',
@@ -109,7 +111,7 @@ const useThemeValues = createThemeStyles((colors) => {
     marginStart: -space[2],
   },
   glyph: { ...text('h2'), color: colors.text.primary },
-  title: { ...text('h2'), color: colors.text.primary, flex: 1 },
+  title: { ...text('h2'), color: colors.text.primary, flex: 1, minWidth: 0 },
   trailing: { minWidth: layout.minTouchTarget, alignItems: 'flex-end' },
 })
   return { colors, styles }

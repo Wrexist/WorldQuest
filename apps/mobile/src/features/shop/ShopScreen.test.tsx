@@ -54,6 +54,23 @@ describe('Shop — the rules the economy depends on', () => {
     shop({ owned: new Set(CATALOGUE.map(item => item.id)) })
     expect(screen.queryByTestId('shop-next-unlock')).toBeNull()
   })
+
+  it('announces the wallet and savings progress separately', () => {
+    shop({ coins: 12 })
+    expect(screen.getByLabelText('12 coins')).toBeTruthy()
+    expect(screen.getByRole('progressbar', { name: `12 / ${PRICE} coins saved` })).toBeTruthy()
+  })
+
+  it('opens the streak from the whole freeze row without spending coins', () => {
+    const onOpenStreak = vi.fn()
+    const { onBuy } = shop({ onOpenStreak, isOffline: true })
+    const freeze = screen.getByRole('button', { name: 'Open streak' })
+    expect(freeze.textContent).toContain('Covers one missed day')
+    fireEvent.click(freeze)
+    expect(onOpenStreak).toHaveBeenCalledOnce()
+    expect(onBuy).not.toHaveBeenCalled()
+  })
+
   it('says in its first sentence that nothing here is an advantage', () => {
     // Rule 1 of xp-economy.md, in words a ten-year-old reads before any price.
     shop()
@@ -121,6 +138,37 @@ describe('Shop — titles', () => {
     const { onEquip } = shop({ owned: new Set(['title.flag-fanatic']) })
     fireEvent.click(screen.getByRole('button', { name: 'Wear it' }))
     expect(onEquip).toHaveBeenCalledWith('title.flag-fanatic')
+  })
+
+  it('confirms a title change only after the equipped title actually changes', () => {
+    const props = {
+      catalogue: CATALOGUE,
+      coins: 5000,
+      owned: new Set(['title.flag-fanatic']),
+      equippedId: null,
+      levelTitleKey: 'titles:scout',
+      loading: false,
+      isOffline: false,
+      onBuy: vi.fn(),
+      onEquip: vi.fn(),
+    }
+    const view = render(<ShopScreen {...props} />)
+    expect(screen.queryByTestId('shop-title-confirmed')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Wear it' }))
+    expect(props.onEquip).toHaveBeenCalledWith('title.flag-fanatic')
+    expect(screen.queryByTestId('shop-title-confirmed')).toBeNull()
+
+    view.rerender(<ShopScreen {...props} equippedId="title.flag-fanatic" />)
+    expect(screen.getByTestId('shop-title-confirmed').textContent).toContain("You're wearing Flag Fanatic.")
+
+    view.rerender(<ShopScreen {...props} />)
+    expect(screen.getAllByTestId('shop-title-confirmed')).toHaveLength(1)
+    expect(screen.getByTestId('shop-title-confirmed').textContent).toContain("You're wearing Scout.")
+  })
+
+  it('does not replay a title confirmation when opening the shop', () => {
+    shop({ owned: new Set(['title.flag-fanatic']), equippedId: 'title.flag-fanatic' })
+    expect(screen.queryByTestId('shop-title-confirmed')).toBeNull()
   })
 
   it('lets somebody go back to the title they earned', () => {

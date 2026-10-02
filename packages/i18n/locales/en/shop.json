@@ -83,8 +83,10 @@
   "shop:unlock.ready__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted.",
   "shop:unlock.progress": "{coins} / {price} coins saved",
   "shop:unlock.progress__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted.",
-  "shop:purchase.pending": "Confirming your purchase?",
+  "shop:purchase.pending": "Confirming your purchase…",
   "shop:purchase.pending__note": "Purchase status. Ownership appears only after the server confirms it.",
   "shop:purchase.failed": "Your purchase could not be confirmed. Reconnect and try again.",
-  "shop:purchase.failed__note": "Purchase status. Ownership appears only after the server confirms it."
+  "shop:purchase.failed__note": "Purchase status. Ownership appears only after the server confirms it.",
+  "shop:atlas.equipped": "You're wearing {title}. Looking good!",
+  "shop:atlas.equipped__note": "Atlas confirms a title change only after equipped state changes. {title} is the translated title name. No purchase or reward is implied."
 }

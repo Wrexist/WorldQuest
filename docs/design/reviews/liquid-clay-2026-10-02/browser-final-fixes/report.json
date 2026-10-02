@@ -1,0 +1,552 @@
+{
+  "source": "C:\\Users\\IsacC\\WorldQuest\\node_modules\\.cache\\wq-liquid-clay-web-final",
+  "realApp": true,
+  "seededAccount": false,
+  "cases": [
+    {
+      "name": "/explore",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "tabLabels": [
+        {
+          "label": "Home",
+          "left": 22.78125,
+          "right": 55.609375
+        },
+        {
+          "label": "Explore",
+          "left": 78.6875,
+          "right": 120.484375
+        },
+        {
+          "label": "Quests",
+          "left": 140.734375,
+          "right": 179.25
+        },
+        {
+          "label": "Profile",
+          "left": 202.515625,
+          "right": 238.265625
+        },
+        {
+          "label": "Shop",
+          "left": 266.671875,
+          "right": 294.921875
+        }
+      ],
+      "searchInput": {
+        "value": "Spain",
+        "position": "relative",
+        "bounds": {
+          "top": 159,
+          "bottom": 207,
+          "width": 198,
+          "height": 48,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        }
+      },
+      "countrySelection": {
+        "openLabel": "Open Spain",
+        "bounds": {
+          "top": 354,
+          "bottom": 402,
+          "width": 210,
+          "height": 48,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "searchCleared": true
+      }
+    },
+    {
+      "name": "/country/SE",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "favourite": {
+        "top": 105,
+        "bottom": 149,
+        "width": 44,
+        "height": 44,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/explore",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "tabLabels": [
+        {
+          "label": "Home",
+          "left": 29.78125,
+          "right": 62.609375
+        },
+        {
+          "label": "Explore",
+          "left": 99.6875,
+          "right": 141.484375
+        },
+        {
+          "label": "Quests",
+          "left": 175.734375,
+          "right": 214.25
+        },
+        {
+          "label": "Profile",
+          "left": 251.515625,
+          "right": 287.265625
+        },
+        {
+          "label": "Shop",
+          "left": 329.671875,
+          "right": 357.921875
+        }
+      ],
+      "searchInput": {
+        "value": "Spain",
+        "position": "relative",
+        "bounds": {
+          "top": 159,
+          "bottom": 207,
+          "width": 268,
+          "height": 48,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        }
+      },
+      "countrySelection": {
+        "openLabel": "Open Spain",
+        "bounds": {
+          "top": 603,
+          "bottom": 651,
+          "width": 280,
+          "height": 48,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "searchCleared": true
+      }
+    },
+    {
+      "name": "/country/SE",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "favourite": {
+        "top": 105,
+        "bottom": 149,
+        "width": 44,
+        "height": 44,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/explore",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "tabLabels": [
+        {
+          "label": "Home",
+          "left": 67.578125,
+          "right": 100.40625
+        },
+        {
+          "label": "Explore",
+          "left": 213.09375,
+          "right": 254.890625
+        },
+        {
+          "label": "Quests",
+          "left": 364.734375,
+          "right": 403.25
+        },
+        {
+          "label": "Profile",
+          "left": 516.125,
+          "right": 551.875
+        },
+        {
+          "label": "Shop",
+          "left": 669.875,
+          "right": 698.125
+        }
+      ],
+      "searchInput": {
+        "value": "Spain",
+        "position": "relative",
+        "bounds": {
+          "top": 159,
+          "bottom": 207,
+          "width": 478,
+          "height": 48,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        }
+      },
+      "countrySelection": {
+        "openLabel": "Open Spain",
+        "bounds": {
+          "top": 737,
+          "bottom": 785,
+          "width": 490,
+          "height": 48,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "searchCleared": true
+      }
+    },
+    {
+      "name": "/country/SE",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "favourite": {
+        "top": 105,
+        "bottom": 149,
+        "width": 44,
+        "height": 44,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/explore",
+      "width": 320,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "tabLabels": [
+        {
+          "label": "Hem",
+          "left": 23.5625,
+          "right": 54.8125
+        },
+        {
+          "label": "Utforska",
+          "left": 71.53125,
+          "right": 127.640625
+        },
+        {
+          "label": "Uppdrag",
+          "left": 131.140625,
+          "right": 188.828125
+        },
+        {
+          "label": "Profil",
+          "left": 202.765625,
+          "right": 238
+        },
+        {
+          "label": "Butik",
+          "left": 263.625,
+          "right": 297.96875
+        }
+      ],
+      "searchInput": {
+        "value": "Spanien",
+        "position": "relative",
+        "bounds": {
+          "top": 197,
+          "bottom": 245,
+          "width": 198,
+          "height": 48,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        }
+      },
+      "countrySelection": {
+        "openLabel": "Öppna Spanien",
+        "bounds": {
+          "top": 356,
+          "bottom": 524,
+          "width": 210,
+          "height": 168,
+          "viewportContained": true,
+          "clipped": true,
+          "fullyVisible": false
+        },
+        "searchCleared": true
+      }
+    },
+    {
+      "name": "/country/SE",
+      "width": 320,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "favourite": {
+        "top": 150,
+        "bottom": 194,
+        "width": 44,
+        "height": 44,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/explore",
+      "width": 390,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "tabLabels": [
+        {
+          "label": "Hem",
+          "left": 30.5625,
+          "right": 61.8125
+        },
+        {
+          "label": "Utforska",
+          "left": 92.53125,
+          "right": 148.640625
+        },
+        {
+          "label": "Uppdrag",
+          "left": 166.140625,
+          "right": 223.828125
+        },
+        {
+          "label": "Profil",
+          "left": 251.765625,
+          "right": 287
+        },
+        {
+          "label": "Butik",
+          "left": 326.625,
+          "right": 360.96875
+        }
+      ],
+      "searchInput": {
+        "value": "Spanien",
+        "position": "relative",
+        "bounds": {
+          "top": 251,
+          "bottom": 299,
+          "width": 268,
+          "height": 48,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        }
+      },
+      "countrySelection": {
+        "openLabel": "Öppna Spanien",
+        "bounds": {
+          "top": 600,
+          "bottom": 720,
+          "width": 280,
+          "height": 120,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "searchCleared": true
+      }
+    },
+    {
+      "name": "/country/SE",
+      "width": 390,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "favourite": {
+        "top": 114,
+        "bottom": 158,
+        "width": 44,
+        "height": 44,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/explore",
+      "width": 768,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "tabLabels": [
+        {
+          "label": "Hem",
+          "left": 68.375,
+          "right": 99.625
+        },
+        {
+          "label": "Utforska",
+          "left": 205.9375,
+          "right": 262.046875
+        },
+        {
+          "label": "Uppdrag",
+          "left": 355.15625,
+          "right": 412.84375
+        },
+        {
+          "label": "Profil",
+          "left": 516.375,
+          "right": 551.609375
+        },
+        {
+          "label": "Butik",
+          "left": 666.828125,
+          "right": 701.171875
+        }
+      ],
+      "searchInput": {
+        "value": "Spanien",
+        "position": "relative",
+        "bounds": {
+          "top": 197,
+          "bottom": 245,
+          "width": 478,
+          "height": 48,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        }
+      },
+      "countrySelection": {
+        "openLabel": "Öppna Spanien",
+        "bounds": {
+          "top": 777,
+          "bottom": 861,
+          "width": 490,
+          "height": 84,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "searchCleared": true
+      }
+    },
+    {
+      "name": "/country/SE",
+      "width": 768,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "favourite": {
+        "top": 114,
+        "bottom": 158,
+        "width": 44,
+        "height": 44,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    }
+  ],
+  "errors": [],
+  "limitations": [
+    "Chromium and react-native-web, not a physical device.",
+    "The accessibility mode doubles rendered glyphs; native fontScale branches need separate fixture/device proof."
+  ]
+}

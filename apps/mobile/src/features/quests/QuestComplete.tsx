@@ -53,7 +53,7 @@ import { createThemeStyles } from '@worldquest/design'
  * motion, so the celebration still LANDS — it just does not travel.
  */
 
-import { Animated, StyleSheet, Text, View } from 'react-native'
+import { Animated, ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   Button,
   Card,
@@ -68,7 +68,7 @@ import { useEffect, useState } from 'react'
 import { useT } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
 import { AtlasCharacter } from '../../components/AtlasCharacter.js'
-import { IslandStage } from '../../components/Scenery.js'
+import { ExplorerChestArt } from '../../components/ExplorerChestArt.js'
 import { Icon } from '../../components/Icon.js'
 import { Stat } from '../../components/Stat.js'
 
@@ -92,30 +92,24 @@ export type QuestCompleteProps = {
 /**
  * The hero.
  *
- * The reference draws a gold trophy on a laurel plinth with the score lettered onto a
- * ribbon. There is no trophy master, and a lettered one would be worse than none: a baked
- * "100 %" is a picture that lies to anyone who scored eighty. `celebration/burst` is the
- * asset this app already celebrates with, and the score is live text under it.
+ * The chest the learner has been working towards, with Atlas beside it. The score
+ * remains live text, and the open chest reflects completed tasks rather than granting
+ * anything when the screen mounts.
  */
 const HERO = 200
 
 /**
- * Atlas, inside the burst.
- *
- * `celebration/burst` is a RING — a confetti wreath with a hole in the middle, drawn to
- * frame something. Rendered on its own it is a doughnut, which is what the first shot of
- * this screen was. The thing it frames is the mascot, celebrating, which is the pose the
- * lesson summary already uses for the same feeling.
- *
- * Half the ring, standing on the floating island (September 2026): the island fills the
- * hole the confetti frames, so Atlas reads as arriving somewhere rather than floating in
- * a doughnut, and the confetti still reads as confetti around the place.
+ * A smaller companion keeps the chest as the focal point. This dedicated celebration
+ * may replay the decorative lid opening, like its confetti arrival, only when the task
+ * count confirms completion. It has no reward callback, sound or receipt mutation.
  */
-const HERO_SUBJECT = 0.46
+const HERO_CHEST = 168
+const HERO_COMPANION = 80
 
 export function QuestComplete({ done, total, streak, milestoneXp, onDone }: QuestCompleteProps) {
   const { colors, styles } = useThemeValues()
   const t = useT()
+  const completed = total > 0 && done >= total
 
   // One frame late on purpose, so the animation has a "from" to travel out of. A value
   // that starts at its destination is a value that never moves.
@@ -129,12 +123,13 @@ export function QuestComplete({ done, total, streak, milestoneXp, onDone }: Ques
 
   return (
     <View style={styles.screen}>
-      <View style={styles.body}>
+      <ScrollView contentContainerStyle={styles.body}>
         <Animated.View style={[styles.hero, burst]} pointerEvents="none">
           <Art name="celebration/burst" size={HERO} />
           <View style={StyleSheet.absoluteFill}>
             <View style={styles.heroSubject}>
-              <IslandStage size={Math.round(HERO * .92)}><AtlasCharacter mood="proud" size={Math.round(HERO * HERO_SUBJECT)} /></IslandStage>
+              <AtlasCharacter mood="proud" size={HERO_COMPANION} />
+              <ExplorerChestArt size={HERO_CHEST} opened={completed} revealOnMount={completed} />
             </View>
           </View>
         </Animated.View>
@@ -182,7 +177,7 @@ export function QuestComplete({ done, total, streak, milestoneXp, onDone }: Ques
         {milestoneXp !== undefined && (
           <Text style={styles.milestone}>{t('quests:done.milestone', { amount: milestoneXp })}</Text>
         )}
-      </View>
+      </ScrollView>
 
       <View style={styles.actions}>
         {/* Not "Claim". Nothing is withheld — see the header. */}
@@ -217,18 +212,19 @@ const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
   screen: { flex: 1 },
   body: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: space[3],
     paddingHorizontal: space[5],
+    paddingVertical: space[4],
   },
-  hero: { alignItems: 'center', justifyContent: 'center' },
-  heroSubject: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  title: { ...text('display'), color: colors.text.primary, textAlign: 'center' },
-  subtitle: { ...text('body'), color: colors.text.secondary, textAlign: 'center' },
-  score: { ...text('h2', { numeric: true }), color: colors.status.progress },
-  rewards: { flexDirection: 'row', gap: space[3], marginTop: space[2] },
+  hero: { width: HERO_CHEST + HERO_COMPANION, minHeight: HERO, alignItems: 'center', justifyContent: 'center' },
+  heroSubject: { flex: 1, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', paddingBottom: space[3] },
+  title: { ...text('display'), color: colors.text.primary, textAlign: 'center', maxWidth: '100%' },
+  subtitle: { ...text('body'), color: colors.text.secondary, textAlign: 'center', maxWidth: '100%' },
+  score: { ...text('h2', { numeric: true }), color: colors.status.progress, maxWidth: '100%' },
+  rewards: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: space[3], marginTop: space[2], maxWidth: '100%' },
   reward: {
     alignItems: 'center',
     paddingVertical: space[3],
@@ -236,9 +232,9 @@ const useThemeValues = createThemeStyles((colors) => {
     borderRadius: radius.lg,
     ...squircle,
   },
-  streak: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
-  streakText: { ...text('bodyStrong', { numeric: true }), color: colors.text.primary },
-  milestone: { ...text('caption', { numeric: true }), color: colors.reward.xp },
+  streak: { flexDirection: 'row', alignItems: 'center', gap: space[2], maxWidth: '100%' },
+  streakText: { ...text('bodyStrong', { numeric: true }), color: colors.text.primary, flexShrink: 1 },
+  milestone: { ...text('caption', { numeric: true }), color: colors.reward.xp, maxWidth: '100%' },
   actions: { padding: space[4], gap: space[2] },
 })
   return { colors, styles }

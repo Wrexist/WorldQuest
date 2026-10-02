@@ -43,7 +43,31 @@ const p = tokens.palette
 
 type Pair = { name: string; fg: string; bg: string; min: number; note?: string }
 
+/** A material's reflection is painted over its fill; test that actual colour too. */
+function withReflection(fill: string, reflection: string): string {
+  const alpha = parseInt(reflection.slice(7, 9), 16) / 255
+  const foreground = hexToRgb(reflection)
+  return '#' + hexToRgb(fill).map((channel, index) =>
+    Math.round(channel * (1 - alpha) + foreground[index]! * alpha).toString(16).padStart(2, '0'),
+  ).join('')
+}
+
+const clayPairs: Pair[] = [tokens.color, tokens.darkColor].flatMap((theme, index) =>
+  (['ice', 'navy', 'sky', 'gold', 'lime'] as const).flatMap(tone => {
+    const material = theme.clay[tone]
+    const inks = [material.ink, material.muted]
+    // Ordinary content cards inherit the app's text colours, not material.ink.
+    if (tone === 'ice' || tone === 'sky') inks.push(...(index === 0 ? Object.values(p.text) : [theme.text.primary, theme.text.secondary, theme.text.tertiary]))
+    return [material.top, material.bottom].flatMap((stop: string, stopIndex: number) =>
+      [stop, withReflection(stop, theme.clay.gloss)].flatMap((bg, reflected) =>
+        inks.map((fg, ink) => ({ name: `${index ? 'night' : 'day'} clay ${tone}/${stopIndex}/${reflected}/${ink}`, fg, bg, min: 4.5 })),
+      ),
+    )
+  }),
+)
+
 const PAIRS: Pair[] = [
+  ...clayPairs,
   ...Object.entries(tokens.color.league as typeof import('../src/tokens.js').colors.league).flatMap(([tier, theme]) => [
     { name: `${tier} banner light`, fg: theme.ink, bg: theme.start, min: 4.5 },
     { name: `${tier} banner dark`, fg: theme.ink, bg: theme.end, min: 4.5 },
@@ -55,6 +79,7 @@ const PAIRS: Pair[] = [
   { name: 'header wordmark', fg: tokens.color.chrome.text, bg: tokens.color.chrome.surface, min: 4.5 },
   { name: 'header balance', fg: tokens.color.chrome.text, bg: tokens.color.chrome.counter, min: 4.5 },
   { name: 'header pending streak', fg: tokens.color.chrome.muted, bg: tokens.color.chrome.counter, min: 4.5 },
+  { name: 'quest treasure bonus', fg: tokens.color.journey.sun, bg: tokens.color.chrome.surface, min: 4.5 },
   { name: 'course banner text', fg: tokens.color.course.bannerInk, bg: tokens.color.course.banner, min: 4.5 },
   { name: 'course platform glyph', fg: tokens.color.course.ink, bg: tokens.color.course.face, min: 3 },
   { name: 'course future-step glyph', fg: tokens.color.course.stoneInk, bg: tokens.color.course.stone, min: 3 },

@@ -27,7 +27,7 @@ export function Skeleton({
   style,
   testID,
 }: SkeletonProps) {
-  const { styles } = useThemeValues()
+  const styles = useThemeValues()
   const opacity = useRef(new Animated.Value(0.4)).current
 
   useEffect(() => {
@@ -72,5 +72,5 @@ const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
   base: { backgroundColor: colors.bg.surfaceRaised },
 })
-  return { colors, styles }
+  return styles
 })

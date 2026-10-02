@@ -1,0 +1,150 @@
+{
+  "routes": {
+    "achievements": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 89,
+        "emptiestBand": {
+          "px": 28,
+          "percentOfViewport": 5,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Utmärkelser",
+          "Härnäst",
+          "Allt annat"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 90,
+        "emptiestBand": {
+          "px": 28,
+          "percentOfViewport": 3,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Utmärkelser",
+          "Härnäst",
+          "Allt annat"
+        ]
+      },
+      "430": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 89,
+        "emptiestBand": {
+          "px": 28,
+          "percentOfViewport": 3,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Utmärkelser",
+          "Härnäst",
+          "Allt annat"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 89,
+        "emptiestBand": {
+          "px": 28,
+          "percentOfViewport": 3,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Utmärkelser",
+          "Härnäst",
+          "Allt annat"
+        ]
+      }
+    },
+    "streak": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 87,
+        "emptiestBand": {
+          "px": 40,
+          "percentOfViewport": 7,
+          "startsAtPercent": 15
+        },
+        "headings": [
+          "Din svit",
+          "Inga dagar än",
+          "oktober 2026",
+          "Svitjuveler"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 88,
+        "emptiestBand": {
+          "px": 40,
+          "percentOfViewport": 5,
+          "startsAtPercent": 10
+        },
+        "headings": [
+          "Din svit",
+          "Inga dagar än",
+          "oktober 2026",
+          "Svitjuveler"
+        ]
+      },
+      "430": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 88,
+        "emptiestBand": {
+          "px": 40,
+          "percentOfViewport": 4,
+          "startsAtPercent": 9
+        },
+        "headings": [
+          "Din svit",
+          "Inga dagar än",
+          "oktober 2026",
+          "Svitjuveler"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 89,
+        "emptiestBand": {
+          "px": 40,
+          "percentOfViewport": 4,
+          "startsAtPercent": 9
+        },
+        "headings": [
+          "Din svit",
+          "Inga dagar än",
+          "oktober 2026",
+          "Svitjuveler"
+        ]
+      }
+    }
+  },
+  "states": {},
+  "generatedAt": null
+}

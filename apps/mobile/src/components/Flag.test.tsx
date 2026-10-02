@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { render } from '@testing-library/react'
 import { Flag } from './Flag.js'
-import { flagHeight } from '../lib/flags.js'
+import { flagHeight, flagSource } from '../lib/flags.js'
+import { FLAG_BY_PATH } from '../lib/flags.generated.js'
 
 /**
  * Any FLAG artwork on screen, ignoring the placeholder's own icon.
@@ -17,6 +18,18 @@ const flagArtwork = (container: HTMLElement): HTMLImageElement | null =>
   ) ?? null
 
 describe('Flag', () => {
+  it('preserves every declared flag path and its own artwork in the packed registry', () => {
+    const pack = require('@worldquest/content/packs/geography/entities.countries.v1.json') as {
+      items: { assets: { flag: { path: string } } }[]
+    }
+    const paths = pack.items.map(item => item.assets.flag.path)
+    expect(Object.keys(FLAG_BY_PATH)).toEqual(paths)
+    // Vite returns the real imported asset URL: an index shift must fail for every
+    // affected country instead of merely proving that some flag was bundled.
+    expect(FLAG_BY_PATH).toEqual(Object.fromEntries(paths.map(path => [path, expect.stringContaining(`/assets/${path}`)])))
+    for (const path of paths) expect(flagSource(path)).toEqual({ uri: FLAG_BY_PATH[path] })
+  })
+
   it('draws the real artwork for a path the bundle has', () => {
     const { container } = render(<Flag path="flags/SE.png" width={72} />)
     const img = container.querySelector('img')

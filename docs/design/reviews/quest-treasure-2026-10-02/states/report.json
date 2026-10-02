@@ -1,0 +1,50 @@
+{
+  "fixture": true,
+  "description": "Real QuestTreasureCard in client React Native Web, explicit local props. Haptics are stubbed; no account state or reward storage is involved.",
+  "states": [
+    {
+      "state": "fresh",
+      "label": "0 of 5 done",
+      "now": "0",
+      "max": "5",
+      "image": {
+        "complete": true,
+        "naturalWidth": 1920
+      }
+    },
+    {
+      "state": "partial",
+      "label": "1 of 5 done",
+      "now": "1",
+      "max": "5",
+      "image": {
+        "complete": true,
+        "naturalWidth": 1920
+      }
+    },
+    {
+      "state": "complete",
+      "label": "5 of 5 done",
+      "now": "5",
+      "max": "5",
+      "image": {
+        "complete": true,
+        "naturalWidth": 1920
+      }
+    }
+  ],
+  "interactions": [
+    {
+      "name": "cosmetic chest nudge",
+      "before": "translateY(0px) rotate(0deg)",
+      "during": "translateY(-6.62222px) rotate(-6.44444deg)",
+      "after": "translateY(0px) rotate(0deg)",
+      "progressUnchanged": true
+    },
+    {
+      "name": "live fresh to complete fixture transition",
+      "progress": "5"
+    }
+  ],
+  "errors": []
+}

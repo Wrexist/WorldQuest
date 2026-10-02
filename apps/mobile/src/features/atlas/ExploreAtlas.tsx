@@ -12,11 +12,12 @@
  * every country the map does, by name.
  */
 
-import { useMemo } from 'react'
-import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
-import { Button, createThemeStyles, radius, space, text } from '@worldquest/design'
+import { useEffect, useMemo, useState, type Ref } from 'react'
+import { I18nManager, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions, type ViewProps } from 'react-native'
+import { ClaySurface, clayShadow, createThemeStyles, layout, radius, space, text } from '@worldquest/design'
 import { Flag } from '../../components/Flag.js'
 import { Icon } from '../../components/Icon.js'
+import { SceneEntrance } from '../../components/SceneEntrance.js'
 import { useT, type TranslationKey } from '../../lib/i18n.js'
 import { WorldAtlasView } from './WorldAtlasView.js'
 import { buildExploreScene } from './scene/exploreScene.js'
@@ -45,14 +46,21 @@ export type ExploreAtlasProps = {
   readonly onRegion: (region: string | null) => void
   /** Search matches, to highlight on the globe. Empty when there is no query. */
   readonly matches: readonly string[]
+  /** Search results provide the same accessible selection while a query is active. */
+  readonly showBrowse?: boolean
+  readonly onLayout?: ViewProps['onLayout']
+  readonly openRef?: Ref<View>
   /** The existing country page — Learn and Review live there. */
   readonly onOpenCountry: (id: string) => void
 }
 
-export function ExploreAtlas({ countries, names, selected, onSelect, region, onRegion, matches, onOpenCountry }: ExploreAtlasProps) {
+export function ExploreAtlas({ countries, names, selected, onSelect, region, onRegion, matches, onOpenCountry, showBrowse = true, onLayout, openRef }: ExploreAtlasProps) {
   const { styles, colors } = useThemeValues()
   const t = useT()
-  const { width, height } = useWindowDimensions()
+  const { width, height, fontScale } = useWindowDimensions()
+  const largeText = fontScale >= 1.5
+  const [browseExpanded, setBrowseExpanded] = useState(false)
+  useEffect(() => { if (!showBrowse) setBrowseExpanded(false) }, [showBrowse])
   const globeHeight = Math.round(Math.min(width * 0.95, height * 0.46, 420))
 
   const spec = useMemo(
@@ -63,12 +71,11 @@ export function ExploreAtlas({ countries, names, selected, onSelect, region, onR
   const place = selected === null ? undefined : Object.values(ATLAS_PLACES).find((p) => p.countryId === selected)
   const capital = place === undefined ? undefined : names.factValueName(place.factId)
   const regionCountries = useMemo(
-    () => (region === null ? [] : countries.filter((c) => c.region === region && ATLAS_COUNTRIES[c.id] !== undefined)),
+    () => countries.filter((c) => (region === null || c.region === region) && ATLAS_COUNTRIES[c.id] !== undefined),
     [countries, region],
   )
-
   return (
-    <View style={styles.column} testID="explore-atlas">
+    <View style={styles.column} testID="explore-atlas" onLayout={onLayout}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips}>
         <RegionChip label={t('atlas:explore.all')} active={region === null} onPress={() => onRegion(null)} />
         {ATLAS_REGIONS.map((r) => (
@@ -90,42 +97,54 @@ export function ExploreAtlas({ countries, names, selected, onSelect, region, onR
       />
 
       {country !== undefined && (
-        <View style={styles.card} testID="explore-atlas-card" accessibilityLiveRegion="polite">
-          <View style={styles.cardRow}>
-            {country.flagPath !== undefined && <Flag path={country.flagPath} width={64} />}
-            <View style={styles.cardText}>
-              <Text style={styles.cardTitle} role="heading">
-                {country.name}
-              </Text>
-              {capital !== undefined && (
-                <View>
-                  <Text style={styles.cardMeta}>{t('atlas:explore.capital')}</Text>
-                  <Text style={styles.cardMetaStrong}>{capital}</Text>
-                </View>
-              )}
+        <SceneEntrance replayKey={country.id} style={styles.card} testID="explore-atlas-card" accessibilityLiveRegion="polite">
+          <ClaySurface radius={radius.lg} />
+          <Pressable ref={openRef} role="button" aria-label={t('atlas:explore.open', { country: country.name })}
+            accessibilityHint={capital === undefined ? undefined : t('atlas:fallback.capital', { capital })}
+            onPress={() => onOpenCountry(country.id)} testID="explore-atlas-open"
+            style={({ pressed }) => [styles.cardOpen, pressed && styles.pressed]}>
+            <View style={[styles.cardBody, largeText && styles.cardBodyStacked]}>
+              {country.flagPath !== undefined && <Flag path={country.flagPath} width={space[7]} />}
+              <View style={styles.cardText}>
+                <Text style={styles.cardTitle} role="heading">{country.name}</Text>
+                {capital !== undefined && <Text style={styles.cardMeta}>{t('atlas:fallback.capital', { capital })}</Text>}
+              </View>
             </View>
-            <Pressable role="button" aria-label={t('atlas:explore.close')} onPress={() => onSelect(null)} style={styles.close} hitSlop={space[1]}>
-              <Icon name="close" size={20} color={colors.text.secondary} />
-            </Pressable>
-          </View>
-          <Button label={t('atlas:explore.open', { country: country.name })} variant="discovery" onPress={() => onOpenCountry(country.id)} testID="explore-atlas-open" />
-        </View>
+            <View style={styles.forward}><Icon name="chevron" size={20} color={colors.action.secondary} /></View>
+          </Pressable>
+          <Pressable role="button" aria-label={t('atlas:explore.close')} onPress={() => onSelect(null)}
+            style={({ pressed }) => [styles.close, pressed && styles.pressed]}>
+            <Icon name="close" size={20} color={colors.text.secondary} />
+          </Pressable>
+        </SceneEntrance>
       )}
 
-      {regionCountries.length > 0 && (
-        <View style={styles.list} role="list" aria-label={t('atlas:explore.listLabel')}>
+      {showBrowse && regionCountries.length > 0 && (
+        <View style={styles.browse}>
+          <ClaySurface radius={radius.lg} />
+          <Pressable role="button" aria-expanded={browseExpanded} onPress={() => setBrowseExpanded(!browseExpanded)}
+            style={({ pressed }) => [styles.disclosure, pressed && styles.pressed]} testID="explore-atlas-browse">
+            <Text style={styles.browseTitle}>{t('atlas:explore.browse', { count: regionCountries.length })}</Text>
+            <View style={{ transform: [{ rotate: browseExpanded ? '270deg' : '90deg' }] }}>
+              <Icon name="chevron" size={20} color={colors.text.secondary} />
+            </View>
+          </Pressable>
+          {browseExpanded && <View style={styles.list} role="list" aria-label={t('atlas:explore.listLabel')}>
           {regionCountries.map((c) => (
             <Pressable
               key={c.id}
               role="button"
               aria-label={c.name}
               aria-selected={c.id === selected}
-              onPress={() => onSelect(c.id)}
-              style={[styles.listItem, c.id === selected && styles.listItemActive]}
+              onPress={() => { setBrowseExpanded(false); onSelect(c.id) }}
+              style={({ pressed }) => [styles.listItem, (width < layout.baseWidth || largeText) && styles.listItemWide, c.id === selected && styles.listItemActive, pressed && styles.pressed]}
             >
+              {c.flagPath !== undefined && <Flag path={c.flagPath} width={space[5]} />}
               <Text style={styles.listText}>{c.name}</Text>
+              {c.id === selected && <Icon name="check" size={16} color={colors.action.secondary} />}
             </Pressable>
           ))}
+          </View>}
         </View>
       )}
     </View>
@@ -136,6 +155,7 @@ function RegionChip({ label, active, onPress }: { label: string; active: boolean
   const { styles } = useThemeValues()
   return (
     <Pressable role="button" aria-label={label} aria-selected={active} onPress={onPress} style={[styles.chip, active && styles.chipActive]}>
+      <ClaySurface transparent={active} radius={radius.full} />
       <Text style={[styles.chipText, active && styles.chipTextActive]}>{label}</Text>
     </Pressable>
   )
@@ -159,31 +179,41 @@ const useThemeValues = createThemeStyles((colors) => {
     chipText: { ...text('body', { weight: '700' }), color: colors.text.primary },
     chipTextActive: { color: colors.text.onAccent },
     card: {
-      gap: space[3],
-      padding: space[4],
-      borderRadius: radius.xl,
+      ...clayShadow(colors),
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: space[2],
+      padding: space[3],
+      borderRadius: radius.lg,
       backgroundColor: colors.bg.surface,
       borderWidth: 1,
       borderColor: colors.border.subtle,
     },
-    cardRow: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
-    cardText: { flex: 1, gap: space[1] },
-    cardTitle: { ...text('h2'), color: colors.text.primary },
-    cardMeta: { ...text('body'), color: colors.text.secondary },
-    cardMetaStrong: { ...text('body', { weight: '700' }), color: colors.text.primary },
-    close: { width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
-    list: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
+    cardOpen: { flex: 1, minWidth: 0, minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: space[2] },
+    cardBody: { flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'center', gap: space[3] },
+    cardBodyStacked: { flexDirection: 'column', alignItems: 'stretch' },
+    cardText: { flexGrow: 1, flexShrink: 1, minWidth: 0 },
+    cardTitle: { ...text('h3'), color: colors.text.primary },
+    cardMeta: { ...text('caption'), color: colors.text.secondary },
+    forward: { transform: [{ scaleX: I18nManager.isRTL ? -1 : 1 }] },
+    close: { width: 44, height: 44, alignSelf: 'flex-start', alignItems: 'center', justifyContent: 'center' },
+    pressed: { opacity: 0.7 },
+    browse: { ...clayShadow(colors), borderRadius: radius.lg, backgroundColor: colors.bg.surface, borderWidth: 1, borderColor: colors.clay.ice.rim, paddingHorizontal: space[3] },
+    disclosure: { minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: space[2], paddingVertical: space[2] },
+    browseTitle: { flex: 1, ...text('bodyStrong'), color: colors.text.primary },
+    list: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: space[2], paddingBottom: space[3] },
     listItem: {
+      width: '48%',
       minHeight: 48,
-      paddingHorizontal: space[3],
-      justifyContent: 'center',
-      borderRadius: radius.md,
-      backgroundColor: colors.bg.surface,
-      borderWidth: 1,
-      borderColor: colors.border.subtle,
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: space[2],
+      padding: space[2],
+      borderRadius: radius.sm,
     },
-    listItemActive: { borderColor: colors.action.secondary, borderWidth: 2 },
-    listText: { ...text('body'), color: colors.text.primary },
+    listItemWide: { width: '100%' },
+    listItemActive: { backgroundColor: colors.bg.surfaceRaised },
+    listText: { flex: 1, minWidth: 0, ...text('body'), color: colors.text.primary },
   })
   return { styles, colors }
 })

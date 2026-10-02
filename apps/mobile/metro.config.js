@@ -15,12 +15,21 @@
  */
 
 const { getDefaultConfig } = require('expo/metro-config')
+const { createHash } = require('node:crypto')
+const { readFileSync } = require('node:fs')
 const path = require('node:path')
 
 const projectRoot = __dirname
 const workspaceRoot = path.resolve(projectRoot, '../..')
 
 const config = getDefaultConfig(projectRoot)
+
+// Schema/editor comments remain in canonical content packs and validation. Expo's
+// JSON transformer needs only their runtime fields. Its supervising worker keeps
+// the default cache key, so include this small transform's content hash explicitly.
+config.transformerPath = require.resolve('./metro-content-transformer.cjs')
+config.transformer.worldquestContentTransformHash = createHash('sha256')
+  .update(readFileSync(config.transformerPath)).digest('hex')
 
 config.watchFolders = [workspaceRoot]
 // The atlas's country rings ship as a binary ASSET, loaded once a globe is on screen,

@@ -1,0 +1,186 @@
+{
+  "source": "C:\\Users\\IsacC\\WorldQuest\\node_modules\\.cache\\wq-liquid-clay-web-complete",
+  "realApp": true,
+  "seededAccount": false,
+  "cases": [
+    {
+      "name": "/country/SE",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "favourite": {
+        "top": 105,
+        "bottom": 149,
+        "width": 44,
+        "height": 44,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "countryTitle": {
+        "text": "Sweden",
+        "width": 102.1875,
+        "height": 38,
+        "lineRects": 1
+      }
+    },
+    {
+      "name": "/country/SE",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "favourite": {
+        "top": 105,
+        "bottom": 149,
+        "width": 44,
+        "height": 44,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "countryTitle": {
+        "text": "Sweden",
+        "width": 102.1875,
+        "height": 38,
+        "lineRects": 1
+      }
+    },
+    {
+      "name": "/country/SE",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "favourite": {
+        "top": 105,
+        "bottom": 149,
+        "width": 44,
+        "height": 44,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "countryTitle": {
+        "text": "Sweden",
+        "width": 102.1875,
+        "height": 38,
+        "lineRects": 1
+      }
+    },
+    {
+      "name": "/country/SE",
+      "width": 320,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "favourite": {
+        "top": 105,
+        "bottom": 149,
+        "width": 44,
+        "height": 44,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "countryTitle": {
+        "text": "Sverige",
+        "width": 191.8125,
+        "height": 77,
+        "lineRects": 1
+      }
+    },
+    {
+      "name": "/country/SE",
+      "width": 390,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "favourite": {
+        "top": 105,
+        "bottom": 149,
+        "width": 44,
+        "height": 44,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "countryTitle": {
+        "text": "Sverige",
+        "width": 191.8125,
+        "height": 77,
+        "lineRects": 1
+      }
+    },
+    {
+      "name": "/country/SE",
+      "width": 768,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "favourite": {
+        "top": 105,
+        "bottom": 149,
+        "width": 44,
+        "height": 44,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "countryTitle": {
+        "text": "Sverige",
+        "width": 191.8125,
+        "height": 77,
+        "lineRects": 1
+      }
+    }
+  ],
+  "errors": [],
+  "limitations": [
+    "Chromium and react-native-web, not a physical device.",
+    "The accessibility mode doubles rendered glyphs; native fontScale branches need separate fixture/device proof."
+  ]
+}

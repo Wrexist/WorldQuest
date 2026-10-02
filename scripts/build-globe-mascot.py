@@ -1,6 +1,6 @@
 """Atlas, the WorldQuest globe explorer, as a production 3D character.
 
-Run:  blender --background --python scripts/build-globe-mascot.py -- [--stills] [--sheets] [--moods=a,b]
+Run:  blender --background --python scripts/build-globe-mascot.py -- [--stills] [--sheets] [--moods=a,b] [--optix]
 
 Built to the canonical design in docs/design/world-mascot.md (the owner's master
 character sheet, September 30): a near-spherical Earth body with raised continents, a
@@ -551,7 +551,7 @@ def build():
 
     # Hat: rounded crown, soft brim, dark band, a globe badge; tilted with personality.
     # Its own pivot, so the acting can lag and settle it after a hop.
-    hat = empty('Hat', (0, 0, .9), body)  # the brim's hole must clear the globe where it sits
+    hat = empty('Hat', (0, 0, .65), body)  # worn: crown roomier than his head, so it sits down on it without the globe showing through
     hat.scale = (1.18, 1.18, 1.18)
     hat.rotation_euler = (radians(-5), radians(8), 0)
     bpy.ops.mesh.primitive_uv_sphere_add(segments=64, ring_count=32, radius=1, location=(0, 0, 0))
@@ -563,7 +563,7 @@ def build():
             z = .6 + (z - .6) * .45
         z -= .09 * max(0.0, z - .45) / .2 * (2.718 ** (-(x / .28) ** 2))
         v.co.z = z
-    crown.scale = (.72, .68, .58)
+    crown.scale = (.85, .83, .64)  # as wide as his head where it sits: worn, not perched
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     so = crown.modifiers.new('Felt', 'SOLIDIFY'); so.thickness = .03
     s2 = crown.modifiers.new('Soft', 'SUBSURF'); s2.levels = 1; s2.render_levels = 2
@@ -572,19 +572,19 @@ def build():
     bpy.ops.mesh.primitive_uv_sphere_add(segments=96, ring_count=48, radius=1, location=(0, 0, 0))
     brim = bpy.context.object; brim.name = 'HatBrim'
     bm = bmesh.new(); bm.from_mesh(brim.data)
-    bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z < .2 or v.co.z > .84], context='VERTS')
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.z < .2 or v.co.z > .7], context='VERTS')  # the brim's hole matches the crown
     bm.to_mesh(brim.data); bm.free()
-    brim.scale = (1.2, 1.12, .16)
+    brim.scale = (1.2, 1.16, .16)
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     bv = brim.modifiers.new('Felt', 'SOLIDIFY'); bv.thickness = .035
     s3 = brim.modifiers.new('Soft', 'SUBSURF'); s3.levels = 1; s3.render_levels = 2
     link(smooth(brim), hat, M['hat']); brim.location = (0, 0, -.11)
-    bpy.ops.mesh.primitive_cylinder_add(vertices=96, radius=.73, depth=.13, location=(0, 0, 0))
+    bpy.ops.mesh.primitive_cylinder_add(vertices=96, radius=.86, depth=.13, location=(0, 0, 0))
     band = bpy.context.object; band.name = 'HatBand'
-    band.scale = (1, .94, 1)
+    band.scale = (1, .97, 1)
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     link(smooth(band), hat, M['band']); band.location = (0, 0, .08)
-    badge = empty('HatBadge', (0, -.665, .2), hat)  # proud of the crown's surface, not sunk in it
+    badge = empty('HatBadge', (0, -.805, .2), hat)  # proud of the crown's surface, not sunk in it
     badge.rotation_euler.x = radians(-22)
     bpy.ops.mesh.primitive_cylinder_add(vertices=48, radius=.14, depth=.03, location=(0, 0, 0), rotation=(radians(90), 0, 0))
     rim = bpy.context.object; rim.name = 'HatBadgeRim'
@@ -625,7 +625,7 @@ def build():
         o.location = (x, -.6, z); link(o, rig, M['spark']); sparks.append(o)
     extras['sparkles'] = sparks
     zs = []
-    for i, (x, z, s) in enumerate([(1.0, 2.75, .3), (1.35, 3.1, .22), (1.6, 3.38, .16)]):
+    for i, (x, z, s) in enumerate([(1.05, 2.54, .26), (1.3, 2.78, .2), (1.5, 2.98, .15)]):  # clear of the brim, inside the frame as they drift
         cu = bpy.data.curves.new(f'Z{i}', 'FONT'); cu.body = 'Z'; cu.extrude = .04; cu.bevel_depth = .015; cu.align_x = 'CENTER'
         o = bpy.data.objects.new(f'Z{i}', cu); bpy.context.collection.objects.link(o)
         o.location = (x, -.8, z); o.rotation_euler = (radians(90), 0, radians(-8)); o.scale = (s, s, s)
@@ -681,6 +681,18 @@ def stage(px):
     # Wide enough that the soft shadow of the hat and body fades out before any edge.
     floor = bpy.context.object; floor.name = 'Shadow'; floor.scale = (5, 5, 1); floor.is_shadow_catcher = True
     scene.render.engine = 'CYCLES'
+    # Retain the static globe and studio between frames; rebuilding them dominated
+    # render time. This changes caching only, not samples, lighting or geometry.
+    scene.render.use_persistent_data = True
+    if '--optix' in ARGS:
+        prefs = bpy.context.preferences.addons['cycles'].preferences
+        prefs.compute_device_type = 'OPTIX'
+        prefs.get_devices()
+        for device in prefs.devices:
+            device.use = device.type == 'OPTIX'
+        if not any(device.use and device.type == 'OPTIX' for device in prefs.devices):
+            raise RuntimeError('--optix requires an available NVIDIA OptiX device')
+        scene.cycles.device = 'GPU'
     scene.cycles.samples = 96
     scene.cycles.use_denoising = True
     scene.render.film_transparent = True
@@ -799,7 +811,7 @@ EXPRESSIONS = [
     ('happy',         dict(mouth='smile')),
     ('big-laugh',     dict(mouth='laugh', eyes='happy', nod=-6, arms=(25, -25), extras=('tears',))),
     ('excited',       dict(mouth='laugh', brow=.04, pupil=1.08, arms=(-100, 100))),
-    ('super-excited', dict(mouth='laugh', eyes='happy', brow=.05, arms=(-150, 150), hands=('fist', 'fist'), extras=('sparkles',))),
+    ('super-excited', dict(mouth='laugh', eyes='happy', brow=.05, arms=(-118, 118), hands=('fist', 'fist'), extras=('sparkles',))),
     ('proud',         dict(mouth='smirk', lids=(-5, -5), brow=-.01, nod=-10, arms=(40, -40), hands=('fist', 'fist'), extras=('sparkles',))),
     ('curious',       dict(mouth='flat', brow=(.05, 0), gaze=(12, 4), roll=-6)),
     ('thinking',      dict(mouth='think', brow=(.03, 0), gaze=(-10, 10), roll=-7, arms=(-60, 0))),
@@ -809,7 +821,7 @@ EXPRESSIONS = [
     ('focused',       dict(mouth='flat', lids=(-35, -35), tilt=-12, nod=4)),
     ('determined',    dict(mouth='firm', lids=(-45, -45), tilt=-18, brow=-.01, arms=(-30, 30), hands=('fist', 'fist'))),
     ('encouraging',   dict(mouth='gentle', brow=.015, tilt=6, nod=5, arms=(-55, 0))),
-    ('celebrating',   dict(mouth='laugh', eyes='happy', arms=(-150, 150), hands=('open', 'open'), extras=('sparkles',))),
+    ('celebrating',   dict(mouth='laugh', eyes='happy', arms=(-118, 118), hands=('open', 'open'), extras=('sparkles',))),
     ('loving',        dict(mouth='gentle', eyes='happy', blush=1.5, roll=6, extras=('heart',))),
     ('shy',           dict(mouth='gentle', lids=(-40, -40), gaze=(8, -10), blush=1.6, roll=-8, arms=(20, -20))),
     ('mischievous',   dict(mouth='smirk', lids=(-20, -5), tilt=-10, brow=(0, .03), gaze=(10, 0))),
@@ -824,16 +836,15 @@ EXPRESSIONS = [
     ('shocked',       dict(mouth='bigO', lids=(-100, -100), brow=.09, pupil=.6, arms=(-95, 95))),
     ('oops',          dict(mouth='grimace', tilt=12, gaze=(10, 0), roll=6, arms=(-130, 0), extras=('sweat',))),
     ('relieved',      dict(mouth='gentle', eyes='happy', tilt=8, nod=4, extras=('sweat',))),
-    ('victory',       dict(mouth='laugh', brow=.03, arms=(-160, 0), hands=('fist', 'relaxed'), extras=('sparkles',))),
+    ('victory',       dict(mouth='laugh', brow=.03, arms=(-122, 0), hands=('fist', 'relaxed'), extras=('sparkles',))),
     ('welcoming',     dict(mouth='smile', roll=5, arms=(-112, 0), hands=('open', 'relaxed'))),
 ]
 
 # The pose library (section 11 of the master character sheet): the hand-led poses this
 # rig can hold. arms = (right, left) as in EXPRESSIONS; his right arm is on the viewer's
-# right. Poses needing an elbow bend (hands on hips, hand on chin), hands meeting in
-# front of him (clap, arms crossed, hug) or a changed body (sit, walk, run, sneak) need
-# the armature rig and are not here yet: a straight arm swung from the shoulder only
-# hides behind the globe in those.
+# right. The armature supports elbow bends and IK reaches. The locked arm length
+# keeps hands meeting in front of the face/body (chin, clap, arms crossed, hug) out
+# of reach; locomotion remains a separate follow-up.
 POSES = [
     ('standing',        dict(mouth='gentle')),
     ('waving',          dict(mouth='smile', roll=5, arms=(-112, 0), hands=('open', 'relaxed'))),
@@ -841,10 +852,10 @@ POSES = [
     ('double-thumbs',   dict(mouth='laugh', eyes='happy', arms=(-80, 80), hands=('thumb', 'thumb'))),
     ('point-right',     dict(mouth='smile', gaze=(14, 0), roll=4, arms=(-82, 0), hands=('point', 'relaxed'))),
     ('point-left',      dict(mouth='smile', gaze=(-14, 0), roll=-4, arms=(0, 82), hands=('relaxed', 'point'))),
-    ('point-up',        dict(mouth='o', brow=.05, gaze=(8, 14), arms=(-138, 0), hands=('point', 'relaxed'))),  # out past the brim
+    ('point-up',        dict(mouth='o', brow=.05, gaze=(8, 14), arms=(-116, 0), hands=('point', 'relaxed'))),  # out past the brim
     ('point-down',      dict(mouth='gentle', gaze=(0, -12), nod=6, arms=(-18, 0), hands=('point', 'relaxed'))),
-    ('cheering',        dict(mouth='laugh', eyes='happy', arms=(-155, 155), hands=('fist', 'fist'), extras=('sparkles',))),
-    ('victory',         dict(mouth='laugh', brow=.03, arms=(-165, 0), hands=('fist', 'relaxed'), extras=('sparkles',))),
+    ('cheering',        dict(mouth='laugh', eyes='happy', arms=(-118, 118), hands=('fist', 'fist'), extras=('sparkles',))),
+    ('victory',         dict(mouth='laugh', brow=.03, arms=(-122, 0), hands=('fist', 'relaxed'), extras=('sparkles',))),
     ('inviting',        dict(mouth='smile', tilt=4, roll=3, arms=(-45, 45), hands=('open', 'open'))),
     # With the elbow rig:
     # Targets and poles were found by searching for the palm nearest each goal with no

@@ -1,0 +1,702 @@
+{
+  "source": "C:\\Users\\IsacC\\WorldQuest\\node_modules\\.cache\\wq-compact-app-web-v2",
+  "realApp": true,
+  "seededAccount": false,
+  "cases": [
+    {
+      "name": "/quests",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "chest": {
+        "top": 274,
+        "bottom": 504,
+        "width": 288,
+        "height": 230,
+        "viewportContained": true,
+        "clipped": true,
+        "fullyVisible": false
+      },
+      "continueBeforeScroll": {
+        "top": 415,
+        "bottom": 471,
+        "width": 288,
+        "height": 56,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 415,
+        "bottom": 471,
+        "width": 288,
+        "height": 56,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "guestStart": {
+        "top": 414,
+        "bottom": 470,
+        "width": 256,
+        "height": 56,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "coin-wallet": {
+        "top": 160,
+        "bottom": 372,
+        "width": 288,
+        "height": 212,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-next-unlock": {
+        "top": 265,
+        "bottom": 371,
+        "width": 286,
+        "height": 106,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-freeze": {
+        "top": 476,
+        "bottom": 603,
+        "width": 288,
+        "height": 127,
+        "viewportContained": false,
+        "clipped": true,
+        "fullyVisible": false
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "chest": {
+        "top": 274,
+        "bottom": 504,
+        "width": 358,
+        "height": 230,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueBeforeScroll": {
+        "top": 691,
+        "bottom": 747,
+        "width": 358,
+        "height": 56,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 691,
+        "bottom": 747,
+        "width": 358,
+        "height": 56,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "guestStart": {
+        "top": 414,
+        "bottom": 470,
+        "width": 315.6875,
+        "height": 56,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "coin-wallet": {
+        "top": 160,
+        "bottom": 372,
+        "width": 358,
+        "height": 212,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-next-unlock": {
+        "top": 265,
+        "bottom": 371,
+        "width": 356,
+        "height": 106,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-freeze": {
+        "top": 476,
+        "bottom": 585,
+        "width": 358,
+        "height": 109,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "chest": {
+        "top": 274,
+        "bottom": 504,
+        "width": 568,
+        "height": 230,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueBeforeScroll": {
+        "top": 871,
+        "bottom": 927,
+        "width": 568,
+        "height": 56,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 871,
+        "bottom": 927,
+        "width": 568,
+        "height": 56,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "guestStart": {
+        "top": 414,
+        "bottom": 470,
+        "width": 315.6875,
+        "height": 56,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "coin-wallet": {
+        "top": 160,
+        "bottom": 372,
+        "width": 568,
+        "height": 212,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-next-unlock": {
+        "top": 265,
+        "bottom": 371,
+        "width": 566,
+        "height": 106,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-freeze": {
+        "top": 452,
+        "bottom": 543,
+        "width": 568,
+        "height": 91,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "navigation and protected state",
+      "chestNudgeTransform": "matrix(0.996195, -0.0871557, 0.0871557, 0.996195, 0, -5.85)",
+      "questProgressUnchanged": true,
+      "tasksUnchanged": true,
+      "achievementsOpens": true,
+      "freezeOpensStreak": true,
+      "unaffordablePurchasesDisabled": true,
+      "unlockUnchanged": true,
+      "levelTitleWorn": true
+    },
+    {
+      "name": "profile after actual UI lesson",
+      "width": 320,
+      "populated": true,
+      "passport": {
+        "top": 156,
+        "bottom": 362,
+        "width": 288,
+        "height": 206,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      }
+    },
+    {
+      "name": "profile after actual UI lesson",
+      "width": 390,
+      "populated": true,
+      "passport": {
+        "top": 108,
+        "bottom": 314,
+        "width": 358,
+        "height": 206,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      }
+    },
+    {
+      "name": "profile after actual UI lesson",
+      "width": 768,
+      "populated": true,
+      "passport": {
+        "top": 108,
+        "bottom": 314,
+        "width": 568,
+        "height": 206,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 320,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "chest": {
+        "top": 586,
+        "bottom": 1004,
+        "width": 288,
+        "height": 418,
+        "viewportContained": false,
+        "clipped": true,
+        "fullyVisible": false
+      },
+      "continueBeforeScroll": {
+        "top": 355.796875,
+        "bottom": 467.796875,
+        "width": 288,
+        "height": 112,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 355.796875,
+        "bottom": 467.796875,
+        "width": 288,
+        "height": 112,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 320,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "guestStart": {
+        "top": 932,
+        "bottom": 1044,
+        "width": 256,
+        "height": 112,
+        "viewportContained": false,
+        "clipped": true,
+        "fullyVisible": false
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 320,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "coin-wallet": {
+        "top": 200,
+        "bottom": 518,
+        "width": 288,
+        "height": 318,
+        "viewportContained": true,
+        "clipped": true,
+        "fullyVisible": false
+      },
+      "shop-next-unlock": {
+        "top": 353,
+        "bottom": 517,
+        "width": 286,
+        "height": 164,
+        "viewportContained": true,
+        "clipped": true,
+        "fullyVisible": false
+      },
+      "shop-freeze": {
+        "top": 790,
+        "bottom": 1169,
+        "width": 288,
+        "height": 379,
+        "viewportContained": false,
+        "clipped": true,
+        "fullyVisible": false
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 390,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "chest": {
+        "top": 570,
+        "bottom": 932,
+        "width": 358,
+        "height": 362,
+        "viewportContained": false,
+        "clipped": true,
+        "fullyVisible": false
+      },
+      "continueBeforeScroll": {
+        "top": 631.796875,
+        "bottom": 743.796875,
+        "width": 358,
+        "height": 112,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 631.796875,
+        "bottom": 743.796875,
+        "width": 358,
+        "height": 112,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 390,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "guestStart": {
+        "top": 692,
+        "bottom": 756,
+        "width": 326,
+        "height": 64,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 390,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "coin-wallet": {
+        "top": 200,
+        "bottom": 518,
+        "width": 358,
+        "height": 318,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-next-unlock": {
+        "top": 353,
+        "bottom": 517,
+        "width": 356,
+        "height": 164,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-freeze": {
+        "top": 742,
+        "bottom": 1001,
+        "width": 358,
+        "height": 259,
+        "viewportContained": false,
+        "clipped": true,
+        "fullyVisible": false
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 768,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "chest": {
+        "top": 358,
+        "bottom": 720,
+        "width": 568,
+        "height": 362,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueBeforeScroll": {
+        "top": 859.796875,
+        "bottom": 923.796875,
+        "width": 568,
+        "height": 64,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 859.796875,
+        "bottom": 923.796875,
+        "width": 568,
+        "height": 64,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 768,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "guestStart": {
+        "top": 588,
+        "bottom": 652,
+        "width": 530.90625,
+        "height": 64,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 768,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "coin-wallet": {
+        "top": 200,
+        "bottom": 518,
+        "width": 568,
+        "height": 318,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-next-unlock": {
+        "top": 353,
+        "bottom": 517,
+        "width": 566,
+        "height": 164,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-freeze": {
+        "top": 694,
+        "bottom": 881,
+        "width": 568,
+        "height": 187,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    }
+  ],
+  "errors": [],
+  "lesson": {
+    "answered": 35,
+    "completed": true,
+    "summary": "Lesson complete.\nThe tricky ones are the ones that stick.\n+58\nXP\n25%\nAccuracy\n1:21\nTime\n+25\nCoins\n5\nFacts stronger\nYour daily goal\n1 / 5 lessons\nOne step closer. Your next adventure is waiting on the path.\nWHERE YOU JUST WERE\nA little more of the world is yours. Keep exploring?\nContinue adventure"
+  }
+}

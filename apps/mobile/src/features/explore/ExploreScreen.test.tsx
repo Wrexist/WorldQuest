@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { WorldProgress } from '@worldquest/engines'
 import { ExploreScreen } from './ExploreScreen.js'
+
+vi.mock('../atlas/WorldAtlasView.js', () => ({ WorldAtlasView: () => <div data-testid="explore-globe" /> }))
 
 const world = (overrides: Partial<WorldProgress> = {}): WorldProgress => ({
   regions: [
@@ -155,4 +157,56 @@ it('searches installed countries and regions, opens real details, and explains n
   fireEvent.change(screen.getByTestId('explore-search'), { target: { value: 'no such country' } })
   expect(screen.getByText('No matching countries. Try another name or region.')).toBeTruthy()
   expect(screen.queryByText('Sweden')).toBeNull()
+  fireEvent.click(screen.getByRole('button', { name: 'Browse continents' }))
+  expect(screen.queryByText('No matching countries. Try another name or region.')).toBeNull()
+  expect(screen.getByRole('button', { name: 'Europe, 38% complete' })).toBeTruthy()
+})
+
+const country = (id: string, name: string, region = 'EU') => ({
+  id, name, region, flagPath: `flags/${id}.png`,
+  progress: { entityId: id, mastery: 'unseen' as const, factsTotal: 3, factsLearned: 0, factsDue: 0, factsSeen: 0, complete: false },
+})
+
+it('keeps search compact while allowing every match and resets expansion for a new query', () => {
+  const countries = [country('ES', 'Spain'), country('FR', 'France'), country('IT', 'Italy'), country('PL', 'Poland'),
+    country('SE', 'Sweden'), country('NO', 'Norway'), country('DK', 'Denmark'), country('DE', 'Germany')]
+  render(<ExploreScreen world={world()} loading={false} countries={countries} onSelectRegion={() => {}} />)
+  const search = screen.getByTestId('explore-search')
+  fireEvent.change(search, { target: { value: 'Europe' } })
+  expect(screen.queryByRole('button', { name: 'Germany' })).toBeNull()
+  fireEvent.click(screen.getByRole('button', { name: 'Show all 8' }))
+  expect(screen.getByRole('button', { name: 'Germany' })).toBeTruthy()
+  fireEvent.change(search, { target: { value: 'Germany' } })
+  expect(screen.getByRole('button', { name: 'Germany' })).toBeTruthy()
+  expect(screen.queryByRole('button', { name: 'Show fewer' })).toBeNull()
+  fireEvent.click(screen.getByRole('button', { name: 'Clear search' }))
+  expect((search as HTMLInputElement).value).toBe('')
+  expect(screen.getByText('Your world')).toBeTruthy()
+})
+
+it('takes a search selection back to its card, clears a conflicting region and keeps the globe mounted', async () => {
+  const onSelectCountry = vi.fn()
+  const countries = [country('SE', 'Sweden'), country('JP', 'Japan', 'AS')]
+  const names = { countryName: (id: string) => countries.find(row => row.id === id)?.name,
+    factValueName: (id: string) => id === 'geo.JP.capital' ? 'Tokyo' : undefined }
+  render(<ExploreScreen world={world()} loading={false} countries={countries} atlas={{ names }} onSelectCountry={onSelectCountry} onSelectRegion={() => {}} />)
+  const globe = screen.getByTestId('explore-globe')
+  fireEvent.click(screen.getByRole('button', { name: 'Europe' }))
+  const search = screen.getByTestId('explore-search')
+  fireEvent.change(search, { target: { value: 'Japan' } })
+  expect(screen.queryByTestId('explore-atlas-browse')).toBeNull()
+  const result = screen.getByRole('button', { name: 'Japan' })
+  expect(result.compareDocumentPosition(globe) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  fireEvent.click(result)
+  expect((search as HTMLInputElement).value).toBe('')
+  expect(screen.getByTestId('explore-globe')).toBe(globe)
+  expect(screen.getByRole('button', { name: 'All' }).getAttribute('aria-selected')).toBe('true')
+  expect(screen.getByText('Capital: Tokyo')).toBeTruthy()
+  expect(screen.queryByText('Your world')).toBeNull()
+  await waitFor(() => expect(document.activeElement).toBe(screen.getByTestId('explore-atlas-open')))
+  expect(onSelectCountry).not.toHaveBeenCalled()
+  fireEvent.click(screen.getByRole('button', { name: 'Open Japan' }))
+  expect(onSelectCountry).toHaveBeenCalledWith('JP')
+  fireEvent.click(screen.getByRole('button', { name: 'Clear selection' }))
+  expect(screen.getByText('Your world')).toBeTruthy()
 })

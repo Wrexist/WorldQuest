@@ -10,6 +10,7 @@ import { useState } from 'react'
 import { Animated, Image, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native'
 import { ATLAS_GLOBE, ATLAS_SEQUENCE, type AtlasGlobeMood } from '../lib/atlasGlobe.generated.js'
 import { useMascotMotion } from './useMascotMotion.js'
+import { hapticSelect } from '../lib/haptics.js'
 
 export type AtlasMood = AtlasGlobeMood
 const hidden = { 'aria-hidden': true, accessibilityElementsHidden: true, importantForAccessibility: 'no-hide-descendants' as const }
@@ -47,8 +48,8 @@ export function WorldMascot({ mood = 'welcome', style, label, onBoopLabel, playb
     if (next > 0) setSide(previous => previous === next ? previous : next)
   }
   if (onBoopLabel !== undefined) {
-    return <Pressable testID="world-mascot" onPress={boopNow} onLayout={onLayout} role="button" aria-label={onBoopLabel}
-      style={[{ alignItems: 'center', justifyContent: 'center' }, style]}>{film}</Pressable>
+    return <Pressable testID="world-mascot" onPress={() => { hapticSelect(); boopNow() }} onLayout={onLayout} role="button" aria-label={onBoopLabel}
+      style={({ pressed }) => [{ alignItems: 'center', justifyContent: 'center', opacity: pressed ? .8 : 1 }, style]}>{film}</Pressable>
   }
   return <View testID="world-mascot" pointerEvents="none" {...(label === undefined ? hidden : { accessible: true, accessibilityRole: 'image' as const, accessibilityLabel: label })}
     onLayout={onLayout} style={[{ alignItems: 'center', justifyContent: 'center' }, style]}>

@@ -97,7 +97,7 @@ export function EmptyState({
   style,
   testID,
 }: EmptyStateProps) {
-  const { styles } = useThemeValues()
+  const styles = useThemeValues()
   return (
     <View style={[compact ? styles.compact : styles.fill, style]} testID={testID}>
       {art !== undefined && <View style={styles.art}>{art}</View>}
@@ -135,11 +135,12 @@ const useThemeValues = createThemeStyles((colors) => {
   // Below the picture rather than on it: the gap belongs to the stack, and a margin
   // here would double it.
   art: { alignItems: 'center' },
-  title: { ...text('h2'), color: colors.text.primary, textAlign: 'center' },
+  title: { ...text('h2'), color: colors.text.primary, textAlign: 'center', maxWidth: '100%' },
   body: {
     ...text('body'),
     color: colors.text.secondary,
     textAlign: 'center',
+    width: '100%',
     maxWidth: BODY_WIDTH,
   },
   // One step more than the gap between the words above it. The action is a different
@@ -147,5 +148,5 @@ const useThemeValues = createThemeStyles((colors) => {
   action: { marginTop: space[2], alignItems: 'center' },
   footnote: { alignItems: 'center', maxWidth: BODY_WIDTH },
 })
-  return { colors, styles }
+  return styles
 })

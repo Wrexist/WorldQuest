@@ -6,11 +6,38 @@ const fs = require('node:fs')
 const path = require('node:path')
 const crypto = require('node:crypto')
 const { chromium } = require('playwright')
+const sharp = require('sharp')
 const { launchOptions } = require('./chromium.cjs')
 const root = path.resolve(__dirname, '..')
 const masters = path.join(root, 'docs/design/assets/playful')
 const output = path.join(root, 'apps/mobile/assets/art/playful')
 const lib = path.join(root, 'apps/mobile/src/lib')
+// Art routes these legacy names to the current Atlas/chest or classic image before
+// StillArt. Keep every public slot, but do not bundle the obsolete vector duplicate.
+const runtimeFiles = {
+  'props/atlas-welcome': 'atlas-globe/welcome.webp',
+  'props/atlas-celebrate': 'atlas-globe/celebrate.webp',
+  'props/atlas-calm': 'atlas-globe/thinking.webp',
+  'props/atlas-companion': 'atlas-globe/welcome.webp',
+  "atlas/broken-compass": "atlas-globe/thinking.webp",
+  "atlas/celebrate": "atlas-globe/celebrate.webp",
+  "atlas/encouraging": "atlas-globe/encouraging.webp",
+  "atlas/explorer": "atlas-globe/welcome.webp",
+  "atlas/resting": "atlas-globe/resting.webp",
+  "atlas/thinking": "atlas-globe/thinking.webp",
+  "atlas/waving-back": "atlas-globe/welcome.webp",
+  "atlas/welcome": "atlas-globe/welcome.webp",
+  "onboarding/conquer": "atlas-globe/celebrate.webp",
+  "onboarding/explore": "atlas-globe/welcome.webp",
+  "onboarding/learn": "atlas-globe/thinking.webp",
+  "states/empty-caught-up": "atlas-globe/celebrate.webp",
+  "states/empty-collection": "explorer-chest/closed.webp",
+  "states/empty-profile": "atlas-globe/resting.webp",
+  "states/error-generic": "atlas-globe/thinking.webp",
+  "states/offline": "atlas-globe/sleepy.webp",
+  "rewards/globe": "rewards/globe.webp",
+  "states/hearts-empty": "states/hearts-empty.webp"
+}
 const P = { ink:'#164D59', teal:'#20BAC0', dark:'#078795', light:'#97F1E4', cream:'#FFF3D6', gold:'#FFCE44', edge:'#E7A927', orange:'#FF8748', blue:'#38B9ED', green:'#8ED448', purple:'#A58AEE', white:'#FFFFFF' }
 const svg = body => `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 256 256">${body}</svg>`
 const rect = (x,y,w,h,r,fill) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${fill}"/>`
@@ -110,12 +137,44 @@ async function main() {
     }
     for(const [name,body] of Object.entries(layer))await save('rig/'+name,body,true)
     for(const [name,body] of Object.entries({'atlas-welcome':atlas(),'atlas-celebrate':atlas('celebrate'),'atlas-calm':atlas('thinking'),'atlas-companion':atlas(),globe,heart,house,passport,gem,'chest-base':chestBase,'chest-lid':chestLid,'star-trophy':trophy,'treasure-chest':chest}))await save('props/'+name,body)
-    const imports=Object.keys(files).map((name,i)=>`import a${i} from '../../assets/art/playful/${files[name]}.webp'`).join('\n')
+    // Measure the actual replacement, including alpha margins. Onboarding also uses
+    // this geometry for slide aspect, so invented square fallback geometry is unsafe.
+    for (const [name, file] of Object.entries(runtimeFiles)) {
+      const { data, info } = await sharp(path.join(root, 'apps/mobile/assets/art', file)).ensureAlpha().raw().toBuffer({ resolveWithObject: true })
+      let x0 = info.width, y0 = info.height, x1 = 0, y1 = 0
+      for (let y = 0; y < info.height; y++) for (let x = 0; x < info.width; x++) if (data[(y * info.width + x) * 4 + 3] > 8) {
+        x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y)
+      }
+      records[name] = { aspect: info.width / info.height, x: x0 / info.width, y: y0 / info.height, w: (x1 - x0 + 1) / info.width, h: (y1 - y0 + 1) / info.height }
+    }
+    // Share only byte-identical runtime assets across all three registries. A future
+    // redraw changes its content hash and automatically receives its own import again.
+    const canonicalPaths = new Map()
+    const runtimePath = name => {
+      const file = runtimeFiles[name] ?? `playful/${files[name]}.webp`
+      const hash = crypto.createHash('sha256').update(fs.readFileSync(path.join(root, 'apps/mobile/assets/art', file))).digest('hex')
+      const canonical = canonicalPaths.get(hash)
+      if (canonical !== undefined) return canonical
+      canonicalPaths.set(hash, file)
+      return file
+    }
+    // Immutable geometry is shared only when every measured field is identical.
+    const geometryCounts = new Map()
+    for (const name of names) {
+      const value = JSON.stringify(records[name])
+      geometryCounts.set(value, (geometryCounts.get(value) ?? 0) + 1)
+    }
+    const sharedGeometry = [...geometryCounts].filter(([, count]) => count > 1).map(([value], i) => [value, `g${i}`])
+    const geometryRefs = new Map(sharedGeometry)
+    const geometryDeclarations = sharedGeometry.map(([value, ref]) => `const ${ref} = ${value} as const`).join('\n')
     const indexOf=name=>Object.keys(files).indexOf(name)
-    fs.writeFileSync(path.join(lib,'art.generated.ts'),`// Generated by scripts/build-playful-art.cjs. Editable SVG masters in docs/design/assets/playful.\n${names.map(n=>`import a${indexOf(n)} from '../../assets/art/playful/${files[n]}.webp'`).join('\n')}\nexport type ArtModule = number | string\nexport const ART_BY_NAME = {\n${names.map(n=>`  '${n}': a${indexOf(n)},`).join('\n')}\n} as const\nexport type ArtName = keyof typeof ART_BY_NAME\nexport type ArtGeometry = { readonly aspect:number; readonly x:number; readonly y:number; readonly w:number; readonly h:number }\nexport const ART_GEOMETRY = {\n${names.map(n=>`  '${n}': ${JSON.stringify(records[n])},`).join('\n')}\n} as const satisfies Readonly<Record<ArtName,ArtGeometry>>\n`)
+    fs.writeFileSync(path.join(lib,'art.generated.ts'),`// Generated by scripts/build-playful-art.cjs. Legacy slots resolve to their current runtime artwork; editable SVG masters remain in docs/design/assets/playful.\n${names.map(n=>`import a${indexOf(n)} from '../../assets/art/${runtimePath(n)}'`).join('\n')}\nexport type ArtModule = number | string\nexport const ART_BY_NAME = {\n${names.map(n=>`  '${n}': a${indexOf(n)},`).join('\n')}\n} as const\nexport type ArtName = keyof typeof ART_BY_NAME\nexport type ArtGeometry = { readonly aspect:number; readonly x:number; readonly y:number; readonly w:number; readonly h:number }\n${geometryDeclarations}\nexport const ART_GEOMETRY = {\n${names.map(n=>`  '${n}': ${geometryRefs.get(JSON.stringify(records[n])) ?? JSON.stringify(records[n])},`).join('\n')}\n} as const satisfies Readonly<Record<ArtName,ArtGeometry>>\n`)
     for(const [prefix,file,exportName] of [['props','daylight.generated.ts','DAYLIGHT_ART'],['rig','atlas-rig.generated.ts','ATLAS_RIG']]) {
-      const subset=Object.keys(files).filter(n=>n.startsWith(prefix+'/'))
-      fs.writeFileSync(path.join(lib,file),`// Generated original vector artwork. Do not edit.\n${subset.map(n=>`import a${indexOf(n)} from '../../assets/art/playful/${files[n]}.webp'`).join('\n')}\nexport const ${exportName} = {\n${subset.map(n=>`  '${n.split('/')[1]}': {asset:a${indexOf(n)},geometry:${JSON.stringify(records[n])}},`).join('\n')}\n} as const\n`)
+      // Newer expedition/studio/chest art handles these legacy prop names first.
+      const superseded = ['heart', 'passport', 'gem', 'star-trophy', 'treasure-chest', 'chest-base', 'chest-lid']
+      const subset=Object.keys(files).filter(n=>n.startsWith(prefix+'/') &&
+        (prefix !== 'props' || !superseded.includes(n.split('/')[1])))
+      fs.writeFileSync(path.join(lib,file),`// Generated original vector artwork. Do not edit.\n${subset.map(n=>`import a${indexOf(n)} from '../../assets/art/${runtimePath(n)}'`).join('\n')}\nexport const ${exportName} = {\n${subset.map(n=>`  '${n.split('/')[1]}': {asset:a${indexOf(n)},geometry:${JSON.stringify(records[n])}},`).join('\n')}\n} as const\n`)
     }
     // Brand assets are original vector exports, never flattened from a screenshot.
     for(const [file,size,bg,body] of [['icon',1024,'#E5F7FC',atlas()],['adaptive-icon',1024,'#E5F7FC',`<g transform="translate(43 43) scale(.66)">${atlas()}</g>`],['splash',1024,P.white,`<g transform="translate(64 64) scale(.5)">${atlas()}</g>`],['favicon',64,'#E5F7FC',`<g transform="translate(-42 -20) scale(1.32)">${layer.head+layer.eyes}</g>`]]) {

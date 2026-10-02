@@ -33,7 +33,8 @@ import {
   View,
   useWindowDimensions,
 } from 'react-native'
-import { Art } from '../../components/Art.js'
+import { AtlasCompanion } from '../../components/AtlasCompanion.js'
+import { WorldMascot } from '../../components/WorldMascot.js'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { Flag } from '../../components/Flag.js'
 import {
@@ -175,7 +176,7 @@ export function CollectionScreen({
   }, [query, shown.length])
 
   return (
-    <View style={styles.root}>
+    <ScrollView style={styles.root} contentContainerStyle={styles.content}>
       {onBack !== undefined && <ScreenHeader onBack={onBack} />}
       <View style={styles.header}>
         <Text style={styles.title} role="heading" aria-level={1}>
@@ -256,14 +257,10 @@ export function CollectionScreen({
         // collection is a lesson. Offering "Start a lesson" to someone who has starred
         // nothing sends them to the one place that will not fix it.
         <View style={styles.empty}>
-          {/* The display case with one slot lit — "anticipation, not absence" — and it
-              belongs to exactly one of the three nothings above. A search that found
-              nothing is a spelling problem, and an empty case illustrating it would
-              say the collection is empty when it is not. Same argument as the button
-              below, which is why they share a condition. */}
-          {query.length === 0 && filter !== 'favourites' && (
-            <Art name="states/empty-collection" size={140} />
-          )}
+          {/* Atlas stays curious about a search and encouraging about a new collection.
+              The action below resolves the actual empty state. */}
+          <WorldMascot mood={query.length > 0 ? 'thinking' : 'encouraging'}
+            onBoopLabel={t('common:atlas.boop')} style={styles.emptyMascot} />
           <Text style={styles.emptyTitle}>
             {query.length > 0
               ? t('collection:search.none.title', { query })
@@ -281,15 +278,21 @@ export function CollectionScreen({
           {query.length === 0 && filter !== 'favourites' && onStartLesson !== undefined && (
             <Button label={t('collection:empty.action')} onPress={onStartLesson} />
           )}
+          {(query.length > 0 || filter === 'favourites') && (
+            <Button variant="secondary" label={t('collection:browse')} onPress={() => { setQuery(''); setFilter('all') }} />
+          )}
         </View>
       ) : (
-        <ScrollView contentContainerStyle={styles.grid} showsVerticalScrollIndicator={false}>
+        <View style={styles.grid}>
+          {filter === 'all' && query.length === 0 && <AtlasCompanion compact style={styles.guide}
+            mood={collected > 0 ? 'proud' : 'welcome'}
+            message={t(collected > 0 ? 'collection:guide.progress' : 'collection:guide.start')} />}
           {shown.map((tile, index) => (
             <Tile key={tile.id} tile={tile} index={index} art={art} wide={wide} onOpen={onOpen} />
           ))}
-        </ScrollView>
+        </View>
       )}
-    </View>
+    </ScrollView>
   )
 }
 
@@ -389,6 +392,9 @@ function Tile({
 const useThemeValues = createThemeStyles((colors) => {
   const styles = StyleSheet.create({
   root: { flex: 1 },
+  content: { flexGrow: 1 },
+  guide: { width: '100%', marginBottom: space[2] },
+  emptyMascot: { width: space[9] * 2, height: space[9] * 2 },
   header: { padding: space[4], gap: space[3] },
   title: { ...text('h1'), color: colors.text.primary },
   search: {
@@ -460,13 +466,11 @@ const useThemeValues = createThemeStyles((colors) => {
   /**
    * Dimmed, never hidden. See the header comment — this is the whole design.
    *
-   * Lower than the 0.45 it used to be, because it no longer has any text under it: at
-   * 0.45 the WHOLE card was dimmed and the country name came out at 4.31:1, under the
-   * 4.5 a caption needs. Now only the collectible fades, so the number can say what it
-   * means — a flag at a third is plainly not yet yours — without costing anybody the
-   * label.
+   * Keep the flags recognisable before mastery. A little softness distinguishes them
+   * from earned tiles without making the whole collection look disabled. Names and
+   * accessible state labels stay at full contrast.
    */
-  uncollected: { opacity: 0.35 },
+  uncollected: { opacity: 0.65 },
   tileName: { ...text('caption', { weight: '700' }), color: colors.text.primary, textAlign: 'center' },
   // Absolute so a starred tile is exactly the same height as an unstarred one —
   // otherwise starring a country makes its row jump.

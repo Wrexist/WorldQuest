@@ -193,7 +193,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "set.westerneurope.name": "Western Europe",
       "set.westerneurope.desc": "Learn everything about all 6 countries in Western Europe.",
       "unlocked.label": "New badge",
-      "unlocked.more": "{count, plural, one {And # more badge — find it in Achievements} other {And # more badges — find them in Achievements}}"
+      "unlocked.more": "{count, plural, one {And # more badge — find it in Achievements} other {And # more badges — find them in Achievements}}",
+      "guide.start": "Your first adventure starts here. Let's find your first badge!",
+      "guide.earned": "Every badge has a story. Look what you've discovered!"
     },
     "atlas": {
       "summary.identify": "Map with one country highlighted. Its name is hidden until you answer.",
@@ -214,6 +216,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "explore.open": "Open {country}",
       "explore.close": "Clear selection",
       "explore.all": "All",
+      "explore.browse": "Browse countries ({count, number})",
       "explore.listLabel": "Countries on the map"
     },
     "collection": {
@@ -237,7 +240,10 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "empty.action": "Start a lesson",
       "search": "Search countries…",
       "search.none.title": "No match for “{query}”",
-      "search.none.body": "Check the spelling, or browse by continent."
+      "search.none.body": "Check the spelling, or browse by continent.",
+      "guide.start": "A world to collect! Practise countries to fill your collection.",
+      "guide.progress": "Your discoveries are adding up. Pick a country to explore!",
+      "browse": "Browse countries"
     },
     "common": {
       "continue": "Continue",
@@ -252,7 +258,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "error.generic.body": "Let's try again.",
       "progress.count": "{current} / {total}",
       "loading": "Loading",
-      "appName": "WorldQuest"
+      "appName": "WorldQuest",
+      "atlas.boop": "Atlas, your guide. Tap for a giggle."
     },
     "country": {
       "favourite.label": "Star this country",
@@ -313,6 +320,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "crash.detail": "Technical detail"
     },
     "explore": {
+      "region.guide": "Pick a flag. Let's explore together.",
+      "search.clear": "Browse continents",
       "title": "Explore",
       "subtitle": "Seven continents. Start anywhere.",
       "region.EU": "Europe",
@@ -341,6 +350,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "mastery.mastered": "Mastered",
       "mastery.burnished": "Burnished",
       "search.label": "Search countries or regions",
+      "search.reset": "Clear search",
+      "search.more": "{count, plural, one {Show # result} other {Show all #}}",
+      "search.fewer": "Show fewer",
       "search.count": "{count, plural, one {# country in this course} other {# countries in this course}}",
       "search.empty": "No matching countries. Try another name or region."
     },
@@ -820,9 +832,17 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "stats.longest.short": "best {days}",
       "league.title": "League",
       "league.body": "See where you stand against 29 other explorers this week.",
-      "adventure.title": "Your next discovery"
+      "adventure.title": "Your next discovery",
+      "atlas.next": "Your story grows with every discovery. Ready for another?"
     },
     "quests": {
+      "treasure.title": "Today's treasure",
+      "treasure.unlock": "Finish all five to unlock.",
+      "treasure.tap": "Tap to nudge",
+      "treasure.nudge": "Give the treasure chest a nudge",
+      "guide.ready": "Ready for a little adventure? Take it one step at a time.",
+      "guide.progress": "Look at you go. Every discovery counts.",
+      "guide.complete": "Today's adventure is complete. Enjoy the view!",
       "title": "Today's Quest",
       "subtitle": "Five things. About ten minutes.",
       "progress": "{done} of {total} done",
@@ -982,8 +1002,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "unlock.title": "Your next unlock",
       "unlock.ready": "Enough coins saved — choose it below",
       "unlock.progress": "{coins} / {price} coins saved",
-      "purchase.pending": "Confirming your purchase?",
-      "purchase.failed": "Your purchase could not be confirmed. Reconnect and try again."
+      "purchase.pending": "Confirming your purchase…",
+      "purchase.failed": "Your purchase could not be confirmed. Reconnect and try again.",
+      "atlas.equipped": "You're wearing {title}. Looking good!"
     },
     "splash": {
       "wordmark": "WorldQuest",
@@ -1257,7 +1278,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "set.westerneurope.name": "Västeuropa",
       "set.westerneurope.desc": "Lär dig allt om alla 6 länder i Västeuropa.",
       "unlocked.label": "Ny utmärkelse",
-      "unlocked.more": "{count, plural, one {Och # utmärkelse till – du hittar den under Utmärkelser} other {Och # utmärkelser till – du hittar dem under Utmärkelser}}"
+      "unlocked.more": "{count, plural, one {Och # utmärkelse till – du hittar den under Utmärkelser} other {Och # utmärkelser till – du hittar dem under Utmärkelser}}",
+      "guide.start": "Ditt första äventyr börjar här. Nu hittar vi ditt första märke!",
+      "guide.earned": "Varje märke har en historia. Se vad du har upptäckt!"
     },
     "atlas": {
       "summary.identify": "Karta med ett land markerat. Namnet visas när du har svarat.",
@@ -1278,6 +1301,7 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "explore.open": "Öppna {country}",
       "explore.close": "Rensa val",
       "explore.all": "Alla",
+      "explore.browse": "Bläddra bland länder ({count, number})",
       "explore.listLabel": "Länder på kartan"
     },
     "collection": {
@@ -1301,7 +1325,10 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "empty.action": "Starta en lektion",
       "search": "Sök länder…",
       "search.none.title": "Ingen träff för ”{query}”",
-      "search.none.body": "Kolla stavningen, eller bläddra per kontinent."
+      "search.none.body": "Kolla stavningen, eller bläddra per kontinent.",
+      "guide.start": "En värld att samla! Öva på länder och fyll din samling.",
+      "guide.progress": "Dina upptäckter blir fler. Välj ett land att utforska!",
+      "browse": "Utforska länder"
     },
     "common": {
       "continue": "Fortsätt",
@@ -1316,7 +1343,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "error.generic.body": "Vi försöker igen.",
       "progress.count": "{current} / {total}",
       "loading": "Laddar",
-      "appName": "WorldQuest"
+      "appName": "WorldQuest",
+      "atlas.boop": "Atlas, din guide. Tryck för ett fniss."
     },
     "country": {
       "favourite.label": "Stjärnmärk landet",
@@ -1377,6 +1405,8 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "crash.detail": "Teknisk detalj"
     },
     "explore": {
+      "region.guide": "Välj en flagga. Vi utforskar tillsammans.",
+      "search.clear": "Utforska kontinenter",
       "title": "Utforska",
       "subtitle": "Sju kontinenter. Börja var du vill.",
       "region.EU": "Europa",
@@ -1405,6 +1435,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "mastery.mastered": "Bemästrat",
       "mastery.burnished": "Slipat",
       "search.label": "Sök länder eller världsdelar",
+      "search.reset": "Rensa sökning",
+      "search.more": "{count, plural, one {Visa # träff} other {Visa alla #}}",
+      "search.fewer": "Visa färre",
       "search.count": "{count, plural, one {# land i den här kursen} other {# länder i den här kursen}}",
       "search.empty": "Inga matchande länder. Prova ett annat namn eller en världsdel."
     },
@@ -1884,9 +1917,17 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "stats.longest.short": "bäst {days}",
       "league.title": "Liga",
       "league.body": "Se hur du ligger till mot 29 andra utforskare den här veckan.",
-      "adventure.title": "Din nästa upptäckt"
+      "adventure.title": "Din nästa upptäckt",
+      "atlas.next": "Din berättelse växer med varje upptäckt. Redo för en till?"
     },
     "quests": {
+      "treasure.title": "Dagens skatt",
+      "treasure.unlock": "Klara alla fem för att låsa upp.",
+      "treasure.tap": "Ge en liten knuff",
+      "treasure.nudge": "Ge skattkistan en liten knuff",
+      "guide.ready": "Redo för ett litet äventyr? Ta ett steg i taget.",
+      "guide.progress": "Se vad du lär dig. Varje upptäckt räknas.",
+      "guide.complete": "Dagens äventyr är klart. Njut av utsikten!",
       "title": "Dagens uppdrag",
       "subtitle": "Fem saker. Ungefär tio minuter.",
       "progress": "{done} av {total} klara",
@@ -2046,8 +2087,9 @@ export const CATALOGUE: Record<string, Record<string, Record<string, string>>> =
       "unlock.title": "Ditt nästa mål",
       "unlock.ready": "Du har tillräckligt med mynt — välj nedan",
       "unlock.progress": "{coins} / {price} mynt sparade",
-      "purchase.pending": "Bekr?ftar ditt k?p?",
-      "purchase.failed": "K?pet kunde inte bekr?ftas. Anslut igen och f?rs?k p? nytt."
+      "purchase.pending": "Bekräftar ditt köp…",
+      "purchase.failed": "Köpet kunde inte bekräftas. Anslut igen och försök på nytt.",
+      "atlas.equipped": "Nu bär du titeln {title}. Snyggt!"
     },
     "splash": {
       "wordmark": "WorldQuest",

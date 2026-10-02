@@ -138,10 +138,18 @@ describe('Achievements screen', () => {
       tier: 'bronze',
     }
     const { container } = render(rowsRender(earned))
-    const names = Array.from(container.querySelectorAll('[aria-label]'), (el) =>
+    const names = Array.from(container.querySelectorAll('[data-testid^="achievement-ach."]'), (el) =>
       el.getAttribute('aria-label'),
     ).filter((label) => label?.includes(','))
     expect(names[0]).toContain('Quest Regular')
+  })
+
+  it('offers a first lesson from the populated catalogue when nothing is earned yet', () => {
+    const start = vi.fn()
+    render(<AchievementsScreen rows={rowsFor()} onStartLesson={start} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Start a lesson' }))
+    expect(start).toHaveBeenCalledOnce()
+    expect(screen.getByRole('button', { name: /Atlas, your guide/ })).toBeTruthy()
   })
 
   it('measures progress towards the next tier, not from zero', () => {

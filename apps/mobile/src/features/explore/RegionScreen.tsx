@@ -18,10 +18,11 @@ import { createThemeStyles } from '@worldquest/design'
  */
 
 import { useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import {
   ArtScrim,
   Button,
+  Card,
   palette,
   ProgressBar,
   radius,
@@ -33,7 +34,9 @@ import {
 import type { EntityProgress, Mastery, RegionProgress } from '@worldquest/engines'
 import { collator, currentLocale, useT, type TranslationKey } from '../../lib/i18n.js'
 import { Art } from '../../components/Art.js'
+import { AtlasCompanion } from '../../components/AtlasCompanion.js'
 import { Flag } from '../../components/Flag.js'
+import { SceneEntrance } from '../../components/SceneEntrance.js'
 import { ScreenHeader } from '../../components/ScreenHeader.js'
 import { StickyFooter } from '../../components/StickyFooter.js'
 import {
@@ -168,6 +171,7 @@ export function RegionScreen({
           The same art, the same `ArtScrim`, and the same measured sizing as the tile it
           came from — imported rather than re-declared, so a continent cannot have one
           picture on Explore and another one step in. */}
+      <SceneEntrance>
       <View
         style={styles.banner}
         onLayout={(event) => {
@@ -239,18 +243,20 @@ export function RegionScreen({
           })}
         </Tally>
       </View>
+      </SceneEntrance>
+
+      <AtlasCompanion message={t('explore:region.guide')} mood="encouraging" compact />
 
       <View style={styles.list}>
         {sorted.map(({ id, name, flagPath, progress }) => (
-          <Pressable
+          <Card
             key={id}
             role="button"
             aria-disabled={false}
             onPress={() => onSelectCountry(id)}
             // One element per country: a reader announces "Sweden, Learning, 1 of 2
             // learned" rather than sweeping three separate text nodes.
-            accessible
-            aria-label={`${name}, ${t(MASTERY_LABEL[progress.mastery])}, ${t(
+            accessibilityLabel={`${name}, ${t(MASTERY_LABEL[progress.mastery])}, ${t(
               'explore:region.progress',
               { learned: progress.factsLearned, total: progress.factsTotal },
             )}`}
@@ -261,17 +267,19 @@ export function RegionScreen({
             <Flag path={flagPath} width={ROW_FLAG} />
             <View style={styles.rowText}>
               <Text style={styles.countryName}>{name}</Text>
-              <Tally style={styles.countryMeta} numberStyle={styles.countryMetaNumber}>
-                {t('explore:region.progress', {
-                  learned: progress.factsLearned,
-                  total: progress.factsTotal,
-                })}
-              </Tally>
+              <View style={styles.rowMeta}>
+                <Tally style={styles.countryMeta} numberStyle={styles.countryMetaNumber}>
+                  {t('explore:region.progress', {
+                    learned: progress.factsLearned,
+                    total: progress.factsTotal,
+                  })}
+                </Tally>
+                <Text style={[styles.mastery, { color: MASTERY_COLOR[progress.mastery] }]}>
+                  {t(MASTERY_LABEL[progress.mastery])}
+                </Text>
+              </View>
             </View>
-            <Text style={[styles.mastery, { color: MASTERY_COLOR[progress.mastery] }]}>
-              {t(MASTERY_LABEL[progress.mastery])}
-            </Text>
-          </Pressable>
+          </Card>
         ))}
       </View>
 
@@ -330,7 +338,7 @@ const useThemeValues = createThemeStyles((colors) => {
   // sky went behind it; the sky only made it measurable. Over Africa's it read 4.0:1.
   totals: { ...text('caption'), color: colors.text.secondary },
   totalsNumber: { ...text('caption', { weight: '700', numeric: true }), color: colors.text.primary },
-  list: { backgroundColor: colors.bg.surface, borderRadius: radius.lg, overflow: 'hidden', ...squircle },
+  list: { gap: space[2], paddingBottom: space[1] },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -338,7 +346,8 @@ const useThemeValues = createThemeStyles((colors) => {
     paddingHorizontal: space[4],
     paddingVertical: space[3],
   },
-  rowText: { flex: 1, gap: space[1] },
+  rowText: { flex: 1, minWidth: 0, gap: space[1] },
+  rowMeta: { flexDirection: 'row', flexWrap: 'wrap', columnGap: space[2], rowGap: space[1] },
   countryName: { ...text('bodyStrong'), color: colors.text.primary },
   countryMeta: { ...text('caption'), color: colors.text.secondary },
   countryMetaNumber: {

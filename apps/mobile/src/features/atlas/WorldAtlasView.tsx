@@ -35,7 +35,7 @@ import {
   type ViewStyle,
 } from 'react-native'
 import { GLView, type ExpoWebGLRenderingContext } from 'expo-gl'
-import { createThemeStyles, motion, radius, space, text, useReducedMotion, useTheme } from '@worldquest/design'
+import { ClaySurface, clayShadow, createThemeStyles, motion, radius, space, text, useReducedMotion, useTheme } from '@worldquest/design'
 import { Icon } from '../../components/Icon.js'
 import { useT } from '../../lib/i18n.js'
 import {
@@ -520,6 +520,7 @@ export function WorldAtlasView({
 
       {controls && status === 'ready' && (
         <View style={styles.controls}>
+          <ClaySurface radius={radius.xl} />
           <ControlButton kind="in" label={t('atlas:control.zoomIn')} onPress={() => flyTo(zoomCamera(cameraRef.current, 1.6))} />
           <ControlButton kind="out" label={t('atlas:control.zoomOut')} onPress={() => flyTo(zoomCamera(cameraRef.current, 1 / 1.6))} />
           <ControlButton kind="recenter" label={t('atlas:control.recenter')} onPress={() => flyTo(homeCamera())} />
@@ -582,7 +583,8 @@ function Pin() {
 function ControlButton({ kind, label, onPress }: { kind: 'recenter' | 'in' | 'out'; label: string; onPress: () => void }) {
   const { styles, colors } = useThemeValues()
   return (
-    <Pressable role="button" aria-label={label} onPress={onPress} style={styles.control} hitSlop={space[1]}>
+    <Pressable role="button" aria-label={label} onPress={onPress} style={({ pressed }) => [styles.control, pressed && styles.controlPressed]}>
+      <ClaySurface tone="sky" radius={radius.lg} />
       {kind === 'recenter' ? (
         <Icon name="globe" size={22} color={colors.text.primary} />
       ) : (
@@ -681,17 +683,23 @@ const useThemeValues = createThemeStyles((colors) => {
       borderBottomColor: colors.map.atlasPin,
     },
     pinLabelText: { ...text('h3'), color: colors.map.atlasLabelStrongInk },
-    controls: { position: 'absolute', end: space[2], bottom: space[2], gap: space[2] },
-    control: {
-      width: 48,
-      height: 48,
-      borderRadius: radius.full,
-      alignItems: 'center',
-      justifyContent: 'center',
+    controls: {
+      ...clayShadow(colors),
+      position: 'absolute', end: space[2], bottom: space[2],
+      flexDirection: 'row', gap: space[2], padding: space[1],
+      borderRadius: radius.xl,
       backgroundColor: colors.bg.surface,
       borderWidth: 1,
       borderColor: colors.border.subtle,
     },
+    control: {
+      width: 48,
+      height: 48,
+      borderRadius: radius.lg,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    controlPressed: { backgroundColor: colors.bg.surfacePressed },
     sign: { width: 16, height: 16, alignItems: 'center', justifyContent: 'center' },
     signBar: { position: 'absolute', width: 16, height: 2, borderRadius: 1, backgroundColor: colors.text.primary },
     signBarUp: { transform: [{ rotate: '90deg' }] },

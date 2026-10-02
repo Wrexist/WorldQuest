@@ -167,6 +167,7 @@ export function CountryScreen({
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       {onBack !== undefined && <ScreenHeader onBack={onBack} />}
       <View style={styles.header}>
+        <View style={styles.identityControls}>
         {/* Decorative: the heading beside it is the country's name, and the flag's
             description is a fact in the list below, where a screen-reader user reads
             it as content rather than as a caption. */}
@@ -175,9 +176,6 @@ export function CountryScreen({
           width={72}
           tint={region ? palette.continent[region] : colors.bg.surfaceRaised}
         />
-        <Text style={styles.title} role="heading">
-          {name}
-        </Text>
         {onToggleFavourite !== undefined && (
           <Pressable
             // `switch` rather than `button`: it is on or off, and a button role would
@@ -204,6 +202,10 @@ export function CountryScreen({
             />
           </Pressable>
         )}
+        </View>
+        <Text style={styles.title} role="heading">
+          {name}
+        </Text>
       </View>
 
       {/* Where it is, before what is true about it.
@@ -311,18 +313,13 @@ const useThemeValues = createThemeStyles((colors) => {
   // Centred and generous: this is the page's one picture, and a locator map squeezed
   // into a corner is a decoration rather than an answer to "where is this?".
   map: { alignItems: 'center' },
-  header: { flexDirection: 'row', alignItems: 'center', gap: space[3] },
-  title: { ...text('h1'), color: colors.text.primary, flex: 1, flexShrink: 1 },
+  header: { gap: space[3] },
+  identityControls: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  // The name gets the full width; large text never competes with the flag or favourite.
+  title: { ...text('h1'), color: colors.text.primary, minWidth: 0, maxWidth: '100%' },
   body: { ...text('caption'), color: colors.text.secondary },
 
-  star: { minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
-  // Blue, not gold and not red. Gold is XP and coins; red is the hearts you lose in a
-  // lesson. A saved country is neither a reward nor a life, and a ten-year-old who
-  // sees the same colour for three different things learns none of them.
-  starOn: { ...text('h2'), color: colors.action.secondary },
-  // Not `tertiary` — an outline star is already quiet, and a quiet colour on top of a
-  // quiet shape is a control nobody notices is a control.
-  starOff: { ...text('h2'), color: colors.text.secondary },
+  star: { minWidth: 44, minHeight: 44, flexShrink: 0, alignItems: 'center', justifyContent: 'center' },
 
   section: { gap: space[2] },
   sectionTitle: { ...text('overline'), color: colors.text.tertiary },
@@ -332,8 +329,6 @@ const useThemeValues = createThemeStyles((colors) => {
   factText: { flex: 1, gap: space[1] },
   factAttribute: { ...text('caption'), color: colors.text.secondary },
   factValue: { ...text('bodyStrong'), color: colors.text.primary },
-  // Not greyed out to nothing — the row still has to read as a fact that exists.
-  factHidden: { color: colors.text.tertiary },
   due: { ...text('caption', { weight: '600' }), color: colors.reward.xp },
 
 })

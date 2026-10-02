@@ -100,7 +100,8 @@ describe('LessonSummary — the numbers', () => {
     const card = screen.getByTestId('summary-xp')
     expect(card.getAttribute('aria-label')).toBe('40 XP earned')
     for (const child of Array.from(card.querySelectorAll('div'))) {
-      expect(child.getAttribute('aria-hidden')).toBe('true')
+      // Lighting layers inherit their decorative parent's hidden subtree.
+      expect(child.closest('[aria-hidden="true"]')).toBeTruthy()
     }
   })
 
@@ -213,7 +214,7 @@ describe('LessonSummary — the numbers', () => {
       const tile = screen.getByTestId(id)
       expect(tile.getAttribute('aria-label')).toBeTruthy()
       for (const child of Array.from(tile.querySelectorAll('div'))) {
-        expect(child.getAttribute('aria-hidden')).toBe('true')
+        expect(child.closest('[aria-hidden="true"]')).toBeTruthy()
       }
     }
   })

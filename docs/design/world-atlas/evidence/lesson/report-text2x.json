@@ -1,0 +1,210 @@
+[
+  {
+    "tag": "capital-320x568-text2x",
+    "found": true,
+    "before": {
+      "horizontalOverflow": false,
+      "elementsPastRightEdge": 0,
+      "promptCut": false,
+      "optionsCut": false,
+      "promptVisible": true,
+      "optionsVisible": true,
+      "checkVisible": false,
+      "atlas": {
+        "top": 162,
+        "height": 142,
+        "width": 288
+      },
+      "options": 4,
+      "mapBeforeAnswer": true
+    },
+    "after": {
+      "horizontalOverflow": false,
+      "elementsPastRightEdge": 3,
+      "promptCut": false,
+      "optionsCut": false,
+      "promptVisible": false,
+      "optionsVisible": true,
+      "checkVisible": false,
+      "atlas": {
+        "top": -62,
+        "height": 142,
+        "width": 288
+      },
+      "options": 4,
+      "mapAfterAnswer": true
+    }
+  },
+  {
+    "tag": "currency-320x568-text2x",
+    "found": true,
+    "before": {
+      "horizontalOverflow": false,
+      "elementsPastRightEdge": 0,
+      "promptCut": false,
+      "optionsCut": false,
+      "promptVisible": true,
+      "optionsVisible": true,
+      "checkVisible": false,
+      "atlas": {
+        "top": 162,
+        "height": 142,
+        "width": 288
+      },
+      "options": 4,
+      "mapBeforeAnswer": true
+    },
+    "after": {
+      "horizontalOverflow": false,
+      "elementsPastRightEdge": 3,
+      "promptCut": false,
+      "optionsCut": false,
+      "promptVisible": false,
+      "optionsVisible": true,
+      "checkVisible": false,
+      "atlas": {
+        "top": -62,
+        "height": 142,
+        "width": 288
+      },
+      "options": 4,
+      "mapAfterAnswer": true
+    }
+  },
+  {
+    "tag": "location-320x568-text2x",
+    "found": true,
+    "before": {
+      "horizontalOverflow": false,
+      "elementsPastRightEdge": 0,
+      "promptCut": false,
+      "optionsCut": false,
+      "promptVisible": true,
+      "optionsVisible": true,
+      "checkVisible": true,
+      "atlas": null,
+      "options": 4,
+      "mapBeforeAnswer": false
+    },
+    "after": {
+      "horizontalOverflow": false,
+      "elementsPastRightEdge": 3,
+      "promptCut": false,
+      "optionsCut": false,
+      "promptVisible": false,
+      "optionsVisible": true,
+      "checkVisible": false,
+      "atlas": {
+        "top": 57,
+        "height": 142,
+        "width": 288
+      },
+      "options": 4,
+      "mapAfterAnswer": true
+    }
+  },
+  {
+    "tag": "capital-390x844-text2x",
+    "found": true,
+    "before": {
+      "horizontalOverflow": false,
+      "elementsPastRightEdge": 0,
+      "promptCut": false,
+      "optionsCut": false,
+      "promptVisible": true,
+      "optionsVisible": true,
+      "checkVisible": true,
+      "atlas": {
+        "top": 193,
+        "height": 219,
+        "width": 358
+      },
+      "options": 4,
+      "mapBeforeAnswer": true
+    },
+    "after": {
+      "horizontalOverflow": false,
+      "elementsPastRightEdge": 3,
+      "promptCut": false,
+      "optionsCut": false,
+      "promptVisible": true,
+      "optionsVisible": true,
+      "checkVisible": false,
+      "atlas": {
+        "top": 56,
+        "height": 219,
+        "width": 358
+      },
+      "options": 4,
+      "mapAfterAnswer": true
+    }
+  },
+  {
+    "tag": "currency-390x844-text2x",
+    "found": true,
+    "before": {
+      "horizontalOverflow": false,
+      "elementsPastRightEdge": 0,
+      "promptCut": false,
+      "optionsCut": false,
+      "promptVisible": true,
+      "optionsVisible": true,
+      "checkVisible": true,
+      "atlas": {
+        "top": 208,
+        "height": 219,
+        "width": 358
+      },
+      "options": 4,
+      "mapBeforeAnswer": true
+    },
+    "after": {
+      "horizontalOverflow": false,
+      "elementsPastRightEdge": 3,
+      "promptCut": false,
+      "optionsCut": false,
+      "promptVisible": false,
+      "optionsVisible": true,
+      "checkVisible": false,
+      "atlas": {
+        "top": 56,
+        "height": 219,
+        "width": 358
+      },
+      "options": 4,
+      "mapAfterAnswer": true
+    }
+  },
+  {
+    "tag": "location-390x844-text2x",
+    "found": true,
+    "before": {
+      "horizontalOverflow": false,
+      "elementsPastRightEdge": 0,
+      "promptCut": false,
+      "optionsCut": false,
+      "promptVisible": true,
+      "optionsVisible": true,
+      "checkVisible": true,
+      "atlas": null,
+      "options": 4,
+      "mapBeforeAnswer": false
+    },
+    "after": {
+      "horizontalOverflow": false,
+      "elementsPastRightEdge": 3,
+      "promptCut": false,
+      "optionsCut": false,
+      "promptVisible": true,
+      "optionsVisible": true,
+      "checkVisible": false,
+      "atlas": {
+        "top": 56,
+        "height": 219,
+        "width": 358
+      },
+      "options": 4,
+      "mapAfterAnswer": true
+    }
+  }
+]

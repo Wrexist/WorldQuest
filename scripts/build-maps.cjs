@@ -75,6 +75,7 @@ const { chromium } = require('playwright')
 const { launchOptions } = require('./chromium.cjs')
 const { readFileSync, writeFileSync, mkdirSync, rmSync } = require('node:fs')
 const { join } = require('node:path')
+const { createHash } = require('node:crypto')
 
 const OUT_CONTEXT = join(process.cwd(), 'apps', 'mobile', 'assets', 'geo', 'context')
 const OUT_COUNTRIES = join(process.cwd(), 'apps', 'mobile', 'assets', 'geo', 'countries')
@@ -145,18 +146,23 @@ function load(name) {
  * not ship misses the lookup and falls back to the placeholder.
  */
 function writeIndex(codes) {
+  // Some masks are byte-identical (for example an entirely land-filled context).
+  // Keep every content-pack key while sharing the exact same bundled PNG module.
+  const byHash = new Map()
+  const assetPath = (layer, code) => {
+    const relative = `geo/${layer}/${code}.png`
+    const bytes = readFileSync(join(process.cwd(), 'apps/mobile/assets', relative))
+    const hash = createHash('sha256').update(bytes).digest('hex')
+    if (!byHash.has(hash)) byHash.set(hash, relative)
+    return byHash.get(hash)
+  }
   const countryImports = codes
-    .map((c) => `import country_${c} from '../../assets/geo/countries/${c}.png'`)
+    .map((c) => `import country_${c} from '../../assets/${assetPath('countries', c)}'`)
     .join('\n')
   const contextImports = codes
-    .map((c) => `import context_${c} from '../../assets/geo/context/${c}.png'`)
+    .map((c) => `import context_${c} from '../../assets/${assetPath('context', c)}'`)
     .join('\n')
-  const countryEntries = codes
-    .map((c) => `  'geo/countries/${c}.png': country_${c},`)
-    .join('\n')
-  const contextEntries = codes
-    .map((c) => `  'geo/context/${c}.png': context_${c},`)
-    .join('\n')
+  const assets = [...codes.map(c => `country_${c}`), ...codes.map(c => `context_${c}`)].join(', ')
 
   writeFileSync(
     INDEX,
@@ -177,11 +183,15 @@ ${contextImports}
 
 import type { AssetModule } from './flags.generated.js'
 
-/** Content-pack asset path → the bundled image. */
-export const MAP_BY_PATH: Readonly<Record<string, AssetModule>> = {
-${countryEntries}
-${contextEntries}
-}
+// Static imports preserve Metro's asset discovery. Compact keys avoid repeating
+// the same two path prefixes in Hermes; the exact public mapping stays unchanged.
+const codes = '${codes.join(' ')}'.split(' ')
+export const MAP_BY_PATH: Readonly<Record<string, AssetModule>> = Object.fromEntries(
+  [${assets}].map((asset, index) => [
+    'geo/' + (index < codes.length ? 'countries/' : 'context/') + codes[index % codes.length] + '.png',
+    asset,
+  ]),
+)
 `,
   )
 }
@@ -280,6 +290,13 @@ ${contextEntries}
         '  Fix the pack, not this script.',
     )
     process.exit(1)
+  }
+
+  // Refresh representation only; writeIndex reads every existing PNG before writing.
+  if (process.argv.includes('--index-only')) {
+    writeIndex(mapped.map(item => item.id).sort())
+    console.log(`Map index regenerated: ${mapped.length * 2} unchanged static imports`)
+    return
   }
 
   // ── match our countries to their outlines, by ISO number ──────────────────

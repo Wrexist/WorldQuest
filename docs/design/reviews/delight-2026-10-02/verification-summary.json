@@ -1,0 +1,35 @@
+{
+  "verification": {
+    "command": "pnpm verify",
+    "passed": true,
+    "mobileTests": 1128,
+    "mobileTestFiles": 126
+  },
+  "e2e": {
+    "command": "node apps/mobile/e2e/flow.cjs node_modules/.cache/wq-delight-web node_modules/.cache/wq-delight-e2e",
+    "passed": true,
+    "reportedSteps": 107,
+    "skipped": 1,
+    "skipReason": "The lesson did not select an image question."
+  },
+  "screenshots": {
+    "routes": 8,
+    "viewports": 4,
+    "configurations": 2,
+    "finalImages": 64,
+    "headerRechecks": 8,
+    "horizontalOverflow": 0,
+    "undersizedTargets": 0,
+    "unlabelledControls": 0
+  },
+  "interactions": {
+    "passed": 34,
+    "total": 34
+  },
+  "notVerified": [
+    "Native device frame rate",
+    "Native haptic experience",
+    "Native Dynamic Type",
+    "VoiceOver and TalkBack"
+  ]
+}

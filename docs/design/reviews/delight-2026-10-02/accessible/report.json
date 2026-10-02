@@ -1,0 +1,533 @@
+{
+  "routes": {
+    "explore": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Utforska"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Utforska"
+        ]
+      },
+      "430": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Utforska"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Utforska"
+        ]
+      }
+    },
+    "quests": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Dagens uppdrag"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Dagens uppdrag"
+        ]
+      },
+      "430": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Dagens uppdrag"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Dagens uppdrag"
+        ]
+      }
+    },
+    "profile": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Ditt upptäckarpass"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Ditt upptäckarpass"
+        ]
+      },
+      "430": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Ditt upptäckarpass"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": {
+          "px": 76,
+          "percentOfViewport": 7
+        },
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Ditt upptäckarpass"
+        ]
+      }
+    },
+    "shop": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Butik",
+          "Svit",
+          "Titlar"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Butik",
+          "Svit",
+          "Titlar"
+        ]
+      },
+      "430": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Butik",
+          "Svit",
+          "Titlar"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Butik",
+          "Svit",
+          "Titlar"
+        ]
+      }
+    },
+    "collection-flags": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 80,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 6,
+          "startsAtPercent": 8
+        },
+        "headings": [
+          "Flaggor"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 84,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 4,
+          "startsAtPercent": 6
+        },
+        "headings": [
+          "Flaggor"
+        ]
+      },
+      "430": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 85,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 4,
+          "startsAtPercent": 5
+        },
+        "headings": [
+          "Flaggor"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 86,
+        "emptiestBand": {
+          "px": 36,
+          "percentOfViewport": 4,
+          "startsAtPercent": 5
+        },
+        "headings": [
+          "Flaggor"
+        ]
+      }
+    },
+    "achievements": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 89,
+        "emptiestBand": {
+          "px": 28,
+          "percentOfViewport": 5,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Utmärkelser",
+          "Härnäst",
+          "Allt annat"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 90,
+        "emptiestBand": {
+          "px": 28,
+          "percentOfViewport": 3,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Utmärkelser",
+          "Härnäst",
+          "Allt annat"
+        ]
+      },
+      "430": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 89,
+        "emptiestBand": {
+          "px": 28,
+          "percentOfViewport": 3,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Utmärkelser",
+          "Härnäst",
+          "Allt annat"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 89,
+        "emptiestBand": {
+          "px": 28,
+          "percentOfViewport": 3,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Utmärkelser",
+          "Härnäst",
+          "Allt annat"
+        ]
+      }
+    },
+    "region-EU": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 96,
+        "emptiestBand": {
+          "px": 20,
+          "percentOfViewport": 4,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Europa"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 97,
+        "emptiestBand": {
+          "px": 12,
+          "percentOfViewport": 1,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Europa"
+        ]
+      },
+      "430": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 98,
+        "emptiestBand": {
+          "px": 12,
+          "percentOfViewport": 1,
+          "startsAtPercent": 53
+        },
+        "headings": [
+          "Europa"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 98,
+        "emptiestBand": {
+          "px": 8,
+          "percentOfViewport": 1,
+          "startsAtPercent": 68
+        },
+        "headings": [
+          "Europa"
+        ]
+      }
+    },
+    "streak": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 87,
+        "emptiestBand": {
+          "px": 40,
+          "percentOfViewport": 7,
+          "startsAtPercent": 15
+        },
+        "headings": [
+          "Din svit",
+          "Inga dagar än",
+          "oktober 2026",
+          "Svitjuveler"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 88,
+        "emptiestBand": {
+          "px": 40,
+          "percentOfViewport": 5,
+          "startsAtPercent": 10
+        },
+        "headings": [
+          "Din svit",
+          "Inga dagar än",
+          "oktober 2026",
+          "Svitjuveler"
+        ]
+      },
+      "430": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 88,
+        "emptiestBand": {
+          "px": 40,
+          "percentOfViewport": 4,
+          "startsAtPercent": 9
+        },
+        "headings": [
+          "Din svit",
+          "Inga dagar än",
+          "oktober 2026",
+          "Svitjuveler"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 89,
+        "emptiestBand": {
+          "px": 40,
+          "percentOfViewport": 4,
+          "startsAtPercent": 9
+        },
+        "headings": [
+          "Din svit",
+          "Inga dagar än",
+          "oktober 2026",
+          "Svitjuveler"
+        ]
+      }
+    }
+  },
+  "states": {},
+  "generatedAt": null
+}

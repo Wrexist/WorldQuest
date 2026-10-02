@@ -1,0 +1,50 @@
+[
+  {
+    "suffix": "default-390",
+    "progressUnchanged": true,
+    "overflow": [],
+    "errors": []
+  },
+  {
+    "suffix": "default-320",
+    "progressUnchanged": true,
+    "overflow": [],
+    "errors": []
+  },
+  {
+    "suffix": "default-430",
+    "progressUnchanged": true,
+    "overflow": [],
+    "errors": []
+  },
+  {
+    "suffix": "default-768",
+    "progressUnchanged": true,
+    "overflow": [],
+    "errors": []
+  },
+  {
+    "suffix": "accessible-390",
+    "progressUnchanged": true,
+    "overflow": [],
+    "errors": []
+  },
+  {
+    "suffix": "accessible-320",
+    "progressUnchanged": true,
+    "overflow": [],
+    "errors": []
+  },
+  {
+    "suffix": "accessible-430",
+    "progressUnchanged": true,
+    "overflow": [],
+    "errors": []
+  },
+  {
+    "suffix": "accessible-768",
+    "progressUnchanged": true,
+    "overflow": [],
+    "errors": []
+  }
+]

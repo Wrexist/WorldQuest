@@ -12,5 +12,7 @@
   "common:progress.count": "{current} / {total}",
   "common:loading": "Laddar",
   "common:appName": "WorldQuest",
-  "common:appName__note": "Product wordmark in the persistent header. Brand name; do not translate."
+  "common:appName__note": "Product wordmark in the persistent header. Brand name; do not translate.",
+  "common:atlas.boop": "Atlas, din guide. Tryck för ett fniss.",
+  "common:atlas.boop__note": "Accessible button name for Atlas across the app. Tapping makes him laugh; it never navigates or gives a reward."
 }

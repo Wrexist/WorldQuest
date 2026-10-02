@@ -1,0 +1,3411 @@
+{
+  "source": "C:\\Users\\IsacC\\WorldQuest\\node_modules\\.cache\\wq-clouds-final-v2",
+  "realApp": true,
+  "seededAccount": false,
+  "cases": [
+    {
+      "name": "/",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 516,
+              "bottom": 564,
+              "width": 128,
+              "height": 48,
+              "viewportContained": true,
+              "clipped": true,
+              "fullyVisible": false
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "1",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 128,
+                "renderedHeight": 42.65625
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 460,
+              "bottom": 564,
+              "width": 104,
+              "height": 104,
+              "viewportContained": true,
+              "clipped": true,
+              "fullyVisible": false
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "welcome-sheet.aabd38dd978ad869b8616bff8db17bc4.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 624,
+                "renderedHeight": 624
+              }
+            ]
+          }
+        ],
+        "reducedMotion": false
+      },
+      "currentChallenge": {
+        "bounds": {
+          "top": 257,
+          "bottom": 314,
+          "width": 262,
+          "height": 57,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "label": "Start challenge →"
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 202,
+              "width": 288,
+              "height": 96,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "1",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 288,
+                "renderedHeight": 96
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 202,
+              "width": 96,
+              "height": 96,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "welcome-sheet.aabd38dd978ad869b8616bff8db17bc4.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 576,
+                "renderedHeight": 576
+              }
+            ]
+          }
+        ],
+        "reducedMotion": false
+      },
+      "chest": {
+        "top": 286,
+        "bottom": 544,
+        "width": 288,
+        "height": 258,
+        "viewportContained": true,
+        "clipped": true,
+        "fullyVisible": false
+      },
+      "continueBeforeScroll": {
+        "top": 409,
+        "bottom": 466,
+        "width": 288,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 409,
+        "bottom": 466,
+        "width": 288,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 119,
+              "bottom": 215,
+              "width": 240,
+              "height": 96,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "1",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 240,
+                "renderedHeight": 80
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 119,
+              "bottom": 215,
+              "width": 96,
+              "height": 96,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "welcome-sheet.aabd38dd978ad869b8616bff8db17bc4.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 576,
+                "renderedHeight": 576
+              }
+            ]
+          }
+        ],
+        "reducedMotion": false
+      },
+      "guestStart": {
+        "top": 413,
+        "bottom": 470,
+        "width": 254,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 320,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 202,
+              "width": 288,
+              "height": 96,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "1",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 288,
+                "renderedHeight": 96
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 202,
+              "width": 96,
+              "height": 96,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "proud-sheet.0709a1245a8618e716b1203ab3d8b4fc.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 576,
+                "renderedHeight": 576
+              }
+            ]
+          },
+          {
+            "bounds": {
+              "top": 747,
+              "bottom": 863,
+              "width": 96,
+              "height": 116,
+              "viewportContained": false,
+              "clipped": true,
+              "fullyVisible": false
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "proud-sheet.0709a1245a8618e716b1203ab3d8b4fc.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 576,
+                "renderedHeight": 576
+              }
+            ]
+          }
+        ],
+        "reducedMotion": false
+      },
+      "coin-wallet": {
+        "top": 218,
+        "bottom": 438,
+        "width": 288,
+        "height": 220,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-next-unlock": {
+        "top": 323,
+        "bottom": 429,
+        "width": 270,
+        "height": 106,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-freeze": {
+        "top": 542,
+        "bottom": 670,
+        "width": 288,
+        "height": 128,
+        "viewportContained": false,
+        "clipped": true,
+        "fullyVisible": false
+      }
+    },
+    {
+      "name": "/",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 569,
+              "bottom": 617,
+              "width": 128,
+              "height": 48,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "1",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 128,
+                "renderedHeight": 42.65625
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 513,
+              "bottom": 617,
+              "width": 104,
+              "height": 104,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "welcome-sheet.aabd38dd978ad869b8616bff8db17bc4.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 624,
+                "renderedHeight": 624
+              }
+            ]
+          }
+        ],
+        "reducedMotion": false
+      },
+      "currentChallenge": {
+        "bounds": {
+          "top": 701,
+          "bottom": 758,
+          "width": 332,
+          "height": 57,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "label": "Start challenge →"
+      },
+      "boop": {
+        "label": "Atlas, your guide. Tap for a giggle.",
+        "bounds": {
+          "top": 466,
+          "bottom": 570,
+          "width": 104,
+          "height": 104,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "originalPose": "mascot-pose-welcome",
+        "laughingDecoded": true,
+        "transforms": [
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, -104, 0)",
+          "matrix(1, 0, 0, 1, -312, 0)",
+          "matrix(1, 0, 0, 1, -520, 0)",
+          "matrix(1, 0, 0, 1, -104, -104)",
+          "matrix(1, 0, 0, 1, -312, -104)",
+          "matrix(1, 0, 0, 1, -520, -104)"
+        ],
+        "cloudTransforms": [
+          "matrix(1, 0, 0, 1, 0, -3.80194)",
+          "matrix(1, 0, 0, 1, 0, -3.96054)",
+          "matrix(1, 0, 0, 1, 0, -3.99463)",
+          "matrix(1, 0, 0, 1, 0, -3.89649)",
+          "matrix(1, 0, 0, 1, 0, -3.68059)"
+        ],
+        "reducedMotion": false,
+        "returnedToOriginalPose": true,
+        "routeAndProgressUnchanged": true
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 218,
+              "width": 358,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "1",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 358,
+                "renderedHeight": 119.328125
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 218,
+              "width": 112,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "welcome-sheet.aabd38dd978ad869b8616bff8db17bc4.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 672,
+                "renderedHeight": 672
+              }
+            ]
+          }
+        ],
+        "reducedMotion": false
+      },
+      "chest": {
+        "top": 302,
+        "bottom": 560,
+        "width": 358,
+        "height": 258,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueBeforeScroll": {
+        "top": 685,
+        "bottom": 742,
+        "width": 358,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 685,
+        "bottom": 742,
+        "width": 358,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "boop": {
+        "label": "Atlas, your guide. Tap for a giggle.",
+        "bounds": {
+          "top": 106,
+          "bottom": 218,
+          "width": 112,
+          "height": 112,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "originalPose": "mascot-pose-welcome",
+        "laughingDecoded": true,
+        "transforms": [
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, -112, 0)",
+          "matrix(1, 0, 0, 1, -336, 0)",
+          "matrix(1, 0, 0, 1, -560, 0)",
+          "matrix(1, 0, 0, 1, -112, -112)",
+          "matrix(1, 0, 0, 1, -336, -112)",
+          "matrix(1, 0, 0, 1, -560, -112)"
+        ],
+        "cloudTransforms": [
+          "matrix(1, 0, 0, 1, 0, -3.97766)",
+          "matrix(1, 0, 0, 1, 0, -3.99026)",
+          "matrix(1, 0, 0, 1, 0, -3.86175)",
+          "matrix(1, 0, 0, 1, 0, -3.62329)",
+          "matrix(1, 0, 0, 1, 0, -3.24698)"
+        ],
+        "reducedMotion": false,
+        "returnedToOriginalPose": true,
+        "routeAndProgressUnchanged": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 119,
+              "bottom": 247,
+              "width": 240,
+              "height": 128,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "1",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 240,
+                "renderedHeight": 80
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 119,
+              "bottom": 247,
+              "width": 128,
+              "height": 128,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "welcome-sheet.aabd38dd978ad869b8616bff8db17bc4.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 768,
+                "renderedHeight": 768
+              }
+            ]
+          }
+        ],
+        "reducedMotion": false
+      },
+      "guestStart": {
+        "top": 445,
+        "bottom": 502,
+        "width": 315.6875,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "boop": {
+        "label": "Atlas, your guide. Tap for a giggle.",
+        "bounds": {
+          "top": 119,
+          "bottom": 247,
+          "width": 128,
+          "height": 128,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "originalPose": "mascot-pose-welcome",
+        "laughingDecoded": true,
+        "transforms": [
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, -128, 0)",
+          "matrix(1, 0, 0, 1, -512, 0)",
+          "matrix(1, 0, 0, 1, -640, 0)",
+          "matrix(1, 0, 0, 1, -128, -128)",
+          "matrix(1, 0, 0, 1, -384, -128)",
+          "matrix(1, 0, 0, 1, -640, -128)"
+        ],
+        "cloudTransforms": [
+          "matrix(1, 0, 0, 1, 0, -3.32487)",
+          "matrix(1, 0, 0, 1, 0, -3.68221)",
+          "matrix(1, 0, 0, 1, 0, -3.89554)",
+          "matrix(1, 0, 0, 1, 0, -3.99441)",
+          "matrix(1, 0, 0, 1, 0, -3.96054)"
+        ],
+        "reducedMotion": false,
+        "returnedToOriginalPose": true,
+        "routeAndProgressUnchanged": true
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 390,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 218,
+              "width": 358,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "1",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 358,
+                "renderedHeight": 119.328125
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 218,
+              "width": 112,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "proud-sheet.0709a1245a8618e716b1203ab3d8b4fc.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 672,
+                "renderedHeight": 672
+              }
+            ]
+          },
+          {
+            "bounds": {
+              "top": 745,
+              "bottom": 861,
+              "width": 96,
+              "height": 116,
+              "viewportContained": false,
+              "clipped": true,
+              "fullyVisible": false
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "proud-sheet.0709a1245a8618e716b1203ab3d8b4fc.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 576,
+                "renderedHeight": 576
+              }
+            ]
+          }
+        ],
+        "reducedMotion": false
+      },
+      "coin-wallet": {
+        "top": 234,
+        "bottom": 454,
+        "width": 358,
+        "height": 220,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-next-unlock": {
+        "top": 339,
+        "bottom": 445,
+        "width": 340,
+        "height": 106,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-freeze": {
+        "top": 558,
+        "bottom": 668,
+        "width": 358,
+        "height": 110,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "boop": {
+        "label": "Atlas, your guide. Tap for a giggle.",
+        "bounds": {
+          "top": 106,
+          "bottom": 218,
+          "width": 112,
+          "height": 112,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "originalPose": "mascot-pose-proud",
+        "laughingDecoded": true,
+        "transforms": [
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, -112, 0)",
+          "matrix(1, 0, 0, 1, -336, 0)",
+          "matrix(1, 0, 0, 1, -560, 0)",
+          "matrix(1, 0, 0, 1, -112, -112)",
+          "matrix(1, 0, 0, 1, -336, -112)",
+          "matrix(1, 0, 0, 1, -560, -112)"
+        ],
+        "cloudTransforms": [
+          "matrix(1, 0, 0, 1, 0, -2.2477)",
+          "matrix(1, 0, 0, 1, 0, -2.73068)",
+          "matrix(1, 0, 0, 1, 0, -3.16587)",
+          "matrix(1, 0, 0, 1, 0, -3.56553)",
+          "matrix(1, 0, 0, 1, 0, -3.82342)"
+        ],
+        "reducedMotion": false,
+        "returnedToOriginalPose": true,
+        "routeAndProgressUnchanged": true
+      }
+    },
+    {
+      "name": "/",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 602,
+              "bottom": 650,
+              "width": 128,
+              "height": 48,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "1",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 128,
+                "renderedHeight": 42.65625
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 546,
+              "bottom": 650,
+              "width": 104,
+              "height": 104,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "welcome-sheet.aabd38dd978ad869b8616bff8db17bc4.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 624,
+                "renderedHeight": 624
+              }
+            ]
+          }
+        ],
+        "reducedMotion": false
+      },
+      "currentChallenge": {
+        "bounds": {
+          "top": 781,
+          "bottom": 838,
+          "width": 542,
+          "height": 57,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "label": "Start challenge →"
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 218,
+              "width": 568,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "1",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 568,
+                "renderedHeight": 189.328125
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 218,
+              "width": 112,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "welcome-sheet.aabd38dd978ad869b8616bff8db17bc4.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 672,
+                "renderedHeight": 672
+              }
+            ]
+          }
+        ],
+        "reducedMotion": false
+      },
+      "chest": {
+        "top": 302,
+        "bottom": 560,
+        "width": 568,
+        "height": 258,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueBeforeScroll": {
+        "top": 865,
+        "bottom": 922,
+        "width": 568,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 865,
+        "bottom": 922,
+        "width": 568,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 119,
+              "bottom": 247,
+              "width": 240,
+              "height": 128,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "1",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 240,
+                "renderedHeight": 80
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 119,
+              "bottom": 247,
+              "width": 128,
+              "height": 128,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "welcome-sheet.aabd38dd978ad869b8616bff8db17bc4.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 768,
+                "renderedHeight": 768
+              }
+            ]
+          }
+        ],
+        "reducedMotion": false
+      },
+      "guestStart": {
+        "top": 445,
+        "bottom": 502,
+        "width": 315.6875,
+        "height": 57,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 768,
+      "mode": "light default",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 218,
+              "width": 568,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "1",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 568,
+                "renderedHeight": 189.328125
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 106,
+              "bottom": 218,
+              "width": 112,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "proud-sheet.0709a1245a8618e716b1203ab3d8b4fc.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 672,
+                "renderedHeight": 672
+              }
+            ]
+          },
+          {
+            "bounds": {
+              "top": 703,
+              "bottom": 819,
+              "width": 96,
+              "height": 116,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "proud-sheet.0709a1245a8618e716b1203ab3d8b4fc.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 576,
+                "renderedHeight": 576
+              }
+            ]
+          }
+        ],
+        "reducedMotion": false
+      },
+      "coin-wallet": {
+        "top": 234,
+        "bottom": 454,
+        "width": 568,
+        "height": 220,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-next-unlock": {
+        "top": 339,
+        "bottom": 445,
+        "width": 550,
+        "height": 106,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-freeze": {
+        "top": 534,
+        "bottom": 626,
+        "width": 568,
+        "height": 92,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "navigation and protected state",
+      "chestNudgeTransform": "matrix(0.991919, -0.126872, 0.126872, 0.991919, 0, -5.125)",
+      "questProgressUnchanged": true,
+      "tasksUnchanged": true,
+      "achievementsOpens": true,
+      "freezeOpensStreak": true,
+      "unaffordablePurchasesDisabled": true,
+      "unlockUnchanged": true,
+      "levelTitleWorn": true
+    },
+    {
+      "name": "profile after actual UI lesson",
+      "width": 320,
+      "mode": "light default",
+      "populated": true,
+      "passport": {
+        "top": 154,
+        "bottom": 392,
+        "width": 288,
+        "height": 238,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 167,
+              "bottom": 295,
+              "width": 262,
+              "height": 128,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "1",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 262,
+                "renderedHeight": 87.328125
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 167,
+              "bottom": 279,
+              "width": 112,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "proud-sheet.0709a1245a8618e716b1203ab3d8b4fc.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 672,
+                "renderedHeight": 672
+              }
+            ]
+          },
+          {
+            "bounds": {
+              "top": 968,
+              "bottom": 1048,
+              "width": 80,
+              "height": 80,
+              "viewportContained": false,
+              "clipped": true,
+              "fullyVisible": false
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-encouraging",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "encouraging-sheet.b8fafd0819049c7cd25229f7983d6cd6.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 480,
+                "renderedHeight": 480
+              }
+            ]
+          }
+        ],
+        "reducedMotion": false
+      }
+    },
+    {
+      "name": "profile after actual UI lesson",
+      "width": 390,
+      "mode": "light default",
+      "populated": true,
+      "passport": {
+        "top": 106,
+        "bottom": 360,
+        "width": 358,
+        "height": 254,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 119,
+              "bottom": 247,
+              "width": 332,
+              "height": 128,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "1",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 332,
+                "renderedHeight": 110.65625
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 119,
+              "bottom": 247,
+              "width": 128,
+              "height": 128,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "proud-sheet.0709a1245a8618e716b1203ab3d8b4fc.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 768,
+                "renderedHeight": 768
+              }
+            ]
+          },
+          {
+            "bounds": {
+              "top": 900,
+              "bottom": 980,
+              "width": 80,
+              "height": 80,
+              "viewportContained": false,
+              "clipped": true,
+              "fullyVisible": false
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-encouraging",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "encouraging-sheet.b8fafd0819049c7cd25229f7983d6cd6.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 480,
+                "renderedHeight": 480
+              }
+            ]
+          }
+        ],
+        "reducedMotion": false
+      },
+      "boop": {
+        "label": "Atlas, your guide. Tap for a giggle.",
+        "bounds": {
+          "top": 119,
+          "bottom": 247,
+          "width": 128,
+          "height": 128,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "originalPose": "mascot-pose-proud",
+        "laughingDecoded": true,
+        "transforms": [
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, -256, 0)",
+          "matrix(1, 0, 0, 1, -384, 0)",
+          "matrix(1, 0, 0, 1, -640, 0)",
+          "matrix(1, 0, 0, 1, -128, -128)",
+          "matrix(1, 0, 0, 1, -384, -128)",
+          "matrix(1, 0, 0, 1, -640, -128)"
+        ],
+        "cloudTransforms": [
+          "matrix(1, 0, 0, 1, 0, -3.73354)",
+          "matrix(1, 0, 0, 1, 0, -3.92552)",
+          "matrix(1, 0, 0, 1, 0, -3.99943)",
+          "matrix(1, 0, 0, 1, 0, -3.93865)",
+          "matrix(1, 0, 0, 1, 0, -3.73205)"
+        ],
+        "reducedMotion": false,
+        "returnedToOriginalPose": true,
+        "routeAndProgressUnchanged": true
+      }
+    },
+    {
+      "name": "profile after actual UI lesson",
+      "width": 768,
+      "mode": "light default",
+      "populated": true,
+      "passport": {
+        "top": 106,
+        "bottom": 360,
+        "width": 568,
+        "height": 254,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 119,
+              "bottom": 247,
+              "width": 542,
+              "height": 128,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "1",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 542,
+                "renderedHeight": 180.65625
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 119,
+              "bottom": 247,
+              "width": 128,
+              "height": 128,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "proud-sheet.0709a1245a8618e716b1203ab3d8b4fc.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 768,
+                "renderedHeight": 768
+              }
+            ]
+          },
+          {
+            "bounds": {
+              "top": 864,
+              "bottom": 944,
+              "width": 80,
+              "height": 80,
+              "viewportContained": true,
+              "clipped": true,
+              "fullyVisible": false
+            },
+            "label": "Atlas, your guide. Tap for a giggle.",
+            "role": "button",
+            "pose": "mascot-pose-encouraging",
+            "stills": 0,
+            "films": 1,
+            "images": [
+              {
+                "source": "encouraging-sheet.b8fafd0819049c7cd25229f7983d6cd6.webp",
+                "decoded": true,
+                "width": 1920,
+                "height": 1920,
+                "renderedWidth": 480,
+                "renderedHeight": 480
+              }
+            ]
+          }
+        ],
+        "reducedMotion": false
+      }
+    },
+    {
+      "name": "/",
+      "width": 320,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 156,
+              "bottom": 204,
+              "width": 128,
+              "height": 48,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "0.14",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 128,
+                "renderedHeight": 42.65625
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 100,
+              "bottom": 204,
+              "width": 104,
+              "height": 104,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "welcome.97ad363c51d768458eafc03b9df1e4ab.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 104,
+                "renderedHeight": 104
+              }
+            ]
+          }
+        ],
+        "reducedMotion": true
+      },
+      "currentChallenge": {
+        "bounds": {
+          "top": 205,
+          "bottom": 365,
+          "width": 262,
+          "height": 160,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "label": "Starta utmaningen →"
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 320,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 352,
+              "bottom": 544,
+              "width": 288,
+              "height": 192,
+              "viewportContained": true,
+              "clipped": true,
+              "fullyVisible": false
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "0.14",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 288,
+                "renderedHeight": 96
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 278,
+              "bottom": 374,
+              "width": 96,
+              "height": 96,
+              "viewportContained": true,
+              "clipped": true,
+              "fullyVisible": false
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "welcome.97ad363c51d768458eafc03b9df1e4ab.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 96,
+                "renderedHeight": 96
+              }
+            ]
+          }
+        ],
+        "reducedMotion": true
+      },
+      "chest": {
+        "top": 688,
+        "bottom": 1186,
+        "width": 288,
+        "height": 498,
+        "viewportContained": false,
+        "clipped": true,
+        "fullyVisible": false
+      },
+      "continueBeforeScroll": {
+        "top": 350.796875,
+        "bottom": 462.796875,
+        "width": 288,
+        "height": 112,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 350.796875,
+        "bottom": 462.796875,
+        "width": 288,
+        "height": 112,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 320,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 167,
+              "bottom": 263,
+              "width": 240,
+              "height": 96,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "0.14",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 240,
+                "renderedHeight": 80
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 167,
+              "bottom": 263,
+              "width": 96,
+              "height": 96,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "welcome.97ad363c51d768458eafc03b9df1e4ab.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 96,
+                "renderedHeight": 96
+              }
+            ]
+          }
+        ],
+        "reducedMotion": true
+      },
+      "guestStart": {
+        "top": 931,
+        "bottom": 1043,
+        "width": 254,
+        "height": 112,
+        "viewportContained": false,
+        "clipped": true,
+        "fullyVisible": false
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 320,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 108,
+              "bottom": 204,
+              "width": 288,
+              "height": 96,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "0.14",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 288,
+                "renderedHeight": 96
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 108,
+              "bottom": 204,
+              "width": 96,
+              "height": 96,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "proud.2c616e23cec9915fbf413b6ea60e49fd.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 96,
+                "renderedHeight": 96
+              }
+            ]
+          },
+          {
+            "bounds": {
+              "top": 1403,
+              "bottom": 1519,
+              "width": 96,
+              "height": 116,
+              "viewportContained": false,
+              "clipped": true,
+              "fullyVisible": false
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "proud.2c616e23cec9915fbf413b6ea60e49fd.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 96,
+                "renderedHeight": 96
+              }
+            ]
+          }
+        ],
+        "reducedMotion": true
+      },
+      "coin-wallet": {
+        "top": 220,
+        "bottom": 546,
+        "width": 288,
+        "height": 326,
+        "viewportContained": true,
+        "clipped": true,
+        "fullyVisible": false
+      },
+      "shop-next-unlock": {
+        "top": 373,
+        "bottom": 537,
+        "width": 270,
+        "height": 164,
+        "viewportContained": true,
+        "clipped": true,
+        "fullyVisible": false
+      },
+      "shop-freeze": {
+        "top": 818,
+        "bottom": 1198,
+        "width": 288,
+        "height": 380,
+        "viewportContained": false,
+        "clipped": true,
+        "fullyVisible": false
+      }
+    },
+    {
+      "name": "/",
+      "width": 390,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 273,
+              "bottom": 321,
+              "width": 128,
+              "height": 48,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "0.14",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 128,
+                "renderedHeight": 42.65625
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 217,
+              "bottom": 321,
+              "width": 104,
+              "height": 104,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "welcome.97ad363c51d768458eafc03b9df1e4ab.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 104,
+                "renderedHeight": 104
+              }
+            ]
+          }
+        ],
+        "reducedMotion": true
+      },
+      "currentChallenge": {
+        "bounds": {
+          "top": 602,
+          "bottom": 714,
+          "width": 332,
+          "height": 112,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "label": "Starta utmaningen →"
+      },
+      "boop": {
+        "label": "Atlas, din guide. Tryck för ett fniss.",
+        "bounds": {
+          "top": 217,
+          "bottom": 321,
+          "width": 104,
+          "height": 104,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "originalPose": "mascot-pose-welcome",
+        "laughingDecoded": true,
+        "transforms": [
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none"
+        ],
+        "cloudTransforms": [
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        "reducedMotion": true,
+        "returnedToOriginalPose": true,
+        "routeAndProgressUnchanged": true
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 390,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 226,
+              "bottom": 418,
+              "width": 358,
+              "height": 192,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "0.14",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 358,
+                "renderedHeight": 119.328125
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 234,
+              "bottom": 346,
+              "width": 112,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "welcome.97ad363c51d768458eafc03b9df1e4ab.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 112,
+                "renderedHeight": 112
+              }
+            ]
+          }
+        ],
+        "reducedMotion": true
+      },
+      "chest": {
+        "top": 562,
+        "bottom": 944,
+        "width": 358,
+        "height": 382,
+        "viewportContained": false,
+        "clipped": true,
+        "fullyVisible": false
+      },
+      "continueBeforeScroll": {
+        "top": 626.796875,
+        "bottom": 738.796875,
+        "width": 358,
+        "height": 112,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 626.796875,
+        "bottom": 738.796875,
+        "width": 358,
+        "height": 112,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "boop": {
+        "label": "Atlas, din guide. Tryck för ett fniss.",
+        "bounds": {
+          "top": 234,
+          "bottom": 346,
+          "width": 112,
+          "height": 112,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "originalPose": "mascot-pose-welcome",
+        "laughingDecoded": true,
+        "transforms": [
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none"
+        ],
+        "cloudTransforms": [
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        "reducedMotion": true,
+        "returnedToOriginalPose": true,
+        "routeAndProgressUnchanged": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 390,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 119,
+              "bottom": 247,
+              "width": 240,
+              "height": 128,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "0.14",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 240,
+                "renderedHeight": 80
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 119,
+              "bottom": 247,
+              "width": 128,
+              "height": 128,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "welcome.97ad363c51d768458eafc03b9df1e4ab.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 128,
+                "renderedHeight": 128
+              }
+            ]
+          }
+        ],
+        "reducedMotion": true
+      },
+      "guestStart": {
+        "top": 723,
+        "bottom": 787,
+        "width": 324,
+        "height": 64,
+        "viewportContained": true,
+        "clipped": true,
+        "fullyVisible": false
+      },
+      "boop": {
+        "label": "Atlas, din guide. Tryck för ett fniss.",
+        "bounds": {
+          "top": 119,
+          "bottom": 247,
+          "width": 128,
+          "height": 128,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "originalPose": "mascot-pose-welcome",
+        "laughingDecoded": true,
+        "transforms": [
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none"
+        ],
+        "cloudTransforms": [
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        "reducedMotion": true,
+        "returnedToOriginalPose": true,
+        "routeAndProgressUnchanged": true
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 390,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 108,
+              "bottom": 220,
+              "width": 358,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "0.14",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 358,
+                "renderedHeight": 119.328125
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 108,
+              "bottom": 220,
+              "width": 112,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "proud.2c616e23cec9915fbf413b6ea60e49fd.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 112,
+                "renderedHeight": 112
+              }
+            ]
+          },
+          {
+            "bounds": {
+              "top": 1197,
+              "bottom": 1313,
+              "width": 96,
+              "height": 116,
+              "viewportContained": false,
+              "clipped": true,
+              "fullyVisible": false
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "proud.2c616e23cec9915fbf413b6ea60e49fd.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 96,
+                "renderedHeight": 96
+              }
+            ]
+          }
+        ],
+        "reducedMotion": true
+      },
+      "coin-wallet": {
+        "top": 236,
+        "bottom": 562,
+        "width": 358,
+        "height": 326,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-next-unlock": {
+        "top": 389,
+        "bottom": 553,
+        "width": 340,
+        "height": 164,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-freeze": {
+        "top": 786,
+        "bottom": 1046,
+        "width": 358,
+        "height": 260,
+        "viewportContained": false,
+        "clipped": true,
+        "fullyVisible": false
+      },
+      "boop": {
+        "label": "Atlas, din guide. Tryck för ett fniss.",
+        "bounds": {
+          "top": 108,
+          "bottom": 220,
+          "width": 112,
+          "height": 112,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "originalPose": "mascot-pose-proud",
+        "laughingDecoded": true,
+        "transforms": [
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none"
+        ],
+        "cloudTransforms": [
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        "reducedMotion": true,
+        "returnedToOriginalPose": true,
+        "routeAndProgressUnchanged": true
+      }
+    },
+    {
+      "name": "/",
+      "width": 768,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 537,
+              "bottom": 585,
+              "width": 128,
+              "height": 48,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "0.14",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 128,
+                "renderedHeight": 42.65625
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 481,
+              "bottom": 585,
+              "width": 104,
+              "height": 104,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "welcome.97ad363c51d768458eafc03b9df1e4ab.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 104,
+                "renderedHeight": 104
+              }
+            ]
+          }
+        ],
+        "reducedMotion": true
+      },
+      "currentChallenge": {
+        "bounds": {
+          "top": 830,
+          "bottom": 894,
+          "width": 542,
+          "height": 64,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "label": "Starta utmaningen →"
+      }
+    },
+    {
+      "name": "/quests",
+      "width": 768,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 108,
+              "bottom": 256,
+              "width": 568,
+              "height": 148,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "0.14",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 568,
+                "renderedHeight": 189.328125
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 126,
+              "bottom": 238,
+              "width": 112,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "welcome.97ad363c51d768458eafc03b9df1e4ab.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 112,
+                "renderedHeight": 112
+              }
+            ]
+          }
+        ],
+        "reducedMotion": true
+      },
+      "chest": {
+        "top": 352,
+        "bottom": 734,
+        "width": 568,
+        "height": 382,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueBeforeScroll": {
+        "top": 854.796875,
+        "bottom": 918.796875,
+        "width": 568,
+        "height": 64,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "continueAfterScroll": {
+        "top": 854.796875,
+        "bottom": 918.796875,
+        "width": 568,
+        "height": 64,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/profile",
+      "width": 768,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 119,
+              "bottom": 247,
+              "width": 240,
+              "height": 128,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "0.14",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 240,
+                "renderedHeight": 80
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 119,
+              "bottom": 247,
+              "width": 128,
+              "height": 128,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-welcome",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "welcome.97ad363c51d768458eafc03b9df1e4ab.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 128,
+                "renderedHeight": 128
+              }
+            ]
+          }
+        ],
+        "reducedMotion": true
+      },
+      "guestStart": {
+        "top": 619,
+        "bottom": 683,
+        "width": 530.90625,
+        "height": 64,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "/shop",
+      "width": 768,
+      "mode": "-sv-dark-glyph2-reduced",
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 108,
+              "bottom": 220,
+              "width": 568,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "0.14",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 568,
+                "renderedHeight": 189.328125
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 108,
+              "bottom": 220,
+              "width": 112,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "proud.2c616e23cec9915fbf413b6ea60e49fd.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 112,
+                "renderedHeight": 112
+              }
+            ]
+          },
+          {
+            "bounds": {
+              "top": 1041,
+              "bottom": 1157,
+              "width": 96,
+              "height": 116,
+              "viewportContained": false,
+              "clipped": true,
+              "fullyVisible": false
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "proud.2c616e23cec9915fbf413b6ea60e49fd.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 96,
+                "renderedHeight": 96
+              }
+            ]
+          }
+        ],
+        "reducedMotion": true
+      },
+      "coin-wallet": {
+        "top": 236,
+        "bottom": 562,
+        "width": 568,
+        "height": 326,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-next-unlock": {
+        "top": 389,
+        "bottom": 553,
+        "width": 550,
+        "height": 164,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "shop-freeze": {
+        "top": 738,
+        "bottom": 926,
+        "width": 568,
+        "height": 188,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      }
+    },
+    {
+      "name": "profile after actual UI lesson",
+      "width": 320,
+      "mode": "-sv-dark-glyph2-reduced",
+      "populated": true,
+      "passport": {
+        "top": 160,
+        "bottom": 450,
+        "width": 288,
+        "height": 290,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [
+          "Utforskare",
+          "Bemästrade fakta"
+        ],
+        "viewport": {
+          "width": 320,
+          "height": 568
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 173,
+              "bottom": 301,
+              "width": 262,
+              "height": 128,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "0.14",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 262,
+                "renderedHeight": 87.328125
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 173,
+              "bottom": 285,
+              "width": 112,
+              "height": 112,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "proud.2c616e23cec9915fbf413b6ea60e49fd.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 112,
+                "renderedHeight": 112
+              }
+            ]
+          },
+          {
+            "bounds": {
+              "top": 1604,
+              "bottom": 1684,
+              "width": 80,
+              "height": 80,
+              "viewportContained": false,
+              "clipped": true,
+              "fullyVisible": false
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-encouraging",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "encouraging.bd322be7cc1f01058b31749c0876f611.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 80,
+                "renderedHeight": 80
+              }
+            ]
+          }
+        ],
+        "reducedMotion": true
+      }
+    },
+    {
+      "name": "profile after actual UI lesson",
+      "width": 390,
+      "mode": "-sv-dark-glyph2-reduced",
+      "populated": true,
+      "passport": {
+        "top": 160,
+        "bottom": 422,
+        "width": 358,
+        "height": 262,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 173,
+              "bottom": 301,
+              "width": 332,
+              "height": 128,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "0.14",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 332,
+                "renderedHeight": 110.65625
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 173,
+              "bottom": 301,
+              "width": 128,
+              "height": 128,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "proud.2c616e23cec9915fbf413b6ea60e49fd.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 128,
+                "renderedHeight": 128
+              }
+            ]
+          },
+          {
+            "bounds": {
+              "top": 1396,
+              "bottom": 1476,
+              "width": 80,
+              "height": 80,
+              "viewportContained": false,
+              "clipped": true,
+              "fullyVisible": false
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-encouraging",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "encouraging.bd322be7cc1f01058b31749c0876f611.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 80,
+                "renderedHeight": 80
+              }
+            ]
+          }
+        ],
+        "reducedMotion": true
+      },
+      "boop": {
+        "label": "Atlas, din guide. Tryck för ett fniss.",
+        "bounds": {
+          "top": 173,
+          "bottom": 301,
+          "width": 128,
+          "height": 128,
+          "viewportContained": true,
+          "clipped": false,
+          "fullyVisible": true
+        },
+        "originalPose": "mascot-pose-proud",
+        "laughingDecoded": true,
+        "transforms": [
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none",
+          "none"
+        ],
+        "cloudTransforms": [
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)",
+          "matrix(1, 0, 0, 1, 0, 0)"
+        ],
+        "reducedMotion": true,
+        "returnedToOriginalPose": true,
+        "routeAndProgressUnchanged": true
+      }
+    },
+    {
+      "name": "profile after actual UI lesson",
+      "width": 768,
+      "mode": "-sv-dark-glyph2-reduced",
+      "populated": true,
+      "passport": {
+        "top": 108,
+        "bottom": 370,
+        "width": 568,
+        "height": 262,
+        "viewportContained": true,
+        "clipped": false,
+        "fullyVisible": true
+      },
+      "layout": {
+        "sidewaysScroll": 0,
+        "smallTargets": [],
+        "textOutsideViewport": [],
+        "viewport": {
+          "width": 768,
+          "height": 1024
+        }
+      },
+      "companions": {
+        "backdrops": [
+          {
+            "bounds": {
+              "top": 121,
+              "bottom": 249,
+              "width": 542,
+              "height": 128,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "presentation": {
+              "hidden": "true",
+              "pointerEvents": "none",
+              "opacity": "0.14",
+              "transform": "matrix(1, 0, 0, 1, 0, 0)"
+            },
+            "images": [
+              {
+                "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+                "decoded": true,
+                "width": 1536,
+                "height": 512,
+                "renderedWidth": 542,
+                "renderedHeight": 180.65625
+              }
+            ]
+          }
+        ],
+        "mascots": [
+          {
+            "bounds": {
+              "top": 121,
+              "bottom": 249,
+              "width": 128,
+              "height": 128,
+              "viewportContained": true,
+              "clipped": false,
+              "fullyVisible": true
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-proud",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "proud.2c616e23cec9915fbf413b6ea60e49fd.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 128,
+                "renderedHeight": 128
+              }
+            ]
+          },
+          {
+            "bounds": {
+              "top": 1164,
+              "bottom": 1244,
+              "width": 80,
+              "height": 80,
+              "viewportContained": false,
+              "clipped": true,
+              "fullyVisible": false
+            },
+            "label": "Atlas, din guide. Tryck för ett fniss.",
+            "role": "button",
+            "pose": "mascot-pose-encouraging",
+            "stills": 1,
+            "films": 0,
+            "images": [
+              {
+                "source": "encouraging.bd322be7cc1f01058b31749c0876f611.webp",
+                "decoded": true,
+                "width": 640,
+                "height": 640,
+                "renderedWidth": 80,
+                "renderedHeight": 80
+              }
+            ]
+          }
+        ],
+        "reducedMotion": true
+      }
+    }
+  ],
+  "errors": [],
+  "limitations": [
+    "Chromium and react-native-web, not a physical device.",
+    "The accessibility mode doubles rendered glyphs; native fontScale branches need separate fixture/device proof."
+  ],
+  "firstCloudFrame": {
+    "source": "backdrop.0abc6da35992e75a178db8e095e4db0d.webp",
+    "decoded": true,
+    "width": 1536,
+    "height": 512,
+    "renderedWidth": 128,
+    "renderedHeight": 42.65625
+  },
+  "lesson": {
+    "answered": 35,
+    "completed": true,
+    "summary": "Lesson complete.\nThe tricky ones are the ones that stick.\n+58\nXP\n25%\nAccuracy\n1:24\nTime\n+25\nCoins\n5\nFacts stronger\nYour daily goal\n1 / 5 lessons\nOne step closer. Your next adventure is waiting on the path.\nWHERE YOU JUST WERE\nA little more of the world is yours. Keep exploring?\nContinue adventure"
+  }
+}

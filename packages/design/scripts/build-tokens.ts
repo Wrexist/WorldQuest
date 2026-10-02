@@ -59,6 +59,19 @@ function resolve(value: Json, tree: Record<string, Json>, seen = 0): Json {
 const resolved = resolve(tokens, tokens) as Record<string, Json>
 delete resolved.version
 
+/** Themes share immutable semantic objects when their resolved values agree.
+ * This changes emitted construction code only: JSON remains the source of truth,
+ * both theme roots remain distinct, and consumers retain their literal readonly types. */
+function emitTheme(value: Json, counterpart: Json | undefined, path = 'colors', indent = 0): string {
+  if (indent > 0 && value !== null && typeof value === 'object' && JSON.stringify(value) === JSON.stringify(counterpart)) return path
+  if (value === null || typeof value !== 'object' || Array.isArray(value)) return JSON.stringify(value)
+  const peer = counterpart !== null && typeof counterpart === 'object' && !Array.isArray(counterpart) ? counterpart : {}
+  const pad = '  '.repeat(indent + 1)
+  return '{\n' + Object.entries(value).map(([key, child]) =>
+    `${pad}${JSON.stringify(key)}: ${emitTheme(child, peer[key], `${path}[${JSON.stringify(key)}]`, indent + 1)}`,
+  ).join(',\n') + '\n' + '  '.repeat(indent) + '}'
+}
+
 const banner = `/**
  * GENERATED FILE — DO NOT EDIT.
  *
@@ -76,7 +89,7 @@ const banner = `/**
 const body = [
   `export const palette = ${JSON.stringify(resolved.palette, null, 2)} as const`,
   `export const colors = ${JSON.stringify(resolved.color, null, 2)} as const`,
-  `export const darkColors = ${JSON.stringify(resolved.darkColor, null, 2)} as const`,
+  `export const darkColors = ${emitTheme(resolved.darkColor!, resolved.color)} as const`,
   `export const space = ${JSON.stringify(resolved.space, null, 2)} as const`,
   `export const radius = ${JSON.stringify(resolved.radius, null, 2)} as const`,
   `export const depth = ${JSON.stringify(resolved.depth, null, 2)} as const`,
@@ -85,6 +98,7 @@ const body = [
   `export const motion = ${JSON.stringify(resolved.motion, null, 2)} as const`,
   `export const gradient = ${JSON.stringify(resolved.gradient, null, 2)} as const`,
   `export const layout = ${JSON.stringify(resolved.layout, null, 2)} as const`,
+  `export const illustration = ${JSON.stringify(resolved.illustration, null, 2)} as const`,
   `export const icon = ${JSON.stringify(resolved.icon, null, 2)} as const`,
   `export const contrastFloors = ${JSON.stringify(resolved.contrastFloors, null, 2)} as const`,
   '',

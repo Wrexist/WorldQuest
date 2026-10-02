@@ -11,8 +11,12 @@
  */
 
 import { describe, expect, it, vi } from 'vitest'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { AccessibilityInfo, Animated } from 'react-native'
+import { motion, setAppReducedMotion } from '@worldquest/design'
 import { BALANCE } from '@worldquest/engines'
+import { withFullMotion } from '../../test/setup.js'
+import { SceneEntrance } from '../../components/SceneEntrance.js'
 import { LessonScreen } from './LessonScreen.js'
 
 // The sync queue writes to MMKV and would try to reach Supabase. The queue's own
@@ -375,5 +379,69 @@ describe('the unfamiliar-fact introduction', () => {
     fireEvent.click(screen.getByTestId('lesson-begin'))
     expect(screen.queryByTestId('lesson-introduction')).toBeNull()
     expect(answerButtons()).toHaveLength(4)
+  })
+})
+
+describe('question arrivals', () => {
+  it('keeps answers usable while arriving, and replays only after Continue', async () => {
+    const osMotion = vi.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false)
+    const timing = vi.spyOn(Animated, 'timing').mockReturnValue({ start: vi.fn(), stop: vi.fn(), reset: vi.fn() })
+    try {
+      await withFullMotion(async () => {
+        // In the app, earlier screens have already read the OS motion preference.
+        // Warm that real hook rather than making an unknown preference animate.
+        render(<SceneEntrance />)
+        await act(async () => { await Promise.resolve() })
+        cleanup()
+        timing.mockClear()
+        render(<LessonScreen onExit={() => {}} focus={{ attributes: ['capital'], entities: ['ES', 'JP', 'SE', 'FR'] }} />)
+        const prompt = screen.getByTestId('lesson-prompt-arrival')
+        const options = screen.getByTestId('lesson-options-arrival')
+        const atlas = screen.getByTestId('prompt-locator')
+        await waitFor(() => expect(timing.mock.calls.filter(([, config]) => config.duration === motion.quick.duration)).toHaveLength(2))
+        const arrivals = new Set(timing.mock.calls.filter(([, config]) => config.duration === motion.quick.duration).map(([value]) => value))
+        timing.mockClear()
+
+        // The animations are held at their first frame. A learner can still choose,
+        // change their mind and grade; none of those actions re-enters the question.
+        fireEvent.click(answerButtons()[0]!)
+        fireEvent.click(answerButtons()[1]!)
+        expect(answerButtons()[1]!.getAttribute('aria-selected')).toBe('true')
+        fireEvent.click(checkButton())
+        expect(screen.getByTestId('answer-sheet')).toBeTruthy()
+        expect(timing.mock.calls.filter(([value]) => arrivals.has(value))).toHaveLength(0)
+        expect(screen.getByTestId('prompt-locator')).toBe(atlas)
+
+        fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+        expect(timing.mock.calls.filter(([value]) => arrivals.has(value))).toHaveLength(2)
+        // Native view identity survives: no keyed scene or GL parent remount.
+        expect(screen.getByTestId('lesson-prompt-arrival')).toBe(prompt)
+        expect(screen.getByTestId('lesson-options-arrival')).toBe(options)
+        expect(screen.getByTestId('prompt-locator')).toBe(atlas)
+        expect(answerButtons().some(option => option.getAttribute('aria-selected') === 'true')).toBe(false)
+      })
+    } finally {
+      cleanup()
+      timing.mockRestore()
+      osMotion.mockRestore()
+    }
+  })
+
+  it('shows a settled, playable next question under reduced motion', () => {
+    setAppReducedMotion(true)
+    try {
+      render(<LessonScreen onExit={() => {}} />)
+      choose(answerButtons()[0]!)
+      fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+      for (const id of ['lesson-prompt-arrival', 'lesson-options-arrival']) {
+        expect(screen.getByTestId(id).style.transform).toContain('translateY(0px)')
+        expect(screen.getByTestId(id).style.transform).toContain('scale(1)')
+      }
+      choose(answerButtons()[0]!)
+      expect(screen.getByTestId('answer-sheet')).toBeTruthy()
+    } finally {
+      cleanup()
+      setAppReducedMotion(false)
+    }
   })
 })

@@ -1,0 +1,83 @@
+{
+  "source": "C:\\Users\\IsacC\\WorldQuest\\node_modules\\.cache\\wq-compact-explore-web-v2",
+  "baseline": false,
+  "realApp": true,
+  "seededAccount": false,
+  "cases": [
+    {
+      "name": "selected Spain",
+      "width": 390,
+      "metrics": {
+        "height": 74,
+        "width": 358,
+        "overflow": [],
+        "text": "SpainCapital: Madrid",
+        "targets": [
+          {
+            "label": "Open Spain",
+            "width": 280,
+            "height": 48
+          },
+          {
+            "label": "Clear selection",
+            "width": 44,
+            "height": 44
+          }
+        ]
+      },
+      "focusAfterBrowseSelection": {
+        "tag": "BUTTON",
+        "label": "Open Spain"
+      },
+      "collapsedAfterSelection": true,
+      "globeRetained": true
+    },
+    {
+      "name": "selected Spain",
+      "width": 390,
+      "metrics": {
+        "height": 74,
+        "width": 358,
+        "overflow": [],
+        "text": "SpainCapital: Madrid",
+        "targets": [
+          {
+            "label": "Open Spain",
+            "width": 280,
+            "height": 48
+          },
+          {
+            "label": "Clear selection",
+            "width": 44,
+            "height": 44
+          }
+        ]
+      },
+      "focusAfterBrowseSelection": {
+        "tag": "BUTTON",
+        "label": "Open Spain"
+      },
+      "collapsedAfterSelection": true,
+      "globeRetained": true
+    },
+    {
+      "name": "behavior",
+      "euCount": 45,
+      "asiaCount": 46,
+      "fullCountryCount": 194,
+      "expandedSearchCount": 186,
+      "resultBeforeGlobe": true,
+      "queryCleared": true,
+      "outsideFilterResets": true,
+      "keyboardOpen": true,
+      "closeIndependent": true,
+      "globeRetained": true,
+      "openFocusRetained": true,
+      "focusAfterSearchSelection": {
+        "tag": "BUTTON",
+        "label": "Open Spain"
+      }
+    }
+  ],
+  "errors": []
+}

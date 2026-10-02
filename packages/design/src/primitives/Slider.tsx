@@ -73,7 +73,7 @@ const TRACK = 14
 const THUMB = layout.minTouchTarget
 
 export function Slider({ stops, value, onChange, label, style, testID }: SliderProps) {
-  const { styles } = useThemeValues()
+  const styles = useThemeValues()
   const [width, setWidth] = useState(0)
   const onTrackLayout = (event: LayoutChangeEvent): void => {
     setWidth(event.nativeEvent.layout.width)
@@ -237,5 +237,5 @@ const useThemeValues = createThemeStyles((colors) => {
   legendText: { ...text('caption'), color: colors.text.tertiary, flex: 1, textAlign: 'center' },
   legendTextOn: { ...text('caption', { weight: '700' }), color: colors.text.primary },
 })
-  return { colors, styles }
+  return styles
 })

@@ -1,0 +1,11 @@
+{
+  "source": "C:\\Users\\IsacC\\WorldQuest\\node_modules\\.cache\\wq-clouds-final",
+  "realApp": true,
+  "seededAccount": false,
+  "cases": [],
+  "errors": [],
+  "limitations": [
+    "Chromium and react-native-web, not a physical device.",
+    "The accessibility mode doubles rendered glyphs; native fontScale branches need separate fixture/device proof."
+  ]
+}

@@ -1,5 +1,11 @@
 # Mockup fidelity
 
+> **October 2, 2026:** the owner's liquid-clay references now define the current
+> material treatment. See the [liquid-clay contract](design-system.md) and
+> [measured reference audit](reviews/liquid-clay-2026-10-02/reference-audit.md).
+> Their illustrative progress numbers and drawn device frame are not app state or
+> app chrome. The implementation retains real rewards, safe areas and compact flows.
+
 > The owner's September 26, 2026 redesign intentionally supersedes the dark
 > mockup's palette, photographic artwork, glows and card treatment. See
 > [Daylight expedition](daylight-redesign.md) for the current design and assets.

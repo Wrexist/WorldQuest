@@ -1,0 +1,68 @@
+{
+  "routes": {
+    "quests": {
+      "320": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Dagens uppdrag"
+        ]
+      },
+      "390": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Dagens uppdrag"
+        ]
+      },
+      "430": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Dagens uppdrag"
+        ]
+      },
+      "768": {
+        "sidewaysScroll": 0,
+        "belowMinTarget": [],
+        "unlabelledControls": 0,
+        "deadSpaceBelow": 0,
+        "contentDensity": 100,
+        "emptiestBand": {
+          "px": 0,
+          "percentOfViewport": 0,
+          "startsAtPercent": 0
+        },
+        "headings": [
+          "Dagens uppdrag"
+        ]
+      }
+    }
+  },
+  "states": {},
+  "generatedAt": null
+}

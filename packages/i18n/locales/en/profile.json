@@ -60,5 +60,7 @@
   "profile:account.body__note": "Current account capability. Signing in on a second phone is verified on the web build against the Worker (pnpm e2e:d1); preferences stay on each device, so never promise that everything carries over.",
   "profile:adventure.title": "Your next discovery",
   "profile:adventure.title__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted.",
-  "profile:account.title__note": "Secondary account action: link an email to the existing account. Keep concise."
+  "profile:account.title__note": "Secondary account action: link an email to the existing account. Keep concise.",
+  "profile:atlas.next": "Your story grows with every discovery. Ready for another?",
+  "profile:atlas.next__note": "Atlas's friendly invitation beside the next lesson action on a populated Profile. Encouragement, not a reward or progress claim."
 }

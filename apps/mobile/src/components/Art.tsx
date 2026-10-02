@@ -107,6 +107,7 @@ import { ART_BY_NAME, ART_GEOMETRY, type ArtName } from '../lib/art.generated.js
 import { CLASSIC_ART } from '../lib/classic.generated.js'
 import { AtlasCharacter, type AtlasMood } from './AtlasCharacter.js'
 import { DaylightIllustration } from './DaylightIllustration.js'
+import { ExplorerChestStill } from './ExplorerChestArt.js'
 import { RewardMotion } from './RewardMotion.js'
 
 export type ArtProps = {
@@ -155,7 +156,8 @@ export function Art(props: ArtProps) {
     return <AtlasCharacter size={size} height={height} mood={mood} label={label} />
   }
   if (label === undefined && name === 'rewards/streak-freeze') return <DaylightIllustration name="streak-freeze" size={size} />
-  if (label === undefined && name === 'states/empty-collection') return <DaylightIllustration name="treasure-chest" size={size} />
+  if (name === 'states/empty-collection') return label === undefined ? <ExplorerChestStill size={size} /> :
+    <View accessible role="img" accessibilityLabel={label}><ExplorerChestStill size={size} /></View>
   if (label === undefined && (name.startsWith('celebration/') || name.startsWith('rewards/'))) {
     return <RewardMotion kind={name.startsWith('celebration/') ? 'confetti' : name.endsWith('flame') ? 'flame' : 'pop'}><StillArt {...props} /></RewardMotion>
   }

@@ -88,7 +88,7 @@ export function AbsentContent({
   style,
   testID,
 }: AbsentContentProps) {
-  const { styles } = useThemeValues()
+  const styles = useThemeValues()
   const loading = state === 'loading'
 
   return (
@@ -152,5 +152,5 @@ const useThemeValues = createThemeStyles((colors) => {
   // becomes two cards is a flicker of a shape that was never real.
   waiting: { borderColor: colors.bg.surface },
 })
-  return { colors, styles }
+  return styles
 })

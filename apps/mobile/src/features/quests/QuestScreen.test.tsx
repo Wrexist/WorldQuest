@@ -1,7 +1,15 @@
-import { describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/react'
+import type { ContextType } from 'react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { AccessibilityInfo, Animated, AppState, type AppStateStatus } from 'react-native'
+import { NavigationContext } from '@react-navigation/native'
+import { setAppReducedMotion } from '@worldquest/design'
 import type { DailyQuest } from '@worldquest/engines'
+import { withFullMotion } from '../../test/setup.js'
 import { QuestScreen } from './QuestScreen.js'
+import { QuestTreasureCard } from './QuestTreasureCard.js'
+
+afterEach(() => { setAppReducedMotion(false); vi.restoreAllMocks() })
 
 const quest = (overrides: Partial<DailyQuest> = {}): DailyQuest => ({
   id: 'u1:2026-08-01',
@@ -54,7 +62,7 @@ describe('Quests — the five states', () => {
     // how the done state would rot.
     const { container } = render(<QuestScreen quest={quest()} loading={false} onStart={() => {}} />)
     // `Array.from`, not spread: a NodeList is not iterable under this tsconfig.
-    const steps = Array.from(container.querySelectorAll('[aria-hidden="true"]'))
+    const steps = Array.from(container.querySelectorAll('[data-testid="quest-step"]'))
       .map((el) => el.textContent?.trim())
       .filter((s) => s !== undefined && s !== '')
     // The done step draws an icon rather than a character, so it contributes no
@@ -70,6 +78,25 @@ describe('Quests — the five states', () => {
       (step) => step.querySelector('img') !== null,
     )
     expect(drawn).toHaveLength(1)
+  })
+
+  it('announces aggregate progress while showing which actual quest milestone is complete', () => {
+    render(<QuestScreen quest={quest()} loading={false} onStart={() => {}} />)
+    const progress = screen.getByRole('progressbar', { name: '1 of 5 done' })
+    expect(progress).toBe(screen.getByTestId('quest-progress'))
+    expect(progress.getAttribute('aria-valuemin')).toBe('0')
+    expect(progress.getAttribute('aria-valuemax')).toBe('5')
+    expect(progress.getAttribute('aria-valuenow')).toBe('1')
+
+    // Tasks may finish out of order: one completed task does not mean task 1 is done.
+    for (const step of [1, 3, 4, 5]) {
+      const milestone = screen.getByTestId(`quest-milestone-${step}`)
+      expect(milestone.textContent?.trim()).toBe(String(step))
+      expect(milestone.querySelector('img')).toBeNull()
+    }
+    const finished = screen.getByTestId('quest-milestone-2')
+    expect(finished.querySelector('img')).not.toBeNull()
+    expect(finished.textContent?.trim()).toBe('')
   })
 
   it('keeps the step number out of the screen reader', () => {
@@ -107,6 +134,37 @@ describe('Quests — the five states', () => {
 })
 
 describe('Quests — behaviour', () => {
+  it('lets the treasure chest react without starting a lesson or awarding progress', () => {
+    const onStart = vi.fn()
+    render(<QuestScreen quest={quest()} loading={false} onStart={onStart} />)
+    const treasure = within(screen.getByTestId('quest-treasure-card'))
+    const chest = treasure.getByRole('button', { name: 'Give the treasure chest a nudge' })
+    expect(treasure.getByText('+50 XP')).toBeTruthy()
+
+    fireEvent.click(chest)
+
+    expect(onStart).not.toHaveBeenCalled()
+    expect(screen.getByTestId('quest-progress').getAttribute('aria-valuenow')).toBe('1')
+    expect(treasure.getByText('+50 XP')).toBeTruthy()
+    expect(screen.getByTestId('quest-milestone-1').textContent?.trim()).toBe('1')
+    expect(screen.getByTestId('quest-milestone-2').querySelector('img')).not.toBeNull()
+  })
+
+  it('lets Atlas respond to actual progress and welcomes a stopping point', () => {
+    const fresh = quest({ tasks: quest().tasks.map((task) => ({ ...task, progress: 0, complete: false })) })
+    const { rerender } = render(<QuestScreen quest={fresh} loading={false} onStart={() => {}} />)
+    expect(screen.getByText('Ready for a little adventure? Take it one step at a time.')).toBeTruthy()
+
+    rerender(<QuestScreen quest={quest()} loading={false} onStart={() => {}} />)
+    expect(screen.getByText('Look at you go. Every discovery counts.')).toBeTruthy()
+    expect(screen.queryByText('Ready for a little adventure? Take it one step at a time.')).toBeNull()
+
+    const finished = quest({ complete: true, tasks: quest().tasks.map((task) => ({ ...task, progress: task.target, complete: true })) })
+    rerender(<QuestScreen quest={finished} loading={false} onStart={() => {}} />)
+    expect(screen.getByText("Today's adventure is complete. Enjoy the view!")).toBeTruthy()
+    expect(screen.queryByRole('button', { name: 'Continue quest →' })).toBeNull()
+  })
+
   it('shows the goal for the performance slot so it is not a mystery', () => {
     render(<QuestScreen quest={quest()} loading={false} onStart={() => {}} />)
     expect(screen.getByText('A lesson with no mistakes')).toBeTruthy()
@@ -143,5 +201,110 @@ describe('Quests — behaviour', () => {
     const { container } = render(<QuestScreen quest={quest()} loading={false} onStart={() => {}} />)
     expect(container.textContent).not.toMatch(/\b[a-z]+:[a-z][a-zA-Z0-9.]+/)
     expect(container.textContent).not.toMatch(/\{[a-zA-Z_]+[,}]/)
+  })
+})
+
+describe('Quest treasure motion lifecycle', () => {
+  it('stamps only a newly completed checkpoint and announces progress before motion finishes', async () => {
+    vi.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false)
+    const sequence = vi.spyOn(Animated, 'sequence').mockImplementation(() => ({
+      start: vi.fn(), stop: vi.fn(), reset: vi.fn(),
+    }))
+    const current = quest()
+    const advanced = quest({ tasks: current.tasks.map(task => task.slot === 'recall'
+      ? { ...task, progress: task.target, complete: true } : task) })
+    await withFullMotion(async () => {
+      const view = render(<QuestTreasureCard quest={current} />)
+      await act(async () => { await Promise.resolve() })
+      expect(sequence).not.toHaveBeenCalled()
+
+      view.rerender(<QuestTreasureCard quest={advanced} />)
+      expect(sequence).toHaveBeenCalledOnce()
+      expect(screen.getByTestId('quest-progress').getAttribute('aria-valuenow')).toBe('2')
+      expect(screen.getByTestId('quest-milestone-3').querySelector('img')).not.toBeNull()
+      expect(screen.getByTestId('quest-milestone-1').textContent?.trim()).toBe('1')
+      sequence.mockClear()
+
+      view.rerender(<QuestTreasureCard quest={{ ...advanced }} />)
+      view.rerender(<QuestTreasureCard quest={current} />)
+      expect(sequence).not.toHaveBeenCalled()
+      view.unmount()
+      render(<QuestTreasureCard quest={advanced} />)
+      expect(sequence).not.toHaveBeenCalled()
+    })
+  })
+
+  it('shows a newly earned checkpoint immediately with reduced motion', () => {
+    setAppReducedMotion(true)
+    const sequence = vi.spyOn(Animated, 'sequence')
+    const current = quest()
+    const view = render(<QuestTreasureCard quest={current} />)
+    view.rerender(<QuestTreasureCard quest={quest({ tasks: current.tasks.map(task => task.slot === 'recall'
+      ? { ...task, progress: task.target, complete: true } : task) })} />)
+    expect(sequence).not.toHaveBeenCalled()
+    expect(screen.getByTestId('quest-progress').getAttribute('aria-valuenow')).toBe('2')
+    expect(screen.getByTestId('quest-milestone-3').querySelector('img')).not.toBeNull()
+  })
+
+  it('settles an active nudge when reduced motion is enabled and keeps the chest usable', async () => {
+    vi.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false)
+    const timing = vi.spyOn(Animated, 'timing').mockImplementation(() => ({
+      start: vi.fn(), stop: vi.fn(), reset: vi.fn(),
+    }))
+    await withFullMotion(async () => {
+      render(<QuestTreasureCard quest={quest()} />)
+      await act(async () => { await Promise.resolve() })
+      timing.mockClear()
+      fireEvent.click(screen.getByRole('button', { name: 'Give the treasure chest a nudge' }))
+      expect(timing).toHaveBeenCalledTimes(1)
+      const nudge = timing.mock.results[0]!.value
+
+      act(() => setAppReducedMotion(true))
+      expect(nudge.stop).toHaveBeenCalled()
+      timing.mockClear()
+      fireEvent.click(screen.getByRole('button', { name: 'Give the treasure chest a nudge' }))
+      expect(timing).not.toHaveBeenCalled()
+      expect(screen.getByText('+50 XP')).toBeTruthy()
+      expect(screen.getByTestId('quest-progress').getAttribute('aria-valuenow')).toBe('1')
+    })
+  })
+
+  it.each(['blur', 'background'] as const)('cancels a chest nudge on %s and removes its listeners', async cause => {
+    vi.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false)
+    const timing = vi.spyOn(Animated, 'timing').mockImplementation(() => ({
+      start: vi.fn(), stop: vi.fn(), reset: vi.fn(),
+    }))
+    const blurListeners = new Set<() => void>()
+    const stateListeners = new Set<(state: AppStateStatus) => void>()
+    vi.spyOn(AppState, 'addEventListener').mockImplementation((_event, callback) => {
+      stateListeners.add(callback)
+      return { remove: () => { stateListeners.delete(callback) } }
+    })
+    const navigation = {
+      isFocused: () => true,
+      addListener: (event: string, callback: () => void) => {
+        if (event === 'blur') blurListeners.add(callback)
+        return () => { blurListeners.delete(callback) }
+      },
+    } as unknown as ContextType<typeof NavigationContext>
+
+    await withFullMotion(async () => {
+      const view = render(<NavigationContext.Provider value={navigation}>
+        <QuestTreasureCard quest={quest()} />
+      </NavigationContext.Provider>)
+      await act(async () => { await Promise.resolve() })
+      timing.mockClear()
+      fireEvent.click(screen.getByRole('button', { name: 'Give the treasure chest a nudge' }))
+      expect(timing).toHaveBeenCalledTimes(1)
+      const nudge = timing.mock.results[0]!.value
+      act(() => {
+        if (cause === 'blur') blurListeners.forEach(listener => listener())
+        else stateListeners.forEach(listener => listener('background'))
+      })
+      expect(nudge.stop).toHaveBeenCalled()
+      view.unmount()
+      expect(blurListeners.size).toBe(0)
+      expect(stateListeners.size).toBe(0)
+    })
   })
 })

@@ -156,7 +156,9 @@ export function buildLessonScene(input: LessonSceneInput): AtlasSceneSpec | null
   } else {
     highlights.push({ countryId: entityId, state: 'subject' })
     ringFor(entityId)
-    labelFor(entityId, name, 10)
+    // Capital prompts already name the country. Keep its fill and accessible
+    // summary, without a floating pill that can be displaced onto a neighbour.
+    if (mode !== 'capital-name') labelFor(entityId, name, 10)
     summary = input.t('atlas:summary.country', { country: name ?? '' })
 
     if (mode === 'capital-name') {

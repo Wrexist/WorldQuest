@@ -17,5 +17,6 @@
   "atlas:explore.open": "Öppna {country}",
   "atlas:explore.close": "Rensa val",
   "atlas:explore.all": "Alla",
+  "atlas:explore.browse": "Bläddra bland länder ({count, number})",
   "atlas:explore.listLabel": "Länder på kartan"
 }

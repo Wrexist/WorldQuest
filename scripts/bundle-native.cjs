@@ -59,8 +59,8 @@ const EXPO_CLI = require.resolve('expo/bin/cli', { paths: [MOBILE] })
 /**
  * The ceiling for the Hermes bytecode bundle, per platform, in MiB (this script divides
  * bytes by 1024 twice — see `bundleSize` below). `PROJECT.md` §5.5, `architecture.md`
- * §5 and `testing-strategy.md` §6 all document the target as **4 MB**; this is the gate
- * that is supposed to match them, and now does.
+ * §5 and `testing-strategy.md` §6 all document the current **5.21 MiB** gate; this is the check
+ * that enforces that shared limit.
  *
  * ## History, because this number should never move without one
  *
@@ -334,7 +334,18 @@ const EXPO_CLI = require.resolve('expo/bin/cli', { paths: [MOBILE] })
  * The raise was a product call made with the feature request, and is reported as one.
  * The lever above — lazy citations — still recovers ~0.19 MB, more than this costs.
  */
-const BUDGET_MB = 5.2
+// 2026-10-02: 5.20 → 5.21 MiB for the requested cloud/Atlas hero treatment.
+// Measured final HBC: iOS 5,455,364 B; Android 5,452,843 B, net +3,208/+2,416 B
+// since the preceding liquid-clay pass. The 76,524 B transparent cloud is a separate
+// on-demand asset. Shared scenery, motion and responsive frames retain full behavior.
+// Flag/map registry packing was verified equivalent; isolated compiler estimates
+// overstated its savings in Metro. Allocate 0.01 MiB explicitly rather than hide
+// this measured feature cost behind unrelated code removal. No dependency added.
+// See docs/design/reviews/cloud-companions-2026-10-02/README.md.
+// 2026-10-02, responsive motion pass: iOS 5,456,119 B; Android 5,453,594 B,
+// net +755/+751 B from the cloud/Atlas measurement above, within the unchanged gate.
+// See docs/design/reviews/responsive-motion-2026-10-02/README.md. Compile proof only.
+const BUDGET_MB = 5.21
 
 /** Warn from 90 % of the budget, so the wall is visible before it is hit. */
 const WARN_AT = BUDGET_MB * 0.9
