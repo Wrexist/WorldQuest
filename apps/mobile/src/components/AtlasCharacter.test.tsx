@@ -1,7 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AccessibilityInfo, Animated, AppState } from 'react-native'
 import { act, fireEvent, render, renderHook, waitFor } from '@testing-library/react'
-import { setAppReducedMotion, useReducedMotion } from '@worldquest/design'
+import { motion, setAppReducedMotion, useReducedMotion } from '@worldquest/design'
+import { useMascotMotion } from './useMascotMotion.js'
 import { AtlasCharacter, type AtlasMood } from './AtlasCharacter.js'
 import { withFullMotion } from '../test/setup.js'
 import { usePreferences, initializeMotionPreference } from '../features/settings/usePreferences.js'
@@ -10,6 +11,35 @@ import { writeJson } from '../lib/storage.js'
 afterEach(() => { setAppReducedMotion(false); vi.restoreAllMocks() })
 
 describe('Atlas and motion preferences', () => {
+  it('cycles paywall gestures only after playback finishes and cancels pending gestures on unmount', async () => {
+    vi.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false)
+    let complete: ((result: { finished: boolean }) => void) | undefined
+    const stop = vi.fn()
+    vi.spyOn(Animated, 'timing').mockImplementation(() => ({
+      start: callback => { complete = callback }, stop, reset: vi.fn(),
+    }))
+    await withFullMotion(async () => {
+      const hook = renderHook(() => useMascotMotion('welcome', 112, { welcome: true, resting: true, wink: true }, 'paywall'))
+      await waitFor(() => expect(complete).toBeDefined())
+      vi.useFakeTimers()
+      try {
+        expect(hook.result.current.playing).toBe('welcome')
+        act(() => complete?.({ finished: false }))
+        act(() => vi.advanceTimersByTime(motion.quick.duration))
+        expect(hook.result.current.playing).toBe('welcome')
+        act(() => complete?.({ finished: true }))
+        act(() => vi.advanceTimersByTime(motion.quick.duration))
+        expect(hook.result.current.playing).toBe('resting')
+        act(() => complete?.({ finished: true }))
+        act(() => vi.advanceTimersByTime(motion.quick.duration))
+        expect(hook.result.current.playing).toBe('wink')
+        act(() => complete?.({ finished: true }))
+        hook.unmount()
+        expect(stop).toHaveBeenCalled()
+        expect(vi.getTimerCount()).toBe(0)
+      } finally { vi.useRealTimers() }
+    })
+  })
   it('holds the film at rest until its sheet has decoded, and cleans up after itself', async () => {
     // jsdom never finishes loading an image (react-native-web reports onLoad from its own
     // loader), so this proves the half a test can reach: nothing plays against an image

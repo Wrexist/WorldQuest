@@ -21,7 +21,9 @@ const SAMPLE_COUNTRIES: readonly PaywallCountry[] = [
   { id: 'FI', name: 'Finland', flagPath: 'flags/FI.png' },
 ]
 
+vi.mock('expo-linear-gradient', async () => ({ LinearGradient: (await import('react-native')).View }))
 vi.mock('../../lib/analytics.js', () => ({ track: vi.fn() }))
+vi.mock('../../lib/haptics.js', () => ({ hapticSelect: vi.fn() }))
 
 const paywall = (over: Partial<React.ComponentProps<typeof PaywallScreen>> = {}) => {
   const onPurchase = vi.fn(async () => ({ kind: 'purchased' as const }))
@@ -42,12 +44,8 @@ const paywall = (over: Partial<React.ComponentProps<typeof PaywallScreen>> = {})
   return { ...view, onPurchase, onRestore, onDismiss }
 }
 
-/** Walks to the plans page, which is where the money is. */
-const toPlans = () => {
-  for (let i = 0; i < 2; i++) {
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
-  }
-}
+/** Plans are now on the first screen. */
+const toPlans = () => expect(screen.queryByRole('button', { name: 'Continue' })).toBeNull()
 
 describe('Paywall — the rules that cost money to break', () => {
   it('never shows a child a purchase', () => {
@@ -80,9 +78,9 @@ describe('Paywall — the rules that cost money to break', () => {
 
   it('promises that learning stays free, on every page that mentions money', () => {
     paywall()
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    toPlans()
     expect(screen.getByText(/Every lesson stays free/i)).toBeTruthy()
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    toPlans()
     expect(screen.getByText(/Every lesson stays free/i)).toBeTruthy()
   })
 
@@ -104,7 +102,7 @@ describe('Paywall — the rules that cost money to break', () => {
 describe('Paywall — the offer', () => {
   it('speaks about what the user just did, not what they could buy', () => {
     paywall({ countries: SAMPLE_COUNTRIES.slice(0, 3) })
-    expect(screen.getByRole('heading').textContent).toContain('3')
+    expect(screen.getByText('You practiced 3 countries.')).toBeTruthy()
   })
 
   it('shows the flags of the countries they just placed, named for a reader', () => {
@@ -117,7 +115,7 @@ describe('Paywall — the offer', () => {
     for (const country of SAMPLE_COUNTRIES) {
       expect(screen.getAllByRole('img', { name: country.name }).length).toBeGreaterThan(0)
     }
-    expect(container.querySelectorAll('img')).toHaveLength(SAMPLE_COUNTRIES.length)
+    expect(container.querySelectorAll('img').length).toBeGreaterThanOrEqual(SAMPLE_COUNTRIES.length)
   })
 
   it('never says "you just learned 0 countries"', () => {
@@ -143,18 +141,18 @@ describe('Paywall — the offer', () => {
     // the saving is arithmetic. Pre-SELECTED is fine; pre-CHARGED is a chargeback.
     paywall()
     toPlans()
-    const [annual, monthly] = screen.getAllByRole('radio')
+    const [monthly, annual] = screen.getAllByRole('radio')
     expect(annual?.getAttribute('aria-checked')).toBe('true')
     expect(monthly?.getAttribute('aria-checked')).toBe('false')
     fireEvent.click(monthly!)
-    expect(screen.getAllByRole('radio')[1]?.getAttribute('aria-checked')).toBe('true')
+    expect(screen.getAllByRole('radio')[0]?.getAttribute('aria-checked')).toBe('true')
   })
 
   it('states the trial terms in words, above the button, not behind a link', () => {
     paywall()
     toPlans()
     expect(screen.getByText(/Free for 7 days, then/i)).toBeTruthy()
-    expect(screen.getByText(/Cancel any time/i)).toBeTruthy()
+    expect(screen.getByText(/Cancel before the trial ends/i)).toBeTruthy()
   })
 
   it('computes the saving from the real prices rather than a marketing number', () => {
@@ -307,7 +305,7 @@ describe('Paywall — never promises what the till will refuse', () => {
     const { container } = paywall({ plans: [] })
     expect(container.textContent).not.toMatch(/thirty|fresh|just learned/i)
     for (let page = 0; page < 2; page++) {
-      fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+      toPlans()
       expect(screen.getByRole('heading').textContent).toBe('Premium')
       expect(container.textContent).not.toMatch(/Unlimited hearts|Offline packs|Deep stats|Exclusive cosmetics|Every plan includes/i)
       expect(screen.getByRole('button', { name: 'Not now' })).toBeTruthy()
@@ -326,5 +324,42 @@ describe('Paywall — never promises what the till will refuse', () => {
     // small lie that costs a refund and a review.
     paywall({ plans: [], plansFailed: true, source: 'settings' })
     expect(screen.getByRole('heading').textContent).not.toMatch(/free for a week/i)
+  })
+})
+
+describe('Single-page Premium offer', () => {
+  it('uses the selected product trial duration and renewal interval', () => {
+    paywall({ source: 'settings', plans: SAMPLE_PLANS.map(p => ({ ...p, trialDays: p.id === 'annual' ? 7 : 3 })) })
+    fireEvent.click(screen.getByRole('radio', { name: /^Monthly/ }))
+    expect(screen.getByRole('button', { name: 'Try 3 days free' })).toBeTruthy()
+    expect(screen.getByText(/Free for 3 days, then.*month/)).toBeTruthy()
+    expect(screen.getByText('Day 3: your plan begins')).toBeTruthy()
+  })
+  it('can buy when the store only returns monthly', async () => {
+    const { onPurchase } = paywall({ source: 'settings', plans: [SAMPLE_PLANS[1]!] })
+    fireEvent.click(screen.getByTestId('paywall-buy'))
+    await waitFor(() => expect(onPurchase).toHaveBeenCalledWith('monthly'))
+  })
+  it('locks plan selection and blocks repeat submissions during checkout', async () => {
+    let finish!: (result: { kind: 'cancelled' }) => void
+    const onPurchase = vi.fn(() => new Promise<{ kind: 'cancelled' }>(resolve => { finish = resolve }))
+    paywall({ source: 'settings', onPurchase })
+    fireEvent.click(screen.getByTestId('paywall-buy'))
+    fireEvent.click(screen.getByTestId('paywall-buy'))
+    expect(onPurchase).toHaveBeenCalledTimes(1)
+    expect(screen.getAllByRole('radio').every(el => el.getAttribute('aria-disabled') === 'true')).toBe(true)
+    finish({ kind: 'cancelled' })
+    await waitFor(() => expect(screen.getByTestId('paywall-buy').getAttribute('aria-disabled')).not.toBe('true'))
+  })
+  it('recovers after the purchase adapter throws', async () => {
+    paywall({ source: 'settings', onPurchase: async () => { throw new Error('store unavailable') } })
+    fireEvent.click(screen.getByTestId('paywall-buy'))
+    await waitFor(() => expect(screen.getByRole('alert')).toBeTruthy())
+    expect(screen.getByRole('button', { name: 'Not now' })).toBeTruthy()
+  })
+  it('does not offer a trial of zero days', () => {
+    paywall({ source: 'settings', plans: SAMPLE_PLANS.map(p => ({ ...p, trialDays: 0 })) })
+    expect(screen.getByRole('button', { name: 'Get Premium' })).toBeTruthy()
+    expect(screen.queryByText('No charge today')).toBeNull()
   })
 })

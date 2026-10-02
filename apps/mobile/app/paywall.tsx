@@ -87,15 +87,7 @@ export default function PaywallRoute() {
     else router.replace('/')
   }
 
-  /**
-   * Held back only for the hand-off, and only until the pack is readable.
-   *
-   * `PaywallScreen` picks its opening page once, on mount, from whether there are
-   * countries to name. Mounting it mid-load would have it decide "nothing to say",
-   * skip to the price list, and stay there after the flags arrived — the value moment
-   * lost to a race. Everywhere else the prices do not depend on content at all, and a
-   * spinner in front of them would be a wait for nothing.
-   */
+  // Resolve the practice recap before presenting the single-page offer.
   if (from === 'onboarding' && status === 'loading') return <View style={styles.wait} />
 
   return (
