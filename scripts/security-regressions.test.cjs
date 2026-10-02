@@ -4,6 +4,40 @@ const { spawnSync } = require('node:child_process')
 const { createRequire } = require('node:module')
 const path = require('node:path')
 
+test('Expo RSA verification rejects extra nested algorithm fields and accepts valid signatures', () => {
+  const forge = require('node-forge')
+  const { privateKey: pem } = require('node:crypto').generateKeyPairSync('rsa', {
+    modulusLength: 1024,
+    privateKeyEncoding: { type: 'pkcs1', format: 'pem' },
+    publicKeyEncoding: { type: 'pkcs1', format: 'pem' },
+  })
+  const privateKey = forge.pki.privateKeyFromPem(pem)
+  const publicKey = forge.pki.setRsaPublicKey(privateKey.n, privateKey.e)
+  const { asn1 } = forge
+  const node = (type, constructed, value) => asn1.create(asn1.Class.UNIVERSAL, type, constructed, value)
+  const digest = forge.md.sha256.create().update('WorldQuest signature regression').digest().bytes()
+  const signature = (withNull, extras = []) => {
+    const algorithm = [node(asn1.Type.OID, false, asn1.oidToDer(forge.oids.sha256).bytes())]
+    if (withNull) algorithm.push(node(asn1.Type.NULL, false, ''))
+    algorithm.push(...extras)
+    const info = node(asn1.Type.SEQUENCE, true, [
+      node(asn1.Type.SEQUENCE, true, algorithm), node(asn1.Type.OCTETSTRING, false, digest),
+    ])
+    // A disposable test key signs malformed DER with ordinary PKCS#1 padding.
+    // Verification must reject its structure, even though the digest matches.
+    return privateKey.sign(asn1.toDer(info).bytes(), 'NONE')
+  }
+  for (const withNull of [false, true]) {
+    assert.equal(publicKey.verify(digest, signature(withNull)), true)
+    assert.throws(() => publicKey.verify(digest, signature(withNull, [
+      node(asn1.Type.OCTETSTRING, false, 'unconsumed field'),
+    ])), /valid RSASSA-PKCS1-v1_5 DigestInfo/)
+  }
+  assert.throws(() => publicKey.verify(digest, signature(true, [
+    node(asn1.Type.NULL, false, ''),
+  ])), /valid RSASSA-PKCS1-v1_5 DigestInfo/)
+})
+
 // Run hostile fixtures in a separate process: a parser regression must fail the
 // test within a bound, rather than hang the test runner (or a Metro worker).
 function bounded(source) {

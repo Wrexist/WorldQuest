@@ -1,145 +1,98 @@
-# iOS launch runbook: the owner's steps
+# WorldQuest free-launch runbook
 
-Written 25 September 2026 for `claude/ios-launch-readiness-cc9070`. Everything a
-repository change can do is done or listed in the [launch audit](ios-launch-audit-2026-09-25.md).
-These steps need your accounts, money or devices. Do them in order; each says how long
-it takes and how to know it worked.
+Updated 2 October 2026. Owner decision: **free first release; Premium later**.
+Primary acceptance device: iPhone. Follow with a shorter Android pass. This is a
+release checklist, not a statement that public launch is ready.
 
-## 1. Signing (15 min)
+## Ready
 
-```bash
-cd apps/mobile
-npx eas credentials
-```
+- Free domain: https://worldquest.dpdns.org. GitHub Pages HTTPS is enforced.
+  Privacy, terms, support and licences pages each returned HTTP 200.
+- Production Cloudflare Worker and EU D1 exist, with migrations 0001–0013.
+  `https://api.worldquest.dpdns.org/health` returns 200. Application API remains closed.
+- Resend sender is verified; both Worker secrets are installed. Gmail confirms
+  SPF, DKIM and DMARC PASS. Transport is configured; inbox delivery is not accepted.
+- EAS production has all six public values: `EXPO_PUBLIC_BACKEND=d1`,
+  `EXPO_PUBLIC_D1_URL=https://api.worldquest.dpdns.org`, and the four
+  `EXPO_PUBLIC_{PRIVACY,TERMS,SUPPORT,LICENCES}_URL` values on the new domain.
+  Read back with `eas env:list production --format short`.
+- EAS iOS credentials inspection reports an active App Store provisioning profile
+  and distribution certificate, both expiring 27 May 2027. This was read-only;
+  Apple portal revocation was not independently checked.
+- Purchase entry points remain disabled explicitly for the free release. The
+  animated Premium design is retained for a later release; no subscriptions are sold.
+- Introductory lessons advance the first course step. New D1 quests count eligible
+  facts from ordinary lessons. XP prediction reconciliation avoids double counting.
 
-Choose iOS → production → create the distribution certificate and App Store profile.
-Then check: `EXPO_TOKEN=… pnpm check:ios-creds` and read its output (it passes on
-missing inputs, so the words matter, not the exit code).
+## Blocking email acceptance
 
-## 2. Pages (done 29 September 2026)
+The English delivery test was rejected by Gmail; the Swedish message landed in Spam.
+Do not treat Resend's Delivered status as inbox success. Authentication passed.
+See [delivery evidence](../engineering/account-email-setup.md) and the
+[prepared Resend support draft](../engineering/resend-delivery-investigation.md).
+The draft has not been sent. No repeated tests or inbox filter overrides were applied.
 
-The four pages are on GitHub Pages, published from the `gh-pages` branch (site files
-only): <https://wrexist.github.io/WorldQuest/> with `privacy.html`, `terms.html`,
-`support.html` and `licences.html`. They describe the D1 build: guest play, optional
-email, age group only on the server, immediate deletion, no analytics or purchases.
-Update them before shipping anything that changes that (analytics, purchases, leagues,
-friends). The EAS **production** variables below are set to those URLs. A custom
-domain is still needed for email (step 3); when it exists, the pages can move to it by
-changing these four values.
+Resolve delivery, then run controlled actual code verification and recovery. Keep
+`API_ENABLED=false` until controlled acceptance access is ready. Before any public
+activation, check persistent send budgets, failure behavior and operational response.
+The existing temporary remote-mail test is not a public application endpoint.
 
-```bash
-eas env:create --environment production --name EXPO_PUBLIC_PRIVACY_URL --value https://… --visibility plaintext
-eas env:create --environment production --name EXPO_PUBLIC_TERMS_URL --value https://… --visibility plaintext
-eas env:create --environment production --name EXPO_PUBLIC_SUPPORT_URL --value https://… --visibility plaintext
-eas env:create --environment production --name EXPO_PUBLIC_LICENCES_URL --value https://… --visibility plaintext
-```
+## Prepare a reproducible iOS candidate
 
-Worked when: Settings › Privacy shows tappable Privacy policy and Terms rows.
+1. Commit and push the reviewed launch changes. Keep unrelated local artwork out
+   of the release commit unless separately reviewed.
+2. Pass `pnpm verify`, native bundle checks and connected journey tests. Record
+   the actual commit and results in the [launch log](launch-preparation-2026-10-02.md).
+3. Confirm the EAS account's current free allowance before starting a cloud build;
+   do not upgrade or spend money without a separate owner decision.
+4. Run `.github/workflows/eas-testflight.yml` on the reviewed branch with
+   `submit_testflight=false` for build-only preparation. The workflow stamps a unique
+   build number and uses the configured production environment and iOS credentials.
+5. Arrange controlled backend access before distributing a usable beta. A build
+   pointing at a closed API is not a passing sign-in or learning test.
+6. Submit the accepted candidate to TestFlight and record build number, commit,
+   install link and backend version. Do not submit the public App Store release yet.
 
-## 3. Email (20 min + DNS wait)
+## iPhone beta — owner performs the physical interactions
 
-Buy a domain first (the pages do not need one; the sign-in email does). Create a Resend account, verify the domain (SPF/DKIM/DMARC records), turn off open and
-click tracking. Details: [account email setup](../engineering/account-email-setup.md).
+Record iPhone model, iOS version, language, build and backend version. Use a disposable
+beta account. Never post verification codes or credentials in the test report.
 
-```bash
-cd packages/backend
-npx wrangler secret put RESEND_API_KEY
-npx wrangler secret put AUTH_SECRET        # 32+ random characters
-```
+- Fresh install: complete onboarding, play the introduction, verify first-step credit.
+- Lesson: correct and wrong answers, map/flag/capital questions, sound and haptics.
+- Interrupt: lock/unlock and background/foreground during a lesson. Separately
+  force-close and relaunch; record whether partial progress is preserved. Durable
+  unfinished-lesson resume is still open, so do not claim it is implemented.
+- Offline: prepare a lesson online, enable airplane mode, finish it, reconnect.
+  XP, coins, quest credit and course progress must settle once, without duplication.
+- Account: receive a real code; test wrong code, expiration and resend behavior.
+- Recovery: sign into the same account on a second device or after reinstalling;
+  compare XP, streak, course progress, cosmetics, preferences and learned facts.
+- Privacy: verify child restrictions and parental gates. Delete only the disposable
+  beta account; confirm old sessions can no longer access it.
+- Accessibility: VoiceOver, largest supported text, reduced motion, dark/light mode.
+- Free release: no Premium prompt, trial claim, Restore purchase row or payment flow.
 
-Set `MAIL_FROM` under `vars` in `wrangler.jsonc`, e.g.
-`"WorldQuest <accounts@learnworldquest.com>"`.
+Android follows with install, a complete lesson, backgrounding, offline sync,
+recovery, TalkBack and large text. Use a mid-tier device for the performance budget.
+iPad support is still configured; iPad acceptance and store screenshots remain open.
 
-## 4. Production Worker and database (20 min)
+## Store and operations gates still open
 
-```bash
-cd packages/backend
-npx wrangler d1 create worldquest-production     # EU jurisdiction, like development
-```
+- App Store metadata, current screenshots, age rating, privacy disclosures, review
+  notes and territorial availability must match the actual free build. Prioritize
+  iPhone screenshots, but do not silently waive the configured iPad requirements.
+  [English/Swedish store copy](../product/store-listing-free-v1.md) is prepared as a
+  draft; it has not been submitted.
+- Owner-only legal declarations (including EU trader status and any agreements)
+  need the owner's answers and submission; never invent them. No paid-product setup
+  is needed for this free release.
+- Real-device acceptance, delivery reliability, quota/health monitoring, incident
+  response and restore rehearsal need recorded evidence.
+- Durable unfinished-lesson resume and due-review-first Home selection remain open
+  product work. Browser tests are not evidence of native gestures or performance.
+- Course English/Swedish copy and content review remain launch checks. Existing
+  authored-difficulty warnings are not silently waived.
 
-Put the new database id in a production `wrangler.jsonc` (or an `env.production`
-block), then:
-
-```bash
-npx wrangler d1 migrations apply DB --remote     # applies 0001–0011
-pnpm --filter @worldquest/backend run deploy
-```
-
-Give the Worker a route on your domain (e.g. `api.learnworldquest.com`). Keep
-`API_ENABLED` `"false"` until step 6 passes, then set it to `"true"` and deploy again.
-Worked when: `curl https://api.learnworldquest.com/health` answers
-`{"service":"worldquest","backend":"cloudflare-d1",…}`.
-
-## 5. Point the app at it (5 min)
-
-```bash
-eas env:create --environment production --name EXPO_PUBLIC_BACKEND --value d1 --visibility plaintext
-eas env:create --environment production --name EXPO_PUBLIC_D1_URL --value https://api.learnworldquest.com --visibility plaintext
-```
-
-Then check all six are set, because a build without them falls back quietly: no backend
-means no in-app account deletion, and a missing privacy URL hides the link rows.
-
-```bash
-eas env:list --environment production
-```
-
-Worked when: it lists `EXPO_PUBLIC_BACKEND`, `EXPO_PUBLIC_D1_URL` and the four
-`EXPO_PUBLIC_*_URL` pages.
-
-## 6. Build and try it (45 min)
-
-Run the **iOS TestFlight** workflow in GitHub Actions (build numbers are unique per
-run). Until 26 September the workflow file did not parse, so GitHub could not start it
-and showed a failed "iOS TestFlight" run on every push: those failures were that, not
-your secrets. `pnpm verify` now parses every workflow (`pnpm check:workflows`). Install from TestFlight on one iPhone and do, in order: onboard, finish a lesson,
-check the streak screen, lock the phone offline and finish a second lesson, reconnect,
-link your email (a real code should arrive). Then, on a second iPhone (or after
-deleting and reinstalling the app), tap **I already have an account**, sign in with the
-same email and check your XP and streak are there. Last, delete the account from
-Settings › Privacy. Report anything odd; every step here has passed on the web build
-against a local Worker (`pnpm e2e:d1`), not yet on a phone.
-
-## 7. App Store Connect (60 min)
-
-Age rating questionnaire; decide Kids Category (the app has an under-13 age gate);
-App Privacy answers matching the manifest (email, user ID, product interaction, other
-data: birth year; all linked, none tracking); EU trader status; agreements, tax and
-banking. Review notes: "Guest mode needs no login. Linking an email is optional and
-sends an eight-digit code." Add a support email.
-
-## Decisions only you can make
-
-1. **iPad:** `supportsTablet` is `true` but nothing has been checked on an iPad. Set it
-   to `false` for 1.0, or test on an iPad and supply 13" screenshots.
-2. **Selling:** v1.0 sells nothing (the paywall is hidden). Keep it free, or create the
-   subscription products so purchases can be built (A01).
-3. **Day 1 of the course (5 min):** it practises six flags (SE NO US JP BR KE), not the
-   brief's four, because the Worker refuses a lesson under five questions. Approve, or
-   pick the six. Recorded in `docs/product/launch-brief.md`.
-4. **Course copy (15 min):** read the English and Swedish lines in
-   `packages/i18n/locales/{en,sv}/course.json`; a native speaker should sign off the
-   Swedish (L18).
-5. **Crash reports:** Sentry was removed on 2026-08-09 to hold the bundle budget, so
-   TestFlight's own crash logs are all you will see. A first-party option costs no SDK:
-   crash reports that already carry no free text (`src/lib/reporting.ts`) could be sent
-   to the Worker. Say if you want it.
-6. **The first lesson and the path (5 min):** onboarding's taster lesson follows the
-   region and level the learner picked, then Home's course path starts with six world
-   flags either way, so the taster does not count as step one. Duolingo makes the first
-   lesson the path's first step. Keep the region-first taster, or make it path step one.
-7. **Kids Category:** if you choose it, the requirement for a parental gate before links
-   out of the app is met: on a child's device every link and "Delete account" asks a
-   grown-up first (`/grown-up`). Nothing else in the app contacts a third party.
-8. **Quests and the path (10 min):** a quest's tasks name specific facts, so they move
-   when the learner plays the quest from its button and rarely from path lessons.
-   Duolingo's quests count any lesson. Keep this, or credit "discover" with any
-   first-seen fact and the review tasks with any due fact answered, so quests move with
-   the path; quests would then complete more often (an economy change, so it is yours).
-9. **The path after week one (5 min):** done with a default you can change. After the
-   brief's first week the path goes on with one unit per continent, in the order the first
-   week met them: Europe, the Americas, Asia and Oceania, Africa (33 steps, 63 countries;
-   `packages/content/packs/courses/first-week.v1.json` v1.2.0; v1.2.0 adds each unit's decorative scenery). Reordering units later
-   keeps every learner's finished steps. Switzerland and South Africa stay out of the
-   path until their capitals are signed off (both are review-required). Check the
-   Swedish unit names with the rest of the course copy (decision 4).
+The [execution checklist](execution-plan.md) remains the full source of release gates;
+this runbook narrows the next operational steps and does not close unverified items.

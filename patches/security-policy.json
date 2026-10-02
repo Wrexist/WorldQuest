@@ -27,6 +27,18 @@
       "installedFiles": {
         "index.js": "fcfdea52a878c4043be927b2fb83cc43e506c39652d0ff4c6f39db035dbe968b"
       }
+    },
+    {
+      "package": "node-forge@1.4.0",
+      "module": "node-forge",
+      "file": "patches/node-forge@1.4.0.patch",
+      "sha256": "063afcfb5b5a9a71880d397946fce8e02d66b6b1df9cfa3db5d9e730e4d0f8b8",
+      "advisories": [
+        "GHSA-86w9-cpqp-85rv"
+      ],
+      "installedFiles": {
+        "lib/rsa.js": "65cb3e3a65b8a548c9caf687a9265c64d6efd56f09661be5a5c0e2e7a704ba1b"
+      }
     }
   ]
 }

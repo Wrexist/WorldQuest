@@ -168,3 +168,25 @@ someone in 2028 can still learn the content.
 
 **Rule: the next two months of live-ops are always fully built and QA'd.** Live-ops
 built the week it ships is live-ops that breaks on a Saturday.
+
+
+## D1 daily-quest activity, October 2, 2026
+
+New server-issued daily quests attach an activity criterion to each content task.
+Discover accepts first-seen facts answered correctly; review accepts due, unsuspended
+facts; when a full review task is unavailable the task is ordinary practice instead.
+Correct facts from any lesson can qualify. The server classifies answers against
+its pre-grading memory, rejects sub-threshold taps, and assigns each distinct fact
+to at most one task per day. Discovery has first claim on new facts. Suggested facts
+already credited to any task disappear from the remaining quest focus.
+
+The existing account revision guard commits credits and rewards atomically with
+the lesson receipt. No request accepts client-selected slots or eligibility. Already
+issued tasks without an activity criterion keep the previous fixed-fact semantics.
+The five task rewards and completion bonus still use the same balance constants;
+more regular lessons can reach them, so actual earn rates need beta measurement.
+
+Activity tasks show their distinct-fact goal beneath the title. Ordinary practice
+tasks are labelled by quest round so a new learner can distinguish multiple practice
+rows. The screen-reader label includes the goal and progress. This is presentation
+only; eligibility, ordering and reward limits stay server-owned.

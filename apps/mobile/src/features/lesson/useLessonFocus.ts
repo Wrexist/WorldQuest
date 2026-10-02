@@ -43,9 +43,8 @@ export function useLessonFocus(params: FocusSearchParams): LessonFocus | undefin
    *
    * The two content questions in onboarding — which continent, and how well do you know
    * the world — have to change a lesson or they are a survey, and this is the one place
-   * every unfocused lesson passes through, including `?taster=1`. The taster is the
-   * first lesson anybody ever plays, which is exactly when "just starting" and "bring it
-   * on" should mean different things.
+   * every unfocused practice lesson passes through. The introductory lesson now names
+   * the first course step, so its pack-defined focus takes precedence.
    *
    * **The URL always wins.** Tapping Sweden on the country page, or a continent on the
    * region page, is a specific request made just now; a preference set once during

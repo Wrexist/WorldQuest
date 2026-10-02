@@ -8,6 +8,12 @@ if (!loaded.ok) throw new Error('the shipped course must parse')
 const COURSE = loaded.course
 
 describe('a lesson from the course path', () => {
+  it('makes the introductory lesson the first course step, without overriding an explicit step', () => {
+    expect(courseLesson(COURSE, { taster: '1' })).toEqual(courseLesson(COURSE, { node: COURSE.units[0]!.nodes[0]!.id }))
+    expect(courseLesson(COURSE, { taster: '1', node: 'node.first-week.locations' })?.kind).toBe('node')
+    expect(courseLesson(COURSE, { taster: '1', node: 'node.first-week.locations' })).toEqual(courseLesson(COURSE, { node: 'node.first-week.locations' }))
+    expect(courseLesson(null, { taster: '1' })).toBeUndefined()
+  })
   it('names the step in its link, not the step\'s content', () => {
     expect(nodeLessonHref('node.first-week.flags')).toBe('/lesson?node=node.first-week.flags')
     expect(reviewLessonHref('courses.first-week')).toBe('/lesson?review=courses.first-week')

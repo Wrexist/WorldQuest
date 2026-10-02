@@ -66,9 +66,14 @@ export type CourseLesson =
  */
 export function courseLesson(
   course: Course | null,
-  params: { readonly node?: string | undefined; readonly review?: string | undefined },
+  params: { readonly node?: string | undefined; readonly review?: string | undefined; readonly taster?: string | undefined },
 ): CourseLesson | undefined {
   if (course === null) return undefined
+  // The introductory lesson is real course progress, using the pack's first step.
+  if (params.taster === '1' && params.node === undefined && params.review === undefined) {
+    const first = course.units[0]?.nodes[0]
+    return first ? { kind: 'node', nodeId: first.id, params: asParams(first.focus), explicit: true } : undefined
+  }
   if (params.node !== undefined) {
     for (const unit of course.units) {
       const node = unit.nodes.find((n) => n.id === params.node)

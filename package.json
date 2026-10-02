@@ -21,7 +21,8 @@
     "patchedDependencies": {
       "image-size@1.2.1": "patches/image-size@1.2.1.patch",
       "decode-uri-component@0.2.2": "patches/decode-uri-component@0.2.2.patch",
-      "expo-secure-store@15.0.8": "patches/expo-secure-store@15.0.8.patch"
+      "expo-secure-store@15.0.8": "patches/expo-secure-store@15.0.8.patch",
+      "node-forge@1.4.0": "patches/node-forge@1.4.0.patch"
     }
   },
   "engines": {
@@ -76,7 +77,7 @@
     "scrollable": "tsx scripts/scrollable.ts",
     "lint:a11y": "tsx scripts/a11y.ts",
     "escape-hatches": "tsx scripts/escape-hatches.ts",
-    "check:eas": "tsx scripts/check-eas-config.ts",
+    "check:eas": "tsx scripts/check-eas-config.ts && node --test scripts/check-production-env.test.mjs",
     "check:workflows": "node scripts/check-workflows.mjs",
     "check:sql": "tsx scripts/check-sql-grants.ts",
     "check:ios-creds": "node scripts/check-ios-credentials.mjs",

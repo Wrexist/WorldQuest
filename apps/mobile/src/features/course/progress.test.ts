@@ -22,6 +22,13 @@ beforeEach(async () => {
 })
 
 describe('course progress', () => {
+  it('does not count a lesson twice if progress arrives before the summary is dismissed', () => {
+    const before = courseProgress(COURSE.id)
+    recordCourseLesson(COURSE, FLAGS)
+    expect(recordCourseLesson(COURSE, FLAGS, before)).toBe(true)
+    expect(courseProgress(COURSE.id)[FLAGS]).toBe(1)
+    expect(nextStep()).toBe(FLAGS)
+  })
   it('counts a finished lesson against the step it was started from', () => {
     expect(recordCourseLesson(COURSE, FLAGS)).toBe(true)
     expect(courseProgress(COURSE.id)).toEqual({ [FLAGS]: 1 })

@@ -60,5 +60,19 @@
   "quests:done.cta": "Nice",
   "quests:done.cta__note": "The button that leaves the quest-complete screen. Deliberately not 'Claim' — the reward is already granted, and a button that claims what you have been given is a lie about who did what. Max 8 characters.",
   "quests:adventure.continue": "Continue quest →",
-  "quests:adventure.continue__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted."
+  "quests:adventure.continue__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted.",
+  "quests:activity.new": "Discover new facts",
+  "quests:activity.review": "Refresh your memory",
+  "quests:activity.practice": "Practice round {round}",
+  "quests:activity.new.body": "{count, plural, one {Answer # new fact correctly.} other {Answer # new facts correctly.}}",
+  "quests:activity.new.body__note": "Task goal. Count is the target, not the remaining number. Facts must be first seen in the credited lesson.",
+  "quests:activity.review.body": "{count, plural, one {Recall # fact ready for review.} other {Recall # facts ready for review.}}",
+  "quests:activity.review.body__note": "Task goal. Correct answers to distinct facts due for review count. Count is the target, not the remainder.",
+  "quests:activity.practice.body": "{count, plural, one {Answer # different fact correctly.} other {Answer # different facts correctly.}}",
+  "quests:activity.practice.body__note": "Task goal. Count is the target. Each fact counts toward one task per day, regardless of lesson type.",
+  "quests:task.detailLabel": "{title}. {description} Progress: {progress} of {target}.",
+  "quests:task.detailLabel__note": "Screen-reader label for a task with a goal description; announce the goal as well as the current count.",
+  "quests:activity.new__note": "Daily task credited by distinct correct facts from any lesson. Repeating one fact never counts twice; progress is server verified.",
+  "quests:activity.review__note": "Daily task credited by distinct correct facts from any lesson. Repeating one fact never counts twice; progress is server verified.",
+  "quests:activity.practice__note": "Numbered practice task; round is its position in today's quest. Distinguishes repeated practice tasks without implying a required question type."
 }

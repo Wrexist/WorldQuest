@@ -34,5 +34,12 @@
   "quests:done.milestone": "Milstolpe i svit — {amount} XP",
   "quests:done.cta": "Fint",
   "quests:adventure.continue": "Fortsätt uppdraget →",
-  "quests:adventure.continue__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted."
+  "quests:adventure.continue__note": "Invitation or real saved-currency progress. Next unlock is the least expensive unowned title. No new reward is granted.",
+  "quests:activity.new": "Upptäck nya fakta",
+  "quests:activity.review": "Friska upp minnet",
+  "quests:activity.practice": "Övningsrunda {round}",
+  "quests:activity.new.body": "{count, plural, one {Svara rätt på # ny faktafråga.} other {Svara rätt på # nya faktafrågor.}}",
+  "quests:activity.review.body": "{count, plural, one {Svara rätt på # repetitionsfråga.} other {Svara rätt på # repetitionsfrågor.}}",
+  "quests:activity.practice.body": "{count, plural, one {Svara rätt på # unik faktafråga.} other {Svara rätt på # olika faktafrågor.}}",
+  "quests:task.detailLabel": "{title}. {description} Framsteg: {progress} av {target}."
 }

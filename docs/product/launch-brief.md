@@ -4,6 +4,13 @@ Decision: 13 September 2026. Scope confirmed by the owner: **worldwide English/S
 
 ## Audience and reason to choose us
 
+Release decision, 2 October 2026: **the first release is free; Premium comes later**.
+Keep selling disabled even if a billing adapter is added during development. No
+subscription products, trial promises or purchase acceptance are needed for this
+free candidate. Paid launch requires a separate decision and billing validation.
+Native beta acceptance prioritizes the owner's iPhone, followed by a shorter Android
+pass for installation, lessons, offline sync, recovery and accessibility.
+
 The initial audience is geography beginners aged 16–24 who want to recognize countries, flags and capitals in everyday life. Alex (18) represents curiosity and visible progress; Priya (24) represents a calm practice habit that fits around work. Recruit English- and Swedish-speaking testers internationally, rather than restricting the beta to Sweden. Keep the broader personas, including younger learners; targeting adults in marketing does not remove child protections.
 
 Job: “When I see a flag, place name or country in the news, I want to recognize it and know where it belongs, without committing to a long study session.”

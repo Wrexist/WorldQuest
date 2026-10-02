@@ -1257,13 +1257,10 @@ export function LessonScreen({
                 lesson.revive()
               }}
               onFinish={() => {
-                track('lesson_abandoned', {
-                  lesson_id: lesson.state.lessonId,
-                  at_item: lesson.state.index,
-                  of_items: lesson.state.questions.length,
-                  reason: 'out_of_hearts',
-                })
-                lesson.abandon()
+                // Hearts ending the session is a completion in both the machine
+                // and the server grader. Abandoning here withheld offline course
+                // credit until reconnect and incorrectly logged a voluntary exit.
+                lesson.advance()
               }}
             />
           ) : (

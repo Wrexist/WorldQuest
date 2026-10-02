@@ -39,7 +39,7 @@ export default function OnboardingRoute() {
     // screen was "one short lesson, no account needed", and landing on Home instead
     // would break it at the exact moment trust is being established.
     // `?taster=1` so the lesson knows it is THE activation moment. Same runner, same
-    // items, same scoring — the flag only changes what is recorded, which is why it is
+    // course step, same scoring — the flag only changes what is recorded, which is why it is
     // a query param like `mode` rather than a second route.
     router.replace('/lesson?taster=1')
   }
