@@ -6,6 +6,7 @@ import { BALANCE, review, type MemoryState, type Rating } from '@worldquest/engi
 import { hashToken } from './src/auth'
 import { submitLesson } from './src/lessons'
 import { spend } from './src/economy'
+import { learningContent } from './src/learning-content'
 import type { Receipt } from './src/contracts'
 import type { Question } from '@worldquest/engines'
 import { createD1AuthClient, type AuthFetch } from '../api/src/d1-auth'
@@ -665,14 +666,31 @@ describe('lessons that end before the last question (real workerd and SQLite)', 
 
   it('keeps a beginner on the plain way of asking, and bounds that preference', async () => {
     const a = await guest()
-    const plain = await call('/v1/lessons/prepare', a.token, { lessonId: 'plain', locale: 'en', count: 20, maxModifier: 0 })
+    const entities = ['SE', 'NO', 'DK', 'FI', 'DE', 'FR']
+    const plain = await call('/v1/lessons/prepare', a.token, { lessonId: 'plain', locale: 'en', count: entities.length,
+      maxModifier: 0, focus: { entities, attributes: ['capital'] } })
     expect(plain.status).toBe(200)
     const lesson = await plain.json() as { questions: Question[]; request: { maxModifier?: number } }
     expect(lesson.request.maxModifier).toBe(0)
-    // Ordered, not filtered: a fact whose only presentation is harder still appears, so a
-    // few can remain — but the plain forward question is the rule, not the exception.
-    const reverse = lesson.questions.filter(q => /reverse|calling-code|country-to-map/.test(q.item.templateId))
-    expect(reverse.length).toBeLessThanOrEqual(Math.ceil(lesson.questions.length / 4))
+    expect(lesson.questions).toHaveLength(entities.length)
+    expect(new Set(lesson.questions.map(q => q.item.factId))).toEqual(new Set(entities.map(id => `geo.${id}.capital`)))
+    for (const question of lesson.questions) {
+      const template = learningContent.templates.get(question.item.templateId)
+      expect(template, question.item.id).toBeDefined()
+      expect(template?.difficultyModifier ?? 0, question.item.id).toBeLessThanOrEqual(0)
+    }
+    // The preference orders presentations per fact, not the random lesson's harder-question share.
+    // Calling codes have no modifier-0 form: preserving all six proves this is not a filter.
+    const fallback = await call('/v1/lessons/prepare', a.token, { lessonId: 'fallback', locale: 'en', count: entities.length,
+      maxModifier: 0, focus: { entities, attributes: ['calling-code'] } })
+    expect(fallback.status).toBe(200)
+    const harder = await fallback.json() as { questions: Question[]; request: { maxModifier?: number } }
+    expect(harder.request.maxModifier).toBe(0)
+    expect(harder.questions).toHaveLength(entities.length)
+    expect(new Set(harder.questions.map(q => q.item.factId))).toEqual(new Set(entities.map(id => `geo.${id}.calling-code`)))
+    for (const question of harder.questions) {
+      expect(learningContent.templates.get(question.item.templateId)?.difficultyModifier, question.item.id).toBeGreaterThan(0)
+    }
     expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'hard', locale: 'en', count: 5, maxModifier: 3 })).status).toBe(400)
     expect((await call('/v1/lessons/prepare', a.token, { lessonId: 'half', locale: 'en', count: 5, maxModifier: 0.5 })).status).toBe(400)
   })
