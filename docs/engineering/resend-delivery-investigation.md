@@ -1,7 +1,10 @@
-# Resend delivery investigation — draft, not sent
+# Resend delivery investigation — sent 2 October 2026
 
-Destination: Resend support, from the account owner. No credential values or
-verification codes belong in this request.
+Sent to Resend support with the owner's explicit approval at approximately
+11:11 UTC. Ticket: [th_01M3Y50J26C8RR38J7J92MCTE2](https://resend.com/help/th_01M3Y50J26C8RR38J7J92MCTE2),
+“Gmail spam filtering for worldquest dpdns org”, High priority. Resend acknowledged
+receipt at approximately 11:12 UTC; investigation is pending. No credential values
+or verification codes were included. The submitted message follows.
 
 Subject: Authenticated transactional mail rejected or filtered by Gmail
 

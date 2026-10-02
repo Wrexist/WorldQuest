@@ -118,13 +118,26 @@ credentials expiring 27 May 2027. All six EAS production public values now use D
 and the new domain and were read back successfully. All four legal/support URLs
 returned HTTPS 200. No production API was enabled or TestFlight build submitted.
 
+The build-only [iOS workflow](https://github.com/Wrexist/WorldQuest/actions/runs/36998241365)
+completed successfully for commit `a2564f4`. The signed
+[EAS build](https://expo.dev/accounts/isacm/projects/worldquest/builds/f8ae64b4-d24f-4084-919a-69cc70e63372)
+has not been submitted to TestFlight and is not yet an installable beta invitation.
+It predates the tooling-only node-forge backport in `a57871e`. The original CI run
+passed database verification but failed both OS security gates on the new advisory.
+The [backport](../engineering/node-forge-backport.md) passes all six local security
+regressions and the dependency policy gate; the
+[replacement CI run](https://github.com/Wrexist/WorldQuest/actions/runs/36999564080)
+is pending. A future distributed candidate must include the patch.
+
 Next production steps, in order:
-1. Resolve Gmail filtering with Resend; a support draft is prepared, not sent.
+1. Resolve Gmail filtering with Resend; the owner-approved
+   [support report](../engineering/resend-delivery-investigation.md) was sent and
+   acknowledged. Provider investigation is pending.
 2. Retest actual code delivery and hosted recovery under controlled access.
 3. Keep the application API closed until controlled acceptance is ready; complete
    quota/health monitoring and operational response checks before public activation.
 4. Verify real code delivery, sign-in, recovery, offline sync and deletion against
    the hosted backend on physical iOS and Android devices.
-5. Build the production-connected TestFlight candidate, then complete the remaining
+5. Prepare the updated TestFlight candidate after CI, then complete the remaining
    native, monitoring and store acceptance gates in the launch runbook. Billing is
    deferred under the owner's free-first-release decision.
