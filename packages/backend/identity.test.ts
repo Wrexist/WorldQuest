@@ -307,9 +307,16 @@ describe('D1 account gateway with real Better Auth and synthetic delivery', () =
   it('erases abandoned unlinked verification data on guest deletion', async () => {
     const s = await guest(); await request(s)
     expect((await call('/v1/account/delete', s.token, {})).status).toBe(200)
-    for (const table of ['auth_user','auth_verification','email_challenges','auth_budgets']) {
+    for (const table of ['auth_user','auth_verification','email_challenges']) {
       expect((await db.prepare(`SELECT * FROM ${table}`).all()).results).toHaveLength(0)
     }
+    // Deleting an account erases its limiter, but cannot reset shared send caps.
+    const budgets = await db.prepare('SELECT bucket,count FROM auth_budgets ORDER BY bucket').all()
+    expect(budgets.results).toEqual([
+      { bucket: 'mail-global:day', count: 1 },
+      { bucket: 'mail-global:hour', count: 1 },
+      { bucket: 'mail-global:month', count: 1 },
+    ])
   })
   it('confirms a lost guest deletion response only to the deleting session', async () => {
     const s = await guest(), other = await guest()

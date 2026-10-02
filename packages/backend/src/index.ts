@@ -7,6 +7,7 @@ import { requestCode, resendCode, verifyCode } from './email-challenges'
 import { deleteAccount, finishIdentity } from './identity'
 import type { MailDelivery } from './email-provider'
 import { resendMail } from './mail-resend'
+import { withMailBudget } from './mail-budget'
 import { deletionCompleted, pruneDeletionReceipts } from './deletion-receipts'
 import { renewSession, revokeSessionFamily, pruneSessionRotations } from './session-renewal'
 import { prepareLesson, prepareLessonSchema } from './lesson-tickets'
@@ -52,9 +53,9 @@ async function body(request: Request): Promise<unknown> {
  * The mail port for a request: an injected one (tests), else Resend when both its secret
  * and sender are configured, else none — the app then shows its delivery-failure state.
  */
-function mailFor(env: Env, injected: MailDelivery | undefined): MailDelivery {
-  if (injected) return injected
-  if (env.RESEND_API_KEY && env.MAIL_FROM) return resendMail({ apiKey: env.RESEND_API_KEY, from: env.MAIL_FROM })
+function mailFor(env: Env, injected: MailDelivery | undefined, clock: Clock): MailDelivery {
+  if (injected) return withMailBudget(env.DB, injected, clock)
+  if (env.RESEND_API_KEY && env.MAIL_FROM) return withMailBudget(env.DB, resendMail({ apiKey: env.RESEND_API_KEY, from: env.MAIL_FROM }), clock)
   return unavailableMail
 }
 
@@ -142,12 +143,12 @@ export function createWorker(mail?: MailDelivery, clock: Clock = Date.now) { ret
         if (path === '/v1/auth/email/request') {
           const parsed = codeRequest.safeParse(input)
           if (!parsed.success) throw new ApiError('INVALID_BODY', 400)
-          return json(await requestCode(env.DB, env.AUTH_SECRET, mailFor(env, mail), account.id, tokenHash, parsed.data, now), 202)
+          return json(await requestCode(env.DB, env.AUTH_SECRET, mailFor(env, mail, clock), account.id, tokenHash, parsed.data, now), 202)
         }
         if (path === '/v1/auth/email/resend') {
           const parsed = z.object({ challengeId }).strict().safeParse(input)
           if (!parsed.success) throw new ApiError('INVALID_BODY', 400)
-          return json(await resendCode(env.DB, env.AUTH_SECRET, mailFor(env, mail), account.id, tokenHash, parsed.data.challengeId, now), 202)
+          return json(await resendCode(env.DB, env.AUTH_SECRET, mailFor(env, mail, clock), account.id, tokenHash, parsed.data.challengeId, now), 202)
         }
         if (path === '/v1/auth/email/verify') {
           const parsed = verification.safeParse(input)
