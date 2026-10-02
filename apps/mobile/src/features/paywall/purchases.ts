@@ -85,10 +85,13 @@ export const RUNTIME_PURCHASES: PurchasePort = UNAVAILABLE
  * With no store adapter every plan list is empty, Restore can only fail, and a paywall
  * is a screen that says "nothing to buy here yet". Guideline 2.1 rejects dead ends like
  * that, and a learner reads it as bait. So entry points ask this first: the taster's
- * hand-off, Settings' Premium section and its Restore row. Flip it by installing a real
- * port, not by editing this line.
+ * hand-off, Settings' Premium section and its Restore row.
+ *
+ * The owner chose a free first release on 2026-10-02. Installing an adapter later
+ * must not silently turn on selling: a paid release needs a separate decision and
+ * completed receipt, restore and subscription acceptance checks.
  */
-export const SELLING: boolean = RUNTIME_PURCHASES !== UNAVAILABLE
+export const SELLING: boolean = false
 
 /** Sample prices for the harness and tests. Never used at runtime. */
 export const SAMPLE_PLANS: readonly Plan[] = [

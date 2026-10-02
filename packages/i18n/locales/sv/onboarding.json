@@ -30,7 +30,7 @@
   "onboarding:plan.title": "Här är din plan.",
   "onboarding:plan.body": "Du kan ändra allt det här senare i Inställningar.",
   "onboarding:plan.pace": "Varje dag",
-  "onboarding:plan.start": "Börjar med",
+  "onboarding:plan.start": "Favoritregion",
   "onboarding:plan.level": "Svårighet",
   "onboarding:plan.world": "Hela världen",
   "onboarding:plan.week": "{minutes, plural, one {Det blir # minut i veckan.} other {Det blir # minuter i veckan.}}",
@@ -39,8 +39,8 @@
   "onboarding:language.title": "Välj ditt språk",
   "onboarding:language.body": "Du kan ändra det när som helst i Inställningar.",
   "onboarding:language.system": "Samma som min telefon",
-  "onboarding:region.title": "Var vill du börja?",
-  "onboarding:region.body": "Dina första lektioner stannar här. Resten av världen är öppen direkt.",
+  "onboarding:region.title": "Var vill du utforska?",
+  "onboarding:region.body": "Välj en favoritregion för fri övning. Din kurs börjar med världens grunder.",
   "onboarding:region.anywhere": "Var som helst i världen",
   "onboarding:level.title": "Hur väl kan du världen?",
   "onboarding:level.body": "Välj en svårighetsgrad att börja med. Du kan ändra den i Inställningar.",
@@ -56,5 +56,8 @@
   "onboarding:slide.2.body__note": "Short onboarding slide copy. Must fit the 320-point carousel at 200% text. No guaranteed learning speed, retention or full-world coverage; count comes from this build.",
   "onboarding:slide.3.title__note": "Short onboarding slide copy. Must fit the 320-point carousel at 200% text. No guaranteed learning speed, retention or full-world coverage; count comes from this build.",
   "onboarding:slide.3.body__note": "Short onboarding slide copy. Must fit the 320-point carousel at 200% text. No guaranteed learning speed, retention or full-world coverage; count comes from this build.",
-  "onboarding:level.body__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. "
+  "onboarding:level.body__note": "Phase 1 claim review, 2026-09-13. Describe current practice/account availability without promising retention, complete world coverage or cross-device recovery. Keep ICU placeholders unchanged. ",
+  "onboarding:plan.world__note": "The value shown for the favourite-region row when the user picked no particular continent.",
+  "onboarding:region.title__note": "Asks for a favourite region used in free practice. The course and introductory lesson start with world foundations regardless of this preference.",
+  "onboarding:region.body__note": "Explains the distinction between the free-practice region preference and the fixed opening course."
 }

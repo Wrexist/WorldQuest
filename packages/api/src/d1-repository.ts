@@ -102,11 +102,13 @@ export function createD1AccountRepository(options: {
       if (!object(t) || t.slot !== slots[i] || !count(t.target) || t.target < 1 || !count(t.progress) || t.progress > t.target
         || typeof t.complete !== 'boolean' || !Array.isArray(t.factIds) || t.factIds.length > 20
         || !t.factIds.every((id: unknown) => typeof id === 'string')
+        || !(t.activity === undefined || t.activity === 'new' || t.activity === 'review' || t.activity === 'practice')
         || !(t.goal === undefined || t.goal === 'perfect_lesson' || t.goal === 'speed_round' || t.goal === 'streak_keeper')) {
         throw new D1AuthError('INVALID_RESPONSE')
       }
       return { slot: t.slot as QuestTask['slot'], target: t.target, progress: t.progress, complete: t.complete,
-        factIds: t.factIds as string[], ...(t.goal === undefined ? {} : { goal: t.goal as NonNullable<QuestTask['goal']> }) }
+        factIds: t.factIds as string[], ...(t.goal === undefined ? {} : { goal: t.goal as NonNullable<QuestTask['goal']> }),
+        ...(t.activity === undefined ? {} : { activity: t.activity as NonNullable<QuestTask['activity']> }) }
     })
     return { day: v.day, quest: { id: v.quest.id, date: v.day, tasks, complete: v.quest.complete, bonusClaimed: v.quest.bonusClaimed } }
   }

@@ -19,6 +19,18 @@ const quest = (overrides: Partial<DailyQuest> = {}): DailyQuest => ({
 })
 
 describe('Quests — the five states', () => {
+  it('describes activity tasks without implying a specific flag, capital or map is required', () => {
+    const current = quest()
+    render(<QuestScreen quest={{ ...current, tasks: current.tasks.map(task => ({ ...task,
+      ...(task.slot === 'perform' ? {} : { activity: task.slot === 'discover' ? 'new' as const : task.slot === 'locate' ? 'review' as const : 'practice' as const }),
+    })) }} loading={false} onStart={() => {}} />)
+    expect(screen.getByText('Discover new facts')).toBeTruthy()
+    expect(screen.getByText('Refresh your memory')).toBeTruthy()
+    expect(screen.getByText('Practice round 2')).toBeTruthy()
+    expect(screen.getByText('Practice round 3')).toBeTruthy()
+    expect(screen.getByLabelText('Practice round 3. Answer 4 different facts correctly. Progress: 0 of 4.')).toBeTruthy()
+    expect(screen.queryByText('Know the flag')).toBeNull()
+  })
   it('renders five tasks', () => {
     render(<QuestScreen quest={quest()} loading={false} onStart={() => {}} />)
     for (const title of [

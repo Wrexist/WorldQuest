@@ -14,8 +14,9 @@ through the public resolver `1.1.1.1`. The zone is active. GitHub Pages now clai
 the domain, with the four GitHub apex A records and a DNS-only `www` CNAME to
 `wrexist.github.io`. Public DNS and GitHub's Pages health check pass. GitHub issued
 the certificate for both apex and `www`; HTTPS enforcement is enabled. The homepage
-and privacy page both returned HTTPS 200. Production app legal URLs have not yet
-been changed.
+and all four legal/support pages returned HTTPS 200. EAS production now uses
+`https://worldquest.dpdns.org/{privacy,terms,support,licences}.html`, with backend
+`d1` and `https://api.worldquest.dpdns.org`; all six public values were read back.
 
 Resend verified `worldquest.dpdns.org` in Ireland (`eu-west-1`) on 2 October at
 11:42 Stockholm time. Domain ID: `2aeb998d-bfdc-4d82-8858-2244eb6bd551`.
@@ -123,7 +124,8 @@ production routes or committed application code.
 - English: Resend accepted the API request (HTTP 200), then Gmail rejected the
   message with SMTP `550-5.7.1`, classifying it as likely unsolicited mail.
   Resend ID: `01a0fc19-bf22-7d1a-8cfd-0097c05798d8`.
-- Swedish: Resend accepted the request (HTTP 200) and reports **Delivered**.
+- Swedish: Resend accepted the request (HTTP 200) and reports **Delivered**, but
+  direct Gmail inspection confirmed **Spam**, not the inbox.
   Resend ID: `01a0fc19-faf6-7b7e-8f9c-5ed63ce94082`.
 
 Both messages were labelled `[Delivery test]`, with an explicit notice that the
@@ -133,6 +135,22 @@ not confirmed inbox placement. No automatic retry was sent after the English
 rejection. Do not infer that language itself caused the rejection; investigate
 authentication, sender reputation and recipient filtering before acceptance.
 Public email sign-in is not launch-ready until delivery and native recovery pass.
+
+Gmail's original-message view confirms SPF **PASS** (aligned return path
+`rsend.worldquest.dpdns.org`), DKIM **PASS** for `worldquest.dpdns.org`, and DMARC
+**PASS**. TLS 1.3 was used. Gmail says the Swedish message resembles previously
+identified spam. The English bounce came from a different shared SES sending IP;
+this is not evidence that translation caused the rejection. Authentication is
+working; sender/content/shared-pool reputation remains unresolved. Do not weaken
+DMARC, rotate domains, or repeatedly resend as a supposed fix. No mailbox filter
+or “not spam” override was applied to manufacture a successful acceptance result.
+
+Next: have Resend investigate the two message IDs and the English SMTP response,
+then perform an owner-authorized controlled retest and actual OTP recovery.
+[Support draft](resend-delivery-investigation.md) is prepared but has not been sent.
+Google's [sender guidance](https://support.google.com/mail/answer/81126?hl=en)
+and Resend's [delivery guidance](https://resend.com/blog/why-your-emails-are-going-to-spam)
+distinguish authentication from reputation and inbox placement.
 
 After registration:
 

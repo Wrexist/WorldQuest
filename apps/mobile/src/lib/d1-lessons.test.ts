@@ -17,6 +17,8 @@ vi.mock('./storage.js', () => ({
     get: (k: string) => store.get(k) ?? null, set: (k: string, v: string) => void store.set(k, v), remove: (k: string) => void store.delete(k) }),
   isRecord: (v: unknown) => typeof v === 'object' && v !== null && !Array.isArray(v),
   readJson: (k: string) => { const raw = store.get(k); return raw === undefined ? null : JSON.parse(raw) as unknown },
+  writeJson: (k: string, v: unknown) => store.set(k, JSON.stringify(v)),
+  onStorageScopeChange: vi.fn(),
 }))
 vi.mock('@worldquest/api/d1-learning', async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
@@ -24,6 +26,8 @@ vi.mock('@worldquest/api/d1-learning', async (importOriginal) => ({
 }))
 
 const { takeLesson, toSubmission, submitLesson, receiptSoon, prefetchFocused, refreshMemory } = await import('./d1-lessons.js')
+const { recordPredictedAward, peekAwards, resetAwardsCache } = await import('./awards.js')
+const { optimisticProgress } = await import('@worldquest/engines')
 
 const question = (id: string) => ({ item: { id, factId: `fact-${id}`, entityId: 'SE', templateId: 't', difficulty: 1, screenReaderSafe: true },
   promptKey: 'q', promptParams: {}, modality: 'text' as const, isNew: true, timeLimitMs: null,
@@ -34,6 +38,7 @@ const answer = (itemId: string) => ({ itemId, factId: `fact-${itemId}`, template
 
 beforeEach(() => {
   store.clear()
+  resetAwardsCache()
   online = true
   // Offline means the request fails, as it does on a device; the flag alone decides nothing.
   prepare.mockReset().mockImplementation(async (request: D1PreparedLesson['request']) => {
@@ -166,9 +171,14 @@ describe('receiptSoon', () => {
 
   it('returns what the server decided when the answer is quick', async () => {
     const lesson = issued('l3', { lessonId: 'l3', locale: 'en', count: 5, screenReader: false })
+    recordPredictedAward({ lessonId: 'l3', xp: 14, coins: 7, localDay: '2026-10-02' })
     submit.mockImplementation(async (input: { lessonId: string }) => receipt(input.lessonId))
     await submitLesson(lesson, [answer('i0')])
     expect(await receiptSoon('l3', 2000)).toMatchObject({ lessonId: 'l3', finished: true, streak: { extended: true } })
+    expect(peekAwards()[0]?.deliveredAt).toEqual(expect.any(Number))
+    expect(optimisticProgress({ authoritative: { xpTotal: 10, coins: 5, streak: 1, lastActiveDate: '2026-10-02' },
+      awards: peekAwards(), progressFetchedAt: Date.now(), today: '2026-10-02' }))
+      .toMatchObject({ xpTotal: 10, coinsIncludingPending: 5, pendingXp: 0 })
   })
 
   it('gives up in time and leaves the decision to the device', async () => {

@@ -16,7 +16,7 @@
  * screens would then have to agree about which of them owns it.
  */
 
-import type { Slot } from '@worldquest/engines'
+import type { QuestTask, Slot } from '@worldquest/engines'
 import type { TranslationKey } from '../../lib/i18n.js'
 import type { IconName } from '../../lib/icons.generated.js'
 
@@ -26,6 +26,13 @@ export const SLOT_TITLE: Record<Slot, TranslationKey> = {
   recall: 'quests:slot.recall',
   discover: 'quests:slot.discover',
   perform: 'quests:slot.perform',
+}
+
+export function taskTitle(task: QuestTask): TranslationKey {
+  if (task.activity === 'new') return 'quests:activity.new'
+  if (task.activity === 'review') return 'quests:activity.review'
+  if (task.activity === 'practice') return 'quests:activity.practice'
+  return SLOT_TITLE[task.slot]
 }
 
 /**

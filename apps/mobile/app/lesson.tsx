@@ -32,7 +32,7 @@ import { parseFocusParams } from '../src/features/lesson/focusParams.js'
 import { useLessonFocus } from '../src/features/lesson/useLessonFocus.js'
 import { loadCourse } from '../src/features/course/course.js'
 import { courseLesson } from '../src/features/course/courseLesson.js'
-import { recordCourseLesson } from '../src/features/course/progress.js'
+import { currentCourseProgress, recordCourseLesson } from '../src/features/course/progress.js'
 
 /**
  * How long the summary's Continue waits for the server's receipt on a D1 build.
@@ -73,7 +73,7 @@ export default function LessonRoute() {
    */
   const [fromCourse] = useState(() => {
     const loaded = loadCourse()
-    return loaded.ok ? { course: loaded.course, lesson: courseLesson(loaded.course, { node, review }) } : null
+    return loaded.ok ? { course: loaded.course, before: currentCourseProgress(loaded.course), lesson: courseLesson(loaded.course, { node, review, taster }) } : null
   })
   const courseStep = fromCourse?.lesson
 
@@ -177,7 +177,7 @@ export default function LessonRoute() {
         // the path Home draws is the one this lesson produced. Only a finished lesson, and
         // only on a step that is open (`creditLesson` refuses a locked one).
         const credited = completed && fromCourse !== null && courseStep?.kind === 'node'
-          ? recordCourseLesson(fromCourse.course, courseStep.nodeId)
+          ? recordCourseLesson(fromCourse.course, courseStep.nodeId, fromCourse.before)
           : false
         // Duolingo's rhythm: the lesson (summary, already shown), then the day (the
         // streak), then the daily quest, then any badge, then anything we want from the

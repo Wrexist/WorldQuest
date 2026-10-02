@@ -11,7 +11,7 @@ import { createThemeStyles } from '@worldquest/design'
  * game into an obligation.
  */
 
-import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Animated, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native'
 import {
   Button,
   Card,
@@ -41,9 +41,15 @@ import { QuestMilestones } from '../../components/QuestMilestones.js'
 import { RewardMotion } from '../../components/RewardMotion.js'
 import { ProgressSparkles } from '../../components/ProgressSparkles.js'
 import { Icon } from '../../components/Icon.js'
-import { SLOT_ICON, SLOT_TITLE } from './slots.js'
+import { SLOT_ICON, taskTitle } from './slots.js'
 import { TopBar } from '../../components/TopBar.js'
 import type { DayCountdown } from './useDayCountdown.js'
+
+const ACTIVITY_BODY = {
+  new: 'quests:activity.new.body',
+  review: 'quests:activity.review.body',
+  practice: 'quests:activity.practice.body',
+} as const satisfies Record<NonNullable<QuestTask['activity']>, TranslationKey>
 
 const GOAL_BODY: Record<PerformGoal, TranslationKey> = {
   perfect_lesson: 'quests:goal.perfect_lesson',
@@ -95,6 +101,7 @@ export function QuestScreen({
 }: QuestScreenProps) {
   const { colors, styles } = useThemeValues()
   const t = useT()
+  const { width, fontScale } = useWindowDimensions()
 
   if (loading) return <QuestSkeleton />
 
@@ -126,7 +133,7 @@ export function QuestScreen({
         {...(coins !== undefined ? { coins } : {})}
         {...(onOpenStreak !== undefined && streak !== undefined ? { onStreak: onOpenStreak, streak } : {})}
       />
-      <View style={styles.header}>
+      <View style={[styles.header, width / fontScale < layout.breakpoints.md && styles.headerStacked]}>
         <View style={styles.headerText}>
           <Text style={styles.title} role="heading">
             {t('quests:title')}
@@ -238,31 +245,18 @@ export function QuestScreen({
 function TaskRow({ task, step }: { task: QuestTask; step: number }) {
   const { colors, styles } = useThemeValues()
   const t = useT()
-  const title = t(SLOT_TITLE[task.slot])
+  const title = task.activity === 'practice'
+    ? t('quests:activity.practice', { round: step }) : t(taskTitle(task))
+  const description = task.activity !== undefined
+    ? t(ACTIVITY_BODY[task.activity], { count: task.target })
+    : task.goal !== undefined ? t(GOAL_BODY[task.goal]) : undefined
   const pop = useCelebration(task.progress)
   const tone = ({ locate: [colors.journey.sky, colors.action.secondary], recognise: [colors.journey.peach, colors.status.streak], recall: [colors.journey.lavender, colors.reward.gem], discover: [colors.journey.sand, colors.reward.xp], perform: [colors.journey.meadow, colors.status.progress] } as const)[task.slot]
 
-  return (
-    <View
-      // One element per task: a reader announces "Know the flag, 2 of 4" rather than
-      // sweeping a title, a body and a counter separately.
-      accessible
-      aria-label={t('quests:task.label', {
-        title,
-        progress: task.progress,
-        target: task.target,
-      })}
-      aria-checked={task.complete}
-      style={[styles.task, task.complete && styles.taskDone]}
-    >
-      {/* The step number, per mockup screen 4.
-          Without it the five rows read as five unrelated meters; with it they read
-          as one quest with five steps, which is what they are. The done state
-          becomes a filled tick rather than only a full bar — a bar at 100 % and a
-          bar at 95 % look alike at a glance, and a tick does not.
-          `aria-hidden` because the row already announces its title and its state;
-          a reader saying "3" before every task is noise. */}
-      <Animated.View style={[styles.taskArt, { backgroundColor: tone[0], transform: [{ scale: pop }] }]}>
+  const { width, fontScale } = useWindowDimensions()
+  // Give the goal a full line on small phones and at large native text sizes.
+  const stacked = width / fontScale < layout.breakpoints.md
+  const art = (<Animated.View style={[styles.taskArt, { backgroundColor: tone[0], transform: [{ scale: pop }] }]}>
       <Icon name={SLOT_ICON[task.slot]} size={30} color={tone[1]} />
       <ProgressSparkles earned={task.progress} />
       <View
@@ -281,29 +275,17 @@ function TaskRow({ task, step }: { task: QuestTask; step: number }) {
           <Text style={styles.stepText}>{String(step)}</Text>
         )}
       </View>
-      </Animated.View>
-
-      <View style={styles.taskText}>
-        {/* Icon then title, `space[1]` apart — the icon↔label rung, and the same pair
-            Explore draws with its pin. Decorative: the row's `aria-label` already says
-            "Know the flag, 2 of 4", and a reader announcing "flag" in front of it is
-            the noun twice. */}
+      </Animated.View>)
+  const content = (<View style={styles.taskText}>
         <View style={styles.taskHead}>
-          {/* Anchored to the FIRST line, not to the middle of the block. At 320 "Find it
-              on the map" wraps to two lines, and a centred icon then sat in the gap
-              between them pointing at nothing. `bodyStrong` has a 24 line height and the
-              glyph is 16, so half the difference — `space[1]`, on the scale — drops it
-              onto the first line's optical centre and it stays there however many lines
-              the title takes. */}
           <Text style={[styles.taskTitle, task.complete && styles.taskTitleDone]}>{title}</Text>
         </View>
-        {task.goal !== undefined && (
-          <Text style={styles.taskBody}>{t(GOAL_BODY[task.goal])}</Text>
+        {description !== undefined && (
+          <Text style={styles.taskBody}>{description}</Text>
         )}
         <QuestMilestones current={task.progress} total={task.target} label={title} decorative />
-      </View>
-
-      <View style={styles.taskMeta}>
+      </View>)
+  const meta = (<View style={styles.taskMeta}>
         {/* Green only once something has happened. This was `status.progress` on every
             row, so a fresh quest showed five "0 / 4"s in success green — the same lie
             the lesson summary told with a 35 % accuracy and the streak screen told with
@@ -324,7 +306,34 @@ function TaskRow({ task, step }: { task: QuestTask; step: number }) {
           <Icon name="xp" size={12} color={colors.reward.xp} />
           <Text style={styles.taskXp}>{t('quests:reward.task', { xp: TASK_XP })}</Text>
         </View>
-      </View>
+      </View>)
+
+  return (
+    <View
+      // One element per task: a reader announces "Know the flag, 2 of 4" rather than
+      // sweeping a title, a body and a counter separately.
+      accessible
+      aria-label={t(description === undefined ? 'quests:task.label' : 'quests:task.detailLabel', {
+        title,
+        description: description ?? '',
+        progress: task.progress,
+        target: task.target,
+      })}
+      aria-checked={task.complete}
+      style={[styles.task, stacked && styles.taskStacked, task.complete && styles.taskDone]}
+    >
+      {/* The step number, per mockup screen 4.
+          Without it the five rows read as five unrelated meters; with it they read
+          as one quest with five steps, which is what they are. The done state
+          becomes a filled tick rather than only a full bar — a bar at 100 % and a
+          bar at 95 % look alike at a glance, and a tick does not.
+          `aria-hidden` because the row already announces its title and its state;
+          a reader saying "3" before every task is noise. */}
+      {stacked ? <>
+        <View style={styles.taskTop}>{art}{meta}</View>
+        {content}
+      </> : <>{art}{content}{meta}</>}
+
     </View>
   )
 }
@@ -381,6 +390,7 @@ const useThemeValues = createThemeStyles((colors) => {
   reset: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space[2] },
   resetText: { ...text('caption', { numeric: true }), color: colors.text.tertiary },
   header: { flexDirection: 'row', alignItems: 'center', gap: space[2] },
+  headerStacked: { flexDirection: 'column', alignItems: 'stretch' },
   headerText: { flex: 1, gap: space[1] },
   title: { ...text('h1'), color: colors.text.primary },
   subtitle: { ...text('body'), color: colors.text.secondary },
@@ -430,7 +440,9 @@ const useThemeValues = createThemeStyles((colors) => {
   // On the filled green circle, not on the surface — this pair is the one the
   // contrast checker cares about.
   stepTextDone: { color: colors.text.onStatus },
-  taskText: { flex: 1, gap: space[2] },
+  taskStacked: { flexDirection: 'column', alignItems: 'stretch' },
+  taskTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: space[3] },
+  taskText: { flex: 1, minWidth: 0, gap: space[2] },
   // `flex: 1` on the title so a long slot name wraps inside the row rather than pushing
   // the icon off it.
   taskHead: { flexDirection: 'row', alignItems: 'flex-start', gap: space[1] },

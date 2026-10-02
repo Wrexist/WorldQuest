@@ -571,7 +571,7 @@ const skip = (name, why) => {
   // Both are checked rather than clicked through blind: they are the steps whose answers
   // reach `app/lesson.tsx`, and a step that silently stopped rendering would otherwise
   // show up here only as a timeout four lines later.
-  step('continent picker appears', /Where do you want to start/i.test(await body()))
+  step('continent picker appears', (await page.getByRole('radio', { name: 'Europe', exact: true }).count()) > 0)
   await page.screenshot({ path: path.join(SHOTS, 'onboarding-region.png') })
   await page.getByRole('radio', { name: 'Europe' }).first().click()
   await page.waitForTimeout(700)

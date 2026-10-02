@@ -105,7 +105,9 @@ function exportBundle() {
   // export. A private temp directory gives this build its own cache, so neither can
   // serve the other a module with the wrong backend baked in, and nothing else's cache
   // is cleared from under it.
-  const tmp = path.join(REPO, 'node_modules', '.cache', 'wq-d1-tmp')
+  // Expo inlines the API URL without including it in Metro's transform cache key.
+  // A run on another port must not reuse a bundle that still calls the old server.
+  const tmp = path.join(REPO, 'node_modules', '.cache', `wq-d1-${PORT}-tmp`)
   fs.mkdirSync(tmp, { recursive: true })
   const result = spawnSync('pnpm', ['--filter', '@worldquest/mobile', 'exec', 'expo', 'export', '--platform', 'web',
     '--output-dir', '../../node_modules/.cache/wq-web-d1'], {
@@ -178,7 +180,8 @@ function questDone(row) {
   const quest = JSON.parse(row.quest), credited = new Set(JSON.parse(row.credited))
   return quest.tasks.filter((t) => t.slot === 'perform'
     ? row.perform_done === 1
-    : t.factIds.filter((id) => credited.has(id)).length >= t.target).length
+    : (t.activity ? [...credited].filter(id => id.startsWith(`${t.slot}:`)).length
+      : t.factIds.filter((id) => credited.has(id)).length) >= t.target).length
 }
 
 async function waitFor(check, ms) {
@@ -330,6 +333,7 @@ async function waitFor(check, ms) {
     // cards and, for a guest adult, the create-profile ask. Walked until the tab bar.
     const asked = { profile: false, badges: 0 }
     for (let i = 0; i < 8; i++) {
+      await leaveJourney(page)
       if ((await page.getByRole('tab', { name: 'Home' }).count()) > 0) break
       if ((await page.getByTestId('achievement-continue').count()) > 0) {
         asked.badges++
@@ -351,6 +355,10 @@ async function waitFor(check, ms) {
       .map((el) => ({ state: (el.getAttribute('data-testid') ?? '').slice('path-node-'.length), label: el.getAttribute('aria-label') ?? '' })))
     await waitFor(async () => (await pathSteps()).length > 0, 5000)
     const firstPath = await pathSteps()
+    const firstCredit = await one(`SELECT count(*) AS n FROM tickets t JOIN receipts r
+      ON r.account_id = t.account_id AND r.lesson_id = t.lesson_id WHERE t.account_id = ?
+      AND json_extract(t.request_json, '$.node') = ? AND json_extract(r.result, '$.finished') = 1`, guest.id, 'node.first-week.flags')
+    step('the introductory lesson already counts toward the first course step', firstCredit.n === 1)
     // A long course shows the current unit and a button for the rest (CoursePath's `condensed`).
     const condensed = (await page.getByTestId('path-expand').count()) > 0
     step('Home shows the course path with one current step, the first',
@@ -412,16 +420,14 @@ async function waitFor(check, ms) {
     await page.getByTestId('summary-continue').click()
     await page.waitForTimeout(2500)
     await leaveJourney(page)
-    // A finished lesson counts towards the step it was started from, offline too: the step
-    // needs two, so it stays current, one lesson on.
+    // The introduction and this offline lesson complete the two-lesson opening step.
     const afterOffline = await pathSteps()
-    step('finishing it offline moves the path on: the step is one lesson from done',
-      afterOffline[0]?.state === 'current' && /Lesson 2 of 2/.test(afterOffline[0]?.label ?? ''),
+    step('finishing it offline completes the first step and opens the next',
+      afterOffline[0]?.state === 'done' && afterOffline[1]?.state === 'current',
       afterOffline[0]?.label ?? 'no path')
 
-    // Its saved ticket is spent, and two unfocused ones are still saved. The step must NOT
-    // quietly play one of those under its own name: it says it needs a connection, and
-    // offers the way back.
+    // The next step has no saved ticket, although unfocused ones remain. It must
+    // require a connection rather than silently substituting an unrelated lesson.
     await page.locator('[data-testid="path-node-current"]:visible').first().click()
     const refused = await waitFor(async () => (await page.getByTestId('lesson-offline-start').count()) > 0, 10000)
     step('with its own lesson spent, the step says it needs a connection rather than playing another',
@@ -439,7 +445,7 @@ async function waitFor(check, ms) {
     // Graded by the Worker as the lesson it issued for the step — not a stand-in.
     const graded = await one(`SELECT count(*) AS n FROM receipts r JOIN tickets t ON t.account_id = r.account_id
       AND t.lesson_id = r.lesson_id WHERE r.account_id = ? AND instr(t.request_json, ?) > 0`, guest.id, STEP_ONE_FOCUS)
-    step('and the lesson the Worker graded was the step\'s own', graded?.n === 1, `${graded?.n ?? 0} graded for the step`)
+    step('and the introduction and offline lesson were both graded for that step', graded?.n === 2, `${graded?.n ?? 0} graded for the step`)
     const after = await one('SELECT xp, streak_current AS streak, lessons_today AS lessons FROM accounts WHERE id = ?', guest.id)
     step('a second lesson the same day keeps the streak at one day', after.streak === 1 && after.lessons === 2 && after.xp > account.xp,
       `xp ${account.xp} → ${after.xp}, lessons ${after.lessons}`)
@@ -554,9 +560,10 @@ async function waitFor(check, ms) {
     const landed = new URL(phone.url()).pathname
     step('and lands in the app, not back in onboarding', landed !== '/onboarding', landed)
     // The course path came along too, derived from the server's records: the first phone
-    // finished the current step's first lesson (the offline one), so this phone's path
-    // opens on the step's second.
-    const pathFollowed = await waitFor(async () => (await phone.getByText('Lesson 2 of 2', { exact: true }).count()) > 0, 15000)
+    // finished both lessons of the first step: the introduction and the offline one.
+    // Recovery therefore opens the second step, with the first marked complete.
+    const pathFollowed = await waitFor(async () => (await phone.getByText('Lesson 1 of 2', { exact: true }).count()) > 0
+      && (await phone.getByTestId('path-node-done').count()) > 0, 15000)
     // The streak calendar too, opened from the top bar's flame: the first phone learned
     // today, so this month shows a learned day here as well.
     await phone.getByRole('button', { name: /^Your streak: / }).first().click()
@@ -567,7 +574,7 @@ async function waitFor(check, ms) {
     await phone.getByRole('button', { name: /back/i }).first().click().catch(() => {})
     await phone.waitForTimeout(1200)
     step('and its course path carries on from the first phone', pathFollowed,
-      pathFollowed ? 'Lesson 2 of 2' : ((await phone.evaluate(() => document.body.innerText)).match(/Lesson \d of \d/) ?? ['no step shown'])[0])
+      pathFollowed ? 'First step complete; next step Lesson 1 of 2' : ((await phone.evaluate(() => document.body.innerText)).match(/Lesson \d of \d/) ?? ['no step shown'])[0])
     await phone.getByRole('tab', { name: /Profile/ }).first().click().catch(() => {})
     await phone.waitForTimeout(2500)
     // The coin balance, by its spoken label: Profile shows XP inside the current level
@@ -575,8 +582,19 @@ async function waitFor(check, ms) {
     const wallet2 = await one('SELECT xp, coins FROM accounts WHERE id = ?', guest.id)
     const coinsShown = await waitFor(async () =>
       (await phone.getByLabel(`${wallet2.coins} coins`, { exact: true }).count()) > 0, 8000)
-    step('the second phone shows the progress earned on the first', coinsShown && wallet2.coins > 0,
-      `server ${wallet2.coins} coins, ${wallet2.xp} XP`)
+    // Incorrect answers can legitimately leave the wallet at zero. Compare the
+    // actual level progress across devices as well, rather than requiring coins.
+    await page.getByRole('tab', { name: /Profile/ }).first().click()
+    await page.getByRole('progressbar', { name: /XP to level/ }).first().waitFor({ state: 'visible' })
+    let firstLevel, secondLevel
+    const levelFollowed = await waitFor(async () => {
+      firstLevel = await page.getByRole('progressbar', { name: /XP to level/ }).first().getAttribute('aria-label')
+      secondLevel = await phone.getByRole('progressbar', { name: /XP to level/ }).first().getAttribute('aria-label')
+      return !!firstLevel && secondLevel === firstLevel
+    }, 8000)
+    step('the second phone shows the progress earned on the first', coinsShown && wallet2.xp > 0 && !!firstLevel && levelFollowed,
+      `server ${wallet2.coins} coins, ${wallet2.xp} XP; coins shown ${coinsShown}; first ${firstLevel}; second ${secondLevel}`)
+    await page.screenshot({ path: path.join(SHOTS, 'first-phone-profile.png') })
     await phone.screenshot({ path: path.join(SHOTS, 'second-phone-profile.png') })
 
     // ── both phones learning on one account (E11, a slice) ────────────────────

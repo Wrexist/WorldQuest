@@ -326,15 +326,15 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
         JSON.stringify(facts.map((factId, i) => ({ itemId: `${lessonId}-${i}`, factId, templateId: 'flag-mcq', options: ['a', 'b'], correctOptionId: 'a' })))).run()
       return facts.map((_, slot) => ({ slot, chosenOptionId: 'a', elapsedMs: 9000 }))
     }
-    // Lesson one: every review fact and one of the two discover facts.
+    // Any 13 new facts: two count for discovery, eleven fill practice tasks.
     const one = await ticket('q1', [...review, discover[0]!])
     const r1 = await (await call('/v1/lessons/submit', a.token, { lessonId: 'q1', answers: one })).json() as Receipt
-    expect(r1.quest.completedSlots.sort()).toEqual(['locate', 'perform', 'recall', 'recognise'])
+    expect(r1.quest.completedSlots.sort()).toEqual(['discover', 'locate', 'perform', 'recognise'])
     expect(r1.quest).toMatchObject({ complete: false, done: 4, xp: 4 * BALANCE.xp.dailyQuestTask, coins: 0 })
-    // Lesson two repeats the review facts (they count once) and adds the last discover fact.
+    // Repeated facts count once; the fourteenth distinct fact finishes the last practice task.
     const two = await ticket('q2', [...review, discover[1]!])
     const r2 = await (await call('/v1/lessons/submit', a.token, { lessonId: 'q2', answers: two })).json() as Receipt
-    expect(r2.quest).toMatchObject({ completedSlots: ['discover'], complete: true, done: 5,
+    expect(r2.quest).toMatchObject({ completedSlots: ['recall'], complete: true, done: 5,
       xp: BALANCE.xp.dailyQuestTask + BALANCE.xp.dailyQuest, coins: BALANCE.coins.dailyQuest })
     // A replay returns the stored receipt; a new lesson on a finished quest pays nothing more.
     expect(await (await call('/v1/lessons/submit', a.token, { lessonId: 'q2', answers: two })).json()).toEqual(r2)
@@ -343,7 +343,7 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
     expect(r3.quest).toMatchObject({ completedSlots: [], complete: true, xp: 0, coins: 0 })
     const after = await today()
     expect(after.quest.complete).toBe(true)
-    expect(after.quest.tasks.map(t => t.factIds)).toEqual(first.quest.tasks.map(t => t.factIds))
+    expect(after.quest.tasks.every(t => t.factIds.length === 0)).toBe(true)
     const snapshot = await state(a.userId)
     expect(snapshot.account?.xp).toBe(snapshot.ledger.reduce((sum, row) => sum + Number(row.xp), 0))
     expect(snapshot.account?.coins).toBe(snapshot.ledger.reduce((sum, row) => sum + Number(row.coins), 0))
@@ -351,6 +351,32 @@ describe('D1 Worker acceptance slice (real workerd and SQLite)', () => {
     const b = await guest()
     const other = await (await call('/v1/quest/today', b.token)).json() as Today
     expect(other.quest.tasks.every(t => t.progress === 0)).toBe(true)
+  })
+  it('credits ordinary course lessons once when two submissions race on the same facts', async () => {
+    const a = await guest()
+    const prepare = async (lessonId: string) => {
+      const response = await call('/v1/lessons/prepare', a.token, { lessonId, locale: 'en', count: 6,
+        node: 'node.first-week.flags', focus: { entities: ['SE', 'NO', 'US', 'JP', 'BR', 'KE'], attributes: ['flag'] } })
+      expect(response.status).toBe(200)
+      return await response.json() as { questions: Question[] }
+    }
+    const first = await prepare('path-quest-one'), second = await prepare('path-quest-two')
+    const submit = (lessonId: string, prepared: { questions: Question[] }) => call('/v1/lessons/submit', a.token, {
+      lessonId, answers: prepared.questions.map((q, slot) => ({ slot,
+        chosenOptionId: q.options.find(o => o.isCorrect)!.id, elapsedMs: 9000 })),
+    })
+    const responses = await Promise.all([submit('path-quest-one', first), submit('path-quest-two', second)])
+    expect(responses.map(r => r.status)).toEqual([200, 200])
+    const row = await db.prepare('SELECT credited FROM quest_days WHERE account_id = ?').bind(a.userId).first<{ credited: string }>()
+    const credited = JSON.parse(row!.credited) as string[]
+    expect(credited).toHaveLength(6)
+    expect(new Set(credited.map(key => key.slice(key.indexOf(':') + 1))).size).toBe(6)
+    const today = await (await call('/v1/quest/today', a.token)).json() as { quest: { tasks: { slot: string; progress: number }[] } }
+    expect(today.quest.tasks.find(t => t.slot === 'discover')?.progress).toBe(2)
+    expect(today.quest.tasks.filter(t => t.slot !== 'perform').reduce((sum, t) => sum + t.progress, 0)).toBe(6)
+    const snapshot = await state(a.userId)
+    expect(snapshot.account?.xp).toBe(snapshot.ledger.reduce((sum, row) => sum + Number(row.xp), 0))
+    expect(snapshot.account?.coins).toBe(snapshot.ledger.reduce((sum, row) => sum + Number(row.coins), 0))
   })
   it('rolls back every write after an injected database failure and retries safely', async () => {
     const a = await guest()

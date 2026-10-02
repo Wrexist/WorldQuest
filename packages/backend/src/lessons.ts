@@ -1,4 +1,4 @@
-import { applyActivity, gradeLesson, localDate, masteryOf, streakMilestoneReward, type MemoryState } from '@worldquest/engines'
+import { BALANCE, applyActivity, gradeLesson, localDate, masteryOf, streakMilestoneReward, type MemoryState } from '@worldquest/engines'
 import { ApiError, ticketSchema, type Account, type Clock, type Receipt, type Submission } from './contracts'
 import { knownTimeZone } from './time-zone'
 import { applyLesson, composeQuest, readQuestRow, type QuestRow } from './quests'
@@ -124,7 +124,11 @@ export async function submitLesson(db: D1Database, owner: string, tokenHash: str
     const questDay = readQuestRow(questRows.find(r => r.day === day))
       ?? { base: composeQuest(owner, day, allMemory, now, account.recent_accuracy), credited: [], performDone: false }
     const quest = applyLesson(questDay, {
-      correctFacts: answers.filter(a => a.wasCorrect).map(a => a.factId),
+      // Match the grader's anti-noise threshold; a sub-400 ms tap earns no quest credit.
+      correctFacts: answers.filter(a => a.wasCorrect && a.elapsedMs >= BALANCE.integrity.minCredibleAnswerMs
+        && learningContent.facts.has(a.factId)).map(a => a.factId),
+      newFacts: answers.filter(a => !allMemory.has(a.factId)).map(a => a.factId),
+      dueFacts: answers.filter(a => { const state = allMemory.get(a.factId); return state && !state.suspended && state.dueAt <= now }).map(a => a.factId),
       accuracy: graded.accuracy,
       durationMs: ordered.reduce((sum, a) => sum + a.elapsedMs, 0),
       finished,

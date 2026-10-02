@@ -9,11 +9,9 @@
  * `onStorageScopeChange` below drops the cached snapshot the moment the scope moves, so
  * no render can draw the previous account's path for a frame.
  *
- * Not server state. The server is authoritative for XP, coins, streaks, hearts, leagues
- * and entitlements (rule 6); a position on a course is none of those, it pays nothing,
- * and the lessons that move it are graded and paid by the server as usual. What that
- * costs is stated rather than hidden: the path does not follow an account to a second
- * device yet (U04 is the same open question for everything else local).
+ * Local optimistic course progress is merged with the D1 server's per-node finished
+ * lesson counts, so a linked account resumes on another device. Course credit itself
+ * pays nothing; the server grades and rewards the underlying lesson.
  *
  * ## Only a finished lesson counts
  *
@@ -75,6 +73,11 @@ export function courseProgress(courseId: string): CourseProgress {
   return read()[courseId] ?? EMPTY
 }
 
+/** Capture before starting a lesson, before its receipt can arrive. */
+export function currentCourseProgress(course: Course): CourseProgress {
+  return withServerProgress(course, courseProgress(course.id), cachedFocusFinished(), cachedNodeFinished())
+}
+
 /**
  * One finished lesson, against the node it was started from.
  *
@@ -82,15 +85,20 @@ export function courseProgress(courseId: string): CourseProgress {
  * one that is still locked, which the engine refuses (`creditLesson` hands back the same
  * object, so nothing is written either).
  */
-export function recordCourseLesson(course: Course, nodeId: string): boolean {
+export function recordCourseLesson(course: Course, nodeId: string, startedFrom = currentCourseProgress(course)): boolean {
   const stored = read()
   // Judged against what the path shows, which includes what the account finished on
   // other phones (`serverProgress.ts`): on a phone just signed into, a step the server
   // has opened is open here too, and its lesson counts at once rather than after a sync.
   // Stored as the merged count, so this device catches up rather than keeping two ledgers.
-  const before = withServerProgress(course, stored[course.id] ?? EMPTY, cachedFocusFinished(), cachedNodeFinished())
-  const after = creditLesson(course, before, nodeId)
-  if (after === before) return false
+  const earned = creditLesson(course, startedFrom, nodeId)
+  if (earned === startedFrom) return false
+  // A fast receipt may already include this lesson. Advance the starting snapshot,
+  // then merge maxima; adding one to the latest server count would count it twice.
+  const current = currentCourseProgress(course)
+  const combined = { ...earned }
+  for (const [id, count] of Object.entries(current)) combined[id] = Math.max(combined[id] ?? 0, count)
+  const after = withServerProgress(course, combined, cachedFocusFinished(), cachedNodeFinished())
   const next: Stored = { ...stored, [course.id]: after }
   snapshot = next
   writeJson(KEY, next)

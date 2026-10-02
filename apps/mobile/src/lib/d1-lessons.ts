@@ -31,6 +31,7 @@ import { captureStorage } from './storage.js'
 import { announceFocusFinished, FOCUS_FINISHED_KEY, MEMORY_KEY, NODE_FINISHED_KEY } from './d1-memory.js'
 import { queueUnlocks, type PendingUnlock } from '../features/achievements/pending.js'
 import { currentUser } from './supabase.js'
+import { markAwardDelivered, peekAwards } from './awards.js'
 
 const QUEUE_KEY = 'd1.lessons.v1'
 /** Unfocused lessons kept ready for offline starts. Well inside the server's 20. */
@@ -346,12 +347,18 @@ export function flushLessons(): Promise<readonly D1Receipt[]> {
   flushing = (async () => {
     if (!isOnline()) return []
     try {
-      const { queue } = await open()
+      const { queue, isCurrent } = await open()
       const before = (await queue.inspect()).receipts.length
       await queue.flush()
       const { receipts } = await queue.inspect()
+      if (!isCurrent()) throw new AccountChangedError()
       const fresh = receipts.slice(before)
-      if (fresh.length > 0) {
+      // Retire predictions before fetching totals that already include these lessons.
+      // Include persisted receipts, so an earlier launch's accepted prediction heals too.
+      const pending = new Set(peekAwards().filter(a => a.deliveredAt === null).map(a => a.lessonId))
+      const delivered = receipts.filter(r => pending.has(r.lessonId))
+      for (const receipt of delivered) markAwardDelivered(receipt.lessonId, Date.now())
+      if (fresh.length > 0 || delivered.length > 0) {
         // The server's badges get their cards: the next lesson end reads this queue,
         // and the one just finished reads it after waiting for its receipt.
         queueUnlocks(fresh.flatMap((r) => r.achievements?.unlocked ?? [])

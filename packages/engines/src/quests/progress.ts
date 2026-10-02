@@ -27,6 +27,8 @@ export type PerformGoal = 'perfect_lesson' | 'speed_round' | 'streak_keeper'
 
 export type QuestTask = {
   readonly slot: Slot
+  /** D1 tasks accept eligible facts from any lesson; absent on older fixed-fact quests. */
+  readonly activity?: 'new' | 'review' | 'practice'
   /** How many of the thing. Always small enough to finish in one sitting. */
   readonly target: number
   /** Facts this task draws on. Empty for `perform`, which is about how, not what. */
