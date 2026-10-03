@@ -2,6 +2,22 @@
 
 Primary persona: Priya, who must be able to start a lesson after onboarding.
 
+## Activated repair
+
+After the full local verification suite, native exports and the 44-step connected
+D1 journey passed, commit `d0bf0dcc` was deployed on October 3 to the existing
+production Worker. Active version: `1edc8e85-3f98-44cf-a0ef-6d63f096d9c3`.
+`API_ENABLED=true`; `EMAIL_AUTH_ENABLED`, leagues and challenges remain false.
+No migrations or secret changes were made.
+
+The explicit-target hosted guest smoke passed against the production endpoint:
+five genuine Swedish beginner questions parsed by the shipped client, followed
+by successful deletion of only the temporary guest. No lesson was submitted, no
+rewards were awarded and no email was sent. This restores the backend used by
+Build 14; visual/client changes require the new app build. Physical-device replay
+and real email delivery acceptance remain open. The investigation below records
+the earlier disabled state and the reasoning for this repair.
+
 The reported Swedish error with Retry and Back matches `LessonScreen.ErrorState`.
 `ContentGate` uses the same copy but has an illustration and no Back action.
 

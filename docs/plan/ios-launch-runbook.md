@@ -9,9 +9,10 @@ release checklist, not a statement that public launch is ready.
 - Free domain: https://worldquest.dpdns.org. GitHub Pages HTTPS is enforced.
   Privacy, terms, support and licences pages each returned HTTP 200.
 - Production Cloudflare Worker and EU D1 exist, with migrations 0001–0013.
-  `https://api.worldquest.dpdns.org/health` returns 200. The October 3 read-only
-  inspection still found the application API closed; the guest-learning repair
-  candidate is documented [here](../engineering/native-loading-2026-10-03.md).
+  Guest learning is active at Worker version `1edc8e85-3f98-44cf-a0ef-6d63f096d9c3`
+  from commit `d0bf0dcc`. The hosted smoke issued five Swedish beginner questions,
+  then deleted its temporary guest. Email identity changes and social features
+  remain held. [Repair evidence](../engineering/native-loading-2026-10-03.md).
 - Resend sender is verified; both Worker secrets are installed. Gmail confirms
   SPF, DKIM and DMARC PASS. Transport is configured; inbox delivery is not accepted.
 - EAS production has all six public values: `EXPO_PUBLIC_BACKEND=d1`,
