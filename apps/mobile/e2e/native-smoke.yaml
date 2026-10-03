@@ -50,9 +50,14 @@ appId: com.wrexist.worldquest
     when:
       platform: iOS
     commands:
+      # A fresh simulator can show consent well after openLink returns.
+      # Do not skip the handoff and mistake the untouched Home screen for a route failure.
+      - extendedWaitUntil:
+          visible: "Open"
+          timeout: 30000
       - tapOn:
           text: "Open"
-          optional: true
+          retryTapIfNoChange: true
 - assertVisible: "Sweden"
 - assertVisible: "Practise this country"
 - takeScreenshot: native-country
