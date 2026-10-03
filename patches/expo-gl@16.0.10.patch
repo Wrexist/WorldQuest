@@ -47,7 +47,7 @@ index d1c990f..1c60e53 100644
 +          if (!mFramePromises.remove(promise)) return;
 +        }
 +        if (error == GL_NO_ERROR) {
-+          promise.resolve(null);
++          promise.resolve((Object) null);
 +        } else {
 +          promise.reject("E_GL_FRAME", "GL frame failed (0x" + Integer.toHexString(error) + ")", null);
 +        }

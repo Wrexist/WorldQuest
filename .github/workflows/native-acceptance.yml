@@ -3,6 +3,10 @@ name: Native acceptance
 on:
   workflow_dispatch:
     inputs:
+      android_only:
+        description: 'Compile only Android after an Android-only repair; takes precedence over ios_only'
+        type: boolean
+        default: false
       ios_only:
         description: 'Retry iOS acceptance using an already verified Android revision'
         type: boolean
@@ -36,7 +40,7 @@ concurrency:
 
 jobs:
   android:
-    if: ${{ !inputs.ios_only }}
+    if: ${{ inputs.android_only || !inputs.ios_only }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -59,6 +63,7 @@ jobs:
           retention-days: 7
 
   ios:
+    if: ${{ !inputs.android_only }}
     runs-on: macos-15
     timeout-minutes: 60
     steps:

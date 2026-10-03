@@ -65,6 +65,15 @@ public class FrameAckLifecycleTest {
   static class Promise {
     String result; int settlements;
     void resolve(Object ignored) { if (++settlements != 1) throw new AssertionError("double settlement"); result = "resolved"; }
+    // Match expo.modules.kotlin.Promise overloads: untyped null is ambiguous in Java.
+    void resolve() { resolve((Object) null); }
+    void resolve(int value) { resolve((Object) value); }
+    void resolve(boolean value) { resolve((Object) value); }
+    void resolve(double value) { resolve((Object) value); }
+    void resolve(float value) { resolve((Object) value); }
+    void resolve(String value) { resolve((Object) value); }
+    void resolve(Collection<? extends Object> value) { resolve((Object) value); }
+    void resolve(Map<String, ? extends Object> value) { resolve((Object) value); }
     void reject(String code, String message, Throwable error) { if (++settlements != 1) throw new AssertionError("double settlement"); result = code; }
   }
   private final Object mFrameLock = new Object();
