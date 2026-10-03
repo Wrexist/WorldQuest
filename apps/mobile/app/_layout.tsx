@@ -15,8 +15,7 @@ import { useEffect, useRef } from 'react'
 import { Stack, router, usePathname } from 'expo-router'
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native'
 import { AppState, type AppStateStatus, StatusBar, StyleSheet } from 'react-native'
-// Context insets support both platforms. Native full-screen modals also need
-// their own safe-area container because they render outside this root surface.
+// Apply window insets once around the navigator, including the full-screen lesson.
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { layout, motion, ScreenBackground } from '@worldquest/design'
 import { ErrorBoundary } from '../src/components/ErrorBoundary.js'
