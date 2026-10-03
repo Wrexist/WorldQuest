@@ -78,6 +78,21 @@ function filesUnder(directory) {
   })
 }
 
+function comparePageBand(before, after, geometry) {
+  if (before.width !== after.width || before.height !== after.height) throw new Error('Gesture screenshots have different dimensions')
+  const scale = before.width / geometry.screen.width
+  const top = Math.ceil((geometry.globe.y + geometry.globe.height + 16) * scale)
+  const bottom = Math.floor(geometry.screen.height * .75 * scale)
+  if (bottom - top < 48 * scale) throw new Error('Too little page content below globe to verify gesture ownership')
+  let changed = 0, count = 0
+  for (let y = top; y < bottom; y++) for (let x = Math.floor(before.width * .1); x < before.width * .9; x++) {
+    const offset = (y * before.width + x) * 4
+    if ([0, 1, 2].some(channel => Math.abs(before.data[offset + channel] - after.data[offset + channel]) >= 8)) changed++
+    count++
+  }
+  return changed / count
+}
+
 function presentationEvidence(log, diagnostic, nativeEvents) {
   const sessions = diagnostic.sessions.filter(session => session.events.some(event => event.kind === 'mount' && event.mode === 'explore'))
   const presses = sessions.flatMap(session => session.events.filter(event => event.kind === 'control-press' && event.control === 'in').map(press => ({ session, press })))
@@ -128,6 +143,17 @@ function verify(directory, { requirePresentation = false } = {}) {
   const log = fs.readFileSync(logPath, 'utf8')
   const geometry = geometryFromLog(log)
   const pixels = compareZoom(PNG.sync.read(fs.readFileSync(beforePath)), PNG.sync.read(fs.readFileSync(afterPath)), geometry)
+  let gesture = { available: false }
+  if (files.some(file => path.basename(file) === 'native-explore-dragged.png')) {
+    const zoomed = PNG.sync.read(fs.readFileSync(afterPath))
+    const dragged = PNG.sync.read(fs.readFileSync(unique('native-explore-dragged.png')))
+    const scrolled = PNG.sync.read(fs.readFileSync(unique('native-explore-page-scroll.png')))
+    const globe = compareZoom(zoomed, dragged, geometry)
+    const pageChangedDuringDrag = comparePageBand(zoomed, dragged, geometry)
+    const pageChangedOutsideGlobe = comparePageBand(dragged, scrolled, geometry)
+    gesture = { available: true, passed: globe.passed && pageChangedDuringDrag < .01 && pageChangedOutsideGlobe >= .05,
+      globeChangedFraction: globe.changedFraction, pageChangedDuringDrag, pageChangedOutsideGlobe }
+  }
   const evidenceDirectory = path.dirname(path.resolve(directory))
   const jsTrace = path.join(evidenceDirectory, 'native-atlas-diagnostic.json')
   const nativeTrace = path.join(evidenceDirectory, 'native-atlas-native.jsonl')
@@ -136,7 +162,7 @@ function verify(directory, { requirePresentation = false } = {}) {
     if (!fs.existsSync(jsTrace) || !fs.existsSync(nativeTrace)) throw new Error('Missing required native globe presentation traces')
     presentation = presentationEvidence(log, JSON.parse(fs.readFileSync(jsTrace, 'utf8')), fs.readFileSync(nativeTrace, 'utf8').trim().split(/\r?\n/).filter(Boolean).map(line => JSON.parse(line)))
   }
-  return { ...pixels, passed: pixels.passed && (!presentation.available || presentation.passed), geometry, presentation }
+  return { ...pixels, passed: pixels.passed && (!presentation.available || presentation.passed) && (!gesture.available || gesture.passed), geometry, presentation, gesture }
 }
 
 if (require.main === module) {

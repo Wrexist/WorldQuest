@@ -490,6 +490,9 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
       if (options.length > 0) await page.getByTestId('lesson-check').click()
       else await answerCurrent(page)
       await page.waitForTimeout(550)
+      const next = page.getByText(/^(Continue|Finish|Got it)$/).first()
+      // Matching boards advance on completion without a verdict sheet.
+      if ((await next.count()) === 0 && (await questionShown(page))) continue
       const tail = (await page.evaluate(() => document.body.innerText)).split('\n').slice(-8).join(' ')
       const correct = /Perfect|Nice|Yes/i.test(tail)
       if (correct && !gotCorrect) {
@@ -500,7 +503,6 @@ const ROUTES = routes.length > 0 ? routes : DEFAULT_ROUTES
         await shot('lesson-feedback-wrong')
         gotWrong = true
       }
-      const next = page.getByText(/^(Continue|Finish|Got it)$/).first()
       if ((await next.count()) === 0) break
       await next.click()
       await page.waitForTimeout(500)

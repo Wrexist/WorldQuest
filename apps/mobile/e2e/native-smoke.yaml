@@ -123,8 +123,8 @@ appId: com.wrexist.worldquest
 # Drag inside the centred globe, then scroll outside it. The viewport and controls
 # must remain in place for the first gesture; the page must unlock for the second.
 - swipe:
-    start: "50%, 52%"
-    end: "66%, 40%"
+    start: "50%, 20%"
+    end: "66%, 26%"
     duration: 800
 - waitForAnimationToEnd:
     timeout: 10000
