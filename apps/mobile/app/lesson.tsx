@@ -8,7 +8,7 @@ import { createThemeStyles } from '@worldquest/design'
  */
 
 import { useRef, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { View } from 'react-native'
 
 import { router, useLocalSearchParams } from 'expo-router'
 import { LessonScreen } from '../src/features/lesson/LessonScreen.js'
@@ -126,8 +126,9 @@ export default function LessonRoute() {
   const online = useOnline()
   const leaving = useRef(false)
 
+  // RootLayout already insets the navigator; a second safe area hides lesson options.
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg.canvas }} edges={['top', 'bottom', 'left', 'right']}>
+    <View style={{ flex: 1, backgroundColor: colors.bg.canvas }}>
     <LessonScreen
       showIntroduction
       mode={mode === 'speed' ? 'speed' : 'normal'}
@@ -221,7 +222,7 @@ export default function LessonRoute() {
         else router.replace('/')
       })()}
     />
-    </SafeAreaView>
+    </View>
   )
 }
 

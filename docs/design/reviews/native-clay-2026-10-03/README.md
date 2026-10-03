@@ -10,6 +10,8 @@ The remaining chest reveal now floors its frame in the native animation graph be
 
 Welcome has a cloud/island stage; question prompts keep a stable mascot beside the bubble. Daily goals use radio cards, regions remain selected until Continue, and error screens share a scrollable clay card with a clear exit. The enlarged brand wordmark is capped like a logo; other onboarding text keeps its full accessibility scaling. Empty course progress now uses the track token instead of a dark filled-looking bar.
 
+Native review also found duplicate safe-area padding in the lesson route beneath the already-inset root navigator. The route now preserves its opaque background without adding the same top/bottom insets twice. The simulator replay checks the recovered answer space, onboarding, early lesson exit and persisted course navigation. Its optional asset diagnostic is off by default and is never part of TestFlight builds.
+
 Primary personas: Priya starting her first lesson and Emma following Atlas. Onboarding remains before the first lesson/account request; errors stay within the lesson with a back path. Continue or Retry is the single primary action. Child restrictions and server-owned rewards remain enforced.
 
 ## Rendered evidence

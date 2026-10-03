@@ -37,11 +37,13 @@ appId: com.wrexist.worldquest
 - tapOn: "Pause the lesson"
 - tapOn: "Finish here"
 - tapOn: "Continue"
-- tapOn: "Not now"
-- assertVisible: "Explorer!"
+# An early finish returns to the assigned course without a profile offer.
+- assertVisible:
+    id: "path-node-current"
 - stopApp
 - launchApp
-- assertVisible: "Explorer!"
+- assertVisible:
+    id: "path-node-current"
 - takeScreenshot: native-relaunch
 - openLink: "worldquest://country/%53%45"
 - runFlow:
