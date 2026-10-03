@@ -50,6 +50,7 @@ import {
 import type { LessonFocus } from '@worldquest/engines'
 import type { ContentIndex, GradeResult, LessonState, Question } from '@worldquest/engines'
 import { Art } from '../../components/Art.js'
+import { FailureState } from '../../components/FailureState.js'
 import { Flag } from '../../components/Flag.js'
 import { LessonAtlas, lessonShowsAtlas } from '../atlas/LessonAtlas.js'
 import { useLesson } from './hooks/useLesson.js'
@@ -93,7 +94,7 @@ import { EarnedReward } from './EarnedReward.js'
 import { AdventureArt } from '../../components/AdventureArt.js'
 import { SceneEntrance } from '../../components/SceneEntrance.js'
 
-type ScreenState = 'loading' | 'error' | 'empty' | 'offline-start' | 'ready'
+type ScreenState = 'loading' | 'error' | 'unavailable' | 'empty' | 'offline-start' | 'ready'
 
 /**
  * The rail down the leading edge of the answers.
@@ -764,6 +765,7 @@ export function LessonScreen({
       : status
     if (source === 'loading') return setScreen('loading')
     if (source === 'error') return setScreen('error')
+    if (source === 'unavailable') return setScreen('unavailable')
     if (source === 'offline') return setScreen('offline-start')
     if (source === 'too-narrow' || questions.length === 0) return setScreen('empty')
     setScreen('ready')
@@ -782,6 +784,7 @@ export function LessonScreen({
 
   if (screen === 'loading') return <LoadingState />
   if (screen === 'error') return <ErrorState onRetry={remoteLessons ? remote.retry : reload} onLeave={onLeave} />
+  if (screen === 'unavailable') return <ErrorState unavailable onRetry={remote.retry} onLeave={onLeave} />
   if (screen === 'offline-start') return <OfflineStartState onRetry={remote.retry} onLeave={onLeave} />
   if (screen === 'empty') return <EmptyState onLeave={onLeave} />
 
@@ -1606,17 +1609,13 @@ function practisedCountries(
   return out
 }
 
-function ErrorState({ onRetry, onLeave }: { onRetry: () => void; onLeave: (() => void) | undefined }) {
-  const { styles } = useThemeValues()
-  const t = useT()
-
+function ErrorState({ onRetry, onLeave, unavailable = false }: { onRetry: () => void; onLeave: (() => void) | undefined; unavailable?: boolean }) {
+  if (unavailable) return <FailureState titleKey="common:error.service.title" bodyKey="common:error.service.body"
+    ctaKey={onLeave ? 'common:back' : 'common:retry'} onPress={onLeave ?? onRetry} />
   return (
-    <View style={[styles.screen, styles.centered]}>
-      <Text style={styles.prompt}>{t('common:error.generic.title')}</Text>
-      <Text style={styles.feedbackBody}>{t('common:error.generic.body')}</Text>
-      <Button label={t('common:retry')} onPress={onRetry} style={styles.retry} />
+    <FailureState titleKey="common:error.generic.title" bodyKey="common:error.generic.body" ctaKey="common:retry" onPress={onRetry}>
       <LeaveButton onLeave={onLeave} />
-    </View>
+    </FailureState>
   )
 }
 

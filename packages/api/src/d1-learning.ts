@@ -111,8 +111,14 @@ function prepareInput(value: unknown): D1PrepareInput {
     || typeof value.screenReader !== 'boolean') throw new D1AuthError('INVALID_LESSON_REQUEST')
   const f = focus(value.focus)
   if (value.node !== undefined && (typeof value.node !== 'string' || !COURSE_NODE.test(value.node))) throw new D1AuthError('INVALID_LESSON_REQUEST')
+  if (value.maxModifier !== undefined && (!integer(value.maxModifier) || value.maxModifier > 2)) throw new D1AuthError('INVALID_LESSON_REQUEST')
+  const introduceFrom = band(value.introduceFrom)
+  if (value.placement !== undefined && value.placement !== true) throw new D1AuthError('INVALID_LESSON_REQUEST')
   return { lessonId: value.lessonId, locale: value.locale, count: value.count, screenReader: value.screenReader,
-    ...(f === undefined ? {} : { focus: f }), ...(value.node === undefined ? {} : { node: value.node }) }
+    ...(f === undefined ? {} : { focus: f }), ...(value.node === undefined ? {} : { node: value.node }),
+    ...(value.maxModifier === undefined ? {} : { maxModifier: value.maxModifier }),
+    ...(introduceFrom === undefined ? {} : { introduceFrom }),
+    ...(value.placement === true ? { placement: true } : {}) }
 }
 function prepared(value: unknown): D1PreparedLesson {
   if (!object(value) || typeof value.lessonId !== 'string' || !integer(value.issuedAt) || !Array.isArray(value.questions)

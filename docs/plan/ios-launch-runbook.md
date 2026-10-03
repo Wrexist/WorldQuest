@@ -1,6 +1,6 @@
 # WorldQuest free-launch runbook
 
-Updated 2 October 2026. Owner decision: **free first release; Premium later**.
+Updated 3 October 2026. Owner decision: **free first release; Premium later**.
 Primary acceptance device: iPhone. Follow with a shorter Android pass. This is a
 release checklist, not a statement that public launch is ready.
 
@@ -9,7 +9,9 @@ release checklist, not a statement that public launch is ready.
 - Free domain: https://worldquest.dpdns.org. GitHub Pages HTTPS is enforced.
   Privacy, terms, support and licences pages each returned HTTP 200.
 - Production Cloudflare Worker and EU D1 exist, with migrations 0001–0013.
-  `https://api.worldquest.dpdns.org/health` returns 200. Application API remains closed.
+  `https://api.worldquest.dpdns.org/health` returns 200. The October 3 read-only
+  inspection still found the application API closed; the guest-learning repair
+  candidate is documented [here](../engineering/native-loading-2026-10-03.md).
 - Resend sender is verified; both Worker secrets are installed. Gmail confirms
   SPF, DKIM and DMARC PASS. Transport is configured; inbox delivery is not accepted.
 - EAS production has all six public values: `EXPO_PUBLIC_BACKEND=d1`,
@@ -29,12 +31,17 @@ release checklist, not a statement that public launch is ready.
 The English delivery test was rejected by Gmail; the Swedish message landed in Spam.
 Do not treat Resend's Delivered status as inbox success. Authentication passed.
 See [delivery evidence](../engineering/account-email-setup.md) and the
-[prepared Resend support draft](../engineering/resend-delivery-investigation.md).
-The draft has not been sent. No repeated tests or inbox filter overrides were applied.
+[Resend support report](../engineering/resend-delivery-investigation.md).
+The report was sent and acknowledged October 2. No repeated tests or inbox filter
+overrides were applied.
 
 Resolve delivery, then run controlled actual code verification and recovery. Keep
-`API_ENABLED=false` until controlled acceptance access is ready. Before any public
-activation, check persistent send budgets, failure behavior and operational response.
+`EMAIL_AUTH_ENABLED=false` until those email identity flows are accepted. The October 3
+repair separates guest learning from this hold: the production candidate sets
+`API_ENABLED=true` while retaining the email and social holds. Existing linked
+account deletion keeps its verified-mail path; this does not waive delivery acceptance.
+Before unrestricted public activation, check guest-creation abuse limits, persistent
+send budgets, failure behavior and operational response.
 The existing temporary remote-mail test is not a public application endpoint.
 
 ## Prepare a reproducible iOS candidate

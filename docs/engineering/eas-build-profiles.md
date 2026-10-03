@@ -151,6 +151,14 @@ Treat the config as a first draft until a build has actually gone through — se
 | `preview-simulator` | Same thing for an iOS Simulator, for whoever has a Mac. |
 | `production` | Store builds. Do not run this until the device pass has been done — shipping an app nobody has opened on a phone is the specific thing the Definition of Done exists to prevent. |
 
+The production `eas-build-pre-install` hook runs `scripts/check-production-env.mjs`
+inside EAS, after its environment has been injected. In addition to validating the
+public configuration, it reads the configured D1 endpoint's `/health` with a
+10-second timeout and requires the WorldQuest D1 service to report
+`apiEnabled: true`. A disabled API still returns HTTP 200 on `/health`, so status
+alone cannot protect a store build. Development and preview builds do not make
+this readiness request. Passing it does not certify account or native acceptance.
+
 `build.production.autoIncrement` only applies to EAS **cloud** builds. The local
 workflow (`.github/workflows/eas-build-local-ios.yml`) mints `CFBundleVersion`
 itself with `scripts/next-build-number.mjs` and stamps it into `app.json`, because

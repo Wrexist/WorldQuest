@@ -176,6 +176,7 @@ describe('primitives obey the token discipline', () => {
       if (!code.includes('Animated.')) continue
       const honoured =
         code.includes('isReduceMotionEnabled') ||
+        code.includes('useReducedMotion') ||
         code.includes('useTiming') ||
         code.includes('useAnimatedTo') ||
         code.includes('useCelebration') ||

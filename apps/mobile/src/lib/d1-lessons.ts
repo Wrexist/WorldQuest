@@ -132,8 +132,11 @@ const sameLesson = (t: D1PreparedLesson, focus: D1Focus | undefined, node: strin
  * A lesson issued for a screen reader (every question describable) suits anyone; one
  * issued without may show a flag or a map a VoiceOver user cannot answer.
  */
-const fitsRequest = (request: Pick<LessonRequest, 'locale' | 'screenReader'>) => (t: D1PreparedLesson) =>
+const fitsRequest = (request: Pick<LessonRequest, 'locale' | 'screenReader' | 'placement'>) => (t: D1PreparedLesson) =>
   t.request.locale === request.locale && (t.request.screenReader || !request.screenReader)
+  // A level check has a fixed cross-level composition. A saved ordinary lesson
+  // cannot stand in for it, nor may an abandoned check become ordinary practice.
+  && (t.request.placement === true) === (request.placement === true)
 
 /**
  * One preparation at a time. The queue holds a single persisted "preparing" slot, and a

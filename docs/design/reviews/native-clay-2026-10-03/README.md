@@ -1,0 +1,24 @@
+# Build 14 repair and liquid-clay review
+
+The owner's Build 14 screenshots showed fragmented Atlas artwork, oversized onboarding layouts and an introductory lesson that could not load. The lesson failure was traced to the actual IPA's production endpoint reporting `apiEnabled:false`; see the [backend investigation](../../../engineering/native-loading-2026-10-03.md).
+
+Atlas now uses four complete, transparent liquid-clay poses throughout the app. A decoded image receives a short native transform, then rests. Tap reactions wait for the correct image, cancel when hidden and respect reduced motion. The previous sprite grid is no longer imported. [Artwork and final prompts](../../assets/atlas-liquid-clay/README.md).
+
+Welcome has a cloud/island stage; question prompts keep a stable mascot beside the bubble. Daily goals use radio cards, regions remain selected until Continue, and error screens share a scrollable clay card with a clear exit. The enlarged brand wordmark is capped like a logo; other onboarding text keeps its full accessibility scaling. Empty course progress now uses the track token instead of a dark filled-looking bar.
+
+Primary personas: Priya starting her first lesson and Emma following Atlas. Onboarding remains before the first lesson/account request; errors stay within the lesson with a back path. Continue or Retry is the single primary action. Child restrictions and server-owned rewards remain enforced.
+
+## Rendered evidence
+
+- [Onboarding](browser/README.md): 24 cases at 320, 390 and 768px; English/light and Swedish/dark with doubled glyphs and reduced motion. Every choice reachable, all CTAs reachable, no horizontal clipping.
+- [Lesson errors](errors/README.md): eight actual onboarding-to-taster cases, intercepted service-hold and transport failures, reachable Back/Retry and quiescent requests.
+- Main routes: 49 checks covering Home, Explore, Quests, Profile, Shop, Country, Settings and Lesson at the same three widths. No uncaught page errors, undersized controls or horizontal text overflow. Selected screens were opened and reviewed; the reproducible report is `node_modules/.cache/wq-native-clay-tabs/report.json` from `scripts/review-liquid-clay.cjs`.
+- [Motion lifecycle measurements](../motion-lifecycle-2026-10-03/README.md): hidden scenery loops 3 to 0; background delayed starts 1 to 0; stale skeleton/count-up work cancelled. These are instrumented lifecycle counts, not native FPS.
+
+## Validation and limits
+
+`pnpm verify` passes, including 1,190 mobile tests and 248 contrast pairs. Three additional hosted-smoke cleanup proofs pass against local workerd. The connected D1 journey passes 44/44 steps, including server grading, offline reconciliation, recovery, deletion and child restrictions. Standard browser E2E passes 108/108 executed steps; its conditional image-question check was skipped because that sampled lesson had no image question. The accessibility-tree audit passes.
+
+Final iOS and Android Hermes exports pass the unchanged 5.21MiB ceiling (5.21 and 5.20MiB respectively; 15.71MiB assets). Native dependencies were unchanged. This proves bundling, not device execution.
+
+**Verdict:** implementation and browser checks pass; native acceptance remains open. No part of this was seen on a phone. Physical iPhone/Android smoothness, largest OS text, VoiceOver/TalkBack, haptics, cold start and lock/unlock still require device validation. Email sign-in/linking remains held pending delivery acceptance; the independent guest-learning repair preserves the original secure deletion path.

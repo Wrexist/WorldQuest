@@ -9,7 +9,7 @@
   "preview_urls": false,
   "triggers": { "crons": ["17 * * * *"] },
   "observability": { "enabled": false },
-  "vars": { "API_ENABLED": "false", "LEAGUES_ENABLED": "false", "CHALLENGES_ENABLED": "false" },
+  "vars": { "API_ENABLED": "false", "EMAIL_AUTH_ENABLED": "false", "LEAGUES_ENABLED": "false", "CHALLENGES_ENABLED": "false" },
   "d1_databases": [{
     "binding": "DB",
     "database_name": "worldquest-development",

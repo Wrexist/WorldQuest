@@ -103,7 +103,7 @@ describe('the motion helper', () => {
     // Animated listeners are throttled and the final frame is not guaranteed, so a
     // count-up that only listens reliably stops at 39 of 40. The completion callback
     // is what makes the number true.
-    expect(source).toMatch(/\}\)\.start\(\(\)\s*=>\s*setValue\(target\)\)/)
+    expect(source).toMatch(/animation\.start\(\(\{ finished \}\) => \{ if \(alive && finished\) setValue\(target\) \}\)/)
   })
 })
 

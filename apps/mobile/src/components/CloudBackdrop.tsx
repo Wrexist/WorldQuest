@@ -1,11 +1,12 @@
 import { Animated, Image, StyleSheet, type StyleProp, type ViewStyle } from 'react-native'
-import { illustration, space, useDrift, useTheme } from '@worldquest/design'
+import { illustration, space, useTheme } from '@worldquest/design'
+import { useSceneDrift } from '../hooks/useSceneDrift.js'
 import clouds from '../../assets/art/clay-clouds/backdrop.webp'
 
 /** A quiet sky behind the character, never a hit target or an accessibility stop. */
 export function CloudBackdrop({ style }: { style?: StyleProp<ViewStyle> }) {
   const { mode } = useTheme()
-  const drift = useDrift(0.6)
+  const drift = useSceneDrift(0.6)
   return <Animated.View testID="cloud-backdrop" pointerEvents="none" aria-hidden
     accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
     style={[styles.clouds, { opacity: illustration.cloudOpacity[mode], transform: [

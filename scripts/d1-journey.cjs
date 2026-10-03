@@ -125,7 +125,7 @@ async function startWorker() {
     compatibilityDate: '2026-09-13', compatibilityFlags: ['nodejs_compat'], d1Databases: ['DB'],
     // Local stand-ins, not credentials: the Worker turns real mail on only when a Resend
     // key and a sender are both set, and signs codes with a secret of 32+ characters.
-    bindings: { API_ENABLED: 'true', AUTH_SECRET: 'journey-local-signing-secret-not-a-real-one',
+    bindings: { API_ENABLED: 'true', EMAIL_AUTH_ENABLED: 'true', AUTH_SECRET: 'journey-local-signing-secret-not-a-real-one',
       RESEND_API_KEY: 're_journey_local', MAIL_FROM: 'WorldQuest <journey@example.invalid>' },
     // Resend, played locally: keep the message, answer the way Resend does. Anything
     // else the Worker tries to reach is refused, so an unexpected call fails loudly.
@@ -241,9 +241,13 @@ async function waitFor(check, ms) {
       await on.waitForTimeout(300)
       await on.getByText('Continue', { exact: true }).first().click()
       await on.waitForTimeout(600)
+      // Ten minutes is the selected clay card; accepting it still uses Continue.
+      await on.getByRole('radio', { name: /^10 min,/ }).waitFor()
       await on.getByText('Continue', { exact: true }).first().click()
       await on.waitForTimeout(600)
       await on.getByRole('radio', { name: 'Europe' }).first().click()
+      // Region choices remain on screen until explicitly confirmed.
+      await on.getByText('Continue', { exact: true }).first().click()
       await on.waitForTimeout(700)
       await on.getByText('Continue', { exact: true }).first().click()
       await on.waitForTimeout(600)

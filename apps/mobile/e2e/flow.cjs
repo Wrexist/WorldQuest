@@ -556,14 +556,10 @@ const skip = (name, why) => {
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(600)
 
-  // A slider now, like the level step: it does not advance on being answered, because a
-  // drag passes through every value on its way to one. Its default is ten minutes.
-  const goalTrack = await page.getByRole('slider').first().boundingBox()
-  if (goalTrack !== null) {
-    await page.mouse.click(goalTrack.x + goalTrack.width - 4, goalTrack.y + goalTrack.height / 2)
-    await page.waitForTimeout(300)
-  }
-  step('the goal slider answers to a tap on its track', /20 min/i.test(await body()))
+  // A card selects a pace without navigating; the chosen state stays inspectable.
+  const seriousGoal = page.getByRole('radio', { name: /20 min/ })
+  await seriousGoal.click()
+  step('the daily goal stays selected until Continue', await seriousGoal.getAttribute('aria-checked') === 'true')
   await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(600)
 
@@ -574,6 +570,8 @@ const skip = (name, why) => {
   step('continent picker appears', (await page.getByRole('radio', { name: 'Europe', exact: true }).count()) > 0)
   await page.screenshot({ path: path.join(SHOTS, 'onboarding-region.png') })
   await page.getByRole('radio', { name: 'Europe' }).first().click()
+  step('the region stays selected until Continue', await page.getByRole('radio', { name: 'Europe' }).first().getAttribute('aria-checked') === 'true')
+  await page.getByText('Continue', { exact: true }).first().click()
   await page.waitForTimeout(700)
 
   step('starting level appears', /How well do you know the world/i.test(await body()))

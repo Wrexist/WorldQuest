@@ -18,8 +18,11 @@ appId: com.wrexist.worldquest
     timeout: 30000
 - tapOn: "2002"
 - tapOn: "Continue"
+- assertVisible: "10 min.*"
 - tapOn: "Continue"
 - tapOn: "Europe"
+- tapOn: "Continue"
+- assertVisible: "How well do you know the world?"
 - tapOn: "Continue"
 - assertVisible: "Here is your plan."
 - tapOn: "Continue"

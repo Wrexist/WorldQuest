@@ -94,6 +94,24 @@ describe('takeLesson', () => {
     expect(await takeLesson({ count: 10, locale: 'en', screenReader: false })).toEqual({ kind: 'offline' })
     // It asked, and the failed request is what said offline.
   })
+
+  it('issues a real placement check instead of reusing a saved ordinary lesson', async () => {
+    const request = { count: 10, locale: 'sv' as const, screenReader: false }
+    await takeLesson(request)
+    const check = await takeLesson({ ...request, placement: true })
+    expect(check.kind).toBe('ready')
+    if (check.kind === 'ready') expect(check.lesson.request.placement).toBe(true)
+    expect(prepare).toHaveBeenCalledTimes(2)
+    const ordinary = await takeLesson(request)
+    if (ordinary.kind === 'ready') expect(ordinary.lesson.request.placement).toBeUndefined()
+  })
+
+  it('does not substitute an ordinary saved lesson for an offline placement check', async () => {
+    const request = { count: 10, locale: 'en' as const, screenReader: false }
+    await takeLesson(request)
+    online = false
+    expect(await takeLesson({ ...request, placement: true })).toEqual({ kind: 'offline' })
+  })
 })
 
 describe('a course step, kept ready', () => {

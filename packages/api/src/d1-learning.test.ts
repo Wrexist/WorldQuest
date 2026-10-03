@@ -88,6 +88,18 @@ describe('D1 durable offline submissions', () => {
     await expect(queue.prepare({ lessonId: 'bad-step', locale: 'en', count: 5, screenReader: false, node: 'Mixed' }))
       .rejects.toThrow('INVALID_LESSON_REQUEST')
   })
+  it('keeps ramp and placement preferences on the wire and across an offline restart', async () => {
+    const h = harness(), queue = h.create()
+    const request: D1PrepareInput = { lessonId: 'ramp', locale: 'sv', count: 10, screenReader: false,
+      maxModifier: 0, introduceFrom: 3, placement: true }
+    await queue.prepare(request)
+    expect(h.prepare).toHaveBeenCalledWith(request)
+    expect((await h.create().inspect()).tickets[0]?.request).toEqual(request)
+    for (const preference of [{ maxModifier: -1 }, { maxModifier: 3 }, { maxModifier: 0.5 },
+      { introduceFrom: 0 }, { introduceFrom: 6 }, { placement: false }]) {
+      await expect(queue.prepare({ ...request, ...preference } as D1PrepareInput)).rejects.toThrow('INVALID_LESSON_REQUEST')
+    }
+  })
   it('keeps old work after an account switch during a request', async () => {
     const h = harness(), queue = h.create(); await queue.enqueue(input)
     h.submit.mockImplementationOnce(async () => { h.switchAccount(); return result })

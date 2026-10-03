@@ -1,77 +1,59 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
-import { Animated, AppState } from 'react-native'
+import { Animated, AppState, Easing } from 'react-native'
 import { NavigationContext } from '@react-navigation/native'
 import { motion, useReducedMotion } from '@worldquest/design'
-import { ATLAS_SEQUENCE, type AtlasGlobeMood } from '../lib/atlasGlobe.generated.js'
+import { ATLAS_CLAY, type AtlasClayMood } from '../lib/atlasClay.generated.js'
 
-const LAST = ATLAS_SEQUENCE.frames - 1
-const FILM_MS = (ATLAS_SEQUENCE.frames / ATLAS_SEQUENCE.fps) * 1000
-
-/**
- * How long Atlas rests between performances. He plays his mood once when he appears,
- * then again every so often while he is on screen — enough to feel alive, never so
- * often that a lesson summary becomes a cartoon you have to wait for. Sleepy dozes
- * continuously, because nodding off IS the resting state.
- */
-const REST_MS: Record<AtlasGlobeMood, number> = {
-  welcome: 7000, celebrate: 9000, thinking: 8000, resting: 6000, encouraging: 8000,
-  laughing: 8000, surprised: 10000, proud: 9000, sleepy: 600, wink: 9000,
-}
-
-/**
- * One owner for playback of the rendered film. Stepped, not tweened: each frame is a
- * Blender render, so the value moves in whole frames at the film's own 18 fps.
- *
- * Stops at rest (frame 0, which is also the last frame's pose) when the app backgrounds,
- * the screen blurs, the character is too small to read, or Reduce Motion is on — where
- * the caller draws the still instead.
- */
-const PAYWALL_POSES: readonly AtlasGlobeMood[] = ['welcome', 'resting', 'wink', 'resting']
-export function useMascotMotion(mood: AtlasGlobeMood, visibleSize: number, decodedSheets: Readonly<Record<string, boolean>>, playback: 'ambient' | 'paywall' = 'ambient') {
+/** A brief whole-character greeting, then rest. No sheet traversal or idle timers. */
+export function useMascotMotion(mood: AtlasClayMood, visibleSize: number, decodedArt: ReadonlySet<unknown>) {
   const reduced = useReducedMotion()
   const navigation = useContext(NavigationContext)
-  const frame = useRef(new Animated.Value(0)).current
-  const [booping, setBooping] = useState(false)
-  const [pose, setPose] = useState(0)
-  const playing = booping ? 'laughing' : playback === 'paywall' && !reduced ? PAYWALL_POSES[pose % PAYWALL_POSES.length]! : mood
-  const largeEnough = visibleSize >= 48
-  // A cold image decode must not swallow the performance before anyone can see it.
-  const decoded = decodedSheets[playing] === true
+  const gesture = useRef(new Animated.Value(0)).current
+  const [boop, setBoop] = useState<number | null>(null)
+  const nextBoop = useRef(0)
+  const previousBoop = useRef<number | null>(null)
+  const playing = boop !== null ? 'laughing' : mood
+  const decoded = decodedArt.has(ATLAS_CLAY[playing])
 
   useEffect(() => {
+    const settlingBoop = previousBoop.current !== null && boop === null
+    previousBoop.current = boop
     let alive = true
-    let film: Animated.CompositeAnimation | undefined
-    let rest: ReturnType<typeof setTimeout> | undefined
-    const stop = () => { film?.stop(); if (rest) clearTimeout(rest); frame.setValue(0) }
+    let active = AppState.currentState === 'active'
+    let focused = navigation?.isFocused() !== false
+    let animation: Animated.CompositeAnimation | undefined
+    const stop = () => { animation?.stop(); animation = undefined; gesture.setValue(0) }
     const play = () => {
-      if (!alive || reduced || !largeEnough || !decoded) return
-      if (AppState.currentState !== 'active' || navigation?.isFocused() === false) return
-      frame.setValue(0)
-      // Stepped: whole frames only, or the sheet would slide between cells.
-      film = Animated.timing(frame, { toValue: LAST, duration: FILM_MS, easing: value => Math.floor(value * LAST) / LAST, useNativeDriver: true, isInteraction: false })
-      film.start(({ finished }) => {
-        if (!alive || !finished) return
-        frame.setValue(0)
-        if (booping) { setBooping(false); return }
-        rest = setTimeout(playback === 'paywall' ? () => setPose(previous => previous + 1) : play,
-          playback === 'paywall' ? motion.quick.duration : REST_MS[playing])
+      stop()
+      if (!alive || !active || !focused || reduced || visibleSize < 48 || !decoded) return
+      animation = Animated.timing(gesture, {
+        toValue: 1, duration: motion.celebrate.duration,
+        easing: Easing.inOut(Easing.ease), useNativeDriver: true, isInteraction: false,
       })
+      animation.start()
     }
-    play()
-    const state = AppState.addEventListener('change', value => { if (value === 'active') play(); else stop() })
-    const focus = navigation?.addListener('focus', play)
-    const blur = navigation?.addListener('blur', stop)
-    return () => { alive = false; stop(); state.remove(); focus?.(); blur?.() }
-  }, [playing, booping, reduced, largeEnough, decoded, navigation, frame, playback, pose])
+    // Returning from a laugh is a rest pose, not a second greeting.
+    if (!settlingBoop) play()
+    const state = AppState.addEventListener('change', value => {
+      active = value === 'active'
+      if (active) play()
+      else { stop(); setBoop(null) }
+    })
+    const focus = navigation?.addListener('focus', () => { focused = true; play() })
+    const blur = navigation?.addListener('blur', () => { focused = false; stop(); setBoop(null) })
+    return () => { alive = false; stop(); state?.remove?.(); focus?.(); blur?.() }
+  }, [playing, boop, reduced, visibleSize, decoded, navigation, gesture])
 
-  /** Tap: he laughs, whatever he was doing, then goes back to it. */
-  const boopNow = useCallback(() => setBooping(true), [])
-  // Under Reduce Motion the laughing still is shown for a moment instead of the film.
+  const boopNow = useCallback(() => {
+    if (AppState.currentState !== 'active' || navigation?.isFocused() === false) return
+    setBoop(++nextBoop.current)
+  }, [navigation])
+  // A reduced-motion boop changes expression without moving. No repeating timer.
   useEffect(() => {
-    if (!booping || !reduced) return
-    const timer = setTimeout(() => setBooping(false), 2000)
+    // A slow first decode must not spend the entire laugh before its artwork appears.
+    if (boop === null || !decoded) return
+    const timer = setTimeout(() => setBoop(current => current === boop ? null : current), motion.celebrate.duration * 2)
     return () => clearTimeout(timer)
-  }, [booping, reduced])
-
-  return { frame, playing, booping, boopNow, still: reduced || !largeEnough }
+  }, [boop, decoded])
+  return { gesture, playing, boopNow, reduced }
 }
