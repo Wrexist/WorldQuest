@@ -19,6 +19,10 @@ on:
         description: 'Trace native globe layout, drawing buffers and framebuffer pixels'
         type: boolean
         default: false
+      atlas_events_only:
+        description: 'Trace globe events without blocking GPU inspection; requires atlas_diagnostics'
+        type: boolean
+        default: false
   push:
     branches: ['fix/**']
     paths: ['.github/workflows/native-acceptance.yml']
@@ -64,6 +68,11 @@ jobs:
         run: |
           echo "::error::Choose at most one of asset_diagnostics, link_diagnostics or atlas_diagnostics"
           exit 1
+      - name: Require atlas diagnostics for event-only tracing
+        if: ${{ inputs.atlas_events_only && !inputs.atlas_diagnostics }}
+        run: |
+          echo "::error::atlas_events_only requires atlas_diagnostics"
+          exit 1
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm }
@@ -78,7 +87,15 @@ jobs:
         run: node scripts/native-link-diagnostic.cjs entry
       - name: Add native globe drawing diagnostic
         if: ${{ inputs.atlas_diagnostics }}
-        run: node scripts/native-atlas-diagnostic.cjs
+        env:
+          ATLAS_EVENTS_ONLY: ${{ inputs.atlas_events_only }}
+        run: |
+          set -euo pipefail
+          if [ "$ATLAS_EVENTS_ONLY" = "true" ]; then
+            node scripts/native-atlas-diagnostic.cjs --events-only
+          else
+            node scripts/native-atlas-diagnostic.cjs
+          fi
       - run: pnpm --filter @worldquest/mobile exec expo prebuild --platform ios --no-install
       - name: Trace the generated native URL callback
         if: ${{ inputs.link_diagnostics }}

@@ -313,6 +313,7 @@
     "scripts/lib/browser-harness.test.cjs",
     "scripts/lib/measure-ink.test.ts",
     "scripts/metro-content-transformer.test.cjs",
+    "scripts/native-atlas-diagnostic.test.cjs",
     "scripts/security-regressions.test.cjs",
     "scripts/verify-native-globe-zoom.test.cjs",
     "supabase/functions/_src/_shared/achievement-events.test.ts",

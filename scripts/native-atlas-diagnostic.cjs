@@ -10,10 +10,10 @@ function replaceOnce(source, before, after, label) {
   return source.replace(before, after)
 }
 
-function runtimeSource() {
+function runtimeSource({ eventsOnly = false } = {}) {
   return `// WQ_ATLAS_DIAGNOSTIC: generated only in Native acceptance CI.
 const FileSystem = require('expo-file-system/legacy')
-const session = { id: Date.now().toString(36), startedAt: new Date().toISOString(), events: [] }
+const session = { id: Date.now().toString(36), startedAt: new Date().toISOString(), mode: '${eventsOnly ? 'events-only' : 'framebuffer'}', events: [] }
 const destination = FileSystem.documentDirectory + '${REPORT}'
 let report = { version: 1, sessions: [session] }
 let nextView = 0
@@ -28,7 +28,7 @@ let writes = FileSystem.readAsStringAsync(destination).then(text => {
   }
 }).catch(() => {})
 function record(kind, fields = {}) {
-  if (session.events.length >= 220) return
+  if (session.events.length >= ${eventsOnly ? 600 : 220}) return
   session.events.push({ time: new Date().toISOString(), kind, ...fields })
   writes = writes.then(() => FileSystem.writeAsStringAsync(destination, JSON.stringify(report, null, 2))).catch(() => {})
 }
@@ -39,7 +39,7 @@ function limited(kind, fields = {}) {
   const key = kind + ':' + (fields.viewId || fields.contextId || fields.control || '')
   const count = (limitedEvents.get(key) || 0) + 1
   limitedEvents.set(key, count)
-  if (count <= 12) record(kind, { ...fields, count })
+  if (count <= ${eventsOnly ? 40 : 12}) record(kind, { ...fields, count })
 }
 function context(gl) {
   return { contextId: gl.contextId, width: gl.drawingBufferWidth, height: gl.drawingBufferHeight }
@@ -52,10 +52,13 @@ function mount(mode) {
 function drawStart(gl, fields) {
   const count = (frames.get(gl.contextId) || 0) + 1
   frames.set(gl.contextId, count)
-  if (count <= 12) record('draw-start', { ...context(gl), count, ...fields })
+  if (count <= ${eventsOnly ? 40 : 12}) record('draw-start', { ...context(gl), count, ...fields })
 }
 function drawEnd(gl, ready) {
   const count = frames.get(gl.contextId) || 0
+${eventsOnly ? `  // JS submission is not native presentation. Do not read GL state, synchronize,
+  // or snapshot here: this mode must preserve production's asynchronous queue.
+  if (count <= 40) record('frame-enqueued', { ...context(gl), count, ready })` : `
   if (count <= 12) {
     try {
       record('frame-submitted', { ...context(gl), count, ready, error: gl.getError(),
@@ -72,14 +75,14 @@ function drawEnd(gl, ready) {
       await FileSystem.copyAsync({ from: snapshot.uri, to: FileSystem.documentDirectory + filename })
       record('snapshot', { ...context(gl), filename, delay, width: snapshot.width, height: snapshot.height })
     } catch (error) { record('snapshot-error', { ...context(gl), delay, error: safeError(error) }) }
-  }, delay)
+  }, delay)`}
 }
 record('initialized')
 module.exports = { record, limited, safeError, context, mount, drawStart, drawEnd }
 `
 }
 
-function instrumentNativeGL(source) {
+function instrumentNativeGL(source, { eventsOnly = false } = {}) {
   let native = replaceOnce(source, 'import ExpoModulesCore', `import ExpoModulesCore
 
 // WQ_ATLAS_DIAGNOSTIC: serialized append survives the test's app relaunch.
@@ -124,7 +127,7 @@ private func wqAtlasAppend(_ fields: [String: Any]) {
       onSurfaceCreate?([`, 'native surface')
   native = replaceOnce(native, '          self.eaglContext.presentRenderbuffer(Int(GL_RENDERBUFFER))', `          let wqPresented = self.eaglContext.presentRenderbuffer(Int(GL_RENDERBUFFER))
           self.wqAtlasPresentCount += 1
-          if self.wqAtlasPresentCount <= 12 { self.wqAtlasTrace("present", presented: wqPresented) }`, 'native presentation')
+          if self.wqAtlasPresentCount <= ${eventsOnly ? 40 : 12} { self.wqAtlasTrace("present", presented: wqPresented) }`, 'native presentation')
   native = replaceOnce(native, '  func glContextInitialized(_ context: EXGLContext) {', `  func glContextInitialized(_ context: EXGLContext) {
     wqAtlasTrace("context-initialized")`, 'native context initialization')
   native = replaceOnce(native, '  func glContextWillDestroy(_ context: EXGLContext) {', `  func glContextWillDestroy(_ context: EXGLContext) {
@@ -132,7 +135,7 @@ private func wqAtlasAppend(_ fields: [String: Any]) {
   return native
 }
 
-function prepareNativeAtlasDiagnostic(workspaceRoot = path.resolve(__dirname, '..'), nativeGLPath) {
+function prepareNativeAtlasDiagnostic(workspaceRoot = path.resolve(__dirname, '..'), nativeGLPath, { eventsOnly = false } = {}) {
   const projectRoot = path.join(workspaceRoot, 'apps/mobile')
   const manifest = JSON.parse(fs.readFileSync(path.join(projectRoot, 'package.json'), 'utf8'))
   if (manifest.main !== 'expo-router/entry') throw new Error('Atlas diagnostic requires the production entry')
@@ -143,7 +146,7 @@ function prepareNativeAtlasDiagnostic(workspaceRoot = path.resolve(__dirname, '.
   let renderer = fs.readFileSync(rendererPath, 'utf8').replace(/\r\n/g, '\n')
   const nativeOriginal = fs.readFileSync(glPath, 'utf8')
   if ([view, renderer, nativeOriginal].some(source => source.includes('WQ_ATLAS_DIAGNOSTIC'))) throw new Error('Atlas diagnostic already installed')
-  const native = instrumentNativeGL(nativeOriginal)
+  const native = instrumentNativeGL(nativeOriginal, { eventsOnly })
 
   view = replaceOnce(view, "import { GLView, type ExpoWebGLRenderingContext } from 'expo-gl'", `import { GLView, type ExpoWebGLRenderingContext } from 'expo-gl'
 // WQ_ATLAS_DIAGNOSTIC: removed with the disposable CI checkout.
@@ -171,6 +174,7 @@ const atlasDiagnostic = require('../../../${RUNTIME}')`, 'view import')
       atlasDiagnostic.record('fly-to', { viewId: diagnosticId, reducedMotion: reduceMotion, fromDistance: cameraRef.current.distance, targetDistance: target.distance })
       stopAnimation()`, 'fly entry')
   view = replaceOnce(view, '        const progress = Math.min(1, (Date.now() - start) / duration)', `        const progress = Math.min(1, (Date.now() - start) / duration)
+        if (progress === 1) atlasDiagnostic.record('camera-animation-complete', { viewId: diagnosticId, targetDistance: target.distance })
         atlasDiagnostic.limited('camera-animation-frame', { viewId: diagnosticId, progress })`, 'camera RAF')
   view = replaceOnce(view, "      if (state === 'active') requestDraw()", `      atlasDiagnostic.record('app-state', { viewId: diagnosticId, state })
       if (state === 'active') requestDraw()`, 'app state')
@@ -194,18 +198,20 @@ const atlasDiagnostic = require('../../../../${RUNTIME}')`, 'renderer import')
     this.disposed = true`, 'dispose')
 
   // Resolve every exact anchor before modifying the disposable checkout.
-  fs.writeFileSync(path.join(projectRoot, RUNTIME), runtimeSource())
+  fs.writeFileSync(path.join(projectRoot, RUNTIME), runtimeSource({ eventsOnly }))
   fs.writeFileSync(path.join(projectRoot, 'native-atlas-diagnostic-GLView.original.swift'), nativeOriginal)
   fs.writeFileSync(glPath, native)
   fs.writeFileSync(viewPath, view)
   fs.writeFileSync(rendererPath, renderer)
-  return { report: REPORT, nativeReport: 'native-atlas-native.jsonl', frames: 'native-atlas-frame-*.png', entry: manifest.main, patched: [viewPath, rendererPath, glPath] }
+  return { mode: eventsOnly ? 'events-only' : 'framebuffer', report: REPORT, nativeReport: 'native-atlas-native.jsonl', frames: 'native-atlas-frame-*.png', entry: manifest.main, patched: [viewPath, rendererPath, glPath] }
 }
 
 if (require.main === module) {
   if (process.env.GITHUB_WORKFLOW !== 'Native acceptance' || process.env.CI !== 'true') {
     throw new Error('Atlas instrumentation is restricted to the Native acceptance CI checkout')
   }
-  console.log(JSON.stringify(prepareNativeAtlasDiagnostic()))
+  const args = process.argv.slice(2)
+  if (args.some(arg => arg !== '--events-only')) throw new Error('Unknown atlas diagnostic option')
+  console.log(JSON.stringify(prepareNativeAtlasDiagnostic(undefined, undefined, { eventsOnly: args.includes('--events-only') })))
 }
 module.exports = { prepareNativeAtlasDiagnostic, runtimeSource, instrumentNativeGL }
