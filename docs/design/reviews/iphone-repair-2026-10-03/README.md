@@ -21,3 +21,25 @@ Browser touch events exercised pan, two-finger pinch and return to one finger. P
 `pnpm verify` passed, including 1,247 mobile tests, engine/backend tests, content validation, accessibility lint, contrast and workflow checks. Native acceptance and complete browser journeys are recorded below when completed. No claim of physical-device frame-rate or VoiceOver validation is made.
 
 The backend deployed as version `712a424c-44ce-4fa4-9adb-3b3c536cc2f0` from source `f53bc022`; existing feature holds were preserved. The live guest smoke loaded five Swedish beginner questions and deleted its temporary guest without submitting answers or sending email.
+
+## Completed journeys and native review
+
+The full browser journey passed 110/110 checks and real local D1 passed 44/44. The corrected screenshot walker handles auto-advancing matching boards and captures both answer verdicts and the real summary; all four viewport runs have no measured failures.
+
+Native acceptance run 37154480472 passed Android compilation and iOS navigation on source f53bc022 with diagnostics disabled. Reviewed dark iPhone screenshots confirm the warm Home-to-lesson header and optional study are below the status bar and above the home indicator. The native zoom changes 88.75% of sampled textured pixels.
+
+Visual review caught that the first new drag test used a point below the clipped globe. Its green command result was therefore not gesture proof. The corrected replay starts inside the visible map, and the pixel verifier now requires page content below the globe to remain stationary while the map changes, then move after a gesture outside the globe. The old misplaced swipe fails that check (90.35% of the page band changed).
+
+The small left-edge missing polygon remains visible on the iOS simulator. It is not hidden or described as fixed; physical-device occurrence and cause remain unverified.
+
+## Native gesture diagnosis
+
+The stricter early replays captured an unchanged globe. Disposable instrumentation in run 37158810855 established that touch delivery and camera updates were correct: the release camera moved from latitude 20 / longitude 10 to latitude 27.82 / longitude -0.009. The software simulator took about three seconds per GPU frame; an unnecessary scene update on scroll-lock first rendered the old camera, and the comparison screenshot preceded the final frame. Search highlights now retain their identity through scroll-lock changes, with a regression test. The native comparison waits for the renderer's actual idle state. A production-path replay without instrumentation is pending.
+
+## Launch redesign
+
+The native launch configuration referenced the retired robot illustration. It now uses the complete clay Atlas cutout through Expo's splash plugin with matching light/dark canvas colors. The React boot screen has an opaque canvas, a single Atlas/cloud composition, safe-area padding, and scrollable slow/failure states. The first-time welcome shares the same illustration language and keeps the existing Get started / account routes. Returning users incur no added delay. The boot reveal is finite and respects reduced motion; ambient cloud drift is disabled while booting.
+
+This serves first-time Alex and returning commuter Priya: recognisable character, a concrete learning promise, and immediate access once ready. It is screen 1 and the existing onboarding welcome, not a new navigation layer. Primary action remains Get started. The design uses the fast, seamless transition principle in [Apple's launching guidance](https://developer.apple.com/design/human-interface-guidelines/launching) and consistent, expressive character principles from [Duolingo's brand guidance](https://design.duolingo.com/writing/duo), without copying its artwork.
+
+`startup/` contains real exported welcome screens plus boot component fixtures with injected booting/slow/failed props. Fixtures are not measured launch timings. Narrow 320px and 390px light/dark renders were reviewed; physical-device startup timing remains unverified. The native build must be regenerated because the launch configuration changed.

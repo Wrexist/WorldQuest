@@ -6,7 +6,7 @@
   "onboarding:slide.3.title": "Din värld",
   "onboarding:slide.3.body": "{count, plural, one {# land. Flaggor och huvudstäder.} other {# länder. Flaggor och huvudstäder.}}",
   "onboarding:cta.next": "Nästa",
-  "onboarding:welcome.body": "Jag heter Atlas. Nu ger vi oss ut i världen.",
+  "onboarding:welcome.body": "Jag heter Atlas. Upptäck länder, lär dig flaggor och utforska lite mer varje dag.",
   "onboarding:cta.start": "Kom igång",
   "onboarding:cta.haveAccount": "Jag har redan ett konto",
   "onboarding:cta.skip": "Hoppa över",

@@ -1,0 +1,7 @@
+{
+  "fixture": true,
+  "description": "Real startup component with injected booting, slow, and failed props; safe-area fixture. Not a measured launch timing.",
+  "layouts": [],
+  "interactions": [],
+  "errors": []
+}

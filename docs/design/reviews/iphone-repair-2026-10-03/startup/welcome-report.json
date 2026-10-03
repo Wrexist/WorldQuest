@@ -1,0 +1,7 @@
+{
+  "cases": [],
+  "errors": [],
+  "limitations": [
+    "Expo web export; synthetic cached progress fixtures in isolated browser contexts; 200% CSS text is not a native Dynamic Type proof."
+  ]
+}

@@ -51,6 +51,7 @@ import { ClayMap } from '../../components/ClayMap.js'
 import { IslandStage, SceneryBanner, type SceneryName } from '../../components/Scenery.js'
 import { Icon } from '../../components/Icon.js'
 import { CloudBackdrop } from '../../components/CloudBackdrop.js'
+import { LaunchHero } from '../../components/LaunchHero.js'
 import { WheelPicker, type WheelOption } from '../../components/WheelPicker.js'
 import type { LevelChoice } from './levels.js'
 import { ART_GEOMETRY, type ArtName } from '../../lib/art.generated.js'
@@ -805,12 +806,9 @@ export function OnboardingScreen({
 
       <Animated.View style={[styles.stepFill, stepStyle]}>
         {step === 'welcome' && (
-          <ScrollView contentContainerStyle={styles.welcomeContent} showsVerticalScrollIndicator={false}>
+          <ScrollView contentContainerStyle={[styles.welcomeContent, styles.welcomeCentered]} showsVerticalScrollIndicator={false}>
             <Animated.View style={[styles.welcomeHero, { height: welcomeStage }, arrivalStyle]}>
-              <CloudBackdrop />
-              <IslandStage size={welcomeStage}>
-                <Art name="atlas/welcome" size={welcomeStage * .56} />
-              </IslandStage>
+              <LaunchHero size={welcomeStage} />
             </Animated.View>
             {/* The wordmark behaves like a logo. Prose and controls retain full text scaling. */}
             <Animated.Text maxFontSizeMultiplier={1.3} dataSet={{ maxScale: '1.3' }} style={[styles.wordmark, staggerStyle(markIn)]}>
@@ -1299,6 +1297,7 @@ const useThemeValues = createThemeStyles((colors) => {
     askBubbleStacked: { flex: 0, alignSelf: 'stretch' },
     form: { alignItems: 'center', paddingHorizontal: space[4], paddingTop: space[3], paddingBottom: space[5], gap: space[3], flexGrow: 1 },
     welcomeContent: { alignItems: 'center', paddingHorizontal: space[4], paddingTop: space[5], paddingBottom: space[5], gap: space[4], flexGrow: 1 },
+    welcomeCentered: { justifyContent: 'center' },
     welcomeHero: { alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', flexShrink: 0 },
     hero: { height: HERO, alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch', flexShrink: 0 },
     wordmark: { ...text('display'), color: colors.text.primary, textAlign: 'center' },
