@@ -1,8 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { AppState, type AppStateStatus } from 'react-native'
+import { AccessibilityInfo, AppState, type AppStateStatus } from 'react-native'
 import { GLView } from 'expo-gl'
+import { motion } from '@worldquest/design'
 import { fakeGl, type FakeGl } from '../../test/fakeGl.js'
+import { withFullMotion } from '../../test/setup.js'
 import { WorldAtlasView } from './WorldAtlasView.js'
 import { buildExploreScene } from './scene/exploreScene.js'
 import { zoomCamera } from './geo/camera.js'
@@ -45,6 +47,40 @@ function renderedDistance() {
   return (matrices.mock.calls.at(-1)![2] as Float32Array)[15]!
 }
 
+/** Advance JS camera frames separately from the native GPU's acknowledgement. */
+async function animatedAtlas() {
+  let now = 0
+  let nextFrame = 0
+  const callbacks = new Map<number, FrameRequestCallback>()
+  vi.spyOn(AccessibilityInfo, 'isReduceMotionEnabled').mockResolvedValue(false)
+  vi.spyOn(performance, 'now').mockImplementation(() => now)
+  vi.spyOn(Date, 'now').mockImplementation(() => now)
+  vi.spyOn(globalThis, 'requestAnimationFrame').mockImplementation(callback => {
+    callbacks.set(++nextFrame, callback)
+    return nextFrame
+  })
+  vi.spyOn(globalThis, 'cancelAnimationFrame').mockImplementation(id => { callbacks.delete(id) })
+  const clock = {
+    elapse(ms: number) { now += ms },
+    async frame(ms = 16) {
+      now += ms
+      await act(async () => {
+        const ready = [...callbacks.values()]
+        callbacks.clear()
+        ready.forEach(callback => callback(now))
+      })
+    },
+    async complete(index: number, ms: number) {
+      now += ms
+      await act(async () => { pending[index]!.resolve() })
+    },
+  }
+  await act(async () => { render(<WorldAtlasView spec={spec} controls />) })
+  await clock.frame()
+  expect(pending).toHaveLength(1)
+  return clock
+}
+
 describe('native GPU frame completion', () => {
   it('keeps controls loading until the GPU completes the first frame', async () => {
     const onStatusChange = vi.fn()
@@ -74,6 +110,66 @@ describe('native GPU frame completion', () => {
     await waitFor(() => expect(pending).toHaveLength(3))
     expect(gl.calls['drawElements']).toBe(draws + 1)
     expect(renderedDistance()).toBeCloseTo(zoomCamera({ lat: 0, lon: 0, distance: initial }, 1.6 ** 3).distance, 5)
+  })
+
+  it('submits the final camera immediately when one native frame costs the whole animation', async () => {
+    await withFullMotion(async () => {
+      const clock = await animatedAtlas()
+      const initial = renderedDistance()
+      await clock.complete(0, motion.expressive.duration)
+      fireEvent.click(screen.getByRole('button', { name: 'Zoom in' }))
+      await clock.frame()
+      expect(pending).toHaveLength(2)
+      expect(renderedDistance()).toBeCloseTo(zoomCamera({ lat: 0, lon: 0, distance: initial }, 1.6).distance, 5)
+      const draws = gl.calls['drawElements']
+      await clock.frame(motion.expressive.duration)
+      expect(gl.calls['drawElements']).toBe(draws)
+    })
+  })
+
+  it('restores intermediate camera frames after a later native frame completes quickly', async () => {
+    await withFullMotion(async () => {
+      const clock = await animatedAtlas()
+      const initial = renderedDistance()
+      await clock.complete(0, motion.expressive.duration)
+      fireEvent.click(screen.getByRole('button', { name: 'Zoom in' }))
+      await clock.frame()
+      const zoomed = renderedDistance()
+      await clock.complete(1, 16)
+      fireEvent.click(screen.getByRole('button', { name: 'Zoom out' }))
+      await clock.frame()
+      await clock.frame()
+      expect(pending).toHaveLength(3)
+      expect(renderedDistance()).toBeGreaterThan(zoomed)
+      expect(renderedDistance()).toBeLessThan(initial)
+    })
+  })
+
+  it('ignores time spent in the background when deciding whether to animate', async () => {
+    let change: (state: AppStateStatus) => void = () => {}
+    vi.spyOn(AppState, 'addEventListener').mockImplementation((_event, listener) => {
+      change = listener
+      return { remove: vi.fn() }
+    })
+    await withFullMotion(async () => {
+      const clock = await animatedAtlas()
+      await clock.complete(0, 16)
+      fireEvent.click(screen.getByRole('button', { name: 'Zoom in' }))
+      await clock.frame()
+      await clock.frame()
+      expect(pending).toHaveLength(2)
+      const beforeBackground = renderedDistance()
+      await act(async () => { change('background') })
+      clock.elapse(motion.expressive.duration * 10)
+      await act(async () => { change('active') })
+      await clock.complete(1, 16)
+      fireEvent.click(screen.getByRole('button', { name: 'Zoom out' }))
+      await clock.frame()
+      expect(pending).toHaveLength(3)
+      // The return redraw still has the pre-background camera; zoom-out is animating.
+      // Counting background time would incorrectly cut straight to its farther target.
+      expect(renderedDistance()).toBeLessThanOrEqual(beforeBackground)
+    })
   })
 
   it('reports GPU failure and ignores a completion after unmount', async () => {

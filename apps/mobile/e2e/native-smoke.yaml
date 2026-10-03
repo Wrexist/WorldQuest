@@ -33,6 +33,14 @@ appId: com.wrexist.worldquest
     id: "lesson-check"
 - assertNotVisible:
     id: "lesson-introduction"
+# Exercise the live lesson map as well as the immediate, disclosure-safe preview.
+- extendedWaitUntil:
+    notVisible: "Loading the map.*"
+    timeout: 30000
+- assertNotVisible:
+    id: "atlas-fallback"
+- waitForAnimationToEnd:
+    timeout: 10000
 - takeScreenshot: native-first-lesson
 - tapOn:
     id: "lesson-study"

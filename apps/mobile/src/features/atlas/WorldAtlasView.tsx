@@ -87,6 +87,7 @@ const FRAME_DEADLINE_MS = 12000
 type FrameFlight = {
   deadline: ReturnType<typeof setTimeout> | null
   fail: (error: Error) => void
+  startedAt: number | null
 }
 
 /** Apply the current disclosure-safe scene before its first complete frame. */
@@ -137,6 +138,7 @@ export function WorldAtlasView({
   const flight = useRef<FrameFlight | null>(null)
   const dirty = useRef(false)
   const nativeContext = useRef<ExpoWebGLRenderingContext | null>(null)
+  const lastNativeFrameMs = useRef<number | null>(null)
   const animation = useRef<number | null>(null)
   const specRef = useRef(spec)
   specRef.current = spec
@@ -188,7 +190,7 @@ export function WorldAtlasView({
         return
       }
       const renderedCamera = cameraRef.current
-      const pending: FrameFlight = { deadline: null, fail: () => {} }
+      const pending: FrameFlight = { deadline: null, fail: () => {}, startedAt: null }
       flight.current = pending
       const release = () => {
         if (flight.current !== pending) return
@@ -205,6 +207,9 @@ export function WorldAtlasView({
       const complete = () => {
         if (flight.current !== pending) return
         if (mounted.current && foreground.current && renderer.current === r) {
+          if (Platform.OS !== 'web' && nativeContext.current !== null && pending.startedAt !== null) {
+            lastNativeFrameMs.current = performance.now() - pending.startedAt
+          }
           // Labels and hit testing follow the image actually completed, not camera
           // positions which a slow GPU has not rendered yet.
           displayedCamera.current = renderedCamera
@@ -220,6 +225,7 @@ export function WorldAtlasView({
       }
       try {
         const started = performance.now()
+        pending.startedAt = started
         const submitted = r.render(renderedCamera, s)
         drawCallback.current?.(performance.now() - started, started)
         if (!submitted) return release()
@@ -252,13 +258,13 @@ export function WorldAtlasView({
     animation.current = null
   }, [])
 
-  /** Short, cancelable, and skipped under Reduce Motion or for long jumps. */
+  /** Skip intermediate views when a native frame already costs the whole animation. */
   const flyTo = useCallback(
     (target: Camera) => {
       stopAnimation()
       const from = cameraRef.current
-      if (reduceMotion || cameraTravel(from, target) > MAX_ANIMATED_TRAVEL) return moveCamera(target)
       const duration = motion.expressive.duration
+      if (reduceMotion || cameraTravel(from, target) > MAX_ANIMATED_TRAVEL || (lastNativeFrameMs.current ?? 0) >= duration) return moveCamera(target)
       const start = Date.now()
       const step = () => {
         const progress = Math.min(1, (Date.now() - start) / duration)
@@ -339,7 +345,11 @@ export function WorldAtlasView({
         if (pending !== null) pending.deadline = setTimeout(() => pending.fail(new Error('atlas: frame timed out')), FRAME_DEADLINE_MS)
         requestDraw()
       } else {
-        if (pending !== null) pending.deadline = null
+        if (pending !== null) {
+          pending.deadline = null
+          // Background time is not GPU speed, even if this frame resolves on return.
+          pending.startedAt = null
+        }
         stopAnimation()
         if (frame.current !== null) cancelAnimationFrame(frame.current)
         frame.current = null
@@ -378,6 +388,7 @@ export function WorldAtlasView({
       renderer.current?.dispose()
       renderer.current = created
       nativeContext.current = gl
+      lastNativeFrameMs.current = null
       requestDraw()
       try {
         const [surface, ids, rings] = await Promise.all([loadSurfaceTexture(), loadCountryIdTexture(), loadAtlasGeometry()])
