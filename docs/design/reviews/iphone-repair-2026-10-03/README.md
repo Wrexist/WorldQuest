@@ -51,3 +51,7 @@ Production-path replay [37160169786](https://github.com/Wrexist/WorldQuest/actio
 Both Android and iOS compilation passed in run `37159678176`. Its `startup/native-welcome-light.png` captures the new first welcome on iPhone. The final replay also reviewed the dark welcome and warm lesson/study safe areas. The small left-edge polygon remains visible after the multisampling adjustment and is still an open visual issue.
 
 Startup captures additionally cover a 320x568 CSS 200% text failure state and scrolling to Retry. The final exported browser gesture check passed with zero errors. After correcting scrollable centering, typecheck, accessibility and scrollable checks passed; the latest Ubuntu CI verification also passed. Windows and Ubuntu CI plus database checks all passed in run 37160172222. Signed TestFlight build/submission run 37161062811 is pending at this evidence commit.
+
+## Signed delivery
+
+[Release workflow 37161062811](https://github.com/Wrexist/WorldQuest/actions/runs/37161062811) passed verification, iOS compilation/signing and submission. Version **1.0.0 (20)** was successfully uploaded to App Store Connect at 2026-10-03 23:32:24 UTC from application source `3d0aad19`. `build-20-ipa.json` records the IPA SHA-256, exact bundled chest and Atlas welcome asset hashes, and the lesson safe-area marker. Apple processing and tester availability are not confirmed by this upload. No merge or public App Store release occurred.
