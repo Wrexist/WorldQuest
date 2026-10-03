@@ -103,5 +103,7 @@ jobs:
             ${{ runner.temp }}/native-flow/
             native-relaunch.png
             native-country.png
+            native-daily-goal.png
+            native-region.png
           if-no-files-found: ignore
           retention-days: 7

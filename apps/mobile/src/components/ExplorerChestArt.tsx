@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Animated, AppState, Easing, Image, StyleSheet, View } from 'react-native'
 import { NavigationContext } from '@react-navigation/native'
 import { motion, space, useReducedMotion } from '@worldquest/design'
@@ -37,6 +37,9 @@ export function ExplorerChestArt({ size, opened = false, revealOnMount = false, 
   const reduced = useReducedMotion()
   const navigation = useContext(NavigationContext)
   const frame = useRef(new Animated.Value(opened && !revealOnMount ? LAST : 0)).current
+  // iOS interpolates native timing samples after easing. Floor in the native graph
+  // so fractional samples cannot slide the crop between neighboring sheet cells.
+  const wholeFrame = useMemo(() => Animated.subtract(frame, Animated.modulo(frame, 1)), [frame])
   const bounce = useRef(new Animated.Value(1)).current
   const [phase, setPhase] = useState<Phase>(opened ? revealOnMount ? 'waiting' : 'opened' : 'closed')
   const [decoded, setDecoded] = useState(false)
@@ -142,8 +145,8 @@ export function ExplorerChestArt({ size, opened = false, revealOnMount = false, 
           onLoad={() => setDecoded(true)} onError={() => setFailed(true)}
           style={{ width: size * EXPLORER_CHEST_SEQUENCE.columns, height: size * EXPLORER_CHEST_SEQUENCE.rows, opacity: playing ? 1 : 0,
             transform: [
-              { translateX: frame.interpolate({ inputRange: FRAMES, outputRange: FRAMES.map(index => -(index % EXPLORER_CHEST_SEQUENCE.columns) * size) }) },
-              { translateY: frame.interpolate({ inputRange: FRAMES, outputRange: FRAMES.map(index => -Math.floor(index / EXPLORER_CHEST_SEQUENCE.columns) * size) }) },
+              { translateX: wholeFrame.interpolate({ inputRange: FRAMES, outputRange: FRAMES.map(index => -(index % EXPLORER_CHEST_SEQUENCE.columns) * size) }) },
+              { translateY: wholeFrame.interpolate({ inputRange: FRAMES, outputRange: FRAMES.map(index => -Math.floor(index / EXPLORER_CHEST_SEQUENCE.columns) * size) }) },
             ],
           }} />
       </View>}

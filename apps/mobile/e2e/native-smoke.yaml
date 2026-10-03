@@ -19,8 +19,10 @@ appId: com.wrexist.worldquest
 - tapOn: "2002"
 - tapOn: "Continue"
 - assertVisible: "10 min.*"
+- takeScreenshot: native-daily-goal
 - tapOn: "Continue"
 - tapOn: "Europe"
+- takeScreenshot: native-region
 - tapOn: "Continue"
 - assertVisible: "How well do you know the world?"
 - tapOn: "Continue"

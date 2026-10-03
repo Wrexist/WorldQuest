@@ -6,6 +6,8 @@ The backend repair is deployed as Worker `1edc8e85-3f98-44cf-a0ef-6d63f096d9c3`.
 
 Atlas now uses four complete, transparent liquid-clay poses throughout the app. A decoded image receives a short native transform, then rests. Tap reactions wait for the correct image, cancel when hidden and respect reduced motion. The previous sprite grid is no longer imported. [Artwork and final prompts](../../assets/atlas-liquid-clay/README.md).
 
+The remaining chest reveal now floors its frame in the native animation graph before calculating both sheet offsets. iOS interpolates timing samples even after stepped easing; a fractional frame could previously expose neighboring cells, especially between rows. A regression fails before the fix and passes afterward for 13 fractional/boundary samples spanning every row wrap. All nine chest lifecycle tests and mobile TypeScript pass. This is source and regression evidence, not a physical-device reproduction.
+
 Welcome has a cloud/island stage; question prompts keep a stable mascot beside the bubble. Daily goals use radio cards, regions remain selected until Continue, and error screens share a scrollable clay card with a clear exit. The enlarged brand wordmark is capped like a logo; other onboarding text keeps its full accessibility scaling. Empty course progress now uses the track token instead of a dark filled-looking bar.
 
 Primary personas: Priya starting her first lesson and Emma following Atlas. Onboarding remains before the first lesson/account request; errors stay within the lesson with a back path. Continue or Retry is the single primary action. Child restrictions and server-owned rewards remain enforced.
