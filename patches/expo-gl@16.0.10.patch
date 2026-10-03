@@ -1,0 +1,302 @@
+diff --git a/android/src/main/java/expo/modules/gl/GLContext.java b/android/src/main/java/expo/modules/gl/GLContext.java
+index d1c990f..1c60e53 100644
+--- a/android/src/main/java/expo/modules/gl/GLContext.java
++++ b/android/src/main/java/expo/modules/gl/GLContext.java
+@@ -18,6 +18,10 @@ import java.lang.ref.WeakReference;
+ import java.nio.IntBuffer;
+ import java.util.HashMap;
+ import java.util.Map;
++import java.util.ArrayList;
++import java.util.HashSet;
++import java.util.List;
++import java.util.Set;
+ import java.util.concurrent.BlockingQueue;
+ import java.util.concurrent.LinkedBlockingQueue;
+ 
+@@ -48,6 +52,9 @@ public class GLContext {
+   private EGL10 mEGL;
+ 
+   private BlockingQueue<Runnable> mEventQueue = new LinkedBlockingQueue<>();
++  private final Object mFrameLock = new Object();
++  private final Set<Promise> mFramePromises = new HashSet<>();
++  private boolean mFrameContextDestroyed = false;
+ 
+   public GLContext(GLObjectManagerModule manager) {
+     super();
+@@ -69,6 +76,34 @@ public class GLContext {
+     mEventQueue.add(r);
+   }
+ 
++  // Called after endFrameEXP, whose flush/swap already precedes this GL queue task.
++  // glFinish runs only on GLThread; Promise resolution never waits on JS or UI.
++  public void waitForFrameAsync(final Promise promise) {
++    synchronized (mFrameLock) {
++      if (mFrameContextDestroyed || mGLThread == null || mEXGLCtxId <= 0) {
++        promise.reject("E_GL_CONTEXT_DESTROYED", "GL context is unavailable", null);
++        return;
++      }
++      mFramePromises.add(promise);
++      runAsync(() -> {
++        synchronized (mFrameLock) {
++          if (!mFramePromises.contains(promise)) return;
++        }
++        glFinish();
++        final int error = glGetError();
++        synchronized (mFrameLock) {
++          // destroy() may already have rejected and removed this Promise.
++          if (!mFramePromises.remove(promise)) return;
++        }
++        if (error == GL_NO_ERROR) {
++          promise.resolve(null);
++        } else {
++          promise.reject("E_GL_FRAME", "GL frame failed (0x" + Integer.toHexString(error) + ")", null);
++        }
++      });
++    }
++  }
++
+   public void initialize(
+     SurfaceTexture surfaceTexture,
+     Boolean enableExperimentalWorkletSupport,
+@@ -77,6 +112,10 @@ public class GLContext {
+       return;
+     }
+ 
++    synchronized (mFrameLock) {
++      mFrameContextDestroyed = false;
++    }
++
+     mGLThread = new GLThread(surfaceTexture);
+     mGLThread.start();
+     mEXGLCtxId = EXGLContextCreate();
+@@ -161,6 +200,16 @@ public class GLContext {
+   }
+ 
+   public void destroy() {
++    final List<Promise> pendingFrames;
++    synchronized (mFrameLock) {
++      mFrameContextDestroyed = true;
++      pendingFrames = new ArrayList<>(mFramePromises);
++      mFramePromises.clear();
++    }
++    // The thread can be interrupted before queued acknowledgements run.
++    for (Promise promise : pendingFrames) {
++      promise.reject("E_GL_CONTEXT_DESTROYED", "GL context was destroyed", null);
++    }
+     if (mGLThread != null) {
+       mManager.deleteContextWithId(mEXGLCtxId);
+       EXGLContextDestroy(mEXGLCtxId);
+diff --git a/android/src/main/java/expo/modules/gl/GLObjectManagerModule.kt b/android/src/main/java/expo/modules/gl/GLObjectManagerModule.kt
+index ebc8392..8f2bc24 100644
+--- a/android/src/main/java/expo/modules/gl/GLObjectManagerModule.kt
++++ b/android/src/main/java/expo/modules/gl/GLObjectManagerModule.kt
+@@ -24,6 +24,12 @@ class GLObjectManagerModule : Module() {
+   override fun definition() = ModuleDefinition {
+     Name("ExponentGLObjectManager")
+ 
++    AsyncFunction("waitForFrameAsync") { exglCtxId: Int, promise: Promise ->
++      val glContext = getContextWithId(exglCtxId)
++        ?: throw InvalidGLContextException()
++      glContext.waitForFrameAsync(promise)
++    }
++
+     AsyncFunction("destroyObjectAsync") { exglObjId: Int ->
+       val glObject = mGLObjects[exglObjId]
+         ?: return@AsyncFunction false
+diff --git a/build/GLView.d.ts b/build/GLView.d.ts
+index 15834ff..8e67161 100644
+--- a/build/GLView.d.ts
++++ b/build/GLView.d.ts
+@@ -23,6 +23,8 @@ export declare class GLView extends React.Component<GLViewProps> {
+      * @return A promise that resolves to WebGL context object. See [WebGL API](#webgl-api) for more details.
+      */
+     static createContextAsync(): Promise<ExpoWebGLRenderingContext>;
++    /** GPU completion of a frame already submitted with endFrameEXP; does not block JS. */
++    static waitForFrameAsync(exgl: ExpoWebGLRenderingContext | number): Promise<void>;
+     /**
+      * Destroys given context.
+      * @param exgl WebGL context to destroy.
+@@ -58,4 +60,4 @@ export declare class GLView extends React.Component<GLViewProps> {
+      */
+     takeSnapshotAsync(options?: SnapshotOptions): Promise<GLSnapshot>;
+ }
+-//# sourceMappingURL=GLView.d.ts.map
+\ No newline at end of file
++//# sourceMappingURL=GLView.d.ts.map
+diff --git a/build/GLView.js b/build/GLView.js
+index 7d4873c..172fde4 100644
+--- a/build/GLView.js
++++ b/build/GLView.js
+@@ -34,6 +34,13 @@ export class GLView extends React.Component {
+         const { exglCtxId } = await ExponentGLObjectManager.createContextAsync();
+         return getGl(exglCtxId);
+     }
++    /** Wait asynchronously for a frame already submitted with endFrameEXP to finish on the GPU. */
++    static async waitForFrameAsync(exgl) {
++        if (!ExponentGLObjectManager.waitForFrameAsync) {
++            throw new UnavailabilityError('expo-gl', 'waitForFrameAsync');
++        }
++        await ExponentGLObjectManager.waitForFrameAsync(getContextId(exgl));
++    }
+     /**
+      * Destroys given context.
+      * @param exgl WebGL context to destroy.
+@@ -160,4 +167,4 @@ const getContextId = (exgl) => {
+     }
+     return exglCtxId;
+ };
+-//# sourceMappingURL=GLView.js.map
+\ No newline at end of file
++//# sourceMappingURL=GLView.js.map
+diff --git a/ios/EXGLContext.h b/ios/EXGLContext.h
+index 0bdfe7a..be61c59 100644
+--- a/ios/EXGLContext.h
++++ b/ios/EXGLContext.h
+@@ -26,6 +26,7 @@
+ - (void)runInEAGLContext:(nonnull EAGLContext*)context callback:(nonnull void(^)(void))callback;
+ - (void)takeSnapshotWithOptions:(nonnull NSDictionary *)options resolve:(nonnull EXPromiseResolveBlock)resolve reject:(nonnull EXPromiseRejectBlock)reject;
+ - (void)destroy;
++- (void)waitForFrameResolve:(nonnull EXPromiseResolveBlock)resolve reject:(nonnull EXPromiseRejectBlock)reject;
+ 
+ // "protected"
+ @property (nonatomic, assign) EXGLContextId contextId;
+diff --git a/ios/EXGLContext.mm b/ios/EXGLContext.mm
+index 0cfc471..b6173d4 100644
+--- a/ios/EXGLContext.mm
++++ b/ios/EXGLContext.mm
+@@ -20,7 +20,8 @@
+ @property (nonatomic, weak) EXGLObjectManager *objectManager;
+ @property (nonatomic, assign) BOOL isContextReady;
+ @property (nonatomic, assign) BOOL wasPrepareCalled;
+-@property (nonatomic) BOOL appIsBackgrounded;
++@property (atomic, assign) BOOL appIsBackgrounded;
++@property (atomic, assign) BOOL frameCompletionDestroyed;
+ 
+ @end
+ 
+@@ -90,14 +91,14 @@
+ 
+ - (void)onApplicationWillResignActive:(NSNotification *)notification
+ {
+-  _appIsBackgrounded = YES;
++  self.appIsBackgrounded = YES;
+   dispatch_sync(_glQueue, ^{
+     glFinish();
+   });
+ }
+ 
+ - (void)onApplicationDidBecomeActive:(NSNotification *)notification {
+-  _appIsBackgrounded = NO;
++  self.appIsBackgrounded = NO;
+   [self flush];
+ }
+ 
+@@ -151,7 +152,7 @@
+ 
+ - (void)flush
+ {
+-  if (_appIsBackgrounded) {
++  if (self.appIsBackgrounded) {
+       return;
+   }
+   [self runAsync:^{
+@@ -165,6 +166,7 @@
+ 
+ - (void)destroy
+ {
++  self.frameCompletionDestroyed = YES;
+   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
+   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
+ 
+@@ -189,6 +191,48 @@
+ 
+ # pragma mark - snapshots
+ 
++// The caller must submit with endFrameEXP first. Its flush is already enqueued
++// on glQueue before this Promise request can reach the native module.
++// This acknowledges GPU completion, not compositor scanout. Never block JS/UI.
++- (void)waitForFrameResolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject
++{
++  if (self.frameCompletionDestroyed || !self.isContextReady) {
++    reject(@"E_GL_CONTEXT_DESTROYED", @"GL context is unavailable", nil);
++    return;
++  }
++  if (self.appIsBackgrounded) {
++    reject(@"E_GL_BACKGROUND", @"GL context is backgrounded", nil);
++    return;
++  }
++  // Do not use runAsync: its wrapper touches GL even if this callback exits early.
++  dispatch_async(_glQueue, ^{
++    if (self.frameCompletionDestroyed || !self.isContextReady) {
++      reject(@"E_GL_CONTEXT_DESTROYED", @"GL context was destroyed", nil);
++      return;
++    }
++    if (self.appIsBackgrounded) {
++      reject(@"E_GL_BACKGROUND", @"GL context is backgrounded", nil);
++      return;
++    }
++    if (![EAGLContext setCurrentContext:self->_eaglCtx]) {
++      reject(@"E_GL_CONTEXT_LOST", @"GL context could not be made current", nil);
++      return;
++    }
++    glFinish();
++    GLenum error = glGetError();
++    [EAGLContext setCurrentContext:nil];
++    if (self.frameCompletionDestroyed) {
++      reject(@"E_GL_CONTEXT_DESTROYED", @"GL context was destroyed", nil);
++    } else if (self.appIsBackgrounded) {
++      reject(@"E_GL_BACKGROUND", @"GL context is backgrounded", nil);
++    } else if (error != GL_NO_ERROR) {
++      reject(@"E_GL_FRAME", [NSString stringWithFormat:@"GL frame failed (0x%x)", error], nil);
++    } else {
++      resolve(nil);
++    }
++  });
++}
++
+ // Saves the contents of the framebuffer to a file.
+ // Possible options:
+ // - `flip`: if true, the image will be flipped vertically.
+diff --git a/ios/EXGLObjectManager.mm b/ios/EXGLObjectManager.mm
+index a477f62..4caf7ed 100644
+--- a/ios/EXGLObjectManager.mm
++++ b/ios/EXGLObjectManager.mm
+@@ -73,6 +73,19 @@ EX_REGISTER_MODULE();
+ 
+ # pragma mark - Snapshots
+ 
++EX_EXPORT_METHOD_AS(waitForFrameAsync,
++                    waitForFrameWithContextId:(nonnull NSNumber *)exglCtxId
++                    resolver:(EXPromiseResolveBlock)resolve
++                    rejecter:(EXPromiseRejectBlock)reject)
++{
++  EXGLContext *glContext = [self getContextWithId:exglCtxId];
++  if (glContext == nil) {
++    reject(@"E_GL_CONTEXT_DESTROYED", @"GL context is unavailable", nil);
++    return;
++  }
++  [glContext waitForFrameResolve:resolve reject:reject];
++}
++
+ EX_EXPORT_METHOD_AS(takeSnapshotAsync,
+                     takeSnapshotWithContextId:(nonnull NSNumber *)exglCtxId
+                     andOptions:(nonnull NSDictionary *)options
+diff --git a/src/GLView.tsx b/src/GLView.tsx
+index 54f39be..bbdaab5 100644
+--- a/src/GLView.tsx
++++ b/src/GLView.tsx
+@@ -63,6 +63,14 @@ export class GLView extends React.Component<GLViewProps> {
+     return getGl(exglCtxId);
+   }
+ 
++  /** Wait asynchronously for a frame already submitted with endFrameEXP to finish on the GPU. */
++  static async waitForFrameAsync(exgl: ExpoWebGLRenderingContext | number): Promise<void> {
++    if (!ExponentGLObjectManager.waitForFrameAsync) {
++      throw new UnavailabilityError('expo-gl', 'waitForFrameAsync');
++    }
++    await ExponentGLObjectManager.waitForFrameAsync(getContextId(exgl));
++  }
++
+   /**
+    * Destroys given context.
+    * @param exgl WebGL context to destroy.

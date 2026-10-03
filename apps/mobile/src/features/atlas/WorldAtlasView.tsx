@@ -83,6 +83,11 @@ const TAP_SLOP = 8
 const TAP_MS = 350
 /** Longest camera move, degrees of arc, that animates; farther ones cut, so no flights. */
 const MAX_ANIMATED_TRAVEL = 70
+const FRAME_DEADLINE_MS = 12000
+type FrameFlight = {
+  deadline: ReturnType<typeof setTimeout> | null
+  fail: (error: Error) => void
+}
 
 /** Apply the current disclosure-safe scene before its first complete frame. */
 function applyScene(renderer: GlobeRenderer, geometry: AtlasGeometry | null, spec: AtlasSceneSpec): void {
@@ -117,14 +122,21 @@ export function WorldAtlasView({
   const [camera, setCamera] = useState<Camera>(WORLD_CAMERA)
   const [status, setStatus] = useState<AtlasStatus>('loading')
   const statusRef = useRef<AtlasStatus>('loading')
+  const [appActive, setAppActive] = useState(AppState.currentState !== 'background' && AppState.currentState !== 'inactive')
+  const foreground = useRef(appActive)
+  const mounted = useRef(true)
   // Bumped to throw away a lost context and mount a fresh GLView.
   const [generation, setGeneration] = useState(0)
 
   const renderer = useRef<GlobeRenderer | null>(null)
   const geometry = useRef<AtlasGeometry | null>(null)
   const cameraRef = useRef<Camera>(WORLD_CAMERA)
+  const displayedCamera = useRef<Camera>(WORLD_CAMERA)
   const sizeRef = useRef<{ width: number; height: number } | null>(null)
   const frame = useRef<number | null>(null)
+  const flight = useRef<FrameFlight | null>(null)
+  const dirty = useRef(false)
+  const nativeContext = useRef<ExpoWebGLRenderingContext | null>(null)
   const animation = useRef<number | null>(null)
   const specRef = useRef(spec)
   specRef.current = spec
@@ -143,23 +155,26 @@ export function WorldAtlasView({
 
   // A context that never initializes must not leave a spinner covering Explore forever.
   useEffect(() => {
-    if (status !== 'loading') return
+    if (status !== 'loading' || !appActive) return
     let active = true
     const timer = setTimeout(() => {
       // Native shader work can delay an already queued timer until after the first
-      // frame. The synchronous status ref wins even before React cleans up this effect.
-      if (active && statusRef.current === 'loading') report('error', new Error('atlas: loading timed out'))
+      // frame or an AppState transition. Synchronous refs win before effect cleanup.
+      if (active && foreground.current && statusRef.current === 'loading') report('error', new Error('atlas: loading timed out'))
     }, 12000)
     return () => { active = false; clearTimeout(timer) }
-  }, [status, report])
+  }, [status, appActive, report])
 
   const settle = useRef(0)
   const requestDrawRef = useRef<() => void>(() => {})
-  /** Draw on the next frame, once, however many times this is called before it. */
+  /** At most one GPU frame in flight; changes while it draws replace the pending camera. */
   const requestDraw = useCallback(() => {
-    if (frame.current !== null) return
+    dirty.current = true
+    if (!mounted.current || !foreground.current || statusRef.current === 'error' || frame.current !== null || flight.current !== null) return
     frame.current = requestAnimationFrame(() => {
       frame.current = null
+      if (!mounted.current || !foreground.current) return
+      dirty.current = false
       const r = renderer.current
       const s = sizeRef.current
       if (r === null || s === null) return
@@ -172,22 +187,52 @@ export function WorldAtlasView({
         setGeneration((n) => n + 1)
         return
       }
+      const renderedCamera = cameraRef.current
+      const pending: FrameFlight = { deadline: null, fail: () => {} }
+      flight.current = pending
+      const release = () => {
+        if (flight.current !== pending) return
+        if (pending.deadline !== null) clearTimeout(pending.deadline)
+        flight.current = null
+        if (dirty.current && mounted.current && foreground.current) requestDrawRef.current()
+      }
+      pending.fail = (error) => {
+        if (flight.current !== pending) return
+        const backgrounded = (error as Error & { code?: string }).code === 'E_GL_BACKGROUND'
+        if (mounted.current && foreground.current && renderer.current === r && !backgrounded) report('error', error)
+        release()
+      }
+      const complete = () => {
+        if (flight.current !== pending) return
+        if (mounted.current && foreground.current && renderer.current === r) {
+          // Labels and hit testing follow the image actually completed, not camera
+          // positions which a slow GPU has not rendered yet.
+          displayedCamera.current = renderedCamera
+          setCamera(renderedCamera)
+          if (statusRef.current === 'loading') report('ready')
+          const expected = Math.round(s.width * PixelRatio.get())
+          if (Math.abs(r.bufferWidth - expected) > 2 && settle.current < 30) {
+            settle.current++
+            dirty.current = true
+          } else settle.current = 0
+        }
+        release()
+      }
       try {
         const started = performance.now()
-        const submitted = r.render(cameraRef.current, s)
-        if (submitted && statusRef.current === 'loading') report('ready')
+        const submitted = r.render(renderedCamera, s)
         drawCallback.current?.(performance.now() - started, started)
-        // A resize clears the canvas, and on the web it happens AFTER this frame: the
-        // GLView resizes its canvas in an effect of its own. Until the drawing buffer
-        // matches the new layout, draw again next frame — bounded, so a platform that
-        // sizes its buffer differently costs a few frames, never a loop.
-        const expected = Math.round(s.width * PixelRatio.get())
-        if (Math.abs(r.bufferWidth - expected) > 2 && settle.current < 30) {
-          settle.current++
-          requestAnimationFrame(() => requestDrawRef.current())
-        } else settle.current = 0
+        if (!submitted) return release()
+        const gl = nativeContext.current
+        if (Platform.OS === 'web' || gl === null) return complete()
+        pending.deadline = setTimeout(() => pending.fail(new Error('atlas: frame timed out')), FRAME_DEADLINE_MS)
+        // endFrameEXP only queues native work. Wait off the JS/UI threads before
+        // submitting another frame, then draw the latest requested position.
+        void GLView.waitForFrameAsync(gl).then(complete, (error: unknown) => {
+          pending.fail(error instanceof Error ? error : new Error(String(error)))
+        })
       } catch (error) {
-        report('error', error instanceof Error ? error : new Error(String(error)))
+        pending.fail(error instanceof Error ? error : new Error(String(error)))
       }
     })
   }, [report])
@@ -197,7 +242,6 @@ export function WorldAtlasView({
   const moveCamera = useCallback(
     (next: Camera) => {
       cameraRef.current = next
-      setCamera(next)
       requestDraw()
     },
     [requestDraw],
@@ -262,7 +306,7 @@ export function WorldAtlasView({
     if (r === null) return
     applyScene(r, geometry.current, spec)
     requestDraw()
-  }, [spec.highlights, status, requestDraw])
+  }, [spec.highlights, requestDraw])
 
   useEffect(() => {
     renderer.current?.setTheme(atlasTheme(colors, mode))
@@ -287,21 +331,36 @@ export function WorldAtlasView({
   // Back from the background: the surface may have been recycled, so draw again.
   useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
-      if (state === 'active') requestDraw()
-      else stopAnimation()
+      foreground.current = state === 'active'
+      setAppActive(foreground.current)
+      const pending = flight.current
+      if (pending?.deadline !== null && pending?.deadline !== undefined) clearTimeout(pending.deadline)
+      if (state === 'active') {
+        if (pending !== null) pending.deadline = setTimeout(() => pending.fail(new Error('atlas: frame timed out')), FRAME_DEADLINE_MS)
+        requestDraw()
+      } else {
+        if (pending !== null) pending.deadline = null
+        stopAnimation()
+        if (frame.current !== null) cancelAnimationFrame(frame.current)
+        frame.current = null
+      }
     })
     return () => sub.remove()
   }, [requestDraw, stopAnimation])
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    mounted.current = true
+    return () => {
+      mounted.current = false
       stopAnimation()
       if (frame.current !== null) cancelAnimationFrame(frame.current)
+      if (flight.current?.deadline !== null && flight.current?.deadline !== undefined) clearTimeout(flight.current.deadline)
+      flight.current = null
       renderer.current?.dispose()
       renderer.current = null
-    },
-    [stopAnimation],
-  )
+      nativeContext.current = null
+    }
+  }, [stopAnimation])
 
   // Read through refs so a theme or quality change reaches the live renderer without
   // recreating the context (which would re-decode both textures).
@@ -309,6 +368,7 @@ export function WorldAtlasView({
   initial.current = { theme: atlasTheme(colors, mode), quality }
   const onContextCreate = useCallback(
     async (gl: ExpoWebGLRenderingContext) => {
+      if (!mounted.current) return
       let created: GlobeRenderer
       try {
         created = new GlobeRenderer(gl as unknown as GL, initial.current.theme, initial.current.quality, Platform.OS === 'web')
@@ -317,6 +377,7 @@ export function WorldAtlasView({
       }
       renderer.current?.dispose()
       renderer.current = created
+      nativeContext.current = gl
       requestDraw()
       try {
         const [surface, ids, rings] = await Promise.all([loadSurfaceTexture(), loadCountryIdTexture(), loadAtlasGeometry()])
@@ -340,8 +401,8 @@ export function WorldAtlasView({
     const s = sizeRef.current
     const g = geometry.current
     const current = specRef.current
-    if (s === null) return
-    const point = unproject(x, y, cameraRef.current, s)
+    if (s === null || statusRef.current !== 'ready') return
+    const point = unproject(x, y, displayedCamera.current, s)
     if (point === null) return
     eventCallback.current?.({ type: 'coordinateSelected', sceneKey: current.sceneKey, lat: point.lat, lon: point.lon })
     if (g === null) return
@@ -361,8 +422,8 @@ export function WorldAtlasView({
   const responder = useMemo(
     () =>
       PanResponder.create({
-        onStartShouldSetPanResponder: () => true,
-        onMoveShouldSetPanResponder: () => true,
+        onStartShouldSetPanResponder: () => statusRef.current === 'ready',
+        onMoveShouldSetPanResponder: () => statusRef.current === 'ready',
         // Inside a scroll view (a lesson, Explore) the page may take the gesture back
         // until the globe has started turning — so a drag that begins on the map can
         // still scroll the screen, and nobody is trapped above the answers. Once the
@@ -408,6 +469,7 @@ export function WorldAtlasView({
   const onLayout = (event: LayoutChangeEvent) => {
     const { width, height } = event.nativeEvent.layout
     if (width === 0 || height === 0) return
+    if (sizeRef.current?.width === width && sizeRef.current.height === height) return
     sizeRef.current = { width, height }
     setSize({ width, height })
     requestDraw()

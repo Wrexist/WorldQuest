@@ -145,6 +145,21 @@ jobs:
             APP_DATA_CONTAINER=$(xcrun simctl get_app_container "$DEVICE_ID" com.wrexist.worldquest data)
             cp "$APP_DATA_CONTAINER/Documents/native-image-lifecycle-diagnostic.json" "$RUNNER_TEMP/native-image-second-launch.json"
           fi
+      - name: Approve the simulator bridge for the app's URL scheme
+        run: |
+          set -euo pipefail
+          # Test cold/warm app routing, not Simulator's intermittent consent dialog.
+          # This touches only this disposable simulator's scheme approval; the app
+          # still has to launch from its encoded URL and show the exact country.
+          # Upstream reproduction: mobile-dev-inc/Maestro#940, comment 3587472809.
+          APPROVAL_PLIST="$HOME/Library/Developer/CoreSimulator/Devices/$DEVICE_ID/data/Library/Preferences/com.apple.launchservices.schemeapproval.plist"
+          APPROVAL_KEY='com.apple.CoreSimulator.CoreSimulatorBridge-->worldquest'
+          if /usr/libexec/PlistBuddy -c "Print $APPROVAL_KEY" "$APPROVAL_PLIST" >/dev/null 2>&1; then
+            /usr/libexec/PlistBuddy -c "Set $APPROVAL_KEY com.wrexist.worldquest" "$APPROVAL_PLIST"
+          else
+            /usr/libexec/PlistBuddy -c "Add $APPROVAL_KEY string com.wrexist.worldquest" "$APPROVAL_PLIST"
+          fi
+          plutil -lint "$APPROVAL_PLIST"
       - name: Exercise native storage, navigation and decoding
         run: |
           set -euo pipefail
@@ -156,11 +171,6 @@ jobs:
           export PATH="$RUNNER_TEMP/maestro/maestro/bin:$PATH"
           cd "$GITHUB_WORKSPACE"
           maestro --device "$DEVICE_ID" test --debug-output "$RUNNER_TEMP/native-flow" apps/mobile/e2e/native-smoke.yaml
-      - name: Verify rendered native globe zoom
-        if: always()
-        run: |
-          node --test scripts/verify-native-globe-zoom.test.cjs
-          node scripts/verify-native-globe-zoom.cjs "$RUNNER_TEMP/native-flow" "$RUNNER_TEMP/native-globe-zoom.json"
       - name: Collect native deep link diagnostic
         if: ${{ always() && inputs.link_diagnostics }}
         run: |
@@ -196,6 +206,18 @@ jobs:
               done
             fi
           fi
+      - name: Verify rendered native globe zoom
+        if: always()
+        env:
+          REQUIRE_PRESENTATION_TRACE: ${{ inputs.atlas_diagnostics }}
+        run: |
+          set -euo pipefail
+          node --test scripts/verify-native-globe-zoom.test.cjs
+          EXTRA_ARGS=()
+          if [ "$REQUIRE_PRESENTATION_TRACE" = "true" ]; then
+            EXTRA_ARGS+=(--require-presentation)
+          fi
+          node scripts/verify-native-globe-zoom.cjs "$RUNNER_TEMP/native-flow" "$RUNNER_TEMP/native-globe-zoom.json" "${EXTRA_ARGS[@]}"
       - name: Save native evidence
         if: always()
         uses: actions/upload-artifact@v4

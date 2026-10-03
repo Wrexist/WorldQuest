@@ -1,6 +1,6 @@
 const { test } = require('node:test')
 const assert = require('node:assert/strict')
-const { geometryFromLog, compareZoom } = require('./verify-native-globe-zoom.cjs')
+const { geometryFromLog, compareZoom, presentationEvidence } = require('./verify-native-globe-zoom.cjs')
 
 const geometry = { screen: { width: 200, height: 400 }, globe: { x: 10, y: 20, width: 180, height: 200 }, controlsTop: 190 }
 function image(textured = true) {
@@ -54,4 +54,47 @@ Scrolling DOWN until id: explore-globe centering enabled COMPLETED
 Tapping on element: UiElement(attributes={accessibilityText=Zoom in, bounds=[213,221][261,269]})`)
   assert.deepEqual(result, { screen: { width: 402, height: 874 }, globe: { x: 16, y: -99, width: 370, height: 381 }, controlsTop: 221 })
   assert.throws(() => geometryFromLog('No scroll or zoom'), /Missing/)
+})
+
+const captureLog = `17:01:26.682 [ INFO] Take screenshot native-explore-globe RUNNING
+17:01:34.301 [ INFO] Take screenshot native-explore-zoomed RUNNING`
+const trace = { sessions: [{ events: [
+  { kind: 'mount', mode: 'explore', viewId: 1, time: '2026-10-03T17:01:16.688Z' },
+  { kind: 'context-created', viewId: 1, contextId: 3, time: '2026-10-03T17:01:17.036Z' },
+  { kind: 'control-press', control: 'in', time: '2026-10-03T17:01:28.613Z' },
+] }] }
+const present = (time, contextId = 3, presented = true) => ({ kind: 'present', contextId, presented, time: Date.parse(`2026-10-03T${time}Z`) / 1000 })
+
+test('rejects the textured preview becoming the initial live frame during the baseline capture', () => {
+  // Actual event-only failure: both initial presents followed capture start and no
+  // zoom frame reached the native surface, despite a 98% pixel change from preview.
+  const result = presentationEvidence(captureLog, trace, [present('17:01:26.769'), present('17:01:26.783')])
+  assert.equal(result.baselinePresentedBeforeCapture, false)
+  assert.equal(result.zoomPresentedAfterPress, false)
+  assert.equal(result.passed, false)
+})
+
+test('requires a baseline present and a post-press present before their respective captures', () => {
+  const initial = present('17:01:25.000')
+  assert.equal(presentationEvidence(captureLog, trace, [initial]).passed, false)
+  assert.equal(presentationEvidence(captureLog, trace, [initial, present('17:01:35.000')]).passed, false)
+  assert.equal(presentationEvidence(captureLog, trace, [initial, present('17:01:29.000', 7), present('17:01:29.100', 3, false)]).passed, false)
+  const result = presentationEvidence(captureLog, trace, [initial, present('17:01:29.000')])
+  assert.equal(result.passed, true)
+  assert.equal(result.baselinePresentCount, 1)
+  assert.equal(result.zoomPresentCount, 1)
+})
+
+test('fails incomplete tracing and handles captures crossing UTC midnight', () => {
+  assert.throws(() => presentationEvidence(captureLog, { sessions: [] }, []), /Expected one traced/)
+  assert.throws(() => presentationEvidence('', trace, []), /capture start/)
+  const midnight = structuredClone(trace)
+  midnight.sessions[0].events[0].time = '2026-10-03T23:59:50.000Z'
+  midnight.sessions[0].events[2].time = '2026-10-04T00:00:01.000Z'
+  const result = presentationEvidence('23:59:59.000 Take screenshot native-explore-globe RUNNING\n00:00:02.000 Take screenshot native-explore-zoomed RUNNING', midnight, [
+    present('23:59:58.000'),
+    { kind: 'present', contextId: 3, presented: true, time: Date.parse('2026-10-04T00:00:01.500Z') / 1000 },
+  ])
+  assert.equal(result.passed, true)
+  assert.equal(result.baselineCaptureStartedAt, '2026-10-03T23:59:59.000Z')
 })

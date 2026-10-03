@@ -162,10 +162,15 @@ const atlasDiagnostic = require('../../../${RUNTIME}')`, 'view import')
     atlasDiagnostic.record('outer-layout', { viewId: diagnosticId, ...event.nativeEvent.layout })`, 'outer layout')
   view = replaceOnce(view, '<GLView key={generation} style={StyleSheet.absoluteFill} onContextCreate={onContextCreate} />', `<GLView key={generation} style={StyleSheet.absoluteFill} onContextCreate={onContextCreate}
           onLayout={event => atlasDiagnostic.record('gl-view-layout', { viewId: diagnosticId, ...event.nativeEvent.layout })} />`, 'GL layout')
-  view = replaceOnce(view, '    if (frame.current !== null) return', `    atlasDiagnostic.limited('draw-request', { viewId: diagnosticId, pendingFrame: frame.current, hasRenderer: renderer.current !== null, hasSize: sizeRef.current !== null })
-    if (frame.current !== null) return`, 'draw scheduling')
-  view = replaceOnce(view, '      frame.current = null', `      atlasDiagnostic.limited('draw-callback', { viewId: diagnosticId })
+  view = replaceOnce(view, '  const requestDraw = useCallback(() => {\n    dirty.current = true', `  const requestDraw = useCallback(() => {
+    dirty.current = true
+    atlasDiagnostic.limited('draw-request', { viewId: diagnosticId, pendingFrame: frame.current, frameInFlight: flight.current !== null, status: statusRef.current, hasRenderer: renderer.current !== null, hasSize: sizeRef.current !== null })`, 'draw scheduling')
+  view = replaceOnce(view, '    frame.current = requestAnimationFrame(() => {\n      frame.current = null', `    frame.current = requestAnimationFrame(() => {
+      atlasDiagnostic.limited('draw-callback', { viewId: diagnosticId })
       frame.current = null`, 'draw callback')
+  view = replaceOnce(view, '      const complete = () => {\n        if (flight.current !== pending) return', `      const complete = () => {
+        if (flight.current !== pending) return
+        atlasDiagnostic.limited('frame-completed', { viewId: diagnosticId, contextId: nativeContext.current?.contextId, distance: renderedCamera.distance, dirty: dirty.current, active: foreground.current })`, 'frame acknowledgement')
   view = replaceOnce(view, '      cameraRef.current = next', `      atlasDiagnostic.limited('camera-change', { viewId: diagnosticId, distance: next.distance })
       cameraRef.current = next`, 'camera change')
   view = replaceOnce(view, '    if (animation.current !== null) cancelAnimationFrame(animation.current)', `    atlasDiagnostic.limited('stop-animation', { viewId: diagnosticId, pendingAnimation: animation.current })
@@ -176,8 +181,8 @@ const atlasDiagnostic = require('../../../${RUNTIME}')`, 'view import')
   view = replaceOnce(view, '        const progress = Math.min(1, (Date.now() - start) / duration)', `        const progress = Math.min(1, (Date.now() - start) / duration)
         if (progress === 1) atlasDiagnostic.record('camera-animation-complete', { viewId: diagnosticId, targetDistance: target.distance })
         atlasDiagnostic.limited('camera-animation-frame', { viewId: diagnosticId, progress })`, 'camera RAF')
-  view = replaceOnce(view, "      if (state === 'active') requestDraw()", `      atlasDiagnostic.record('app-state', { viewId: diagnosticId, state })
-      if (state === 'active') requestDraw()`, 'app state')
+  view = replaceOnce(view, "      if (state === 'active') {", `      atlasDiagnostic.record('app-state', { viewId: diagnosticId, state })
+      if (state === 'active') {`, 'app state')
   view = replaceOnce(view, '<Pressable role="button" aria-label={label} onPress={onPress} style=', `<Pressable role="button" aria-label={label}
       onPressIn={() => atlasDiagnostic.record('control-press-in', { control: kind })}
       onPressOut={() => atlasDiagnostic.record('control-press-out', { control: kind })}

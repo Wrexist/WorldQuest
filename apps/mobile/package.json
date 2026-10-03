@@ -63,6 +63,7 @@
     "autolinking": {
       "android": {
         "buildFromSource": [
+          "expo-gl",
           "expo-secure-store"
         ]
       }

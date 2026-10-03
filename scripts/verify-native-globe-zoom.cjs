@@ -78,7 +78,44 @@ function filesUnder(directory) {
   })
 }
 
-function verify(directory) {
+function presentationEvidence(log, diagnostic, nativeEvents) {
+  const sessions = diagnostic.sessions.filter(session => session.events.some(event => event.kind === 'mount' && event.mode === 'explore'))
+  const presses = sessions.flatMap(session => session.events.filter(event => event.kind === 'control-press' && event.control === 'in').map(press => ({ session, press })))
+  if (presses.length !== 1) throw new Error(`Expected one traced Explore zoom press, found ${presses.length}`)
+  const { session, press } = presses[0]
+  const mount = session.events.find(event => event.kind === 'mount' && event.mode === 'explore')
+  const context = session.events.find(event => event.kind === 'context-created' && event.viewId === mount.viewId)
+  if (!context) throw new Error('Missing traced Explore GL context')
+  const pressTime = Date.parse(press.time)
+  const captureTime = name => {
+    const matches = [...log.matchAll(new RegExp(`^(\\d{2}:\\d{2}:\\d{2}\\.\\d{3}).*Take screenshot ${name} RUNNING`, 'gm'))]
+    if (matches.length !== 1) throw new Error(`Expected one ${name} capture start, found ${matches.length}`)
+    let time = Date.parse(`${press.time.slice(0, 10)}T${matches[0][1]}Z`)
+    // Maestro logs UTC time-of-day; associate captures across midnight with the press.
+    if (time - pressTime > 12 * 60 * 60 * 1000) time -= 24 * 60 * 60 * 1000
+    if (pressTime - time > 12 * 60 * 60 * 1000) time += 24 * 60 * 60 * 1000
+    return time
+  }
+  const baselineStarted = captureTime('native-explore-globe')
+  const zoomedStarted = captureTime('native-explore-zoomed')
+  if (!(Date.parse(mount.time) < baselineStarted && baselineStarted < pressTime && pressTime < zoomedStarted)) throw new Error('Unexpected baseline, zoom press or capture order')
+  const presents = nativeEvents.filter(event => event.kind === 'present' && event.presented === true && event.contextId === context.contextId && event.time * 1000 >= Date.parse(mount.time)).map(event => event.time * 1000)
+  const baselinePresents = presents.filter(time => time < baselineStarted)
+  const zoomPresents = presents.filter(time => time > pressTime && time < zoomedStarted)
+  return {
+    available: true,
+    passed: baselinePresents.length > 0 && zoomPresents.length > 0,
+    baselinePresentedBeforeCapture: baselinePresents.length > 0,
+    zoomPresentedAfterPress: zoomPresents.length > 0,
+    baselinePresentCount: baselinePresents.length,
+    zoomPresentCount: zoomPresents.length,
+    baselineCaptureStartedAt: new Date(baselineStarted).toISOString(),
+    zoomPressedAt: press.time,
+    zoomCaptureStartedAt: new Date(zoomedStarted).toISOString(),
+  }
+}
+
+function verify(directory, { requirePresentation = false } = {}) {
   const files = filesUnder(directory)
   const unique = name => {
     const found = files.filter(file => path.basename(file) === name)
@@ -88,18 +125,28 @@ function verify(directory) {
   const beforePath = unique('native-explore-globe.png')
   const afterPath = unique('native-explore-zoomed.png')
   const logPath = path.join(path.dirname(path.dirname(beforePath)), 'logs', 'maestro.log')
-  const geometry = geometryFromLog(fs.readFileSync(logPath, 'utf8'))
-  return { ...compareZoom(PNG.sync.read(fs.readFileSync(beforePath)), PNG.sync.read(fs.readFileSync(afterPath)), geometry), geometry }
+  const log = fs.readFileSync(logPath, 'utf8')
+  const geometry = geometryFromLog(log)
+  const pixels = compareZoom(PNG.sync.read(fs.readFileSync(beforePath)), PNG.sync.read(fs.readFileSync(afterPath)), geometry)
+  const evidenceDirectory = path.dirname(path.resolve(directory))
+  const jsTrace = path.join(evidenceDirectory, 'native-atlas-diagnostic.json')
+  const nativeTrace = path.join(evidenceDirectory, 'native-atlas-native.jsonl')
+  let presentation = { available: false }
+  if (requirePresentation || fs.existsSync(jsTrace) || fs.existsSync(nativeTrace)) {
+    if (!fs.existsSync(jsTrace) || !fs.existsSync(nativeTrace)) throw new Error('Missing required native globe presentation traces')
+    presentation = presentationEvidence(log, JSON.parse(fs.readFileSync(jsTrace, 'utf8')), fs.readFileSync(nativeTrace, 'utf8').trim().split(/\r?\n/).filter(Boolean).map(line => JSON.parse(line)))
+  }
+  return { ...pixels, passed: pixels.passed && (!presentation.available || presentation.passed), geometry, presentation }
 }
 
 if (require.main === module) {
-  const [directory, reportPath] = process.argv.slice(2)
-  if (!directory || !reportPath) throw new Error('Usage: node scripts/verify-native-globe-zoom.cjs <native-flow-directory> <report.json>')
+  const [directory, reportPath, option] = process.argv.slice(2)
+  if (!directory || !reportPath || (option && option !== '--require-presentation')) throw new Error('Usage: node scripts/verify-native-globe-zoom.cjs <native-flow-directory> <report.json> [--require-presentation]')
   let report
-  try { report = verify(directory) } catch (error) { report = { passed: false, error: error.message } }
+  try { report = verify(directory, { requirePresentation: option === '--require-presentation' }) } catch (error) { report = { passed: false, error: error.message } }
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n')
   console.log(JSON.stringify(report))
   if (!report.passed) process.exitCode = 1
 }
 
-module.exports = { geometryFromLog, compareZoom, verify }
+module.exports = { geometryFromLog, compareZoom, presentationEvidence, verify }

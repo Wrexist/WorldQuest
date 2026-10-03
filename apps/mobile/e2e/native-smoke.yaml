@@ -56,7 +56,7 @@ appId: com.wrexist.worldquest
     id: "path-node-current"
 - takeScreenshot: native-relaunch
 - tapOn: "Explore"
-# Zoom controls exist only after the native renderer reports ready.
+# Zoom controls exist only after the native renderer acknowledges its first frame.
 - extendedWaitUntil:
     visible: "Zoom in"
     timeout: 30000
@@ -75,6 +75,9 @@ appId: com.wrexist.worldquest
     id: "atlas-fallback"
 - assertNotVisible:
     id: "explore-map-fallback"
+# Let the acknowledged first frame and the viewport scroll settle before sampling.
+- waitForAnimationToEnd:
+    timeout: 10000
 - takeScreenshot: native-explore-globe
 - tapOn: "Zoom in"
 - waitForAnimationToEnd:
@@ -102,7 +105,11 @@ appId: com.wrexist.worldquest
       - tapOn:
           text: "Open"
           retryTapIfNoChange: true
-- assertVisible: "Sweden"
+# Accepting the system dialog is not application launch. Wait for the actual cold
+# destination on the hosted simulator, and still fail if it never arrives.
+- extendedWaitUntil:
+    visible: "Sweden"
+    timeout: 45000
 - assertVisible: "Practise this country"
 - takeScreenshot: native-country-se
 # Keep the process running to verify a second encoded link replaces the country.
@@ -118,6 +125,8 @@ appId: com.wrexist.worldquest
       - tapOn:
           text: "Open"
           retryTapIfNoChange: true
-- assertVisible: "France"
+- extendedWaitUntil:
+    visible: "France"
+    timeout: 45000
 - assertVisible: "Practise this country"
 - takeScreenshot: native-country-warm-fr
