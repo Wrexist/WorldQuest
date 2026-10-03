@@ -72,8 +72,11 @@ export function TopBar({
   const t = useT()
   const { width, fontScale } = useWindowDimensions()
   const locale = currentLocale()
-  const streakValue = streak === undefined ? undefined : formatCompact(streak, locale)
-  const coinValue = coins === undefined ? undefined : formatCompact(coins, locale)
+  // Intl keeps its decimal punctuation and translated units. Allow a line break
+  // before the unit so very large text never escapes the capsule's rounded rim.
+  const compact = (value: number) => formatCompact(value, locale).replace(/\u00a0/g, ' ')
+  const streakValue = streak === undefined ? undefined : compact(streak)
+  const coinValue = coins === undefined ? undefined : compact(coins)
   // Keep the identity on ordinary headers; spend its space on readable counters as
   // values or system text grow. The counters themselves can wrap without truncation.
   const hasStreak = streak !== undefined && onStreak !== undefined

@@ -36,9 +36,9 @@ describe('header counters', () => {
     const view = render(<TopBar coins={12_850} streak={1_234} onStreak={vi.fn()} />)
     expect(view.getByTestId('header-coins').textContent).toBe('12.9K')
     await act(async () => { await setLocale('sv') })
-    expect(view.getByTestId('header-coins').textContent).toBe('12,9\u00a0tn')
+    expect(view.getByTestId('header-coins').textContent).toBe('12,9 tn')
     expect(view.getByTestId('header-coins').getAttribute('aria-label')).toBe('12\u00a0850 mynt')
-    expect(view.getByTestId('header-streak').textContent).toBe('1,2\u00a0tn')
+    expect(view.getByTestId('header-streak').textContent).toBe('1,2 tn')
     expect(view.getByTestId('header-streak').getAttribute('aria-label')).toContain('1\u00a0234 dagar')
   })
 
