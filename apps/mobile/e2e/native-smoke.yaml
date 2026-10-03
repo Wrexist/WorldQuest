@@ -45,19 +45,37 @@ appId: com.wrexist.worldquest
 - assertVisible:
     id: "path-node-current"
 - takeScreenshot: native-relaunch
+# Start the first link from a stopped app, as in Maestro's deep-link recipe.
+- stopApp
 - openLink: "worldquest://country/%53%45"
+# Consent may appear asynchronously, or the OS may open the destination directly.
+- extendedWaitUntil:
+    visible: "^(Open|Sweden)$"
+    timeout: 30000
 - runFlow:
     when:
       platform: iOS
+      visible: "Open"
     commands:
-      # A fresh simulator can show consent well after openLink returns.
-      # Do not skip the handoff and mistake the untouched Home screen for a route failure.
-      - extendedWaitUntil:
-          visible: "Open"
-          timeout: 30000
       - tapOn:
           text: "Open"
           retryTapIfNoChange: true
 - assertVisible: "Sweden"
 - assertVisible: "Practise this country"
-- takeScreenshot: native-country
+- takeScreenshot: native-country-se
+# Keep the process running to verify a second encoded link replaces the country.
+- openLink: "worldquest://country/%46%52"
+- extendedWaitUntil:
+    visible: "^(Open|France)$"
+    timeout: 30000
+- runFlow:
+    when:
+      platform: iOS
+      visible: "Open"
+    commands:
+      - tapOn:
+          text: "Open"
+          retryTapIfNoChange: true
+- assertVisible: "France"
+- assertVisible: "Practise this country"
+- takeScreenshot: native-country-warm-fr
