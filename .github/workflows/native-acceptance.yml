@@ -35,7 +35,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: native-acceptance-${{ github.ref }}
+  group: native-acceptance-${{ github.ref }}-${{ inputs.android_only && 'android' || inputs.ios_only && 'ios' || 'all' }}
   cancel-in-progress: true
 
 jobs:
@@ -218,11 +218,11 @@ jobs:
         run: |
           set -euo pipefail
           node --test scripts/verify-native-globe-zoom.test.cjs
-          EXTRA_ARGS=()
           if [ "$REQUIRE_PRESENTATION_TRACE" = "true" ]; then
-            EXTRA_ARGS+=(--require-presentation)
+            node scripts/verify-native-globe-zoom.cjs "$RUNNER_TEMP/native-flow" "$RUNNER_TEMP/native-globe-zoom.json" --require-presentation
+          else
+            node scripts/verify-native-globe-zoom.cjs "$RUNNER_TEMP/native-flow" "$RUNNER_TEMP/native-globe-zoom.json"
           fi
-          node scripts/verify-native-globe-zoom.cjs "$RUNNER_TEMP/native-flow" "$RUNNER_TEMP/native-globe-zoom.json" "${EXTRA_ARGS[@]}"
       - name: Save native evidence
         if: always()
         uses: actions/upload-artifact@v4
